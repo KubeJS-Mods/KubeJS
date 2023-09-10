@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.script;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -12,6 +13,7 @@ import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.NativeObject;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.mod.util.RemappingHelper;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.Nullable;
@@ -193,10 +195,15 @@ public class ScriptManager implements ClassShutter {
 			plugin.registerCustomJavaToJsWrappers(customJavaToJsWrappersEvent);
 		}
 
-		for (var registryTypeWrapperFactory : RegistryTypeWrapperFactory.ALL.get()) {
-			try {
-				typeWrappers.register(registryTypeWrapperFactory.info().objectBaseClass, UtilsJS.cast(registryTypeWrapperFactory));
-			} catch (IllegalArgumentException ignored) {
+		for (var reg : BuiltInRegistries.REGISTRY.registryKeySet()) {
+			var info = RegistryInfo.of(reg);
+
+			if (info.autoWrap && info.objectBaseClass != Object.class && info.objectBaseClass != null) {
+				try {
+					typeWrappers.register(info.objectBaseClass, UtilsJS.cast(info));
+				} catch (IllegalArgumentException ignored) {
+					scriptType.console.info("Skipped registry type wrapper for " + info.key.location());
+				}
 			}
 		}
 

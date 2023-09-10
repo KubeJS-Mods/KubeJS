@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.misc;
 
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -69,7 +69,7 @@ public class BasicEnchantment extends Enchantment {
 		if (enchantment == this) {
 			return false;
 		} else if (enchantmentBuilder.checkCompatibility != null) {
-			return enchantmentBuilder.checkCompatibility.apply(KubeJSRegistries.enchantments().getId(enchantment));
+			return enchantmentBuilder.checkCompatibility.apply(RegistryInfo.ENCHANTMENT.getId(enchantment));
 		}
 
 		return true;

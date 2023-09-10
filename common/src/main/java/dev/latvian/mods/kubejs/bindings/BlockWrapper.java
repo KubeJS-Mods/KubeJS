@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.bindings;
 import dev.latvian.mods.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockPredicate;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.Util;
@@ -61,21 +61,21 @@ public class BlockWrapper {
 
 	@Info("Gets a Block from a block id")
 	public static Block getBlock(ResourceLocation id) {
-		return KubeJSRegistries.blocks().get(id);
+		return RegistryInfo.BLOCK.getValue(id);
 	}
 
 	@Info("Gets a blocks id from the Block")
 	@Nullable
 	public static ResourceLocation getId(Block block) {
-		return KubeJSRegistries.blocks().getId(block);
+		return RegistryInfo.BLOCK.getId(block);
 	}
 
 	@Info("Gets a list of the classname of all registered blocks")
 	public static List<String> getTypeList() {
-		List<String> list = new ArrayList<>();
+		var list = new ArrayList<String>();
 
-		for (var block : KubeJSRegistries.blocks().getIds()) {
-			list.add(block.toString());
+		for (var block : RegistryInfo.BLOCK.entrySet()) {
+			list.add(block.getKey().location().toString());
 		}
 
 		return list;

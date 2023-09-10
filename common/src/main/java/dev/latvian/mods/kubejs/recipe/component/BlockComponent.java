@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -33,7 +33,7 @@ public record BlockComponent(ComponentRole crole) implements RecipeComponent<Blo
 
 	@Override
 	public JsonPrimitive write(RecipeJS recipe, Block value) {
-		return new JsonPrimitive(String.valueOf(KubeJSRegistries.blocks().getId(value)));
+		return new JsonPrimitive(String.valueOf(RegistryInfo.BLOCK.getId(value)));
 	}
 
 	@Override

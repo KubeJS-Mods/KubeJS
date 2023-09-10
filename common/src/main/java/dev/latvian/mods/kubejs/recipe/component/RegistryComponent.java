@@ -2,19 +2,16 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
-public record RegistryComponent<T>(ResourceKey<? extends Registry<T>> registry, Class<?> registryType) implements RecipeComponent<T> {
+public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeComponent<T> {
 	@Override
 	public String componentType() {
 		return "registry_element";
@@ -22,45 +19,50 @@ public record RegistryComponent<T>(ResourceKey<? extends Registry<T>> registry, 
 
 	@Override
 	public TypeDescJS constructorDescription(DescriptionContext ctx) {
-		return TypeDescJS.STRING.or(ctx.javaType(registryType));
+		return TypeDescJS.STRING.or(ctx.javaType(registry.objectBaseClass));
 	}
 
 	@Override
 	public Class<?> componentClass() {
-		return registryType;
-	}
-
-	private Registrar<T> reg() {
-		return KubeJSRegistries.genericRegistry(UtilsJS.cast(registry));
+		return registry.objectBaseClass;
 	}
 
 	@Override
 	public JsonElement write(RecipeJS recipe, T value) {
-		return new JsonPrimitive(reg().getId(value).toString());
+		return new JsonPrimitive(registry.getId(value).toString());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public T read(RecipeJS recipe, Object from) {
-		if (registryType.isInstance(from)) {
+		if (registry.objectBaseClass != Object.class && registry.objectBaseClass.isInstance(from)) {
 			return (T) from;
-		} else if (registry.equals(Registries.ITEM) && from instanceof ItemStack stack) {
-			return (T) stack.getItem();
-		} else if (registry.equals(Registries.FLUID) && from instanceof FluidStackJS fluid) {
-			return (T) fluid.getFluid();
+		} else if (!(from instanceof CharSequence) && !(from instanceof JsonPrimitive) && !(from instanceof ResourceLocation)) {
+			if (registry == RegistryInfo.ITEM) {
+				if (from instanceof ItemStack is) {
+					return (T) is.getItem();
+				} else {
+					return (T) recipe.readOutputItem(from).item.getItem();
+				}
+			} else if (registry == RegistryInfo.FLUID) {
+				if (from instanceof FluidStackJS fs) {
+					return (T) fs.getFluid();
+				} else if (recipe.readOutputFluid(from) instanceof FluidStackJS fs) {
+					return (T) fs.getFluid();
+				}
+			}
 		}
 
-		var s = String.valueOf(from);
-		return reg().get(UtilsJS.getMCID(null, s));
+		return registry.getValue(UtilsJS.getMCID(null, from));
 	}
 
 	@Override
 	public boolean hasPriority(RecipeJS recipe, Object from) {
-		return registryType.isInstance(from) || (from instanceof CharSequence && UtilsJS.getMCID(null, from.toString()) != null) || (from instanceof JsonPrimitive json && json.isString() && UtilsJS.getMCID(null, json.getAsString()) != null);
+		return (registry.objectBaseClass != Object.class && registry.objectBaseClass.isInstance(from)) || (from instanceof CharSequence && UtilsJS.getMCID(null, from.toString()) != null) || (from instanceof JsonPrimitive json && json.isString() && UtilsJS.getMCID(null, json.getAsString()) != null);
 	}
 
 	@Override
 	public String toString() {
-		return "%s{%s}".formatted(componentType(), registry.location());
+		return "%s{%s}".formatted(componentType(), registry);
 	}
 }

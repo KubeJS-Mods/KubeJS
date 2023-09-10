@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.entity.LivingEntityHurtEventJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.Extra;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 
@@ -22,7 +22,7 @@ public interface EntityEvents {
 		}
 
 		var id = ResourceLocation.tryParse(o.toString());
-		return id == null ? null : KubeJSRegistries.entityTypes().get(id);
+		return id == null ? null : RegistryInfo.ENTITY_TYPE.getValue(id);
 	}
 
 	EventHandler DEATH = GROUP.common("death", () -> LivingEntityDeathEventJS.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();

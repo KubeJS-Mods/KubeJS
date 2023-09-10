@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -137,7 +137,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		var map = new HashMap<String, Integer>();
 
 		for (var entry : EnchantmentHelper.getEnchantments(kjs$self()).entrySet()) {
-			var id = KubeJSRegistries.enchantments().getId(entry.getKey());
+			var id = RegistryInfo.ENCHANTMENT.getId(entry.getKey());
 
 			if (id != null) {
 				map.put(id.toString(), entry.getValue());
@@ -156,7 +156,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		var is = kjs$self();
 
 		for (var entry : enchantments.entrySet()) {
-			var enchantment = KubeJSRegistries.enchantments().get(UtilsJS.getMCID(null, entry.getKey()));
+			var enchantment = RegistryInfo.ENCHANTMENT.getValue(UtilsJS.getMCID(null, entry.getKey()));
 
 			if (enchantment != null && entry.getValue() instanceof Number number) {
 				is = is.kjs$enchantCopy(enchantment, number.intValue());

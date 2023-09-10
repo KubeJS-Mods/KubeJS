@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.fluid;
 
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
@@ -53,14 +53,14 @@ public class FluidWrapper {
 	}
 
 	public static Fluid getType(ResourceLocation id) {
-		return KubeJSRegistries.fluids().get(id);
+		return RegistryInfo.FLUID.getValue(id);
 	}
 
 	public static List<String> getTypes() {
-		List<String> types = new ArrayList<>();
+		var types = new ArrayList<String>();
 
-		for (var id : KubeJSRegistries.fluids().getIds()) {
-			types.add(id.toString());
+		for (var entry : RegistryInfo.FLUID.entrySet()) {
+			types.add(entry.getKey().location().toString());
 		}
 
 		return types;
@@ -71,10 +71,10 @@ public class FluidWrapper {
 	}
 
 	public static boolean exists(ResourceLocation id) {
-		return KubeJSRegistries.fluids().contains(id);
+		return RegistryInfo.FLUID.hasValue(id);
 	}
 
 	public static ResourceLocation getId(Fluid fluid) {
-		return KubeJSRegistries.fluids().getId(fluid);
+		return RegistryInfo.FLUID.getId(fluid);
 	}
 }

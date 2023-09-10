@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.resources.ResourceLocation;
@@ -26,7 +26,7 @@ public interface RecipeKJS {
 	}
 
 	default RecipeSchema kjs$getSchema() {
-		var s = KubeJSRegistries.recipeSerializers().getId(((Recipe<?>) this).getSerializer());
+		var s = RegistryInfo.RECIPE_SERIALIZER.getId(((Recipe<?>) this).getSerializer());
 		return RecipeNamespace.getAll().get(s.getNamespace()).get(s.getPath()).schema;
 	}
 
@@ -35,7 +35,7 @@ public interface RecipeKJS {
 	}
 
 	default ResourceLocation kjs$getType() {
-		return KubeJSRegistries.recipeSerializers().getId(((Recipe<?>) this).getSerializer());
+		return RegistryInfo.RECIPE_SERIALIZER.getId(((Recipe<?>) this).getSerializer());
 	}
 
 	default boolean hasInput(ReplacementMatch match) {

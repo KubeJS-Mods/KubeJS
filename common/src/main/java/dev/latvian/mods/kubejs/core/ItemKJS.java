@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.item.FoodBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
 import dev.latvian.mods.kubejs.item.MutableToolTier;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.Util;
@@ -54,7 +54,7 @@ public interface ItemKJS extends IngredientSupplierKJS {
 	}
 
 	default String kjs$getCreativeTab() {
-		var id = KubeJSRegistries.items().getId((Item) this);
+		var id = RegistryInfo.ITEM.getId(kjs$self());
 		return id == null ? "unknown" : id.getNamespace();
 	}
 

@@ -23,7 +23,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
@@ -202,7 +202,7 @@ public class RecipesEventJS extends EventJS {
 		recipeFunctions.put("stonecutting", stonecutting);
 		recipeFunctions.put("smithing", smithing);
 
-		stageSerializer = KubeJSRegistries.recipeSerializers().get(new ResourceLocation("recipestages:stage"));
+		stageSerializer = RegistryInfo.RECIPE_SERIALIZER.getValue(new ResourceLocation("recipestages:stage"));
 	}
 
 	@HideFromJS
@@ -630,7 +630,7 @@ public class RecipesEventJS extends EventJS {
 
 	public void printAllTypes() {
 		ConsoleJS.SERVER.info("== All recipe types [available] ==");
-		printTypes(t -> KubeJSRegistries.recipeSerializers().get(t.id) != null);
+		printTypes(t -> RegistryInfo.RECIPE_SERIALIZER.getValue(t.id) != null);
 	}
 
 	public void printExamples(String type) {

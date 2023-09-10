@@ -7,11 +7,12 @@ import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
 import dev.latvian.mods.kubejs.level.gen.properties.AddLakeProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.AddOreProperties;
 import dev.latvian.mods.kubejs.level.gen.properties.AddSpawnProperties;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Blocks;
@@ -157,11 +158,11 @@ public class AddWorldgenEventJS extends StartupEventJS {
 
 		if (matcher.matches()) {
 			try {
-				var entity = Objects.requireNonNull(KubeJSRegistries.entityTypes().get(new ResourceLocation(matcher.group(1))));
+				var entity = Objects.requireNonNull(RegistryInfo.ENTITY_TYPE.getValue(new ResourceLocation(matcher.group(1))));
 				var weight = Integer.parseInt(matcher.group(4));
 				var min = Integer.parseInt(matcher.group(2));
 				var max = Integer.parseInt(matcher.group(3));
-				addEntitySpawn(filter, category, new MobSpawnSettings.SpawnerData(entity, weight, min, max));
+				addEntitySpawn(filter, category, new MobSpawnSettings.SpawnerData((EntityType<?>) entity, weight, min, max));
 			} catch (Exception ex) {
 				ConsoleJS.STARTUP.info("Failed to add spawn: " + ex);
 			}

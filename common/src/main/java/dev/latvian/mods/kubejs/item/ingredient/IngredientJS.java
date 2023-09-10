@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -117,7 +117,7 @@ public interface IngredientJS {
 		} else if (s.startsWith("@")) {
 			return IngredientPlatformHelper.get().mod(s.substring(1));
 		} else if (s.startsWith("%")) {
-			var group = UtilsJS.findCreativeTab(s.substring(1));
+			var group = UtilsJS.findCreativeTab(new ResourceLocation(s.substring(1)));
 
 			if (group == null) {
 				if (RecipeJS.itemErrors) {
@@ -136,7 +136,7 @@ public interface IngredientJS {
 			return IngredientPlatformHelper.get().regex(reg);
 		}
 
-		var item = KubeJSRegistries.items().get(new ResourceLocation(s));
+		var item = RegistryInfo.ITEM.getValue(new ResourceLocation(s));
 
 		if (item == null || item == Items.AIR) {
 			return Ingredient.EMPTY;

@@ -9,9 +9,9 @@ import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
@@ -68,8 +68,7 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
 	}
 
 	@Nullable
-	default Entity kjs$createEntity(ResourceLocation id) {
-		var type = BuiltInRegistries.ENTITY_TYPE.get(id);
+	default Entity kjs$createEntity(EntityType<?> type) {
 		return type.create(kjs$self());
 	}
 

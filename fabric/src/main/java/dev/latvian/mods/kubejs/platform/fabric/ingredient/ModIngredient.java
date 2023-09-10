@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +36,7 @@ public class ModIngredient extends KubeJSIngredient {
 	public List<ItemStack> getMatchingStacks() {
 		var list = new ArrayList<ItemStack>();
 
-		for (var item : KubeJSRegistries.items()) {
+		for (var item : RegistryInfo.ITEM.getArchitecturyRegistrar()) {
 			if (item.kjs$getMod().equals(mod)) {
 				list.add(item.getDefaultInstance());
 			}

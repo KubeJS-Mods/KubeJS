@@ -4,13 +4,12 @@ import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.platform.LevelPlatformHelper;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -138,7 +137,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public String getId() {
-		return BuiltInRegistries.BLOCK.getKey(getBlockState().getBlock()).toString();
+		return RegistryInfo.BLOCK.getId(getBlockState().getBlock()).toString();
 	}
 
 	public Collection<ResourceLocation> getTags() {
@@ -150,7 +149,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public void set(ResourceLocation id, Map<?, ?> properties, int flags) {
-		var block = KubeJSRegistries.blocks().get(id);
+		var block = RegistryInfo.BLOCK.getValue(id);
 		var state = block.defaultBlockState();
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR) {
@@ -202,7 +201,7 @@ public class BlockContainerJS implements SpecialEquality {
 
 	public String getEntityId() {
 		var entity = getEntity();
-		return entity == null ? "minecraft:air" : BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(entity.getType()).toString();
+		return entity == null ? "minecraft:air" : RegistryInfo.BLOCK_ENTITY_TYPE.getId(entity.getType()).toString();
 	}
 
 	@Nullable
@@ -295,8 +294,8 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	@Nullable
-	public Entity createEntity(ResourceLocation id) {
-		var entity = getLevel().kjs$createEntity(id);
+	public Entity createEntity(EntityType<?> type) {
+		var entity = getLevel().kjs$createEntity(type);
 
 		if (entity != null) {
 			entity.kjs$setPosition(this);

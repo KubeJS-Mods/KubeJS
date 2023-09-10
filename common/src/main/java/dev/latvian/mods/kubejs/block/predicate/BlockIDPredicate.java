@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block.predicate;
 
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -65,7 +65,7 @@ public class BlockIDPredicate implements BlockPredicate {
 
 	private Block getBlock() {
 		if (cachedBlock == null) {
-			cachedBlock = KubeJSRegistries.blocks().get(id);
+			cachedBlock = RegistryInfo.BLOCK.getValue(id);
 
 			if (cachedBlock == null) {
 				cachedBlock = Blocks.AIR;

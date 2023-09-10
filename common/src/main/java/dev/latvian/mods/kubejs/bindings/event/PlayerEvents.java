@@ -10,7 +10,7 @@ import dev.latvian.mods.kubejs.player.PlayerAdvancementEventJS;
 import dev.latvian.mods.kubejs.player.PlayerChatDecorateEventJS;
 import dev.latvian.mods.kubejs.player.PlayerRespawnedEventJS;
 import dev.latvian.mods.kubejs.player.SimplePlayerEventJS;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -18,7 +18,7 @@ import net.minecraft.world.inventory.MenuType;
 public interface PlayerEvents {
 	Extra SUPPORTS_MENU_TYPE = new Extra().transformer(PlayerEvents::transformMenuType).identity();
 
-	static MenuType<?> transformMenuType(Object o) {
+	static Object transformMenuType(Object o) {
 		if (o == null) {
 			return null;
 		} else if (o instanceof MenuType<?> menuType) {
@@ -32,7 +32,7 @@ public interface PlayerEvents {
 		}
 
 		var id = ResourceLocation.tryParse(o.toString());
-		return id == null ? null : KubeJSRegistries.menuTypes().get(id);
+		return id == null ? null : RegistryInfo.MENU.getValue(id);
 	}
 
 	EventGroup GROUP = EventGroup.of("PlayerEvents");

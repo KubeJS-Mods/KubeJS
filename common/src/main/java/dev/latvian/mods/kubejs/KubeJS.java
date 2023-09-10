@@ -17,8 +17,6 @@ import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.player.KubeJSPlayerEventHandler;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
-import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryEventJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptFileInfo;
@@ -147,10 +145,7 @@ public class KubeJS {
 
 		for (var extraId : StartupEvents.REGISTRY.findUniqueExtraIds(ScriptType.STARTUP)) {
 			if (extraId instanceof ResourceKey<?> key) {
-				var info = RegistryInfo.of(UtilsJS.cast(key));
-				var event = new RegistryEventJS(info);
-				StartupEvents.REGISTRY.post(event, key);
-				event.created.forEach(BuilderBase::createAdditionalObjects);
+				RegistryInfo.of((ResourceKey) key).fireRegistryEvent();
 			}
 		}
 	}

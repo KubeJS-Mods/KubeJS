@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.common.collect.Lists;
 import dev.architectury.hooks.item.food.FoodPropertiesHooks;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import net.minecraft.resources.ResourceLocation;
@@ -164,9 +164,10 @@ public class FoodBuilder {
 		@Override
 		public MobEffectInstance get() {
 			if (cachedEffect == null) {
-				cachedEffect = KubeJSRegistries.mobEffects().get(id);
+				cachedEffect = RegistryInfo.MOB_EFFECT.getValue(id);
+
 				if (cachedEffect == null) {
-					var effectIds = KubeJSRegistries.mobEffects().entrySet().stream().map(entry -> entry.getKey().location()).collect(Collectors.toSet());
+					var effectIds = RegistryInfo.MOB_EFFECT.entrySet().stream().map(entry -> entry.getKey().location()).collect(Collectors.toSet());
 					throw new RuntimeException(String.format("Missing effect '%s'. Check spelling or maybe potion id was used instead of effect id. Possible ids: %s", id, effectIds));
 				}
 			}

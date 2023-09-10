@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.item.custom;
 
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import net.minecraft.resources.ResourceLocation;
@@ -54,7 +54,7 @@ public class RecordItemJS extends RecordItem {
 
 		public SoundEvent getSoundEvent() {
 			if (songSoundEvent == null) {
-				songSoundEvent = KubeJSRegistries.soundEvents().get(song);
+				songSoundEvent = RegistryInfo.SOUND_EVENT.getValue(song);
 
 				if (songSoundEvent == null || songSoundEvent == SoundEvents.ITEM_PICKUP) {
 					songSoundEvent = SoundEvents.MUSIC_DISC_11;

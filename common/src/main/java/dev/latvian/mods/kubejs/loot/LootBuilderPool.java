@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.loot;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -84,7 +84,7 @@ public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 	}
 
 	public LootTableEntry addItem(ItemStack item, int weight, @Nullable NumberProvider count) {
-		var id = KubeJSRegistries.items().getId(item.getItem());
+		var id = RegistryInfo.ITEM.getId(item.getItem());
 
 		if (id == null || item.isEmpty()) {
 			return new LootTableEntry(new JsonObject());

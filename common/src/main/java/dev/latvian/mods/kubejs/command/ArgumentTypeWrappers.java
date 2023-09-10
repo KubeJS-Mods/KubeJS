@@ -9,6 +9,7 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.Util;
@@ -44,7 +45,6 @@ import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemPredicateArgument;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
@@ -165,7 +165,7 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 		if (byNameCache == null) {
 			return byNameCache = Util.make(new HashMap<>(), map -> {
 				for (var entry : ArgumentTypeInfos.BY_CLASS.entrySet()) {
-					var id = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(entry.getValue());
+					var id = RegistryInfo.COMMAND_ARGUMENT_TYPE.getId(entry.getValue());
 					byNameCache.put(id, new ClassWrapper<>(entry.getKey()));
 				}
 			});
@@ -183,10 +183,12 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 		this.getter = getter;
 	}
 
+	@Override
 	public ArgumentType<?> create(CommandRegistryEventJS event) {
 		return factory.apply(event.context);
 	}
 
+	@Override
 	public Object getResult(CommandContext<CommandSourceStack> context, String input) throws CommandSyntaxException {
 		return getter.getResult(context, input);
 	}

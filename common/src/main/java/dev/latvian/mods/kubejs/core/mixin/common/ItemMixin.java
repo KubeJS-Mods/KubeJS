@@ -4,7 +4,7 @@ import dev.architectury.registry.fuel.FuelRegistry;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -61,7 +61,7 @@ public abstract class ItemMixin implements ItemKJS {
 	@Override
 	public ResourceLocation kjs$getIdLocation() {
 		if (kjs$id == null) {
-			var id = KubeJSRegistries.items().getId(kjs$self());
+			var id = RegistryInfo.ITEM.getId(kjs$self());
 			kjs$id = id == null ? UtilsJS.UNKNOWN_ID : id;
 		}
 

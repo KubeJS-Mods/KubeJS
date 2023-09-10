@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.loot;
 
 import com.google.gson.JsonElement;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 
@@ -26,7 +26,7 @@ public class EntityLootEventJS extends LootEventJS {
 	public void addEntity(EntityType<?> type, Consumer<LootBuilder> b) {
 		var builder = createLootBuilder(null, b);
 		var json = builder.toJson();
-		var entityId = builder.customId == null ? KubeJSRegistries.entityTypes().getId(type) : builder.customId;
+		var entityId = builder.customId == null ? RegistryInfo.ENTITY_TYPE.getId(type) : builder.customId;
 
 		if (entityId != null) {
 			addJson(entityId, json);
@@ -34,7 +34,7 @@ public class EntityLootEventJS extends LootEventJS {
 	}
 
 	public void modifyEntity(EntityType<?> type, Consumer<LootBuilder> b) {
-		var entityId = KubeJSRegistries.entityTypes().getId(type);
+		var entityId = RegistryInfo.ENTITY_TYPE.getId(type);
 
 		if (entityId != null) {
 			modify(entityId, b);

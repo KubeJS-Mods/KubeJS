@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeSchemaRegistryEventJS;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.SpecialRecipeSchema;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +24,7 @@ public class RecipeNamespace extends LinkedHashMap<String, RecipeSchemaType> {
 			all = new HashMap<>();
 			mappedRecipes = new HashMap<>();
 
-			for (var entry : KubeJSRegistries.recipeSerializers().entrySet()) {
+			for (var entry : RegistryInfo.RECIPE_SERIALIZER.entrySet()) {
 				var ns = all.computeIfAbsent(entry.getKey().location().getNamespace(), RecipeNamespace::new);
 				ns.put(entry.getKey().location().getPath(), new JsonRecipeSchemaType(ns, entry.getKey().location(), entry.getValue()));
 			}

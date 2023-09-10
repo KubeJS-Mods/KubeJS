@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallback;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabEvent;
 import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
 import dev.latvian.mods.kubejs.platform.fabric.IngredientFabricHelper;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -18,14 +17,15 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.WritableRegistry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.function.Supplier;
 
 public class KubeJSFabric implements ModInitializer, ClientModInitializer, DedicatedServerModInitializer {
 	@Override
@@ -47,20 +47,20 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 		var ignored = new HashSet<>(RegistryInfo.AFTER_VANILLA);
 
 		for (var info : RegistryInfo.MAP.values()) {
-			final var key = (ResourceKey) info.key;
-
-			if (!ignored.contains(info) && BuiltInRegistries.REGISTRY.get(key) instanceof WritableRegistry<?> reg) {
-				info.registerObjects((id, obj) -> reg.register(ResourceKey.create(key, id), UtilsJS.cast(obj.get()), Lifecycle.stable()));
+			if (!ignored.contains(info) && info.getVanillaRegistry() instanceof WritableRegistry<?> reg) {
+				info.registerObjects((id, obj) -> register((WritableRegistry) reg, id, obj));
 			}
 		}
 
 		for (var info : RegistryInfo.AFTER_VANILLA) {
-			final var key = (ResourceKey) info.key;
-
-			if (BuiltInRegistries.REGISTRY.get(key) instanceof WritableRegistry<?> reg) {
-				info.registerObjects((id, obj) -> reg.register(ResourceKey.create(key, id), UtilsJS.cast(obj.get()), Lifecycle.stable()));
+			if (info.getVanillaRegistry() instanceof WritableRegistry<?> reg) {
+				info.registerObjects((id, obj) -> register((WritableRegistry) reg, id, obj));
 			}
 		}
+	}
+
+	private <T> void register(WritableRegistry<T> reg, ResourceLocation id, Supplier<T> obj) {
+		reg.register(ResourceKey.create(reg.key(), id), UtilsJS.cast(obj.get()), Lifecycle.stable());
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class KubeJSFabric implements ModInitializer, ClientModInitializer, Dedic
 	}
 
 	private void modifyCreativeTab(CreativeModeTab tab, FabricItemGroupEntries entries) {
-		var tabId = KubeJSRegistries.creativeModeTabs().getId(tab);
+		var tabId = RegistryInfo.CREATIVE_MODE_TAB.getId(tab);
 
 		if (StartupEvents.MODIFY_CREATIVE_TAB.hasListeners(tabId)) {
 			StartupEvents.MODIFY_CREATIVE_TAB.post(ScriptType.STARTUP, tabId, new CreativeTabEvent(tab, entries.shouldShowOpRestrictedItems(), new CreativeTabCallbackFabric(entries)));

@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
@@ -38,7 +38,7 @@ public class RegExIngredient extends KubeJSIngredient {
 	public List<ItemStack> getMatchingStacks() {
 		var list = new ArrayList<ItemStack>();
 
-		for (var item : KubeJSRegistries.items()) {
+		for (var item : RegistryInfo.ITEM.getArchitecturyRegistrar()) {
 			if (pattern.matcher(item.kjs$getId()).find()) {
 				list.add(item.getDefaultInstance());
 			}

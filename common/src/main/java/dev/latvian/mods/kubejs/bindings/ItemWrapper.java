@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.bindings;
 
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.FireworksJS;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -78,18 +78,18 @@ public interface ItemWrapper {
 
 	@Info("Gets an Item from an item id")
 	static Item getItem(ResourceLocation id) {
-		return KubeJSRegistries.items().get(id);
+		return RegistryInfo.ITEM.getValue(id);
 	}
 
 	@Nullable
 	@Info("Gets an items id from the Item")
 	static ResourceLocation getId(Item item) {
-		return KubeJSRegistries.items().getId(item);
+		return RegistryInfo.ITEM.getId(item);
 	}
 
 	@Info("Checks if the provided item id exists in the registry")
 	static boolean exists(ResourceLocation id) {
-		return KubeJSRegistries.items().contains(id);
+		return RegistryInfo.ITEM.hasValue(id);
 	}
 
 	@Info("""

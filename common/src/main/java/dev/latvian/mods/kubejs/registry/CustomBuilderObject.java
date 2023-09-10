@@ -5,12 +5,11 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.function.Supplier;
 
 // Class that acts as a holder for a custom registry object, usually based off a class from another mod.
-class CustomBuilderObject extends BuilderBase {
-
+public class CustomBuilderObject extends BuilderBase {
 	private final Supplier<Object> object;
-	private final RegistryInfo registry;
+	private final RegistryInfo<?> registry;
 
-	public CustomBuilderObject(ResourceLocation i, Supplier<Object> object, RegistryInfo registry) {
+	public CustomBuilderObject(ResourceLocation i, Supplier<Object> object, RegistryInfo<?> registry) {
 		super(i);
 		this.object = object;
 		this.registry = registry;
@@ -29,7 +28,7 @@ class CustomBuilderObject extends BuilderBase {
 	}
 
 	@Override
-	public RegistryInfo getRegistryType() {
+	public RegistryInfo<?> getRegistryType() {
 		return registry;
 	}
 

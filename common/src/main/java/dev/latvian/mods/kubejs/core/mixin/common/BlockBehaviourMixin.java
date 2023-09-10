@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.core.mixin.common;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.core.BlockKJS;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
@@ -27,7 +27,7 @@ public abstract class BlockBehaviourMixin implements BlockKJS {
 	public ResourceLocation kjs$getIdLocation() {
 		if (kjs$id == null) {
 			if ((Object) this instanceof Block block) {
-				var id = KubeJSRegistries.blocks().getId(block);
+				var id = RegistryInfo.BLOCK.getId(block);
 				kjs$id = id == null ? UtilsJS.UNKNOWN_ID : id;
 			} else {
 				kjs$id = UtilsJS.UNKNOWN_ID;

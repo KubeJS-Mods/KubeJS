@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
@@ -22,7 +22,7 @@ public class RecipeSchemaType {
 
 	public RecipeSerializer<?> getSerializer() {
 		if (serializer == null) {
-			serializer = Optional.ofNullable(KubeJSRegistries.recipeSerializers().get(id));
+			serializer = Optional.ofNullable(RegistryInfo.RECIPE_SERIALIZER.getValue(id));
 		}
 
 		var s = serializer.orElse(null);

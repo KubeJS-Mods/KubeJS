@@ -13,11 +13,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 public class KubeJSCreativeTabs {
-	public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(KubeJS.MOD_ID, Registries.CREATIVE_MODE_TAB);
+	public static final DeferredRegister<CreativeModeTab> REGISTER = DeferredRegister.create(KubeJS.MOD_ID, Registries.CREATIVE_MODE_TAB);
 
 	public static void init() {
 		if (!CommonProperties.get().serverOnly) {
-			CREATIVE_TABS.register("tab", () -> MiscPlatformHelper.get().creativeModeTab(
+			REGISTER.register("tab", () -> MiscPlatformHelper.get().creativeModeTab(
 				Component.literal("KubeJS"),
 				() -> {
 					var is = ItemStackJS.of(CommonProperties.get().creativeModeTabIcon);
@@ -25,12 +25,12 @@ public class KubeJSCreativeTabs {
 				},
 				(params, output) -> {
 					for (var b : RegistryInfo.ITEM) {
-						output.accept(((Item) b.get()).getDefaultInstance());
+						output.accept(b.get().getDefaultInstance());
 					}
 				}
 			));
 
-			CREATIVE_TABS.register();
+			REGISTER.register();
 		}
 	}
 }

@@ -4,7 +4,7 @@ import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.event.EventResult;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 
@@ -28,7 +28,7 @@ public class SpecialRecipeSerializerManager extends EventJS {
 	}
 
 	public boolean isSpecial(Recipe<?> recipe) {
-		return data.getOrDefault(KubeJSRegistries.recipeSerializers().getId(recipe.getSerializer()), recipe.isSpecial());
+		return data.getOrDefault(RegistryInfo.RECIPE_SERIALIZER.getId(recipe.getSerializer()), recipe.isSpecial());
 	}
 
 	public void ignoreSpecialFlag(ResourceLocation id) {
@@ -45,21 +45,21 @@ public class SpecialRecipeSerializerManager extends EventJS {
 
 	public void ignoreSpecialMod(String modid) {
 		synchronized (data) {
-			KubeJSRegistries.recipeSerializers().getIds().forEach(id -> {
-				if (id.getNamespace().equals(modid)) {
-					data.put(id, false);
+			for (var entry : RegistryInfo.RECIPE_SERIALIZER.entrySet()) {
+				if (entry.getKey().location().getNamespace().equals(modid)) {
+					data.put(entry.getKey().location(), false);
 				}
-			});
+			}
 		}
 	}
 
 	public void addSpecialMod(String modid) {
 		synchronized (data) {
-			KubeJSRegistries.recipeSerializers().getIds().forEach(id -> {
-				if (id.getNamespace().equals(modid)) {
-					data.put(id, true);
+			for (var entry : RegistryInfo.RECIPE_SERIALIZER.entrySet()) {
+				if (entry.getKey().location().getNamespace().equals(modid)) {
+					data.put(entry.getKey().location(), true);
 				}
-			});
+			}
 		}
 	}
 }

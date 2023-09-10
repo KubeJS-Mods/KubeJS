@@ -1,9 +1,7 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import dev.architectury.registry.registries.Registrar;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.util.ClassWrapper;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
@@ -25,7 +23,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -121,7 +118,7 @@ public interface UtilsWrapper {
 	@Nullable
 	@Info("Gets a SoundEvent from the id")
 	static SoundEvent getSound(ResourceLocation id) {
-		return KubeJSRegistries.soundEvents().get(id);
+		return RegistryInfo.SOUND_EVENT.getValue(id);
 	}
 
 	@Info("Gets a random object from the list using the passed in random")
@@ -173,19 +170,21 @@ public interface UtilsWrapper {
 		return UtilsJS.toTitleCase(s, ignoreSpecial);
 	}
 
-	@Info("Returns the KubeJSRegistries class")
-	static ClassWrapper<KubeJSRegistries> getRegistries() {
-		return new ClassWrapper<>(KubeJSRegistries.class);
-	}
-
 	@Info("Gets the specified registry")
-	static Registrar<?> getRegistry(ResourceLocation id) {
-		return Objects.requireNonNull(KubeJSRegistries.genericRegistry(ResourceKey.createRegistryKey(id)), "No builtin or static registry found for %s!".formatted(id));
+	static RegistryInfo<?> getRegistry(ResourceLocation id) {
+		return RegistryInfo.of(ResourceKey.createRegistryKey(id));
 	}
 
 	@Info("Gets all ids from the registry with the specified id")
-	static Collection<ResourceLocation> getRegistryIds(ResourceLocation id) {
-		return getRegistry(id).getIds();
+	static List<ResourceLocation> getRegistryIds(ResourceLocation id) {
+		var entries = getRegistry(id).entrySet();
+		var list = new ArrayList<ResourceLocation>(entries.size());
+
+		for (var entry : entries) {
+			list.add(entry.getKey().location());
+		}
+
+		return list;
 	}
 
 	@Info("Returns a lazy value with the supplier function as its value factory")
@@ -200,7 +199,7 @@ public interface UtilsWrapper {
 
 	@Nullable
 	@Info("Returns the creative tab associated with the id")
-	static CreativeModeTab findCreativeTab(String id) {
+	static CreativeModeTab findCreativeTab(ResourceLocation id) {
 		return UtilsJS.findCreativeTab(id);
 	}
 

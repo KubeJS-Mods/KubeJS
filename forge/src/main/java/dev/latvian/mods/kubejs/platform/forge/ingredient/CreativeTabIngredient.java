@@ -1,9 +1,11 @@
 package dev.latvian.mods.kubejs.platform.forge.ingredient;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -24,7 +26,7 @@ public class CreativeTabIngredient extends KubeJSIngredient {
 	}
 
 	public CreativeTabIngredient(JsonObject json) {
-		this(UtilsJS.findCreativeTab(json.get("tab").getAsString()));
+		this(UtilsJS.findCreativeTab(new ResourceLocation(json.get("tab").getAsString())));
 	}
 
 	@Override
@@ -37,8 +39,9 @@ public class CreativeTabIngredient extends KubeJSIngredient {
 		return stack != null && tab.contains(stack);
 	}
 
+	@Override
 	public void toJson(JsonObject json) {
-		json.addProperty("tab", BuiltInRegistries.CREATIVE_MODE_TAB.getKey(tab).toString());
+		json.addProperty("tab", RegistryInfo.CREATIVE_MODE_TAB.getId(tab).toString());
 	}
 
 	@Override

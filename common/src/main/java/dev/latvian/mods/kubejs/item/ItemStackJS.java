@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -13,7 +13,6 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -40,8 +39,8 @@ public interface ItemStackJS {
 	Lazy<List<String>> CACHED_ITEM_TYPE_LIST = Lazy.of(() -> {
 		var cachedItemTypeList = new ArrayList<String>();
 
-		for (var id : KubeJSRegistries.items().getIds()) {
-			cachedItemTypeList.add(id.toString());
+		for (var entry : RegistryInfo.ITEM.entrySet()) {
+			cachedItemTypeList.add(entry.getKey().location().toString());
 		}
 
 		return cachedItemTypeList;
@@ -64,7 +63,7 @@ public interface ItemStackJS {
 
 		for (var itemId : CACHED_ITEM_TYPE_LIST.get()) {
 			var itemRl = new ResourceLocation(itemId);
-			map.computeIfAbsent(itemRl, id -> Set.of(BuiltInRegistries.ITEM.get(id).getDefaultInstance()));
+			map.computeIfAbsent(itemRl, id -> Set.of(RegistryInfo.ITEM.getValue(id).getDefaultInstance()));
 		}
 
 		return map;
@@ -86,7 +85,7 @@ public interface ItemStackJS {
 		} else if (o instanceof Ingredient ingr) {
 			return ingr.kjs$getFirst();
 		} else if (o instanceof ResourceLocation id) {
-			var item = KubeJSRegistries.items().get(id);
+			var item = RegistryInfo.ITEM.getValue(id);
 
 			if (item == null || item == Items.AIR) {
 				if (RecipeJS.itemErrors) {
@@ -140,7 +139,7 @@ public interface ItemStackJS {
 		if (map != null) {
 			if (map.containsKey("item")) {
 				var id = UtilsJS.getMCID(null, map.get("item").toString());
-				var item = KubeJSRegistries.items().get(id);
+				var item = RegistryInfo.ITEM.getValue(id);
 
 				if (item == Items.AIR) {
 					if (RecipeJS.itemErrors) {
@@ -183,7 +182,7 @@ public interface ItemStackJS {
 		} else if (s.startsWith("@")) {
 			return IngredientPlatformHelper.get().mod(s.substring(1)).kjs$getFirst();
 		} else if (s.startsWith("%")) {
-			var group = UtilsJS.findCreativeTab(s.substring(1));
+			var group = UtilsJS.findCreativeTab(new ResourceLocation(s.substring(1)));
 
 			if (group == null) {
 				if (RecipeJS.itemErrors) {
@@ -205,7 +204,7 @@ public interface ItemStackJS {
 		var spaceIndex = s.indexOf(' ');
 		var id = spaceIndex == -1 ? s : s.substring(0, spaceIndex);
 
-		var item = KubeJSRegistries.items().get(new ResourceLocation(id));
+		var item = RegistryInfo.ITEM.getValue(new ResourceLocation(id));
 
 		if (item == Items.AIR) {
 			if (RecipeJS.itemErrors) {
@@ -238,7 +237,7 @@ public interface ItemStackJS {
 			if (s.isEmpty()) {
 				return Items.AIR;
 			} else if (s.charAt(0) != '#') {
-				return KubeJSRegistries.items().get(UtilsJS.getMCID(cx, s));
+				return RegistryInfo.ITEM.getValue(UtilsJS.getMCID(cx, s));
 			}
 		}
 

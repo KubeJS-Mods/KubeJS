@@ -4,7 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import dev.architectury.registry.fuel.FuelRegistry;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -47,7 +47,7 @@ public class BasicItemJS extends Item {
 	@Override
 	public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
 		if (!modified) {
-			kjs$getItemBuilder().attributes.forEach((r, m) -> attributes.put(KubeJSRegistries.attributes().get(r), m));
+			kjs$getItemBuilder().attributes.forEach((r, m) -> attributes.put(RegistryInfo.ATTRIBUTE.getValue(r), m));
 			modified = true;
 		}
 

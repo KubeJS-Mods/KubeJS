@@ -15,7 +15,7 @@ import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
 import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
@@ -33,7 +33,6 @@ import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.NbtOps;
@@ -421,7 +420,8 @@ public class UtilsJS {
 			return id;
 		}
 
-		var s = o.toString();
+		var s = o instanceof JsonPrimitive p ? p.getAsString() : o.toString();
+
 		try {
 			return new ResourceLocation(s);
 		} catch (ResourceLocationException ex) {
@@ -456,7 +456,7 @@ public class UtilsJS {
 
 		var i = string.indexOf('[');
 		var hasProperties = i >= 0 && string.indexOf(']') == string.length() - 1;
-		var state = KubeJSRegistries.blocks().get(new ResourceLocation(hasProperties ? string.substring(0, i) : string)).defaultBlockState();
+		var state = RegistryInfo.BLOCK.getValue(new ResourceLocation(hasProperties ? string.substring(0, i) : string)).defaultBlockState();
 
 		if (hasProperties) {
 			for (var s : string.substring(i + 1, string.length() - 1).split(",")) {
@@ -775,7 +775,7 @@ public class UtilsJS {
 		}
 
 		var states = new HashSet<BlockState>();
-		for (var block : KubeJSRegistries.blocks()) {
+		for (var block : RegistryInfo.BLOCK.getArchitecturyRegistrar()) {
 			states.addAll(block.getStateDefinition().getPossibleStates());
 		}
 
@@ -878,8 +878,8 @@ public class UtilsJS {
 	}
 
 	@Nullable
-	public static CreativeModeTab findCreativeTab(String id) {
-		return BuiltInRegistries.CREATIVE_MODE_TAB.get(UtilsJS.getMCID(null, id));
+	public static CreativeModeTab findCreativeTab(ResourceLocation id) {
+		return RegistryInfo.CREATIVE_MODE_TAB.getValue(id);
 	}
 
 	public static <T> T makeFunctionProxy(ScriptType type, Class<T> targetClass, BaseFunction function) {

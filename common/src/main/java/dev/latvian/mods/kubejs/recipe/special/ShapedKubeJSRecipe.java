@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -90,7 +90,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	public static class SerializerKJS implements RecipeSerializer<ShapedKubeJSRecipe> {
 
 		// registry replacement... you never know
-		private static final RecipeSerializer<ShapedRecipe> SHAPED = UtilsJS.cast(KubeJSRegistries.recipeSerializers().get(new ResourceLocation("crafting_shaped")));
+		private static final RecipeSerializer<ShapedRecipe> SHAPED = UtilsJS.cast(RegistryInfo.RECIPE_SERIALIZER.getValue(new ResourceLocation("crafting_shaped")));
 
 		@Override
 		public ShapedKubeJSRecipe fromJson(ResourceLocation id, JsonObject json) {

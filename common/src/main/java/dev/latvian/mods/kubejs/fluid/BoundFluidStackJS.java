@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.fluid;
 
 import dev.architectury.fluid.FluidStack;
-import net.minecraft.core.registries.BuiltInRegistries;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +15,7 @@ public class BoundFluidStackJS extends FluidStackJS {
 
 	@Override
 	public String getId() {
-		return BuiltInRegistries.FLUID.getKey(fluidStack.getFluid()).toString();
+		return RegistryInfo.FLUID.getId(fluidStack.getFluid()).toString();
 	}
 
 	@Override
