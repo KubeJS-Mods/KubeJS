@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.client.ClientProperties;
+import dev.latvian.mods.kubejs.client.LangEventJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
@@ -17,8 +18,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-
-import java.util.Map;
 
 public class KubeJSPlugin {
 	public void init() {
@@ -73,7 +72,7 @@ public class KubeJSPlugin {
 	public void generateAssetJsons(AssetJsonGenerator generator) {
 	}
 
-	public void generateLang(Map<String, String> lang) {
+	public void generateLang(LangEventJS event) {
 	}
 
 	public void loadCommonProperties(CommonProperties properties) {

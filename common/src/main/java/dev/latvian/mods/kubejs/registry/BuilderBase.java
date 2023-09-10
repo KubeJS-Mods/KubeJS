@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.registry;
 
+import dev.latvian.mods.kubejs.client.LangEventJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -9,7 +10,6 @@ import net.minecraft.server.packs.PackType;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -107,14 +107,14 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		return translationKey;
 	}
 
-	public void generateLang(Map<String, String> lang) {
+	public void generateLang(LangEventJS lang) {
 		var dname = displayName;
 
 		if (dname.isEmpty()) {
 			dname = UtilsJS.snakeCaseToTitleCase(id.getPath());
 		}
 
-		lang.put(getBuilderTranslationKey(), dname);
+		lang.add(id.getNamespace(), getBuilderTranslationKey(), dname);
 	}
 
 	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {

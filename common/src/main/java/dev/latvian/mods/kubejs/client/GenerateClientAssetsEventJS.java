@@ -3,23 +3,21 @@ package dev.latvian.mods.kubejs.client;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class GenerateClientAssetsEventJS extends EventJS {
 	public final AssetJsonGenerator generator;
-	private final Map<String, String> langMap;
 
-	public GenerateClientAssetsEventJS(AssetJsonGenerator gen, Map<String, String> langMap) {
+	public GenerateClientAssetsEventJS(AssetJsonGenerator gen) {
 		this.generator = gen;
-		this.langMap = langMap;
 	}
 
 	public void addLang(String key, String value) {
-		langMap.put(key, value);
+		ConsoleJS.CLIENT.error("Use ClientEvents.lang('en_us', event => { event.add(key, value) }) instead!");
 	}
 
 	public void add(ResourceLocation location, JsonElement json) {

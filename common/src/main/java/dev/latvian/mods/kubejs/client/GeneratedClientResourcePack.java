@@ -8,7 +8,9 @@ import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackResources;
@@ -21,7 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class GeneratedClientResourcePack extends GeneratedResourcePack {
-	public static List<PackResources> inject(List<PackResources> packs) {
+	public static List<PackResources> inject(Minecraft client, List<PackResources> packs) {
 		// only add the resource pack if KubeJS has loaded
 		// to prevent crashes on mod loading errors
 		if (KubeJS.instance != null) {
@@ -37,7 +39,7 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 			}
 
 			var injected = new ArrayList<PackResources>(2);
-			injected.add(new GeneratedClientResourcePack());
+			injected.add(new GeneratedClientResourcePack(client));
 			// injected.add(KubeJSFolderPackResources.PACK);
 
 			for (var file : Objects.requireNonNull(KubeJSPaths.ASSETS.toFile().listFiles())) {
@@ -52,8 +54,11 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 		return packs;
 	}
 
-	public GeneratedClientResourcePack() {
+	public final Minecraft client;
+
+	public GeneratedClientResourcePack(Minecraft client) {
 		super(PackType.CLIENT_RESOURCES);
+		this.client = client;
 	}
 
 	@Override
@@ -61,17 +66,36 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 		var generator = new AssetJsonGenerator(map);
 		KubeJSPlugins.forEachPlugin(p -> p.generateAssetJsons(generator));
 
-		var langMap = new HashMap<String, String>();
-		KubeJSPlugins.forEachPlugin(p -> p.generateLang(langMap));
+		var langMap = new HashMap<LangEventJS.Key, String>();
+		var langEvents = new HashMap<String, LangEventJS>();
+		var enUsLangEvent = langEvents.computeIfAbsent("en_us", s -> new LangEventJS(s, langMap));
 
-		ClientEvents.HIGH_ASSETS.post(ScriptType.CLIENT, new GenerateClientAssetsEventJS(generator, langMap));
+		KubeJSPlugins.forEachPlugin(p -> p.generateLang(enUsLangEvent));
 
-		var lang = new JsonObject();
+		ClientEvents.HIGH_ASSETS.post(ScriptType.CLIENT, new GenerateClientAssetsEventJS(generator));
 
-		for (var entry : langMap.entrySet()) {
-			lang.addProperty(entry.getKey(), entry.getValue());
+		for (var lang : ClientEvents.LANG.findUniqueExtraIds(ScriptType.CLIENT)) {
+			var l = String.valueOf(lang);
+
+			if (LangEventJS.PATTERN.matcher(l).matches()) {
+				ClientEvents.LANG.post(ScriptType.CLIENT, l, langEvents.computeIfAbsent(l, k -> new LangEventJS(l, langMap)));
+			} else {
+				ConsoleJS.CLIENT.error("Invalid language key: " + l);
+			}
 		}
 
-		generator.json(new ResourceLocation("kubejs_generated:lang/en_us"), lang);
+		var finalMap = new HashMap<String, Map<String, JsonObject>>();
+
+		for (var entry : langMap.entrySet()) {
+			var ns = finalMap.computeIfAbsent(entry.getKey().namespace(), s -> new HashMap<>());
+			var lang = ns.computeIfAbsent(entry.getKey().lang(), s -> new JsonObject());
+			lang.addProperty(entry.getKey().key(), entry.getValue());
+		}
+
+		for (var e1 : finalMap.entrySet()) { // namespaces
+			for (var e2 : e1.getValue().entrySet()) { // languages
+				generator.json(new ResourceLocation(e1.getKey() + ":lang/" + e2.getKey()), e2.getValue());
+			}
+		}
 	}
 }

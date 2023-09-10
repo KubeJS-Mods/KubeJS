@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
@@ -12,6 +13,7 @@ import net.minecraft.server.packs.resources.IoSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -32,7 +34,7 @@ public abstract class GeneratedResourcePack implements PackResources {
 
 	@Nullable
 	@Override
-	public IoSupplier<InputStream> getRootResource(String... path) {
+	public GeneratedData getRootResource(String... path) {
 		return switch (path.length == 1 ? path[0] : "") {
 			case PACK_META -> GeneratedData.PACK_META;
 			case "pack.png" -> GeneratedData.PACK_ICON;
@@ -43,7 +45,6 @@ public abstract class GeneratedResourcePack implements PackResources {
 	public Map<ResourceLocation, GeneratedData> getGenerated() {
 		if (generated == null) {
 			generated = new HashMap<>();
-			generatedNamespaces = new HashSet<>();
 			generate(generated);
 
 			try {
@@ -76,10 +77,6 @@ public abstract class GeneratedResourcePack implements PackResources {
 			}
 
 			generated = Map.copyOf(generated);
-
-			for (var s : generated.entrySet()) {
-				generatedNamespaces.add(s.getKey().getNamespace());
-			}
 
 			if (DevProperties.get().logGeneratedData || DevProperties.get().debugInfo) {
 				var sb = new StringBuilder("Generated " + packType + " data (" + generated.size() + " files)");
@@ -124,7 +121,14 @@ public abstract class GeneratedResourcePack implements PackResources {
 	@NotNull
 	public Set<String> getNamespaces(PackType type) {
 		if (type == packType) {
-			getGenerated();
+			if (generatedNamespaces == null) {
+				generatedNamespaces = new HashSet<>();
+
+				for (var s : getGenerated().entrySet()) {
+					generatedNamespaces.add(s.getKey().getNamespace());
+				}
+			}
+
 			return generatedNamespaces;
 		}
 
@@ -133,7 +137,15 @@ public abstract class GeneratedResourcePack implements PackResources {
 
 	@Nullable
 	@Override
-	public <T> T getMetadataSection(MetadataSectionSerializer<T> serializer) {
+	public <T> T getMetadataSection(MetadataSectionSerializer<T> serializer) throws IOException {
+		var inputSupplier = this.getRootResource(PACK_META);
+
+		if (inputSupplier != null) {
+			try (var input = inputSupplier.get()) {
+				return AbstractPackResources.getMetadataFromStream(serializer, input);
+			}
+		}
+
 		return null;
 	}
 
