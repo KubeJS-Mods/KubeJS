@@ -6,10 +6,8 @@ import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
@@ -242,24 +240,6 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 
 	default BlockContainerJS kjs$getBlock() {
 		return new BlockContainerJS(kjs$getLevel(), kjs$self().blockPosition());
-	}
-
-	@Deprecated
-	default CompoundTag kjs$getFullNBT() {
-		ConsoleJS.getCurrent(ScriptManager.getCurrentContext()).error("getFullNBT() and fullNBT are deprecated. Use getNbt() or nbt instead!");
-		return kjs$getNbt();
-	}
-
-	@Deprecated
-	default void kjs$setFullNBT(@Nullable CompoundTag nbt) {
-		ConsoleJS.getCurrent(ScriptManager.getCurrentContext()).error("setFullNBT() and fullNBT are deprecated. Use setNbt(CompoundTag) or nbt instead!");
-		kjs$setNbt(nbt);
-	}
-
-	@Deprecated
-	default Entity kjs$mergeFullNBT(@Nullable CompoundTag tag) {
-		ConsoleJS.getCurrent(ScriptManager.getCurrentContext()).error("mergeFullNBT() is deprecated. Use mergeNbt instead!");
-		return kjs$mergeNbt(tag);
 	}
 
 	default CompoundTag kjs$getNbt() {
