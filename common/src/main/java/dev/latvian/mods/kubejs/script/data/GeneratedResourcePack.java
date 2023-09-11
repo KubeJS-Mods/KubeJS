@@ -76,6 +76,8 @@ public abstract class GeneratedResourcePack implements PackResources {
 				KubeJS.LOGGER.error("Failed to load files from kubejs/" + packType.getDirectory(), ex);
 			}
 
+			generated.put(GeneratedData.INTERNAL_RELOAD.id(), GeneratedData.INTERNAL_RELOAD);
+
 			generated = Map.copyOf(generated);
 
 			if (DevProperties.get().logGeneratedData || DevProperties.get().debugInfo) {
@@ -100,7 +102,13 @@ public abstract class GeneratedResourcePack implements PackResources {
 	@Override
 	@Nullable
 	public IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
-		return type == packType ? getGenerated().get(location) : null;
+		var r = type == packType ? getGenerated().get(location) : null;
+
+		if (r == GeneratedData.INTERNAL_RELOAD) {
+			close();
+		}
+
+		return r;
 	}
 
 	public void generate(Map<ResourceLocation, GeneratedData> map) {

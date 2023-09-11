@@ -16,6 +16,7 @@ import dev.latvian.mods.kubejs.net.NetworkEventJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -134,6 +135,8 @@ public class KubeJSClient extends KubeJSCommon {
 	private void reload(PreparableReloadListener listener) {
 		var start = System.currentTimeMillis();
 		var mc = Minecraft.getInstance();
+		mc.getResourceManager().getResource(GeneratedData.INTERNAL_RELOAD.id());
+
 		listener.reload(CompletableFuture::completedFuture, mc.getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Util.backgroundExecutor(), mc).thenAccept(unused -> {
 			/*
 			long ms = System.currentTimeMillis() - start;
@@ -156,6 +159,7 @@ public class KubeJSClient extends KubeJSCommon {
 
 	@Override
 	public void reloadLang() {
+		reloadClientScripts();
 		reload(Minecraft.getInstance().getLanguageManager());
 	}
 

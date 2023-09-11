@@ -13,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 public record GeneratedData(ResourceLocation id, Lazy<byte[]> data) implements IoSupplier<InputStream> {
+	public static final GeneratedData INTERNAL_RELOAD = new GeneratedData(KubeJS.id("__internal.reload"), Lazy.of(() -> new byte[0]));
+
 	public static final GeneratedData PACK_META = new GeneratedData(KubeJS.id("pack.mcmeta"), Lazy.of(() -> {
 		var json = new JsonObject();
 		var pack = new JsonObject();
