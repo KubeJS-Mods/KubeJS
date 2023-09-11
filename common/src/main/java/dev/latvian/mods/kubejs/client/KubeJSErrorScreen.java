@@ -43,7 +43,7 @@ public class KubeJSErrorScreen extends Screen {
 
 		for (int i = 0; i < errors.size(); i++) {
 			list.add(Component.empty());
-			list.add(Component.literal((i + 1) + ") ").withStyle(ChatFormatting.DARK_RED).append(Component.literal(errors.get(i)).withStyle(style)));
+			list.add(Component.literal((i + 1) + ") ").withStyle(ChatFormatting.DARK_RED).append(Component.literal(errors.get(i).replace("Error occurred while handling event ", "Error in ").replace("dev.latvian.mods.kubejs.", "...")).withStyle(style)));
 		}
 
 		this.multilineMessage = MultiLineLabel.create(this.font, CommonComponents.joinLines(list), this.width - 12);

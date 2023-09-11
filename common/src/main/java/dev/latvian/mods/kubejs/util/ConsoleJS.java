@@ -114,7 +114,7 @@ public class ConsoleJS {
 		debugEnabled = false;
 		writeToFile = true;
 		writeQueue = new LinkedList<>();
-		nameStrip = scriptType.name + ':';
+		nameStrip = scriptType.name + "_scripts:";
 
 		debugLogFunction = logger::debug;
 		infoLogFunction = logger::info;
@@ -194,6 +194,23 @@ public class ConsoleJS {
 			lineS = currentError.lineSource();
 		}
 
+		int lpi = s.lastIndexOf('(');
+
+		if (lpi > 0 && s.charAt(s.length() - 1) == ')') {
+			var pe = s.substring(lpi + 1, s.length() - 1);
+
+			int ci = pe.lastIndexOf('#');
+
+			if (ci > 0) {
+				try {
+					lineP[0] = Integer.parseInt(pe.substring(ci + 1));
+					lineS = pe.substring(0, ci);
+					s = s.substring(0, lpi).trim();
+				} catch (Exception e) {
+				}
+			}
+		}
+
 		if (lineP[0] == 0 || lineS == null) {
 			lineS = Context.getSourcePositionFromStack(scriptType.manager.get().context, lineP);
 		}
@@ -205,9 +222,9 @@ public class ConsoleJS {
 		if (lineP[0] > 0) {
 			if (lineS != null && !lineS.isEmpty()) {
 				builder.append(lineS);
-				builder.append(':');
-			} else {
 				builder.append('#');
+			} else {
+				builder.append("<unknown source>#");
 			}
 
 			builder.append(lineP[0]);
