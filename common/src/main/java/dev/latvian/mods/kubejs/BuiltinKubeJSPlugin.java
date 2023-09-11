@@ -102,6 +102,7 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
 import dev.latvian.mods.kubejs.util.NotificationBuilder;
+import dev.latvian.mods.kubejs.util.RotationAxis;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.CollectionTagWrapper;
 import dev.latvian.mods.rhino.mod.util.CompoundTagWrapper;
@@ -140,7 +141,6 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -148,6 +148,11 @@ import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -371,11 +376,15 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("Color", ColorWrapper.class);
 		event.add("BlockStatePredicate", BlockStatePredicate.class);
 
-		event.add("DecorationGenerationStep", GenerationStep.Decoration.class);
-		event.add("CarvingGenerationStep", GenerationStep.Carving.class);
-		event.add("Vec3", Vec3.class);
 		event.add("Vec3d", Vec3.class);
 		event.add("Vec3i", Vec3i.class);
+		event.add("Vec3f", Vector3f.class);
+		event.add("Vec4f", Vector4f.class);
+		event.add("Matrix3f", Matrix3f.class);
+		event.add("Matrix4f", Matrix4f.class);
+		event.add("Matrix4f", Matrix4f.class);
+		event.add("Quaternionf", Quaternionf.class);
+		event.add("RotationAxis", RotationAxis.class);
 		event.add("BlockPos", BlockPos.class);
 		event.add("DamageSource", DamageSource.class);
 
