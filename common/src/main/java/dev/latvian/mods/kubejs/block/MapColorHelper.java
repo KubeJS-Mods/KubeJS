@@ -41,21 +41,21 @@ public record MapColorHelper(int id, String name, MapColor color, Vector3f rgb) 
 		add("water", MapColor.WATER);
 		add("wood", MapColor.WOOD);
 		add("quartz", MapColor.QUARTZ);
-		add("orange", MapColor.COLOR_ORANGE);
-		add("magenta", MapColor.COLOR_MAGENTA);
-		add("light_blue", MapColor.COLOR_LIGHT_BLUE);
-		add("yellow", MapColor.COLOR_YELLOW);
-		add("light_green", MapColor.COLOR_LIGHT_GREEN);
-		add("pink", MapColor.COLOR_PINK);
-		add("gray", MapColor.COLOR_GRAY);
-		add("light_gray", MapColor.COLOR_LIGHT_GRAY);
-		add("cyan", MapColor.COLOR_CYAN);
-		add("purple", MapColor.COLOR_PURPLE);
-		add("blue", MapColor.COLOR_BLUE);
-		add("brown", MapColor.COLOR_BROWN);
-		add("green", MapColor.COLOR_GREEN);
-		add("red", MapColor.COLOR_RED);
-		add("black", MapColor.COLOR_BLACK);
+		add("color_orange", MapColor.COLOR_ORANGE);
+		add("color_magenta", MapColor.COLOR_MAGENTA);
+		add("color_light_blue", MapColor.COLOR_LIGHT_BLUE);
+		add("color_yellow", MapColor.COLOR_YELLOW);
+		add("color_light_green", MapColor.COLOR_LIGHT_GREEN);
+		add("color_pink", MapColor.COLOR_PINK);
+		add("color_gray", MapColor.COLOR_GRAY);
+		add("color_light_gray", MapColor.COLOR_LIGHT_GRAY);
+		add("color_cyan", MapColor.COLOR_CYAN);
+		add("color_purple", MapColor.COLOR_PURPLE);
+		add("color_blue", MapColor.COLOR_BLUE);
+		add("color_brown", MapColor.COLOR_BROWN);
+		add("color_green", MapColor.COLOR_GREEN);
+		add("color_red", MapColor.COLOR_RED);
+		add("color_black", MapColor.COLOR_BLACK);
 		add("gold", MapColor.GOLD);
 		add("diamond", MapColor.DIAMOND);
 		add("lapis", MapColor.LAPIS);
@@ -101,7 +101,7 @@ public record MapColorHelper(int id, String name, MapColor color, Vector3f rgb) 
 			} else if (s.charAt(0) == '#') {
 				return findClosest(Integer.decode(s.toString())).color;
 			} else {
-				return NAME_MAP.getOrDefault(s.toString(), NONE).color;
+				return NAME_MAP.getOrDefault(s.toString().toLowerCase(), NONE).color;
 			}
 		} else if (o instanceof Number n) {
 			return findClosest(n.intValue()).color;

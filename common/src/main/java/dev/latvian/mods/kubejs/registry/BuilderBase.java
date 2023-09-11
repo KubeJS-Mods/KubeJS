@@ -124,4 +124,16 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		object = transformObject(createObject());
 		return object;
 	}
+
+	@Override
+	public String toString() {
+		var n = getClass().getName();
+		int i = n.lastIndexOf('.');
+
+		if (i != -1) {
+			n = n.substring(i + 1);
+		}
+
+		return n + "[" + id + "]";
+	}
 }

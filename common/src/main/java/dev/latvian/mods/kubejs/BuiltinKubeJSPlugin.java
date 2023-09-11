@@ -23,6 +23,7 @@ import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.bindings.event.WorldgenEvents;
 import dev.latvian.mods.kubejs.block.DetectorBlock;
 import dev.latvian.mods.kubejs.block.MapColorHelper;
+import dev.latvian.mods.kubejs.block.SoundTypeWrapper;
 import dev.latvian.mods.kubejs.block.custom.BasicBlockJS;
 import dev.latvian.mods.kubejs.block.custom.ButtonBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.CropBlockBuilder;
@@ -140,6 +141,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.material.MapColor;
@@ -387,6 +389,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("RotationAxis", RotationAxis.class);
 		event.add("BlockPos", BlockPos.class);
 		event.add("DamageSource", DamageSource.class);
+		event.add("SoundType", SoundType.class);
 
 		event.add("BlockProperties", BlockStateProperties.class);
 
@@ -458,6 +461,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(Stat.class, PlayerStatsJS::statOf);
 		typeWrappers.register(NotificationBuilder.class, NotificationBuilder::of);
 		typeWrappers.registerSimple(MapColor.class, MapColorHelper::of);
+		typeWrappers.register(SoundType.class, SoundTypeWrapper.INSTANCE);
 
 		// components //
 		typeWrappers.registerSimple(Component.class, TextWrapper::of);

@@ -345,10 +345,48 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Info("Sets the block's sound type. Defaults to wood.")
-	// TODO (CRITICAL): Add SoundType wrapper
 	public BlockBuilder soundType(SoundType m) {
+		if (m == null || m == SoundType.EMPTY) {
+			soundType = SoundType.EMPTY;
+			ConsoleJS.STARTUP.error("Invalid sound type!");
+			ConsoleJS.STARTUP.warn("Valid sound types: " + SoundTypeWrapper.INSTANCE.getMap().keySet());
+			return this;
+		}
+
 		soundType = m;
 		return this;
+	}
+
+	public BlockBuilder noSoundType() {
+		return soundType(SoundType.EMPTY);
+	}
+
+	public BlockBuilder woodSoundType() {
+		return soundType(SoundType.WOOD);
+	}
+
+	public BlockBuilder stoneSoundType() {
+		return soundType(SoundType.STONE);
+	}
+
+	public BlockBuilder gravelSoundType() {
+		return soundType(SoundType.GRAVEL);
+	}
+
+	public BlockBuilder grassSoundType() {
+		return soundType(SoundType.GRASS);
+	}
+
+	public BlockBuilder sandSoundType() {
+		return soundType(SoundType.SAND);
+	}
+
+	public BlockBuilder cropSoundType() {
+		return soundType(SoundType.CROP);
+	}
+
+	public BlockBuilder glassSoundType() {
+		return soundType(SoundType.GLASS);
 	}
 
 	@Info("Sets the block's map color. Defaults to NONE.")
