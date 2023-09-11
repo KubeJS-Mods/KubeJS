@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 
 import java.util.Arrays;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factory factory) {
@@ -18,6 +19,20 @@ public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factor
 				recipe.setValue(key, UtilsJS.cast(from.getValue(recipe, key)));
 			}
 		};
+
+		static Factory defaultWith(BiFunction<RecipeJS, RecipeKey<?>, Object> valueSupplier) {
+			return (recipe, schemaType, keys, from) -> {
+				DEFAULT.setValues(recipe, schemaType, keys, from);
+
+				for (var key : schemaType.schema.keys) {
+					var v = valueSupplier.apply(recipe, key);
+
+					if (v != null) {
+						recipe.setValue(key, UtilsJS.cast(v));
+					}
+				}
+			};
+		}
 
 		default RecipeJS create(RecipeTypeFunction type, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from) {
 			var r = schemaType.schema.factory.get();

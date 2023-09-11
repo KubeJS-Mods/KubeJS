@@ -139,6 +139,7 @@ public class RecipesEventJS extends EventJS {
 	public final RecipeTypeFunction campfireCooking;
 	public final RecipeTypeFunction stonecutting;
 	public final RecipeTypeFunction smithing;
+	public final RecipeTypeFunction smithingTrim;
 
 	final RecipeSerializer<?> stageSerializer;
 
@@ -173,7 +174,8 @@ public class RecipesEventJS extends EventJS {
 		smoking = (RecipeTypeFunction) recipeFunctions.get("minecraft:smoking");
 		campfireCooking = (RecipeTypeFunction) recipeFunctions.get("minecraft:campfire_cooking");
 		stonecutting = (RecipeTypeFunction) recipeFunctions.get("minecraft:stonecutting");
-		smithing = (RecipeTypeFunction) recipeFunctions.get("minecraft:smithing");
+		smithing = (RecipeTypeFunction) recipeFunctions.get("minecraft:smithing_transform");
+		smithingTrim = (RecipeTypeFunction) recipeFunctions.get("minecraft:smithing_trim");
 
 		for (var entry : new ArrayList<>(recipeFunctions.entrySet())) {
 			if (entry.getValue() instanceof RecipeTypeFunction && entry.getKey().indexOf(':') != -1) {
@@ -201,6 +203,7 @@ public class RecipesEventJS extends EventJS {
 		recipeFunctions.put("campfireCooking", campfireCooking);
 		recipeFunctions.put("stonecutting", stonecutting);
 		recipeFunctions.put("smithing", smithing);
+		recipeFunctions.put("smithingTrim", smithingTrim);
 
 		stageSerializer = RegistryInfo.RECIPE_SERIALIZER.getValue(new ResourceLocation("recipestages:stage"));
 	}
