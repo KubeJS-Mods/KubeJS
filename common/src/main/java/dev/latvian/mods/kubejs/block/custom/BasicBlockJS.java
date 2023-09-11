@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import dev.latvian.mods.kubejs.block.BlockRightClickedEventJS;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
@@ -12,6 +13,7 @@ import dev.latvian.mods.kubejs.block.callbacks.BlockStateRotateCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.EntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.EntitySteppedOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.entity.BlockEntityJS;
 import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -21,7 +23,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -29,15 +35,20 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -55,7 +66,25 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 
 		@Override
 		public Block createObject() {
-			return new BasicBlockJS(this);
+			return blockEntityInfo != null ? new WithEntity(this) : new BasicBlockJS(this);
+		}
+	}
+
+	public static class WithEntity extends BasicBlockJS implements EntityBlock {
+		public WithEntity(BlockBuilder p) {
+			super(p);
+		}
+
+		@Nullable
+		@Override
+		public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+			return blockBuilder.blockEntityInfo.createBlockEntity(blockPos, blockState);
+		}
+
+		@Nullable
+		@Override
+		public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
+			return blockBuilder.blockEntityInfo.getTicker(level);
 		}
 	}
 
@@ -292,5 +321,42 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 		}
 
 		return super.mirror(blockState, mirror);
+	}
+
+	@Override
+	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if (blockBuilder.rightClick != null) {
+			if (!level.isClientSide()) {
+				blockBuilder.rightClick.accept(new BlockRightClickedEventJS(player, hand, pos, hit.getDirection()));
+			}
+
+			return InteractionResult.SUCCESS;
+		}
+
+		return InteractionResult.PASS;
+	}
+
+	@Override
+	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean bl) {
+		if (!state.is(newState.getBlock())) {
+			if (level.getBlockEntity(pos) instanceof BlockEntityJS entity) {
+				if (level instanceof ServerLevel) {
+					for (var attachment : entity.attachments) {
+						attachment.onRemove(newState);
+					}
+				}
+
+				level.updateNeighbourForOutputSignal(pos, this);
+			}
+
+			super.onRemove(state, level, pos, newState, bl);
+		}
+	}
+
+	@Override
+	public void setPlacedBy(Level level, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
+		if (livingEntity != null && !level.isClientSide() && level.getBlockEntity(blockPos) instanceof BlockEntityJS e) {
+			e.placerId = livingEntity.getUUID();
+		}
 	}
 }

@@ -9,7 +9,6 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -158,20 +157,12 @@ public interface ContainerMixin extends InventoryKJS {
 
 	@Override
 	default int kjs$getWidth() {
-		if (kjs$self() instanceof ChestBlockEntity) {
-			return 9;
-		}
-
-		return kjs$self() instanceof CraftingContainer crafter ? crafter.getWidth() : kjs$getSlots();
+		return kjs$self() instanceof CraftingContainer crafter ? crafter.getWidth() : InventoryKJS.super.kjs$getWidth();
 	}
 
 	@Override
 	default int kjs$getHeight() {
-		if (kjs$self() instanceof ChestBlockEntity) {
-			return kjs$getSlots() / 9;
-		}
-
-		return kjs$self() instanceof CraftingContainer crafter ? crafter.getHeight() : 1;
+		return kjs$self() instanceof CraftingContainer crafter ? crafter.getHeight() : InventoryKJS.super.kjs$getHeight();
 	}
 
 	@Override
@@ -195,5 +186,10 @@ public interface ContainerMixin extends InventoryKJS {
 		}
 
 		return null;
+	}
+
+	@Override
+	default Container kjs$asContainer() {
+		return kjs$self();
 	}
 }

@@ -11,6 +11,8 @@ import dev.latvian.mods.kubejs.block.callbacks.BlockStateRotateCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.EntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.EntitySteppedOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.entity.BlockEntityBuilder;
+import dev.latvian.mods.kubejs.block.entity.BlockEntityInfo;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
@@ -100,6 +102,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient Consumer<BlockExplodedCallbackJS> explodedCallback;
 	public transient Consumer<BlockStateRotateCallbackJS> rotateStateModification;
 	public transient Consumer<BlockStateMirrorCallbackJS> mirrorStateModification;
+	public transient Consumer<BlockRightClickedEventJS> rightClick;
+	public transient BlockEntityInfo blockEntityInfo;
 
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
@@ -152,6 +156,10 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public void createAdditionalObjects() {
 		if (itemBuilder != null) {
 			RegistryInfo.ITEM.addBuilder(itemBuilder);
+		}
+
+		if (blockEntityInfo != null) {
+			RegistryInfo.BLOCK_ENTITY_TYPE.addBuilder(new BlockEntityBuilder(id, blockEntityInfo));
 		}
 	}
 
@@ -792,6 +800,19 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	@Info("Set the callback used for determining how the block is mirrored")
 	public BlockBuilder mirrorState(Consumer<BlockStateMirrorCallbackJS> callbackJS) {
 		mirrorStateModification = callbackJS;
+		return this;
+	}
+
+	@Info("Set the callback used for right-clicking on the block")
+	public BlockBuilder rightClick(Consumer<BlockRightClickedEventJS> callbackJS) {
+		rightClick = callbackJS;
+		return this;
+	}
+
+	@Info("Creates a Block Entity for this block")
+	public BlockBuilder blockEntity(Consumer<BlockEntityInfo> callback) {
+		blockEntityInfo = new BlockEntityInfo(this);
+		callback.accept(blockEntityInfo);
 		return this;
 	}
 

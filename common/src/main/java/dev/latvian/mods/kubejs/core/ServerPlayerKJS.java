@@ -1,5 +1,9 @@
 package dev.latvian.mods.kubejs.core;
 
+import dev.architectury.registry.menu.ExtendedMenuProvider;
+import dev.architectury.registry.menu.MenuRegistry;
+import dev.latvian.mods.kubejs.gui.KubeJSGUI;
+import dev.latvian.mods.kubejs.gui.KubeJSMenu;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.net.NotificationMessage;
 import dev.latvian.mods.kubejs.net.PaintMessage;
@@ -8,16 +12,21 @@ import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.util.NotificationBuilder;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanListEntry;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
+import java.util.function.Consumer;
 
 @RemapPrefixForJS("kjs$")
 public interface ServerPlayerKJS extends PlayerKJS {
@@ -141,5 +150,34 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	@Override
 	default void kjs$notify(NotificationBuilder builder) {
 		new NotificationMessage(builder).sendTo(kjs$self());
+	}
+
+	default void kjs$openGUI(Consumer<KubeJSGUI> gui) {
+		var data = new KubeJSGUI();
+		gui.accept(data);
+
+		MenuRegistry.openExtendedMenu(kjs$self(), new ExtendedMenuProvider() {
+			@Override
+			public void saveExtraData(FriendlyByteBuf buf) {
+				data.write(buf);
+			}
+
+			@Override
+			public Component getDisplayName() {
+				return data.title;
+			}
+
+			@Override
+			public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+				return new KubeJSMenu(i, inventory, data);
+			}
+		});
+	}
+
+	default void kjs$openInventoryGUI(InventoryKJS inventory, Component title) {
+		kjs$openGUI(gui -> {
+			gui.title = title;
+			gui.setInventory(inventory);
+		});
 	}
 }

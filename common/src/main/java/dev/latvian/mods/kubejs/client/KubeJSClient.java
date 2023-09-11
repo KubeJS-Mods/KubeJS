@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.architectury.hooks.PackRepositoryHooks;
 import dev.architectury.platform.Platform;
+import dev.architectury.registry.menu.MenuRegistry;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSPaths;
@@ -11,6 +12,8 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
+import dev.latvian.mods.kubejs.gui.KubeJSMenu;
+import dev.latvian.mods.kubejs.gui.KubeJSScreen;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.net.NetworkEventJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -18,6 +21,7 @@ import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -87,6 +91,10 @@ public class KubeJSClient extends KubeJSCommon {
 	}
 
 	@Override
+	public void clientTypeWrappers(TypeWrappers wrappers) {
+	}
+
+	@Override
 	public void clientSetup() {
 		if (Platform.isDevelopmentEnvironment()) {
 			KubeJS.LOGGER.info("CLIENT SETUP");
@@ -107,6 +115,8 @@ public class KubeJSClient extends KubeJSCommon {
 
 			return null;
 		});
+
+		MenuRegistry.registerScreenFactory(KubeJSMenu.KUBEJS_MENU.get(), KubeJSScreen::new);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
@@ -36,6 +37,21 @@ public interface InventoryKJS {
 		throw new NoMixinException();
 	}
 
+	default ItemStack kjs$insertItem(ItemStack stack, boolean simulate) {
+		if (stack.isEmpty()) {
+			return stack;
+		}
+
+		for (int i = 0; i < kjs$getSlots(); i++) {
+			stack = kjs$insertItem(i, stack, simulate);
+			if (stack.isEmpty()) {
+				return ItemStack.EMPTY;
+			}
+		}
+
+		return stack;
+	}
+
 	default int kjs$getSlotLimit(int slot) {
 		throw new NoMixinException();
 	}
@@ -45,11 +61,11 @@ public interface InventoryKJS {
 	}
 
 	default int kjs$getWidth() {
-		return kjs$getSlots();
+		return Math.min(kjs$getSlots(), 9);
 	}
 
 	default int kjs$getHeight() {
-		return 1;
+		return (kjs$getSlots() + 8) / 9;
 	}
 
 	default void kjs$clear() {
@@ -194,5 +210,9 @@ public interface InventoryKJS {
 		}
 
 		return list;
+	}
+
+	default Container kjs$asContainer() {
+		return null;
 	}
 }
