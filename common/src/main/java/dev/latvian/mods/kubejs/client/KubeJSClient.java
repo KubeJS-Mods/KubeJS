@@ -100,7 +100,7 @@ public class KubeJSClient extends KubeJSCommon {
 			KubeJS.LOGGER.info("CLIENT SETUP");
 		}
 
-		ClientEvents.INIT.post(ScriptType.STARTUP, new ClientEventJS());
+		ClientEvents.INIT.post(ScriptType.STARTUP, new ClientInitEventJS());
 		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesEventJS());
 
 		ClientEvents.ATLAS_SPRITE_REGISTRY.listenJava(ScriptType.CLIENT, TextureAtlas.LOCATION_BLOCKS, event -> {
