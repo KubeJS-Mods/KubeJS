@@ -77,6 +77,7 @@ public class KubeJSCommands {
 			)
 			.then(Commands.literal("custom_command")
 				.then(Commands.argument("id", StringArgumentType.word())
+					.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(ServerEvents.CUSTOM_COMMAND.findUniqueExtraIds(ScriptType.SERVER).stream().map(String::valueOf), builder))
 					.executes(context -> customCommand(context.getSource(), StringArgumentType.getString(context, "id")))
 				)
 			)

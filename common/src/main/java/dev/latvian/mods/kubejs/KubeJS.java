@@ -30,6 +30,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
@@ -57,6 +58,7 @@ public class KubeJS {
 	public static final int MC_VERSION_NUMBER = 2001;
 	public static final String MC_VERSION_STRING = "1.20.1";
 	public static String QUERY;
+	public static final Component NAME_COMPONENT = Component.literal(MOD_NAME);
 
 	public static ResourceLocation id(String path) {
 		return new ResourceLocation(MOD_ID, path);
