@@ -4,6 +4,8 @@ import dev.architectury.registry.menu.ExtendedMenuProvider;
 import dev.architectury.registry.menu.MenuRegistry;
 import dev.latvian.mods.kubejs.gui.KubeJSGUI;
 import dev.latvian.mods.kubejs.gui.KubeJSMenu;
+import dev.latvian.mods.kubejs.gui.chest.ChestMenuData;
+import dev.latvian.mods.kubejs.gui.chest.CustomChestMenu;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.net.NotificationMessage;
 import dev.latvian.mods.kubejs.net.PaintMessage;
@@ -18,6 +20,8 @@ import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanListEntry;
+import net.minecraft.util.Mth;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -179,5 +183,38 @@ public interface ServerPlayerKJS extends PlayerKJS {
 			gui.title = title;
 			gui.setInventory(inventory);
 		});
+	}
+
+	default void kjs$openChestGUI(Component title, int rows, Consumer<ChestMenuData> gui) {
+		var data = new ChestMenuData(title, Mth.clamp(rows, 1, 6));
+		gui.accept(data);
+
+		if (kjs$self().containerMenu instanceof CustomChestMenu open && open.data.rows == data.rows && open.data.title.equals(title)) {
+			data.playerInventory = open.data.playerInventory;
+			open.data = data;
+			open.sendAllDataToRemote();
+		} else {
+			var playerItems = kjs$self().getInventory().items;
+
+			data.playerInventory = new ItemStack[playerItems.size()];
+
+			for (int i = 0; i < data.playerInventory.length; i++) {
+				data.playerInventory[i] = playerItems.set(i, ItemStack.EMPTY);
+			}
+
+			kjs$self().inventoryMenu.broadcastFullState();
+
+			kjs$self().openMenu(new MenuProvider() {
+				@Override
+				public Component getDisplayName() {
+					return title;
+				}
+
+				@Override
+				public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+					return new CustomChestMenu(i, inventory, data);
+				}
+			});
+		}
 	}
 }
