@@ -18,6 +18,12 @@ loom {
 	accessWidenerPath = file("src/main/resources/kubejs.accesswidener")
 }
 
+jar {
+	manifest {
+		attributes 'Fabric-Loom-Remap': true
+	}
+}
+
 publishing {
 	publications {
 		mavenCommon(MavenPublication) {
