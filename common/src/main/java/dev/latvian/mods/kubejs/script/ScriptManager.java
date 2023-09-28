@@ -83,7 +83,7 @@ public class ScriptManager implements ClassShutter {
 	private void loadFromResources(ResourceManager resourceManager) {
 		Map<String, List<ResourceLocation>> packMap = new HashMap<>();
 
-		for (var resource : resourceManager.listResources("kubejs", s -> s.getPath().endsWith(".js")).keySet()) {
+		for (var resource : resourceManager.listResources("kubejs", s -> s.getPath().endsWith(".js") || s.getPath().endsWith(".ts") && !s.getPath().endsWith(".d.ts")).keySet()) {
 			packMap.computeIfAbsent(resource.getNamespace(), s -> new ArrayList<>()).add(resource);
 		}
 
