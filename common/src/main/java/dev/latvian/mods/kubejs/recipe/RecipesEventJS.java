@@ -29,6 +29,7 @@ import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonIO;
+import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.WrappedException;
 import dev.latvian.mods.rhino.mod.util.JsonUtils;
@@ -351,6 +352,8 @@ public class RecipesEventJS extends EventJS {
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating script recipes", ex, SKIP_ERROR);
 		}
+
+		KubeJSPlugins.forEachPlugin(p -> p.injectRuntimeRecipes(this, recipesByName));
 
 		var newRecipeMap = new HashMap<RecipeType<?>, Map<ResourceLocation, Recipe<?>>>();
 
