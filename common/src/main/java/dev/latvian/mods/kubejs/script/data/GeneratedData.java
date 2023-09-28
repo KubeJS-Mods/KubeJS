@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.script.data;
 
 import com.google.gson.JsonObject;
+import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.resources.ResourceLocation;
@@ -24,9 +25,9 @@ public record GeneratedData(ResourceLocation id, Lazy<byte[]> data) implements I
 		return json.toString().getBytes(StandardCharsets.UTF_8);
 	}));
 
-	public static final GeneratedData PACK_ICON = new GeneratedData(KubeJS.id("kubejs_logo.png"), Lazy.of(() -> {
+	public static final GeneratedData PACK_ICON = new GeneratedData(KubeJS.id("textures/kubejs_logo.png"), Lazy.of(() -> {
 		try {
-			return Files.readAllBytes(KubeJS.thisMod.findResource("kubejs_logo.png").get());
+			return Files.readAllBytes(Platform.getMod(KubeJS.MOD_ID).findResource("assets", "kubejs", "textures", "kubejs_logo.png").get());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return new byte[0];

@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
-import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
 import net.minecraft.server.packs.resources.IoSupplier;
@@ -15,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,7 +22,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class GeneratedResourcePack implements PackResources {
+public abstract class GeneratedResourcePack implements ExportablePackResources {
 	private final PackType packType;
 	private Map<ResourceLocation, GeneratedData> generated;
 	private Set<String> generatedNamespaces;
@@ -47,11 +46,17 @@ public abstract class GeneratedResourcePack implements PackResources {
 			generated = new HashMap<>();
 			generate(generated);
 
+			boolean debug = DevProperties.get().logGeneratedData || DevProperties.get().debugInfo;
+
 			try {
 				var root = KubeJSPaths.get(packType);
 
 				for (var dir : Files.list(root).filter(Files::isDirectory).toList()) {
 					var ns = dir.getFileName().toString();
+
+					if (debug) {
+						KubeJS.LOGGER.info("# Walking namespace '" + ns + "'");
+					}
 
 					for (var path : Files.walk(dir).filter(Files::isRegularFile).filter(Files::isReadable).toList()) {
 						var pathStr = dir.relativize(path).toString().replace('\\', '/');
@@ -69,6 +74,10 @@ public abstract class GeneratedResourcePack implements PackResources {
 							}
 						}));
 
+						if (debug) {
+							KubeJS.LOGGER.info("- File found: '" + data.id() + "' (" + data.data().get().length + " bytes)");
+						}
+
 						generated.put(data.id(), data);
 					}
 				}
@@ -80,19 +89,8 @@ public abstract class GeneratedResourcePack implements PackResources {
 
 			generated = Map.copyOf(generated);
 
-			if (DevProperties.get().logGeneratedData || DevProperties.get().debugInfo) {
-				var sb = new StringBuilder("Generated " + packType + " data (" + generated.size() + " files)");
-
-				for (var data : generated.entrySet()) {
-					sb.append("\n - ").append(data.getKey()).append(" (").append(data.getValue().data().get().length).append(" bytes)");
-
-					if (data.getKey().getPath().endsWith(".json")) {
-						sb.append(": ");
-						sb.append(new String(data.getValue().data().get(), StandardCharsets.UTF_8).replace('\n', ' '));
-					}
-				}
-
-				KubeJS.LOGGER.info(sb.toString());
+			if (debug) {
+				KubeJS.LOGGER.info("Generated " + packType + " data (" + generated.size() + " files)");
 			}
 		}
 
@@ -117,8 +115,12 @@ public abstract class GeneratedResourcePack implements PackResources {
 	@Override
 	public void listResources(PackType type, String namespace, String path, ResourceOutput visitor) {
 		if (type == packType) {
+			if (!path.endsWith("/")) {
+				path = path + "/";
+			}
+
 			for (var r : getGenerated().entrySet()) {
-				if (r.getKey().getPath().startsWith(path)) {
+				if (r.getKey().getNamespace().equals(namespace) && r.getKey().getPath().startsWith(path)) {
 					visitor.accept(r.getKey(), r.getValue());
 				}
 			}
@@ -172,5 +174,17 @@ public abstract class GeneratedResourcePack implements PackResources {
 	@Override
 	public boolean isBuiltin() {
 		return true;
+	}
+
+	@Override
+	public void export(FileSystem fs) throws IOException {
+		for (var file : getGenerated().entrySet()) {
+			var path = fs.getPath(packType.getDirectory() + "/" + file.getKey().getNamespace() + "/" + file.getKey().getPath());
+			Files.createDirectories(path.getParent());
+			Files.write(path, file.getValue().data().get());
+		}
+
+		Files.write(fs.getPath(PACK_META), GeneratedData.PACK_META.data().get());
+		Files.write(fs.getPath("pack.png"), GeneratedData.PACK_ICON.data().get());
 	}
 }

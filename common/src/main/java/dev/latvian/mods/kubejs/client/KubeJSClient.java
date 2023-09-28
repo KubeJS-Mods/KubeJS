@@ -19,6 +19,7 @@ import dev.latvian.mods.kubejs.net.NetworkEventJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
@@ -40,6 +41,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class KubeJSClient extends KubeJSCommon {
@@ -196,6 +198,15 @@ public class KubeJSClient extends KubeJSCommon {
 		if (mc.player != null) {
 			CreativeModeTabs.CACHED_PARAMETERS = null;
 			CreativeModeTabs.tryRebuildTabContents(mc.player.connection.enabledFeatures(), mc.player.canUseGameMasterBlocks() && mc.options.operatorItemsTab().get(), mc.level.registryAccess());
+		}
+	}
+
+	@Override
+	public void export(List<ExportablePackResources> packs) {
+		for (var pack : Minecraft.getInstance().getResourceManager().listPacks().toList()) {
+			if (pack instanceof ExportablePackResources e && !packs.contains(e)) {
+				packs.add(e);
+			}
 		}
 	}
 }

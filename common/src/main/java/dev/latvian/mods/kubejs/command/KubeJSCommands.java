@@ -19,7 +19,7 @@ import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.net.ReloadStartupScriptsMessage;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
+import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
@@ -128,10 +128,9 @@ public class KubeJSCommands {
 			.then(Commands.literal("export")
 				.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
 				.executes(context -> export(context.getSource()))
-			)
-			.then(Commands.literal("export_virtual_data")
-				.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
-				.executes(context -> exportVirtualData(context.getSource()))
+				.then(Commands.literal("packs")
+					.executes(context -> exportPacks(context.getSource()))
+				)
 			)
 			/*
 			.then(Commands.literal("output_recipes")
@@ -631,29 +630,38 @@ public class KubeJSCommands {
 		return 1;
 	}
 
-	private static int exportVirtualData(CommandSourceStack source) {
-		return source.getServer().getResourceManager()
-			.listPacks()
-			.filter(pack -> pack instanceof VirtualKubeJSDataPack)
-			.map(pack -> (VirtualKubeJSDataPack) pack)
-			.mapToInt(pack -> {
-					var path = KubeJSPaths.EXPORT.resolve(pack.packId() + ".zip");
-					try {
-						Files.deleteIfExists(path);
-						try (var fs = FileSystems.newFileSystem(path, Map.of("create", true))) {
-							pack.export(fs);
-						}
-						source.sendSuccess(() -> Component.literal("Successfully exported %s to %s".formatted(pack, path)).withStyle(ChatFormatting.GREEN), true);
-						return 1;
-					} catch (IOException e) {
-						e.printStackTrace();
-						source.sendFailure(Component.literal("Failed to export %s!".formatted(pack)).withStyle(style ->
-							style.withColor(ChatFormatting.RED)
-								.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(e.getMessage())))));
-						return 0;
-					}
+	private static int exportPacks(CommandSourceStack source) {
+		var packs = new ArrayList<ExportablePackResources>();
+
+		for (var pack : source.getServer().getResourceManager().listPacks().toList()) {
+			if (pack instanceof ExportablePackResources e) {
+				packs.add(e);
+			}
+		}
+
+		KubeJS.PROXY.export(packs);
+		int success = 0;
+
+		for (var pack : packs) {
+			var path = KubeJSPaths.EXPORTED_PACKS.resolve(pack.packId() + ".zip");
+			try {
+				Files.deleteIfExists(path);
+
+				try (var fs = FileSystems.newFileSystem(path, Map.of("create", true))) {
+					pack.export(fs);
 				}
-			).sum();
+
+				source.sendSuccess(() -> Component.literal("Successfully exported ").withStyle(ChatFormatting.GREEN).append(Component.literal(pack.packId()).withStyle(ChatFormatting.BLUE)), true);
+				success++;
+			} catch (IOException e) {
+				e.printStackTrace();
+				source.sendFailure(Component.literal("Failed to export %s!".formatted(pack)).withStyle(style ->
+					style.withColor(ChatFormatting.RED)
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(e.getMessage())))));
+			}
+		}
+
+		return success;
 	}
 
 	private static int outputRecipes(ServerPlayer player) {

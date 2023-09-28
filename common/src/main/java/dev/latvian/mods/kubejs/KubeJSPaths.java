@@ -45,6 +45,7 @@ public interface KubeJSPaths {
 	Path LOCAL_CACHE = dir(LOCAL.resolve("cache"));
 	Path LOCAL_DEV_PROPERTIES = LOCAL.resolve("dev.properties");
 	Path EXPORT = dir(LOCAL.resolve("export"));
+	Path EXPORTED_PACKS = dir(LOCAL.resolve("exported_packs"));
 
 	static Path get(PackType type) {
 		return type == PackType.CLIENT_RESOURCES ? ASSETS : DATA;
