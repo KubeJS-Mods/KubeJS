@@ -515,10 +515,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 			.special("crafting_special_repairitem")
 		;
 
-		event.namespace("cucumber")
-			.shaped("shaped_no_mirror")
-		;
-
 		event.namespace("extendedcrafting")
 			.shaped("shaped_table")
 			.shapeless("shapeless_table")
