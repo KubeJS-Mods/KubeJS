@@ -353,7 +353,7 @@ public class RecipesEventJS extends EventJS {
 			ConsoleJS.SERVER.error("Error creating script recipes", ex, SKIP_ERROR);
 		}
 
-		KubeJSPlugins.forEachPlugin(p -> p.injectRuntimeRecipes(this, recipesByName));
+		KubeJSPlugins.forEachPlugin(p -> p.injectRuntimeRecipes(this, recipeManager, recipesByName));
 
 		var newRecipeMap = new HashMap<RecipeType<?>, Map<ResourceLocation, Recipe<?>>>();
 
