@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 
 public class KubeJSMenu extends AbstractContainerMenu {
 	public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create("kubejs", Registries.MENU);
-	public static Supplier<MenuType<KubeJSMenu>> KUBEJS_MENU = MENU_TYPES.register("menu", () -> MiscPlatformHelper.get().createMenuType());
+	public static final Supplier<MenuType<KubeJSMenu>> KUBEJS_MENU = MENU_TYPES.register("menu", () -> MiscPlatformHelper.get().createMenuType());
 
 	public static void init() {
 		if (!CommonProperties.get().serverOnly) {
