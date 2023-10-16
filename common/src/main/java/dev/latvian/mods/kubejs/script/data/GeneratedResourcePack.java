@@ -59,9 +59,11 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 					}
 
 					for (var path : Files.walk(dir).filter(Files::isRegularFile).filter(Files::isReadable).toList()) {
-						var pathStr = dir.relativize(path).toString().replace('\\', '/');
+						var pathStr = dir.relativize(path).toString().replace('\\', '/').toLowerCase();
+						int sindex = pathStr.lastIndexOf('/');
+						var fileName = sindex == -1 ? pathStr : pathStr.substring(sindex + 1);
 
-						if (pathStr.endsWith(".zip")) {
+						if (fileName.endsWith(".zip") || fileName.equals(".ds_store") || fileName.equals("thumbs.db") || fileName.equals("desktop.ini") || Files.isHidden(path)) {
 							continue;
 						}
 
