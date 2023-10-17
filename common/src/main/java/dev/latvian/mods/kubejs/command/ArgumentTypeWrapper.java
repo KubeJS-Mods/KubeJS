@@ -28,6 +28,7 @@ import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.commands.arguments.MobEffectArgument;
 import net.minecraft.commands.arguments.NbtPathArgument;
 import net.minecraft.commands.arguments.NbtTagArgument;
+import net.minecraft.commands.arguments.ObjectiveArgument;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.commands.arguments.RangeArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
@@ -114,6 +115,7 @@ public enum ArgumentTypeWrapper {
 	DIMENSION(DimensionArgument::dimension, DimensionArgument::getDimension),
 	TIME(TimeArgument::time, IntegerArgumentType::getInteger),
 	UUID(UuidArgument::uuid, UuidArgument::getUuid),
+	OBJECTIVE(ObjectiveArgument::objective, ObjectiveArgument::getObjective),
 	;
 
 	private final Function<CommandBuildContext, ? extends ArgumentType<?>> factory;
