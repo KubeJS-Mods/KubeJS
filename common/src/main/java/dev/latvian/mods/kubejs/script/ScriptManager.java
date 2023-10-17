@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.script;
 
+import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
@@ -41,7 +42,7 @@ public class ScriptManager implements ClassShutter {
 	public boolean firstLoad;
 	public Context context;
 	public Scriptable topLevelScope;
-	private Map<String, Optional<NativeJavaClass>> javaClassCache;
+	private Map<String, Either<NativeJavaClass, Boolean>> javaClassCache;
 	public boolean canListenEvents;
 
 	public ScriptManager(ScriptType t, Path p) {
@@ -230,46 +231,60 @@ public class ScriptManager implements ClassShutter {
 		canListenEvents = false;
 	}
 
-	public NativeJavaClass loadJavaClass(String name0, boolean warn) {
-		if (name0 == null || name0.equals("null") || name0.isEmpty()) {
-			throw Context.reportRuntimeError("Class name can't be empty!", context);
-		}
-
-		String name = RemappingHelper.getMinecraftRemapper().getUnmappedClass(name0);
-
-		if (name.isEmpty()) {
-			name = name0;
+	public NativeJavaClass loadJavaClass(String name, boolean error) {
+		if (name == null || name.equals("null") || name.isEmpty()) {
+			if (error) {
+				throw Context.reportRuntimeError("Class name can't be empty!", context);
+			} else {
+				return null;
+			}
 		}
 
 		if (javaClassCache == null) {
 			javaClassCache = new HashMap<>();
 		}
 
-		var ch = javaClassCache.get(name);
+		var either = javaClassCache.get(name);
 
-		if (ch == null) {
-			javaClassCache.put(name, Optional.empty());
+		if (either == null) {
+			either = Either.right(false);
 
-			try {
-				if (!isClassAllowed(name)) {
-					throw Context.reportRuntimeError("Failed to load Java class '%s': Class is not allowed by class filter!".formatted(name), context);
+			if (!isClassAllowed(name)) {
+				either = Either.right(true);
+			} else {
+				try {
+					either = Either.left(new NativeJavaClass(context, topLevelScope, Class.forName(name)));
+					scriptType.console.info("Loaded Java class '%s'".formatted(name));
+				} catch (Exception ignored1) {
+					var name1 = RemappingHelper.getMinecraftRemapper().getUnmappedClass(name);
+
+					if (!name1.isEmpty()) {
+						if (!isClassAllowed(name1)) {
+							either = Either.right(true);
+						} else {
+							try {
+								either = Either.left(new NativeJavaClass(context, topLevelScope, Class.forName(name1)));
+								scriptType.console.info("Loaded Java class '%s'".formatted(name));
+							} catch (Exception ignored2) {
+							}
+						}
+					}
 				}
-
-				var c = Class.forName(name);
-				var njc = new NativeJavaClass(context, topLevelScope, c);
-				javaClassCache.put(name, Optional.of(njc));
-				scriptType.console.info("Loaded Java class '%s'".formatted(name0));
-				return njc;
-			} catch (ClassNotFoundException cnf) {
-				throw Context.reportRuntimeError("Failed to load Java class '%s': Class could not be found!\n%s".formatted(name, cnf.getMessage()), context);
 			}
+
+			javaClassCache.put(name, either);
 		}
 
-		if (ch.isPresent()) {
-			return ch.get();
-		}
+		var l = either.left().orElse(null);
 
-		throw Context.reportRuntimeError("Failed to load Java class '%s'!".formatted(name), context);
+		if (l != null) {
+			return l;
+		} else if (error) {
+			var found = either.right().orElse(false);
+			throw Context.reportRuntimeError((found ? "Failed to load Java class '%s': Class is not allowed by class filter!" : "Failed to load Java class '%s': Class could not be found!").formatted(name), context);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
