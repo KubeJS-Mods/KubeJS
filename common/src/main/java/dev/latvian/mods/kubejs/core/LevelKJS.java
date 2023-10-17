@@ -10,6 +10,7 @@ import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -30,6 +31,47 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
 	@RemapForJS("getSide")
 	default ScriptType kjs$getScriptType() {
 		throw new NoMixinException();
+	}
+
+	@Override
+	default Component kjs$getName() {
+		return Component.literal(kjs$getDimension().toString());
+	}
+
+	@Override
+	default void kjs$tell(Component message) {
+		for (var entity : kjs$self().players()) {
+			entity.kjs$tell(message);
+		}
+	}
+
+	@Override
+	default void kjs$setStatusMessage(Component message) {
+		for (var entity : kjs$self().players()) {
+			entity.kjs$setStatusMessage(message);
+		}
+	}
+
+	@Override
+	default int kjs$runCommand(String command) {
+		var m = 0;
+
+		for (var entity : kjs$self().players()) {
+			m = Math.max(m, entity.kjs$runCommand(command));
+		}
+
+		return m;
+	}
+
+	@Override
+	default int kjs$runCommandSilent(String command) {
+		var m = 0;
+
+		for (var entity : kjs$self().players()) {
+			m = Math.max(m, entity.kjs$runCommandSilent(command));
+		}
+
+		return m;
 	}
 
 	default ResourceLocation kjs$getDimension() {
