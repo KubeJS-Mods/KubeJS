@@ -5,13 +5,16 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.core.WithPersistentData;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -32,11 +35,15 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.CompoundTagArgument;
+import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.ObjectiveArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.ScoreHolderArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -45,6 +52,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.commands.ReloadCommand;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
@@ -59,6 +67,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class KubeJSCommands {
@@ -221,6 +230,16 @@ public class KubeJSCommands {
 					.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
 					.executes(context -> dumpEvents(context.getSource()))
 				)
+			)
+			.then(Commands.literal("persistent_data")
+				.requires(source -> source.hasPermission(2))
+				.then(addPersistentDataCommands(Commands.literal("server"), ctx -> Set.of(ctx.getSource().getServer())))
+				.then(Commands.literal("dimension")
+					.then(addPersistentDataCommands(Commands.literal("*"), ctx -> (Collection<ServerLevel>) ctx.getSource().getServer().getAllLevels()))
+					.then(addPersistentDataCommands(Commands.argument("dimension", DimensionArgument.dimension()), ctx -> Set.of(DimensionArgument.getDimension(ctx, "dimension"))))
+				)
+				.then(Commands.literal("entity")
+					.then(addPersistentDataCommands(Commands.argument("entity", EntityArgument.entities()), ctx -> EntityArgument.getEntities(ctx, "entity"))))
 			)
 		);
 
@@ -820,5 +839,157 @@ public class KubeJSCommands {
 		}
 
 		return 1;
+	}
+
+	@FunctionalInterface
+	private interface PersistentDataFactory {
+		SimpleCommandExceptionType EMPTY_LIST = new SimpleCommandExceptionType(Component.literal("Expected at least one target"));
+
+		Collection<? extends WithPersistentData> apply(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException;
+
+		default Collection<? extends WithPersistentData> getAll(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+			var list = apply(ctx);
+
+			if (list.isEmpty()) {
+				throw EMPTY_LIST.create();
+			}
+
+			return list;
+		}
+
+		default WithPersistentData getOne(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+			var list = apply(ctx);
+
+			if (list.isEmpty()) {
+				throw EMPTY_LIST.create();
+			}
+
+			return list.iterator().next();
+		}
+	}
+
+	private static ArgumentBuilder<CommandSourceStack, ?> addPersistentDataCommands(ArgumentBuilder<CommandSourceStack, ?> cmd, PersistentDataFactory factory) {
+		cmd.then(Commands.literal("get")
+			.then(Commands.literal("*")
+				.executes(ctx -> {
+					var objects = factory.getAll(ctx);
+
+					for (var o : objects) {
+						var dataStr = NbtUtils.toPrettyComponent(o.kjs$getPersistentData());
+						ctx.getSource().sendSuccess(() -> Component.literal("").append(Component.literal("").withStyle(ChatFormatting.YELLOW).append(o.kjs$getDisplayName())).append(": ").append(dataStr), false);
+					}
+
+					return objects.size();
+				})
+			)
+			.then(Commands.argument("key", StringArgumentType.string())
+				.executes(ctx -> {
+					var objects = factory.getAll(ctx);
+					var key = StringArgumentType.getString(ctx, "key");
+
+					for (var o : objects) {
+						var data = key.equals("*") ? o.kjs$getPersistentData() : o.kjs$getPersistentData().get(key);
+						var dataStr = data == null ? Component.literal("null").withStyle(ChatFormatting.RED) : NbtUtils.toPrettyComponent(data);
+						ctx.getSource().sendSuccess(() -> Component.literal("").append(Component.literal("").withStyle(ChatFormatting.YELLOW).append(o.kjs$getDisplayName())).append(": ").append(dataStr), false);
+					}
+
+					return objects.size();
+				})
+			)
+		);
+
+		cmd.then(Commands.literal("merge")
+			.then(Commands.argument("nbt", CompoundTagArgument.compoundTag())
+				.executes(ctx -> {
+					var objects = factory.getAll(ctx);
+					var tag = CompoundTagArgument.getCompoundTag(ctx, "nbt");
+
+					for (var o : objects) {
+						o.kjs$getPersistentData().merge(tag);
+						ctx.getSource().sendSuccess(() -> Component.literal("").append(Component.literal("").withStyle(ChatFormatting.YELLOW).append(o.kjs$getDisplayName())).append(" updated"), false);
+					}
+
+					return objects.size();
+				})
+			)
+		);
+
+		cmd.then(Commands.literal("remove")
+			.then(Commands.literal("*")
+				.executes(ctx -> {
+					var objects = factory.getAll(ctx);
+
+					for (var o : objects) {
+						o.kjs$getPersistentData().getAllKeys().removeIf(UtilsJS.ALWAYS_TRUE);
+					}
+
+					return objects.size();
+				})
+			)
+			.then(Commands.argument("key", StringArgumentType.string())
+				.executes(ctx -> {
+					var objects = factory.getAll(ctx);
+					var key = StringArgumentType.getString(ctx, "key");
+
+					for (var o : objects) {
+						o.kjs$getPersistentData().remove(key);
+					}
+
+					return objects.size();
+				})
+			)
+		);
+
+		cmd.then(Commands.literal("scoreboard")
+			.then(Commands.literal("import")
+				.then(Commands.argument("key", StringArgumentType.string())
+					.then(Commands.argument("target", ScoreHolderArgument.scoreHolder())
+						.suggests(ScoreHolderArgument.SUGGEST_SCORE_HOLDERS)
+						.then(Commands.argument("objective", ObjectiveArgument.objective())
+							.executes(ctx -> {
+								var scoreboard = ctx.getSource().getServer().getScoreboard();
+								var objects = factory.getAll(ctx);
+								var key = StringArgumentType.getString(ctx, "key");
+								var target = ScoreHolderArgument.getName(ctx, "target");
+								var objective = ObjectiveArgument.getObjective(ctx, "objective");
+
+								int score = scoreboard.hasPlayerScore(target, objective) ? scoreboard.getOrCreatePlayerScore(target, objective).getScore() : 0;
+
+								for (var o : objects) {
+									o.kjs$getPersistentData().putInt(key, score);
+								}
+
+								return objects.size();
+							})
+						)
+					)
+				)
+			).then(Commands.literal("export")
+				.then(Commands.argument("key", StringArgumentType.string())
+					.then(Commands.argument("targets", ScoreHolderArgument.scoreHolders())
+						.suggests(ScoreHolderArgument.SUGGEST_SCORE_HOLDERS)
+						.then(Commands.argument("objective", ObjectiveArgument.objective())
+							.executes(ctx -> {
+								var scoreboard = ctx.getSource().getServer().getScoreboard();
+								var object = factory.getOne(ctx);
+								var key = StringArgumentType.getString(ctx, "key");
+								var targets = ScoreHolderArgument.getNames(ctx, "targets");
+								var objective = ObjectiveArgument.getObjective(ctx, "objective");
+
+								int score = object.kjs$getPersistentData().getInt(key);
+
+								for (var target : targets) {
+									scoreboard.getOrCreatePlayerScore(target, objective).setScore(score);
+								}
+
+								return 1;
+							})
+						)
+					)
+				)
+			)
+		);
+
+		return cmd;
 	}
 }
