@@ -119,8 +119,9 @@ public class KubeJSClient extends KubeJSCommon {
 			return null;
 		});
 
-		if (!CommonProperties.get().serverOnly)
+		if (!CommonProperties.get().serverOnly) {
 			MenuRegistry.registerScreenFactory(KubeJSMenu.KUBEJS_MENU.get(), KubeJSScreen::new);
+		}
 	}
 
 	@Override

@@ -29,7 +29,6 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -338,13 +337,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 
 		return true;
-	}
-
-	@Override
-	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {
-		if (lootTable != EMPTY && path.equals("loot_tables")) {
-			list.add(new ResourceLocation(id.getNamespace(), "loot_tables/blocks/" + id.getPath() + ".json"));
-		}
 	}
 
 	public BlockBuilder material(String material) {

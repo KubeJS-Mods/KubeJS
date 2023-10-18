@@ -70,7 +70,6 @@ public class ServerScriptManager {
 
 		list.addFirst(virtualDataPackLow);
 		list.addLast(new GeneratedServerResourcePack());
-		// list.addLast(KubeJSFolderPackResources.PACK);
 
 		for (var file : Objects.requireNonNull(KubeJSPaths.DATA.toFile().listFiles())) {
 			if (file.isFile() && file.getName().endsWith(".zip")) {

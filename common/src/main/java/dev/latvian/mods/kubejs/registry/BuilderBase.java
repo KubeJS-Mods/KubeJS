@@ -6,10 +6,8 @@ import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -115,9 +113,6 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		}
 
 		lang.add(id.getNamespace(), getBuilderTranslationKey(), dname);
-	}
-
-	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {
 	}
 
 	protected T createTransformedObject() {

@@ -41,6 +41,11 @@ public class InventoryKJSSlot extends Slot {
 	}
 
 	@Override
+	public void setChanged() {
+		this.inventory.kjs$setChanged();
+	}
+
+	@Override
 	public int getMaxStackSize() {
 		return this.inventory.kjs$getSlotLimit(this.invIndex);
 	}

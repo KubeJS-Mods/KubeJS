@@ -40,7 +40,6 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 
 			var injected = new ArrayList<PackResources>(2);
 			injected.add(new GeneratedClientResourcePack(client));
-			// injected.add(KubeJSFolderPackResources.PACK);
 
 			for (var file : Objects.requireNonNull(KubeJSPaths.ASSETS.toFile().listFiles())) {
 				if (file.isFile() && file.getName().endsWith(".zip")) {
