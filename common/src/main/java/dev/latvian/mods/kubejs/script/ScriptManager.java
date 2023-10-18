@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class ScriptManager implements ClassShutter {
 	private static final ThreadLocal<Context> CURRENT_CONTEXT = new ThreadLocal<>();
@@ -80,9 +79,9 @@ public class ScriptManager implements ClassShutter {
 	}
 
 	private void loadFromResources(ResourceManager resourceManager) {
-		Map<String, List<ResourceLocation>> packMap = new HashMap<>();
+		var packMap = new HashMap<String, List<ResourceLocation>>();
 
-		for (var resource : resourceManager.listResources("kubejs", s -> s.getPath().endsWith(".js")).keySet()) {
+		for (var resource : resourceManager.listResources("kubejs", s -> s.getPath().endsWith(".js") || s.getPath().endsWith(".ts") && !s.getPath().endsWith(".d.ts")).keySet()) {
 			packMap.computeIfAbsent(resource.getNamespace(), s -> new ArrayList<>()).add(resource);
 		}
 

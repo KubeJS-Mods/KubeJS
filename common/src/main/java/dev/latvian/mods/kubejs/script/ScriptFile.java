@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.script;
 
-import java.nio.charset.StandardCharsets;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 
 public class ScriptFile implements Comparable<ScriptFile> {
 	public final ScriptPack pack;
@@ -14,10 +14,8 @@ public class ScriptFile implements Comparable<ScriptFile> {
 	}
 
 	public void load() throws Throwable {
-		try (var stream = source.createStream(info)) {
-			var script = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-			pack.manager.context.evaluateString(pack.scope, script, info.location, 1, null);
-		}
+		pack.manager.context.evaluateString(pack.scope, String.join("\n", info.lines), info.location, 1, null);
+		info.lines = UtilsJS.EMPTY_STRING_ARRAY; // free memory
 	}
 
 	@Override
