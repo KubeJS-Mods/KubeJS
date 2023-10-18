@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.util.InventoryIterator;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -9,11 +8,10 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @RemapPrefixForJS("kjs$")
-public interface InventoryKJS extends Iterable<ItemStack> {
+public interface InventoryKJS {
 	default boolean kjs$isMutable() {
 		return false;
 	}
@@ -44,11 +42,6 @@ public interface InventoryKJS extends Iterable<ItemStack> {
 
 	default boolean kjs$isItemValid(int slot, ItemStack stack) {
 		throw new NoMixinException();
-	}
-
-	@Override
-	default Iterator<ItemStack> iterator() {
-		return new InventoryIterator(this);
 	}
 
 	default int kjs$getWidth() {

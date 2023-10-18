@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.ResourcePackFileNotFoundException;
@@ -26,6 +27,7 @@ import java.util.function.Predicate;
 public abstract class GeneratedResourcePack implements PackResources {
 	private final PackType packType;
 	private Map<ResourceLocation, byte[]> generated;
+	private Set<String> generatedNamespaces;
 
 	public GeneratedResourcePack(PackType t) {
 		packType = t;
@@ -99,19 +101,23 @@ public abstract class GeneratedResourcePack implements PackResources {
 			return Collections.emptySet();
 		}
 
-		var namespaces = new HashSet<String>();
+		if (generatedNamespaces == null) {
+			generatedNamespaces = new HashSet<>();
 
-		for (var key : getGenerated().entrySet()) {
-			namespaces.add(key.getKey().getNamespace());
+			for (var s : getGenerated().entrySet()) {
+				generatedNamespaces.add(s.getKey().getNamespace());
+			}
 		}
 
-		return namespaces;
+		return generatedNamespaces;
 	}
 
 	@Nullable
 	@Override
-	public <T> T getMetadataSection(MetadataSectionSerializer<T> serializer) {
-		return null;
+	public <T> T getMetadataSection(MetadataSectionSerializer<T> serializer) throws IOException {
+		try (var in = this.getRootResource(PACK_META)) {
+			return AbstractPackResources.getMetadataFromStream(serializer, in);
+		}
 	}
 
 	@Override
@@ -122,5 +128,6 @@ public abstract class GeneratedResourcePack implements PackResources {
 	@Override
 	public void close() {
 		generated = null;
+		generatedNamespaces = null;
 	}
 }

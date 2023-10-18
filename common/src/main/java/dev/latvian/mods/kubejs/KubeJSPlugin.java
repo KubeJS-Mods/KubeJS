@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.client.ClientProperties;
+import dev.latvian.mods.kubejs.client.LangEventJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
@@ -73,7 +74,11 @@ public class KubeJSPlugin {
 	public void generateAssetJsons(AssetJsonGenerator generator) {
 	}
 
+	@Deprecated
 	public void generateLang(Map<String, String> lang) {
+	}
+
+	public void generateLang(LangEventJS lang) {
 	}
 
 	public void loadCommonProperties(CommonProperties properties) {

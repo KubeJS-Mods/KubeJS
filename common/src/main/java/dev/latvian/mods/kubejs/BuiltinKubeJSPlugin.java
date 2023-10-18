@@ -39,6 +39,7 @@ import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WoodenButtonBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WoodenPressurePlateBlockBuilder;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
+import dev.latvian.mods.kubejs.client.LangEventJS;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
 import dev.latvian.mods.kubejs.event.EventGroup;
@@ -531,8 +532,16 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	}
 
 	@Override
+	@Deprecated
 	public void generateLang(Map<String, String> lang) {
-		lang.put("itemGroup.kubejs.kubejs", "KubeJS");
+		for (var builder : RegistryInfo.ALL_BUILDERS) {
+			builder.generateLang(lang);
+		}
+	}
+
+	@Override
+	public void generateLang(LangEventJS lang) {
+		lang.add("itemGroup.kubejs.kubejs", "KubeJS");
 
 		for (var builder : RegistryInfo.ALL_BUILDERS) {
 			builder.generateLang(lang);

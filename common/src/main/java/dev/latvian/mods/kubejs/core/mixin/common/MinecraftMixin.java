@@ -32,7 +32,7 @@ public abstract class MinecraftMixin implements MinecraftClientKJS {
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;")
 	)
 	private List<PackResources> kjs$loadPacks(List<PackResources> resources) {
-		return GeneratedClientResourcePack.inject(resources);
+		return GeneratedClientResourcePack.inject(kjs$self(), resources);
 	}
 
 	@Inject(method = "startAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;swing(Lnet/minecraft/world/InteractionHand;)V", shift = At.Shift.AFTER))

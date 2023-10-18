@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.registry;
 
+import dev.latvian.mods.kubejs.client.LangEventJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -99,7 +100,11 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	public void generateAssetJsons(AssetJsonGenerator generator) {
 	}
 
+	@Deprecated
 	public void generateLang(Map<String, String> lang) {
+	}
+
+	public void generateLang(LangEventJS lang) {
 		var tkey = translationKey;
 
 		if (tkey.isEmpty()) {
@@ -112,7 +117,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 			dname = UtilsJS.snakeCaseToTitleCase(id.getPath());
 		}
 
-		lang.put(tkey, dname);
+		lang.add(id.getNamespace(), tkey, dname);
 	}
 
 	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {

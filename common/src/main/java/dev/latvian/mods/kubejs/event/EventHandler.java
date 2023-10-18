@@ -355,6 +355,10 @@ public final class EventHandler extends BaseFunction {
 	}
 
 	public Set<Object> findUniqueExtraIds(ScriptType type) {
+		if (!hasListeners()) {
+			return Set.of();
+		}
+
 		var set = new HashSet<>();
 
 		forEachListener(type, c -> {
