@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -113,5 +114,10 @@ public class KubeJSRegistries {
 	@Info("Gets the mob effect registrar")
 	public static Registrar<MobEffect> mobEffects() {
 		return genericRegistry(MOB_EFFECT_REGISTRY);
+	}
+
+	@Info("Gets the particle type registrar")
+	public static Registrar<ParticleType<?>> particleTypes() {
+		return genericRegistry(PARTICLE_TYPE_REGISTRY);
 	}
 }

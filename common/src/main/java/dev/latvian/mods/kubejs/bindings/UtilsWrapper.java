@@ -1,5 +1,8 @@
 package dev.latvian.mods.kubejs.bindings;
 
+import com.google.gson.JsonElement;
+import com.mojang.brigadier.StringReader;
+import com.mojang.math.Vector3f;
 import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -9,6 +12,8 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.mod.util.CountingMap;
 import net.minecraft.Util;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -33,6 +38,8 @@ import java.util.regex.Pattern;
 
 @Info("A collection of utilities")
 public interface UtilsWrapper {
+	DustParticleOptions ERROR_PARTICLE = new DustParticleOptions(new Vector3f(0F, 0F, 0F), 1F);
+
 	@Info("Get the server. Null if there is no server (startup or client)")
 	static MinecraftServer getServer() {
 		return UtilsJS.staticServer;
@@ -222,5 +229,20 @@ public interface UtilsWrapper {
 	@Info("Returns the provided snake_case_string in Title Case")
 	static String snakeCaseToTitleCase(String string) {
 		return UtilsJS.snakeCaseToTitleCase(string);
+	}
+
+	static ParticleOptions particleOptions(Object o) {
+		if (o instanceof ParticleOptions po) {
+			return po;
+		} else if (o != null) {
+			try {
+				var reader = new StringReader(o instanceof JsonElement j ? j.getAsString() : o.toString());
+				var particle = KubeJSRegistries.particleTypes().get(ResourceLocation.read(reader));
+				return particle.getDeserializer().fromCommand(UtilsJS.cast(particle), reader);
+			} catch (Exception ignored) {
+			}
+		}
+
+		return ERROR_PARTICLE;
 	}
 }

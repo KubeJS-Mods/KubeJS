@@ -128,6 +128,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -466,6 +467,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.register(NotificationBuilder.class, NotificationBuilder::of);
 		typeWrappers.registerSimple(MaterialColor.class, MapColorHelper::of);
 		typeWrappers.register(SoundType.class, SoundTypeWrapper.INSTANCE);
+		typeWrappers.registerSimple(ParticleOptions.class, UtilsWrapper::particleOptions);
 
 		// components //
 		typeWrappers.registerSimple(Component.class, TextWrapper::of);
