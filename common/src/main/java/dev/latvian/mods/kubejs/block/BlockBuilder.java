@@ -194,7 +194,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 
 		if (modelJson != null) {
-			generator.json(newID("models/", ""), modelJson);
+			generator.json(newID("models/block/", ""), modelJson);
 		} else {
 			// This is different because there can be multiple models, so we should let the block handle those
 			generateBlockModelJsons(generator);
