@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.bindings.event;
 
 import dev.latvian.mods.kubejs.client.AtlasSpriteRegistryEventJS;
 import dev.latvian.mods.kubejs.client.ClientEventJS;
+import dev.latvian.mods.kubejs.client.ClientInitEventJS;
 import dev.latvian.mods.kubejs.client.DebugInfoEventJS;
 import dev.latvian.mods.kubejs.client.GenerateClientAssetsEventJS;
 import dev.latvian.mods.kubejs.client.LangEventJS;
@@ -14,7 +15,7 @@ public interface ClientEvents {
 	EventGroup GROUP = EventGroup.of("ClientEvents");
 	// add low assets
 	EventHandler HIGH_ASSETS = GROUP.client("highPriorityAssets", () -> GenerateClientAssetsEventJS.class);
-	EventHandler INIT = GROUP.startup("init", () -> ClientEventJS.class);
+	EventHandler INIT = GROUP.startup("init", () -> ClientInitEventJS.class);
 	EventHandler LOGGED_IN = GROUP.client("loggedIn", () -> ClientEventJS.class);
 	EventHandler LOGGED_OUT = GROUP.client("loggedOut", () -> ClientEventJS.class);
 	EventHandler TICK = GROUP.client("tick", () -> ClientEventJS.class);
