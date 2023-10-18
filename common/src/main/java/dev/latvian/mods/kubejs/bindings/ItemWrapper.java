@@ -1,16 +1,22 @@
 package dev.latvian.mods.kubejs.bindings;
 
+import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.FireworksJS;
 import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -98,5 +104,44 @@ public interface ItemWrapper {
 		""")
 	static boolean isItem(@Nullable Object o) {
 		return o instanceof ItemStackJS;
+	}
+
+	static ItemStack playerHead(String name) {
+		var stack = new ItemStack(Items.PLAYER_HEAD);
+		stack.getOrCreateTag().putString("SkullOwner", name);
+		return stack;
+	}
+
+	static ItemStack playerHead(UUID uuid, String textureBase64) {
+		var stack = new ItemStack(Items.PLAYER_HEAD);
+		var so = stack.getOrCreateTagElement("SkullOwner");
+		so.putUUID("Id", uuid);
+
+		if (textureBase64 != null && !textureBase64.isBlank()) {
+			var properties = new CompoundTag();
+			var list = new ListTag();
+			var texture = new CompoundTag();
+			texture.putString("Value", textureBase64);
+			list.add(texture);
+			properties.put("textures", list);
+			so.put("Properties", properties);
+		}
+
+		return stack;
+	}
+
+	static ItemStack playerHeadFromUrl(String url) {
+		var root = new JsonObject();
+		var textures = new JsonObject();
+		var skin = new JsonObject();
+		skin.addProperty("url", url);
+		textures.add("SKIN", skin);
+		root.add("textures", textures);
+		var bytes = JsonUtils.toString(root).getBytes(StandardCharsets.UTF_8);
+		return playerHead(UUID.nameUUIDFromBytes(bytes), Base64.getEncoder().encodeToString(bytes));
+	}
+
+	static ItemStack playerHeadFromSkinHash(String hash) {
+		return playerHeadFromUrl("https://textures.minecraft.net/texture/" + hash);
 	}
 }
