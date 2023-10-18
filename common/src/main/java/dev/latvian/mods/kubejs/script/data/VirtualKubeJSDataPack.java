@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class VirtualKubeJSDataPack extends AbstractPackResources {
+public class VirtualKubeJSDataPack extends AbstractPackResources implements ExportablePackResources {
 	public final boolean high;
 	private final Map<ResourceLocation, String> locationToData;
 	private final Map<String, String> pathToData;
@@ -118,6 +118,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources {
 		return "KubeJS Virtual Data Pack [" + (high ? "high" : "low") + " priority]";
 	}
 
+	@Override
 	public void export(FileSystem fs) throws IOException {
 		for (var file : pathToData.entrySet()) {
 			var path = fs.getPath(file.getKey());

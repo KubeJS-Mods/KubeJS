@@ -6,8 +6,8 @@ import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
-import dev.latvian.mods.kubejs.script.data.KubeJSFolderPackResources;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.client.Minecraft;
@@ -40,7 +40,6 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 
 			var injected = new ArrayList<PackResources>(2);
 			injected.add(new GeneratedClientResourcePack(client));
-			injected.add(KubeJSFolderPackResources.PACK);
 
 			for (var file : Objects.requireNonNull(KubeJSPaths.ASSETS.toFile().listFiles())) {
 				if (file.isFile() && file.getName().endsWith(".zip")) {
@@ -62,7 +61,7 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 	}
 
 	@Override
-	public void generate(Map<ResourceLocation, byte[]> map) {
+	public void generate(Map<ResourceLocation, GeneratedData> map) {
 		var generator = new AssetJsonGenerator(map);
 		KubeJSPlugins.forEachPlugin(p -> p.generateAssetJsons(generator));
 

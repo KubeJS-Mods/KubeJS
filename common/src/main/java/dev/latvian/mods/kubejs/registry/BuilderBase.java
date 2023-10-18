@@ -120,6 +120,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		lang.add(id.getNamespace(), tkey, dname);
 	}
 
+	@Deprecated
 	public void addResourcePackLocations(String path, List<ResourceLocation> list, PackType packType) {
 	}
 

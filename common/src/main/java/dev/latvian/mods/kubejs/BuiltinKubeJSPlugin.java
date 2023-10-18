@@ -559,7 +559,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void generateLang(LangEventJS lang) {
-		lang.add("itemGroup.kubejs.kubejs", "KubeJS");
+		lang.add(KubeJS.MOD_ID, "itemGroup.kubejs.kubejs", KubeJS.MOD_NAME);
 
 		for (var builder : RegistryInfo.ALL_BUILDERS) {
 			builder.generateLang(lang);

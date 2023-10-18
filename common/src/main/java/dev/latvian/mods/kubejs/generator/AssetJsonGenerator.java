@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.generator;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
+import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
@@ -11,7 +12,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class AssetJsonGenerator extends JsonGenerator {
-	public AssetJsonGenerator(Map<ResourceLocation, byte[]> m) {
+	public AssetJsonGenerator(Map<ResourceLocation, GeneratedData> m) {
 		super(ConsoleJS.CLIENT, m);
 	}
 

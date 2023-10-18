@@ -10,7 +10,6 @@ import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.DataPackEventJS;
-import dev.latvian.mods.kubejs.script.data.KubeJSFolderPackResources;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.server.tag.PreTagEventJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -68,7 +67,6 @@ public class ServerScriptManager {
 
 		list.addFirst(virtualDataPackLow);
 		list.addLast(new GeneratedServerResourcePack());
-		list.addLast(KubeJSFolderPackResources.PACK);
 
 		for (var file : Objects.requireNonNull(KubeJSPaths.DATA.toFile().listFiles())) {
 			if (file.isFile() && file.getName().endsWith(".zip")) {
