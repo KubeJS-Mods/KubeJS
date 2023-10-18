@@ -14,8 +14,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -119,9 +119,9 @@ public class VirtualKubeJSDataPack extends AbstractPackResources implements Expo
 	}
 
 	@Override
-	public void export(FileSystem fs) throws IOException {
+	public void export(Path root) throws IOException {
 		for (var file : pathToData.entrySet()) {
-			var path = fs.getPath(file.getKey());
+			var path = root.resolve(file.getKey());
 			Files.createDirectories(path.getParent());
 			Files.writeString(path, file.getValue(), StandardCharsets.UTF_8);
 		}

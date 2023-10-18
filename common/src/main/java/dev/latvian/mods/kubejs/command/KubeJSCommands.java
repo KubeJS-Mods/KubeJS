@@ -58,12 +58,15 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -136,21 +139,13 @@ public class KubeJSCommands {
 			.then(Commands.literal("export")
 				.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
 				.executes(context -> export(context.getSource()))
-				.then(Commands.literal("packs")
-					.executes(context -> exportPacks(context.getSource()))
+				.then(Commands.literal("pack_zips")
+					.executes(context -> exportPacks(context.getSource(), true))
+				)
+				.then(Commands.literal("pack_folders")
+					.executes(context -> exportPacks(context.getSource(), false))
 				)
 			)
-			/*
-			.then(Commands.literal("output_recipes")
-					.executes(context -> outputRecipes(context.getSource().getPlayerOrException()))
-			)
-			.then(Commands.literal("input_recipes")
-					.executes(context -> inputRecipes(context.getSource().getPlayerOrException()))
-			)
-			.then(Commands.literal("check_recipe_conflicts")
-					.executes(context -> checkRecipeConflicts(context.getSource().getPlayerOrException()))
-			)
-			 */
 			.then(Commands.literal("list_tag")
 				.then(Commands.argument("registry", ResourceLocationArgument.id())
 					.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
@@ -645,7 +640,7 @@ public class KubeJSCommands {
 		return 1;
 	}
 
-	private static int exportPacks(CommandSourceStack source) {
+	private static int exportPacks(CommandSourceStack source, boolean exportZip) {
 		var packs = new ArrayList<ExportablePackResources>();
 
 		for (var pack : source.getServer().getResourceManager().listPacks().toList()) {
@@ -658,15 +653,29 @@ public class KubeJSCommands {
 		int success = 0;
 
 		for (var pack : packs) {
-			var path = KubeJSPaths.EXPORTED_PACKS.resolve(pack.getName() + ".zip");
 			try {
-				Files.deleteIfExists(path);
+				if (exportZip) {
+					var path = KubeJSPaths.EXPORTED_PACKS.resolve(pack.getName() + ".zip");
+					Files.deleteIfExists(path);
 
-				try (var fs = FileSystems.newFileSystem(path, Map.of("create", true))) {
-					pack.export(fs);
+					try (var fs = FileSystems.newFileSystem(path, Map.of("create", true))) {
+						pack.export(fs.getPath("."));
+					}
+				} else {
+					var path = KubeJSPaths.EXPORTED_PACKS.resolve(pack.getName());
+
+					if (Files.exists(path)) {
+						Files.walk(path)
+							.sorted(Comparator.reverseOrder())
+							.map(Path::toFile)
+							.forEach(File::delete);
+					}
+
+					Files.createDirectories(path);
+					pack.export(path);
 				}
 
-				source.sendSuccess(Component.literal("Successfully exported ").withStyle(ChatFormatting.GREEN).append(Component.literal(pack.getName()).withStyle(ChatFormatting.BLUE)), true);
+				source.sendSuccess(Component.literal("Successfully exported ").withStyle(ChatFormatting.GREEN).append(Component.literal(pack.getName()).withStyle(ChatFormatting.BLUE)), false);
 				success++;
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -676,22 +685,13 @@ public class KubeJSCommands {
 			}
 		}
 
+		if (source.getServer().isSingleplayer() && !source.getServer().isPublished()) {
+			source.sendSuccess(Component.literal("Exported " + success + " packs").kjs$clickOpenFile(KubeJSPaths.EXPORTED_PACKS.toAbsolutePath().toString()), false);
+		} else {
+			source.sendSuccess(Component.literal("Exported " + success + " packs"), false);
+		}
+
 		return success;
-	}
-
-	private static int outputRecipes(ServerPlayer player) {
-		player.sendSystemMessage(Component.literal("WIP!"));
-		return Command.SINGLE_SUCCESS;
-	}
-
-	private static int inputRecipes(ServerPlayer player) {
-		player.sendSystemMessage(Component.literal("WIP!"));
-		return Command.SINGLE_SUCCESS;
-	}
-
-	private static int checkRecipeConflicts(ServerPlayer player) {
-		player.sendSystemMessage(Component.literal("WIP!"));
-		return Command.SINGLE_SUCCESS;
 	}
 
 	private static <T> int listTagsFor(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {

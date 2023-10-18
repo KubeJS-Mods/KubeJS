@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -187,14 +187,14 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 	}
 
 	@Override
-	public void export(FileSystem fs) throws IOException {
+	public void export(Path root) throws IOException {
 		for (var file : getGenerated().entrySet()) {
-			var path = fs.getPath(packType.getDirectory() + "/" + file.getKey().getNamespace() + "/" + file.getKey().getPath());
+			var path = root.resolve(packType.getDirectory() + "/" + file.getKey().getNamespace() + "/" + file.getKey().getPath());
 			Files.createDirectories(path.getParent());
 			Files.write(path, file.getValue().data().get());
 		}
 
-		Files.write(fs.getPath(PACK_META), GeneratedData.PACK_META.data().get());
-		Files.write(fs.getPath("pack.png"), GeneratedData.PACK_ICON.data().get());
+		Files.write(root.resolve(PACK_META), GeneratedData.PACK_META.data().get());
+		Files.write(root.resolve("pack.png"), GeneratedData.PACK_ICON.data().get());
 	}
 }

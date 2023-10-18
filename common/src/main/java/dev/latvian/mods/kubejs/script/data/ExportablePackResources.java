@@ -4,7 +4,8 @@ import net.minecraft.server.packs.PackResources;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
+import java.nio.file.Path;
 
 public interface ExportablePackResources extends PackResources {
-	void export(FileSystem fs) throws IOException;
+	void export(Path root) throws IOException;
 }
