@@ -10,6 +10,7 @@ import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -121,5 +122,8 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Mes
 
 	default EntityArrayList kjs$getEntitiesWithin(AABB aabb) {
 		return new EntityArrayList(kjs$self(), kjs$self().getEntities(null, aabb));
+	}
+
+	default void kjs$spawnParticles(ParticleOptions options, boolean overrideLimiter, double x, double y, double z, double vx, double vy, double vz, int count, double speed) {
 	}
 }
