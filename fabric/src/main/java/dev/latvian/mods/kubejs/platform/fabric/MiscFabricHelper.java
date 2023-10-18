@@ -1,11 +1,14 @@
 package dev.latvian.mods.kubejs.platform.fabric;
 
+import dev.latvian.mods.kubejs.gui.KubeJSMenu;
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.inventory.MenuType;
 
 @SuppressWarnings("UnstableApiUsage")
 public class MiscFabricHelper implements MiscPlatformHelper {
@@ -52,5 +55,10 @@ public class MiscFabricHelper implements MiscPlatformHelper {
 	@Override
 	public long bottleFluidAmount() {
 		return FluidConstants.BOTTLE;
+	}
+
+	@Override
+	public MenuType<KubeJSMenu> createMenuType() {
+		return new ExtendedScreenHandlerType<>(KubeJSMenu::new);
 	}
 }

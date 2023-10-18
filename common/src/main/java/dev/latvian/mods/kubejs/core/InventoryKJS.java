@@ -36,6 +36,21 @@ public interface InventoryKJS {
 		throw new NoMixinException();
 	}
 
+	default ItemStack kjs$insertItem(ItemStack stack, boolean simulate) {
+		if (stack.isEmpty()) {
+			return stack;
+		}
+
+		for (int i = 0; i < kjs$getSlots(); i++) {
+			stack = kjs$insertItem(i, stack, simulate);
+			if (stack.isEmpty()) {
+				return ItemStack.EMPTY;
+			}
+		}
+
+		return stack;
+	}
+
 	default int kjs$getSlotLimit(int slot) {
 		throw new NoMixinException();
 	}

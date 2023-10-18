@@ -1,11 +1,15 @@
 package dev.latvian.mods.kubejs.platform.fabric;
 
+import dev.latvian.mods.kubejs.block.entity.BlockEntityInfo;
+import dev.latvian.mods.kubejs.block.entity.BlockEntityJS;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.platform.LevelPlatformHelper;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public class LevelFabricHelper implements LevelPlatformHelper {
@@ -23,5 +27,10 @@ public class LevelFabricHelper implements LevelPlatformHelper {
 	@Override
 	public double getReachDistance(LivingEntity livingEntity) {
 		return 5;
+	}
+
+	@Override
+	public BlockEntityJS createBlockEntity(BlockPos pos, BlockState state, BlockEntityInfo info) {
+		return new BlockEntityJS(pos, state, info);
 	}
 }

@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.architectury.hooks.PackRepositoryHooks;
 import dev.architectury.platform.Platform;
+import dev.architectury.registry.menu.MenuRegistry;
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSPaths;
@@ -11,6 +13,8 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
+import dev.latvian.mods.kubejs.gui.KubeJSMenu;
+import dev.latvian.mods.kubejs.gui.KubeJSScreen;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.net.NetworkEventJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -108,6 +112,10 @@ public class KubeJSClient extends KubeJSCommon {
 
 			return null;
 		});
+
+		if (!CommonProperties.get().serverOnly) {
+			MenuRegistry.registerScreenFactory(KubeJSMenu.KUBEJS_MENU.get(), KubeJSScreen::new);
+		}
 	}
 
 	@Override

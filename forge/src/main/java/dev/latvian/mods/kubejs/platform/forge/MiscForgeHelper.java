@@ -1,11 +1,14 @@
 package dev.latvian.mods.kubejs.platform.forge;
 
+import dev.latvian.mods.kubejs.gui.KubeJSMenu;
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
+import net.minecraftforge.network.IContainerFactory;
 
 public class MiscForgeHelper implements MiscPlatformHelper {
 	@Override
@@ -41,5 +44,10 @@ public class MiscForgeHelper implements MiscPlatformHelper {
 	@Override
 	public long bottleFluidAmount() {
 		return 250;
+	}
+
+	@Override
+	public MenuType<KubeJSMenu> createMenuType() {
+		return new MenuType<>((IContainerFactory<KubeJSMenu>) KubeJSMenu::new);
 	}
 }

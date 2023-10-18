@@ -45,6 +45,8 @@ import dev.latvian.mods.kubejs.block.custom.StonePressurePlateBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WoodenButtonBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WoodenPressurePlateBlockBuilder;
+import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
+import dev.latvian.mods.kubejs.block.entity.InventoryAttachment;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.client.LangEventJS;
 import dev.latvian.mods.kubejs.client.painter.Painter;
@@ -533,6 +535,11 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		;
 
 		event.mapRecipe("dankStorageUpgrade", "dankstorage:upgrade");
+	}
+
+	@Override
+	public void registerBlockEntityAttachments(List<BlockEntityAttachmentType> types) {
+		types.add(InventoryAttachment.TYPE);
 	}
 
 	@Override

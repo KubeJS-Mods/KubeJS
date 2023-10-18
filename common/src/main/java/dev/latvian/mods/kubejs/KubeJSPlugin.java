@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs;
 
+import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
 import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.client.LangEventJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
@@ -23,6 +24,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
 import java.util.Map;
 
 public class KubeJSPlugin {
@@ -66,6 +68,9 @@ public class KubeJSPlugin {
 	}
 
 	public void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
+	}
+
+	public void registerBlockEntityAttachments(List<BlockEntityAttachmentType> types) {
 	}
 
 	public void attachServerData(AttachedData<MinecraftServer> event) {
