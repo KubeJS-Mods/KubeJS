@@ -39,6 +39,7 @@ import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -416,6 +417,8 @@ public class UtilsJS {
 			return null;
 		} else if (o instanceof ResourceLocation id) {
 			return id;
+		} else if (o instanceof ResourceKey<?> key) {
+			return key.location();
 		}
 
 		var s = o.toString();

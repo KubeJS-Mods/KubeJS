@@ -51,7 +51,7 @@ public class CommonProperties {
 			hideServerScriptErrors = get("hideServerScriptErrors", false);
 			serverOnly = get("serverOnly", false);
 			announceReload = get("announceReload", true);
-			packMode = get("packmode", "default");
+			packMode = get("packmode", "");
 			saveDevPropertiesInConfig = get("saveDevPropertiesInConfig", false);
 			allowAsyncStreams = get("allowAsyncStreams", true);
 			matchJsonRecipes = get("matchJsonRecipes", true);

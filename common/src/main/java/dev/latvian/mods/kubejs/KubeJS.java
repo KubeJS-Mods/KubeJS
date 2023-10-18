@@ -32,6 +32,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -58,6 +59,7 @@ import java.util.Locale;
 public class KubeJS {
 	public static final String MOD_ID = "kubejs";
 	public static final String MOD_NAME = "KubeJS";
+	public static final Component NAME_COMPONENT = Component.literal(MOD_NAME);
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 	public static final int MC_VERSION_NUMBER = 1902;
 	public static final String MC_VERSION_STRING = "1.19.2";
