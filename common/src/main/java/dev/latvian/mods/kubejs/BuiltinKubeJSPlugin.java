@@ -28,8 +28,10 @@ import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.bindings.event.WorldgenEvents;
 import dev.latvian.mods.kubejs.block.DetectorBlock;
+import dev.latvian.mods.kubejs.block.MapColorHelper;
 import dev.latvian.mods.kubejs.block.MaterialJS;
 import dev.latvian.mods.kubejs.block.MaterialListJS;
+import dev.latvian.mods.kubejs.block.SoundTypeWrapper;
 import dev.latvian.mods.kubejs.block.custom.BasicBlockJS;
 import dev.latvian.mods.kubejs.block.custom.CropBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FallingBlockBuilder;
@@ -147,8 +149,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
@@ -389,6 +393,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("RotationAxis", RotationAxis.class);
 		event.add("BlockPos", BlockPos.class);
 		event.add("DamageSource", DamageSource.class);
+		event.add("SoundType", SoundType.class);
 
 		event.add("BlockProperties", BlockStateProperties.class);
 
@@ -459,6 +464,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(ReplacementMatch.class, ReplacementMatch::of);
 		typeWrappers.registerSimple(Stat.class, PlayerStatsJS::statOf);
 		typeWrappers.register(NotificationBuilder.class, NotificationBuilder::of);
+		typeWrappers.registerSimple(MaterialColor.class, MapColorHelper::of);
+		typeWrappers.register(SoundType.class, SoundTypeWrapper.INSTANCE);
 
 		// components //
 		typeWrappers.registerSimple(Component.class, TextWrapper::of);

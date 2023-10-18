@@ -20,6 +20,7 @@ import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -30,10 +31,12 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -47,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
@@ -58,6 +62,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	private static final BlockBehaviour.StateArgumentPredicate<?> ALWAYS_FALSE_STATE_ARG_PREDICATE = (blockState, blockGetter, blockPos, type) -> false;
 
 	public transient MaterialJS material;
+	public transient SoundType soundType;
+	public transient Function<BlockState, MaterialColor> mapColorFn;
 	public transient float hardness;
 	public transient float resistance;
 	public transient float lightLevel;
@@ -98,7 +104,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
-		material = MaterialListJS.INSTANCE.map.get("wood");
+		material = null;
+		soundType = SoundType.WOOD;
+		mapColorFn = MapColorHelper.NONE;
 		hardness = 1.5F;
 		resistance = 3F;
 		lightLevel = 0F;
@@ -336,6 +344,70 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	@Info("Sets the block's material. Defaults to wood.")
 	public BlockBuilder material(MaterialJS m) {
 		material = m;
+		return this;
+	}
+
+	public BlockBuilder buildMaterial(MaterialColor color, SoundType soundType, Consumer<Material.Builder> builder) {
+		var b = new Material.Builder(color);
+		builder.accept(b);
+		material = new MaterialJS("custom", b.build(), soundType);
+		return this;
+	}
+
+	@Info("Sets the block's sound type. Defaults to wood.")
+	public BlockBuilder soundType(SoundType m) {
+		if (m == null || m == SoundTypeWrapper.EMPTY) {
+			soundType = SoundTypeWrapper.EMPTY;
+			ConsoleJS.STARTUP.error("Invalid sound type!");
+			ConsoleJS.STARTUP.warn("Valid sound types: " + SoundTypeWrapper.INSTANCE.getMap().keySet());
+			return this;
+		}
+
+		soundType = m;
+		return this;
+	}
+
+	public BlockBuilder noSoundType() {
+		return soundType(SoundTypeWrapper.EMPTY);
+	}
+
+	public BlockBuilder woodSoundType() {
+		return soundType(SoundType.WOOD);
+	}
+
+	public BlockBuilder stoneSoundType() {
+		return soundType(SoundType.STONE);
+	}
+
+	public BlockBuilder gravelSoundType() {
+		return soundType(SoundType.GRAVEL);
+	}
+
+	public BlockBuilder grassSoundType() {
+		return soundType(SoundType.GRASS);
+	}
+
+	public BlockBuilder sandSoundType() {
+		return soundType(SoundType.SAND);
+	}
+
+	public BlockBuilder cropSoundType() {
+		return soundType(SoundType.CROP);
+	}
+
+	public BlockBuilder glassSoundType() {
+		return soundType(SoundType.GLASS);
+	}
+
+	@Info("Sets the block's map color. Defaults to NONE.")
+	public BlockBuilder mapColor(MaterialColor m) {
+		mapColorFn = MapColorHelper.reverse(m);
+		return this;
+	}
+
+	@Info("Sets the block's map color dynamically per block state. If unset, defaults to NONE.")
+	public BlockBuilder dynamicMapColor(@Nullable Function<BlockState, Object> m) {
+		mapColorFn = m == null ? MapColorHelper.NONE : s -> MapColorHelper.of(m.apply(s));
 		return this;
 	}
 
@@ -646,10 +718,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return this;
 	}
 
-	private MaterialColor getStateColor(BlockState state) {
-		return material.getMinecraftMaterial().getColor();
-	}
-
 	@Info("Set the default state of the block.")
 	public BlockBuilder defaultState(Consumer<BlockStateModifyCallbackJS> callbackJS) {
 		defaultStateModification = callbackJS;
@@ -732,8 +800,12 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	public Block.Properties createProperties() {
-		var properties = new KubeJSBlockProperties(this, material.getMinecraftMaterial(), this::getStateColor);
-		properties.sound(material.getSound());
+		if (material == null) {
+			material = MaterialListJS.INSTANCE.map.get("wood");
+		}
+
+		var properties = new KubeJSBlockProperties(this, material.getMinecraftMaterial(), mapColorFn == MapColorHelper.NONE ? this::getStateColor : mapColorFn);
+		properties.sound(soundType == SoundTypeWrapper.EMPTY ? material.getSound() : soundType);
 
 		if (resistance >= 0F) {
 			properties.strength(hardness, resistance);
@@ -792,5 +864,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 
 		return properties;
+	}
+
+	private MaterialColor getStateColor(BlockState state) {
+		return material.getMinecraftMaterial().getColor();
 	}
 }
