@@ -6,9 +6,11 @@ import dev.architectury.utils.Env;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PlatformWrapper {
 	public static class ModInfo {
@@ -127,5 +129,9 @@ public class PlatformWrapper {
 
 	public static boolean isGeneratingData() {
 		return MiscPlatformHelper.get().isDataGen();
+	}
+
+	public static void breakpoint(Object... args) {
+		KubeJS.LOGGER.info(Arrays.stream(args).map(String::valueOf).collect(Collectors.joining(", ")));
 	}
 }
