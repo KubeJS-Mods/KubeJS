@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.forge;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import dev.latvian.mods.kubejs.client.BlockTintFunctionWrapper;
+import dev.latvian.mods.kubejs.client.ItemTintFunctionWrapper;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
@@ -48,16 +50,16 @@ public class KubeJSForgeClient {
 
 	private void blockColors(RegisterColorHandlersEvent.Block event) {
 		for (var builder : RegistryInfo.BLOCK) {
-			if (builder instanceof BlockBuilder b && !b.color.isEmpty()) {
-				event.register((state, level, pos, index) -> b.color.get(index), b.get());
+			if (builder instanceof BlockBuilder b && b.tint != null) {
+				event.register(new BlockTintFunctionWrapper(b.tint), b.get());
 			}
 		}
 	}
 
 	private void itemColors(RegisterColorHandlersEvent.Item event) {
 		for (var builder : RegistryInfo.ITEM) {
-			if (builder instanceof ItemBuilder b && b.colorCallback != null) {
-				event.register((stack, tintIndex) -> b.colorCallback.getColor(stack, tintIndex).getArgbJS(), b.get());
+			if (builder instanceof ItemBuilder b && b.tint != null) {
+				event.register(new ItemTintFunctionWrapper(b.tint), b.get());
 			}
 
 			if (builder instanceof FluidBucketItemBuilder b && b.fluidBuilder.bucketColor != 0xFFFFFFFF) {

@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.fabric;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import dev.latvian.mods.kubejs.client.BlockTintFunctionWrapper;
+import dev.latvian.mods.kubejs.client.ItemTintFunctionWrapper;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
@@ -19,8 +21,8 @@ public class KubeJSFabricClient {
 					case "translucent" -> BlockRenderLayerMap.INSTANCE.putBlocks(RenderType.translucent(), b.get());
 				}
 
-				if (!b.color.isEmpty()) {
-					ColorProviderRegistry.BLOCK.register((state, level, pos, index) -> b.color.get(index), b.get());
+				if (b.tint != null) {
+					ColorProviderRegistry.BLOCK.register(new BlockTintFunctionWrapper(b.tint), b.get());
 				}
 			}
 		}
@@ -39,8 +41,8 @@ public class KubeJSFabricClient {
 		// ClientSpriteRegistryCallback.EVENT.register((atlasTexture, registry) -> ClientEvents.ATLAS_SPRITE_REGISTRY.post(new AtlasSpriteRegistryEventJS(registry::register), atlasTexture.location()));
 
 		for (var builder : RegistryInfo.ITEM) {
-			if (builder instanceof ItemBuilder b && b.colorCallback != null) {
-				ColorProviderRegistry.ITEM.register((stack, tintIndex) -> b.colorCallback.getColor(stack, tintIndex).getArgbJS(), b.get());
+			if (builder instanceof ItemBuilder b && b.tint != null) {
+				ColorProviderRegistry.ITEM.register(new ItemTintFunctionWrapper(b.tint), b.get());
 			}
 
 			if (builder instanceof FluidBucketItemBuilder b && b.fluidBuilder.bucketColor != 0xFFFFFFFF) {
