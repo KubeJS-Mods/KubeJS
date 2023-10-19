@@ -65,7 +65,7 @@ public class ScriptFileInfo {
 
 		priority = Integer.parseInt(getProperty("priority", "0"));
 		ignored = getProperty("ignored", "false").equals("true") || getProperty("ignore", "false").equals("true");
-		packMode = getProperty("packmode", "default");
+		packMode = getProperty("packmode", "");
 		requiredMods.addAll(getProperties("requires"));
 	}
 
