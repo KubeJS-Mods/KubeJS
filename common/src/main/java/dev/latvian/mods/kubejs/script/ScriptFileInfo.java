@@ -96,23 +96,23 @@ public class ScriptFileInfo {
 		return priority;
 	}
 
-	public boolean skipLoading() {
+	public String skipLoading() {
 		if (ignored) {
-			return true;
+			return "Ignored";
 		}
 
 		if (!packMode.isEmpty() && !packMode.equals(CommonProperties.get().packMode)) {
-			return true;
+			return "Pack mode mismatch";
 		}
 
 		if (!requiredMods.isEmpty()) {
 			for (String mod : requiredMods) {
 				if (!Platform.isModLoaded(mod)) {
-					return true;
+					return "Mod " + mod + " is not loaded";
 				}
 			}
 		}
 
-		return false;
+		return "";
 	}
 }
