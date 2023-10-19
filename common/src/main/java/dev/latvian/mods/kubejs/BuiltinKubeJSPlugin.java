@@ -21,6 +21,7 @@ import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.bindings.event.WorldgenEvents;
+import dev.latvian.mods.kubejs.block.BlockTintFunction;
 import dev.latvian.mods.kubejs.block.DetectorBlock;
 import dev.latvian.mods.kubejs.block.MapColorHelper;
 import dev.latvian.mods.kubejs.block.SoundTypeWrapper;
@@ -52,6 +53,7 @@ import dev.latvian.mods.kubejs.integration.rei.REIEvents;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ItemTintFunction;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabBuilder;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
@@ -466,6 +468,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(MapColor.class, MapColorHelper::of);
 		typeWrappers.register(SoundType.class, SoundTypeWrapper.INSTANCE);
 		typeWrappers.registerSimple(ParticleOptions.class, UtilsWrapper::particleOptions);
+		typeWrappers.register(ItemTintFunction.class, ItemTintFunction::of);
+		typeWrappers.register(BlockTintFunction.class, BlockTintFunction::of);
 
 		// components //
 		typeWrappers.registerSimple(Component.class, TextWrapper::of);
