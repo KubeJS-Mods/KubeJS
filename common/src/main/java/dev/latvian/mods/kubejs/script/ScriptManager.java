@@ -80,6 +80,21 @@ public class ScriptManager implements ClassShutter {
 		load();
 	}
 
+	private void loadFile(ScriptPack pack, ScriptFileInfo fileInfo, ScriptSource source) {
+		try {
+			fileInfo.preload(source);
+			var skip = fileInfo.skipLoading();
+
+			if (skip.isEmpty()) {
+				pack.scripts.add(new ScriptFile(pack, fileInfo, source));
+			} else {
+				scriptType.console.info("Skipped " + fileInfo.location + ": " + skip);
+			}
+		} catch (Throwable error) {
+			scriptType.console.error("Failed to pre-load script file " + fileInfo.location + ": " + error);
+		}
+	}
+
 	private void loadFromResources(ResourceManager resourceManager) {
 		Map<String, List<ResourceLocation>> packMap = new HashMap<>();
 
@@ -96,17 +111,7 @@ public class ScriptManager implements ClassShutter {
 
 			for (var fileInfo : pack.info.scripts) {
 				var scriptSource = (ScriptSource.FromResource) info -> resourceManager.getResourceOrThrow(info.id);
-				var error = fileInfo.preload(scriptSource);
-
-				if (fileInfo.skipLoading()) {
-					continue;
-				}
-
-				if (error == null) {
-					pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));
-				} else {
-					scriptType.console.error("Failed to pre-load script file " + fileInfo.location + ": " + error);
-				}
+				loadFile(pack, fileInfo, scriptSource);
 			}
 
 			pack.scripts.sort(null);
@@ -139,18 +144,7 @@ public class ScriptManager implements ClassShutter {
 
 		for (var fileInfo : pack.info.scripts) {
 			var scriptSource = (ScriptSource.FromPath) info -> directory.resolve(info.file);
-
-			var error = fileInfo.preload(scriptSource);
-
-			if (fileInfo.skipLoading()) {
-				continue;
-			}
-
-			if (error == null) {
-				pack.scripts.add(new ScriptFile(pack, fileInfo, scriptSource));
-			} else {
-				KubeJS.LOGGER.error("Failed to pre-load script file " + fileInfo.location + ": " + error);
-			}
+			loadFile(pack, fileInfo, scriptSource);
 		}
 
 		pack.scripts.sort(null);

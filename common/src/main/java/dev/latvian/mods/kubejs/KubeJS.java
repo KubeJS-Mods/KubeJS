@@ -165,7 +165,7 @@ public class KubeJS {
 			for (var file : Files.walk(dir, 10, FileVisitOption.FOLLOW_LINKS).filter(Files::isRegularFile).toList()) {
 				var fileName = dir.relativize(file).toString().replace(File.separatorChar, '/');
 
-				if (fileName.endsWith(".js")) {
+				if (fileName.endsWith(".js") || fileName.endsWith(".ts") && !fileName.endsWith(".d.ts")) {
 					pack.info.scripts.add(new ScriptFileInfo(pack.info, pathPrefix + fileName));
 				}
 			}

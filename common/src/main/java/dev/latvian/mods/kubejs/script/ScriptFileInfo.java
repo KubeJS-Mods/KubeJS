@@ -4,7 +4,6 @@ import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,18 +41,11 @@ public class ScriptFileInfo {
 		lines = UtilsJS.EMPTY_STRING_ARRAY;
 	}
 
-	@Nullable
-	public Throwable preload(ScriptSource source) {
+	public void preload(ScriptSource source) throws Throwable {
 		properties.clear();
 		priority = 0;
 		ignored = false;
-		lines = UtilsJS.EMPTY_STRING_ARRAY;
-
-		try {
-			lines = source.readSource(this).toArray(UtilsJS.EMPTY_STRING_ARRAY);
-		} catch (Throwable ex) {
-			return ex;
-		}
+		lines = source.readSource(this).toArray(UtilsJS.EMPTY_STRING_ARRAY);
 
 		for (int i = 0; i < lines.length; i++) {
 			var tline = lines[i].trim();
@@ -71,16 +63,10 @@ public class ScriptFileInfo {
 			}
 		}
 
-		try {
-			priority = Integer.parseInt(getProperty("priority", "0"));
-			ignored = getProperty("ignored", "false").equals("true") || getProperty("ignore", "false").equals("true");
-			packMode = getProperty("packmode", "default");
-			requiredMods.addAll(getProperties("requires"));
-		} catch (Exception ex) {
-			return ex;
-		}
-
-		return null;
+		priority = Integer.parseInt(getProperty("priority", "0"));
+		ignored = getProperty("ignored", "false").equals("true") || getProperty("ignore", "false").equals("true");
+		packMode = getProperty("packmode", "default");
+		requiredMods.addAll(getProperties("requires"));
 	}
 
 	public List<String> getProperties(String s) {
@@ -96,23 +82,23 @@ public class ScriptFileInfo {
 		return priority;
 	}
 
-	public boolean skipLoading() {
+	public String skipLoading() {
 		if (ignored) {
-			return true;
+			return "Ignored";
 		}
 
 		if (!packMode.isEmpty() && !packMode.equals(CommonProperties.get().packMode)) {
-			return true;
+			return "Pack mode mismatch";
 		}
 
 		if (!requiredMods.isEmpty()) {
 			for (String mod : requiredMods) {
 				if (!Platform.isModLoaded(mod)) {
-					return true;
+					return "Mod " + mod + " is not loaded";
 				}
 			}
 		}
 
-		return false;
+		return "";
 	}
 }
