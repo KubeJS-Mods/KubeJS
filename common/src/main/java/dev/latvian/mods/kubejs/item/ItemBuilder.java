@@ -11,11 +11,7 @@ import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
-import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -104,7 +100,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	@Nullable
 	public transient CreativeModeTab group;
 	@Nullable
-	public transient ItemColorJS colorCallback;
+	public transient ItemTintFunction tint;
 	public transient FoodBuilder foodBuilder;
 	public transient Function<ItemStack, Color> barColor;
 	public transient ToIntFunction<ItemStack> barWidth;
@@ -178,6 +174,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 			if (textureJson.size() == 0) {
 				texture(newID("item/", "").toString());
 			}
+
 			m.textures(textureJson);
 		});
 	}
@@ -257,21 +254,18 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	@Info("Colorizes item's texture of the given index. Index is used when you have multiple layers, e.g. a crushed ore (of rock + ore).")
-	public ItemBuilder color(int index, Color c) {
-		if (!(colorCallback instanceof IndexedItemColor indexed)) {
-			if (colorCallback != null) {
-				ConsoleJS.STARTUP.warnf("Overwriting existing dynamic item color for {} with an indexed color", id);
-			}
-			color(Util.make(new IndexedItemColor(), col -> col.add(index, c)));
-		} else {
-			indexed.add(index, c);
+	public ItemBuilder color(int index, ItemTintFunction color) {
+		if (!(tint instanceof ItemTintFunction.Mapped)) {
+			tint = new ItemTintFunction.Mapped();
 		}
+
+		((ItemTintFunction.Mapped) tint).map.put(index, color);
 		return this;
 	}
 
 	@Info("Colorizes item's texture of the given index. Useful for coloring items, like GT ores ore dusts")
-	public ItemBuilder color(ItemColorJS callback) {
-		colorCallback = callback;
+	public ItemBuilder color(ItemTintFunction callback) {
+		tint = callback;
 		return this;
 	}
 
@@ -449,28 +443,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public ItemBuilder releaseUsing(ReleaseUsingCallback releaseUsing) {
 		this.releaseUsing = releaseUsing;
 		return this;
-	}
-
-	public static class IndexedItemColor implements ItemColorJS {
-		Int2IntOpenHashMap colors = new Int2IntOpenHashMap();
-
-		public IndexedItemColor() {
-			colors.defaultReturnValue(0xFFFFFFFF);
-		}
-
-		@Override
-		public Color getColor(ItemStack stack, int tintIndex) {
-			return ColorWrapper.of(colors.get(tintIndex));
-		}
-
-		public void add(int tintIndex, Color color) {
-			colors.put(tintIndex, color.getRgbJS());
-		}
-	}
-
-	@FunctionalInterface
-	public interface ItemColorJS {
-		Color getColor(ItemStack stack, int tintIndex);
 	}
 
 	@FunctionalInterface

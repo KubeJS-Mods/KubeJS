@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.block;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
@@ -24,9 +23,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -45,10 +42,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -72,7 +67,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient boolean fullBlock;
 	public transient boolean requiresTool;
 	public transient String renderType;
-	public transient Int2IntOpenHashMap color;
+	@Nullable
+	public transient BlockTintFunction tint;
 	public transient final JsonObject textures;
 	public transient String model;
 	public transient BlockItemBuilder itemBuilder;
@@ -116,8 +112,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		fullBlock = false;
 		requiresTool = false;
 		renderType = "solid";
-		color = new Int2IntOpenHashMap();
-		color.defaultReturnValue(0xFFFFFFFF);
 		textures = new JsonObject();
 		textureAll(id.getNamespace() + ":block/" + id.getPath());
 		model = "";
@@ -244,7 +238,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 				mg.textures(textures);
 			}
 
-			if (!color.isEmpty() || !customShape.isEmpty()) {
+			if (tint != null || !customShape.isEmpty()) {
 				List<AABB> boxes = new ArrayList<>(customShape);
 
 				if (boxes.isEmpty()) {
@@ -260,7 +254,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 								face.tex("#" + direction.getSerializedName());
 								face.cull();
 
-								if (!color.isEmpty()) {
+								if (tint != null) {
 									face.tintindex(0);
 								}
 							});
@@ -273,61 +267,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
 		bs.simpleVariant("", model.isEmpty() ? (id.getNamespace() + ":block/" + id.getPath()) : model);
-	}
-
-	public Map<ResourceLocation, JsonObject> generateBlockModels(BlockBuilder builder) {
-		Map<ResourceLocation, JsonObject> map = new HashMap<>();
-
-		if (builder.modelJson != null) {
-			map.put(builder.newID("models/block/", ""), builder.modelJson);
-		} else {
-			var modelJson = new JsonObject();
-
-			var particle = builder.textures.get("particle").getAsString();
-
-			if (areAllTexturesEqual(builder.textures, particle)) {
-				modelJson.addProperty("parent", "block/cube_all");
-				var textures = new JsonObject();
-				textures.addProperty("all", particle);
-				modelJson.add("textures", textures);
-			} else {
-				modelJson.addProperty("parent", "block/cube");
-				modelJson.add("textures", builder.textures);
-			}
-
-			if (!builder.color.isEmpty()) {
-				var cube = new JsonObject();
-				var from = new JsonArray();
-				from.add(0);
-				from.add(0);
-				from.add(0);
-				cube.add("from", from);
-				var to = new JsonArray();
-				to.add(16);
-				to.add(16);
-				to.add(16);
-				cube.add("to", to);
-				var faces = new JsonObject();
-
-				for (var direction : Direction.values()) {
-					var f = new JsonObject();
-					f.addProperty("texture", "#" + direction.getSerializedName());
-					f.addProperty("cullface", direction.getSerializedName());
-					f.addProperty("tintindex", 0);
-					faces.add(direction.getSerializedName(), f);
-				}
-
-				cube.add("faces", faces);
-
-				var elements = new JsonArray();
-				elements.add(cube);
-				modelJson.add("elements", elements);
-			}
-
-			map.put(builder.newID("models/block/", ""), modelJson);
-		}
-
-		return map;
 	}
 
 	protected boolean areAllTexturesEqual(JsonObject tex, String t) {
@@ -475,8 +414,20 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	@Info("""
 		Set the color of a specific layer of the block.
 		""")
-	public BlockBuilder color(int index, Color c) {
-		color.put(index, c.getArgbJS());
+	public BlockBuilder color(int index, BlockTintFunction color) {
+		if (!(tint instanceof BlockTintFunction.Mapped)) {
+			tint = new BlockTintFunction.Mapped();
+		}
+
+		((BlockTintFunction.Mapped) tint).map.put(index, color);
+		return this;
+	}
+
+	@Info("""
+		Set the color of a specific layer of the block.
+		""")
+	public BlockBuilder color(BlockTintFunction color) {
+		tint = color;
 		return this;
 	}
 
