@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.script.data;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
@@ -23,8 +24,47 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public abstract class GeneratedResourcePack implements ExportablePackResources {
+	private static Stream<Path> tryWalk(Path path) {
+		try {
+			return Files.walk(path);
+		} catch (Exception ignore) {
+		}
+
+		return Stream.empty();
+	}
+
+	public static void scanForInvalidFiles(String pathName, Path path) throws IOException {
+		for (var p : Files.list(path).filter(Files::isDirectory).flatMap(GeneratedResourcePack::tryWalk).filter(Files::isRegularFile).filter(Files::isReadable).toList()) {
+			try {
+				var fileName = p.getFileName().toString();
+
+				if (fileName.endsWith(".zip") || fileName.equals(".ds_store") || fileName.equals("thumbs.db") || fileName.equals("desktop.ini")) {
+					return;
+				} else if (Files.isHidden(path)) {
+					ConsoleJS.STARTUP.error("Invisible file found: " + pathName + path.relativize(p).toString().replace('\\', '/'));
+					return;
+				}
+
+				var chars = fileName.toCharArray();
+
+				for (char c : chars) {
+					if (c >= 'A' && c <= 'Z') {
+						ConsoleJS.STARTUP.error("Invalid file name: Uppercase '" + c + "' in " + pathName + path.relativize(p).toString().replace('\\', '/'));
+						return;
+					} else if (c != '_' && c != '-' && (c < 'a' || c > 'z') && (c < '0' || c > '9') && c != '/' && c != '.') {
+						ConsoleJS.STARTUP.error("Invalid file name: Invalid character '" + c + "' in " + pathName + path.relativize(p).toString().replace('\\', '/'));
+						return;
+					}
+				}
+			} catch (Exception ex) {
+				ConsoleJS.STARTUP.error("Invalid file name: " + pathName + path.relativize(p).toString().replace('\\', '/'));
+			}
+		}
+	}
+
 	private final PackType packType;
 	private Map<ResourceLocation, GeneratedData> generated;
 	private Set<String> generatedNamespaces;
