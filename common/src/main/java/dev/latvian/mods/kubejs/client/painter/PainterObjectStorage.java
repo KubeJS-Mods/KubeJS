@@ -32,6 +32,16 @@ public class PainterObjectStorage {
 	}
 
 	public void handle(CompoundTag root) {
+		if (root.contains("bulk")) {
+			var bulk = root.getList("bulk", Tag.TAG_COMPOUND);
+
+			for (int i = 0; i < bulk.size(); i++) {
+				handle(bulk.getCompound(i));
+			}
+
+			return;
+		}
+
 		for (var key : root.getAllKeys()) {
 			var tag = root.getCompound(key);
 
