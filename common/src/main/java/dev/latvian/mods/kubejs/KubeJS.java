@@ -25,6 +25,7 @@ import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptPack;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
+import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
 import dev.latvian.mods.kubejs.server.KubeJSServerEventHandler;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
@@ -152,6 +153,9 @@ public class KubeJS {
 				RegistryInfo.of((ResourceKey) key).fireRegistryEvent();
 			}
 		}
+
+		GeneratedResourcePack.scanForInvalidFiles("kubejs/assets/", KubeJSPaths.ASSETS);
+		GeneratedResourcePack.scanForInvalidFiles("kubejs/data/", KubeJSPaths.DATA);
 	}
 
 	public static void loadScripts(ScriptPack pack, Path dir, String path) {
