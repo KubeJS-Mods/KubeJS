@@ -149,4 +149,12 @@ public abstract class EntityMixin implements EntityKJS {
 	@Shadow
 	@RemapForJS("getEntityType")
 	public abstract EntityType<?> getType();
+
+	@Shadow
+	@RemapForJS("distanceToEntitySqr")
+	public abstract double distanceToSqr(Entity arg);
+
+	@Shadow
+	@RemapForJS("distanceToEntity")
+	public abstract float distanceTo(Entity arg);
 }
