@@ -1,6 +1,14 @@
 package dev.latvian.mods.kubejs.bindings;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class KMath {
 	public static final double E = 2.7182818284590452354;
@@ -10,6 +18,39 @@ public class KMath {
 
 	public static BlockPos block(double x, double y, double z) {
 		return BlockPos.containing(x, y, z);
+	}
+
+	// why
+	public static Vec3 v3(double x, double y, double z) {
+		return new Vec3(x, y, z);
+	}
+
+	public static Vector3d v3d(double x, double y, double z) {
+		return new Vector3d(x, y, z);
+	}
+
+	public static Vector3f v3f(float x, float y, float z) {
+		return new Vector3f(x, y, z);
+	}
+
+	public static Vector4f v4f(float x, float y, float z, float w) {
+		return new Vector4f(x, y, z, w);
+	}
+
+	public static Matrix3f m3f() {
+		return new Matrix3f();
+	}
+
+	public static Matrix4f m4f() {
+		return new Matrix4f();
+	}
+
+	public static PoseStack poseStack() {
+		return new PoseStack();
+	}
+
+	public static Quaternionf quaternion(float x, float y, float z, float w) {
+		return new Quaternionf(x, y, z, w);
 	}
 
 	public static double rad(double value) {
