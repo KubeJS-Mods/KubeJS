@@ -74,9 +74,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.math.BigInteger;
 import java.nio.file.Path;
-import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
@@ -85,10 +83,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -836,13 +832,7 @@ public class UtilsJS {
 	}
 
 	private static <T> String getUniqueId(T input, Function<T, JsonElement> toJson) {
-		try {
-			var messageDigest = Objects.requireNonNull(MessageDigest.getInstance("MD5"));
-			var json = toJson.apply(input);
-			return new BigInteger(HexFormat.of().formatHex(messageDigest.digest(JsonIO.getJsonHashBytes(json))), 16).toString(36);
-		} catch (Exception ex) {
-			throw new RuntimeException("MD5 not supported", ex);
-		}
+		return JsonIO.getJsonHashString(toJson.apply(input));
 	}
 
 	public static String stripEventName(String s) {
