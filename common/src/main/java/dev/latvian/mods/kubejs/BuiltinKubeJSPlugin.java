@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.bindings.JavaWrapper;
+import dev.latvian.mods.kubejs.bindings.KMath;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
@@ -351,6 +352,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("onEvent", new LegacyCodeHandler("onEvent()"));
 		event.add("java", new LegacyCodeHandler("java()"));
 
+		event.add("KMath", KMath.class);
 		event.add("Utils", UtilsWrapper.class);
 		event.add("Java", new JavaWrapper(event.manager));
 		event.add("Text", TextWrapper.class);
