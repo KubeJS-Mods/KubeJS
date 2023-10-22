@@ -39,7 +39,7 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 			try {
 				var fileName = p.getFileName().toString();
 
-				if (fileName.endsWith(".zip") || fileName.equals(".ds_store") || fileName.equals("thumbs.db") || fileName.equals("desktop.ini")) {
+				if (fileName.endsWith(".zip") || fileName.equals(".DS_Store") || fileName.equals("thumbs.db") || fileName.equals("desktop.ini")) {
 					return;
 				} else if (Files.isHidden(path)) {
 					ConsoleJS.STARTUP.error("Invisible file found: " + pathName + path.relativize(p).toString().replace('\\', '/'));
