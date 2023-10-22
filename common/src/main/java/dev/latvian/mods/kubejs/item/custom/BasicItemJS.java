@@ -40,7 +40,7 @@ public class BasicItemJS extends Item {
 
 	@Override
 	public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> stacks) {
-		if (kjs$getItemBuilder().subtypes != null) {
+		if (kjs$getItemBuilder().subtypes != null && category.equals(kjs$getItemBuilder().group)) {
 			stacks.addAll(kjs$getItemBuilder().subtypes.apply(new ItemStack(this)));
 		} else {
 			super.fillItemCategory(category, stacks);
