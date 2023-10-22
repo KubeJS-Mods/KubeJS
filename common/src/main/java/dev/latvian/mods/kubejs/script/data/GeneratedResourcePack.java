@@ -103,7 +103,7 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 						int sindex = pathStr.lastIndexOf('/');
 						var fileName = sindex == -1 ? pathStr : pathStr.substring(sindex + 1);
 
-						if (fileName.endsWith(".zip") || fileName.equals(".ds_store") || fileName.equals("thumbs.db") || fileName.equals("desktop.ini") || Files.isHidden(path)) {
+						if (fileName.endsWith(".zip") || fileName.equals(".DS_Store") || fileName.equals("thumbs.db") || fileName.equals("desktop.ini") || Files.isHidden(path)) {
 							continue;
 						}
 
