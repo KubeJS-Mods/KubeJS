@@ -38,8 +38,9 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 		for (var p : Files.list(path).filter(Files::isDirectory).flatMap(GeneratedResourcePack::tryWalk).filter(Files::isRegularFile).filter(Files::isReadable).toList()) {
 			try {
 				var fileName = p.getFileName().toString();
+				var fileNameLC = fileName.toLowerCase();
 
-				if (fileName.endsWith(".zip") || fileName.equals(".DS_Store") || fileName.equals("Thumbs.db") || fileName.equals("desktop.ini")) {
+				if (fileNameLC.endsWith(".zip") || fileNameLC.equals(".ds_store") || fileNameLC.equals("thumbs.db") || fileNameLC.equals("desktop.ini")) {
 					return;
 				} else if (Files.isHidden(path)) {
 					ConsoleJS.STARTUP.error("Invisible file found: " + pathName + path.relativize(p).toString().replace('\\', '/'));
@@ -101,9 +102,9 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 					for (var path : Files.walk(dir).filter(Files::isRegularFile).filter(Files::isReadable).toList()) {
 						var pathStr = dir.relativize(path).toString().replace('\\', '/').toLowerCase();
 						int sindex = pathStr.lastIndexOf('/');
-						var fileName = sindex == -1 ? pathStr : pathStr.substring(sindex + 1);
+						var fileNameLC = sindex == -1 ? pathStr : pathStr.substring(sindex + 1);
 
-						if (fileName.endsWith(".zip") || fileName.equals(".DS_Store") || fileName.equals("Thumbs.db") || fileName.equals("desktop.ini") || Files.isHidden(path)) {
+						if (fileNameLC.endsWith(".zip") || fileNameLC.equals(".ds_store") || fileNameLC.equals("thumbs.db") || fileNameLC.equals("desktop.ini") || Files.isHidden(path)) {
 							continue;
 						}
 
@@ -118,6 +119,14 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 
 						if (debug) {
 							KubeJS.LOGGER.info("- File found: '" + data.id() + "' (" + data.data().get().length + " bytes)");
+						}
+
+						if (skipFile(data)) {
+							if (debug) {
+								KubeJS.LOGGER.info("- Skipping '" + data.id() + "'");
+							}
+
+							continue;
 						}
 
 						generated.put(data.id(), data);
@@ -137,6 +146,10 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 		}
 
 		return generated;
+	}
+
+	protected boolean skipFile(GeneratedData data) {
+		return false;
 	}
 
 	@Override

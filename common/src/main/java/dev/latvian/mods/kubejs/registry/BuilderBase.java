@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashSet;
@@ -15,7 +16,8 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	public final ResourceLocation id;
 	protected T object;
 	public String translationKey;
-	public String displayName;
+	public Component displayName;
+	public boolean formattedDisplayName;
 	public transient boolean dummyBuilder;
 	public transient Set<ResourceLocation> defaultTags;
 
@@ -23,7 +25,8 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		id = i;
 		object = null;
 		translationKey = "";
-		displayName = "";
+		displayName = null;
+		formattedDisplayName = false;
 		dummyBuilder = false;
 		defaultTags = new HashSet<>();
 	}
@@ -53,7 +56,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	}
 
 	public String getTranslationKeyGroup() {
-		return getRegistryType().key.location().getPath();
+		return getRegistryType().languageKeyPrefix;
 	}
 
 	@Info("""
@@ -69,9 +72,24 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 
 		This will be overridden by a lang file if it exists.
 		""")
-	public BuilderBase<T> displayName(String name) {
+	public BuilderBase<T> displayName(Component name) {
 		displayName = name;
 		return this;
+	}
+
+	@Info("""
+		Makes displayName() override language files.
+		""")
+	public BuilderBase<T> formattedDisplayName() {
+		formattedDisplayName = true;
+		return this;
+	}
+
+	@Info("""
+		Combined method of formattedDisplayName().displayName(name).
+		""")
+	public BuilderBase<T> formattedDisplayName(Component name) {
+		return formattedDisplayName().displayName(name);
 	}
 
 	@Info("""
@@ -106,13 +124,11 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	}
 
 	public void generateLang(LangEventJS lang) {
-		var dname = displayName;
-
-		if (dname.isEmpty()) {
-			dname = UtilsJS.snakeCaseToTitleCase(id.getPath());
+		if (displayName != null) {
+			lang.add(id.getNamespace(), getBuilderTranslationKey(), displayName.getString());
+		} else {
+			lang.add(id.getNamespace(), getBuilderTranslationKey(), UtilsJS.snakeCaseToTitleCase(id.getPath()));
 		}
-
-		lang.add(id.getNamespace(), getBuilderTranslationKey(), dname);
 	}
 
 	protected T createTransformedObject() {

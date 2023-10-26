@@ -25,6 +25,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -161,7 +162,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 		This will be overridden by a lang file if it exists.
 		""")
-	public BuilderBase<Block> displayName(String name) {
+	public BuilderBase<Block> displayName(Component name) {
 		if (itemBuilder != null) {
 			itemBuilder.displayName(name);
 		}

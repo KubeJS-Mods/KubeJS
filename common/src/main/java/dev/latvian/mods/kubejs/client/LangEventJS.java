@@ -1,8 +1,7 @@
 package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -66,17 +65,11 @@ public class LangEventJS extends EventJS {
 		}
 	}
 
-	public void renameEntity(EntityType<?> entityType, String name) {
-		if (entityType != null) {
-			var d = entityType.getDescriptionId();
+	public void renameEntity(ResourceLocation id, String name) {
+		add(id.getNamespace(), "entity." + id.getNamespace() + "." + id.getPath().replace('/', '.'), name);
+	}
 
-			if (d != null && !d.isEmpty()) {
-				var id = RegistryInfo.ENTITY_TYPE.getId(entityType);
-
-				if (id != null) {
-					add(id.getNamespace(), d, name);
-				}
-			}
-		}
+	public void renameBiome(ResourceLocation id, String name) {
+		add(id.getNamespace(), "biome." + id.getNamespace() + "." + id.getPath().replace('/', '.'), name);
 	}
 }

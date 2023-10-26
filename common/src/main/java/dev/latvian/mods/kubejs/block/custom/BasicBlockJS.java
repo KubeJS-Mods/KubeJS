@@ -19,6 +19,8 @@ import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -110,6 +112,15 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 	@Override
 	public BlockBuilder kjs$getBlockBuilder() {
 		return blockBuilder;
+	}
+
+	@Override
+	public MutableComponent getName() {
+		if (blockBuilder.displayName != null && blockBuilder.formattedDisplayName) {
+			return Component.literal("").append(blockBuilder.displayName);
+		}
+
+		return super.getName();
 	}
 
 	@Override

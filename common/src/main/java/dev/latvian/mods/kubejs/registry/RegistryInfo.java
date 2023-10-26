@@ -133,7 +133,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 
 	public static final RegistryInfo<SoundEvent> SOUND_EVENT = of(Registries.SOUND_EVENT, SoundEvent.class);
 	public static final RegistryInfo<Fluid> FLUID = of(Registries.FLUID, Fluid.class);
-	public static final RegistryInfo<MobEffect> MOB_EFFECT = of(Registries.MOB_EFFECT, MobEffect.class);
+	public static final RegistryInfo<MobEffect> MOB_EFFECT = of(Registries.MOB_EFFECT, MobEffect.class).languageKeyPrefix("effect");
 	public static final RegistryInfo<Block> BLOCK = of(Registries.BLOCK, Block.class);
 	public static final RegistryInfo<Enchantment> ENCHANTMENT = of(Registries.ENCHANTMENT, Enchantment.class);
 	public static final RegistryInfo<EntityType> ENTITY_TYPE = of(Registries.ENTITY_TYPE, EntityType.class);
@@ -245,6 +245,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	public boolean bypassServerOnly;
 	public boolean autoWrap;
 	private Registrar<T> architecturyRegistrar;
+	public String languageKeyPrefix;
 
 	private RegistryInfo(ResourceKey<? extends Registry<T>> key, Class<T> objectBaseClass) {
 		this.key = key;
@@ -253,6 +254,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 		this.objects = new LinkedHashMap<>();
 		this.bypassServerOnly = false;
 		this.autoWrap = objectBaseClass != Codec.class && objectBaseClass != ResourceLocation.class && objectBaseClass != String.class;
+		this.languageKeyPrefix = key.location().getPath().replace('/', '.');
 	}
 
 	public RegistryInfo<T> bypassServerOnly() {
@@ -262,6 +264,11 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 
 	public RegistryInfo<T> noAutoWrap() {
 		this.autoWrap = false;
+		return this;
+	}
+
+	public RegistryInfo<T> languageKeyPrefix(String prefix) {
+		this.languageKeyPrefix = prefix;
 		return this;
 	}
 

@@ -8,13 +8,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 
 public class CreativeTabBuilder extends BuilderBase<CreativeModeTab> {
-	public transient Component displayNameComponent;
 	public transient CreativeTabIconSupplier icon;
 	public transient CreativeTabContentSupplier content;
 
 	public CreativeTabBuilder(ResourceLocation i) {
 		super(i);
-		this.displayNameComponent = null;
 		this.icon = CreativeTabIconSupplier.DEFAULT;
 		this.content = CreativeTabContentSupplier.DEFAULT;
 	}
@@ -27,15 +25,10 @@ public class CreativeTabBuilder extends BuilderBase<CreativeModeTab> {
 	@Override
 	public CreativeModeTab createObject() {
 		return MiscPlatformHelper.get().creativeModeTab(
-			displayNameComponent == null ? Component.translatable(getBuilderTranslationKey()) : displayNameComponent,
+			displayName == null ? Component.translatable(getBuilderTranslationKey()) : displayName,
 			new CreativeTabIconSupplier.Wrapper(icon),
 			new CreativeTabContentSupplier.Wrapper(content)
 		);
-	}
-
-	public CreativeTabBuilder displayNameComponent(Component displayNameComponent) {
-		this.displayNameComponent = displayNameComponent;
-		return this;
 	}
 
 	public CreativeTabBuilder icon(CreativeTabIconSupplier icon) {

@@ -46,7 +46,6 @@ import dev.latvian.mods.kubejs.event.EventGroupWrapper;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
-import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.integration.rei.REIEvents;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
@@ -524,13 +523,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	@Override
 	public void registerBlockEntityAttachments(List<BlockEntityAttachmentType> types) {
 		types.add(InventoryAttachment.TYPE);
-	}
-
-	@Override
-	public void generateDataJsons(DataJsonGenerator generator) {
-		for (var builder : RegistryInfo.ALL_BUILDERS) {
-			builder.generateDataJsons(generator);
-		}
 	}
 
 	@Override
