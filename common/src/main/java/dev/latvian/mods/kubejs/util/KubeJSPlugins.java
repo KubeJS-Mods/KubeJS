@@ -21,21 +21,21 @@ public class KubeJSPlugins {
 	private static final List<String> GLOBAL_CLASS_FILTER = new ArrayList<>();
 	private static final ModResourceBindings BINDINGS = new ModResourceBindings();
 
-	public static void load(List<Mod> mods) {
+	public static void load(List<Mod> mods, boolean loadClientPlugins) {
 		try {
 			for (var mod : mods) {
-				load(mod);
+				load(mod, loadClientPlugins);
 			}
 		} catch (Exception ex) {
 			throw new RuntimeException("Failed to load KubeJS plugin", ex);
 		}
 	}
 
-	public static void load(Mod mod) throws IOException {
+	private static void load(Mod mod, boolean loadClientPlugins) throws IOException {
 		var pp = mod.findResource("kubejs.plugins.txt");
 
 		if (pp.isPresent()) {
-			loadFromFile(Files.lines(pp.get()), mod.getModId());
+			loadFromFile(Files.lines(pp.get()), mod.getModId(), loadClientPlugins);
 		}
 
 		var pc = mod.findResource("kubejs.classfilter.txt");
@@ -47,7 +47,7 @@ public class KubeJSPlugins {
 		BINDINGS.readBindings(mod);
 	}
 
-	private static void loadFromFile(Stream<String> contents, String source) {
+	private static void loadFromFile(Stream<String> contents, String source, boolean loadClientPlugins) {
 		KubeJS.LOGGER.info("Found plugin source {}", source);
 
 		contents.map(s -> s.split("#", 2)[0].trim()) // allow comments (#)
@@ -56,7 +56,15 @@ public class KubeJSPlugins {
 				String[] line = s.split(" ");
 
 				for (int i = 1; i < line.length; i++) {
-					if (!Platform.isModLoaded(line[i])) {
+					if (line[i].equalsIgnoreCase("client")) {
+						if (!loadClientPlugins) {
+							if (DevProperties.get().logSkippedPlugins) {
+								KubeJS.LOGGER.warn("Plugin " + line[0] + " does not load on server side, skipping");
+							}
+
+							return Stream.empty();
+						}
+					} else if (!Platform.isModLoaded(line[i])) {
 						if (DevProperties.get().logSkippedPlugins) {
 							KubeJS.LOGGER.warn("Plugin " + line[0] + " does not have required mod " + line[i] + " loaded, skipping");
 						}

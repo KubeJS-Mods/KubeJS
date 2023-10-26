@@ -124,7 +124,7 @@ public class KubeJS {
 		var allMods = new ArrayList<>(Platform.getMods());
 		allMods.remove(thisMod);
 		allMods.add(0, thisMod);
-		KubeJSPlugins.load(allMods);
+		KubeJSPlugins.load(allMods, Platform.getEnvironment() == Env.CLIENT);
 		LOGGER.info("Done in " + pluginTimer.stop());
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);

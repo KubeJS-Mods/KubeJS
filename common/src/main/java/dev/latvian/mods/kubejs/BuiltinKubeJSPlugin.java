@@ -13,7 +13,6 @@ import dev.latvian.mods.kubejs.bindings.KMath;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
-import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.EntityEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.LevelEvents;
@@ -40,7 +39,6 @@ import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
 import dev.latvian.mods.kubejs.block.entity.InventoryAttachment;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
-import dev.latvian.mods.kubejs.client.LangEventJS;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
 import dev.latvian.mods.kubejs.event.EventGroup;
@@ -48,7 +46,6 @@ import dev.latvian.mods.kubejs.event.EventGroupWrapper;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.integration.rei.REIEvents;
 import dev.latvian.mods.kubejs.item.InputItem;
@@ -120,8 +117,6 @@ import dev.latvian.mods.rhino.mod.wrapper.DirectionWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import dev.latvian.mods.unit.Unit;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -146,6 +141,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -236,15 +232,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	}
 
 	@Override
-	@Environment(EnvType.CLIENT)
-	public void clientInit() {
-		Painter.INSTANCE.registerBuiltinObjects();
-	}
-
-	@Override
 	public void registerEvents() {
 		StartupEvents.GROUP.register();
-		ClientEvents.GROUP.register();
 		ServerEvents.GROUP.register();
 		LevelEvents.GROUP.register();
 		WorldgenEvents.GROUP.register();
@@ -399,9 +388,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("SoundType", SoundType.class);
 
 		event.add("BlockProperties", BlockStateProperties.class);
-
-		KubeJS.PROXY.clientBindings(event);
-		KubeJSPlugins.addSidedBindings(event);
 	}
 
 	@Override
@@ -431,6 +417,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(Vec3.class, UtilsJS::vec3Of);
 
 		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
+		typeWrappers.register(ItemLike.class, ItemStackJS::getRawItem);
 		typeWrappers.registerSimple(MobCategory.class, o -> o == null ? null : UtilsJS.mobCategoryByName(o.toString()));
 
 		typeWrappers.registerSimple(AABB.class, AABBWrapper::wrap);
@@ -479,8 +466,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		typeWrappers.registerSimple(Color.class, ColorWrapper::of);
 		typeWrappers.registerSimple(TextColor.class, o -> ColorWrapper.of(o).createTextColorJS());
 		typeWrappers.registerSimple(ClickEvent.class, TextWrapper::clickEventOf);
-
-		KubeJS.PROXY.clientTypeWrappers(typeWrappers);
 	}
 
 	@Override
@@ -545,20 +530,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	public void generateDataJsons(DataJsonGenerator generator) {
 		for (var builder : RegistryInfo.ALL_BUILDERS) {
 			builder.generateDataJsons(generator);
-		}
-	}
-
-	@Override
-	public void generateAssetJsons(AssetJsonGenerator generator) {
-		for (var builder : RegistryInfo.ALL_BUILDERS) {
-			builder.generateAssetJsons(generator);
-		}
-	}
-
-	@Override
-	public void generateLang(LangEventJS lang) {
-		for (var builder : RegistryInfo.ALL_BUILDERS) {
-			builder.generateLang(lang);
 		}
 	}
 

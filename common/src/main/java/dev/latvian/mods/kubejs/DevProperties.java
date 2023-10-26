@@ -35,7 +35,7 @@ public class DevProperties {
 	public boolean logSkippedTags = false;
 	public boolean logErroringRecipes = true;
 	public boolean logInvalidRecipeHandlers = true;
-	public boolean logSkippedPlugins = false;
+	public boolean logSkippedPlugins = true;
 	public boolean logGeneratedData = false;
 	public boolean strictTags = false;
 

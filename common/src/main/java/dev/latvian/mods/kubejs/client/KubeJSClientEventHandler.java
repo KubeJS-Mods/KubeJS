@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.client;
 
-import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
@@ -35,6 +34,7 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -57,7 +57,6 @@ public class KubeJSClientEventHandler {
 		ClientPlayerEvent.CLIENT_PLAYER_RESPAWN.register(this::respawn);
 		ClientGuiEvent.RENDER_HUD.register(Painter.INSTANCE::inGameScreenDraw);
 		ClientGuiEvent.RENDER_POST.register(Painter.INSTANCE::guiScreenDraw);
-		ClientGuiEvent.SET_SCREEN.register(this::setScreen);
 		ClientGuiEvent.INIT_PRE.register(this::guiPreInit);
 		ClientGuiEvent.INIT_POST.register(this::guiPostInit);
 		//ClientTextureStitchEvent.POST.register(this::postAtlasStitch);
@@ -151,12 +150,13 @@ public class KubeJSClientEventHandler {
 		// client respawn event
 	}
 
-	private CompoundEventResult<Screen> setScreen(Screen screen) {
+	@Nullable
+	public static Screen setScreen(Screen screen) {
 		if (screen instanceof TitleScreen && !ScriptType.STARTUP.errors.isEmpty() && CommonProperties.get().startupErrorGUI) {
-			return CompoundEventResult.interruptTrue(new KubeJSErrorScreen(ScriptType.STARTUP));
+			return new KubeJSErrorScreen(ScriptType.STARTUP);
 		}
 
-		return CompoundEventResult.pass();
+		return screen;
 	}
 
 	private EventResult guiPreInit(Screen screen, ScreenAccess screenAccess) {

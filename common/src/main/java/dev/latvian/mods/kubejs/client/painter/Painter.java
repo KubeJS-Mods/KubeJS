@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Painter implements UnitVariables {
-	public static final Painter INSTANCE = new Painter();
+	public static final Painter INSTANCE = new Painter("global");
 
 	public static final int DRAW_ALWAYS = 0;
 	public static final int DRAW_INGAME = 1;
@@ -44,6 +44,7 @@ public class Painter implements UnitVariables {
 	public static final int TOP = -1;
 	public static final int BOTTOM = 1;
 
+	public final String id;
 	private final Object lock;
 	private final Map<String, PainterFactory> objectRegistry;
 	private final PainterObjectStorage storage;
@@ -56,7 +57,8 @@ public class Painter implements UnitVariables {
 	public final MutableNumberUnit mouseXUnit;
 	public final MutableNumberUnit mouseYUnit;
 
-	public Painter() {
+	public Painter(String id) {
+		this.id = id;
 		lock = new Object();
 		objectRegistry = new HashMap<>();
 		storage = new PainterObjectStorage(this);
@@ -131,25 +133,29 @@ public class Painter implements UnitVariables {
 	}
 
 	public void paint(CompoundTag root) {
-		synchronized (lock) {
-			storage.handle(root);
-			screenObjects = null;
+		Minecraft.getInstance().execute(() -> {
+			synchronized (lock) {
+				storage.handle(root);
+				screenObjects = null;
 
-			if (ClientEvents.PAINTER_UPDATED.hasListeners()) {
-				ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientEventJS());
+				if (ClientEvents.PAINTER_UPDATED.hasListeners()) {
+					ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientEventJS());
+				}
 			}
-		}
+		});
 	}
 
 	public void clear() {
-		synchronized (lock) {
-			storage.clear();
-			screenObjects = null;
+		Minecraft.getInstance().execute(() -> {
+			synchronized (lock) {
+				storage.clear();
+				screenObjects = null;
 
-			if (ClientEvents.PAINTER_UPDATED.hasListeners()) {
-				ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientEventJS());
+				if (ClientEvents.PAINTER_UPDATED.hasListeners()) {
+					ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientEventJS());
+				}
 			}
-		}
+		});
 	}
 
 	@HideFromJS

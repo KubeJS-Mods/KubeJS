@@ -189,6 +189,8 @@ public class ScriptManager implements ClassShutter {
 			plugin.registerCustomJavaToJsWrappers(customJavaToJsWrappersEvent);
 		}
 
+		KubeJSPlugins.addSidedBindings(bindingsEvent);
+
 		for (var reg : BuiltInRegistries.REGISTRY.registryKeySet()) {
 			var info = RegistryInfo.of(reg);
 
