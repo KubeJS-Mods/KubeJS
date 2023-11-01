@@ -8,25 +8,24 @@ import dev.latvian.mods.kubejs.client.GeneratedClientResourcePack;
 import dev.latvian.mods.kubejs.client.ScheduledClientEvent;
 import dev.latvian.mods.kubejs.core.MinecraftClientKJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.util.TickDuration;
+import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackResources;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.time.Duration;
-import java.time.temporal.TemporalAmount;
-import java.util.LinkedList;
 import java.util.List;
 
 @Mixin(Minecraft.class)
 @RemapPrefixForJS("kjs$")
 public abstract class MinecraftClientMixin implements MinecraftClientKJS {
-	private final List<ScheduledClientEvent> kjs$scheduledEvents = new LinkedList<>();
+	@Unique
+	private ScheduledEvents kjs$scheduledEvents;
 
 	@Inject(method = "createTitle", at = @At("HEAD"), cancellable = true)
 	private void kjs$createTitle(CallbackInfoReturnable<String> ci) {
@@ -57,24 +56,23 @@ public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 
 	@Inject(method = "tick", at = @At("RETURN"))
 	private void kjs$postTickClient(CallbackInfo ci) {
-		if (kjs$self().player != null && ClientEvents.TICK.hasListeners()) {
-			ScheduledClientEvent.tickAll(System.currentTimeMillis(), kjs$self().level.getGameTime(), kjs$scheduledEvents);
-			ClientEvents.TICK.post(ScriptType.CLIENT, new ClientEventJS());
+		if (kjs$self().level != null && kjs$self().player != null) {
+			if (kjs$scheduledEvents != null) {
+				kjs$scheduledEvents.tickAll(kjs$self().level.getGameTime());
+			}
+
+			if (ClientEvents.TICK.hasListeners()) {
+				ClientEvents.TICK.post(ScriptType.CLIENT, new ClientEventJS());
+			}
 		}
 	}
 
 	@Override
-	public ScheduledClientEvent kjs$schedule(TemporalAmount timer, ScheduledClientEvent.Callback event) {
-		if (timer instanceof TickDuration duration) {
-			var e = new ScheduledClientEvent.InTicks(kjs$self(), duration, kjs$self().level.getGameTime() + duration.ticks(), event);
-			kjs$scheduledEvents.add(e);
-			return e;
-		} else if (timer instanceof Duration duration) {
-			var e = new ScheduledClientEvent.InMs(kjs$self(), duration, System.currentTimeMillis() + duration.toMillis(), event);
-			kjs$scheduledEvents.add(e);
-			return e;
-		} else {
-			throw new IllegalArgumentException("Unsupported TemporalAmount: " + timer);
+	public ScheduledEvents kjs$getScheduledEvents() {
+		if (kjs$scheduledEvents == null) {
+			kjs$scheduledEvents = ScheduledClientEvent.make(kjs$self());
 		}
+
+		return kjs$scheduledEvents;
 	}
 }

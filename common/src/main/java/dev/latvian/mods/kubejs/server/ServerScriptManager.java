@@ -17,12 +17,13 @@ import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
-import net.minecraft.server.packs.resources.ResourceManager;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -31,17 +32,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ServerScriptManager {
+public class ServerScriptManager extends ScriptManager {
 	public static ServerScriptManager instance;
 
 	public static ScriptManager getScriptManager() {
-		return instance.scriptManager;
+		return instance;
 	}
 
-	private final ScriptManager scriptManager = new ScriptManager(ScriptType.SERVER, KubeJSPaths.SERVER_SCRIPTS);
+	public final MinecraftServer server;
 	public final Map<ResourceKey<?>, PreTagEventJS> preTagEvents = new ConcurrentHashMap<>();
 
-	public ServerScriptManager() {
+	public ServerScriptManager(@Nullable MinecraftServer server) {
+		super(ScriptType.SERVER, KubeJSPaths.SERVER_SCRIPTS);
+		this.server = server;
+
 		try {
 			if (Files.notExists(KubeJSPaths.DATA)) {
 				Files.createDirectories(KubeJSPaths.DATA);
@@ -55,10 +59,6 @@ public class ServerScriptManager {
 		KubeJSReloadListener.resources = serverResources;
 		KubeJSReloadListener.recipeContext = RecipePlatformHelper.get().createRecipeContext(serverResources);
 		UtilsJS.staticRegistryAccess = registryAccess;
-	}
-
-	public void reloadScriptManager(ResourceManager resourceManager) {
-		scriptManager.reload(resourceManager);
 	}
 
 	public MultiPackResourceManager wrapResourceManager(CloseableResourceManager original) {
@@ -81,7 +81,7 @@ public class ServerScriptManager {
 
 		var wrappedResourceManager = new MultiPackResourceManager(PackType.SERVER_DATA, list);
 
-		reloadScriptManager(wrappedResourceManager);
+		reload(wrappedResourceManager);
 
 		ServerEvents.LOW_DATA.post(ScriptType.SERVER, new DataPackEventJS(virtualDataPackLow, wrappedResourceManager));
 		ServerEvents.HIGH_DATA.post(ScriptType.SERVER, new DataPackEventJS(virtualDataPackHigh, wrappedResourceManager));

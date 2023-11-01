@@ -603,7 +603,7 @@ public class KubeJSCommands {
 	}
 
 	private static int reloadServer(CommandSourceStack source) {
-		ServerScriptManager.instance.reloadScriptManager(source.getServer().kjs$getReloadableResources().resourceManager());
+		ServerScriptManager.instance.reload(source.getServer().kjs$getReloadableResources().resourceManager());
 		source.sendSuccess(() -> Component.literal("Done! To reload recipes, tags, loot tables and other datapack things, run ")
 				.append(Component.literal("'/reload'")
 					.kjs$clickRunCommand("/reload")

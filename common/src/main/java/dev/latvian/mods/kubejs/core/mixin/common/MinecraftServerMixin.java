@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
 import dev.latvian.mods.kubejs.server.ServerEventJS;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import dev.latvian.mods.kubejs.util.TickDuration;
+import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
@@ -15,16 +15,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.temporal.TemporalAmount;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.function.BooleanSupplier;
 
 @Mixin(MinecraftServer.class)
@@ -36,9 +33,16 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	@Shadow
 	public abstract void invalidateStatus();
 
+	@Unique
 	private final CompoundTag kjs$persistentData = new CompoundTag();
-	private final List<ScheduledServerEvent> kjs$scheduledEvents = new LinkedList<>();
+
+	@Unique
+	private ScheduledEvents kjs$scheduledEvents;
+
+	@Unique
 	private ServerLevel kjs$overworld;
+
+	@Unique
 	private AttachedData<MinecraftServer> kjs$attachedData;
 
 	@Override
@@ -71,7 +75,9 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 
 	@Inject(method = "tickServer", at = @At("RETURN"))
 	private void kjs$postTickServer(BooleanSupplier booleanSupplier, CallbackInfo ci) {
-		ScheduledServerEvent.tickAll(System.currentTimeMillis(), kjs$getOverworld().getGameTime(), kjs$scheduledEvents);
+		if (kjs$scheduledEvents != null) {
+			kjs$scheduledEvents.tickAll(kjs$getOverworld().getGameTime());
+		}
 
 		if (ServerEvents.TICK.hasListeners()) {
 			ServerEvents.TICK.post(ScriptType.SERVER, new ServerEventJS(kjs$self()));
@@ -79,18 +85,12 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	}
 
 	@Override
-	public ScheduledServerEvent kjs$schedule(TemporalAmount timer, ScheduledServerEvent.Callback event) {
-		if (timer instanceof TickDuration duration) {
-			var e = new ScheduledServerEvent.InTicks(kjs$self(), duration, kjs$getOverworld().getGameTime() + duration.ticks(), event);
-			kjs$scheduledEvents.add(e);
-			return e;
-		} else if (timer instanceof Duration duration) {
-			var e = new ScheduledServerEvent.InMs(kjs$self(), duration, System.currentTimeMillis() + duration.toMillis(), event);
-			kjs$scheduledEvents.add(e);
-			return e;
-		} else {
-			throw new IllegalArgumentException("Unsupported TemporalAmount: " + timer);
+	public ScheduledEvents kjs$getScheduledEvents() {
+		if (kjs$scheduledEvents == null) {
+			kjs$scheduledEvents = ScheduledServerEvent.make(kjs$self());
 		}
+
+		return kjs$scheduledEvents;
 	}
 
 	@Shadow

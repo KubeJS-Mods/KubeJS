@@ -3,25 +3,49 @@ package dev.latvian.mods.kubejs.core;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.ClientProperties;
-import dev.latvian.mods.kubejs.client.ScheduledClientEvent;
 import dev.latvian.mods.kubejs.item.ItemClickedEventJS;
 import dev.latvian.mods.kubejs.net.FirstClickMessage;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.temporal.TemporalAmount;
-
 @SuppressWarnings("resource")
 @RemapPrefixForJS("kjs$")
-public interface MinecraftClientKJS {
+public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 	default Minecraft kjs$self() {
 		return (Minecraft) this;
+	}
+
+	@Override
+	default Component kjs$getName() {
+		return Component.literal(kjs$self().name());
+	}
+
+	@Override
+	default void kjs$tell(Component message) {
+		kjs$self().player.kjs$tell(message);
+	}
+
+	@Override
+	default void kjs$setStatusMessage(Component message) {
+		kjs$self().player.kjs$setStatusMessage(message);
+	}
+
+	@Override
+	default int kjs$runCommand(String command) {
+		kjs$self().player.connection.sendCommand(command);
+		return 0;
+	}
+
+	@Override
+	default int kjs$runCommandSilent(String command) {
+		kjs$self().player.connection.sendCommand(command);
+		return 0;
 	}
 
 	@Nullable
@@ -82,11 +106,5 @@ public interface MinecraftClientKJS {
 		}
 
 		new FirstClickMessage(1).sendToServer();
-	}
-
-	ScheduledClientEvent kjs$schedule(TemporalAmount timer, ScheduledClientEvent.Callback callback);
-
-	default ScheduledClientEvent kjs$scheduleInTicks(long ticks, ScheduledClientEvent.Callback callback) {
-		return kjs$schedule(new TickDuration(ticks), callback);
 	}
 }

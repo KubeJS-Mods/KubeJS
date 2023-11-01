@@ -3,8 +3,6 @@ package dev.latvian.mods.kubejs.core;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.mods.kubejs.player.AdvancementJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
-import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
-import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -16,10 +14,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.temporal.TemporalAmount;
-
 @RemapPrefixForJS("kjs$")
-public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, MessageSenderKJS, WithPersistentData, DataSenderKJS {
+public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, WithPersistentData, DataSenderKJS, MinecraftEnvironmentKJS {
 	default MinecraftServer kjs$self() {
 		return (MinecraftServer) this;
 	}
@@ -28,20 +24,9 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, M
 
 	ServerLevel kjs$getOverworld();
 
-	ScheduledServerEvent kjs$schedule(TemporalAmount timer, ScheduledServerEvent.Callback event);
-
-	default ScheduledServerEvent kjs$scheduleInTicks(long ticks, ScheduledServerEvent.Callback event) {
-		return kjs$schedule(new TickDuration(ticks), event);
-	}
-
 	@Override
 	default Component kjs$getName() {
 		return Component.literal(kjs$self().name());
-	}
-
-	@Override
-	default Component kjs$getDisplayName() {
-		return kjs$self().createCommandSourceStack().getDisplayName();
 	}
 
 	@Override

@@ -9,10 +9,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(WorldLoader.PackConfig.class)
 public abstract class WorldLoaderPackConfigMixin {
-
 	@ModifyVariable(method = "createResourceManager", at = @At("STORE"))
 	private CloseableResourceManager injectKubeJSPacks(CloseableResourceManager original) {
-		ServerScriptManager.instance = new ServerScriptManager();
+		ServerScriptManager.instance = new ServerScriptManager(null);
 		return ServerScriptManager.instance.wrapResourceManager(original);
 	}
 }

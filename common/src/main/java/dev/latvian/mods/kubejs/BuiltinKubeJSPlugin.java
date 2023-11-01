@@ -95,6 +95,7 @@ import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.FluidAmounts;
 import dev.latvian.mods.kubejs.util.JsonIO;
@@ -105,6 +106,7 @@ import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
 import dev.latvian.mods.kubejs.util.NotificationBuilder;
 import dev.latvian.mods.kubejs.util.RotationAxis;
+import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.CollectionTagWrapper;
 import dev.latvian.mods.rhino.mod.util.CompoundTagWrapper;
@@ -339,6 +341,15 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		event.add("onEvent", new LegacyCodeHandler("onEvent()"));
 		event.add("java", new LegacyCodeHandler("java()"));
+
+		if (event.manager instanceof ServerScriptManager sm && sm.server != null) {
+			var se = sm.server.kjs$getScheduledEvents();
+
+			event.add("setTimeout", new ScheduledEvents.TimeoutJSFunction(se, false, false));
+			event.add("clearTimeout", new ScheduledEvents.TimeoutJSFunction(se, true, false));
+			event.add("setInterval", new ScheduledEvents.TimeoutJSFunction(se, false, true));
+			event.add("clearInterval", new ScheduledEvents.TimeoutJSFunction(se, true, true));
+		}
 
 		event.add("KMath", KMath.class);
 		event.add("Utils", UtilsWrapper.class);
