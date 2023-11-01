@@ -11,9 +11,7 @@ import dev.latvian.mods.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
 import dev.latvian.mods.kubejs.level.SimpleLevelEventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.RhinoException;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -26,8 +24,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelResource;
 
 import java.nio.file.Files;
-import java.util.LinkedList;
-import java.util.List;
 
 public class KubeJSServerEventHandler {
 	private static final LevelResource PERSISTENT_DATA = new LevelResource("kubejs_persistent_data.nbt");
@@ -100,32 +96,6 @@ public class KubeJSServerEventHandler {
 					ex.printStackTrace();
 				}
 			});
-		}
-	}
-
-	public static void tickScheduledEvents(long nowMs, long nowTicks, List<ScheduledEvent> kjs$scheduledEvents) {
-		if (!kjs$scheduledEvents.isEmpty()) {
-			var eventIterator = kjs$scheduledEvents.iterator();
-			var list = new LinkedList<ScheduledEvent>();
-
-			while (eventIterator.hasNext()) {
-				var e = eventIterator.next();
-
-				if (e.check(nowMs, nowTicks)) {
-					list.add(e);
-					eventIterator.remove();
-				}
-			}
-
-			for (var e : list) {
-				try {
-					e.callback.onCallback(e);
-				} catch (RhinoException ex) {
-					ConsoleJS.SERVER.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
-				} catch (Throwable ex) {
-					ex.printStackTrace();
-				}
-			}
 		}
 	}
 

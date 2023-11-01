@@ -50,7 +50,7 @@
 		"ImageButtonMixin",
 		"KeyboardHandlerMixin",
 		"LoadingOverlayMixin",
-		"MinecraftMixin",
+		"MinecraftClientMixin",
 		"OptionsMixin",
 		"ScreenMixin",
 		"WindowMixin",

@@ -3,9 +3,7 @@ package dev.latvian.mods.kubejs.core.mixin.common;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.server.IScheduledEventCallback;
-import dev.latvian.mods.kubejs.server.KubeJSServerEventHandler;
-import dev.latvian.mods.kubejs.server.ScheduledEvent;
+import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
 import dev.latvian.mods.kubejs.server.ServerEventJS;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
@@ -39,7 +37,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	public abstract void invalidateStatus();
 
 	private final CompoundTag kjs$persistentData = new CompoundTag();
-	private final List<ScheduledEvent> kjs$scheduledEvents = new LinkedList<>();
+	private final List<ScheduledServerEvent> kjs$scheduledEvents = new LinkedList<>();
 	private ServerLevel kjs$overworld;
 	private AttachedData<MinecraftServer> kjs$attachedData;
 
@@ -73,7 +71,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 
 	@Inject(method = "tickServer", at = @At("RETURN"))
 	private void kjs$postTickServer(BooleanSupplier booleanSupplier, CallbackInfo ci) {
-		KubeJSServerEventHandler.tickScheduledEvents(System.currentTimeMillis(), kjs$getOverworld().getGameTime(), kjs$scheduledEvents);
+		ScheduledServerEvent.tickAll(System.currentTimeMillis(), kjs$getOverworld().getGameTime(), kjs$scheduledEvents);
 
 		if (ServerEvents.TICK.hasListeners()) {
 			ServerEvents.TICK.post(ScriptType.SERVER, new ServerEventJS(kjs$self()));
@@ -81,13 +79,13 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	}
 
 	@Override
-	public ScheduledEvent kjs$schedule(TemporalAmount timer, IScheduledEventCallback event) {
+	public ScheduledServerEvent kjs$schedule(TemporalAmount timer, ScheduledServerEvent.Callback event) {
 		if (timer instanceof TickDuration duration) {
-			var e = new ScheduledEvent.InTicks(kjs$self(), duration, kjs$getOverworld().getGameTime() + duration.ticks(), event);
+			var e = new ScheduledServerEvent.InTicks(kjs$self(), duration, kjs$getOverworld().getGameTime() + duration.ticks(), event);
 			kjs$scheduledEvents.add(e);
 			return e;
 		} else if (timer instanceof Duration duration) {
-			var e = new ScheduledEvent.InMs(kjs$self(), duration, System.currentTimeMillis() + duration.toMillis(), event);
+			var e = new ScheduledServerEvent.InMs(kjs$self(), duration, System.currentTimeMillis() + duration.toMillis(), event);
 			kjs$scheduledEvents.add(e);
 			return e;
 		} else {

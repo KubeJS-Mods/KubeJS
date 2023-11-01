@@ -113,6 +113,7 @@ public class UtilsJS {
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
 	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, e -> true, MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_RANDOM, false, null, null, null, true);
 
+	@FunctionalInterface
 	public interface TryIO {
 		void run() throws IOException;
 	}

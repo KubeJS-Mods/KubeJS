@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.client;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
-import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
 import dev.architectury.hooks.fluid.FluidBucketHooks;
@@ -51,7 +50,6 @@ public class KubeJSClientEventHandler {
 		ClientGuiEvent.DEBUG_TEXT_LEFT.register(this::debugInfoLeft);
 		ClientGuiEvent.DEBUG_TEXT_RIGHT.register(this::debugInfoRight);
 		ClientTooltipEvent.ITEM.register(this::itemTooltip);
-		ClientTickEvent.CLIENT_POST.register(this::clientTick);
 		ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(this::loggedIn);
 		ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(this::loggedOut);
 		ClientPlayerEvent.CLIENT_PLAYER_RESPAWN.register(this::respawn);
@@ -128,12 +126,6 @@ public class KubeJSClientEventHandler {
 			}
 		} catch (Exception ex) {
 			ConsoleJS.CLIENT.error("Error while gathering tooltip for " + stack, ex);
-		}
-	}
-
-	private void clientTick(Minecraft minecraft) {
-		if (Minecraft.getInstance().player != null && ClientEvents.TICK.hasListeners()) {
-			ClientEvents.TICK.post(ScriptType.CLIENT, new ClientEventJS());
 		}
 	}
 
