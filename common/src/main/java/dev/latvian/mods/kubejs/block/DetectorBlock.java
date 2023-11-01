@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -28,12 +29,12 @@ public class DetectorBlock extends Block {
 				detectorId = detectorId.substring(9);
 			}
 
-			displayName("KubeJS Detector [" + detectorId + "]");
+			displayName(Component.literal("KubeJS Detector [" + detectorId + "]"));
 		}
 
 		public Builder detectorId(String id) {
 			detectorId = id;
-			displayName("KubeJS Detector [" + detectorId + "]");
+			displayName(Component.literal("KubeJS Detector [" + detectorId + "]"));
 			return this;
 		}
 

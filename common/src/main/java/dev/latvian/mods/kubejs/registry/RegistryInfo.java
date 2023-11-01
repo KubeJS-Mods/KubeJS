@@ -104,7 +104,7 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 
 	public static final RegistryInfo SOUND_EVENT = of(Registry.SOUND_EVENT_REGISTRY).type(SoundEvent.class);
 	public static final RegistryInfo FLUID = of(Registry.FLUID_REGISTRY).type(Fluid.class);
-	public static final RegistryInfo MOB_EFFECT = of(Registry.MOB_EFFECT_REGISTRY).type(MobEffect.class);
+	public static final RegistryInfo MOB_EFFECT = of(Registry.MOB_EFFECT_REGISTRY).type(MobEffect.class).languageKeyPrefix("effect");
 	public static final RegistryInfo BLOCK = of(Registry.BLOCK_REGISTRY).type(Block.class);
 	public static final RegistryInfo ENCHANTMENT = of(Registry.ENCHANTMENT_REGISTRY).type(Enchantment.class);
 	public static final RegistryInfo ENTITY_TYPE = of(Registry.ENTITY_TYPE_REGISTRY).type(EntityType.class);
@@ -197,6 +197,7 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 	private BuilderType defaultType;
 	public boolean bypassServerOnly;
 	public boolean autoWrap;
+	public String languageKeyPrefix;
 
 	private RegistryInfo(ResourceKey<? extends Registry<?>> key) {
 		this.key = key;
@@ -205,6 +206,7 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 		this.objects = new LinkedHashMap<>();
 		this.bypassServerOnly = false;
 		this.autoWrap = true;
+		this.languageKeyPrefix = key.location().getPath().replace('/', '.');
 	}
 
 	public RegistryInfo type(Class<?> baseClass) {
@@ -214,6 +216,11 @@ public final class RegistryInfo implements Iterable<BuilderBase<?>> {
 
 	public RegistryInfo bypassServerOnly() {
 		this.bypassServerOnly = true;
+		return this;
+	}
+
+	public RegistryInfo languageKeyPrefix(String prefix) {
+		this.languageKeyPrefix = prefix;
 		return this;
 	}
 

@@ -18,15 +18,12 @@ import dev.latvian.mods.kubejs.gui.KubeJSScreen;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.net.NetworkEventJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
@@ -34,7 +31,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -86,12 +82,6 @@ public class KubeJSClient extends KubeJSCommon {
 	}
 
 	@Override
-	public void clientBindings(BindingsEvent event) {
-		event.add("Client", Minecraft.getInstance());
-		event.add("Painter", Painter.INSTANCE);
-	}
-
-	@Override
 	public void clientSetup() {
 		if (Platform.isDevelopmentEnvironment()) {
 			KubeJS.LOGGER.info("CLIENT SETUP");
@@ -136,11 +126,6 @@ public class KubeJSClient extends KubeJSCommon {
 		Painter.INSTANCE.paint(tag);
 	}
 
-	@Override
-	public Level getClientLevel() {
-		return Minecraft.getInstance().level;
-	}
-
 	private void reload(PreparableReloadListener listener) {
 		var start = System.currentTimeMillis();
 		var mc = Minecraft.getInstance();
@@ -169,11 +154,6 @@ public class KubeJSClient extends KubeJSCommon {
 	@Override
 	public void reloadLang() {
 		reload(Minecraft.getInstance().getLanguageManager());
-	}
-
-	@Override
-	public boolean isClientButNotSelf(Player player) {
-		return player instanceof AbstractClientPlayer && !(player instanceof LocalPlayer);
 	}
 
 	@Override

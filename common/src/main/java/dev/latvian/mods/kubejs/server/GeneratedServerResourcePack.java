@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.server;
 
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
@@ -17,6 +18,11 @@ public class GeneratedServerResourcePack extends GeneratedResourcePack {
 	@Override
 	public void generate(Map<ResourceLocation, GeneratedData> map) {
 		var generator = new DataJsonGenerator(map);
+
+		for (var builder : RegistryInfo.ALL_BUILDERS) {
+			builder.generateDataJsons(generator);
+		}
+
 		KubeJSPlugins.forEachPlugin(p -> p.generateDataJsons(generator));
 	}
 }

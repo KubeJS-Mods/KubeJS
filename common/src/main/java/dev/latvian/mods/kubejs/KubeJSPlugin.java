@@ -15,8 +15,6 @@ import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
@@ -39,7 +37,6 @@ public class KubeJSPlugin {
 	public void initStartup() {
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void clientInit() {
 	}
 
@@ -98,7 +95,6 @@ public class KubeJSPlugin {
 	public void loadCommonProperties(CommonProperties properties) {
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void loadClientProperties(ClientProperties properties) {
 	}
 

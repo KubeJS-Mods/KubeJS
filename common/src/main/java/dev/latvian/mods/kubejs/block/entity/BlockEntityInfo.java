@@ -43,7 +43,7 @@ public class BlockEntityInfo {
 	}
 
 	public void serverTick(int frequency, int offset, BlockEntityCallback callback) {
-		serverTicker = new BlockEntityJSTicker(Math.max(1, frequency), Math.max(0, offset), callback);
+		serverTicker = new BlockEntityJSTicker(this, Math.max(1, frequency), Math.max(0, offset), callback, true);
 	}
 
 	public void serverTick(BlockEntityCallback callback) {
@@ -51,7 +51,7 @@ public class BlockEntityInfo {
 	}
 
 	public void clientTick(int frequency, int offset, BlockEntityCallback callback) {
-		clientTicker = new BlockEntityJSTicker(Math.max(1, frequency), Math.max(0, offset), callback);
+		clientTicker = new BlockEntityJSTicker(this, Math.max(1, frequency), Math.max(0, offset), callback, false);
 	}
 
 	public void clientTick(BlockEntityCallback callback) {

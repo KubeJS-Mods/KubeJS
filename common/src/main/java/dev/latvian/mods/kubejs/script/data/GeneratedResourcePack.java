@@ -40,8 +40,9 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 		for (var p : Files.list(path).filter(Files::isDirectory).flatMap(GeneratedResourcePack::tryWalk).filter(Files::isRegularFile).filter(Files::isReadable).toList()) {
 			try {
 				var fileName = p.getFileName().toString();
+				var fileNameLC = fileName.toLowerCase();
 
-				if (fileName.endsWith(".zip") || fileName.equals(".ds_store") || fileName.equals("thumbs.db") || fileName.equals("desktop.ini")) {
+				if (fileNameLC.endsWith(".zip") || fileNameLC.equals(".ds_store") || fileNameLC.equals("thumbs.db") || fileNameLC.equals("desktop.ini")) {
 					return;
 				} else if (Files.isHidden(path)) {
 					ConsoleJS.STARTUP.error("Invisible file found: " + pathName + path.relativize(p).toString().replace('\\', '/'));
@@ -125,6 +126,14 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 							KubeJS.LOGGER.info("- File found: '" + data.id() + "' (" + data.data().get().length + " bytes)");
 						}
 
+						if (skipFile(data)) {
+							if (debug) {
+								KubeJS.LOGGER.info("- Skipping '" + data.id() + "'");
+							}
+
+							continue;
+						}
+
 						generated.put(data.id(), data);
 					}
 				}
@@ -142,6 +151,10 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 		}
 
 		return generated;
+	}
+
+	protected boolean skipFile(GeneratedData data) {
+		return false;
 	}
 
 	@Override

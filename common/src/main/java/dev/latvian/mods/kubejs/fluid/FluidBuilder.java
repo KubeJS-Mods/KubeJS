@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.material.FlowingFluid;
@@ -43,13 +44,13 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	}
 
 	@Override
-	public BuilderBase<FlowingFluid> displayName(String name) {
+	public BuilderBase<FlowingFluid> displayName(Component name) {
 		if (block != null) {
 			block.displayName(name);
 		}
 
 		if (bucketItem != null) {
-			bucketItem.displayName(name + " Bucket");
+			bucketItem.displayName(Component.literal("").append(name).append(" Bucket"));
 		}
 
 		return super.displayName(name);

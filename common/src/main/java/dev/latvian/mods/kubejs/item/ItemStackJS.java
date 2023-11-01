@@ -237,8 +237,8 @@ public interface ItemStackJS {
 	static Item getRawItem(Context cx, @Nullable Object o) {
 		if (o == null) {
 			return Items.AIR;
-		} else if (o instanceof Item item) {
-			return item;
+		} else if (o instanceof ItemLike item) {
+			return item.asItem();
 		} else if (o instanceof CharSequence) {
 			var s = o.toString();
 			if (s.isEmpty()) {
