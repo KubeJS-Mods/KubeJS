@@ -120,4 +120,13 @@ public class PaintEventJS extends ClientEventJS {
 	public void setPositionColorTextureShader() {
 		RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
 	}
+
+	public void blend(boolean enabled) {
+		if (enabled) {
+			RenderSystem.enableBlend();
+			RenderSystem.defaultBlendFunc();
+		} else {
+			RenderSystem.disableBlend();
+		}
+	}
 }

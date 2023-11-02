@@ -73,6 +73,7 @@ public class TextObject extends ScreenPainterObject {
 		event.push();
 		event.translate(ax, ay, az);
 		event.scale(scale.getFloat(event));
+		event.blend(true);
 
 		for (int i = 0; i < text.length; i++) {
 			event.rawText(text[i], c ? (int) -(textWidth[i] / 2F) : 0, (int) (i * ls), color.getInt(event), s);

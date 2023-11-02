@@ -76,6 +76,7 @@ public class GradientObject extends ScreenPainterObject {
 
 		if (texture == null) {
 			event.setPositionColorShader();
+			event.blend(true);
 			event.beginQuads(false);
 			event.vertex(m, ax + aw, ay, az, colTR);
 			event.vertex(m, ax, ay, az, colTL);
@@ -90,6 +91,7 @@ public class GradientObject extends ScreenPainterObject {
 
 			event.setPositionColorTextureShader();
 			event.setShaderTexture(texture);
+			event.blend(true);
 			event.beginQuads(true);
 			event.vertex(m, ax + aw, ay, az, colTR, u1f, v0f);
 			event.vertex(m, ax, ay, az, colTL, u0f, v0f);

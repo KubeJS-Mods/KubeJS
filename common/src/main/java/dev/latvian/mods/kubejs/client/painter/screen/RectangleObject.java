@@ -40,6 +40,7 @@ public class RectangleObject extends ScreenPainterObject {
 
 		if (texture == null) {
 			event.setPositionColorShader();
+			event.blend(true);
 			event.beginQuads(false);
 			event.rectangle(ax, ay, az, aw, ah, color.getInt(event));
 			event.end();
@@ -51,6 +52,7 @@ public class RectangleObject extends ScreenPainterObject {
 
 			event.setPositionColorTextureShader();
 			event.setShaderTexture(texture);
+			event.blend(true);
 			event.beginQuads(true);
 			event.rectangle(ax, ay, az, aw, ah, color.getInt(event), u0f, v0f, u1f, v1f);
 			event.end();

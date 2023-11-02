@@ -67,6 +67,7 @@ public class ItemObject extends ScreenPainterObject {
 		}
 
 		event.scale(aw / 16F, ah / 16F, 1F);
+		event.blend(true);
 		drawItem(event.matrices, itemStack, 0, overlay.getBoolean(event), customText.isEmpty() ? null : customText);
 		event.pop();
 	}

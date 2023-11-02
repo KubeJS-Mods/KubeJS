@@ -225,10 +225,6 @@ public class Painter implements UnitVariables {
 			return;
 		}
 
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		//RenderSystem.disableLighting();
-
 		var event = new PaintScreenEventJS(mc, screen, graphics, mouseX, mouseY, delta);
 		deltaUnit.set(delta);
 		screenWidthUnit.set(event.width);
