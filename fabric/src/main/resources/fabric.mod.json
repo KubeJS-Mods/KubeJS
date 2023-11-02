@@ -12,7 +12,7 @@
 		"issues": "https://kubejs.com/support?source=kubejs&mc=1902&loader=fabric"
 	},
 	"license": "GNU LGPLv3",
-	"icon": "assets/kubejs/textures/kubejs_logo.png",
+	"icon": "kubejs_logo.png",
 	"entrypoints": {
 		"main": [
 			"dev.latvian.mods.kubejs.fabric.KubeJSFabric"
