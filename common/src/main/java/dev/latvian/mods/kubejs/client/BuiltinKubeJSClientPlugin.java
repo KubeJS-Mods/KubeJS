@@ -23,11 +23,13 @@ public class BuiltinKubeJSClientPlugin extends KubeJSPlugin {
 		event.add("Client", Minecraft.getInstance());
 		event.add("Painter", Painter.INSTANCE);
 
-		var se = Minecraft.getInstance().kjs$getScheduledEvents();
+		if (event.getType().isClient()) {
+			var se = Minecraft.getInstance().kjs$getScheduledEvents();
 
-		event.add("setTimeout", new ScheduledEvents.TimeoutJSFunction(se, false, false));
-		event.add("clearTimeout", new ScheduledEvents.TimeoutJSFunction(se, true, false));
-		event.add("setInterval", new ScheduledEvents.TimeoutJSFunction(se, false, true));
-		event.add("clearInterval", new ScheduledEvents.TimeoutJSFunction(se, true, true));
+			event.add("setTimeout", new ScheduledEvents.TimeoutJSFunction(se, false, false));
+			event.add("clearTimeout", new ScheduledEvents.TimeoutJSFunction(se, true, false));
+			event.add("setInterval", new ScheduledEvents.TimeoutJSFunction(se, false, true));
+			event.add("clearInterval", new ScheduledEvents.TimeoutJSFunction(se, true, true));
+		}
 	}
 }

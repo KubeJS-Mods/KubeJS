@@ -342,7 +342,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("onEvent", new LegacyCodeHandler("onEvent()"));
 		event.add("java", new LegacyCodeHandler("java()"));
 
-		if (event.manager instanceof ServerScriptManager sm && sm.server != null) {
+		if (event.getType().isServer() && event.manager instanceof ServerScriptManager sm && sm.server != null) {
 			var se = sm.server.kjs$getScheduledEvents();
 
 			event.add("setTimeout", new ScheduledEvents.TimeoutJSFunction(se, false, false));
