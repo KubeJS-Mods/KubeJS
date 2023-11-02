@@ -24,13 +24,14 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public class ItemObject extends ScreenPainterObject {
-	private ItemStack itemStack = ItemStack.EMPTY;
-	private Unit overlay = FixedBooleanUnit.TRUE;
-	private String customText = "";
-	private Unit rotation = FixedNumberUnit.ZERO;
+public class ItemObject extends BoxObject {
+	public ItemStack itemStack = ItemStack.EMPTY;
+	public Unit overlay = FixedBooleanUnit.TRUE;
+	public String customText = "";
+	public Unit rotation = FixedNumberUnit.ZERO;
 
 	public ItemObject(Painter painter) {
+		super(painter);
 		z = FixedNumberUnit.of(100);
 	}
 

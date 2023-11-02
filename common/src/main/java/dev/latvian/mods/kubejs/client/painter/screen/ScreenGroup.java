@@ -8,16 +8,16 @@ import dev.latvian.mods.unit.Unit;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class ScreenGroup extends ScreenPainterObject {
-	private final PainterObjectStorage storage;
-	private Unit scaleX = FixedNumberUnit.ONE;
-	private Unit scaleY = FixedNumberUnit.ONE;
-	private Unit paddingW = FixedNumberUnit.ZERO;
-	private Unit paddingH = FixedNumberUnit.ZERO;
+public class ScreenGroup extends BoxObject {
+	public final PainterObjectStorage storage;
+	public Unit scaleX = FixedNumberUnit.ONE;
+	public Unit scaleY = FixedNumberUnit.ONE;
+	public Unit paddingW = FixedNumberUnit.ZERO;
+	public Unit paddingH = FixedNumberUnit.ZERO;
 
 	public ScreenGroup(Painter painter) {
+		super(painter);
 		storage = new PainterObjectStorage(painter);
 	}
 
@@ -52,12 +52,15 @@ public class ScreenGroup extends ScreenPainterObject {
 			return;
 		}
 
-		List<Unit> wunits = new ArrayList<>(objects.size());
-		List<Unit> hunits = new ArrayList<>(objects.size());
+		var wunits = new ArrayList<Unit>(objects.size());
+		var hunits = new ArrayList<Unit>(objects.size());
 
 		for (var object : objects) {
 			if (object instanceof ScreenPainterObject s) {
 				s.preDraw(event);
+			}
+
+			if (object instanceof BoxObject s) {
 				wunits.add(s.x.add(s.w));
 				hunits.add(s.y.add(s.h));
 			}
@@ -75,7 +78,10 @@ public class ScreenGroup extends ScreenPainterObject {
 
 		event.push();
 		event.translate(ax, ay, az);
-		event.scale(scaleX.getFloat(event), scaleY.getFloat(event), 1F);
+
+		if (scaleX != FixedNumberUnit.ONE || scaleY != FixedNumberUnit.ONE) {
+			event.scale(scaleX.getFloat(event), scaleY.getFloat(event), 1F);
+		}
 
 		for (var object : storage.getObjects()) {
 			if (object instanceof ScreenPainterObject s) {

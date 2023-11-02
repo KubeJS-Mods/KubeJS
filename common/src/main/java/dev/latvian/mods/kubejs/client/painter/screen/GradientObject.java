@@ -7,18 +7,19 @@ import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.Unit;
 import net.minecraft.resources.ResourceLocation;
 
-public class GradientObject extends ScreenPainterObject {
-	private Unit colorTL = FixedColorUnit.WHITE;
-	private Unit colorTR = FixedColorUnit.WHITE;
-	private Unit colorBL = FixedColorUnit.WHITE;
-	private Unit colorBR = FixedColorUnit.WHITE;
-	private ResourceLocation texture = null;
-	private Unit u0 = FixedNumberUnit.ZERO;
-	private Unit v0 = FixedNumberUnit.ZERO;
-	private Unit u1 = FixedNumberUnit.ONE;
-	private Unit v1 = FixedNumberUnit.ONE;
+public class GradientObject extends BoxObject {
+	public Unit colorTL = FixedColorUnit.WHITE;
+	public Unit colorTR = FixedColorUnit.WHITE;
+	public Unit colorBL = FixedColorUnit.WHITE;
+	public Unit colorBR = FixedColorUnit.WHITE;
+	public ResourceLocation texture = null;
+	public Unit u0 = FixedNumberUnit.ZERO;
+	public Unit v0 = FixedNumberUnit.ZERO;
+	public Unit u1 = FixedNumberUnit.ONE;
+	public Unit v1 = FixedNumberUnit.ONE;
 
 	public GradientObject(Painter painter) {
+		super(painter);
 	}
 
 	@Override

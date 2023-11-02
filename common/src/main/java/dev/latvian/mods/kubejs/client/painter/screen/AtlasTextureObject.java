@@ -8,13 +8,14 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 
-public class AtlasTextureObject extends ScreenPainterObject {
-	private Unit color = FixedColorUnit.WHITE;
-	private ResourceLocation atlas = InventoryMenu.BLOCK_ATLAS;
-	private ResourceLocation texture = null;
-	private TextureAtlas textureAtlas;
+public class AtlasTextureObject extends BoxObject {
+	public Unit color = FixedColorUnit.WHITE;
+	public ResourceLocation atlas = InventoryMenu.BLOCK_ATLAS;
+	public ResourceLocation texture = null;
+	public TextureAtlas textureAtlas;
 
 	public AtlasTextureObject(Painter painter) {
+		super(painter);
 	}
 
 	@Override

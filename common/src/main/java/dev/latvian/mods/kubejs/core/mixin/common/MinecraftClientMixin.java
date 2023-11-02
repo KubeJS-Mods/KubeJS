@@ -62,7 +62,11 @@ public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 			}
 
 			if (ClientEvents.TICK.hasListeners()) {
-				ClientEvents.TICK.post(ScriptType.CLIENT, new ClientEventJS());
+				try {
+					ClientEvents.TICK.post(ScriptType.CLIENT, new ClientEventJS());
+				} catch (IllegalStateException ignored) {
+					// FIXME: Replace with rhino exception when it gets updated
+				}
 			}
 		}
 	}

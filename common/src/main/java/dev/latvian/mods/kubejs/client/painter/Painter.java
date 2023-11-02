@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.client.ClientEventJS;
 import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
 import dev.latvian.mods.kubejs.client.painter.screen.GradientObject;
 import dev.latvian.mods.kubejs.client.painter.screen.ItemObject;
+import dev.latvian.mods.kubejs.client.painter.screen.LineObject;
 import dev.latvian.mods.kubejs.client.painter.screen.PaintScreenEventJS;
 import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
@@ -34,16 +35,6 @@ import java.util.Map;
 public class Painter implements UnitVariables {
 	public static final Painter INSTANCE = new Painter("global");
 
-	public static final int DRAW_ALWAYS = 0;
-	public static final int DRAW_INGAME = 1;
-	public static final int DRAW_GUI = 2;
-
-	public static final int CENTER = 0;
-	public static final int LEFT = -1;
-	public static final int RIGHT = 1;
-	public static final int TOP = -1;
-	public static final int BOTTOM = 1;
-
 	public final String id;
 	private final Object lock;
 	private final Map<String, PainterFactory> objectRegistry;
@@ -56,6 +47,7 @@ public class Painter implements UnitVariables {
 	public final MutableNumberUnit screenHeightUnit;
 	public final MutableNumberUnit mouseXUnit;
 	public final MutableNumberUnit mouseYUnit;
+	public final MutableNumberUnit defaultLineSizeUnit;
 
 	public Painter(String id) {
 		this.id = id;
@@ -72,6 +64,7 @@ public class Painter implements UnitVariables {
 		screenHeightUnit = variables.setMutable("$SH", 1D);
 		mouseXUnit = variables.setMutable("$MX", 0D);
 		mouseYUnit = variables.setMutable("$MY", 0D);
+		defaultLineSizeUnit = variables.setMutable("$LINE", 2.5D);
 
 		// Legacy
 		variables.set("$delta", deltaUnit);
@@ -117,6 +110,7 @@ public class Painter implements UnitVariables {
 		registerObject("atlas_texture", AtlasTextureObject::new);
 		registerObject("gradient", GradientObject::new);
 		registerObject("item", ItemObject::new);
+		registerObject("line", LineObject::new);
 	}
 
 	@Nullable
@@ -189,26 +183,26 @@ public class Painter implements UnitVariables {
 			return;
 		}
 
-		RenderSystem.enableBlend();
 		RenderSystem.enableDepthTest();
-		//RenderSystem.disableLighting();
 
-		var event = new PaintScreenEventJS(mc, graphics, delta);
+		var event = new PaintScreenEventJS(mc, graphics, this, delta);
 		deltaUnit.set(delta);
 		screenWidthUnit.set(event.width);
 		screenHeightUnit.set(event.height);
 		mouseXUnit.set(event.width / 2D);
 		mouseYUnit.set(event.height / 2D);
+		defaultLineSizeUnit.set(Math.max(2.5D, event.mc.getWindow().getWidth() / 1920D * 2.5D));
+
 		ClientEvents.PAINT_SCREEN.post(ScriptType.CLIENT, event);
 
 		for (var object : getScreenObjects()) {
-			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
+			if (object.visible.getBoolean(event) && object.draw.ingame()) {
 				object.preDraw(event);
 			}
 		}
 
 		for (var object : getScreenObjects()) {
-			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_INGAME)) {
+			if (object.visible.getBoolean(event) && object.draw.ingame()) {
 				object.draw(event);
 			}
 		}
@@ -225,24 +219,25 @@ public class Painter implements UnitVariables {
 			return;
 		}
 
-		var event = new PaintScreenEventJS(mc, screen, graphics, mouseX, mouseY, delta);
+		var event = new PaintScreenEventJS(mc, screen, graphics, this, mouseX, mouseY, delta);
 		deltaUnit.set(delta);
 		screenWidthUnit.set(event.width);
 		screenHeightUnit.set(event.height);
 		mouseXUnit.set(mouseX);
 		mouseYUnit.set(mouseY);
+		defaultLineSizeUnit.set(Math.max(2.5D, event.mc.getWindow().getWidth() / 1920D * 2.5D));
 
 		event.resetShaderColor();
 		ClientEvents.PAINT_SCREEN.post(ScriptType.CLIENT, event);
 
 		for (var object : getScreenObjects()) {
-			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
+			if (object.visible.getBoolean(event) && object.draw.gui()) {
 				object.preDraw(event);
 			}
 		}
 
 		for (var object : getScreenObjects()) {
-			if (object.visible.getBoolean(event) && (object.draw == Painter.DRAW_ALWAYS || object.draw == Painter.DRAW_GUI)) {
+			if (object.visible.getBoolean(event) && object.draw.gui()) {
 				object.draw(event);
 			}
 		}

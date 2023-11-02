@@ -7,15 +7,16 @@ import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.Unit;
 import net.minecraft.resources.ResourceLocation;
 
-public class RectangleObject extends ScreenPainterObject {
-	private Unit color = FixedColorUnit.WHITE;
-	private ResourceLocation texture = null;
-	private Unit u0 = FixedNumberUnit.ZERO;
-	private Unit v0 = FixedNumberUnit.ZERO;
-	private Unit u1 = FixedNumberUnit.ONE;
-	private Unit v1 = FixedNumberUnit.ONE;
+public class RectangleObject extends BoxObject {
+	public Unit color = FixedColorUnit.WHITE;
+	public ResourceLocation texture = null;
+	public Unit u0 = FixedNumberUnit.ZERO;
+	public Unit v0 = FixedNumberUnit.ZERO;
+	public Unit u1 = FixedNumberUnit.ONE;
+	public Unit v1 = FixedNumberUnit.ONE;
 
 	public RectangleObject(Painter painter) {
+		super(painter);
 	}
 
 	@Override

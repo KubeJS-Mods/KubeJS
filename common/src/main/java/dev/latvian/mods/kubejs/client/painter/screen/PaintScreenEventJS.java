@@ -12,42 +12,50 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
 public class PaintScreenEventJS extends PaintEventJS implements UnitVariables {
+	public final Painter painter;
 	public final int mouseX;
 	public final int mouseY;
 	public final int width;
 	public final int height;
 	public final boolean inventory;
 
-	public PaintScreenEventJS(Minecraft m, Screen s, GuiGraphics graphics, int mx, int my, float d) {
+	public PaintScreenEventJS(Minecraft m, Screen s, GuiGraphics graphics, Painter painter, int mx, int my, float d) {
 		super(m, graphics, d, s);
-		mouseX = mx;
-		mouseY = my;
-		width = mc.getWindow().getGuiScaledWidth();
-		height = mc.getWindow().getGuiScaledHeight();
-		inventory = true;
+		this.painter = painter;
+		this.mouseX = mx;
+		this.mouseY = my;
+		this.width = mc.getWindow().getGuiScaledWidth();
+		this.height = mc.getWindow().getGuiScaledHeight();
+		this.inventory = true;
 	}
 
-	public PaintScreenEventJS(Minecraft m, GuiGraphics graphics, float d) {
+	public PaintScreenEventJS(Minecraft m, GuiGraphics graphics, Painter painter, float d) {
 		super(m, graphics, d, null);
-		mouseX = -1;
-		mouseY = -1;
-		width = mc.getWindow().getGuiScaledWidth();
-		height = mc.getWindow().getGuiScaledHeight();
-		inventory = false;
+		this.painter = painter;
+		this.mouseX = -1;
+		this.mouseY = -1;
+		this.width = mc.getWindow().getGuiScaledWidth();
+		this.height = mc.getWindow().getGuiScaledHeight();
+		this.inventory = false;
 	}
 
-	public float alignX(float x, float w, int alignX) {
+	@Override
+	public VariableSet getVariables() {
+		return painter.getVariables();
+	}
+
+	public float alignX(float x, float w, AlignMode alignX) {
 		return switch (alignX) {
-			case Painter.RIGHT -> width - w + x;
-			case Painter.CENTER -> (width - w) / 2 + x;
+			case END -> width - w + x;
+			case CENTER -> (width - w) / 2 + x;
 			default -> x;
 		};
 	}
 
-	public float alignY(float y, float h, int alignY) {
+	public float alignY(float y, float h, AlignMode alignY) {
 		return switch (alignY) {
-			case Painter.BOTTOM -> height - h + y;
-			case Painter.CENTER -> (height - h) / 2 + y;
+			case END -> height - h + y;
+			case CENTER -> (height - h) / 2 + y;
 			default -> y;
 		};
 	}
@@ -94,10 +102,5 @@ public class PaintScreenEventJS extends PaintEventJS implements UnitVariables {
 
 	public void rawText(FormattedCharSequence text, int x, int y, int color, boolean shadow) {
 		graphics.drawString(mc.font, text, x, y, color, shadow);
-	}
-
-	@Override
-	public VariableSet getVariables() {
-		return Painter.INSTANCE.getVariables();
 	}
 }

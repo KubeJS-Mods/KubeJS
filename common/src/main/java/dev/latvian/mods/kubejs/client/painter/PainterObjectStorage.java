@@ -42,44 +42,49 @@ public class PainterObjectStorage {
 			return;
 		}
 
-		for (var key : root.getAllKeys()) {
-			var tag = root.getCompound(key);
-
-			if (key.equals("*")) {
-				if (tag.getBoolean("remove")) {
-					objects.clear();
-				} else {
-					for (var o : objects.values()) {
-						o.update(tag);
-					}
-				}
-			} else if (key.equals("$")) {
-				for (var k : tag.getAllKeys()) {
-					if (tag.contains(k, Tag.TAG_ANY_NUMERIC)) {
-						painter.setVariable(k, FixedNumberUnit.of(tag.getFloat(k)));
-					} else {
-						painter.setVariable(k, painter.unitOf(ConsoleJS.CLIENT, tag.get(k)));
-					}
-				}
+		if (root.get("*") instanceof CompoundTag tag) {
+			if (tag.getBoolean("remove")) {
+				objects.clear();
 			} else {
-				var o = objects.get(key);
-
-				if (o != null) {
+				for (var o : objects.values()) {
 					o.update(tag);
-				} else if (key.indexOf(' ') != -1) {
-					ConsoleJS.CLIENT.error("Painter id can't contain spaces!");
-				} else {
-					var type = tag.getString("type");
-					var o1 = painter.make(type);
+				}
+			}
+		}
 
-					if (o1 != null) {
-						o1.id = key;
-						o1.parent = this;
-						o1.update(tag);
-						objects.put(key, o1);
-					} else {
-						ConsoleJS.CLIENT.error("Unknown Painter type: " + type);
-					}
+		if (root.get("$") instanceof CompoundTag tag) {
+			for (var k : tag.getAllKeys()) {
+				if (tag.contains(k, Tag.TAG_ANY_NUMERIC)) {
+					painter.setVariable(k, FixedNumberUnit.of(tag.getFloat(k)));
+				} else {
+					painter.setVariable(k, painter.unitOf(ConsoleJS.CLIENT, tag.get(k)));
+				}
+			}
+		}
+
+		for (var key : root.getAllKeys()) {
+			if (key.equals("*") || key.equals("$")) {
+				continue;
+			}
+
+			var tag = root.getCompound(key);
+			var o = objects.get(key);
+
+			if (o != null) {
+				o.update(tag);
+			} else if (key.indexOf(' ') != -1) {
+				ConsoleJS.CLIENT.error("Painter id can't contain spaces!");
+			} else {
+				var type = tag.getString("type");
+				var o1 = painter.make(type);
+
+				if (o1 != null) {
+					o1.id = key;
+					o1.parent = this;
+					o1.update(tag);
+					objects.put(key, o1);
+				} else {
+					ConsoleJS.CLIENT.error("Unknown Painter type: " + type);
 				}
 			}
 		}

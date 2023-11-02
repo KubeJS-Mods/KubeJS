@@ -10,17 +10,18 @@ import dev.latvian.mods.unit.Unit;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.FormattedCharSequence;
 
-public class TextObject extends ScreenPainterObject {
-	private FormattedCharSequence[] text = new FormattedCharSequence[0];
-	private Unit shadow = FixedBooleanUnit.FALSE;
-	private Unit scale = FixedNumberUnit.ONE;
-	private Unit color = FixedColorUnit.WHITE;
-	private Unit centered = FixedBooleanUnit.FALSE;
-	private Unit lineSpacing = FixedNumberUnit.TEN;
+public class TextObject extends BoxObject {
+	public FormattedCharSequence[] text = new FormattedCharSequence[0];
+	public Unit shadow = FixedBooleanUnit.FALSE;
+	public Unit scale = FixedNumberUnit.ONE;
+	public Unit color = FixedColorUnit.WHITE;
+	public Unit centered = FixedBooleanUnit.FALSE;
+	public Unit lineSpacing = FixedNumberUnit.TEN;
 
 	private float[] textWidth = new float[0];
 
 	public TextObject(Painter painter) {
+		super(painter);
 	}
 
 	@Override
