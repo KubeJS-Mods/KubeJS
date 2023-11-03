@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.item.forge;
 
 import dev.latvian.mods.kubejs.player.PlayerEventJS;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import org.jetbrains.annotations.Nullable;
@@ -15,8 +15,8 @@ public class ItemDestroyedEventJS extends PlayerEventJS {
 	}
 
 	@Override
-	public ServerPlayer getEntity() {
-		return (ServerPlayer) event.getEntity();
+	public Player getEntity() {
+		return event.getEntity();
 	}
 
 	@Nullable
