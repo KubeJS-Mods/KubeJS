@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
 
-public class DataJsonGenerator extends JsonGenerator {
+public class DataJsonGenerator extends ResourceGenerator {
 	public DataJsonGenerator(Map<ResourceLocation, GeneratedData> m) {
 		super(ConsoleJS.SERVER, m);
 	}

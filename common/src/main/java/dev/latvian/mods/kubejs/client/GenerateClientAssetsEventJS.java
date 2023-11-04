@@ -1,12 +1,14 @@
 package dev.latvian.mods.kubejs.client;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 
+import java.io.IOException;
 import java.util.function.Consumer;
 
 public class GenerateClientAssetsEventJS extends EventJS {
@@ -37,5 +39,9 @@ public class GenerateClientAssetsEventJS extends EventJS {
 	public void addMultipartBlockState(ResourceLocation id, Consumer<MultipartBlockStateGenerator> consumer) {
 		var gen = Util.make(new MultipartBlockStateGenerator(), consumer);
 		add(new ResourceLocation(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
+	}
+
+	public void stencil(ResourceLocation target, String stencil, JsonObject colors) throws IOException {
+		generator.stencil(target, stencil, colors);
 	}
 }

@@ -13,8 +13,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
-public record GeneratedData(ResourceLocation id, Lazy<byte[]> data) implements IoSupplier<InputStream> {
-	public static final GeneratedData INTERNAL_RELOAD = new GeneratedData(KubeJS.id("__internal.reload"), Lazy.of(() -> new byte[0]));
+public record GeneratedData(ResourceLocation id, Lazy<byte[]> data, boolean alwaysForget) implements IoSupplier<InputStream> {
+	public static final GeneratedData INTERNAL_RELOAD = new GeneratedData(KubeJS.id("__internal.reload"), Lazy.of(() -> new byte[0]), false);
 
 	public static final GeneratedData PACK_META = new GeneratedData(KubeJS.id("pack.mcmeta"), Lazy.of(() -> {
 		var json = new JsonObject();
@@ -23,7 +23,7 @@ public record GeneratedData(ResourceLocation id, Lazy<byte[]> data) implements I
 		pack.addProperty("pack_format", 15);
 		json.add("pack", pack);
 		return json.toString().getBytes(StandardCharsets.UTF_8);
-	}));
+	}), false);
 
 	public static final GeneratedData PACK_ICON = new GeneratedData(KubeJS.id("textures/kubejs_logo.png"), Lazy.of(() -> {
 		try {
@@ -32,12 +32,18 @@ public record GeneratedData(ResourceLocation id, Lazy<byte[]> data) implements I
 			ex.printStackTrace();
 			return new byte[0];
 		}
-	}));
+	}), true);
 
 	@Override
 	@NotNull
 	public InputStream get() {
-		return new ByteArrayInputStream(data.get());
+		var in = new ByteArrayInputStream(data.get());
+
+		if (alwaysForget) {
+			data.forget();
+		}
+
+		return in;
 	}
 
 	@Override

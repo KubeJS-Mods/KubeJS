@@ -1,19 +1,30 @@
 package dev.latvian.mods.kubejs.generator;
 
+import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
+import dev.latvian.mods.kubejs.client.StencilTexture;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 
+import javax.imageio.ImageIO;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class AssetJsonGenerator extends JsonGenerator {
+public class AssetJsonGenerator extends ResourceGenerator {
+	private final Map<String, StencilTexture> stencils;
+
 	public AssetJsonGenerator(Map<ResourceLocation, GeneratedData> m) {
 		super(ConsoleJS.CLIENT, m);
+		this.stencils = new HashMap<>();
 	}
 
 	public void blockState(ResourceLocation id, Consumer<VariantBlockStateGenerator> consumer) {
@@ -38,5 +49,36 @@ public class AssetJsonGenerator extends JsonGenerator {
 
 	public static ResourceLocation asItemModelLocation(ResourceLocation id) {
 		return new ResourceLocation(id.getNamespace(), "models/item/" + id.getPath());
+	}
+
+	public void stencil(ResourceLocation target, String stencil, JsonObject colors) throws IOException {
+		var st = stencils.get(stencil);
+
+		if (st == null) {
+			var path = KubeJSPaths.ASSETS.resolve("kubejs/textures/stencil/" + stencil + ".png");
+
+			if (Files.notExists(path)) {
+				throw new IllegalArgumentException("Stencil file 'kubejs/assets/kubejs/textures/stencil/'" + stencil + ".png' not found!");
+			}
+
+			try (var in = new BufferedInputStream(Files.newInputStream(path))) {
+				var metaPath = KubeJSPaths.ASSETS.resolve("kubejs/textures/stencil/" + stencil + ".png.mcmeta");
+				byte[] meta = null;
+
+				if (Files.exists(metaPath)) {
+					meta = Files.readAllBytes(metaPath);
+				}
+
+				st = new StencilTexture(ImageIO.read(in), meta);
+				stencils.put(stencil, st);
+			}
+		}
+
+		var st1 = st;
+		add(new ResourceLocation(target.getNamespace(), "textures/" + target.getPath() + ".png"), () -> st1.create(colors), true);
+
+		if (st.mcmeta != null) {
+			add(new ResourceLocation(target.getNamespace(), "textures/" + target.getPath() + ".png.mcmeta"), () -> st1.mcmeta, false);
+		}
 	}
 }

@@ -11,17 +11,21 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class JsonGenerator {
+public class ResourceGenerator {
 	private final ConsoleJS console;
 	private final Map<ResourceLocation, GeneratedData> map;
 
-	public JsonGenerator(ConsoleJS c, Map<ResourceLocation, GeneratedData> m) {
+	public ResourceGenerator(ConsoleJS c, Map<ResourceLocation, GeneratedData> m) {
 		console = c;
 		map = m;
 	}
 
+	public void add(ResourceLocation id, Supplier<byte[]> data, boolean alwaysForget) {
+		map.put(id, new GeneratedData(id, Lazy.of(data), alwaysForget));
+	}
+
 	public void add(ResourceLocation id, Supplier<byte[]> data) {
-		map.put(id, new GeneratedData(id, Lazy.of(data)));
+		add(id, data, false);
 	}
 
 	public void json(ResourceLocation id, JsonElement json) {

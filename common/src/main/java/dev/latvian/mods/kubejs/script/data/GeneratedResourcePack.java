@@ -115,7 +115,7 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 								ex.printStackTrace();
 								return new byte[0];
 							}
-						}));
+						}), forgetFile(pathStr));
 
 						if (debug) {
 							KubeJS.LOGGER.info("- File found: '" + data.id() + "' (" + data.data().get().length + " bytes)");
@@ -146,6 +146,10 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 		}
 
 		return generated;
+	}
+
+	protected boolean forgetFile(String path) {
+		return false;
 	}
 
 	protected boolean skipFile(GeneratedData data) {

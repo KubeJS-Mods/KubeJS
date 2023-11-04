@@ -150,6 +150,11 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 	}
 
 	@Override
+	protected boolean forgetFile(String path) {
+		return path.endsWith(".png") || path.endsWith(".ogg");
+	}
+
+	@Override
 	protected boolean skipFile(GeneratedData data) {
 		return data.id().getPath().startsWith("lang/");
 	}
