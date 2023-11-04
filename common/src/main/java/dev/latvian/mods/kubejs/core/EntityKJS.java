@@ -304,7 +304,13 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	default RayTraceResultJS kjs$rayTrace(double distance, boolean fluids) {
-		return new RayTraceResultJS(kjs$self(), kjs$self().pick(distance, 0F, fluids), distance);
+		var blockResult = kjs$self().pick(distance, 0.0F, fluids);
+		var traceResult = new RayTraceResultJS(kjs$self(), blockResult, distance);
+		var entityResult = ProjectileUtil.getHitResultOnViewVector(kjs$self(), entity -> !entity.isSpectator() && entity.isPickable(), distance);
+		if (entityResult.getType() == HitResult.Type.ENTITY) {
+			traceResult = new RayTraceResultJS(kjs$self(), entityResult, distance);
+		}
+		return traceResult;
 	}
 
 	default RayTraceResultJS kjs$rayTrace(double distance) {
