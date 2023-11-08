@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.platform.LevelPlatformHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,6 +27,9 @@ public class LevelFabricHelper implements LevelPlatformHelper {
 
 	@Override
 	public double getReachDistance(LivingEntity livingEntity) {
+		if (livingEntity instanceof Player player){
+			if (!player.isCreative()) return 4.5;
+		}
 		return 5;
 	}
 
