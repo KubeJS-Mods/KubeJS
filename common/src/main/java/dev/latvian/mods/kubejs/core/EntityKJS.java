@@ -28,6 +28,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.scores.Team;
@@ -321,7 +323,21 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	default RayTraceResultJS kjs$rayTrace(double distance, boolean fluids) {
-		return new RayTraceResultJS(kjs$self(), kjs$self().pick(distance, 0F, fluids), distance);
+		var entity = kjs$self();
+		var hitResult = entity.pick(distance, 0F, fluids);
+		var eyePosition = entity.getEyePosition();
+		var lookVector = entity.getViewVector(1.0f);
+		var traceEnd = eyePosition.add(lookVector.x * distance, lookVector.y * distance, lookVector.z * distance);
+		var bound = entity.getBoundingBox().expandTowards(lookVector.scale(distance)).inflate(1.0, 1.0, 1.0);
+		var distanceSquared = hitResult.getType() != HitResult.Type.MISS ? hitResult.getLocation().distanceToSqr(eyePosition) : distance * distance;
+		var entityHitResult = ProjectileUtil.getEntityHitResult(entity, eyePosition, traceEnd, bound, ent -> !ent.isSpectator() && ent.isPickable(), distanceSquared);
+		if (entityHitResult != null) {
+			var entityDistanceSquared = eyePosition.distanceToSqr(entityHitResult.getLocation());
+			if (entityDistanceSquared < distanceSquared || hitResult.getType() == HitResult.Type.MISS) {
+				hitResult = entityHitResult;
+			}
+		}
+		return new RayTraceResultJS(entity, hitResult, distance);
 	}
 
 	default RayTraceResultJS kjs$rayTrace(double distance) {
