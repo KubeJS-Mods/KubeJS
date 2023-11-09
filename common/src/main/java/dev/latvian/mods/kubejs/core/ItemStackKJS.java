@@ -17,6 +17,7 @@ import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -329,5 +330,24 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 
 	default OutputItem kjs$withChance(double chance) {
 		return OutputItem.of(kjs$self(), chance);
+	}
+
+	default ItemStack kjs$withLore(Component... text) {
+		var is = kjs$self().copy();
+
+		if (text.length > 0) {
+			var tag = is.getOrCreateTag();
+			var display = tag.getCompound("display");
+			var lore = display.getList("Lore", NbtType.STRING);
+
+			for (var t : text) {
+				lore.add(StringTag.valueOf(Component.Serializer.toJson(t)));
+			}
+
+			display.put("Lore", lore);
+			tag.put("display", display);
+		}
+
+		return is;
 	}
 }
