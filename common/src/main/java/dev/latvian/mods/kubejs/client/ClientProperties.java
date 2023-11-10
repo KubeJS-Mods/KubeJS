@@ -3,13 +3,10 @@ package dev.latvian.mods.kubejs.client;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Mth;
 
 import java.io.Reader;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.OptionalInt;
 import java.util.Properties;
 
@@ -30,8 +27,7 @@ public class ClientProperties {
 
 	private final Properties properties;
 	private boolean writeProperties;
-	private Path icon;
-	private boolean tempIconCancel = true;
+	private final boolean tempIconCancel = true;
 
 	public String title;
 	private boolean showTagNames;
@@ -77,22 +73,6 @@ public class ClientProperties {
 			menuBackgroundBrightness = Mth.clamp(get("menuBackgroundBrightness", 64), 0, 255);
 			menuInnerBackgroundBrightness = Mth.clamp(get("menuInnerBackgroundBrightness", 32), 0, 255);
 			menuBackgroundScale = (float) Mth.clamp(get("menuBackgroundScale", 32D), 0.0625D, 1024D);
-
-			var iconFile = KubeJSPaths.CONFIG.resolve("packicon.png");
-
-			try {
-				var p0 = KubeJSPaths.DIRECTORY.resolve("packicon.png");
-
-				if (Files.exists(p0)) {
-					Files.move(p0, iconFile);
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-
-			if (Files.exists(iconFile)) {
-				icon = iconFile;
-			}
 
 			KubeJSPlugins.forEachPlugin(p -> p.loadClientProperties(this));
 
@@ -151,29 +131,6 @@ public class ClientProperties {
 		c[1] = ((color >> 8) & 0xFF) / 255F;
 		c[2] = ((color >> 0) & 0xFF) / 255F;
 		return c;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public boolean cancelIconUpdate() {
-		if (tempIconCancel) {
-			if (icon != null) {
-				try (var stream16 = Files.newInputStream(icon);
-					 var stream32 = Files.newInputStream(icon)) {
-					tempIconCancel = false;
-					// todo: ~~buy noose~~ fix this
-					//Minecraft.getInstance().getWindow().setIcon(stream16, stream32);
-					tempIconCancel = true;
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		return false;
 	}
 
 	public boolean getShowTagNames() {

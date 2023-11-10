@@ -332,7 +332,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		return OutputItem.of(kjs$self(), chance);
 	}
 
-	default ItemStack kjs$withLore(Component... text) {
+	default ItemStack kjs$withLore(Component[] text) {
 		var is = kjs$self().copy();
 
 		if (text.length > 0) {

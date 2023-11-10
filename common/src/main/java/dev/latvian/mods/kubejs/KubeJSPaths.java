@@ -40,6 +40,7 @@ public interface KubeJSPaths {
 	Path COMMON_PROPERTIES = CONFIG.resolve("common.properties");
 	Path CLIENT_PROPERTIES = CONFIG.resolve("client.properties");
 	Path CONFIG_DEV_PROPERTIES = CONFIG.resolve("dev.properties");
+	Path PACKICON = CONFIG.resolve("packicon.png");
 	Path README = DIRECTORY.resolve("README.txt");
 	Path LOCAL = dir(Platform.getGameFolder().resolve("local").resolve("kubejs"));
 	Path LOCAL_CACHE = dir(LOCAL.resolve("cache"));
