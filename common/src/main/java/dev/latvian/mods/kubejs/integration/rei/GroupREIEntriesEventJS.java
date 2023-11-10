@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
-import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.Tags;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import me.shedaniel.rei.api.client.registry.entry.CollapsibleEntryRegistry;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
@@ -14,15 +14,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
 @SuppressWarnings("UnstableApiUsage")
 public class GroupREIEntriesEventJS extends EventJS {
+	private final REIEntryWrappers entryWrappers;
 	public final CollapsibleEntryRegistry registry;
 
-	public GroupREIEntriesEventJS(CollapsibleEntryRegistry registry) {
+	public GroupREIEntriesEventJS(REIEntryWrappers entryWrappers, CollapsibleEntryRegistry registry) {
+		this.entryWrappers = entryWrappers;
 		this.registry = registry;
 	}
 
@@ -37,18 +38,9 @@ public class GroupREIEntriesEventJS extends EventJS {
 
 	public void groupEntries(ResourceLocation groupId, Component description, ResourceLocation entryTypeId, Object entries) {
 		var entryType = KubeJSREIPlugin.getTypeOrThrow(entryTypeId);
-		var wrapper = KubeJSREIPlugin.getWrapperOrFallback(entryType);
-		var entryList = ListJS.orSelf(entries);
-
-		var list = new ArrayList<EntryStack<?>>(entryList.size());
-		for (var entry : entryList) {
-			var stacks = wrapper.wrap(entry);
-			if (stacks != null && !stacks.isEmpty()) {
-				list.addAll(stacks);
-			}
-		}
-
-		group(groupId, description, list);
+		var wrapper = entryWrappers.getWrapper(entryType);
+		var list = wrapper.entryList(entries);
+		group(groupId, description, UtilsJS.cast(list));
 	}
 
 	public void groupSameItem(ResourceLocation group, Component description, ItemStack item) {
@@ -85,7 +77,6 @@ public class GroupREIEntriesEventJS extends EventJS {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public void groupEntriesIf(ResourceLocation groupId, Component description, ResourceLocation entryTypeId, Predicate predicate) {
 		var entryType = KubeJSREIPlugin.getTypeOrThrow(entryTypeId);
-		var wrapper = KubeJSREIPlugin.getWrapperOrFallback(entryType);
 		registry.group(groupId, description, entryType, (entry) -> predicate.test(entry.getValue()));
 	}
 

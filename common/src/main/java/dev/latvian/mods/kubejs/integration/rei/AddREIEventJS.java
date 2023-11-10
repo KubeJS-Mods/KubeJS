@@ -1,36 +1,26 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
-import com.google.common.collect.Lists;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.event.EventResult;
-import dev.latvian.mods.kubejs.util.ListJS;
 import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class AddREIEventJS extends EventJS {
+public class AddREIEventJS<T, C> extends EventJS {
 	private final EntryRegistry registry;
-	private final EntryWrapper entryWrapper;
-	private final List<EntryStack<?>> added = Lists.newArrayList();
+	private final EntryWrapper<T, C> entryWrapper;
+	private final List<EntryStack<T>> added;
 
-	public AddREIEventJS(EntryRegistry registry, EntryWrapper entryWrapper) {
+	public AddREIEventJS(EntryRegistry registry, EntryWrapper<T, C> entryWrapper) {
 		this.registry = registry;
 		this.entryWrapper = entryWrapper;
+		this.added = new ArrayList<>();
 	}
 
 	public void add(Object o) {
-		for (var o1 : ListJS.orSelf(o)) {
-			var stacks = entryWrapper.wrap(o1);
-
-			if (stacks != null && !stacks.isEmpty()) {
-				for (var stack : stacks) {
-					if (stack != null && !stack.isEmpty()) {
-						added.add(stack);
-					}
-				}
-			}
-		}
+		added.addAll(entryWrapper.entryList(o));
 	}
 
 	@Override

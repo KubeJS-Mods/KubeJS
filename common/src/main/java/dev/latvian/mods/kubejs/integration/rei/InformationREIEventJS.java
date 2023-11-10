@@ -14,6 +14,12 @@ import net.minecraft.world.item.crafting.Ingredient;
 import java.util.Arrays;
 
 public class InformationREIEventJS extends EventJS {
+	private final REIEntryWrappers entryWrappers;
+
+	public InformationREIEventJS(REIEntryWrappers entryWrappers) {
+		this.entryWrappers = entryWrappers;
+	}
+
 	public void addItem(Ingredient stacks, Component title, Component[] description) {
 		add(VanillaEntryTypes.ITEM, stacks, title, description);
 	}
@@ -27,9 +33,12 @@ public class InformationREIEventJS extends EventJS {
 	}
 
 	@HideFromJS
-	public void add(EntryType<?> type, Object stacks, Component title, Component[] description) {
+	public <T> void add(EntryType<T> type, Object stacks, Component title, Component[] description) {
+		var w = entryWrappers.getWrapper(type);
+		var list = w.entryList(stacks);
+
 		BuiltinClientPlugin.getInstance().registerInformation(
-			EntryIngredient.of(KubeJSREIPlugin.getWrapperOrFallback(type).wrap(stacks)),
+			EntryIngredient.of(list),
 			title,
 			components -> {
 				components.addAll(Arrays.asList(description));
