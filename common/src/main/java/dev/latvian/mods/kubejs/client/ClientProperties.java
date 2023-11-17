@@ -43,6 +43,7 @@ public class ClientProperties {
 	private int menuBackgroundBrightness;
 	private int menuInnerBackgroundBrightness;
 	private float menuBackgroundScale;
+	public boolean blurScaledPackIcon;
 
 	private ClientProperties() {
 		properties = new Properties();
@@ -73,6 +74,7 @@ public class ClientProperties {
 			menuBackgroundBrightness = Mth.clamp(get("menuBackgroundBrightness", 64), 0, 255);
 			menuInnerBackgroundBrightness = Mth.clamp(get("menuInnerBackgroundBrightness", 32), 0, 255);
 			menuBackgroundScale = (float) Mth.clamp(get("menuBackgroundScale", 32D), 0.0625D, 1024D);
+			blurScaledPackIcon = get("blurScaledPackIcon", true);
 
 			KubeJSPlugins.forEachPlugin(p -> p.loadClientProperties(this));
 

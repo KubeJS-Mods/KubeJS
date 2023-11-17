@@ -44,4 +44,18 @@ public class GenerateClientAssetsEventJS extends EventJS {
 	public void stencil(ResourceLocation target, String stencil, JsonObject colors) throws IOException {
 		generator.stencil(target, stencil, colors);
 	}
+
+	public void defaultItemModel(ResourceLocation id) {
+		addModel("item", id, model -> {
+			model.parent("minecraft:item/generated");
+			model.texture("layer0", id.getNamespace() + ":item/" + id.getPath());
+		});
+	}
+
+	public void defaultHandheldItemModel(ResourceLocation id) {
+		addModel("item", id, model -> {
+			model.parent("minecraft:item/handheld");
+			model.texture("layer0", id.getNamespace() + ":item/" + id.getPath());
+		});
+	}
 }
