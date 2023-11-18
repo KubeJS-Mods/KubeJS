@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,7 +33,7 @@ public record BlockStateComponent(ComponentRole crole) implements RecipeComponen
 
 	@Override
 	public JsonPrimitive write(RecipeJS recipe, BlockState value) {
-		return new JsonPrimitive(value.toString());
+		return new JsonPrimitive(BlockStateParser.serialize(value));
 	}
 
 	@Override
