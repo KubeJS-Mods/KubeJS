@@ -40,9 +40,18 @@ public class KubeJSForgeClient {
 		for (var builder : RegistryInfo.FLUID) {
 			if (builder instanceof FluidBuilder b) {
 				switch (b.renderType) {
-					case "cutout" -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.cutout());
-					case "cutout_mipped" -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.cutoutMipped());
-					case "translucent" -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.translucent());
+					case "cutout" -> {
+						ItemBlockRenderTypes.setRenderLayer(b.get().getSource(), RenderType.cutout());
+						ItemBlockRenderTypes.setRenderLayer(b.get().getFlowing(), RenderType.cutout());
+					}
+					case "cutout_mipped" -> {
+						ItemBlockRenderTypes.setRenderLayer(b.get().getSource(), RenderType.cutoutMipped());
+						ItemBlockRenderTypes.setRenderLayer(b.get().getFlowing(), RenderType.cutoutMipped());
+					}
+					case "translucent" -> {
+						ItemBlockRenderTypes.setRenderLayer(b.get().getSource(), RenderType.translucent());
+						ItemBlockRenderTypes.setRenderLayer(b.get().getFlowing(), RenderType.translucent());
+					}
 				}
 			}
 		}

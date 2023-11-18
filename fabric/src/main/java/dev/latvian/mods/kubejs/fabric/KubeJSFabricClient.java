@@ -30,9 +30,9 @@ public class KubeJSFabricClient {
 		for (var builder : RegistryInfo.FLUID) {
 			if (builder instanceof FluidBuilder b) {
 				switch (b.renderType) {
-					case "cutout" -> BlockRenderLayerMap.INSTANCE.putFluids(RenderType.cutout(), b.get());
-					case "cutout_mipped" -> BlockRenderLayerMap.INSTANCE.putFluids(RenderType.cutoutMipped(), b.get());
-					case "translucent" -> BlockRenderLayerMap.INSTANCE.putFluids(RenderType.translucent(), b.get());
+					case "cutout" -> BlockRenderLayerMap.INSTANCE.putFluids(RenderType.cutout(), b.get().getSource(), b.get().getFlowing());
+					case "cutout_mipped" -> BlockRenderLayerMap.INSTANCE.putFluids(RenderType.cutoutMipped(), b.get().getSource(), b.get().getFlowing());
+					case "translucent" -> BlockRenderLayerMap.INSTANCE.putFluids(RenderType.translucent(), b.get().getSource(), b.get().getFlowing());
 				}
 			}
 		}
