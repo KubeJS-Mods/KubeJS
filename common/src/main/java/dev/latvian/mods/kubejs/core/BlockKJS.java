@@ -61,6 +61,10 @@ public interface BlockKJS extends BlockBuilderProvider {
 		throw new NoMixinException();
 	}
 
+	default void kjs$setNameKey(String key) {
+		throw new NoMixinException();
+	}
+
 	default void kjs$setDestroySpeed(float v) {
 		for (var state : kjs$getBlockStates()) {
 			state.kjs$setDestroySpeed(v);

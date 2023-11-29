@@ -202,6 +202,10 @@ public interface ItemKJS extends IngredientSupplierKJS {
 		return ImmutableList.copyOf(attributes.get(attribute));
 	}
 
+	default void kjs$setNameKey(String key) {
+		throw new NoMixinException();
+	}
+
 	default ItemStackKey kjs$getTypeItemStackKey() {
 		throw new NoMixinException();
 	}

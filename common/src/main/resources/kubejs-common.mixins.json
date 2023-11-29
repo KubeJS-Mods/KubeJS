@@ -4,6 +4,7 @@
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
 		"BlockBehaviourMixin",
+		"BlockMixin",
 		"BlockStateBaseMixin",
 		"ContainerMixin",
 		"CraftingContainerMixin",

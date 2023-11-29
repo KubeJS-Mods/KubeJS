@@ -220,6 +220,11 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Override
+	@Accessor("descriptionId")
+	@Mutable
+	public abstract void kjs$setNameKey(String key);
+
+	@Override
 	public ItemStackKey kjs$getTypeItemStackKey() {
 		if (kjs$typeItemStackKey == null) {
 			kjs$typeItemStackKey = new ItemStackKey(kjs$self(), null);
