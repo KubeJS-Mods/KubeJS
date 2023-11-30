@@ -33,7 +33,7 @@ public class ConsoleJS {
 	public static ConsoleJS getCurrent(ConsoleJS def) {
 		Context cx = Context.getCurrentContext();
 
-		if (cx != null && cx.sharedContextData.getExtraProperty("Console") instanceof ConsoleJS c) {
+		if (cx != null && cx.sharedContextData != null && cx.sharedContextData.getExtraProperty("Console") instanceof ConsoleJS c) {
 			return c;
 		}
 
