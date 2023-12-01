@@ -43,10 +43,10 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 				var fileNameLC = fileName.toLowerCase();
 
 				if (fileNameLC.endsWith(".zip") || fileNameLC.equals(".ds_store") || fileNameLC.equals("thumbs.db") || fileNameLC.equals("desktop.ini")) {
-					return;
+					continue;
 				} else if (Files.isHidden(path)) {
 					ConsoleJS.STARTUP.error("Invisible file found: " + pathName + path.relativize(p).toString().replace('\\', '/'));
-					return;
+					continue;
 				}
 
 				var chars = fileName.toCharArray();
@@ -54,10 +54,10 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 				for (char c : chars) {
 					if (c >= 'A' && c <= 'Z') {
 						ConsoleJS.STARTUP.error("Invalid file name: Uppercase '" + c + "' in " + pathName + path.relativize(p).toString().replace('\\', '/'));
-						return;
+						break;
 					} else if (c != '_' && c != '-' && (c < 'a' || c > 'z') && (c < '0' || c > '9') && c != '/' && c != '.') {
 						ConsoleJS.STARTUP.error("Invalid file name: Invalid character '" + c + "' in " + pathName + path.relativize(p).toString().replace('\\', '/'));
-						return;
+						break;
 					}
 				}
 			} catch (Exception ex) {
