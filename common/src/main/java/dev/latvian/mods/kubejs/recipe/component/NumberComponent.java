@@ -2,8 +2,11 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
+import dev.latvian.mods.rhino.ScriptRuntime;
+import dev.latvian.mods.rhino.Wrapper;
 import net.minecraft.util.Mth;
 
 public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
@@ -32,6 +35,42 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 	LongRange ANY_LONG = longRange(Long.MIN_VALUE, Long.MAX_VALUE);
 	FloatRange ANY_FLOAT = floatRange(Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
 	DoubleRange ANY_DOUBLE = doubleRange(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+
+	DynamicRecipeComponent DYNAMIC_INT = new DynamicRecipeComponent(TypeDescJS.object()
+		.add("min", TypeDescJS.NUMBER)
+		.add("max", TypeDescJS.NUMBER),
+		(cx, scope, args) -> {
+			var min = ScriptRuntime.toInt32(cx, Wrapper.unwrapped(args.getOrDefault("min", 0)));
+			var max = ScriptRuntime.toInt32(cx, Wrapper.unwrapped(args.getOrDefault("max", Integer.MAX_VALUE)));
+			return NumberComponent.intRange(min, max);
+		});
+
+	DynamicRecipeComponent DYNAMIC_LONG = new DynamicRecipeComponent(TypeDescJS.object()
+		.add("min", TypeDescJS.NUMBER)
+		.add("max", TypeDescJS.NUMBER),
+		(cx, scope, args) -> {
+			var min = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("min", 0)));
+			var max = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("max", Long.MAX_VALUE)));
+			return NumberComponent.longRange((long) min, (long) max);
+		});
+
+	DynamicRecipeComponent DYNAMIC_FLOAT = new DynamicRecipeComponent(TypeDescJS.object()
+		.add("min", TypeDescJS.NUMBER)
+		.add("max", TypeDescJS.NUMBER),
+		(cx, scope, args) -> {
+			var min = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("min", 0F)));
+			var max = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("max", Float.MAX_VALUE)));
+			return NumberComponent.floatRange((float) min, (float) max);
+		});
+
+	DynamicRecipeComponent DYNAMIC_DOUBLE = new DynamicRecipeComponent(TypeDescJS.object()
+		.add("min", TypeDescJS.NUMBER)
+		.add("max", TypeDescJS.NUMBER),
+		(cx, scope, args) -> {
+			var min = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("min", 0)));
+			var max = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("max", Double.MAX_VALUE)));
+			return NumberComponent.doubleRange(min, max);
+		});
 
 	private static Number numberOf(Object from) {
 		if (from instanceof Number n) {

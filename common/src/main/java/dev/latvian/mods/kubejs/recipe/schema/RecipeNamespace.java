@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
+import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeSchemaRegistryEventJS;
@@ -29,8 +30,7 @@ public class RecipeNamespace extends LinkedHashMap<String, RecipeSchemaType> {
 				ns.put(entry.getKey().location().getPath(), new JsonRecipeSchemaType(ns, entry.getKey().location(), entry.getValue()));
 			}
 
-			var event = new RegisterRecipeSchemasEvent(all, mappedRecipes);
-			KubeJSPlugins.forEachPlugin(plugin -> plugin.registerRecipeSchemas(event));
+			KubeJSPlugins.forEachPlugin(new RegisterRecipeSchemasEvent(all, mappedRecipes), KubeJSPlugin::registerRecipeSchemas);
 			StartupEvents.RECIPE_SCHEMA_REGISTRY.post(ScriptType.STARTUP, new RecipeSchemaRegistryEventJS(all, mappedRecipes));
 		}
 

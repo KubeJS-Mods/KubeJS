@@ -3,8 +3,13 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.NativeJavaObject;
+import dev.latvian.mods.rhino.ScriptableObject;
+import dev.latvian.mods.rhino.Wrapper;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Predicate;
@@ -46,6 +51,15 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 			return componentType();
 		}
 	};
+
+	public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(TypeDescJS.object()
+		.add("error", TypeDescJS.STRING, true)
+		.add("filter", TypeDescJS.ANY),
+		(cx, scope, args) -> {
+			var error = String.valueOf(Wrapper.unwrapped(args.getOrDefault("error", "invalid string")));
+			var filter = args.get("filter") instanceof ScriptableObject obj ? NativeJavaObject.createInterfaceAdapter(cx, Predicate.class, obj) : UtilsJS.ALWAYS_TRUE;
+			return new StringComponent(error, (Predicate) filter);
+		});
 
 	@Override
 	public String componentType() {

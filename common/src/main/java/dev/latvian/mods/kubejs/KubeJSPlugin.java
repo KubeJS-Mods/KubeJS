@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistryEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
@@ -60,6 +61,9 @@ public class KubeJSPlugin {
 	}
 
 	public void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
+	}
+
+	public void registerRecipeComponents(RecipeComponentFactoryRegistryEvent event) {
 	}
 
 	public void registerBlockEntityAttachments(List<BlockEntityAttachmentType> types) {
