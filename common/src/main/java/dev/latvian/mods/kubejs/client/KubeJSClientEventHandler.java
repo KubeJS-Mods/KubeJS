@@ -144,8 +144,8 @@ public class KubeJSClientEventHandler {
 
 	@Nullable
 	public static Screen setScreen(Screen screen) {
-		if (screen instanceof TitleScreen && !ScriptType.STARTUP.errors.isEmpty() && CommonProperties.get().startupErrorGUI) {
-			return new KubeJSErrorScreen(ScriptType.STARTUP);
+		if (screen instanceof TitleScreen && !ConsoleJS.STARTUP.errors.isEmpty() && CommonProperties.get().startupErrorGUI) {
+			return new KubeJSErrorScreen(ConsoleJS.STARTUP);
 		}
 
 		return screen;

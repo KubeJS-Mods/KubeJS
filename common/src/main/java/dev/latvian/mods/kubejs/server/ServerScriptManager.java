@@ -81,6 +81,7 @@ public class ServerScriptManager extends ScriptManager {
 
 		var wrappedResourceManager = new MultiPackResourceManager(PackType.SERVER_DATA, list);
 
+		ConsoleJS.SERVER.setCapturingErrors(true);
 		reload(wrappedResourceManager);
 
 		ServerEvents.LOW_DATA.post(ScriptType.SERVER, new DataPackEventJS(virtualDataPackLow, wrappedResourceManager));

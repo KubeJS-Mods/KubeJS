@@ -67,7 +67,7 @@ public class DevProperties {
 			logGeneratedData = get("logGeneratedData", false);
 			strictTags = get("strictTags", false);
 
-			KubeJSPlugins.forEachPlugin(p -> p.loadDevProperties(this));
+			KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::loadDevProperties);
 
 			if (writeProperties) {
 				save();

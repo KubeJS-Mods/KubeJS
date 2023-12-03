@@ -80,6 +80,7 @@ import java.time.Duration;
 import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -970,5 +971,31 @@ public class UtilsJS {
 
 	public static Color readColor(FriendlyByteBuf buf) {
 		return new SimpleColorWithAlpha(buf.readInt());
+	}
+
+	public static void appendTimestamp(StringBuilder builder, Calendar calendar) {
+		int h = calendar.get(Calendar.HOUR_OF_DAY);
+		int m = calendar.get(Calendar.MINUTE);
+		int s = calendar.get(Calendar.SECOND);
+
+		if (h < 10) {
+			builder.append('0');
+		}
+
+		builder.append(h);
+		builder.append(':');
+
+		if (m < 10) {
+			builder.append('0');
+		}
+
+		builder.append(m);
+		builder.append(':');
+
+		if (s < 10) {
+			builder.append('0');
+		}
+
+		builder.append(s);
 	}
 }

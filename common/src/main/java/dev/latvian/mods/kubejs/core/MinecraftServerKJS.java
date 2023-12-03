@@ -1,9 +1,14 @@
 package dev.latvian.mods.kubejs.core;
 
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.mods.kubejs.player.AdvancementJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
+import dev.latvian.mods.kubejs.server.DataExport;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -87,5 +92,23 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 	@Override
 	default void kjs$sendData(String channel, @Nullable CompoundTag data) {
 		new SendDataFromServerMessage(channel, data).sendToAll(kjs$self());
+	}
+
+	@HideFromJS
+	default void kjs$afterResourcesLoaded(boolean reload) {
+		if (reload) {
+			DataExport.exportData();
+		}
+
+		if (reload && CommonProperties.get().announceReload && !CommonProperties.get().hideServerScriptErrors) {
+			if (ConsoleJS.SERVER.errors.isEmpty()) {
+				kjs$tell(Component.literal("Reloaded with no KubeJS errors!").withStyle(ChatFormatting.GREEN));
+			} else {
+				kjs$tell(ConsoleJS.SERVER.errorsComponent("/kubejs errors"));
+			}
+		}
+
+		ConsoleJS.SERVER.setCapturingErrors(false);
+		ConsoleJS.SERVER.info("Server resource reload complete!");
 	}
 }

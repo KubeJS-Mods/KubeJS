@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
+import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -20,8 +21,11 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 
 @Mixin(MinecraftServer.class)
@@ -49,6 +53,11 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	@Accessor("resources")
 	public abstract MinecraftServer.ReloadableResources kjs$getReloadableResources();
 
+	@Inject(method = "<init>", at = @At("RETURN"))
+	private void kjs$init(CallbackInfo ci) {
+		CompletableFuture.runAsync(() -> kjs$afterResourcesLoaded(false), kjs$self());
+	}
+
 	@Override
 	public CompoundTag kjs$getPersistentData() {
 		return kjs$persistentData;
@@ -58,7 +67,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	public AttachedData<MinecraftServer> kjs$getData() {
 		if (kjs$attachedData == null) {
 			kjs$attachedData = new AttachedData<>(kjs$self());
-			KubeJSPlugins.forEachPlugin(plugin -> plugin.attachServerData(kjs$attachedData));
+			KubeJSPlugins.forEachPlugin(kjs$attachedData, KubeJSPlugin::attachServerData);
 		}
 
 		return kjs$attachedData;
@@ -100,4 +109,9 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	@Shadow
 	@RemapForJS("stop")
 	public abstract void stopServer();
+
+	@Inject(method = "reloadResources", at = @At("TAIL"))
+	private void endResourceReload(Collection<String> collection, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+		CompletableFuture.runAsync(() -> kjs$afterResourcesLoaded(true), kjs$self());
+	}
 }

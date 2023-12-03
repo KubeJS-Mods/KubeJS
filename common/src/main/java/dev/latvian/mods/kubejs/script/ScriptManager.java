@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.mods.kubejs.util.LogType;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.ClassShutter;
 import dev.latvian.mods.rhino.Context;
@@ -64,11 +65,11 @@ public class ScriptManager implements ClassShutter {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clearCaches);
 
 		unload();
-		scriptType.console.writeToFile("INIT", "KubeJS " + KubeJS.thisMod.getVersion() + "; MC " + KubeJS.MC_VERSION_NUMBER + " " + PlatformWrapper.getName());
-		scriptType.console.writeToFile("INIT", "Loaded plugins:");
+		scriptType.console.writeToFile(LogType.INIT, "KubeJS " + KubeJS.thisMod.getVersion() + "; MC " + KubeJS.MC_VERSION_NUMBER + " " + PlatformWrapper.getName());
+		scriptType.console.writeToFile(LogType.INIT, "Loaded plugins:");
 
 		for (var plugin : KubeJSPlugins.getAll()) {
-			scriptType.console.writeToFile("INIT", "- " + plugin.getClass().getName());
+			scriptType.console.writeToFile(LogType.INIT, "- " + plugin.getClass().getName());
 		}
 
 		loadFromDirectory();
@@ -228,7 +229,7 @@ public class ScriptManager implements ClassShutter {
 			}
 		}
 
-		scriptType.console.info("Loaded " + i + "/" + t + " KubeJS " + scriptType.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s");
+		scriptType.console.info("Loaded " + i + "/" + t + " KubeJS " + scriptType.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s with " + scriptType.console.errors.size() + " errors and " + scriptType.console.warnings.size() + " warnings");
 		firstLoad = false;
 		canListenEvents = false;
 	}

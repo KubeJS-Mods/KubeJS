@@ -7,17 +7,12 @@ import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
@@ -39,16 +34,12 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 	}
 
 	public final String name;
-	public final transient ConcurrentLinkedDeque<String> errors;
-	public final transient ConcurrentLinkedDeque<String> warnings;
 	public final ConsoleJS console;
 	public final transient Supplier<ScriptManager> manager;
 	public transient Executor executor;
 
 	ScriptType(String n, String cname, Supplier<ScriptManager> m) {
 		this.name = n;
-		this.errors = new ConcurrentLinkedDeque<>();
-		this.warnings = new ConcurrentLinkedDeque<>();
 		this.console = new ConsoleJS(this, LoggerFactory.getLogger(cname));
 		this.manager = m;
 		this.executor = Runnable::run;
@@ -93,8 +84,8 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 
 	@HideFromJS
 	public void unload() {
-		errors.clear();
-		warnings.clear();
+		console.warnings.clear();
+		console.errors.clear();
 		console.resetFile();
 
 		for (var group : EventGroup.getGroups().values()) {
@@ -102,20 +93,6 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 				handler.clear(this);
 			}
 		}
-	}
-
-	public Component errorsComponent(String command) {
-		return Component.literal("KubeJS errors found [" + errors.size() + "]! Run '" + command + "' for more info")
-			.kjs$clickRunCommand(command)
-			.kjs$hover(Component.literal("Click to show"))
-			.withStyle(ChatFormatting.DARK_RED);
-	}
-
-	public Component warningsComponent(String command) {
-		return Component.literal("KubeJS warnings found [" + warnings.size() + "]! Run '" + command + "' for more info")
-			.kjs$clickRunCommand(command)
-			.kjs$hover(Component.literal("Click to show"))
-			.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500)));
 	}
 
 	@Override

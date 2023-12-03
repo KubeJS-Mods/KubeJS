@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
+import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
@@ -23,6 +24,6 @@ public class GeneratedServerResourcePack extends GeneratedResourcePack {
 			builder.generateDataJsons(generator);
 		}
 
-		KubeJSPlugins.forEachPlugin(p -> p.generateDataJsons(generator));
+		KubeJSPlugins.forEachPlugin(generator, KubeJSPlugin::generateDataJsons);
 	}
 }

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -73,7 +74,7 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 			builder.generateAssetJsons(generator);
 		}
 
-		KubeJSPlugins.forEachPlugin(p -> p.generateAssetJsons(generator));
+		KubeJSPlugins.forEachPlugin(generator, KubeJSPlugin::generateAssetJsons);
 
 		var langMap = new HashMap<LangEventJS.Key, String>();
 		var langEvents = new HashMap<String, LangEventJS>();
@@ -91,7 +92,7 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 			builder.generateLang(enUsLangEvent);
 		}
 
-		KubeJSPlugins.forEachPlugin(p -> p.generateLang(enUsLangEvent));
+		KubeJSPlugins.forEachPlugin(enUsLangEvent, KubeJSPlugin::generateLang);
 
 		ClientEvents.HIGH_ASSETS.post(ScriptType.CLIENT, new GenerateClientAssetsEventJS(generator));
 

@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block.entity;
 
+import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.typings.desc.ObjectDescJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.Lazy;
@@ -13,7 +14,7 @@ public record BlockEntityAttachmentType(String type, ObjectDescJS input, Functio
 	public static final Lazy<Map<String, BlockEntityAttachmentType>> ALL = Lazy.of(() -> {
 		var map = new HashMap<String, BlockEntityAttachmentType>();
 		var list = new ArrayList<BlockEntityAttachmentType>();
-		KubeJSPlugins.forEachPlugin(p -> p.registerBlockEntityAttachments(list));
+		KubeJSPlugins.forEachPlugin(list, KubeJSPlugin::registerBlockEntityAttachments);
 
 		for (var type : list) {
 			map.put(type.type, type);

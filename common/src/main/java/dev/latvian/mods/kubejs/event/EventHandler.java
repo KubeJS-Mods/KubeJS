@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -288,6 +289,8 @@ public final class EventHandler extends BaseFunction {
 					scriptType.console.handleError(new IllegalStateException("Event returned result when it's not cancellable"), null, "Error occurred while handling event '" + this + "'");
 				}
 			}
+		} catch (RhinoException error) {
+			scriptType.console.handleError(error, null, "Error occurred while handling event '" + this + "'");
 		}
 
 		event.afterPosted(eventResult);

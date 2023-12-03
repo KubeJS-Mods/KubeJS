@@ -19,6 +19,7 @@ import dev.latvian.mods.kubejs.player.KubeJSPlayerEventHandler;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptFileInfo;
 import dev.latvian.mods.kubejs.script.ScriptManager;
@@ -116,6 +117,8 @@ public class KubeJS {
 
 		if (!MiscPlatformHelper.get().isDataGen()) {
 			new KubeJSBackgroundThread().start();
+			// Required to be called this way because ConsoleJS class hasn't been initialized yet
+			ScriptType.STARTUP.console.setCapturingErrors(true);
 		}
 
 		var pluginTimer = Stopwatch.createStarted();
@@ -207,11 +210,11 @@ public class KubeJS {
 		UtilsJS.postModificationEvents();
 		RecipeNamespace.getAll();
 
-		if (!ScriptType.STARTUP.errors.isEmpty()) {
+		if (!ConsoleJS.STARTUP.errors.isEmpty()) {
 			var list = new ArrayList<String>();
 			list.add("Startup script errors:");
 
-			var lines = ScriptType.STARTUP.errors.toArray(new String[0]);
+			var lines = ConsoleJS.STARTUP.errors.toArray(ConsoleLine.EMPTY_ARRAY);
 
 			for (int i = 0; i < lines.length; i++) {
 				list.add((i + 1) + ") " + lines[i]);
@@ -225,6 +228,8 @@ public class KubeJS {
 				throw new RuntimeException("There were KubeJS startup script syntax errors! See logs/kubejs/startup.log for more info");
 			}
 		}
+
+		ConsoleJS.STARTUP.setCapturingErrors(false);
 
 		QUERY = "source=kubejs&mc=" + MC_VERSION_NUMBER + "&loader=" + PlatformWrapper.getName() + "&v=" + URLEncoder.encode(thisMod.getVersion(), StandardCharsets.UTF_8);
 

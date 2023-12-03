@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -113,6 +114,12 @@ public class KubeJSPlugins {
 
 	public static void forEachPlugin(Consumer<KubeJSPlugin> callback) {
 		LIST.forEach(callback);
+	}
+
+	public static <T> void forEachPlugin(T instance, BiConsumer<KubeJSPlugin, T> callback) {
+		for (var item : LIST) {
+			callback.accept(item, instance);
+		}
 	}
 
 	public static List<KubeJSPlugin> getAll() {

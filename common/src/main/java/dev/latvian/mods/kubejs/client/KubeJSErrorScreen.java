@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -17,12 +17,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class KubeJSErrorScreen extends Screen {
-	public final ScriptType type;
+	public final ConsoleJS console;
 	private MultiLineLabel multilineMessage;
 
-	public KubeJSErrorScreen(ScriptType type) {
+	public KubeJSErrorScreen(ConsoleJS console) {
 		super(Component.empty());
-		this.type = type;
+		this.console = console;
 		this.multilineMessage = MultiLineLabel.EMPTY;
 	}
 
@@ -36,14 +36,14 @@ public class KubeJSErrorScreen extends Screen {
 		super.init();
 
 		var list = new ArrayList<Component>();
-		list.add(Component.literal("There were KubeJS startup errors ").append(Component.literal("[" + type.errors.size() + "]").withStyle(ChatFormatting.DARK_RED)).append("!"));
+		list.add(Component.literal("There were KubeJS startup errors ").append(Component.literal("[" + console.errors.size() + "]").withStyle(ChatFormatting.DARK_RED)).append("!"));
 
 		var style = Style.EMPTY.withColor(0xD19893);
-		var errors = new ArrayList<>(type.errors);
+		var errors = new ArrayList<>(console.errors);
 
 		for (int i = 0; i < errors.size(); i++) {
 			list.add(Component.empty());
-			list.add(Component.literal((i + 1) + ") ").withStyle(ChatFormatting.DARK_RED).append(Component.literal(errors.get(i).replace("Error occurred while handling event ", "Error in ").replace("dev.latvian.mods.kubejs.", "...")).withStyle(style)));
+			list.add(Component.literal((i + 1) + ") ").withStyle(ChatFormatting.DARK_RED).append(Component.literal(errors.get(i).getText().replace("Error occurred while handling event ", "Error in ").replace("dev.latvian.mods.kubejs.", "...")).withStyle(style)));
 		}
 
 		this.multilineMessage = MultiLineLabel.create(this.font, CommonComponents.joinLines(list), this.width - 12);
@@ -68,7 +68,7 @@ public class KubeJSErrorScreen extends Screen {
 	}
 
 	private void openLog(Button button) {
-		handleComponentClicked(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, type.getLogFile().toAbsolutePath().toString())));
+		handleComponentClicked(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, console.scriptType.getLogFile().toAbsolutePath().toString())));
 	}
 
 	@Override

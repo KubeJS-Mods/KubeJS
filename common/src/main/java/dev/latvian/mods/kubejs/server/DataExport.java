@@ -7,8 +7,11 @@ import com.google.gson.JsonPrimitive;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.KubeJSPlugin;
+import dev.latvian.mods.kubejs.script.ConsoleLine;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
@@ -19,6 +22,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -71,7 +75,27 @@ public class DataExport {
 		add(path, () -> JsonUtils.toPrettyString(json).getBytes(StandardCharsets.UTF_8));
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked", "resource", "ResultOfMethodCallIgnored"})
+	private void appendLine(StringBuilder sb, Calendar calendar, ConsoleLine line) {
+		calendar.setTimeInMillis(line.timestamp);
+		sb.append('[');
+		UtilsJS.appendTimestamp(sb, calendar);
+		sb.append(']');
+		sb.append(' ');
+		sb.append('[');
+		sb.append(line.type);
+		sb.append(']');
+		sb.append(' ');
+
+		if (line.type.equals("ERROR")) {
+			sb.append('!');
+			sb.append(' ');
+		}
+
+		sb.append(line.getText());
+		sb.append('\n');
+	}
+
+	@SuppressWarnings({"resource", "ResultOfMethodCallIgnored"})
 	private void exportData0() throws Exception {
 		source.registryAccess().registries().forEach(reg -> {
 			var key = reg.key();
@@ -86,8 +110,24 @@ public class DataExport {
 			addJson("registries/" + key.location().getPath() + ".json", j);
 		});
 
-		addString("errors.log", String.join("\n", ScriptType.SERVER.errors));
-		addString("warnings.log", String.join("\n", ScriptType.SERVER.warnings));
+		var logStringBuilder = new StringBuilder();
+		var calendar = Calendar.getInstance();
+
+		for (var line : ConsoleJS.SERVER.errors) {
+			appendLine(logStringBuilder, calendar, line);
+		}
+
+		logStringBuilder.setLength(logStringBuilder.length() - 1);
+		addString("errors.log", logStringBuilder.toString());
+
+		logStringBuilder.setLength(0);
+
+		for (var line : ConsoleJS.SERVER.warnings) {
+			appendLine(logStringBuilder, calendar, line);
+		}
+
+		logStringBuilder.setLength(logStringBuilder.length() - 1);
+		addString("warnings.log", logStringBuilder.toString());
 
 		var modArr = new JsonArray();
 
@@ -108,7 +148,7 @@ public class DataExport {
 
 		addJson("mods.json", modArr);
 
-		KubeJSPlugins.forEachPlugin(p -> p.exportServerData(this));
+		KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::exportServerData);
 
 		var index = new JsonArray();
 

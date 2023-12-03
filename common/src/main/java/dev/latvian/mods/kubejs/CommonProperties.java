@@ -61,7 +61,7 @@ public class CommonProperties {
 			startupErrorReportUrl = get("startupErrorReportUrl", "");
 			creativeModeTabIcon = get("creativeModeTabIcon", "minecraft:purple_dye");
 
-			KubeJSPlugins.forEachPlugin(p -> p.loadCommonProperties(this));
+			KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::loadCommonProperties);
 
 			if (writeProperties) {
 				save();

@@ -2,11 +2,16 @@ package dev.latvian.mods.kubejs.util;
 
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
+import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.WrappedException;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -19,10 +24,12 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,6 +38,17 @@ public class ConsoleJS {
 	public static ConsoleJS STARTUP;
 	public static ConsoleJS SERVER;
 	public static ConsoleJS CLIENT;
+
+	private record LogFunc(ConsoleJS console, LogType type, @Nullable Collection<ConsoleLine> capture) implements Consumer<ConsoleLine> {
+		@Override
+		public void accept(ConsoleLine line) {
+			type.callback.accept(console.logger, line.getText());
+
+			if (capture != null) {
+				capture.add(line);
+			}
+		}
+	}
 
 	public static ConsoleJS getCurrent(ConsoleJS def) {
 		Context cx = ScriptManager.getCurrentContext();
@@ -49,18 +67,18 @@ public class ConsoleJS {
 		return cx.getProperty("Console", null);
 	}
 
-	private static class StackTracePrintStream extends PrintStream implements Consumer<String> {
+	private static class StackTracePrintStream extends PrintStream implements Consumer<ConsoleLine> {
 		private final ConsoleJS console;
-		private final boolean error;
+		private final LogType type;
 		private final Pattern skipString;
 		private boolean skip;
 
-		private StackTracePrintStream(ConsoleJS c, boolean e, @Nullable Pattern ca) {
+		private StackTracePrintStream(ConsoleJS c, LogType type, @Nullable Pattern ca) {
 			super(System.err);
-			console = c;
-			error = e;
-			skipString = ca;
-			skip = false;
+			this.console = c;
+			this.type = type;
+			this.skipString = ca;
+			this.skip = false;
 		}
 
 		@Override
@@ -76,20 +94,20 @@ public class ConsoleJS {
 
 			if (x != null && skipString != null && skipString.matcher(x).find()) {
 				skip = true;
-			} else if (error) {
-				console.log(this, "ERROR", x);
 			} else {
-				console.log(this, "WARN", x);
+				console.log(this, type, x);
 			}
 		}
 
 		@Override
-		public void accept(String s) {
-			console.logger.error(s);
+		public void accept(ConsoleLine s) {
+			type.callback.accept(console.logger, s.getText());
 		}
 	}
 
-	private final ScriptType scriptType;
+	public final ScriptType scriptType;
+	public final transient Collection<ConsoleLine> warnings;
+	public final transient Collection<ConsoleLine> errors;
 	private final Logger logger;
 	private final Path logFile;
 	private String group;
@@ -99,35 +117,31 @@ public class ConsoleJS {
 	private boolean writeToFile;
 	private final List<String> writeQueue;
 	private final String nameStrip;
+	private final Calendar calendar;
 
-	public final Consumer<String> debugLogFunction;
-	public final Consumer<String> infoLogFunction;
-	public final Consumer<String> warnLogFunction;
-	public final Consumer<String> errorLogFunction;
+	public final Consumer<ConsoleLine> debugLogFunction;
+	public final Consumer<ConsoleLine> infoLogFunction;
+	public Consumer<ConsoleLine> warnLogFunction;
+	public Consumer<ConsoleLine> errorLogFunction;
 
 	public ConsoleJS(ScriptType m, Logger log) {
-		scriptType = m;
-		logger = log;
-		logFile = m.getLogFile();
-		group = "";
-		muted = false;
-		debugEnabled = false;
-		writeToFile = true;
-		writeQueue = new LinkedList<>();
-		nameStrip = scriptType.name + "_scripts:";
+		this.scriptType = m;
+		this.warnings = new ConcurrentLinkedDeque<>();
+		this.errors = new ConcurrentLinkedDeque<>();
+		this.logger = log;
+		this.logFile = m.getLogFile();
+		this.group = "";
+		this.muted = false;
+		this.debugEnabled = false;
+		this.writeToFile = true;
+		this.writeQueue = new LinkedList<>();
+		this.nameStrip = scriptType.name + "_scripts:";
+		this.calendar = Calendar.getInstance();
 
-		debugLogFunction = logger::debug;
-		infoLogFunction = logger::info;
-
-		warnLogFunction = s -> {
-			logger.warn(s);
-			scriptType.warnings.add(s);
-		};
-
-		errorLogFunction = s -> {
-			logger.error(s);
-			scriptType.errors.add(s);
-		};
+		this.debugLogFunction = new LogFunc(this, LogType.DEBUG, null);
+		this.infoLogFunction = new LogFunc(this, LogType.INFO, null);
+		this.warnLogFunction = new LogFunc(this, LogType.WARN, null);
+		this.errorLogFunction = new LogFunc(this, LogType.ERROR, null);
 	}
 
 	public Logger getLogger() {
@@ -162,6 +176,18 @@ public class ConsoleJS {
 		return writeToFile;
 	}
 
+	public synchronized void setCapturingErrors(boolean enabled) {
+		if (enabled) {
+			warnLogFunction = new LogFunc(this, LogType.WARN, warnings);
+			errorLogFunction = new LogFunc(this, LogType.ERROR, errors);
+			logger.info("Capturing errors for " + scriptType.name + " scripts enabled");
+		} else {
+			warnLogFunction = new LogFunc(this, LogType.WARN, null);
+			errorLogFunction = new LogFunc(this, LogType.ERROR, null);
+			logger.info("Capturing errors for " + scriptType.name + " scripts disabled");
+		}
+	}
+
 	public void resetFile() {
 		scriptType.executor.execute(() -> {
 			try {
@@ -180,114 +206,93 @@ public class ConsoleJS {
 		currentError = null;
 	}
 
-	private String string(Object object) {
+	private ConsoleLine line(LogType type, Object object) {
 		var o = UtilsJS.wrap(object, JSObjectType.ANY);
-		var s = o == null || o.getClass().isPrimitive() || o instanceof Boolean || o instanceof String || o instanceof Number || o instanceof WrappedJS ? String.valueOf(o) : (o + " [" + o.getClass().getName() + "]");
-
-		var builder = new StringBuilder();
-
-		int[] lineP = {0};
-		String lineS = null;
+		var line = o instanceof Component c ? new ConsoleLine(c) : new ConsoleLine(o == null || o.getClass().isPrimitive() || o instanceof Boolean || o instanceof String || o instanceof Number || o instanceof WrappedJS ? String.valueOf(o) : (o + " [" + o.getClass().getName() + "]"));
+		line.type = type;
+		line.group = group;
 
 		if (currentError != null) {
-			lineP[0] = currentError.lineNumber();
-			lineS = currentError.lineSource();
+			line.line = currentError.lineNumber();
+			line.source = currentError.lineSource();
 		}
 
-		int lpi = s.lastIndexOf('(');
+		if (line.message != null) {
+			int lpi = line.message.lastIndexOf('(');
 
-		if (lpi > 0 && s.charAt(s.length() - 1) == ')') {
-			var pe = s.substring(lpi + 1, s.length() - 1);
+			if (lpi > 0 && line.message.charAt(line.message.length() - 1) == ')') {
+				var pe = line.message.substring(lpi + 1, line.message.length() - 1);
 
-			int ci = pe.lastIndexOf('#');
+				int ci = pe.lastIndexOf('#');
 
-			if (ci > 0) {
-				try {
-					lineP[0] = Integer.parseInt(pe.substring(ci + 1));
-					lineS = pe.substring(0, ci);
-					s = s.substring(0, lpi).trim();
-				} catch (Exception e) {
+				if (ci > 0) {
+					try {
+						line.line = Integer.parseInt(pe.substring(ci + 1));
+						line.source = pe.substring(0, ci);
+						line.message = line.message.substring(0, lpi).trim();
+					} catch (Exception e) {
+					}
 				}
 			}
 		}
 
-		if (lineP[0] == 0 || lineS == null) {
-			lineS = Context.getSourcePositionFromStack(scriptType.manager.get().context, lineP);
+		if (line.line == 0 || line.source == null) {
+			int[] lineP = {0};
+			line.source = Context.getSourcePositionFromStack(scriptType.manager.get().context, lineP);
+			line.line = lineP[0];
 		}
 
-		if (lineS != null && lineS.startsWith(nameStrip)) {
-			lineS = lineS.substring(nameStrip.length());
+		if (line.source != null && line.source.startsWith(nameStrip)) {
+			line.source = line.source.substring(nameStrip.length());
 		}
 
-		if (lineP[0] > 0) {
-			if (lineS != null && !lineS.isEmpty()) {
-				builder.append(lineS);
-				builder.append('#');
-			} else {
-				builder.append("<unknown source>#");
+		return line;
+	}
+
+	private ConsoleLine log(Consumer<ConsoleLine> logFunction, LogType type, Object message) {
+		if (shouldPrint()) {
+			var s = line(type, message);
+			logFunction.accept(s);
+
+			if (writeToFile) {
+				writeToFile(type, s.timestamp, s.getText());
 			}
 
-			builder.append(lineP[0]);
-			builder.append(": ");
+			return s;
 		}
 
-		if (!group.isEmpty()) {
-			builder.append(group);
-		}
-
-		builder.append(s);
-		return builder.toString();
+		return null;
 	}
 
-	private String stringf(Object object, Object... args) {
-		return string(String.format(String.valueOf(object), args));
-	}
-
-	private void log(Consumer<String> logFunction, String type, Object message) {
+	private ConsoleLine logf(Consumer<ConsoleLine> logFunction, LogType type, Object message, Object... args) {
 		if (shouldPrint()) {
-			var s = string(message);
+			var s = line(type, String.format(String.valueOf(message), args));
 			logFunction.accept(s);
-			writeToFile(type, s);
+
+			if (writeToFile) {
+				writeToFile(type, s.timestamp, s.getText());
+			}
+
+			return s;
 		}
+
+		return null;
 	}
 
-	private void logf(Consumer<String> logFunction, String type, Object message, Object... args) {
-		if (shouldPrint()) {
-			var s = stringf(message, args);
-			logFunction.accept(s);
-			writeToFile(type, s);
-		}
+	public synchronized void writeToFile(LogType type, String line) {
+		writeToFile(type, System.currentTimeMillis(), line);
 	}
 
-	public synchronized void writeToFile(String type, String line) {
+	public synchronized void writeToFile(LogType type, long timestamp, String line) {
 		if (!writeToFile || MiscPlatformHelper.get().isDataGen()) {
 			return;
 		}
 
-		var calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(timestamp);
 		var sb = new StringBuilder();
 
 		sb.append('[');
-
-		if (calendar.get(Calendar.HOUR_OF_DAY) < 10) {
-			sb.append('0');
-		}
-
-		sb.append(calendar.get(Calendar.HOUR_OF_DAY));
-		sb.append(':');
-
-		if (calendar.get(Calendar.MINUTE) < 10) {
-			sb.append('0');
-		}
-
-		sb.append(calendar.get(Calendar.MINUTE));
-		sb.append(':');
-
-		if (calendar.get(Calendar.SECOND) < 10) {
-			sb.append('0');
-		}
-
-		sb.append(calendar.get(Calendar.SECOND));
+		UtilsJS.appendTimestamp(sb, calendar);
 		sb.append(']');
 		sb.append(' ');
 		sb.append('[');
@@ -295,7 +300,7 @@ public class ConsoleJS {
 		sb.append(']');
 		sb.append(' ');
 
-		if (type.equals("ERROR")) {
+		if (type == LogType.ERROR) {
 			sb.append('!');
 			sb.append(' ');
 		}
@@ -335,78 +340,94 @@ public class ConsoleJS {
 		}
 	}
 
-	public void info(Object message) {
-		log(infoLogFunction, "INFO", message);
+	public ConsoleLine info(Object message) {
+		return log(infoLogFunction, LogType.INFO, message);
 	}
 
-	public void infof(Object message, Object... args) {
-		logf(infoLogFunction, "INFO", message, args);
+	public ConsoleLine infof(Object message, Object... args) {
+		return logf(infoLogFunction, LogType.INFO, message, args);
 	}
 
-	public void warn(Object message) {
-		log(warnLogFunction, "WARN", message);
+	public ConsoleLine warn(Object message) {
+		return log(warnLogFunction, LogType.WARN, message);
 	}
 
-	public void warn(String message, Throwable throwable, @Nullable Pattern skip) {
+	public ConsoleLine warn(String message, Throwable throwable, @Nullable Pattern skip) {
 		if (shouldPrint()) {
 			var s = throwable.toString();
 
 			if (DevProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
-				warn(message + ":");
+				var l = warn(message + ":");
+				l.error = throwable;
 				printStackTrace(false, throwable, skip);
+				return l;
 			} else {
-				warn(message + ": " + s);
+				var l = warn(message + ": " + s);
+				l.error = throwable;
+				return l;
 			}
 		}
+
+		return null;
 	}
 
-	public void warn(String message, Throwable throwable) {
-		warn(message, throwable, null);
+	public ConsoleLine warn(String message, Throwable throwable) {
+		return warn(message, throwable, null);
 	}
 
-	public void warnf(String message, Object... args) {
-		logf(warnLogFunction, "WARN", message, args);
+	public ConsoleLine warnf(String message, Object... args) {
+		return logf(warnLogFunction, LogType.WARN, message, args);
 	}
 
-	public void error(Object message) {
-		log(errorLogFunction, "ERROR", message);
+	public ConsoleLine error(Object message) {
+		return log(errorLogFunction, LogType.ERROR, message);
 	}
 
-	public void error(String message, Throwable throwable, @Nullable Pattern skip) {
+	public ConsoleLine error(String message, Throwable throwable, @Nullable Pattern skip) {
 		if (shouldPrint()) {
 			var s = throwable.toString();
 
 			if (DevProperties.get().debugInfo || s.equals("java.lang.NullPointerException")) {
-				error(message + ":");
+				var l = error(message + ":");
+				l.error = throwable;
 				printStackTrace(true, throwable, skip);
+				return l;
 			} else {
-				error(message + ": " + s);
+				var l = error(message + ": " + s);
+				l.error = throwable;
+				return l;
 			}
 		}
+
+		return null;
 	}
 
-	public void error(String message, Throwable throwable) {
-		error(message, throwable, null);
+	public ConsoleLine error(String message, Throwable throwable) {
+		return error(message, throwable, null);
 	}
 
-	public void errorf(String message, Object... args) {
-		logf(errorLogFunction, "ERROR", message, args);
+	public ConsoleLine errorf(String message, Object... args) {
+		return logf(errorLogFunction, LogType.ERROR, message, args);
 	}
 
 	public boolean shouldPrintDebug() {
 		return debugEnabled && shouldPrint();
 	}
 
-	public void debug(Object message) {
+	public ConsoleLine debug(Object message) {
 		if (shouldPrintDebug()) {
-			log(debugLogFunction, "DEBUG", message);
+			return log(debugLogFunction, LogType.DEBUG, message);
 		}
+
+		return null;
 	}
 
-	public void debugf(String message, Object... args) {
+	public ConsoleLine debugf(String message, Object... args) {
 		if (shouldPrintDebug()) {
-			logf(debugLogFunction, "DEBUG", message, args);
+			return logf(debugLogFunction, LogType.DEBUG, message, args);
 		}
+
+		return null;
 	}
 
 	public void group() {
@@ -502,7 +523,7 @@ public class ConsoleJS {
 				printClass(sc.getName(), true);
 			}
 		} catch (Throwable ex) {
-			error("= Error loading class =");
+			error("= Error loading class =").error = ex;
 			error(ex.toString());
 		}
 	}
@@ -551,7 +572,7 @@ public class ConsoleJS {
 			return;
 		}
 
-		throwable.printStackTrace(new StackTracePrintStream(this, error, skip));
+		throwable.printStackTrace(new StackTracePrintStream(this, error ? LogType.ERROR : LogType.WARN, skip));
 	}
 
 	public void handleError(Throwable throwable, @Nullable Pattern skip, String message) {
@@ -570,9 +591,23 @@ public class ConsoleJS {
 				printStackTrace(true, throwable, skip);
 			}
 		} catch (Throwable ex) {
-			error("Errored while handling error... wtf... " + ex);
+			error("Errored while handling error... wtf... " + ex).error = ex;
 			ex.printStackTrace();
 		}
+	}
+
+	public Component errorsComponent(String command) {
+		return Component.literal("KubeJS errors found [" + errors.size() + "]! Run '" + command + "' for more info")
+			.kjs$clickRunCommand(command)
+			.kjs$hover(Component.literal("Click to show"))
+			.withStyle(ChatFormatting.DARK_RED);
+	}
+
+	public Component warningsComponent(String command) {
+		return Component.literal("KubeJS warnings found [" + warnings.size() + "]! Run '" + command + "' for more info")
+			.kjs$clickRunCommand(command)
+			.kjs$hover(Component.literal("Click to show"))
+			.withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500)));
 	}
 
 	private static final class VarFunc implements Comparable<VarFunc> {

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.util.Mth;
 
@@ -76,7 +77,7 @@ public class ClientProperties {
 			menuBackgroundScale = (float) Mth.clamp(get("menuBackgroundScale", 32D), 0.0625D, 1024D);
 			blurScaledPackIcon = get("blurScaledPackIcon", true);
 
-			KubeJSPlugins.forEachPlugin(p -> p.loadClientProperties(this));
+			KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::loadClientProperties);
 
 			if (writeProperties) {
 				save();

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.command;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -21,6 +20,7 @@ import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.net.ReloadStartupScriptsMessage;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
+import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
@@ -51,7 +51,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.commands.ReloadCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -544,19 +543,19 @@ public class KubeJSCommands {
 	}
 
 	private static int errors(CommandSourceStack source) {
-		var lines = ScriptType.SERVER.errors.toArray(new String[0]);
+		var lines = ConsoleJS.SERVER.errors.toArray(ConsoleLine.EMPTY_ARRAY);
 
 		if (lines.length == 0) {
 			source.sendSystemMessage(Component.literal("No errors found!").withStyle(ChatFormatting.GREEN));
 
-			if (!ScriptType.SERVER.warnings.isEmpty()) {
-				source.sendSystemMessage(ScriptType.SERVER.warningsComponent("/kubejs warnings"));
+			if (!ConsoleJS.SERVER.warnings.isEmpty()) {
+				source.sendSystemMessage(ConsoleJS.SERVER.warningsComponent("/kubejs warnings"));
 			}
 			return 1;
 		}
 
 		for (var i = 0; i < lines.length; i++) {
-			var component = Component.literal((i + 1) + ") ").append(Component.literal(lines[i]).withStyle(ChatFormatting.RED)).withStyle(ChatFormatting.DARK_RED);
+			var component = Component.literal((i + 1) + ") ").append(Component.literal(lines[i].getText()).withStyle(ChatFormatting.RED)).withStyle(ChatFormatting.DARK_RED);
 			source.sendSystemMessage(component);
 		}
 
@@ -566,15 +565,15 @@ public class KubeJSCommands {
 					.kjs$hover(Component.literal("Click to open"))).withStyle(ChatFormatting.DARK_RED),
 			false);
 
-		if (!ScriptType.SERVER.warnings.isEmpty()) {
-			source.sendSystemMessage(ScriptType.SERVER.warningsComponent("/kubejs warnings"));
+		if (!ConsoleJS.SERVER.warnings.isEmpty()) {
+			source.sendSystemMessage(ConsoleJS.SERVER.warningsComponent("/kubejs warnings"));
 		}
 
 		return 1;
 	}
 
 	private static int warnings(CommandSourceStack source) {
-		var lines = ScriptType.SERVER.warnings.toArray(new String[0]);
+		var lines = ConsoleJS.SERVER.warnings.toArray(ConsoleLine.EMPTY_ARRAY);
 
 		if (lines.length == 0) {
 			source.sendSystemMessage(Component.literal("No warnings found!").withStyle(ChatFormatting.GREEN));
@@ -582,7 +581,7 @@ public class KubeJSCommands {
 		}
 
 		for (var i = 0; i < lines.length; i++) {
-			var component = Component.literal((i + 1) + ") ").append(Component.literal(lines[i]).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))).withStyle(ChatFormatting.RED));
+			var component = Component.literal((i + 1) + ") ").append(Component.literal(lines[i].getText()).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))).withStyle(ChatFormatting.RED));
 			source.sendSystemMessage(component);
 		}
 
@@ -636,23 +635,13 @@ public class KubeJSCommands {
 		DataExport.export = new DataExport();
 		DataExport.export.source = source;
 		source.sendSuccess(() -> Component.literal("Reloading server and exporting data..."), true);
-
-		var minecraftServer = source.getServer();
-		var packRepository = minecraftServer.getPackRepository();
-		var worldData = minecraftServer.getWorldData();
-		var collection = packRepository.getSelectedIds();
-		packRepository.reload();
-		Collection<String> collection2 = Lists.newArrayList(collection);
-		Collection<String> collection3 = worldData.getDataConfiguration().dataPacks().getDisabled();
-
-		for (var string : packRepository.getAvailableIds()) {
-			if (!collection3.contains(string) && !collection2.contains(string)) {
-				collection2.add(string);
-			}
-		}
-
-		ReloadCommand.reloadPacks(collection2, source);
+		source.getServer().kjs$runCommand("reload");
 		return 1;
+	}
+
+	private static void afterReload(CommandSourceStack source) {
+		// System.out.println("Hello");
+		source.sendSuccess(() -> Component.literal("Reloaded!"), true);
 	}
 
 	private static int exportPacks(CommandSourceStack source, boolean exportZip) {

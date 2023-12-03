@@ -43,7 +43,7 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 				if (fileNameLC.endsWith(".zip") || fileNameLC.equals(".ds_store") || fileNameLC.equals("thumbs.db") || fileNameLC.equals("desktop.ini")) {
 					continue;
 				} else if (Files.isHidden(path)) {
-					ConsoleJS.STARTUP.error("Invisible file found: " + pathName + path.relativize(p).toString().replace('\\', '/'));
+					ConsoleJS.STARTUP.error("Invisible file found: " + pathName + path.relativize(p).toString().replace('\\', '/')).externalFile = path;
 					continue;
 				}
 
@@ -51,15 +51,17 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 
 				for (char c : chars) {
 					if (c >= 'A' && c <= 'Z') {
-						ConsoleJS.STARTUP.error("Invalid file name: Uppercase '" + c + "' in " + pathName + path.relativize(p).toString().replace('\\', '/'));
+						ConsoleJS.STARTUP.error("Invalid file name: Uppercase '" + c + "' in " + pathName + path.relativize(p).toString().replace('\\', '/')).externalFile = path;
 						break;
 					} else if (c != '_' && c != '-' && (c < 'a' || c > 'z') && (c < '0' || c > '9') && c != '/' && c != '.') {
-						ConsoleJS.STARTUP.error("Invalid file name: Invalid character '" + c + "' in " + pathName + path.relativize(p).toString().replace('\\', '/'));
+						ConsoleJS.STARTUP.error("Invalid file name: Invalid character '" + c + "' in " + pathName + path.relativize(p).toString().replace('\\', '/')).externalFile = path;
 						break;
 					}
 				}
 			} catch (Exception ex) {
-				ConsoleJS.STARTUP.error("Invalid file name: " + pathName + path.relativize(p).toString().replace('\\', '/'));
+				var line = ConsoleJS.STARTUP.error("Invalid file name: " + pathName + path.relativize(p).toString().replace('\\', '/'));
+				line.externalFile = path;
+				line.error = ex;
 			}
 		}
 	}

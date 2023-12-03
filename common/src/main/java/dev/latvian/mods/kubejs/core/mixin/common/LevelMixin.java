@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
+import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.core.LevelKJS;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
@@ -17,7 +18,7 @@ public abstract class LevelMixin implements LevelKJS {
 	public AttachedData<Level> kjs$getData() {
 		if (kjs$attachedData == null) {
 			kjs$attachedData = new AttachedData<>(kjs$self());
-			KubeJSPlugins.forEachPlugin(plugin -> plugin.attachLevelData(kjs$attachedData));
+			KubeJSPlugins.forEachPlugin(kjs$attachedData, KubeJSPlugin::attachLevelData);
 		}
 
 		return kjs$attachedData;

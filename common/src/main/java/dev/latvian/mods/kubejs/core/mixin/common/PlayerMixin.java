@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
+import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.core.PlayerKJS;
 import dev.latvian.mods.kubejs.player.KubeJSInventoryListener;
@@ -42,7 +43,7 @@ public abstract class PlayerMixin implements PlayerKJS {
 	public AttachedData<Player> kjs$getData() {
 		if (kjs$attachedData == null) {
 			kjs$attachedData = new AttachedData<>(kjs$self());
-			KubeJSPlugins.forEachPlugin(plugin -> plugin.attachPlayerData(kjs$attachedData));
+			KubeJSPlugins.forEachPlugin(kjs$attachedData, KubeJSPlugin::attachPlayerData);
 		}
 
 		return kjs$attachedData;
