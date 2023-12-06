@@ -404,12 +404,12 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			var js = getSerializationTypeFunction();
 			var ids = CommonProperties.get().ignoreCustomUniqueRecipeIds ? null : js.schemaType.schema.uniqueIdFunction.apply(this);
 
-			var prefix = js.id.getNamespace() + ":kjs_";
+			var prefix = js.id.getNamespace() + ":kjs/";
 
-			if (ids == null) {
+			if (ids == null || ids.isEmpty()) {
 				ids = UtilsJS.getUniqueId(json);
 			} else {
-				ids = RecipeSchema.normalizeId(ids).replace(':', '_').replace('/', '_');
+				ids = ids.replace(':', '_');
 			}
 
 			id = type.event.takeId(this, prefix, ids);

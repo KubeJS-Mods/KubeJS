@@ -156,7 +156,7 @@ public class RecipeSchema {
 	public RecipeSchema uniqueOutputId(RecipeKey<OutputItem> resultItemKey) {
 		return uniqueId(r -> {
 			var item = r.getValue(resultItemKey);
-			return item == null || item.isEmpty() ? null : normalizeId(item.item.kjs$getId());
+			return item == null || item.isEmpty() ? null : normalizeId(item.item.kjs$getId()).replace('/', '_');
 		});
 	}
 
@@ -176,7 +176,7 @@ public class RecipeSchema {
 						sb.append('_');
 					}
 
-					sb.append(normalizeId(item.item.kjs$getId()));
+					sb.append(normalizeId(item.item.kjs$getId()).replace('/', '_'));
 				}
 			}
 
@@ -188,7 +188,7 @@ public class RecipeSchema {
 		return uniqueId(r -> {
 			var ingredient = r.getValue(resultItemKey);
 			var item = ingredient == null ? null : ingredient.ingredient.kjs$getFirst();
-			return item == null || item.isEmpty() ? null : normalizeId(item.kjs$getId());
+			return item == null || item.isEmpty() ? null : normalizeId(item.kjs$getId()).replace('/', '_');
 		});
 	}
 
