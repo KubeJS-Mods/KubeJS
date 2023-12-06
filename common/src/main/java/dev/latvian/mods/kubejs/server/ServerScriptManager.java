@@ -43,7 +43,7 @@ public class ServerScriptManager extends ScriptManager {
 	public final Map<ResourceKey<?>, PreTagEventJS> preTagEvents = new ConcurrentHashMap<>();
 
 	public ServerScriptManager(@Nullable MinecraftServer server) {
-		super(ScriptType.SERVER, KubeJSPaths.SERVER_SCRIPTS);
+		super(ScriptType.SERVER);
 		this.server = server;
 
 		try {

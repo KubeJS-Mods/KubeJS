@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -17,9 +18,10 @@ import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
-	STARTUP("startup", "KubeJS Startup", KubeJS::getStartupScriptManager),
-	SERVER("server", "KubeJS Server", ServerScriptManager::getScriptManager),
-	CLIENT("client", "KubeJS Client", KubeJS::getClientScriptManager);
+	STARTUP("startup", "KubeJS Startup", KubeJSPaths.STARTUP_SCRIPTS, KubeJS::getStartupScriptManager),
+	SERVER("server", "KubeJS Server", KubeJSPaths.SERVER_SCRIPTS, ServerScriptManager::getScriptManager),
+	CLIENT("client", "KubeJS Client", KubeJSPaths.CLIENT_SCRIPTS, KubeJS::getClientScriptManager);
+
 
 	static {
 		ConsoleJS.STARTUP = STARTUP.console;
@@ -35,12 +37,14 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 
 	public final String name;
 	public final ConsoleJS console;
+	public final Path path;
 	public final transient Supplier<ScriptManager> manager;
 	public transient Executor executor;
 
-	ScriptType(String n, String cname, Supplier<ScriptManager> m) {
+	ScriptType(String n, String cname, Path path, Supplier<ScriptManager> m) {
 		this.name = n;
 		this.console = new ConsoleJS(this, LoggerFactory.getLogger(cname));
+		this.path = path;
 		this.manager = m;
 		this.executor = Runnable::run;
 	}
@@ -84,8 +88,8 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 
 	@HideFromJS
 	public void unload() {
-		console.warnings.clear();
 		console.errors.clear();
+		console.warnings.clear();
 		console.resetFile();
 
 		for (var group : EventGroup.getGroups().values()) {

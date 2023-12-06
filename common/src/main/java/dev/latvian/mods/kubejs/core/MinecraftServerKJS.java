@@ -104,7 +104,7 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 			if (ConsoleJS.SERVER.errors.isEmpty()) {
 				kjs$tell(Component.literal("Reloaded with no KubeJS errors!").withStyle(ChatFormatting.GREEN));
 			} else {
-				kjs$tell(ConsoleJS.SERVER.errorsComponent("/kubejs errors"));
+				kjs$tell(ConsoleJS.SERVER.errorsComponent("/kubejs errors server"));
 			}
 		}
 

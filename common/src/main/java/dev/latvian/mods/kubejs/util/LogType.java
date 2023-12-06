@@ -11,6 +11,8 @@ public enum LogType {
 	WARN("WARN", Logger::warn),
 	ERROR("ERROR", Logger::error);
 
+	public static final LogType[] VALUES = values();
+
 	public final String name;
 	public final BiConsumer<Logger, String> callback;
 

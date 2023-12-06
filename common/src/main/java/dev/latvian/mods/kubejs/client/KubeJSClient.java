@@ -18,6 +18,7 @@ import dev.latvian.mods.kubejs.gui.KubeJSScreen;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
 import dev.latvian.mods.kubejs.net.NetworkEventJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
@@ -186,5 +187,15 @@ public class KubeJSClient extends KubeJSCommon {
 				packs.add(e);
 			}
 		}
+	}
+
+	@Override
+	public void openErrors(ScriptType type) {
+		Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(new KubeJSErrorScreen(Minecraft.getInstance().screen, type.console)));
+	}
+
+	@Override
+	public void openErrors(ScriptType type, List<ConsoleLine> errors, List<ConsoleLine> warnings) {
+		Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(new KubeJSErrorScreen(Minecraft.getInstance().screen, type, null, errors, warnings)));
 	}
 }

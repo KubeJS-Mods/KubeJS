@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -38,7 +37,6 @@ public class ScriptManager implements ClassShutter {
 	}
 
 	public final ScriptType scriptType;
-	public final Path directory;
 	public final Map<String, ScriptPack> packs;
 	private final ClassFilter classFilter;
 	public boolean firstLoad;
@@ -47,9 +45,8 @@ public class ScriptManager implements ClassShutter {
 	private Map<String, Either<NativeJavaClass, Boolean>> javaClassCache;
 	public boolean canListenEvents;
 
-	public ScriptManager(ScriptType t, Path p) {
+	public ScriptManager(ScriptType t) {
 		scriptType = t;
-		directory = p;
 		packs = new LinkedHashMap<>();
 		firstLoad = true;
 		classFilter = KubeJSPlugins.createClassFilter(scriptType);
@@ -92,7 +89,7 @@ public class ScriptManager implements ClassShutter {
 				scriptType.console.info("Skipped " + fileInfo.location + ": " + skip);
 			}
 		} catch (Throwable error) {
-			scriptType.console.error("Failed to pre-load script file " + fileInfo.location + ": " + error);
+			scriptType.console.error("Failed to pre-load script file '" + fileInfo.location + "'", error);
 		}
 	}
 
@@ -121,14 +118,14 @@ public class ScriptManager implements ClassShutter {
 	}
 
 	public void loadFromDirectory() {
-		if (Files.notExists(directory)) {
+		if (Files.notExists(scriptType.path)) {
 			try {
-				Files.createDirectories(directory);
+				Files.createDirectories(scriptType.path);
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				scriptType.console.error("Failed to create script directory", ex);
 			}
 
-			try (var out = Files.newOutputStream(directory.resolve("example.js"))) {
+			try (var out = Files.newOutputStream(scriptType.path.resolve("example.js"))) {
 				out.write(("""
 					// priority: 0
 
@@ -136,15 +133,15 @@ public class ScriptManager implements ClassShutter {
 
 					console.info('Hello, World! (Loaded\s""" + scriptType.name + " scripts)')\n\n").getBytes(StandardCharsets.UTF_8));
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				scriptType.console.error("Failed to write example.js", ex);
 			}
 		}
 
-		var pack = new ScriptPack(this, new ScriptPackInfo(directory.getFileName().toString(), ""));
-		KubeJS.loadScripts(pack, directory, "");
+		var pack = new ScriptPack(this, new ScriptPackInfo(scriptType.path.getFileName().toString(), ""));
+		KubeJS.loadScripts(pack, scriptType.path, "");
 
 		for (var fileInfo : pack.info.scripts) {
-			var scriptSource = (ScriptSource.FromPath) info -> directory.resolve(info.file);
+			var scriptSource = (ScriptSource.FromPath) info -> scriptType.path.resolve(info.file);
 			loadFile(pack, fileInfo, scriptSource);
 		}
 
@@ -221,11 +218,11 @@ public class ScriptManager implements ClassShutter {
 						i++;
 						scriptType.console.info("Loaded script " + file.info.location + " in " + (System.currentTimeMillis() - start) / 1000D + " s");
 					} catch (Throwable ex) {
-						scriptType.console.handleError(ex, null, "Error loading KubeJS script: " + file.info.location + "'");
+						scriptType.console.error("", ex);
 					}
 				}
 			} catch (Throwable ex) {
-				scriptType.console.error("Failed to read script pack " + pack.info.namespace + ": ", ex);
+				scriptType.console.error("Failed to read script pack " + pack.info.namespace, ex);
 			}
 		}
 

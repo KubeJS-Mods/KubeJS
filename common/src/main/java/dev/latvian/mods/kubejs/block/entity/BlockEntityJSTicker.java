@@ -14,9 +14,9 @@ public record BlockEntityJSTicker(BlockEntityInfo info, int frequency, int offse
 				callback.accept(e);
 			} catch (Exception ex) {
 				if (server) {
-					ConsoleJS.SERVER.error("Error while ticking KubeJS block entity '" + info.blockBuilder.id + "'", ex, null);
+					ConsoleJS.SERVER.error("Error while ticking KubeJS block entity '" + info.blockBuilder.id + "'", ex);
 				} else {
-					ConsoleJS.CLIENT.error("Error while ticking KubeJS block entity '" + info.blockBuilder.id + "'", ex, null);
+					ConsoleJS.CLIENT.error("Error while ticking KubeJS block entity '" + info.blockBuilder.id + "'", ex);
 				}
 			}
 

@@ -17,10 +17,11 @@ import dev.latvian.mods.kubejs.core.WithPersistentData;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.net.DisplayClientErrorsMessage;
+import dev.latvian.mods.kubejs.net.DisplayServerErrorsMessage;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.net.ReloadStartupScriptsMessage;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
-import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
@@ -105,10 +106,18 @@ public class KubeJSCommands {
 				.executes(context -> hotbar(context.getSource().getPlayerOrException()))
 			)
 			.then(Commands.literal("errors")
-				.executes(context -> errors(context.getSource()))
-			)
-			.then(Commands.literal("warnings")
-				.executes(context -> warnings(context.getSource()))
+				.then(Commands.literal("startup")
+					.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+					.executes(context -> errors(context.getSource(), ScriptType.STARTUP))
+				)
+				.then(Commands.literal("server")
+					.requires(source -> source.getServer().isSingleplayer() || source.hasPermission(2))
+					.executes(context -> errors(context.getSource(), ScriptType.SERVER))
+				)
+				.then(Commands.literal("client")
+					.requires(source -> true)
+					.executes(context -> errors(context.getSource(), ScriptType.CLIENT))
+				)
 			)
 			.then(Commands.literal("reload")
 				.then(Commands.literal("config")
@@ -275,7 +284,7 @@ public class KubeJSCommands {
 				Files.createDirectories(groupFolder);
 				FileUtils.cleanDirectory(groupFolder.toFile());
 			} catch (IOException e) {
-				ConsoleJS.SERVER.handleError(e, null, "Failed to create folder for event group " + groupName);
+				ConsoleJS.SERVER.error("Failed to create folder for event group " + groupName, e);
 				source.sendFailure(Component.literal("Failed to create folder for event group " + groupName));
 				return 0;
 			}
@@ -449,7 +458,7 @@ public class KubeJSCommands {
 				try {
 					Files.writeString(handlerFile, builder.toString());
 				} catch (IOException e) {
-					ConsoleJS.SERVER.handleError(e, null, "Failed to write file for event handler " + fullName);
+					ConsoleJS.SERVER.error("Failed to write file for event handler " + fullName, e);
 					source.sendFailure(Component.literal("Failed to write file for event handler " + fullName));
 					return 0;
 				}
@@ -542,7 +551,30 @@ public class KubeJSCommands {
 		return 1;
 	}
 
-	private static int errors(CommandSourceStack source) {
+	private static int errors(CommandSourceStack source, ScriptType type) throws CommandSyntaxException {
+		if (type == ScriptType.CLIENT) {
+			var player = source.getPlayerOrException();
+			new DisplayClientErrorsMessage().sendTo(player);
+			return 1;
+		}
+
+		if (type.console.errors.isEmpty() && type.console.warnings.isEmpty()) {
+			source.sendSystemMessage(Component.literal("No errors or warnings found!").withStyle(ChatFormatting.GREEN));
+			return 0;
+		}
+
+		if (source.getServer().isSingleplayer()) {
+			KubeJS.PROXY.openErrors(type);
+			return 1;
+		}
+
+		var player = source.getPlayerOrException();
+		var errors = new ArrayList<>(type.console.errors);
+		var warnings = new ArrayList<>(type.console.warnings);
+		player.sendSystemMessage(Component.literal("You need KubeJS on client side!").withStyle(ChatFormatting.RED), true);
+		new DisplayServerErrorsMessage(type, errors, warnings).sendTo(player);
+
+		/*
 		var lines = ConsoleJS.SERVER.errors.toArray(ConsoleLine.EMPTY_ARRAY);
 
 		if (lines.length == 0) {
@@ -568,22 +600,7 @@ public class KubeJSCommands {
 		if (!ConsoleJS.SERVER.warnings.isEmpty()) {
 			source.sendSystemMessage(ConsoleJS.SERVER.warningsComponent("/kubejs warnings"));
 		}
-
-		return 1;
-	}
-
-	private static int warnings(CommandSourceStack source) {
-		var lines = ConsoleJS.SERVER.warnings.toArray(ConsoleLine.EMPTY_ARRAY);
-
-		if (lines.length == 0) {
-			source.sendSystemMessage(Component.literal("No warnings found!").withStyle(ChatFormatting.GREEN));
-			return 1;
-		}
-
-		for (var i = 0; i < lines.length; i++) {
-			var component = Component.literal((i + 1) + ") ").append(Component.literal(lines[i].getText()).withStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xFFA500))).withStyle(ChatFormatting.RED));
-			source.sendSystemMessage(component);
-		}
+		 */
 
 		return 1;
 	}

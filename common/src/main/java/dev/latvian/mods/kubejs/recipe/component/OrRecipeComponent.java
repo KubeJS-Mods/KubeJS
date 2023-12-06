@@ -62,8 +62,8 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 				try {
 					return Either.right(low.read(recipe, from));
 				} catch (Exception ex2) {
-					ConsoleJS.SERVER.handleError(ex1, null, "Failed to read %s as high priority (%s)!".formatted(from, high));
-					ConsoleJS.SERVER.handleError(ex2, null, "Failed to read %s as low priority (%s)!".formatted(from, low));
+					ConsoleJS.SERVER.error("Failed to read %s as high priority (%s)!".formatted(from, high), ex1);
+					ConsoleJS.SERVER.error("Failed to read %s as low priority (%s)!".formatted(from, low), ex2);
 					throw new RecipeExceptionJS("Failed to read %s as either %s or %s!".formatted(from, high, low));
 				}
 			}

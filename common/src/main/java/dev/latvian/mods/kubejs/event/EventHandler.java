@@ -281,16 +281,16 @@ public final class EventHandler extends BaseFunction {
 					((Throwable) exit.result.value()).printStackTrace();
 				}
 
-				scriptType.console.handleError((Throwable) exit.result.value(), null, "Error occurred while handling event '" + this + "'");
+				scriptType.console.error("Error in '" + this + "'", (Throwable) exit.result.value());
 			} else {
 				eventResult = exit.result;
 
 				if (!getHasResult()) {
-					scriptType.console.handleError(new IllegalStateException("Event returned result when it's not cancellable"), null, "Error occurred while handling event '" + this + "'");
+					scriptType.console.error("Error in '" + this + "'", new IllegalStateException("Event returned result when it's not cancellable"));
 				}
 			}
 		} catch (RhinoException error) {
-			scriptType.console.handleError(error, null, "Error occurred while handling event '" + this + "'");
+			scriptType.console.error("Error in '" + this + "'", error);
 		}
 
 		event.afterPosted(eventResult);

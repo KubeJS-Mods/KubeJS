@@ -47,11 +47,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -64,6 +66,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -72,7 +75,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RecipesEventJS extends EventJS {
-	public static final Pattern SKIP_ERROR = Pattern.compile("at.*dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesEventJS\\.post");
+	public static final Pattern SKIP_ERROR = Pattern.compile("dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesEventJS\\.post");
 	private static final Predicate<RecipeJS> RECIPE_NOT_REMOVED = r -> r != null && !r.removed;
 	private static final EventExceptionHandler RECIPE_EXCEPTION_HANDLER = (event, handler, ex) -> {
 		// skip the current handler on a recipe or JSON exception, but let other handlers run
@@ -83,6 +86,45 @@ public class RecipesEventJS extends EventJS {
 			return ex; // rethrow
 		}
 	};
+
+	private static String recipeToString(Recipe<?> recipe) {
+		var map = new LinkedHashMap<String, Object>();
+		map.put("type", RegistryInfo.RECIPE_SERIALIZER.getId(recipe.getSerializer()));
+
+		try {
+			var in = new ArrayList<>();
+
+			for (var ingredient : recipe.getIngredients()) {
+				in.add(Arrays.asList(ingredient.getItems()));
+			}
+
+			map.put("in", in);
+		} catch (Exception ex) {
+			map.put("in_error", ex.toString());
+		}
+
+		try {
+			map.put("out", recipe.getResultItem(UtilsJS.staticRegistryAccess));
+		} catch (Exception ex) {
+			map.put("out_error", ex.toString());
+		}
+
+		return map.toString();
+	}
+
+	private static final BinaryOperator<Recipe<?>> MERGE_ORIGINAL = (a, b) -> {
+		ConsoleJS.SERVER.warn("Duplicate original recipe for id " + a.getId() + "!\nRecipe A: " + recipeToString(a) + "\nRecipe B: " + recipeToString(b) + "\nUsing last one encountered.");
+		return b;
+	};
+
+	private static final BinaryOperator<Recipe<?>> MERGE_ADDED = (a, b) -> {
+		ConsoleJS.SERVER.error("Duplicate added recipe for id " + a.getId() + "!\nRecipe A: " + recipeToString(a) + "\nRecipe B: " + recipeToString(b) + "\nUsing last one encountered.");
+		return b;
+	};
+
+	private static final Function<Recipe<?>, ResourceLocation> RECIPE_ID = Recipe::getId;
+	private static final Predicate<Recipe<?>> RECIPE_NON_NULL = Objects::nonNull;
+	private static final Function<Recipe<?>, Recipe<?>> RECIPE_IDENTITY = Function.identity();
 
 	@HideFromJS
 	public static final Map<ResourceLocation, ModifyRecipeResultCallback> MODIFY_RESULT_CALLBACKS = new ConcurrentHashMap<>();
@@ -297,8 +339,7 @@ public class RecipesEventJS extends EventJS {
 						ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2, SKIP_ERROR);
 					}
 				} catch (Exception ex3) {
-					ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType + ":");
-					ConsoleJS.SERVER.printStackTrace(false, ex3, SKIP_ERROR);
+					ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex3, SKIP_ERROR);
 				}
 			}
 		}
@@ -331,11 +372,8 @@ public class RecipesEventJS extends EventJS {
 			recipesByName.putAll(runInParallel(() -> originalRecipes.values().parallelStream()
 				.filter(RECIPE_NOT_REMOVED)
 				.map(this::createRecipe)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toConcurrentMap(Recipe::getId, Function.identity(), (a, b) -> {
-					ConsoleJS.SERVER.warn("Duplicate recipe for id " + a.getId() + "! Using last one encountered.");
-					return b;
-				}))));
+				.filter(RECIPE_NON_NULL)
+				.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, MERGE_ORIGINAL))));
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating datapack recipes", ex, SKIP_ERROR);
 		}
@@ -343,12 +381,8 @@ public class RecipesEventJS extends EventJS {
 		try {
 			recipesByName.putAll(runInParallel(() -> addedRecipes.parallelStream()
 				.map(this::createRecipe)
-				.filter(Objects::nonNull)
-				.collect(Collectors.toConcurrentMap(Recipe::getId, Function.identity(), (a, b) -> {
-					ConsoleJS.SERVER.warn("Duplicate recipe for id " + a.getId() + "! Using last one encountered.");
-					ConsoleJS.SERVER.warn("You might want to check your scripts for errors.");
-					return b;
-				}))));
+				.filter(RECIPE_NON_NULL)
+				.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, MERGE_ADDED))));
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating script recipes", ex, SKIP_ERROR);
 		}

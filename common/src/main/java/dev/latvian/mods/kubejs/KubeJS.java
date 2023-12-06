@@ -133,8 +133,8 @@ public class KubeJS {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::registerEvents);
 
-		startupScriptManager = new ScriptManager(ScriptType.STARTUP, KubeJSPaths.STARTUP_SCRIPTS);
-		clientScriptManager = new ScriptManager(ScriptType.CLIENT, KubeJSPaths.CLIENT_SCRIPTS);
+		startupScriptManager = new ScriptManager(ScriptType.STARTUP);
+		clientScriptManager = new ScriptManager(ScriptType.CLIENT);
 
 		startupScriptManager.reload(null);
 

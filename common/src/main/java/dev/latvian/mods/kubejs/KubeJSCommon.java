@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs;
 
+import dev.latvian.mods.kubejs.script.ConsoleLine;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
@@ -47,5 +49,11 @@ public class KubeJSCommon {
 	}
 
 	public void export(List<ExportablePackResources> packs) {
+	}
+
+	public void openErrors(ScriptType type) {
+	}
+
+	public void openErrors(ScriptType type, List<ConsoleLine> errors, List<ConsoleLine> warnings) {
 	}
 }

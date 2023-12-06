@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.recipe;
 
-public class RecipeExceptionJS extends IllegalArgumentException {
+import dev.latvian.mods.kubejs.util.MutedError;
+
+public class RecipeExceptionJS extends IllegalArgumentException implements MutedError {
 	public boolean error;
 
 	public RecipeExceptionJS(String m) {
