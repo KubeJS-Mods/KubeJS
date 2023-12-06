@@ -77,8 +77,12 @@ public class ConsoleLine {
 			var builder = new StringBuilder();
 
 			if (!sourceLines.isEmpty()) {
-				builder.append(sourceLines.iterator().next());
-				builder.append(": ");
+				for (var line : sourceLines) {
+					if (line.line != 0 && !line.source.isEmpty()) {
+						builder.append(line.source).append('#').append(line.line).append(':').append(' ');
+						break;
+					}
+				}
 			}
 
 			if (!group.isEmpty()) {
