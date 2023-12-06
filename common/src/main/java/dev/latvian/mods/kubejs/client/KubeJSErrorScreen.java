@@ -196,11 +196,13 @@ public class KubeJSErrorScreen extends Screen {
 			if (line.source.isEmpty()) {
 				if (line.externalFile != null) {
 					this.scriptLineText = Component.literal(line.externalFile.getFileName().toString()).getVisualOrderText();
+				} else if (line.line == 0) {
+					this.scriptLineText = Component.literal("Internal Error").getVisualOrderText();
 				} else {
 					this.scriptLineText = Component.literal("<unknown source>#" + line.line).getVisualOrderText();
 				}
 			} else {
-				this.scriptLineText = Component.literal((line.source + "#") + line.line).getVisualOrderText();
+				this.scriptLineText = Component.literal(line.source + "#" + line.line).getVisualOrderText();
 			}
 
 			var sb = new StringBuilder();
@@ -262,7 +264,7 @@ public class KubeJSErrorScreen extends Screen {
 						throw new IllegalStateException("Error");
 					}
 				} catch (Exception ignored) {
-					if (Files.isRegularFile(path)) {
+					if (Files.isRegularFile(path) && !path.getFileName().toString().endsWith(".js")) {
 						path = path.getParent();
 					}
 

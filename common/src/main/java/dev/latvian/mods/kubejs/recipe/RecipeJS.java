@@ -412,15 +412,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 				ids = RecipeSchema.normalizeId(ids).replace(':', '_').replace('/', '_');
 			}
 
-			int i = 2;
-			id = new ResourceLocation(prefix + ids);
-
-			while (type.event.takenIds.containsKey(id)) {
-				id = new ResourceLocation(prefix + ids + '_' + i);
-				i++;
-			}
-
-			type.event.takenIds.put(id, this);
+			id = type.event.takeId(this, prefix, ids);
 		}
 
 		return id;

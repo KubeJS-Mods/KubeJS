@@ -47,7 +47,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -95,7 +94,13 @@ public class RecipesEventJS extends EventJS {
 			var in = new ArrayList<>();
 
 			for (var ingredient : recipe.getIngredients()) {
-				in.add(Arrays.asList(ingredient.getItems()));
+				var list = new ArrayList<String>();
+
+				for (var item : ingredient.getItems()) {
+					list.add(item.kjs$toItemString());
+				}
+
+				in.add(list);
 			}
 
 			map.put("in", in);
@@ -104,7 +109,7 @@ public class RecipesEventJS extends EventJS {
 		}
 
 		try {
-			map.put("out", recipe.getResultItem(UtilsJS.staticRegistryAccess));
+			map.put("out", recipe.getResultItem(UtilsJS.staticRegistryAccess).kjs$toItemString());
 		} catch (Exception ex) {
 			map.put("out_error", ex.toString());
 		}
@@ -683,6 +688,19 @@ public class RecipesEventJS extends EventJS {
 			var r = list.get(i);
 			ConsoleJS.SERVER.info("- " + r.getOrCreateId() + ":\n" + JsonIO.toPrettyString(r.json));
 		}
+	}
+
+	public synchronized ResourceLocation takeId(RecipeJS recipe, String prefix, String ids) {
+		int i = 2;
+		var id = new ResourceLocation(prefix + ids);
+
+		while (takenIds.containsKey(id)) {
+			id = new ResourceLocation(prefix + ids + '_' + i);
+			i++;
+		}
+
+		takenIds.put(id, recipe);
+		return id;
 	}
 
 	public void setItemErrors(boolean b) {
