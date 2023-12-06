@@ -407,27 +407,12 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			var prefix = js.id.getNamespace() + ":kjs_";
 
 			if (ids == null) {
-				id = new ResourceLocation(prefix + UtilsJS.getUniqueId(json));
-				return id;
+				ids = UtilsJS.getUniqueId(json);
+			} else {
+				ids = RecipeSchema.normalizeId(ids).replace(':', '_').replace('/', '_');
 			}
 
-			if (ids.startsWith("minecraft:")) {
-				ids = ids.substring("minecraft:".length());
-			} else if (ids.startsWith("kubejs:")) {
-				ids = ids.substring("kubejs:".length());
-			}
-
-			ids = ids.replace(':', '_').replace('/', '_');
-
-			int i = 2;
-			id = new ResourceLocation(prefix + ids);
-
-			while (type.event.takenIds.containsKey(id)) {
-				id = new ResourceLocation(prefix + ids + "_" + i);
-				i++;
-			}
-
-			type.event.takenIds.put(id, this);
+			id = type.event.takeId(this, prefix, ids);
 		}
 
 		return id;

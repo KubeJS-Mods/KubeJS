@@ -143,10 +143,44 @@ public class RecipeSchema {
 		return this;
 	}
 
+	public static String normalizeId(String id) {
+		if (id.startsWith("minecraft:")) {
+			return id.substring(10);
+		} else if (id.startsWith("kubejs:")) {
+			return id.substring(7);
+		} else {
+			return id;
+		}
+	}
+
 	public RecipeSchema uniqueOutputId(RecipeKey<OutputItem> resultItemKey) {
 		return uniqueId(r -> {
 			var item = r.getValue(resultItemKey);
-			return item == null || item.isEmpty() ? null : item.item.kjs$getId();
+			return item == null || item.isEmpty() ? null : normalizeId(item.item.kjs$getId());
+		});
+	}
+
+	public RecipeSchema uniqueOutputArrayId(RecipeKey<OutputItem[]> resultItemKey) {
+		return uniqueId(r -> {
+			var array = r.getValue(resultItemKey);
+
+			if (array == null || array.length == 0) {
+				return null;
+			}
+
+			var sb = new StringBuilder();
+
+			for (var item : array) {
+				if (!item.isEmpty()) {
+					if (!sb.isEmpty()) {
+						sb.append('_');
+					}
+
+					sb.append(normalizeId(item.item.kjs$getId()));
+				}
+			}
+
+			return sb.isEmpty() ? null : sb.toString();
 		});
 	}
 
@@ -154,7 +188,7 @@ public class RecipeSchema {
 		return uniqueId(r -> {
 			var ingredient = r.getValue(resultItemKey);
 			var item = ingredient == null ? null : ingredient.ingredient.kjs$getFirst();
-			return item == null || item.isEmpty() ? null : item.kjs$getId();
+			return item == null || item.isEmpty() ? null : normalizeId(item.kjs$getId());
 		});
 	}
 

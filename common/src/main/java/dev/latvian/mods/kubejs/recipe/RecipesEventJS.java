@@ -652,6 +652,19 @@ public class RecipesEventJS extends EventJS {
 		}
 	}
 
+	public synchronized ResourceLocation takeId(RecipeJS recipe, String prefix, String ids) {
+		int i = 2;
+		var id = new ResourceLocation(prefix + ids);
+
+		while (takenIds.containsKey(id)) {
+			id = new ResourceLocation(prefix + ids + '_' + i);
+			i++;
+		}
+
+		takenIds.put(id, recipe);
+		return id;
+	}
+
 	public void setItemErrors(boolean b) {
 		RecipeJS.itemErrors = b;
 	}
