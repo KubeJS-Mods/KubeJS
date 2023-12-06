@@ -27,7 +27,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class KubeJSErrorScreen extends Screen {
 	public final Screen lastScreen;
@@ -193,17 +195,9 @@ public class KubeJSErrorScreen extends Screen {
 
 			this.indexText = Component.literal("#" + (index + 1)).getVisualOrderText();
 
-			if (line.source.isEmpty()) {
-				if (line.externalFile != null) {
-					this.scriptLineText = Component.literal(line.externalFile.getFileName().toString()).getVisualOrderText();
-				} else if (line.line == 0) {
-					this.scriptLineText = Component.literal("Internal Error").getVisualOrderText();
-				} else {
-					this.scriptLineText = Component.literal("<unknown source>#" + line.line).getVisualOrderText();
-				}
-			} else {
-				this.scriptLineText = Component.literal(line.source + "#" + line.line).getVisualOrderText();
-			}
+			var sourceLines = new ArrayList<>(line.sourceLines);
+			Collections.reverse(sourceLines);
+			this.scriptLineText = Component.literal(sourceLines.stream().map(Object::toString).collect(Collectors.joining(" -> "))).getVisualOrderText();
 
 			var sb = new StringBuilder();
 			calendar.setTimeInMillis(line.timestamp);
@@ -254,7 +248,7 @@ public class KubeJSErrorScreen extends Screen {
 		}
 
 		public void open() {
-			var path = line.externalFile == null ? (line.source.isEmpty() ? null : line.console.scriptType.path.resolve(line.source)) : line.externalFile;
+			var path = line.externalFile == null ? (line.sourceLines.isEmpty() || line.sourceLines.iterator().next().source().isEmpty() ? null : line.console.scriptType.path.resolve(line.sourceLines.iterator().next().source())) : line.externalFile;
 
 			if (path != null && Files.exists(path)) {
 				try {

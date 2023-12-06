@@ -38,6 +38,7 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 	public final String name;
 	public final ConsoleJS console;
 	public final Path path;
+	public final String nameStrip;
 	public final transient Supplier<ScriptManager> manager;
 	public transient Executor executor;
 
@@ -45,6 +46,7 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 		this.name = n;
 		this.console = new ConsoleJS(this, LoggerFactory.getLogger(cname));
 		this.path = path;
+		this.nameStrip = name + "_scripts:";
 		this.manager = m;
 		this.executor = Runnable::run;
 	}

@@ -5,9 +5,36 @@ import dev.latvian.mods.kubejs.util.LogType;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ConsoleLine {
+	public record SourceLine(String source, int line) {
+		public SourceLine(FriendlyByteBuf buf) {
+			this(buf.readUtf(), buf.readVarInt());
+		}
+
+		@Override
+		public String toString() {
+			if (source.isEmpty() && line == 0) {
+				return "Internal Error";
+			} else if (source.isEmpty()) {
+				return "<unknown source>#" + line;
+			} else if (line == 0) {
+				return source;
+			} else {
+				return source + "#" + line;
+			}
+		}
+
+		public static void write(FriendlyByteBuf buf, SourceLine sourceLine) {
+			buf.writeUtf(sourceLine.source);
+			buf.writeVarInt(sourceLine.line);
+		}
+	}
+
 	public static final ConsoleLine[] EMPTY_ARRAY = new ConsoleLine[0];
 
 	public final ConsoleJS console;
@@ -15,8 +42,7 @@ public class ConsoleLine {
 	public String message;
 	public LogType type = LogType.INFO;
 	public String group = "";
-	public String source = "";
-	public int line = 0;
+	public Collection<SourceLine> sourceLines = Set.of();
 	public Path externalFile = null;
 	public List<String> stackTrace = List.of();
 	private String cachedText;
@@ -33,8 +59,7 @@ public class ConsoleLine {
 		this.message = buf.readUtf();
 		this.type = LogType.VALUES[buf.readByte()];
 		this.group = "";
-		this.source = buf.readUtf();
-		this.line = buf.readVarInt();
+		this.sourceLines = buf.readList(SourceLine::new);
 		this.stackTrace = buf.readList(FriendlyByteBuf::readUtf);
 	}
 
@@ -43,8 +68,7 @@ public class ConsoleLine {
 		buf.writeLong(line.timestamp);
 		buf.writeUtf(line.message);
 		buf.writeByte(line.type.ordinal());
-		buf.writeUtf(line.source);
-		buf.writeVarInt(line.line);
+		buf.writeCollection(line.sourceLines, SourceLine::write);
 		buf.writeCollection(line.stackTrace, FriendlyByteBuf::writeUtf);
 	}
 
@@ -52,15 +76,8 @@ public class ConsoleLine {
 		if (cachedText == null) {
 			var builder = new StringBuilder();
 
-			if (line > 0) {
-				if (!source.isEmpty()) {
-					builder.append(source);
-					builder.append('#');
-				} else {
-					builder.append("<unknown source>#");
-				}
-
-				builder.append(line);
+			if (!sourceLines.isEmpty()) {
+				builder.append(sourceLines.iterator().next());
 				builder.append(": ");
 			}
 
@@ -75,8 +92,35 @@ public class ConsoleLine {
 		return cachedText;
 	}
 
+	public ConsoleLine withSourceLine(String source, int line) {
+		if (source == null) {
+			source = "";
+		}
+
+		if (!source.isEmpty() && source.startsWith(console.scriptType.nameStrip)) {
+			source = source.substring(console.scriptType.nameStrip.length());
+		}
+
+		if (line < 0) {
+			line = 0;
+		}
+
+		if (sourceLines.isEmpty()) {
+			sourceLines = Set.of(new SourceLine(source, line));
+			return this;
+		} else if (sourceLines.size() == 1) {
+			var line0 = sourceLines.iterator().next();
+			sourceLines = new LinkedHashSet<>();
+			sourceLines.add(line0);
+		}
+
+		sourceLines.add(new SourceLine(source, line));
+		return this;
+	}
+
 	public ConsoleLine withExternalFile(Path path) {
 		externalFile = path;
+		sourceLines = Set.of(new SourceLine(path.getFileName().toString(), 0));
 		return this;
 	}
 

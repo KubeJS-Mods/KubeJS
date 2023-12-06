@@ -89,7 +89,6 @@ public class ConsoleJS {
 	private boolean debugEnabled;
 	private boolean writeToFile;
 	private final List<String> writeQueue;
-	private final String nameStrip;
 	private final Calendar calendar;
 
 	public final Consumer<ConsoleLine> debugLogFunction;
@@ -108,7 +107,6 @@ public class ConsoleJS {
 		this.debugEnabled = false;
 		this.writeToFile = true;
 		this.writeQueue = new LinkedList<>();
-		this.nameStrip = scriptType.name + "_scripts:";
 		this.calendar = Calendar.getInstance();
 
 		this.debugLogFunction = new LogFunc(this, LogType.DEBUG);
@@ -184,11 +182,16 @@ public class ConsoleJS {
 		line.group = group;
 
 		if (error instanceof RhinoException ex) {
-			line.line = ex.lineNumber();
-			line.source = ex.lineSource();
+			if (ex.lineSource() != null) {
+				line.withSourceLine(ex.lineSource(), ex.lineNumber());
+			}
 
-			if (line.source == null) {
-				line.source = "";
+			if (capturingErrors) {
+				for (var el : ex.getScriptStack()) {
+					if (el.fileName != null && el.lineNumber >= 0) {
+						line.withSourceLine(el.fileName, el.lineNumber);
+					}
+				}
 			}
 		}
 
@@ -202,8 +205,7 @@ public class ConsoleJS {
 
 				if (ci > 0) {
 					try {
-						line.line = Integer.parseInt(pe.substring(ci + 1));
-						line.source = pe.substring(0, ci);
+						line.withSourceLine(pe.substring(0, ci), Integer.parseInt(pe.substring(ci + 1)));
 						line.message = line.message.substring(0, lpi).trim();
 					} catch (Exception e) {
 					}
@@ -211,19 +213,10 @@ public class ConsoleJS {
 			}
 		}
 
-		if (line.line == 0 || line.source.isEmpty()) {
+		if (line.sourceLines.isEmpty()) {
 			int[] lineP = {0};
-			line.source = Context.getSourcePositionFromStack(scriptType.manager.get().context, lineP);
-
-			if (line.source == null) {
-				line.source = "";
-			}
-
-			line.line = lineP[0];
-		}
-
-		if (!line.source.isEmpty() && line.source.startsWith(nameStrip)) {
-			line.source = line.source.substring(nameStrip.length());
+			var source = Context.getSourcePositionFromStack(scriptType.manager.get().context, lineP);
+			line.withSourceLine(source, lineP[0]);
 		}
 
 		return line;
