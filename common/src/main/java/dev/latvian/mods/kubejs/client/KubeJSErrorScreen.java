@@ -37,7 +37,7 @@ public class KubeJSErrorScreen extends Screen {
 	public final Path logFile;
 	public final List<ConsoleLine> errors;
 	public final List<ConsoleLine> warnings;
-	//private MultiLineLabel multilineMessage;
+	public List<ConsoleLine> viewing;
 	private ErrorList list;
 
 	public KubeJSErrorScreen(Screen lastScreen, ScriptType scriptType, @Nullable Path logFile, List<ConsoleLine> errors, List<ConsoleLine> warnings) {
@@ -47,7 +47,8 @@ public class KubeJSErrorScreen extends Screen {
 		this.logFile = logFile;
 		this.errors = errors;
 		this.warnings = warnings;
-		//this.multilineMessage = MultiLineLabel.EMPTY;
+
+		this.viewing = errors.isEmpty() && !warnings.isEmpty() ? warnings : errors;
 	}
 
 	public KubeJSErrorScreen(Screen lastScreen, ConsoleJS console) {
@@ -62,29 +63,9 @@ public class KubeJSErrorScreen extends Screen {
 	@Override
 	protected void init() {
 		super.init();
-		this.list = new ErrorList(this, this.minecraft, this.width, this.height, 32, this.height - 32);
+		this.list = new ErrorList(this, this.minecraft, this.width, this.height, 32, this.height - 32, viewing);
 		this.addWidget(list);
 
-		/*
-		var list = new ArrayList<Component>();
-		list.add(Component.literal("There were KubeJS " + scriptType.name + " errors ").append(Component.literal("[" + errors.size() + "]").withStyle(ChatFormatting.DARK_RED)).append("!"));
-
-		var errorStyle = Style.EMPTY.withColor(0xD19893);
-		var warningStyle = Style.EMPTY.withColor(0xCEB692);
-
-		for (int i = 0; i < errors.size(); i++) {
-			list.add(Component.empty());
-			list.add(Component.literal((i + 1) + ") ").withStyle(ChatFormatting.DARK_RED).append(Component.literal(errors.get(i).getText().replace("Error occurred while handling event ", "Error in ").replace("dev.latvian.mods.kubejs.", "...")).withStyle(errorStyle)));
-		}
-
-		for (int i = 0; i < warnings.size(); i++) {
-			list.add(Component.empty());
-			list.add(Component.literal((i + 1) + ") ").withStyle(ChatFormatting.GOLD).append(Component.literal(warnings.get(i).getText().replace("Error occurred while handling event ", "Error in ").replace("dev.latvian.mods.kubejs.", "...")).withStyle(warningStyle)));
-		}
-		 */
-
-		// this.multilineMessage = MultiLineLabel.create(this.font, CommonComponents.joinLines(list), this.width - 12);
-		// this.multilineMessage = MultiLineLabel.create(this.font, CommonComponents.joinLines(Component.literal("Hi")), this.width - 12);
 		int i = this.height - 26;
 
 		Button openLog;
@@ -99,6 +80,12 @@ public class KubeJSErrorScreen extends Screen {
 		}
 
 		openLog.active = logFile != null;
+
+		var viewOther = this.addRenderableWidget(Button.builder(Component.literal((viewing == errors) ? ("View Warnings [" + warnings.size() + "]") : ("View Errors [" + errors.size() + "]")), this::viewOther).bounds(this.width - 107, 7, 100, 20).build());
+
+		if (errors.isEmpty() || warnings.isEmpty()) {
+			viewOther.active = false;
+		}
 	}
 
 	private void quit(Button button) {
@@ -119,11 +106,16 @@ public class KubeJSErrorScreen extends Screen {
 		}
 	}
 
+	private void viewOther(Button button) {
+		viewing = viewing == errors ? warnings : errors;
+		repositionElements();
+	}
+
 	@Override
 	public void render(GuiGraphics guiGraphics, int mx, int my, float delta) {
 		this.renderBackground(guiGraphics);
 		this.list.render(guiGraphics, mx, my, delta);
-		guiGraphics.drawCenteredString(this.font, "KubeJS " + scriptType.name + " script errors", this.width / 2, 12, 0xFFFFFF);
+		guiGraphics.drawCenteredString(this.font, "KubeJS " + scriptType.name + " script " + (viewing == errors ? "errors" : "warnings"), this.width / 2, 12, 0xFFFFFF);
 		super.render(guiGraphics, mx, my, delta);
 	}
 
@@ -139,21 +131,19 @@ public class KubeJSErrorScreen extends Screen {
 
 	public static class ErrorList extends ObjectSelectionList<Entry> {
 		public final KubeJSErrorScreen screen;
+		public final List<ConsoleLine> lines;
 
-		public ErrorList(KubeJSErrorScreen screen, Minecraft minecraft, int x1, int height, int y0, int y1) {
+		public ErrorList(KubeJSErrorScreen screen, Minecraft minecraft, int x1, int height, int y0, int y1, List<ConsoleLine> lines) {
 			super(minecraft, x1, height, y0, y1, 48);
 			this.screen = screen;
+			this.lines = lines;
 
 			setRenderBackground(false);
 
 			var calendar = Calendar.getInstance();
 
-			for (int i = 0; i < screen.errors.size(); i++) {
-				addEntry(new KubeJSErrorScreen.Entry(this, minecraft, i, screen.errors.get(i), calendar));
-			}
-
-			for (int i = 0; i < screen.warnings.size(); i++) {
-				addEntry(new KubeJSErrorScreen.Entry(this, minecraft, i, screen.warnings.get(i), calendar));
+			for (int i = 0; i < lines.size(); i++) {
+				addEntry(new KubeJSErrorScreen.Entry(this, minecraft, i, lines.get(i), calendar));
 			}
 		}
 
@@ -197,7 +187,7 @@ public class KubeJSErrorScreen extends Screen {
 
 			var sourceLines = new ArrayList<>(line.sourceLines);
 			Collections.reverse(sourceLines);
-			this.scriptLineText = Component.literal(sourceLines.stream().map(Object::toString).collect(Collectors.joining(" -> "))).getVisualOrderText();
+			this.scriptLineText = Component.literal(sourceLines.stream().map(Object::toString).map(s -> s.isEmpty() ? (this.line.type == LogType.WARN ? "Internal Warning" : "Internal Error") : s).collect(Collectors.joining(" -> "))).getVisualOrderText();
 
 			var sb = new StringBuilder();
 			calendar.setTimeInMillis(line.timestamp);

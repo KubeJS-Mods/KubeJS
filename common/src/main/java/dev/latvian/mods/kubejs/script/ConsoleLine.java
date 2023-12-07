@@ -19,7 +19,7 @@ public class ConsoleLine {
 		@Override
 		public String toString() {
 			if (source.isEmpty() && line == 0) {
-				return "Internal Error";
+				return "";
 			} else if (source.isEmpty()) {
 				return "<unknown source>#" + line;
 			} else if (line == 0) {
