@@ -111,7 +111,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	public abstract void stopServer();
 
 	@Inject(method = "reloadResources", at = @At("TAIL"))
-	private void endResourceReload(Collection<String> collection, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+	private void kjs$endResourceReload(Collection<String> collection, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
 		CompletableFuture.runAsync(() -> kjs$afterResourcesLoaded(true), kjs$self());
 	}
 }

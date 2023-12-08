@@ -38,6 +38,7 @@ public class DevProperties {
 	public boolean logSkippedPlugins = true;
 	public boolean logGeneratedData = false;
 	public boolean strictTags = false;
+	public boolean alwaysCaptureErrors = false;
 
 	private DevProperties() {
 		properties = new Properties();
@@ -66,6 +67,7 @@ public class DevProperties {
 			logSkippedPlugins = get("logSkippedPlugins", true);
 			logGeneratedData = get("logGeneratedData", false);
 			strictTags = get("strictTags", false);
+			alwaysCaptureErrors = get("alwaysCaptureErrors", false);
 
 			KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::loadDevProperties);
 

@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,21 +35,6 @@ public class ConsoleJS {
 	public static ConsoleJS STARTUP;
 	public static ConsoleJS SERVER;
 	public static ConsoleJS CLIENT;
-
-	private record LogFunc(ConsoleJS console, LogType type) implements Consumer<ConsoleLine> {
-		@Override
-		public void accept(ConsoleLine line) {
-			type.callback.accept(console.logger, line.getText());
-
-			if (console.capturingErrors) {
-				if (type == LogType.ERROR) {
-					console.errors.add(line);
-				} else if (type == LogType.WARN) {
-					console.warnings.add(line);
-				}
-			}
-		}
-	}
 
 	public static ConsoleJS getCurrent(ConsoleJS def) {
 		Context cx = ScriptManager.getCurrentContext();
@@ -79,11 +63,11 @@ public class ConsoleJS {
 	};
 
 	public final ScriptType scriptType;
-	private transient boolean capturingErrors;
 	public final transient Collection<ConsoleLine> errors;
 	public final transient Collection<ConsoleLine> warnings;
-	private final Logger logger;
+	public final transient Logger logger;
 	private final Path logFile;
+	private boolean capturingErrors;
 	private String group;
 	private boolean muted;
 	private boolean debugEnabled;
@@ -91,28 +75,19 @@ public class ConsoleJS {
 	private final List<String> writeQueue;
 	private final Calendar calendar;
 
-	public final Consumer<ConsoleLine> debugLogFunction;
-	public final Consumer<ConsoleLine> infoLogFunction;
-	public Consumer<ConsoleLine> warnLogFunction;
-	public Consumer<ConsoleLine> errorLogFunction;
-
 	public ConsoleJS(ScriptType m, Logger log) {
 		this.scriptType = m;
 		this.errors = new ConcurrentLinkedDeque<>();
 		this.warnings = new ConcurrentLinkedDeque<>();
 		this.logger = log;
 		this.logFile = m.getLogFile();
+		this.capturingErrors = DevProperties.get().alwaysCaptureErrors;
 		this.group = "";
 		this.muted = false;
 		this.debugEnabled = false;
 		this.writeToFile = true;
 		this.writeQueue = new LinkedList<>();
 		this.calendar = Calendar.getInstance();
-
-		this.debugLogFunction = new LogFunc(this, LogType.DEBUG);
-		this.infoLogFunction = new LogFunc(this, LogType.INFO);
-		this.warnLogFunction = new LogFunc(this, LogType.WARN);
-		this.errorLogFunction = new LogFunc(this, LogType.ERROR);
 	}
 
 	public Logger getLogger() {
@@ -148,18 +123,24 @@ public class ConsoleJS {
 	}
 
 	public synchronized void setCapturingErrors(boolean enabled) {
-		capturingErrors = enabled;
+		if (DevProperties.get().alwaysCaptureErrors) {
+			capturingErrors = true;
+		} else if (capturingErrors != enabled) {
+			capturingErrors = enabled;
 
-		if (DevProperties.get().debugInfo) {
-			if (enabled) {
-				logger.info("Capturing errors for " + scriptType.name + " scripts enabled");
-			} else {
-				logger.info("Capturing errors for " + scriptType.name + " scripts disabled");
+			if (DevProperties.get().debugInfo) {
+				if (capturingErrors) {
+					logger.info("Capturing errors for " + scriptType.name + " scripts enabled");
+				} else {
+					logger.info("Capturing errors for " + scriptType.name + " scripts disabled");
+				}
 			}
 		}
 	}
 
-	public void resetFile() {
+	public synchronized void resetFile() {
+		errors.clear();
+		warnings.clear();
 		scriptType.executor.execute(() -> {
 			try {
 				Files.write(logFile, List.of());
@@ -222,16 +203,24 @@ public class ConsoleJS {
 		return line;
 	}
 
-	private ConsoleLine log(Consumer<ConsoleLine> logFunction, LogType type, @Nullable Throwable error, Object message) {
+	private ConsoleLine log(LogType type, @Nullable Throwable error, Object message) {
 		if (shouldPrint()) {
-			var s = line(type, message, error);
-			logFunction.accept(s);
+			var line = line(type, message, error);
+			type.callback.accept(logger, line.getText());
 
-			if (writeToFile) {
-				writeToFile(type, s.timestamp, s.getText());
+			if (capturingErrors) {
+				if (type == LogType.ERROR) {
+					errors.add(line);
+				} else if (type == LogType.WARN) {
+					warnings.add(line);
+				}
 			}
 
-			return s;
+			if (writeToFile) {
+				writeToFile(type, line.timestamp, line.getText());
+			}
+
+			return line;
 		}
 
 		return null;
@@ -299,7 +288,7 @@ public class ConsoleJS {
 	}
 
 	public ConsoleLine info(Object message) {
-		return log(infoLogFunction, LogType.INFO, null, message);
+		return log(LogType.INFO, null, message);
 	}
 
 	public ConsoleLine infof(String message, Object... args) {
@@ -307,12 +296,12 @@ public class ConsoleJS {
 	}
 
 	public ConsoleLine warn(Object message) {
-		return log(warnLogFunction, LogType.WARN, null, message);
+		return log(LogType.WARN, null, message);
 	}
 
 	public ConsoleLine warn(String message, Throwable error, @Nullable Pattern exitPattern) {
 		if (shouldPrint()) {
-			var l = log(errorLogFunction, LogType.WARN, error, message.isEmpty() ? error.getMessage() : (message + ": " + error.getMessage()));
+			var l = log(LogType.WARN, error, message.isEmpty() ? error.getMessage() : (message + ": " + error.getMessage()));
 			handleError(l, error, exitPattern, !capturingErrors);
 			return l;
 		}
@@ -329,12 +318,12 @@ public class ConsoleJS {
 	}
 
 	public ConsoleLine error(Object message) {
-		return log(errorLogFunction, LogType.ERROR, null, message);
+		return log(LogType.ERROR, null, message);
 	}
 
 	public ConsoleLine error(String message, Throwable error, @Nullable Pattern exitPattern) {
 		if (shouldPrint()) {
-			var l = log(errorLogFunction, LogType.ERROR, error, message.isEmpty() ? error.getMessage() : (message + ": " + error.getMessage()));
+			var l = log(LogType.ERROR, error, message.isEmpty() ? error.getMessage() : (message + ": " + error.getMessage()));
 			handleError(l, error, exitPattern, true);
 			return l;
 		}
@@ -356,7 +345,7 @@ public class ConsoleJS {
 
 	public ConsoleLine debug(Object message) {
 		if (shouldPrintDebug()) {
-			return log(debugLogFunction, LogType.DEBUG, null, message);
+			return log(LogType.DEBUG, null, message);
 		}
 
 		return null;

@@ -90,8 +90,6 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 
 	@HideFromJS
 	public void unload() {
-		console.errors.clear();
-		console.warnings.clear();
 		console.resetFile();
 
 		for (var group : EventGroup.getGroups().values()) {

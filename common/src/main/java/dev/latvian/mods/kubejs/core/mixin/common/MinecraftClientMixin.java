@@ -20,12 +20,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Mixin(Minecraft.class)
 @RemapPrefixForJS("kjs$")
 public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 	@Unique
 	private ScheduledEvents kjs$scheduledEvents;
+
+	@Inject(method = "<init>", at = @At("RETURN"))
+	private void kjs$init(CallbackInfo ci) {
+		CompletableFuture.runAsync(() -> kjs$afterResourcesLoaded(false), kjs$self());
+	}
 
 	@Inject(method = "createTitle", at = @At("HEAD"), cancellable = true)
 	private void kjs$createTitle(CallbackInfoReturnable<String> ci) {
@@ -78,5 +84,10 @@ public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 		}
 
 		return kjs$scheduledEvents;
+	}
+
+	@Inject(method = "reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;", at = @At("TAIL"))
+	private void kjs$endResourceReload(boolean bl, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+		CompletableFuture.runAsync(() -> kjs$afterResourcesLoaded(true), kjs$self());
 	}
 }

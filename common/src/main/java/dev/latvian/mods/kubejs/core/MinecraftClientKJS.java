@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.item.ItemClickedEventJS;
 import dev.latvian.mods.kubejs.net.FirstClickMessage;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
@@ -106,5 +107,11 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 		}
 
 		new FirstClickMessage(1).sendToServer();
+	}
+
+	@HideFromJS
+	default void kjs$afterResourcesLoaded(boolean reload) {
+		ConsoleJS.CLIENT.setCapturingErrors(false);
+		ConsoleJS.CLIENT.info("Client resource reload complete!");
 	}
 }
