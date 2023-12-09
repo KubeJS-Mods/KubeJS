@@ -48,3 +48,9 @@ mandatory = false
 versionRange = "[9.1.572,)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[mixins]]
+config = "kubejs-common.mixins.json"
+
+[[mixins]]
+config = "kubejs-forge.mixins.json"

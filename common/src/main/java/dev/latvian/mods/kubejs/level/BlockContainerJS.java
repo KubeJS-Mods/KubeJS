@@ -336,7 +336,7 @@ public class BlockContainerJS implements SpecialEquality {
 		var entity = getEntity();
 
 		if (entity != null) {
-			var c = LevelPlatformHelper.get().getInventoryFromBlockEntity(entity, facing);
+			var c = LevelPlatformHelper.get().getInventoryFromBlockEntity(this, facing);
 
 			if (c != null) {
 				return c;

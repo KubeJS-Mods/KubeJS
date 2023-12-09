@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.forge;
 
-import dev.architectury.platform.forge.EventBuses;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
@@ -17,22 +16,22 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.network.NetworkConstants;
-import net.minecraftforge.registries.RegisterEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.fml.IExtensionPoint;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
+import net.neoforged.neoforge.network.NetworkConstants;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -42,7 +41,6 @@ import java.util.Map;
 public class KubeJSForge {
 	public KubeJSForge() throws Throwable {
 		var bus = FMLJavaModLoadingContext.get().getModEventBus();
-		EventBuses.registerModEventBus(KubeJS.MOD_ID, bus);
 		bus.addListener(EventPriority.LOW, KubeJSForge::loadComplete);
 		bus.addListener(EventPriority.LOW, KubeJSForge::initRegistries);
 		bus.addListener(EventPriority.LOW, KubeJSForge::commonSetup);
@@ -52,16 +50,18 @@ public class KubeJSForge {
 		KubeJS.instance.setup();
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
-		MinecraftForge.EVENT_BUS.addListener(KubeJSForge::itemDestroyed);
-		MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, KubeJSForge::livingDrops);
+		NeoForge.EVENT_BUS.addListener(KubeJSForge::itemDestroyed);
+		NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, KubeJSForge::livingDrops);
 
 		if (!CommonProperties.get().serverOnly) {
-			ForgeMod.enableMilkFluid();
-			IngredientForgeHelper.register();
+			NeoForgeMod.enableMilkFluid();
+			IngredientForgeHelper.register(bus);
 			KubeJSCreativeTabs.init();
 		}
 
-		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> KubeJSForgeClient::new);
+		if (FMLEnvironment.dist == Dist.CLIENT) {
+			new KubeJSForgeClient();
+		}
 	}
 
 	private static void initRegistries(RegisterEvent event) {

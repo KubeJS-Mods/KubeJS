@@ -51,13 +51,13 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 	}
 
 	@Override
-	default int kjs$runCommand(String command) {
-		return kjs$self().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack(), command);
+	default void kjs$runCommand(String command) {
+		kjs$self().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack(), command);
 	}
 
 	@Override
-	default int kjs$runCommandSilent(String command) {
-		return kjs$self().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack().withSuppressedOutput(), command);
+	default void kjs$runCommandSilent(String command) {
+		kjs$self().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack().withSuppressedOutput(), command);
 	}
 
 	default ServerLevel kjs$getLevel(ResourceLocation dimension) {

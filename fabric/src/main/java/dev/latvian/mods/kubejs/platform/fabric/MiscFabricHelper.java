@@ -8,8 +8,6 @@ import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -34,13 +32,6 @@ public class MiscFabricHelper implements MiscPlatformHelper {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	@Override
-	@SuppressWarnings("deprecation")
-	public MobCategory getMobCategory(String name) {
-		// safe cast, mojang just specified too general of a type
-		return ((StringRepresentable.EnumCodec<MobCategory>) MobCategory.CODEC).byName(name);
 	}
 
 	@Override

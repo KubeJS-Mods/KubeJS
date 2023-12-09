@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.item.ingredient;
 
 import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
@@ -151,7 +153,8 @@ public interface IngredientJS {
 		} else if (json.isJsonPrimitive()) {
 			return of(json.getAsString());
 		} else {
-			return Ingredient.fromJson(json);
+			return Ingredient.CODEC.decode(JsonOps.INSTANCE, json)
+				.result().map(Pair::getFirst).orElseThrow();
 		}
 	}
 

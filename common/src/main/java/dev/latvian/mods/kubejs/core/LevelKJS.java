@@ -53,25 +53,17 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
 	}
 
 	@Override
-	default int kjs$runCommand(String command) {
-		var m = 0;
-
+	default void kjs$runCommand(String command) {
 		for (var entity : kjs$self().players()) {
-			m = Math.max(m, entity.kjs$runCommand(command));
+			entity.kjs$runCommand(command);
 		}
-
-		return m;
 	}
 
 	@Override
-	default int kjs$runCommandSilent(String command) {
-		var m = 0;
-
+	default void kjs$runCommandSilent(String command) {
 		for (var entity : kjs$self().players()) {
-			m = Math.max(m, entity.kjs$runCommandSilent(command));
+			entity.kjs$runCommandSilent(command);
 		}
-
-		return m;
 	}
 
 	default ResourceLocation kjs$getDimension() {

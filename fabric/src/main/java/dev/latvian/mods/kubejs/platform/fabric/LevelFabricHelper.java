@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.platform.fabric;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityInfo;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityJS;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
+import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.platform.LevelPlatformHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,12 +17,12 @@ import org.jetbrains.annotations.Nullable;
 public class LevelFabricHelper implements LevelPlatformHelper {
 	@Override
 	@Nullable
-	public InventoryKJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing) {
+	public InventoryKJS getInventoryFromBlockEntity(BlockContainerJS tileEntity, Direction facing) {
 		return null;
 	}
 
 	@Override
-	public boolean areCapsCompatible(ItemStack a, ItemStack b) {
+	public boolean isDataCompatible(ItemStack a, ItemStack b) {
 		return true;
 	}
 

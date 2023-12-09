@@ -4,15 +4,14 @@ import dev.latvian.mods.kubejs.gui.KubeJSMenu;
 import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoader;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
-import net.minecraftforge.network.IContainerFactory;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModLoader;
+import net.neoforged.fml.loading.moddiscovery.ModInfo;
+import net.neoforged.neoforge.network.IContainerFactory;
 
 import java.util.function.Supplier;
 
@@ -30,11 +29,6 @@ public class MiscForgeHelper implements MiscPlatformHelper {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	@Override
-	public MobCategory getMobCategory(String name) {
-		return MobCategory.byName(name);
 	}
 
 	@Override

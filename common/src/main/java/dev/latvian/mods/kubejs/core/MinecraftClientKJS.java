@@ -38,15 +38,13 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 	}
 
 	@Override
-	default int kjs$runCommand(String command) {
+	default void kjs$runCommand(String command) {
 		kjs$self().player.connection.sendCommand(command);
-		return 0;
 	}
 
 	@Override
-	default int kjs$runCommandSilent(String command) {
+	default void kjs$runCommandSilent(String command) {
 		kjs$self().player.connection.sendCommand(command);
-		return 0;
 	}
 
 	@Nullable

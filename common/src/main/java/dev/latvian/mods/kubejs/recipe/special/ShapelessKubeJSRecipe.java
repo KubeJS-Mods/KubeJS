@@ -1,9 +1,10 @@
 package dev.latvian.mods.kubejs.recipe.special;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
-import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -11,7 +12,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -26,7 +26,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 	private final String stage;
 
 	public ShapelessKubeJSRecipe(ShapelessRecipe original, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
-		super(original.getId(), original.getGroup(), original.category(), original.result, original.getIngredients());
+		super(original.getGroup(), original.category(), original.result, original.getIngredients());
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
 		this.stage = stage;
@@ -65,27 +65,36 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 
 	public static class SerializerKJS implements RecipeSerializer<ShapelessKubeJSRecipe> {
 
-		// registry replacement... you never know
+		// registry replacement-safe(?)
 		private static final RecipeSerializer<ShapelessRecipe> SHAPELESS = UtilsJS.cast(RegistryInfo.RECIPE_SERIALIZER.getValue(new ResourceLocation("crafting_shapeless")));
 
-		@Override
-		public ShapelessKubeJSRecipe fromJson(ResourceLocation id, JsonObject json) {
-			var shapelessRecipe = SHAPELESS.fromJson(id, json);
+		private static final MapCodec.MapCodecCodec<ShapelessRecipe> SHAPELESS_CODEC = getCodec();
 
-			var ingredientActions = IngredientAction.parseList(json.get("kubejs:actions"));
-			ModifyRecipeResultCallback modifyResult = null;
-			if (json.has("kubejs:modify_result")) {
-				modifyResult = RecipesEventJS.MODIFY_RESULT_CALLBACKS.get(id);
+		private static MapCodec.MapCodecCodec<ShapelessRecipe> getCodec() {
+			try {
+				return UtilsJS.cast(SHAPELESS_CODEC);
+			} catch (ClassCastException e) {
+				throw new IllegalStateException("Original ShapelessRecipe codec is not a MapCodecCodec!");
 			}
+		}
 
-			var stage = GsonHelper.getAsString(json, "kubejs:stage", "");
+		public static final Codec<ShapelessKubeJSRecipe> CODEC = RecordCodecBuilder.create(instance -> {
+			return instance.group(
+				SHAPELESS_CODEC.codec().forGetter(r -> r),
+				IngredientAction.CODEC.listOf().optionalFieldOf("kubejs:actions", List.of()).forGetter(r -> r.ingredientActions),
+				ModifyRecipeResultCallback.CODEC.optionalFieldOf("kubejs:modify_result", null).forGetter(r -> r.modifyResult),
+				Codec.STRING.optionalFieldOf("kubejs:stage", "").forGetter(r -> r.stage)
+			).apply(instance, ShapelessKubeJSRecipe::new);
+		});
 
-			return new ShapelessKubeJSRecipe(shapelessRecipe, ingredientActions, modifyResult, stage);
+		@Override
+		public Codec<ShapelessKubeJSRecipe> codec() {
+			return CODEC;
 		}
 
 		@Override
-		public ShapelessKubeJSRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-			var shapelessRecipe = SHAPELESS.fromNetwork(id, buf);
+		public ShapelessKubeJSRecipe fromNetwork(FriendlyByteBuf buf) {
+			var shapelessRecipe = SHAPELESS.fromNetwork(buf);
 			var flags = (int) buf.readByte();
 
 			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : List.of();

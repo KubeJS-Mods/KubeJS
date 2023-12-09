@@ -109,7 +109,7 @@ public interface FunctionContainer {
 	default FunctionContainer copyName(CopyNameFunction.NameSource source) {
 		var o = new JsonObject();
 		o.addProperty("function", "minecraft:copy_name");
-		o.addProperty("source", source.name);
+		o.addProperty("source", source.getSerializedName());
 		return addFunction(o);
 	}
 

@@ -5,11 +5,13 @@ import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
 import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.levelgen.structure.structures.IglooPieces;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -125,6 +127,7 @@ public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
 
 	@Override
 	default JsonElement toJsonJS() {
-		return kjs$self().toJson();
+		// FIXME: Use the Codec(? idk if that's the right thing to do on Fabric, it definitely is on Forge)
+		return UtilsJS.toJsonOrThrow(kjs$self(), Ingredient.CODEC);
 	}
 }

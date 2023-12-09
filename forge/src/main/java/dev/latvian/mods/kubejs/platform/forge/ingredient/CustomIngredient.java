@@ -1,32 +1,26 @@
 package dev.latvian.mods.kubejs.platform.forge.ingredient;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.platform.forge.IngredientForgeHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
 
 import java.util.function.Predicate;
 
 public class CustomIngredient extends KubeJSIngredient {
-	public static final KubeJSIngredientSerializer<CustomIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(CustomIngredient::new, CustomIngredient::new);
+	public static final Codec<CustomIngredient> CODEC = Codec.unit(CustomIngredient::new);
 
-	private final Predicate<ItemStack> predicate;
+	private Predicate<ItemStack> predicate;
 
 	public CustomIngredient(Predicate<ItemStack> predicate) {
+		this();
 		this.predicate = predicate;
 	}
 
-	private CustomIngredient(JsonObject json) {
-		predicate = stack -> true;
-	}
-
-	private CustomIngredient(FriendlyByteBuf buf) {
-		predicate = stack -> true;
-	}
-
-	@Override
-	public IIngredientSerializer<CustomIngredient> getSerializer() {
-		return SERIALIZER;
+	private CustomIngredient() {
+		super(IngredientForgeHelper.CUSTOM);
+		this.predicate = stack -> false;
 	}
 
 	@Override

@@ -15,7 +15,7 @@ public class FenceBlockBuilder extends MultipartShapedBlockBuilder {
 
 		tagBoth(BlockTags.FENCES.location());
 
-		if (Platform.isForge()) {
+		if (Platform.isNeoForge()) {
 			tagBoth(new ResourceLocation("forge:fences"));
 		}
 	}

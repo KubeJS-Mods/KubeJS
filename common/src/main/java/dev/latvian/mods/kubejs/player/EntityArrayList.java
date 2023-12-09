@@ -65,25 +65,17 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 	}
 
 	@Override
-	public int kjs$runCommand(String command) {
-		var m = 0;
-
+	public void kjs$runCommand(String command) {
 		for (var entity : this) {
-			m = Math.max(m, entity.kjs$runCommand(command));
+			entity.kjs$runCommand(command);
 		}
-
-		return m;
 	}
 
 	@Override
-	public int kjs$runCommandSilent(String command) {
-		var m = 0;
-
+	public void kjs$runCommandSilent(String command) {
 		for (var entity : this) {
-			m = Math.max(m, entity.kjs$runCommandSilent(command));
+			entity.kjs$runCommandSilent(command);
 		}
-
-		return m;
 	}
 
 	public void kill() {

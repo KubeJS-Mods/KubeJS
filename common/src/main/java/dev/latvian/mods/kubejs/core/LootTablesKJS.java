@@ -11,6 +11,7 @@ import dev.latvian.mods.kubejs.loot.GiftLootEventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootDataId;
 import net.minecraft.world.level.storage.loot.LootDataType;
@@ -37,7 +38,7 @@ public interface LootTablesKJS {
 				var type = entry.getKey().type();
 				var id = entry.getKey().location();
 				try {
-					var lootJson = type.parser().toJsonTree(entry.getValue());
+					var lootJson = UtilsJS.toJsonOrThrow(UtilsJS.cast(entry.getValue()), type.codec);
 					var fileName = "%s/%s/%s.json".formatted(type.directory(), id.getNamespace(), id.getPath());
 
 					DataExport.export.addJson(fileName, lootJson);

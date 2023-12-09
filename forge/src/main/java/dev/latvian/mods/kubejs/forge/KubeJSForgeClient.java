@@ -10,10 +10,10 @@ import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 
 public class KubeJSForgeClient {
 	public KubeJSForgeClient() {
@@ -23,7 +23,6 @@ public class KubeJSForgeClient {
 		//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::textureStitch);
 	}
 
-	@SuppressWarnings("removal")
 	private void setupClient(FMLClientSetupEvent event) {
 		KubeJS.PROXY.clientSetup();
 

@@ -43,7 +43,7 @@ public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 	}
 
 	@ModifyExpressionValue(
-		method = {"reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;", "<init>"},
+		method = {"reloadResourcePacks(ZLnet/minecraft/client/Minecraft$GameLoadCookie;)Ljava/util/concurrent/CompletableFuture;", "<init>"},
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;")
 	)
 	private List<PackResources> kjs$loadPacks(List<PackResources> resources) {
@@ -86,8 +86,8 @@ public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 		return kjs$scheduledEvents;
 	}
 
-	@Inject(method = "reloadResourcePacks(Z)Ljava/util/concurrent/CompletableFuture;", at = @At("TAIL"))
-	private void kjs$endResourceReload(boolean bl, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+	@Inject(method = "reloadResourcePacks(ZLnet/minecraft/client/Minecraft$GameLoadCookie;)Ljava/util/concurrent/CompletableFuture;", at = @At("TAIL"))
+	private void kjs$endResourceReload(boolean bl, Minecraft.GameLoadCookie gameLoadCookie, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
 		CompletableFuture.runAsync(() -> kjs$afterResourcesLoaded(true), kjs$self());
 	}
 }

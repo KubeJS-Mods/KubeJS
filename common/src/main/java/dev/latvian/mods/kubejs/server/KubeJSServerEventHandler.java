@@ -17,6 +17,7 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -47,7 +48,7 @@ public class KubeJSServerEventHandler {
 
 		if (Files.exists(p)) {
 			try {
-				var tag = NbtIo.readCompressed(p.toFile());
+				var tag = NbtIo.readCompressed(p, NbtAccounter.unlimitedHeap());
 
 				if (tag != null) {
 					server.kjs$getPersistentData().merge(tag);
@@ -91,7 +92,7 @@ public class KubeJSServerEventHandler {
 		if (level.dimension() == Level.OVERWORLD) {
 			Util.ioPool().execute(() -> {
 				try {
-					NbtIo.writeCompressed(level.getServer().kjs$getPersistentData(), p.toFile());
+					NbtIo.writeCompressed(level.getServer().kjs$getPersistentData(), p);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

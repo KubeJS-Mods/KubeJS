@@ -14,7 +14,7 @@ public class AddSpawnProperties {
 	public int maxCount = 4;
 
 	public void setCategory(String s) {
-		_category = UtilsJS.mobCategoryByName(s);
+		_category = UtilsJS.byName(MobCategory.CODEC, s);
 	}
 
 	public void setEntity(String s) {

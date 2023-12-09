@@ -56,10 +56,6 @@ public class BlockExplodedCallbackJS {
 		return explosion.radius;
 	}
 
-	public DamageSource getDamageSource() {
-		return explosion.getDamageSource();
-	}
-
 	public List<Player> getAffectedPlayers() {
 		return explosion.getHitPlayers().keySet().stream().toList();
 	}

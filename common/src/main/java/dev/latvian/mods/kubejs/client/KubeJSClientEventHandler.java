@@ -10,13 +10,12 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
-import dev.latvian.mods.kubejs.core.ImageButtonKJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
@@ -160,7 +159,7 @@ public class KubeJSClientEventHandler {
 			var iterator = screen.children().iterator();
 			while (iterator.hasNext()) {
 				var listener = iterator.next();
-				if (listener instanceof AbstractWidget && listener instanceof ImageButtonKJS buttonKJS && RECIPE_BUTTON_TEXTURE.equals(buttonKJS.kjs$getButtonTexture())) {
+				if (listener instanceof ImageButton button && button.sprites.enabled().equals(RECIPE_BUTTON_TEXTURE)) {
 					access.getRenderables().remove(listener);
 					access.getNarratables().remove(listener);
 					iterator.remove();

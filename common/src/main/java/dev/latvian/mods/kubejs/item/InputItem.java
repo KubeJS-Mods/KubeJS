@@ -106,7 +106,7 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonS
 
 			return EMPTY;
 		} else {
-			return of(Ingredient.fromJson(json), 1);
+			return of(IngredientJS.ofJson(json), 1);
 		}
 	}
 
@@ -169,11 +169,11 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonS
 	@RemapForJS("toJson")
 	public JsonElement toJsonJS(boolean alwaysNest) {
 		if (!alwaysNest && count == 1) {
-			return ingredient.toJson();
+			return ingredient.toJsonJS();
 		} else {
 			var o = new JsonObject();
 			o.addProperty("count", count);
-			o.add("ingredient", ingredient.toJson());
+			o.add("ingredient", ingredient.toJsonJS());
 			return o;
 		}
 	}

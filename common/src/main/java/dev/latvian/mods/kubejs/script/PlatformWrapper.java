@@ -65,7 +65,7 @@ public class PlatformWrapper {
 	}
 
 	public static boolean isForge() {
-		return Platform.isForge();
+		return Platform.isNeoForge();
 	}
 
 	public static boolean isFabric() {

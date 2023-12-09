@@ -48,7 +48,6 @@
 		"AbstractClientPlayerMixin",
 		"AbstractSelectionListMixin",
 		"ClientLevelMixin",
-		"ImageButtonMixin",
 		"KeyboardHandlerMixin",
 		"LoadingOverlayMixin",
 		"MinecraftClientMixin",

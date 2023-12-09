@@ -20,8 +20,6 @@ public interface MiscPlatformHelper {
 
 	void setModName(PlatformWrapper.ModInfo info, String name);
 
-	MobCategory getMobCategory(String name);
-
 	boolean isDataGen();
 
 	long ingotFluidAmount();

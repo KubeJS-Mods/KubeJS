@@ -14,7 +14,6 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
 import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.BaseFunction;
@@ -28,6 +27,7 @@ import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import net.minecraft.ResourceLocationException;
+import net.minecraft.Util;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
@@ -44,25 +44,25 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.util.valueproviders.ClampedInt;
 import net.minecraft.util.valueproviders.ClampedNormalInt;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.Deserializers;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -738,7 +738,7 @@ public class UtilsJS {
 	}
 
 	public static JsonElement numberProviderJson(NumberProvider gen) {
-		return Deserializers.createConditionSerializer().create().toJsonTree(gen);
+		return UtilsJS.toJsonOrThrow(gen, NumberProviders.CODEC);
 	}
 
 	public static Vec3 vec3Of(@Nullable Object o) {
@@ -817,8 +817,28 @@ public class UtilsJS {
 		}
 	}
 
-	public static MobCategory mobCategoryByName(String s) {
-		return MiscPlatformHelper.get().getMobCategory(s);
+	public static <E extends Enum<E> & StringRepresentable> E byName(Codec<E> codec, String s) {
+		return fromJsonOrThrow(new JsonPrimitive(s), codec);
+	}
+
+	public static <E> E fromJsonOrThrow(JsonElement json, Codec<E> codec) {
+		return fromJsonOrThrow(json, codec, str -> {
+			throw new RuntimeException("Could not decode element from JSON: " + str);
+		});
+	}
+
+	public static <E> JsonElement toJsonOrThrow(E value, Codec<E> codec) {
+		return toJsonOrThrow(value, codec, str -> {
+			throw new RuntimeException("Could not encode element to JSON: " + str);
+		});
+	}
+
+	public static <E, X extends Throwable> E fromJsonOrThrow(JsonElement json, Codec<E> codec, Function<String, X> onError) throws X {
+		return Util.getOrThrow(codec.parse(JsonOps.INSTANCE, json), onError);
+	}
+
+	public static <E, X extends Throwable> JsonElement toJsonOrThrow(E value, Codec<E> codec, Function<String, X> onError) throws X {
+		return Util.getOrThrow(codec.encodeStart(JsonOps.INSTANCE, value), onError);
 	}
 
 	public static String stripIdForEvent(ResourceLocation id) {
@@ -830,10 +850,7 @@ public class UtilsJS {
 	}
 
 	public static <T> String getUniqueId(T input, Codec<T> codec) {
-		return getUniqueId(input, o -> codec.encodeStart(JsonOps.COMPRESSED, o)
-			.getOrThrow(false, str -> {
-				throw new RuntimeException("Could not encode element to JSON: " + str);
-			}));
+		return getUniqueId(input, o -> toJsonOrThrow(o, codec));
 	}
 
 	private static <T> String getUniqueId(T input, Function<T, JsonElement> toJson) {

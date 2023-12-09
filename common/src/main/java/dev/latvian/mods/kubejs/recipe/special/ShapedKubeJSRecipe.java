@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.recipe.special;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
@@ -30,9 +32,9 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	private final ModifyRecipeResultCallback modifyResult;
 	private final String stage;
 
-	public ShapedKubeJSRecipe(ResourceLocation id, String group, CraftingBookCategory category, int width, int height, NonNullList<Ingredient> ingredients, ItemStack result,
+	public ShapedKubeJSRecipe(String group, CraftingBookCategory category, int width, int height, NonNullList<Ingredient> ingredients, ItemStack result,
 							  boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
-		super(id, group, category, width, height, ingredients, result);
+		super(group, category, width, height, ingredients, result);
 		this.mirror = mirror;
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
@@ -89,10 +91,27 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 	public static class SerializerKJS implements RecipeSerializer<ShapedKubeJSRecipe> {
 
-		// registry replacement... you never know
+		// registry replacement-safe(?)
 		private static final RecipeSerializer<ShapedRecipe> SHAPED = UtilsJS.cast(RegistryInfo.RECIPE_SERIALIZER.getValue(new ResourceLocation("crafting_shaped")));
 
+		private static final MapCodec.MapCodecCodec<ShapedRecipe> SHAPED_CODEC = getCodec();
+
+		private static MapCodec.MapCodecCodec<ShapedRecipe> getCodec() {
+			try {
+				return UtilsJS.cast(SHAPED_CODEC);
+			} catch (ClassCastException e) {
+				throw new IllegalStateException("Original ShapedRecipe codec is not a MapCodecCodec!");
+			}
+		}
+
+		// FIXME: i am in great pain
+		public static final Codec<ShapedKubeJSRecipe> CODEC = null;
+
 		@Override
+		public Codec<ShapedKubeJSRecipe> codec() {
+			return CODEC;
+		}
+
 		public ShapedKubeJSRecipe fromJson(ResourceLocation id, JsonObject json) {
 			var shapedRecipe = SHAPED.fromJson(id, json);
 
@@ -126,8 +145,8 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 		}
 
 		@Override
-		public ShapedKubeJSRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-			var shapedRecipe = SHAPED.fromNetwork(id, buf);
+		public ShapedKubeJSRecipe fromNetwork(FriendlyByteBuf buf) {
+			var shapedRecipe = SHAPED.fromNetwork(buf);
 			var flags = (int) buf.readByte();
 
 			// original values
@@ -144,7 +163,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 			// the pattern can be used as-is because the shrinking logic is done serverside
 			// additionally, result modification callbacks do not need to be synced to clients
-			return new ShapedKubeJSRecipe(id, group, category, width, height, ingredients, result, mirror, ingredientActions, null, stage);
+			return new ShapedKubeJSRecipe(group, category, width, height, ingredients, result, mirror, ingredientActions, null, stage);
 		}
 
 		@Override

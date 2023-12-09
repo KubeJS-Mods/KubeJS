@@ -77,7 +77,7 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 			}
 
 			if (map.get("category") != null) {
-				filters.add(new CategoryFilter(UtilsJS.mobCategoryByName(map.get("category").toString())));
+				filters.add(new CategoryFilter(UtilsJS.byName(MobCategory.CODEC, map.get("category").toString())));
 			}
 
 			// TODO: Add other mob filters
@@ -100,7 +100,7 @@ public interface MobFilter extends BiPredicate<MobCategory, MobSpawnSettings.Spa
 				return new RegexIDFilter(pattern);
 			}
 
-			return s.charAt(0) == '#' ? new CategoryFilter(UtilsJS.mobCategoryByName(s.substring(1))) : new IDFilter(UtilsJS.getMCID(cx, s));
+			return s.charAt(0) == '#' ? new CategoryFilter(UtilsJS.byName(MobCategory.CODEC, s.substring(1))) : new IDFilter(UtilsJS.getMCID(cx, s));
 		}
 	}
 

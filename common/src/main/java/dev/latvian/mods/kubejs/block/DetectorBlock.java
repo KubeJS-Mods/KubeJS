@@ -57,7 +57,7 @@ public class DetectorBlock extends Block {
 	private final Builder builder;
 
 	public DetectorBlock(Builder b) {
-		super(Properties.copy(Blocks.BEDROCK));
+		super(Properties.ofFullCopy(Blocks.BEDROCK));
 		builder = b;
 		registerDefaultState(stateDefinition.any().setValue(BlockStateProperties.POWERED, false));
 	}

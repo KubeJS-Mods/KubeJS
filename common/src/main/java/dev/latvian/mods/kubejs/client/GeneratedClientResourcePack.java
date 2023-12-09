@@ -49,7 +49,8 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 
 			for (var file : Objects.requireNonNull(KubeJSPaths.ASSETS.toFile().listFiles())) {
 				if (file.isFile() && file.getName().endsWith(".zip")) {
-					injected.add(new FilePackResources(file.getName(), file, false));
+					var access = new FilePackResources.FileResourcesSupplier(file, false);
+					injected.add(access.openPrimary(file.getName()));
 				}
 			}
 

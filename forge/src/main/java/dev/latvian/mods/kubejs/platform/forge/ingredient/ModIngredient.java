@@ -1,46 +1,25 @@
 package dev.latvian.mods.kubejs.platform.forge.ingredient;
 
-import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.platform.forge.IngredientForgeHelper;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
 import org.jetbrains.annotations.Nullable;
 
 public class ModIngredient extends KubeJSIngredient {
-	public static final KubeJSIngredientSerializer<ModIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(ModIngredient::ofModFromJson, ModIngredient::ofModFromNetwork);
-
-	public static ModIngredient ofModFromNetwork(FriendlyByteBuf buf) {
-		return new ModIngredient(buf.readUtf());
-	}
-
-	public static ModIngredient ofModFromJson(JsonObject json) {
-		return new ModIngredient(json.get("mod").getAsString());
-	}
+	public static final Codec<ModIngredient> CODEC = Codec.STRING
+		.fieldOf("mod")
+		.codec()
+		.xmap(ModIngredient::new, ingredient -> ingredient.mod);
 
 	public final String mod;
 
 	public ModIngredient(String mod) {
+		super(IngredientForgeHelper.MOD);
 		this.mod = mod;
 	}
 
 	@Override
 	public boolean test(@Nullable ItemStack stack) {
 		return stack != null && stack.kjs$getMod().equals(mod);
-	}
-
-	@Override
-	public IIngredientSerializer<? extends Ingredient> getSerializer() {
-		return SERIALIZER;
-	}
-
-	@Override
-	public void toJson(JsonObject json) {
-		json.addProperty("mod", mod);
-	}
-
-	@Override
-	public void write(FriendlyByteBuf buf) {
-		buf.writeUtf(mod);
 	}
 }

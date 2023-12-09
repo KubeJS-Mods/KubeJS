@@ -3,12 +3,12 @@ package dev.latvian.mods.kubejs.platform;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityInfo;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityJS;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
+import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,9 +20,9 @@ public interface LevelPlatformHelper {
 	}
 
 	@Nullable
-	InventoryKJS getInventoryFromBlockEntity(BlockEntity tileEntity, Direction facing);
+	InventoryKJS getInventoryFromBlockEntity(BlockContainerJS block, Direction facing);
 
-	boolean areCapsCompatible(ItemStack a, ItemStack b);
+	boolean isDataCompatible(ItemStack a, ItemStack b);
 
 	double getReachDistance(LivingEntity livingEntity);
 

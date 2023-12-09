@@ -277,7 +277,7 @@ public class RecipesEventJS extends EventJS {
 			JsonObject json;
 
 			try {
-				if (recipeId == null || (Platform.isForge() && recipeId.getPath().startsWith("_"))) {
+				if (recipeId == null || (Platform.isNeoForge() && recipeId.getPath().startsWith("_"))) {
 					continue; //Forge: filter anything beginning with "_" as it's used for metadata.
 				}
 

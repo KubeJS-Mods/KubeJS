@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -64,9 +65,9 @@ public class KubeJSPlayerEventHandler {
 		return PlayerEvents.CHAT.hasListeners() ? PlayerEvents.CHAT.post(ScriptType.SERVER, new PlayerChatReceivedEventJS(player, component)).arch() : EventResult.pass();
 	}
 
-	public static void advancement(ServerPlayer player, Advancement advancement) {
+	public static void advancement(ServerPlayer player, AdvancementHolder advancement) {
 		if (PlayerEvents.ADVANCEMENT.hasListeners()) {
-			PlayerEvents.ADVANCEMENT.post(new PlayerAdvancementEventJS(player, advancement), advancement.getId());
+			PlayerEvents.ADVANCEMENT.post(new PlayerAdvancementEventJS(player, advancement), advancement.id());
 		}
 	}
 

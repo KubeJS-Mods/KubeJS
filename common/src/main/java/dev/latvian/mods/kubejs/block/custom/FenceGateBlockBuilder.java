@@ -17,7 +17,7 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 		super(i, "_fence_gate");
 		tagBoth(BlockTags.FENCE_GATES.location());
 
-		if (Platform.isForge()) {
+		if (Platform.isNeoForge()) {
 			tagBoth(new ResourceLocation("forge:fence_gates"));
 		}
 

@@ -231,9 +231,9 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 	}
 
 	@Override
-	public boolean canPlaceLiquid(BlockGetter blockGetter, BlockPos blockPos, BlockState blockState, Fluid fluid) {
+	public boolean canPlaceLiquid(Player player, BlockGetter blockGetter, BlockPos blockPos, BlockState blockState, Fluid fluid) {
 		if (blockBuilder.canBeWaterlogged()) {
-			return SimpleWaterloggedBlock.super.canPlaceLiquid(blockGetter, blockPos, blockState, fluid);
+			return SimpleWaterloggedBlock.super.canPlaceLiquid(player, blockGetter, blockPos, blockState, fluid);
 		}
 
 		return false;
@@ -249,9 +249,9 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 	}
 
 	@Override
-	public ItemStack pickupBlock(LevelAccessor levelAccessor, BlockPos blockPos, BlockState blockState) {
+	public ItemStack pickupBlock(Player player, LevelAccessor levelAccessor, BlockPos blockPos, BlockState blockState) {
 		if (blockBuilder.canBeWaterlogged()) {
-			return SimpleWaterloggedBlock.super.pickupBlock(levelAccessor, blockPos, blockState);
+			return SimpleWaterloggedBlock.super.pickupBlock(player, levelAccessor, blockPos, blockState);
 		}
 
 		return ItemStack.EMPTY;

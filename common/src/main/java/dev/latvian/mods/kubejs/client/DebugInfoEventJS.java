@@ -17,7 +17,7 @@ public class DebugInfoEventJS extends ClientEventJS {
 
 	@Info("Whether the debug info should be rendered.")
 	public boolean getShowDebug() {
-		return Minecraft.getInstance().options.renderDebug;
+		return Minecraft.getInstance().getDebugOverlay().showDebugScreen();
 	}
 
 	@Info("The lines of debug info. Mutating this list will change the debug info.")

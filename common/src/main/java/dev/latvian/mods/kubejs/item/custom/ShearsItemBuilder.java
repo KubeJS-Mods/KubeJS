@@ -17,7 +17,7 @@ public class ShearsItemBuilder extends ItemBuilder {
 		return stack.getItem() instanceof ShearsItemKJS;
 	}
 
-	public static final ResourceLocation TAG = new ResourceLocation(Platform.isForge() ? "forge:shears" : "c:shears");
+	public static final ResourceLocation TAG = new ResourceLocation(Platform.isNeoForge() ? "forge:shears" : "c:shears");
 
 	public transient float speedBaseline;
 

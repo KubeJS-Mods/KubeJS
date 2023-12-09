@@ -20,11 +20,10 @@ public interface MessageSenderKJS {
 	default void kjs$setStatusMessage(Component message) {
 	}
 
-	default int kjs$runCommand(String command) {
-		throw new NoMixinException();
+	default void kjs$runCommand(String command) {
 	}
 
-	default int kjs$runCommandSilent(String command) {
-		return kjs$runCommand(command);
+	default void kjs$runCommandSilent(String command) {
+		kjs$runCommand(command);
 	}
 }

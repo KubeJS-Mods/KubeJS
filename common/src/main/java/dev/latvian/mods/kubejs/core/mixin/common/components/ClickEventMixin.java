@@ -21,7 +21,7 @@ public abstract class ClickEventMixin implements JsonSerializable {
 	@RemapForJS("toJson")
 	public JsonElement toJsonJS() {
 		return Util.make(new JsonObject(), json -> {
-			json.addProperty("action", getAction().getName());
+			json.addProperty("action", getAction().getSerializedName());
 			json.addProperty("value", getValue());
 		});
 	}

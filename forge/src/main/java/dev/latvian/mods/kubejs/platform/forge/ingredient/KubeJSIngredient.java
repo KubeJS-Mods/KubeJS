@@ -7,16 +7,17 @@ import dev.latvian.mods.kubejs.item.ItemStackSet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.AbstractIngredient;
-import net.minecraftforge.common.crafting.CraftingHelper;
+import net.neoforged.neoforge.common.crafting.CraftingHelper;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public abstract class KubeJSIngredient extends AbstractIngredient implements IngredientKJS {
+public abstract class KubeJSIngredient extends Ingredient implements IngredientKJS {
 	private static final Ingredient.Value[] EMPTY_VALUES = new Ingredient.Value[0];
 
-	public KubeJSIngredient() {
-		super(Stream.empty());
+	public KubeJSIngredient(Supplier<? extends IngredientType<? extends KubeJSIngredient>> type) {
+		super(Stream.empty(), type);
 		values = EMPTY_VALUES;
 	}
 
@@ -59,16 +60,4 @@ public abstract class KubeJSIngredient extends AbstractIngredient implements Ing
 		// unless somebody does something *really* weird from scripts
 		return true;
 	}
-
-	@Override
-	public final JsonObject toJson() {
-		JsonObject json = new JsonObject();
-		json.addProperty("type", CraftingHelper.getID(getSerializer()).toString());
-		toJson(json);
-		return json;
-	}
-
-	public abstract void toJson(JsonObject json);
-
-	public abstract void write(FriendlyByteBuf buf);
 }

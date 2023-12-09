@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.player.PlayerEventJS;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemDestroyedEventJS extends PlayerEventJS {

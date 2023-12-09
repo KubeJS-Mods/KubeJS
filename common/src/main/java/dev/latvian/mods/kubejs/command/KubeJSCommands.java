@@ -987,7 +987,9 @@ public class KubeJSCommands {
 								var target = ScoreHolderArgument.getName(ctx, "target");
 								var objective = ObjectiveArgument.getObjective(ctx, "objective");
 
-								int score = scoreboard.hasPlayerScore(target, objective) ? scoreboard.getOrCreatePlayerScore(target, objective).getScore() : 0;
+								var info = scoreboard.getPlayerScoreInfo(target, objective);
+
+								int score = info != null ? info.value() : 0;
 
 								for (var o : objects) {
 									o.kjs$getPersistentData().putInt(key, score);
@@ -1013,7 +1015,7 @@ public class KubeJSCommands {
 								int score = object.kjs$getPersistentData().getInt(key);
 
 								for (var target : targets) {
-									scoreboard.getOrCreatePlayerScore(target, objective).setScore(score);
+									scoreboard.getOrCreatePlayerScore(target, objective).set(score);
 								}
 
 								return 1;

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import dev.architectury.hooks.item.ItemStackHooks;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
@@ -21,6 +22,8 @@ import java.util.function.Function;
 public abstract class IngredientAction extends IngredientActionFilter {
 	private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 	public static final Map<String, Function<JsonObject, IngredientAction>> FACTORY_MAP = new HashMap<>();
+
+	public static final Codec<IngredientAction> CODEC = null;
 
 	static {
 		FACTORY_MAP.put("custom", json -> new CustomIngredientAction(json.get("id").getAsString()));
@@ -90,7 +93,7 @@ public abstract class IngredientAction extends IngredientActionFilter {
 			action.toJson(json);
 			buf.writeUtf(GSON.toJson(json));
 			buf.writeVarInt(action.filterIndex);
-			buf.writeUtf(action.filterIngredient == null ? "" : GSON.toJson(action.filterIngredient.toJson()));
+			buf.writeUtf(action.filterIngredient == null ? "" : GSON.toJson(action.filterIngredient.toJsonJS()));
 		}
 	}
 
@@ -126,7 +129,7 @@ public abstract class IngredientAction extends IngredientActionFilter {
 		json.addProperty("type", getType());
 
 		if (filterIngredient != null) {
-			json.add("filter_ingredient", filterIngredient.toJson());
+			json.add("filter_ingredient", filterIngredient.toJsonJS());
 		}
 
 		if (filterIndex != -1) {

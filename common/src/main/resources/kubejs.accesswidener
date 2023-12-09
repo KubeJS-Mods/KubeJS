@@ -68,11 +68,14 @@ accessible method net/minecraft/world/item/crafting/ShapedRecipe patternFromJson
 accessible method net/minecraft/world/item/crafting/ShapedRecipe shrink ([Ljava/lang/String;)[Ljava/lang/String;
 accessible method net/minecraft/world/item/crafting/ShapedRecipe dissolvePattern ([Ljava/lang/String;Ljava/util/Map;II)Lnet/minecraft/core/NonNullList;
 accessible method net/minecraft/world/item/crafting/ShapedRecipe matches (Lnet/minecraft/world/inventory/CraftingContainer;IIZ)Z
+accessible field net/minecraft/world/item/crafting/ShapelessRecipe$Serializer CODEC Lcom/mojang/serialization/Codec;
+accessible field net/minecraft/world/item/crafting/ShapedRecipe$Serializer CODEC Lcom/mojang/serialization/Codec;
 
 accessible field net/minecraft/server/level/ServerPlayerGameMode isDestroyingBlock Z
 accessible method net/minecraft/server/commands/TeleportCommand performTeleport (Lnet/minecraft/commands/CommandSourceStack;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FFLnet/minecraft/server/commands/TeleportCommand$LookAt;)V
 accessible field net/minecraft/commands/arguments/selector/EntitySelector predicate Ljava/util/function/Predicate;
 accessible field net/minecraft/world/level/storage/loot/LootContext$EntityTarget name Ljava/lang/String;
+accessible field net/minecraft/world/level/storage/loot/LootDataType codec Lcom/mojang/serialization/Codec;
 accessible field net/minecraft/advancements/critereon/ItemPredicate items Ljava/util/Set;
 mutable field net/minecraft/advancements/critereon/ItemPredicate items Ljava/util/Set;
 
@@ -82,3 +85,5 @@ accessible field net/minecraft/world/entity/item/ItemEntity age I
 
 # client stuff
 accessible class net/minecraft/client/gui/components/AbstractSelectionList$Entry
+accessible field net/minecraft/client/gui/components/ImageButton sprites Lnet/minecraft/client/gui/components/WidgetSprites;
+accessible class net/minecraft/client/Minecraft$GameLoadCookie

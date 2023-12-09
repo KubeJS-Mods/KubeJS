@@ -23,7 +23,7 @@ public interface CookingRecipeSchema {
 
 		@Override
 		public JsonElement write(RecipeJS recipe, OutputItem value) {
-			if (Platform.isForge()) {
+			if (Platform.isNeoForge()) {
 				return ItemComponents.OUTPUT.write(recipe, value);
 			} else {
 				return new JsonPrimitive(value.item.kjs$getId());

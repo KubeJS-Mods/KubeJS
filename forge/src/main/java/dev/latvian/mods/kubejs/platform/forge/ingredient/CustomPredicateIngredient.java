@@ -1,46 +1,37 @@
 package dev.latvian.mods.kubejs.platform.forge.ingredient;
 
-import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.platform.forge.IngredientForgeHelper;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public class CustomPredicateIngredient extends KubeJSIngredient {
-	public static final KubeJSIngredientSerializer<CustomPredicateIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(CustomPredicateIngredient::new, CustomPredicateIngredient::new);
+	public static final Codec<CustomPredicateIngredient> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		Ingredient.CODEC.fieldOf("parent").forGetter(i -> i.parent),
+		Codec.STRING.xmap(UUID::fromString, UUID::toString).fieldOf("uuid").forGetter(i -> i.uuid)
+	).apply(instance, CustomPredicateIngredient::fromCodec));
 
 	private final Ingredient parent;
+	@Nullable
 	private final UUID uuid;
 	private final boolean isServer;
 
-	public CustomPredicateIngredient(Ingredient parent, UUID uuid) {
+	public CustomPredicateIngredient(Ingredient parent, UUID uuid, boolean isServer) {
+		super(IngredientForgeHelper.CUSTOM_PREDICATE);
 		this.parent = parent;
 		this.uuid = uuid;
-		this.isServer = true;
+		this.isServer = isServer;
 	}
 
-	private CustomPredicateIngredient(JsonObject json) {
-		parent = IngredientJS.ofJson(json.get("parent"));
-		uuid = UUID.fromString(json.get("uuid").getAsString());
-		isServer = false;
-	}
-
-	private CustomPredicateIngredient(FriendlyByteBuf buf) {
-		parent = IngredientJS.ofNetwork(buf);
-		uuid = buf.readUUID();
-		isServer = false;
-	}
-
-	@Override
-	public IIngredientSerializer<CustomPredicateIngredient> getSerializer() {
-		return SERIALIZER;
+	private static CustomPredicateIngredient fromCodec(Ingredient parent, UUID uuid) {
+		return new CustomPredicateIngredient(parent, uuid, false);
 	}
 
 	@Override
@@ -62,17 +53,5 @@ public class CustomPredicateIngredient extends KubeJSIngredient {
 		}
 
 		return false;
-	}
-
-	@Override
-	public void toJson(JsonObject json) {
-		json.add("parent", parent.toJson());
-		json.addProperty("uuid", uuid.toString());
-	}
-
-	@Override
-	public void write(FriendlyByteBuf buf) {
-		parent.toNetwork(buf);
-		buf.writeUUID(uuid);
 	}
 }

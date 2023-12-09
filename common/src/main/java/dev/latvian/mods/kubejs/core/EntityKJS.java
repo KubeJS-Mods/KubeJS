@@ -73,21 +73,17 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	@Override
-	default int kjs$runCommand(String command) {
+	default void kjs$runCommand(String command) {
 		if (kjs$getLevel() instanceof ServerLevel level) {
-			return level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack(), command);
+			level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack(), command);
 		}
-
-		return 0;
 	}
 
 	@Override
-	default int kjs$runCommandSilent(String command) {
+	default void kjs$runCommandSilent(String command) {
 		if (kjs$getLevel() instanceof ServerLevel level) {
-			return level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack().withSuppressedOutput(), command);
+			level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack().withSuppressedOutput(), command);
 		}
-
-		return 0;
 	}
 
 	default boolean kjs$isPlayer() {

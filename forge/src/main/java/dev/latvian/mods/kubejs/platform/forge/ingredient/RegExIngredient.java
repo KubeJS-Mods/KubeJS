@@ -1,50 +1,29 @@
 package dev.latvian.mods.kubejs.platform.forge.ingredient;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.platform.forge.IngredientForgeHelper;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
 public class RegExIngredient extends KubeJSIngredient {
-	public static final KubeJSIngredientSerializer<RegExIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(RegExIngredient::new, RegExIngredient::new);
+	public static final Codec<RegExIngredient> CODEC = ExtraCodecs.stringResolverCodec(Pattern::toString, UtilsJS::parseRegex)
+		.fieldOf("regex")
+		.codec()
+		.xmap(RegExIngredient::new, ingredient -> ingredient.pattern);
 
 	public final Pattern pattern;
 
 	public RegExIngredient(Pattern pattern) {
+		super(IngredientForgeHelper.REGEX);
 		this.pattern = pattern;
-	}
-
-	public RegExIngredient(FriendlyByteBuf buf) {
-		this(Pattern.compile(buf.readUtf(), buf.readVarInt()));
-	}
-
-	public RegExIngredient(JsonObject json) {
-		this(UtilsJS.parseRegex(json.get("pattern").getAsString()));
-	}
-
-	@Override
-	public IIngredientSerializer<? extends Ingredient> getSerializer() {
-		return SERIALIZER;
 	}
 
 	@Override
 	public boolean test(@Nullable ItemStack stack) {
 		return stack != null && pattern.matcher(stack.kjs$getId()).find();
-	}
-
-	@Override
-	public void toJson(JsonObject json) {
-		json.addProperty("regex", pattern.toString());
-	}
-
-	@Override
-	public void write(FriendlyByteBuf buf) {
-		buf.writeUtf(pattern.toString());
-		buf.writeVarInt(pattern.flags());
 	}
 }

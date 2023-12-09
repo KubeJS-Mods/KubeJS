@@ -438,13 +438,13 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
 		typeWrappers.register(ItemLike.class, ItemStackJS::getRawItem);
-		typeWrappers.registerSimple(MobCategory.class, o -> o == null ? null : UtilsJS.mobCategoryByName(o.toString()));
+		typeWrappers.registerSimple(MobCategory.class, o -> o == null ? null : UtilsJS.byName(MobCategory.CODEC, o.toString()));
 
 		typeWrappers.registerSimple(AABB.class, AABBWrapper::wrap);
 		typeWrappers.registerSimple(IntProvider.class, UtilsJS::intProviderOf);
 		typeWrappers.registerSimple(NumberProvider.class, UtilsJS::numberProviderOf);
-		typeWrappers.registerSimple(LootContext.EntityTarget.class, o -> o == null ? null : LootContext.EntityTarget.getByName(o.toString().toLowerCase()));
-		typeWrappers.registerSimple(CopyNameFunction.NameSource.class, o -> o == null ? null : CopyNameFunction.NameSource.getByName(o.toString().toLowerCase()));
+		typeWrappers.registerSimple(LootContext.EntityTarget.class, o -> o == null ? null : UtilsJS.byName(LootContext.EntityTarget.CODEC, o.toString().toLowerCase()));
+		typeWrappers.registerSimple(CopyNameFunction.NameSource.class, o -> o == null ? null : UtilsJS.byName(CopyNameFunction.NameSource.CODEC, o.toString().toLowerCase()));
 
 		// KubeJS //
 		typeWrappers.registerSimple(Map.class, MapJS::of);

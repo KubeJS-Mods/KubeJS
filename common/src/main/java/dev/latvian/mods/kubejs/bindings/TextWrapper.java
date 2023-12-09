@@ -12,8 +12,8 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 
 @Info("The hub for all things text components. Format text to your hearts content!")
 public class TextWrapper {
@@ -119,7 +118,7 @@ public class TextWrapper {
 
 	@Info("Checks if the passed in component, and all its children are empty")
 	public static boolean isEmpty(Component component) {
-		return component.getContents() == ComponentContents.EMPTY && component.getSiblings().isEmpty();
+		return component.getContents() == PlainTextContents.EMPTY && component.getSiblings().isEmpty();
 	}
 
 	@Info("Returns a ClickEvent of the input")
@@ -134,7 +133,7 @@ public class TextWrapper {
 		if (json != null) {
 			var action = GsonHelper.getAsString(json, "action");
 			var value = GsonHelper.getAsString(json, "value");
-			return new ClickEvent(Objects.requireNonNull(ClickEvent.Action.getByName(action), "Invalid click event action %s!".formatted(action)), value);
+			return UtilsJS.fromJsonOrThrow(json, ClickEvent.CODEC);
 		}
 
 		var s = o.toString();
@@ -147,9 +146,10 @@ public class TextWrapper {
 			case "copy" -> new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, split[1]);
 			case "file" -> new ClickEvent(ClickEvent.Action.OPEN_FILE, split[1]);
 			default -> {
-				var action = ClickEvent.Action.getByName(split[0]);
-				if (action != null) {
-					yield new ClickEvent(action, split[1]);
+				for (var a : ClickEvent.Action.values()) {
+					if (a.getSerializedName().equals(split[0])) {
+						yield new ClickEvent(a, split[1]);
+					}
 				}
 
 				yield new ClickEvent(ClickEvent.Action.OPEN_URL, s);

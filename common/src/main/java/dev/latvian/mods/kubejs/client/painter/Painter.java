@@ -3,25 +3,12 @@ package dev.latvian.mods.kubejs.client.painter;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.client.ClientEventJS;
-import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
-import dev.latvian.mods.kubejs.client.painter.screen.GradientObject;
-import dev.latvian.mods.kubejs.client.painter.screen.ItemObject;
-import dev.latvian.mods.kubejs.client.painter.screen.LineObject;
-import dev.latvian.mods.kubejs.client.painter.screen.PaintScreenEventJS;
-import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
-import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
-import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
-import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
+import dev.latvian.mods.kubejs.client.painter.screen.*;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import dev.latvian.mods.unit.FixedNumberUnit;
-import dev.latvian.mods.unit.MutableNumberUnit;
-import dev.latvian.mods.unit.Unit;
-import dev.latvian.mods.unit.UnitContext;
-import dev.latvian.mods.unit.UnitVariables;
-import dev.latvian.mods.unit.VariableSet;
+import dev.latvian.mods.unit.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -175,7 +162,7 @@ public class Painter implements UnitVariables {
 	public void inGameScreenDraw(GuiGraphics graphics, float delta) {
 		var mc = Minecraft.getInstance();
 
-		if (mc.player == null || mc.options.renderDebug || mc.screen != null) {
+		if (mc.player == null || mc.getDebugOverlay().showDebugScreen() || mc.screen != null) {
 			return;
 		}
 

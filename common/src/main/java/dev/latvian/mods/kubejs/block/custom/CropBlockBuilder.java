@@ -139,7 +139,7 @@ public class CropBlockBuilder extends BlockBuilder {
 		}
 
 		tagBlock(BlockTags.CROPS.location());
-		if (Platform.isForge()) {
+		if (Platform.isNeoForge()) {
 			tagItem(new ResourceLocation("forge", "seeds"));
 		}
 	}

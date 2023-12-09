@@ -73,7 +73,8 @@ public class ServerScriptManager extends ScriptManager {
 
 		for (var file : Objects.requireNonNull(KubeJSPaths.DATA.toFile().listFiles())) {
 			if (file.isFile() && file.getName().endsWith(".zip")) {
-				list.addLast(new FilePackResources(file.getName(), file, false));
+				var access = new FilePackResources.FileResourcesSupplier(file, false);
+				list.addLast(access.openPrimary(file.getName()));
 			}
 		}
 

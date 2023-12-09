@@ -4,6 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeKJS;
@@ -16,12 +18,7 @@ import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.component.MissingComponentException;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentBuilderMap;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.*;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -505,7 +502,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 				var o = new JsonObject();
 				o.addProperty("stage", json.get("kubejs:stage").getAsString());
 				o.add("recipe", json);
-				return type.event.stageSerializer.fromJson(id, o);
+				return type.event.stageSerializer.codec().decode(JsonOps.INSTANCE, o).result().map(Pair::getFirst).orElseThrow();
 			}
 		} else if (originalRecipe != null) {
 			return originalRecipe.getValue();
@@ -606,7 +603,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	public JsonElement writeInputItem(InputItem value) {
-		return value.ingredient.toJson();
+		return value.ingredient.toJsonJS();
 	}
 
 	public boolean outputItemHasPriority(Object from) {
