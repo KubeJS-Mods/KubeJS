@@ -64,6 +64,7 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 	public GeneratedClientResourcePack(Minecraft client) {
 		super(PackType.CLIENT_RESOURCES);
 		this.client = client;
+		getGenerated();
 	}
 
 	@Override
@@ -152,7 +153,8 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 
 	@Override
 	protected boolean forgetFile(String path) {
-		return path.endsWith(".png") || path.endsWith(".ogg");
+		// return path.endsWith(".png") || path.endsWith(".ogg");
+		return super.forgetFile(path);
 	}
 
 	@Override

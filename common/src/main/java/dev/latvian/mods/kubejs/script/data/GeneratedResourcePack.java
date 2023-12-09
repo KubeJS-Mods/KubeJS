@@ -149,7 +149,7 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 	}
 
 	protected boolean forgetFile(String path) {
-		return false;
+		return true;
 	}
 
 	protected boolean skipFile(GeneratedData data) {

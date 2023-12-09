@@ -14,6 +14,7 @@ import java.util.Map;
 public class GeneratedServerResourcePack extends GeneratedResourcePack {
 	public GeneratedServerResourcePack() {
 		super(PackType.SERVER_DATA);
+		getGenerated();
 	}
 
 	@Override
@@ -25,5 +26,11 @@ public class GeneratedServerResourcePack extends GeneratedResourcePack {
 		}
 
 		KubeJSPlugins.forEachPlugin(generator, KubeJSPlugin::generateDataJsons);
+	}
+
+	@Override
+	protected boolean forgetFile(String path) {
+		// return path.endsWith(".png") || path.endsWith(".ogg");
+		return super.forgetFile(path);
 	}
 }
