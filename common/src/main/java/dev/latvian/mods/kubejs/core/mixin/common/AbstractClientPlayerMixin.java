@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin(value = AbstractClientPlayer.class)
+@Mixin(AbstractClientPlayer.class)
 @RemapPrefixForJS("kjs$")
 public abstract class AbstractClientPlayerMixin extends Player implements ClientPlayerKJS {
 	public AbstractClientPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
