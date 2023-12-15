@@ -3,12 +3,28 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
+import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.NativeJavaClass;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public record EnumComponent<T extends Enum<T>>(Class<T> enumType, Function<T, String> toStringFunc, BiFunction<Class<T>, String, T> toEnumFunc) implements RecipeComponent<T> {
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(TypeDescJS.object(), (ctx, scope, args) -> {
+		Object o = args.get("enum");
+		Class clazz;
+		if (o instanceof NativeJavaClass njc) clazz = njc.getClassObject();
+		if (o instanceof Class c) clazz = c;
+		else try {
+			return new EnumComponent<>((Class) Class.forName(String.valueOf(o)));
+		} catch (ClassNotFoundException e) {
+			throw new RecipeExceptionJS("Error loading class for EnumComponent", e);
+		}
+		if (!clazz.isEnum()) throw new RecipeExceptionJS("Class " + clazz.getTypeName() + " is not an enum!");
+	});
 	private static final Function<Enum<?>, String> DEFAULT_TO_STRING = e -> e.name().toLowerCase();
 	private static final BiFunction<Class<? extends Enum<?>>, String, Enum<?>> DEFAULT_TO_ENUM = (c, s) -> {
 		for (var e : c.getEnumConstants()) {

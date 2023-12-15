@@ -4,14 +4,28 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeComponent<T> {
+	@SuppressWarnings("unchecked")
+	public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(TypeDescJS.object(1).add("registry", TypeDescJS.STRING.or(DescriptionContext.DEFAULT.javaType(RegistryInfo.class))), (ctx, scope, args) -> {
+		Object registry = args.get("registry");
+		RegistryInfo<?> regInfo;
+		if (registry instanceof RegistryInfo<?> registryInfo) regInfo = registryInfo;
+		else if (registry instanceof ResourceKey<?> resourceKey) regInfo = RegistryInfo.of((ResourceKey<? extends Registry<?>>) resourceKey);
+		else regInfo = RegistryInfo.of(ResourceKey.createRegistryKey(new ResourceLocation(String.valueOf(registry))));
+
+		return new RegistryComponent<>(regInfo);
+	});
+
 	@Override
 	public String componentType() {
 		return "registry_element";

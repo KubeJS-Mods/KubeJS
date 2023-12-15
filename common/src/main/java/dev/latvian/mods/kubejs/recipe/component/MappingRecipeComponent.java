@@ -18,6 +18,10 @@ public class MappingRecipeComponent<T> implements RecipeComponentWithParent<T> {
 		this.mappingFrom = mappingFrom;
 	}
 
+	@Override
+	public String componentType() {
+		return "mapping";
+	}
 
 	@Override
 	public T read(RecipeJS recipe, Object from) {

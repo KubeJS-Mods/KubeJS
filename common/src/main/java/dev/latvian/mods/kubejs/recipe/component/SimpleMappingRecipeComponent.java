@@ -20,6 +20,11 @@ public class SimpleMappingRecipeComponent<T> extends MappingRecipeComponent<T> {
 		super(parent, o -> to(o, mappings), j -> from(j, mappings.inverse()));
 	}
 
+	@Override
+	public String componentType() {
+		return "simple_mapping";
+	}
+
 	@SuppressWarnings("unchecked")
 	public static Object to(Object o, Map<String, String> mappings) {
 		Map<String, Object> m = (Map<String, Object>) MapJS.of(o); // If Object instanceof Map then if the caller has a reference to it then they will see the mutated map, which may cause issues but hopefully won't

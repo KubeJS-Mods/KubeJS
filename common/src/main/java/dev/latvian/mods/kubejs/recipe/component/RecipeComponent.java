@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
 /**
  * A <b>recipe component</b> is a reusable definition of a recipe element (such as an in/output item, a fluid, or even just a number value)
@@ -296,5 +297,21 @@ public interface RecipeComponent<T> {
 
 	default <O> AndRecipeComponent<T, O> and(RecipeComponent<O> other) {
 		return new AndRecipeComponent<>(this, other);
+	}
+
+	default MappingRecipeComponent<T> mapIn(UnaryOperator<Object> mappingTo) {
+		return map(mappingTo, UnaryOperator.identity());
+	}
+
+	default MappingRecipeComponent<T> mapTo(UnaryOperator<JsonElement> mappingFrom) {
+		return map(UnaryOperator.identity(), mappingFrom);
+	}
+
+	default MappingRecipeComponent<T> map(UnaryOperator<Object> mappingTo, UnaryOperator<JsonElement> mappingFrom) {
+		return new MappingRecipeComponent<>(this, mappingTo, mappingFrom);
+	}
+
+	default SimpleMappingRecipeComponent<T> simpleMap(Object mappings) {
+		return new SimpleMappingRecipeComponent<>(this, mappings);
 	}
 }

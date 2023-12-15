@@ -1,7 +1,10 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
+import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
@@ -12,7 +15,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 public record BlockStateComponent(ComponentRole crole) implements RecipeComponent<BlockState> {
-	public static final RecipeComponent<BlockState> INPUT = new BlockStateComponent(ComponentRole.INPUT);
+	public static final RecipeComponent<BlockState> 	INPUT = new BlockStateComponent(ComponentRole.INPUT);
 	public static final RecipeComponent<BlockState> OUTPUT = new BlockStateComponent(ComponentRole.OUTPUT);
 	public static final RecipeComponent<BlockState> BLOCK = new BlockStateComponent(ComponentRole.OTHER);
 
@@ -44,6 +47,8 @@ public record BlockStateComponent(ComponentRole crole) implements RecipeComponen
 			return b.defaultBlockState();
 		} else if (from instanceof JsonPrimitive json) {
 			return UtilsJS.parseBlockState(json.getAsString());
+		} else if (from instanceof JsonObject json) {
+			return BlockState.CODEC.parse(JsonOps.INSTANCE, json).getOrThrow(true, message -> {throw new RecipeExceptionJS("Failed to parse blockstate: " + message);});
 		} else {
 			return UtilsJS.parseBlockState(String.valueOf(from));
 		}
