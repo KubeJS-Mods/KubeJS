@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.TinyMap;
@@ -299,18 +300,28 @@ public interface RecipeComponent<T> {
 		return new AndRecipeComponent<>(this, other);
 	}
 
+	// The below helpers are mainly intended for scripters, if you are an addon developer just make your own component instead of reusing the existing ones.
+	@Info("Returns a new RecipeComponent that applies the mappingTo function to the input before it is passed to this component to be read")
 	default MappingRecipeComponent<T> mapIn(UnaryOperator<Object> mappingTo) {
 		return map(mappingTo, UnaryOperator.identity());
 	}
 
-	default MappingRecipeComponent<T> mapTo(UnaryOperator<JsonElement> mappingFrom) {
+	@Info("Returns a new RecipeComponent that applies the mappingFrom function after the component writes to json, before that json is saved")
+	default MappingRecipeComponent<T> mapOut(UnaryOperator<JsonElement> mappingFrom) {
 		return map(UnaryOperator.identity(), mappingFrom);
 	}
 
+	@Info("Returns a new RecipeComponent that applies the mappingTo function to the input before it is passed to this component to be read, and the mappingFrom function after the component writes to json, before that json is saved")
 	default MappingRecipeComponent<T> map(UnaryOperator<Object> mappingTo, UnaryOperator<JsonElement> mappingFrom) {
 		return new MappingRecipeComponent<>(this, mappingTo, mappingFrom);
 	}
 
+	@Info("""
+            Returns a new RecipeComponent that maps the keys in a JsonObject according to the provided map, both before the json gets passed to the component and after the component returns a written json object.
+            The mappings should be provided in the format `{recipe: "component"}` where recipe is the key as in the recipe, and component is the key as how the RecipeComponent expects it.
+            Any keys not included in the provided map will be ignored, and any keys in the provided map that are not in either the input object or output object will be ignored.
+            Note that if the input or output is not a JsonObject (ie its an ItemStack, or it is a JsonPrimitive) then that will pass through this without being modified.
+            If you wish to handle those situations use the actual map function""")
 	default SimpleMappingRecipeComponent<T> simpleMap(Object mappings) {
 		return new SimpleMappingRecipeComponent<>(this, mappings);
 	}
