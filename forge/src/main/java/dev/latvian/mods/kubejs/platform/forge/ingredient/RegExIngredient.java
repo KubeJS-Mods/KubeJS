@@ -16,6 +16,7 @@ public class RegExIngredient extends KubeJSIngredient {
 	public final Pattern pattern;
 
 	public RegExIngredient(Pattern pattern) {
+		if (pattern == null) throw new IllegalArgumentException("Pattern for a RegExIngredient cannot be null! Check your pattern format");
 		this.pattern = pattern;
 	}
 
@@ -39,7 +40,7 @@ public class RegExIngredient extends KubeJSIngredient {
 
 	@Override
 	public void toJson(JsonObject json) {
-		json.addProperty("regex", pattern.toString());
+		json.addProperty("pattern", UtilsJS.toRegexString(pattern));
 	}
 
 	@Override
