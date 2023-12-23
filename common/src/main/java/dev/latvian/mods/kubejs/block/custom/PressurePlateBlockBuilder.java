@@ -38,7 +38,8 @@ public class PressurePlateBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	public Block createObject() {
-		return new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING, createProperties(), behaviour);
+		// TODO: Sensitivity is part of BlockSetType now
+		return new PressurePlateBlock(behaviour, createProperties());
 	}
 
 	@Override

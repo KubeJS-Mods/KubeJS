@@ -9,7 +9,6 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
 public class KubeJSReloadListener implements ResourceManagerReloadListener {
 	public static ReloadableServerResources resources;
-	public static Object recipeContext; // Forge
 
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {

@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.StringReader;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
@@ -823,13 +824,13 @@ public class UtilsJS {
 
 	public static <E> E fromJsonOrThrow(JsonElement json, Codec<E> codec) {
 		return fromJsonOrThrow(json, codec, str -> {
-			throw new RuntimeException("Could not decode element from JSON: " + str);
+			throw new JsonSyntaxException("Could not decode element from JSON: " + str);
 		});
 	}
 
 	public static <E> JsonElement toJsonOrThrow(E value, Codec<E> codec) {
 		return toJsonOrThrow(value, codec, str -> {
-			throw new RuntimeException("Could not encode element to JSON: " + str);
+			throw new IllegalArgumentException("Could not encode element to JSON: " + str);
 		});
 	}
 

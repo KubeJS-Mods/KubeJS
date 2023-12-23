@@ -8,7 +8,7 @@ import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
@@ -39,6 +39,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -117,19 +118,19 @@ public class RecipesEventJS extends EventJS {
 		return map.toString();
 	}
 
-	private static final BinaryOperator<Recipe<?>> MERGE_ORIGINAL = (a, b) -> {
-		ConsoleJS.SERVER.warn("Duplicate original recipe for id " + a.getId() + "!\nRecipe A: " + recipeToString(a) + "\nRecipe B: " + recipeToString(b) + "\nUsing last one encountered.");
+	private static final BinaryOperator<RecipeHolder<?>> MERGE_ORIGINAL = (a, b) -> {
+		ConsoleJS.SERVER.warn("Duplicate original recipe for id " + a.id() + "!\nRecipe A: " + recipeToString(a.value()) + "\nRecipe B: " + recipeToString(b.value()) + "\nUsing last one encountered.");
 		return b;
 	};
 
-	private static final BinaryOperator<Recipe<?>> MERGE_ADDED = (a, b) -> {
-		ConsoleJS.SERVER.error("Duplicate added recipe for id " + a.getId() + "!\nRecipe A: " + recipeToString(a) + "\nRecipe B: " + recipeToString(b) + "\nUsing last one encountered.");
+	private static final BinaryOperator<RecipeHolder<?>> MERGE_ADDED = (a, b) -> {
+		ConsoleJS.SERVER.error("Duplicate added recipe for id " + a.id() + "!\nRecipe A: " + recipeToString(a.value()) + "\nRecipe B: " + recipeToString(b.value()) + "\nUsing last one encountered.");
 		return b;
 	};
 
-	private static final Function<Recipe<?>, ResourceLocation> RECIPE_ID = Recipe::getId;
-	private static final Predicate<Recipe<?>> RECIPE_NON_NULL = Objects::nonNull;
-	private static final Function<Recipe<?>, Recipe<?>> RECIPE_IDENTITY = Function.identity();
+	private static final Function<RecipeHolder<?>, ResourceLocation> RECIPE_ID = RecipeHolder::id;
+	private static final Predicate<RecipeHolder<?>> RECIPE_NON_NULL = Objects::nonNull;
+	private static final Function<RecipeHolder<?>, RecipeHolder<?>> RECIPE_IDENTITY = Function.identity();
 
 	@HideFromJS
 	public static final Map<ResourceLocation, ModifyRecipeResultCallback> MODIFY_RESULT_CALLBACKS = new ConcurrentHashMap<>();
@@ -371,7 +372,7 @@ public class RecipesEventJS extends EventJS {
 		timer.reset().start();
 		addedRecipes.removeIf(RecipesEventJS::addedRecipeRemoveCheck);
 
-		var recipesByName = new HashMap<ResourceLocation, Recipe<?>>(originalRecipes.size() + addedRecipes.size());
+		var recipesByName = new HashMap<ResourceLocation, RecipeHolder<?>>(originalRecipes.size() + addedRecipes.size());
 
 		try {
 			recipesByName.putAll(runInParallel(() -> originalRecipes.values().parallelStream()
@@ -394,10 +395,10 @@ public class RecipesEventJS extends EventJS {
 
 		KubeJSPlugins.forEachPlugin(p -> p.injectRuntimeRecipes(this, recipeManager, recipesByName));
 
-		var newRecipeMap = new HashMap<RecipeType<?>, Map<ResourceLocation, Recipe<?>>>();
+		var newRecipeMap = new HashMap<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>>();
 
 		for (var entry : recipesByName.entrySet()) {
-			var type = entry.getValue().getType();
+			var type = entry.getValue().value().getType();
 			var recipes = newRecipeMap.computeIfAbsent(type, k -> new HashMap<>());
 			recipes.put(entry.getKey(), entry.getValue());
 		}
@@ -438,15 +439,15 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	@Nullable
-	private Recipe<?> createRecipe(RecipeJS r) {
+	private RecipeHolder<?> createRecipe(RecipeJS r) {
 		try {
 			var rec = r.createRecipe();
 
 			if (DataExport.export != null) {
-				DataExport.export.addJson("recipes/" + rec.getId() + ".json", r.json);
+				DataExport.export.addJson("recipes/" + rec.id() + ".json", r.json);
 
 				if (r.newRecipe) {
-					DataExport.export.addJson("added_recipes/" + rec.getId() + ".json", r.json);
+					DataExport.export.addJson("added_recipes/" + rec.id() + ".json", r.json);
 				}
 			}
 
@@ -484,7 +485,7 @@ public class RecipesEventJS extends EventJS {
 		return r;
 	}
 
-	public RecipeFilter customFilter(Predicate<RecipeKJS> filter) {
+	public RecipeFilter customFilter(Predicate<RecipeLikeKJS> filter) {
 		return filter::test;
 	}
 

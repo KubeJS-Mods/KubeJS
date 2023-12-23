@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
-import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 
 public record NotFilter(RecipeFilter original) implements RecipeFilter {
 	@Override
-	public boolean test(RecipeKJS r) {
+	public boolean test(RecipeLikeKJS r) {
 		return !original.test(r);
 	}
 

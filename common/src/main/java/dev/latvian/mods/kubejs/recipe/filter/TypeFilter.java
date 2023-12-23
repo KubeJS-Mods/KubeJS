@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
-import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -18,7 +18,7 @@ public class TypeFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(RecipeKJS r) {
+	public boolean test(RecipeLikeKJS r) {
 		return r.kjs$getType().equals(type);
 	}
 

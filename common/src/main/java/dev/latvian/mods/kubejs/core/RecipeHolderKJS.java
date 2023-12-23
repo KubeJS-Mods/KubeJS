@@ -11,36 +11,47 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 
 @RemapPrefixForJS("kjs$")
-public interface RecipeKJS {
+public interface RecipeHolderKJS extends RecipeLikeKJS {
+	default RecipeHolder<?> kjs$self() {
+		return UtilsJS.cast(this);
+	}
+
+	default Recipe<?> kjs$getRecipe() {
+		return kjs$self().value();
+	}
+
 	default String kjs$getGroup() {
-		return ((Recipe<?>) this).getGroup();
+		return kjs$getRecipe().getGroup();
 	}
 
 	default void kjs$setGroup(String group) {
 	}
 
 	default ResourceLocation kjs$getOrCreateId() {
-		return ((Recipe<?>) this).getId();
+		return kjs$self().id();
+	}
+
+	@Override
+	default RecipeSerializer<?> kjs$getSerializer() {
+		return kjs$getRecipe().getSerializer();
 	}
 
 	default RecipeSchema kjs$getSchema() {
-		var s = RegistryInfo.RECIPE_SERIALIZER.getId(((Recipe<?>) this).getSerializer());
+		var s = kjs$getType();
 		return RecipeNamespace.getAll().get(s.getNamespace()).get(s.getPath()).schema;
 	}
 
-	default String kjs$getMod() {
-		return kjs$getOrCreateId().getNamespace();
-	}
-
 	default ResourceLocation kjs$getType() {
-		return RegistryInfo.RECIPE_SERIALIZER.getId(((Recipe<?>) this).getSerializer());
+		return RegistryInfo.RECIPE_SERIALIZER.getId(kjs$getSerializer());
 	}
 
 	default boolean hasInput(ReplacementMatch match) {
 		if (match instanceof ItemMatch m) {
-			for (var in : ((Recipe<?>) this).getIngredients()) {
+			for (var in : kjs$getRecipe().getIngredients()) {
 				if (m.contains(in)) {
 					return true;
 				}
@@ -55,7 +66,7 @@ public interface RecipeKJS {
 	}
 
 	default boolean hasOutput(ReplacementMatch match) {
-		return match instanceof ItemMatch m && m.contains(((Recipe<?>) this).getResultItem(UtilsJS.staticRegistryAccess));
+		return match instanceof ItemMatch m && m.contains(kjs$getRecipe().getResultItem(UtilsJS.staticRegistryAccess));
 	}
 
 	default boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {

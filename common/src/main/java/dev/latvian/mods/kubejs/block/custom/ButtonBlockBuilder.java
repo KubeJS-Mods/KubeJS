@@ -45,6 +45,7 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 		return this;
 	}
 
+	// TODO: this is now determined by the BlockSetType
 	public ButtonBlockBuilder arrowsCanPress(boolean b) {
 		arrowsCanPress = b;
 		return this;
@@ -52,7 +53,11 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	public Block createObject() {
-		return new ButtonBlock(createProperties(), BlockSetType.OAK, ticksToStayPressed, arrowsCanPress);
+		// TODO: (maybe) Custom BlockSetTypes?
+		//  instead of all of these methods above, we could just have a single method
+		//  that can take either a string and return an already registered BlockSetType
+		//  or create a BlockSetType using a function like (typeBuilder) => {}
+		return new ButtonBlock(BlockSetType.OAK, ticksToStayPressed, createProperties());
 	}
 
 	@Override

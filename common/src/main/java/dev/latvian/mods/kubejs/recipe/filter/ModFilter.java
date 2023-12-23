@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
-import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 
 public class ModFilter implements RecipeFilter {
 	private final String mod;
@@ -10,7 +10,7 @@ public class ModFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(RecipeKJS r) {
+	public boolean test(RecipeLikeKJS r) {
 		return r.kjs$getMod().equals(mod);
 	}
 

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.DevProperties;
-import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 
 import java.util.ArrayList;
@@ -17,23 +18,23 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class AfterRecipesLoadedEventJS extends EventJS {
-	private final Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipeMap;
-	private final Map<ResourceLocation, Recipe<?>> recipeIdMap;
+	private final Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> recipeMap;
+	private final Map<ResourceLocation, RecipeHolder<?>> recipeIdMap;
 
-	private List<RecipeKJS> originalRecipes;
+	private List<RecipeLikeKJS> originalRecipes;
 
-	public AfterRecipesLoadedEventJS(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> r, Map<ResourceLocation, Recipe<?>> n) {
+	public AfterRecipesLoadedEventJS(Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> r, Map<ResourceLocation, RecipeHolder<?>> n) {
 		recipeMap = r;
 		recipeIdMap = n;
 	}
 
-	private List<RecipeKJS> getOriginalRecipes() {
+	private List<RecipeLikeKJS> getOriginalRecipes() {
 		if (originalRecipes == null) {
 			originalRecipes = new ArrayList<>();
 
 			for (var map : recipeMap.values()) {
 				for (var entry : map.entrySet()) {
-					originalRecipes.add((RecipeKJS) entry.getValue());
+					originalRecipes.add(entry.getValue());
 				}
 			}
 		}
@@ -41,7 +42,7 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 		return originalRecipes;
 	}
 
-	public void forEachRecipe(RecipeFilter filter, Consumer<RecipeKJS> consumer) {
+	public void forEachRecipe(RecipeFilter filter, Consumer<RecipeLikeKJS> consumer) {
 		if (filter == ConstantFilter.TRUE) {
 			getOriginalRecipes().forEach(consumer);
 		} else if (filter != ConstantFilter.FALSE) {

@@ -2,36 +2,32 @@ package dev.latvian.mods.kubejs.platform.forge;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.core.mixin.forge.RecipeManagerAccessor;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.ICondition;
+import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 public class RecipeForgeHelper implements RecipePlatformHelper {
 	public static final String FORGE_CONDITIONAL = "forge:conditional";
 
 	@Override
 	@Nullable
-	public Recipe<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
-		return serializer.fromJson(id, json, (ICondition.IContext) KubeJSReloadListener.recipeContext);
+	public RecipeHolder<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
+		// TODO: What is this mess, Forge???
+		return RecipeManager.fromJson(id, json, JsonOps.INSTANCE).orElse(null);
 	}
 
 	@Override
 	@Nullable
 	public JsonObject checkConditions(JsonObject json) {
-		var context = (ICondition.IContext) KubeJSReloadListener.recipeContext;
+		var context = KubeJSReloadListener.resources.getConditionContext();
 
 		if (!json.has("type")) {
 			return null;
@@ -59,16 +55,6 @@ public class RecipeForgeHelper implements RecipePlatformHelper {
 
 	@Override
 	public boolean processConditions(RecipeManager recipeManager, JsonObject json) {
-		return !json.has("conditions") || CraftingHelper.processConditions(json, "conditions", (ICondition.IContext) KubeJSReloadListener.recipeContext);
+		return !json.has("conditions") || CraftingHelper.processConditions(json, "conditions", KubeJSReloadListener.resources.getConditionContext());
 	}
-
-	@Override
-	public void pingNewRecipes(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map) {
-	}
-
-	@Override
-	public Object createRecipeContext(ReloadableServerResources resources) {
-		return ((RecipeManagerAccessor) resources.getRecipeManager()).getContext();
-	}
-
 }

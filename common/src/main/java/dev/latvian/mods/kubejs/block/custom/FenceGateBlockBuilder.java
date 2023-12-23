@@ -24,6 +24,8 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 		behaviour = WoodType.OAK;
 	}
 
+	// TODO: (maybe) Custom WoodTypes?
+	//  same idea as with BlockSetTypes in ButtonBlockBuilder
 	public FenceGateBlockBuilder behaviour(WoodType wt) {
 		behaviour = wt;
 		return this;
@@ -42,7 +44,7 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	public Block createObject() {
-		return new FenceGateBlock(createProperties(), behaviour);
+		return new FenceGateBlock(behaviour, createProperties());
 	}
 
 	@Override

@@ -57,7 +57,6 @@ public class ServerScriptManager extends ScriptManager {
 
 	public void updateResources(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
 		KubeJSReloadListener.resources = serverResources;
-		KubeJSReloadListener.recipeContext = RecipePlatformHelper.get().createRecipeContext(serverResources);
 		UtilsJS.staticRegistryAccess = registryAccess;
 	}
 

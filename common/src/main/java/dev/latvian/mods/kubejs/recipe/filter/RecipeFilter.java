@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.filter;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
-import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -17,11 +17,11 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 @FunctionalInterface
-public interface RecipeFilter extends Predicate<RecipeKJS> {
+public interface RecipeFilter extends Predicate<RecipeLikeKJS> {
 	Event<RecipeFilterParseEvent> PARSE = EventFactory.createLoop();
 
 	@Override
-	boolean test(RecipeKJS r);
+	boolean test(RecipeLikeKJS r);
 
 	static RecipeFilter of(Context cx, @Nullable Object o) {
 		if (o == null || o == ConstantFilter.TRUE) {

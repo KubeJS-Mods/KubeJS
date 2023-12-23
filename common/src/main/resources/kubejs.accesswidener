@@ -60,24 +60,24 @@ transitive-accessible field net/minecraft/world/item/crafting/Ingredient itemSta
 transitive-accessible field net/minecraft/world/item/crafting/Ingredient stackingIds Lit/unimi/dsi/fastutil/ints/IntList;
 transitive-extendable class net/minecraft/world/item/crafting/Ingredient$Value
 
-accessible field net/minecraft/world/item/crafting/ShapedRecipe width I
-accessible field net/minecraft/world/item/crafting/ShapedRecipe height I
-accessible field net/minecraft/world/item/crafting/ShapedRecipe result Lnet/minecraft/world/item/ItemStack;
-accessible method net/minecraft/world/item/crafting/ShapedRecipe keyFromJson (Lcom/google/gson/JsonObject;)Ljava/util/Map;
-accessible method net/minecraft/world/item/crafting/ShapedRecipe patternFromJson (Lcom/google/gson/JsonArray;)[Ljava/lang/String;
-accessible method net/minecraft/world/item/crafting/ShapedRecipe shrink ([Ljava/lang/String;)[Ljava/lang/String;
-accessible method net/minecraft/world/item/crafting/ShapedRecipe dissolvePattern ([Ljava/lang/String;Ljava/util/Map;II)Lnet/minecraft/core/NonNullList;
-accessible method net/minecraft/world/item/crafting/ShapedRecipe matches (Lnet/minecraft/world/inventory/CraftingContainer;IIZ)Z
-accessible field net/minecraft/world/item/crafting/ShapelessRecipe$Serializer CODEC Lcom/mojang/serialization/Codec;
-accessible field net/minecraft/world/item/crafting/ShapedRecipe$Serializer CODEC Lcom/mojang/serialization/Codec;
+# accessible field net/minecraft/world/item/crafting/ShapedRecipe width I
+# accessible field net/minecraft/world/item/crafting/ShapedRecipe height I
+# accessible field net/minecraft/world/item/crafting/ShapedRecipe result Lnet/minecraft/world/item/ItemStack;
+# accessible method net/minecraft/world/item/crafting/ShapedRecipe keyFromJson (Lcom/google/gson/JsonObject;)Ljava/util/Map;
+# accessible method net/minecraft/world/item/crafting/ShapedRecipe patternFromJson (Lcom/google/gson/JsonArray;)[Ljava/lang/String;
+# accessible method net/minecraft/world/item/crafting/ShapedRecipe shrink ([Ljava/lang/String;)[Ljava/lang/String;
+# accessible method net/minecraft/world/item/crafting/ShapedRecipe dissolvePattern ([Ljava/lang/String;Ljava/util/Map;II)Lnet/minecraft/core/NonNullList;
+# accessible method net/minecraft/world/item/crafting/ShapedRecipe matches (Lnet/minecraft/world/inventory/CraftingContainer;IIZ)Z
+# accessible field net/minecraft/world/item/crafting/ShapelessRecipe$Serializer CODEC Lcom/mojang/serialization/Codec;
+# accessible field net/minecraft/world/item/crafting/ShapedRecipe$Serializer CODEC Lcom/mojang/serialization/Codec;
 
 accessible field net/minecraft/server/level/ServerPlayerGameMode isDestroyingBlock Z
 accessible method net/minecraft/server/commands/TeleportCommand performTeleport (Lnet/minecraft/commands/CommandSourceStack;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FFLnet/minecraft/server/commands/TeleportCommand$LookAt;)V
 accessible field net/minecraft/commands/arguments/selector/EntitySelector predicate Ljava/util/function/Predicate;
 accessible field net/minecraft/world/level/storage/loot/LootContext$EntityTarget name Ljava/lang/String;
 accessible field net/minecraft/world/level/storage/loot/LootDataType codec Lcom/mojang/serialization/Codec;
-accessible field net/minecraft/advancements/critereon/ItemPredicate items Ljava/util/Set;
-mutable field net/minecraft/advancements/critereon/ItemPredicate items Ljava/util/Set;
+# accessible field net/minecraft/advancements/critereon/ItemPredicate items Ljava/util/Set;
+# mutable field net/minecraft/advancements/critereon/ItemPredicate items Ljava/util/Set;
 
 accessible method net/minecraft/world/entity/npc/VillagerType <init> (Ljava/lang/String;)V
 accessible field net/minecraft/world/entity/item/ItemEntity LIFETIME I

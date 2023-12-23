@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
-import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 
 public class GroupFilter implements RecipeFilter {
 	private final String group;
@@ -10,7 +10,7 @@ public class GroupFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(RecipeKJS r) {
+	public boolean test(RecipeLikeKJS r) {
 		return r.kjs$getGroup().equals(group);
 	}
 

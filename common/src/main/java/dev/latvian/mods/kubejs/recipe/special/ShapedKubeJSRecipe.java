@@ -32,6 +32,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	private final ModifyRecipeResultCallback modifyResult;
 	private final String stage;
 
+	// TODO: All of the hell that is ShapedRecipePattern
 	public ShapedKubeJSRecipe(String group, CraftingBookCategory category, int width, int height, NonNullList<Ingredient> ingredients, ItemStack result,
 							  boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
 		super(group, category, width, height, ingredients, result);

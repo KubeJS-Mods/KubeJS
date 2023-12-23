@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
-import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ public class OrFilter implements RecipeFilter {
 	public final List<RecipeFilter> list = new ArrayList<>(2);
 
 	@Override
-	public boolean test(RecipeKJS r) {
+	public boolean test(RecipeLikeKJS r) {
 		for (var p : list) {
 			if (p.test(r)) {
 				return true;

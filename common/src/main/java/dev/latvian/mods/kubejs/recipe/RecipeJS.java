@@ -4,11 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
-import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.InputFluid;
 import dev.latvian.mods.kubejs.fluid.OutputFluid;
@@ -18,7 +16,12 @@ import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.component.MissingComponentException;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentBuilderMap;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.*;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -31,6 +34,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
+public class RecipeJS implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public static boolean itemErrors = false;
 
 	public ResourceLocation id;
@@ -279,6 +284,11 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		return getType();
 	}
 
+	@Override
+	public RecipeSerializer<?> kjs$getSerializer() {
+		return type.schemaType.getSerializer();
+	}
+
 	@SuppressWarnings({"SuspiciousToArrayCall", "ToArrayCallWithZeroLengthArrayArgument"})
 	public final RecipeComponentValue<?>[] inputValues() {
 		if (inputValues == null) {
@@ -466,7 +476,7 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Nullable
-	public Recipe<?> createRecipe() {
+	public RecipeHolder<?> createRecipe() {
 		if (removed) {
 			return null;
 		}
@@ -502,10 +512,11 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 				var o = new JsonObject();
 				o.addProperty("stage", json.get("kubejs:stage").getAsString());
 				o.add("recipe", json);
-				return type.event.stageSerializer.codec().decode(JsonOps.INSTANCE, o).result().map(Pair::getFirst).orElseThrow();
+				var recipe = UtilsJS.fromJsonOrThrow(o, type.event.stageSerializer.codec());
+				return new RecipeHolder<>(id, recipe);
 			}
 		} else if (originalRecipe != null) {
-			return originalRecipe.getValue();
+			return new RecipeHolder<>(getOrCreateId(), originalRecipe.getValue());
 		}
 
 		return RecipePlatformHelper.get().fromJson(getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json);
@@ -518,7 +529,8 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		if (originalRecipe == null) {
 			originalRecipe = new MutableObject<>();
 			try {
-				originalRecipe.setValue(RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), getOrCreateId(), json));
+				// todo: this sucks
+				originalRecipe.setValue(RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), getOrCreateId(), json).value());
 			} catch (Throwable e) {
 				error = e;
 			}

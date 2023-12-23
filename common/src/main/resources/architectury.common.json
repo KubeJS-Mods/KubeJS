@@ -59,6 +59,9 @@
 		],
 		"net/minecraft/class_1715": [
 			"dev/latvian/mods/kubejs/core/CraftingContainerKJS"
+		],
+		"net/minecraft/class_8786": [
+			"dev/latvian/mods/kubejs/core/RecipeHolderKJS"
 		]
 	}
 }

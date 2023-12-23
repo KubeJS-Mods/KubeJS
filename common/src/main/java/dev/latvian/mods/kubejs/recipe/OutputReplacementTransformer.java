@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.core.RecipeKJS;
+import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 
 @FunctionalInterface
 public interface OutputReplacementTransformer {
-	Object transform(RecipeKJS recipe, ReplacementMatch match, OutputReplacement original, OutputReplacement with);
+	Object transform(RecipeLikeKJS recipe, ReplacementMatch match, OutputReplacement original, OutputReplacement with);
 
 	record Replacement(OutputReplacement with, OutputReplacementTransformer transformer) implements OutputReplacement {
 		@Override

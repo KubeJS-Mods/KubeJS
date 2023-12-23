@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -21,16 +21,18 @@ public interface RecipePlatformHelper {
 	}
 
 	@Nullable
-	Recipe<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json);
+	RecipeHolder<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json);
 
 	@Nullable
 	JsonObject checkConditions(JsonObject json);
 
 	Ingredient getCustomIngredient(JsonObject object);
 
-	void pingNewRecipes(Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> map);
+	default void pingNewRecipes(Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> map) {
+		// Fabric only
+	}
+
+	;
 
 	boolean processConditions(RecipeManager recipeManager, JsonObject json);
-
-	Object createRecipeContext(ReloadableServerResources resources);
 }
