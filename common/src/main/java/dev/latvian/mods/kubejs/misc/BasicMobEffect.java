@@ -3,31 +3,32 @@ package dev.latvian.mods.kubejs.misc;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.AttributeModifierTemplate;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class BasicMobEffect extends MobEffect {
 
 	private final MobEffectBuilder.EffectTickCallback effectTickCallback;
-	private final Map<ResourceLocation, AttributeModifier> modifierMap;
-	private final Map<Attribute, AttributeModifier> attributeMap;
+	private final Map<ResourceLocation, AttributeModifierTemplate> modifierMap;
+	private final Map<Attribute, AttributeModifierTemplate> attributeMap;
 	private boolean modified = false;
 	private final ResourceLocation id;
+	private final boolean instant;
 
 	public BasicMobEffect(Builder builder) {
 		super(builder.category, builder.color);
 		this.effectTickCallback = builder.effectTick;
 		modifierMap = builder.attributeModifiers;
-		attributeMap = new HashMap<>();
+		attributeMap = getAttributeModifiers();
 		this.id = builder.id;
+		this.instant = builder.instant;
 	}
 
 	@Override
@@ -47,38 +48,30 @@ public class BasicMobEffect extends MobEffect {
 	}
 
 	@Override
-	public Map<Attribute, AttributeModifier> getAttributeModifiers() {
-		this.applyAttributeModifications();
-		return attributeMap;
+	public Map<Attribute, AttributeModifierTemplate> getAttributeModifiers() {
+		applyAttributeModifications();
+		return super.getAttributeModifiers();
 	}
 
 	@Override
-	public void removeAttributeModifiers(LivingEntity livingEntity, AttributeMap attributeMap, int i) {
-		this.applyAttributeModifications();
-		for (Map.Entry<Attribute, AttributeModifier> entry : this.attributeMap.entrySet()) {
-			AttributeInstance attributeInstance = attributeMap.getInstance(entry.getKey());
-			if (attributeInstance != null) {
-				attributeInstance.removeModifier(entry.getValue());
-			}
-		}
+	public void removeAttributeModifiers(AttributeMap attributeMap) {
+		applyAttributeModifications();
+		super.removeAttributeModifiers(attributeMap);
 	}
 
 	@Override
-	public void addAttributeModifiers(LivingEntity livingEntity, AttributeMap attributeMap, int i) {
-		this.applyAttributeModifications();
-		for (Map.Entry<Attribute, AttributeModifier> attributeAttributeModifierEntry : this.attributeMap.entrySet()) {
-			AttributeInstance attributeInstance = attributeMap.getInstance(attributeAttributeModifierEntry.getKey());
-			if (attributeInstance != null) {
-				AttributeModifier attributeModifier = attributeAttributeModifierEntry.getValue();
-				attributeInstance.removeModifier(attributeModifier);
-				attributeInstance.addPermanentModifier(new AttributeModifier(attributeModifier.getId(), this.getDescriptionId() + " " + i, this.getAttributeModifierValue(i, attributeModifier), attributeModifier.getOperation()));
-			}
-		}
-
+	public MobEffect addAttributeModifier(Attribute attribute, String string, double d, AttributeModifier.Operation operation) {
+		applyAttributeModifications();
+		return super.addAttributeModifier(attribute, string, d, operation);
 	}
 
 	@Override
-	public boolean isDurationEffectTick(int i, int j) {
+	public boolean isInstantenous() {
+		return instant && this.effectTickCallback != null;
+	}
+
+	@Override
+	public boolean shouldApplyEffectTickThisTick(int i, int j) {
 		return this.effectTickCallback != null;
 	}
 
