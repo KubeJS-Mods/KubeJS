@@ -86,9 +86,11 @@ import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.component.BlockComponent;
 import dev.latvian.mods.kubejs.recipe.component.BlockStateComponent;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
+import dev.latvian.mods.kubejs.recipe.component.EnumComponent;
 import dev.latvian.mods.kubejs.recipe.component.FluidComponents;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
+import dev.latvian.mods.kubejs.recipe.component.RegistryComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.component.TagKeyComponent;
 import dev.latvian.mods.kubejs.recipe.component.TimeComponent;
@@ -590,6 +592,9 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.register("inputBlockState", BlockStateComponent.INPUT);
 		event.register("outputBlockState", BlockStateComponent.OUTPUT);
 		event.register("otherBlockState", BlockStateComponent.BLOCK);
+		event.register("inputBlockStateString", BlockStateComponent.INPUT_STRING);
+		event.register("outputBlockStateString", BlockStateComponent.OUTPUT_STRING);
+		event.register("otherBlockStateString", BlockStateComponent.BLOCK_STRING);
 
 		event.register("ticks", TimeComponent.TICKS);
 		event.register("seconds", TimeComponent.SECONDS);
@@ -598,9 +603,13 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		event.register("blockTag", TagKeyComponent.BLOCK);
 		event.register("itemTag", TagKeyComponent.ITEM);
+		event.register("fluidTag", TagKeyComponent.FLUID);
 		event.register("entityTypeTag", TagKeyComponent.ENTITY_TYPE);
 		event.register("biomeTag", TagKeyComponent.BIOME);
 		event.registerDynamic("tag", TagKeyComponent.DYNAMIC);
+
+		event.registerDynamic("registryObject", RegistryComponent.DYNAMIC);
+		event.registerDynamic("enum", EnumComponent.DYNAMIC);
 	}
 
 	@Override

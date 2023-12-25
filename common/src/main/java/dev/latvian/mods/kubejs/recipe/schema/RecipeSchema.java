@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.util.JsonIO;
+import dev.latvian.mods.rhino.util.RemapForJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.resources.ResourceLocation;
@@ -120,6 +121,7 @@ public class RecipeSchema {
 	 * @return This schema.
 	 * @implNote If a constructor is manually defined using this method, constructors will not be automatically generated.
 	 */
+	@RemapForJS("addConstructor") // constructor is a reserved word in TypeScript, so remap this for scripters who use .d.ts files for typing hints
 	public RecipeSchema constructor(RecipeConstructor.Factory factory, RecipeKey<?>... keys) {
 		var c = new RecipeConstructor(this, keys, factory);
 
@@ -134,6 +136,7 @@ public class RecipeSchema {
 		return this;
 	}
 
+	@RemapForJS("addConstructor") // constructor is a reserved word in TypeScript, so remap this for scripters who use .d.ts files for typing hints
 	public RecipeSchema constructor(RecipeKey<?>... keys) {
 		return constructor(RecipeConstructor.Factory.DEFAULT, keys);
 	}
