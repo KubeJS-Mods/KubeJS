@@ -1,8 +1,7 @@
 package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.typings.Info;
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 @Info("""
@@ -10,11 +9,11 @@ import net.minecraft.server.level.ServerPlayer;
 	""")
 public class PlayerAdvancementEventJS extends PlayerEventJS {
 	private final ServerPlayer player;
-	private final AdvancementHolder advancement;
+	private final ResourceLocation id;
 
-	public PlayerAdvancementEventJS(ServerPlayer player, AdvancementHolder advancement) {
+	public PlayerAdvancementEventJS(ServerPlayer player, ResourceLocation id) {
 		this.player = player;
-		this.advancement = advancement;
+		this.id = id;
 	}
 
 	@Override
@@ -25,6 +24,6 @@ public class PlayerAdvancementEventJS extends PlayerEventJS {
 
 	@Info("Returns the advancement that was obtained.")
 	public AdvancementJS getAdvancement() {
-		return new AdvancementJS(advancement);
+		return player.server.kjs$getAdvancement(id);
 	}
 }

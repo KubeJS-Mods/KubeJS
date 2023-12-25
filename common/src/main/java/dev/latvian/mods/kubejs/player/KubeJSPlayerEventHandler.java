@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -67,7 +66,8 @@ public class KubeJSPlayerEventHandler {
 
 	public static void advancement(ServerPlayer player, AdvancementHolder advancement) {
 		if (PlayerEvents.ADVANCEMENT.hasListeners()) {
-			PlayerEvents.ADVANCEMENT.post(new PlayerAdvancementEventJS(player, advancement), advancement.id());
+			var id = advancement.id();
+			PlayerEvents.ADVANCEMENT.post(new PlayerAdvancementEventJS(player, id), id);
 		}
 	}
 

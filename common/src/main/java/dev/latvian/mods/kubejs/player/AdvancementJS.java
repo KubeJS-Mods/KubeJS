@@ -1,6 +1,9 @@
 package dev.latvian.mods.kubejs.player;
 
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementNode;
+import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -9,20 +12,25 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class AdvancementJS {
+	public final AdvancementNode node;
+
+	public final AdvancementHolder holder;
 	public final Advancement advancement;
 
-	public AdvancementJS(Advancement a) {
-		advancement = a;
+	public AdvancementJS(AdvancementNode node) {
+		this.node = node;
+		this.holder = node.holder();
+		this.advancement = node.advancement();
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		return o == this || o instanceof AdvancementJS && advancement.equals(((AdvancementJS) o).advancement);
+		return o == this || o instanceof AdvancementJS a && node.equals(a.node);
 	}
 
 	@Override
 	public int hashCode() {
-		return advancement.hashCode();
+		return node.hashCode();
 	}
 
 	@Override
@@ -35,18 +43,19 @@ public class AdvancementJS {
 	}
 
 	public ResourceLocation getId() {
-		return advancement.getId();
+		return node.holder().id();
 	}
 
 	@Nullable
 	public AdvancementJS getParent() {
-		return advancement.getParent() == null ? null : new AdvancementJS(advancement.getParent());
+		var parent = node.parent();
+		return parent == null ? null : new AdvancementJS(parent);
 	}
 
 	public Set<AdvancementJS> getChildren() {
 		Set<AdvancementJS> set = new LinkedHashSet<>();
 
-		for (var a : advancement.getChildren()) {
+		for (var a : node.children()) {
 			set.add(new AdvancementJS(a));
 		}
 
@@ -54,22 +63,27 @@ public class AdvancementJS {
 	}
 
 	public void addChild(AdvancementJS a) {
-		advancement.addChild(a.advancement);
+		node.addChild(a.node);
 	}
 
 	public Component getDisplayText() {
-		return advancement.getChatComponent();
+		return advancement.name().orElse(Component.empty());
 	}
 
 	public boolean hasDisplay() {
-		return advancement.getDisplay() != null;
+		return advancement.display().isPresent();
 	}
 
 	public Component getTitle() {
-		return advancement.getDisplay() != null ? advancement.getDisplay().getTitle() : Component.empty();
+		return advancement.display().map(DisplayInfo::getTitle).orElse(Component.empty());
 	}
 
 	public Component getDescription() {
-		return advancement.getDisplay() != null ? advancement.getDisplay().getDescription() : Component.empty();
+		return advancement.display().map(DisplayInfo::getDescription).orElse(Component.empty());
+	}
+
+	@Nullable
+	public DisplayInfo getDisplay() {
+		return advancement.display().orElse(null);
 	}
 }

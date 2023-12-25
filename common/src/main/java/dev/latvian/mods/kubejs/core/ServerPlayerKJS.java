@@ -92,17 +92,17 @@ public interface ServerPlayerKJS extends PlayerKJS {
 
 	default boolean kjs$isAdvancementDone(ResourceLocation id) {
 		var a = kjs$self().server.kjs$getAdvancement(id);
-		return a != null && kjs$self().getAdvancements().getOrStartProgress(a.advancement).isDone();
+		return a != null && kjs$self().getAdvancements().getOrStartProgress(a.holder).isDone();
 	}
 
 	default void kjs$unlockAdvancement(ResourceLocation id) {
 		var a = kjs$self().server.kjs$getAdvancement(id);
 
 		if (a != null) {
-			var advancementprogress = kjs$self().getAdvancements().getOrStartProgress(a.advancement);
+			var advancementprogress = kjs$self().getAdvancements().getOrStartProgress(a.holder);
 
 			for (var s : advancementprogress.getRemainingCriteria()) {
-				kjs$self().getAdvancements().award(a.advancement, s);
+				kjs$self().getAdvancements().award(a.holder, s);
 			}
 		}
 	}
@@ -111,11 +111,11 @@ public interface ServerPlayerKJS extends PlayerKJS {
 		var a = kjs$self().server.kjs$getAdvancement(id);
 
 		if (a != null) {
-			var advancementprogress = kjs$self().getAdvancements().getOrStartProgress(a.advancement);
+			var advancementprogress = kjs$self().getAdvancements().getOrStartProgress(a.holder);
 
 			if (advancementprogress.hasProgress()) {
 				for (var s : advancementprogress.getCompletedCriteria()) {
-					kjs$self().getAdvancements().revoke(a.advancement, s);
+					kjs$self().getAdvancements().revoke(a.holder, s);
 				}
 			}
 		}

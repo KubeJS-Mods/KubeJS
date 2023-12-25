@@ -85,7 +85,7 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 
 	@Nullable
 	default AdvancementJS kjs$getAdvancement(ResourceLocation id) {
-		var a = kjs$self().getAdvancements().getAdvancement(id);
+		var a = kjs$self().getAdvancements().tree().get(id);
 		return a == null ? null : new AdvancementJS(a);
 	}
 
