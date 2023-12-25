@@ -14,8 +14,12 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -35,6 +39,8 @@ public interface IngredientJS {
 			return Ingredient.EMPTY;
 		} else if (o instanceof IngredientSupplierKJS ingr) {
 			return ingr.kjs$asIngredient();
+		} else if (o instanceof TagKey<?> tag) {
+			return Ingredient.of(TagKey.create(Registries.ITEM, tag.location()));
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
 			var reg = UtilsJS.parseRegex(o);
 
