@@ -10,8 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Pattern;
 
 public class RegExIngredient extends KubeJSIngredient {
-	public static final Codec<RegExIngredient> CODEC = ExtraCodecs.stringResolverCodec(Pattern::toString, UtilsJS::parseRegex)
-		.fieldOf("regex")
+	public static final Codec<RegExIngredient> CODEC = ExtraCodecs.stringResolverCodec(UtilsJS::toRegexString, UtilsJS::parseRegex)
+		.fieldOf("pattern")
 		.codec()
 		.xmap(RegExIngredient::new, ingredient -> ingredient.pattern);
 
@@ -19,6 +19,7 @@ public class RegExIngredient extends KubeJSIngredient {
 
 	public RegExIngredient(Pattern pattern) {
 		super(IngredientForgeHelper.REGEX);
+		if (pattern == null) throw new IllegalArgumentException("Pattern for a RegExIngredient cannot be null! Check your pattern format");
 		this.pattern = pattern;
 	}
 
