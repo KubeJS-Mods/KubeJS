@@ -71,7 +71,6 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	private final ModifyRecipeResultCallback modifyResult;
 	private final String stage;
 
-	// TODO: All of the hell that is ShapedRecipePattern
 	public ShapedKubeJSRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, ItemStack result,
 							  boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
 		super(group, category, pattern, result);
@@ -134,7 +133,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 		// registry replacement-safe(?)
 		private static final RecipeSerializer<ShapedRecipe> SHAPED = UtilsJS.cast(RegistryInfo.RECIPE_SERIALIZER.getValue(new ResourceLocation("crafting_shaped")));
 
-		// FIXME: this is still a bit of a mess
+		// TODO: this is still a bit of a mess
 		public static final Codec<ShapedKubeJSRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			// manually copied from the shaped recipe codec
 			// (would be nice if we could just swap out specifically the pattern codec from the underlying codec)

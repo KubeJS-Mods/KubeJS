@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.forge;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
-import dev.latvian.mods.kubejs.bindings.event.WorldgenEvents;
 import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallback;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabEvent;
@@ -70,7 +69,6 @@ public class KubeJSForge {
 	}
 
 	private static void commonSetup(FMLCommonSetupEvent event) {
-		WorldgenEvents.post();
 	}
 
 	private record CreativeTabCallbackForge(BuildCreativeModeTabContentsEvent event) implements CreativeTabCallback {

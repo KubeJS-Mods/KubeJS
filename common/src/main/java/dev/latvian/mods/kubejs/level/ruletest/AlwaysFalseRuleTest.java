@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.level.gen.ruletest;
+package dev.latvian.mods.kubejs.level.ruletest;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.util.RandomSource;

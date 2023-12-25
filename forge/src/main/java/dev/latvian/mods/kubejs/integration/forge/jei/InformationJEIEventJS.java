@@ -1,20 +1,10 @@
 package dev.latvian.mods.kubejs.integration.forge.jei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.fluid.FluidStackJS;
-import dev.latvian.mods.kubejs.util.ListJS;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
-import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.crafting.Ingredient;
-
-import java.util.stream.Collectors;
 
 
 public class InformationJEIEventJS extends EventJS {
-	private final IRecipeRegistration registration;
+	/*private final IRecipeRegistration registration;
 
 	public InformationJEIEventJS(IRecipeRegistration reg) {
 		registration = reg;
@@ -38,6 +28,6 @@ public class InformationJEIEventJS extends EventJS {
 				.filter(t -> targets.contains(helper.getWildcardId(t)))
 				.toList(),
 			type, s);
-	}
+	}*/
 
 }

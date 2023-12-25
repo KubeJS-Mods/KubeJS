@@ -1,22 +1,10 @@
 package dev.latvian.mods.kubejs.integration.forge.jei;
 
-import dev.latvian.mods.kubejs.BuiltinKubeJSPlugin;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.fluid.FluidStackJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
-import mezz.jei.api.registration.IRecipeRegistration;
-import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fluids.FluidStack;
-
-import java.util.Objects;
 
 /**
  * TODO: make a common JEI plugin if the need arises
@@ -31,7 +19,7 @@ public class JEIPlugin implements IModPlugin {
 		return ID;
 	}
 
-	@Override
+	/*@Override
 	public void onRuntimeAvailable(IJeiRuntime r) {
 		runtime = r;
 		BuiltinKubeJSPlugin.GLOBAL.put("jeiRuntime", runtime);
@@ -84,5 +72,5 @@ public class JEIPlugin implements IModPlugin {
 		if (JEIEvents.INFORMATION.hasListeners()) {
 			JEIEvents.INFORMATION.post(ScriptType.CLIENT, new InformationJEIEventJS(registration));
 		}
-	}
+	}*/
 }
