@@ -72,20 +72,18 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 
 		private static MapCodec.MapCodecCodec<ShapelessRecipe> getCodec() {
 			try {
-				return UtilsJS.cast(SHAPELESS_CODEC);
+				return UtilsJS.cast(SHAPELESS.codec());
 			} catch (ClassCastException e) {
 				throw new IllegalStateException("Original ShapelessRecipe codec is not a MapCodecCodec!");
 			}
 		}
 
-		public static final Codec<ShapelessKubeJSRecipe> CODEC = RecordCodecBuilder.create(instance -> {
-			return instance.group(
-				SHAPELESS_CODEC.codec().forGetter(r -> r),
-				IngredientAction.CODEC.listOf().optionalFieldOf("kubejs:actions", List.of()).forGetter(r -> r.ingredientActions),
-				ModifyRecipeResultCallback.CODEC.optionalFieldOf("kubejs:modify_result", null).forGetter(r -> r.modifyResult),
-				Codec.STRING.optionalFieldOf("kubejs:stage", "").forGetter(r -> r.stage)
-			).apply(instance, ShapelessKubeJSRecipe::new);
-		});
+		public static final Codec<ShapelessKubeJSRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+			SHAPELESS_CODEC.codec().forGetter(r -> r),
+			IngredientAction.CODEC.listOf().optionalFieldOf("kubejs:actions", List.of()).forGetter(r -> r.ingredientActions),
+			ModifyRecipeResultCallback.CODEC.optionalFieldOf("kubejs:modify_result", null).forGetter(r -> r.modifyResult),
+			Codec.STRING.optionalFieldOf("kubejs:stage", "").forGetter(r -> r.stage)
+		).apply(instance, ShapelessKubeJSRecipe::new));
 
 		@Override
 		public Codec<ShapelessKubeJSRecipe> codec() {
