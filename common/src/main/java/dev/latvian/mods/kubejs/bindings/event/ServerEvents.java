@@ -4,12 +4,6 @@ import dev.latvian.mods.kubejs.command.CommandRegistryEventJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.Extra;
-import dev.latvian.mods.kubejs.loot.BlockLootEventJS;
-import dev.latvian.mods.kubejs.loot.ChestLootEventJS;
-import dev.latvian.mods.kubejs.loot.EntityLootEventJS;
-import dev.latvian.mods.kubejs.loot.FishingLootEventJS;
-import dev.latvian.mods.kubejs.loot.GenericLootEventJS;
-import dev.latvian.mods.kubejs.loot.GiftLootEventJS;
 import dev.latvian.mods.kubejs.recipe.AfterRecipesLoadedEventJS;
 import dev.latvian.mods.kubejs.recipe.CompostableRecipesEventJS;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
@@ -35,10 +29,4 @@ public interface ServerEvents {
 	EventHandler RECIPES_AFTER_LOADED = GROUP.server("afterRecipes", () -> AfterRecipesLoadedEventJS.class);
 	EventHandler SPECIAL_RECIPES = GROUP.server("specialRecipeSerializers", () -> SpecialRecipeSerializerManager.class);
 	EventHandler COMPOSTABLE_RECIPES = GROUP.server("compostableRecipes", () -> CompostableRecipesEventJS.class);
-	EventHandler GENERIC_LOOT_TABLES = GROUP.server("genericLootTables", () -> GenericLootEventJS.class);
-	EventHandler BLOCK_LOOT_TABLES = GROUP.server("blockLootTables", () -> BlockLootEventJS.class);
-	EventHandler ENTITY_LOOT_TABLES = GROUP.server("entityLootTables", () -> EntityLootEventJS.class);
-	EventHandler GIFT_LOOT_TABLES = GROUP.server("giftLootTables", () -> GiftLootEventJS.class);
-	EventHandler FISHING_LOOT_TABLES = GROUP.server("fishingLootTables", () -> FishingLootEventJS.class);
-	EventHandler CHEST_LOOT_TABLES = GROUP.server("chestLootTables", () -> ChestLootEventJS.class);
 }
