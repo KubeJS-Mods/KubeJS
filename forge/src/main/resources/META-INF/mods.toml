@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[47,)"
+loaderVersion = "[2,)"
 issueTrackerURL = "https://kubejs.com/support?source=kubejs&mc=1902&loader=forge"
 license = "GNU LGPLv3"
 
@@ -15,36 +15,36 @@ logoFile = "kubejs_logo.png"
 license = "GNU LGPLv3"
 
 [[dependencies.kubejs]]
-modId = "forge"
-mandatory = true
-versionRange = "[47.1.0,)"
+modId = "neoforge"
+type = "required"
+versionRange = "[20.4.57-beta,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.kubejs]]
 modId = "rhino"
-mandatory = true
+type = "required"
 versionRange = "[${min_rhino_version},)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.kubejs]]
 modId = "architectury"
-mandatory = true
+type = "required"
 versionRange = "[${architectury_version},)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.kubejs]]
 modId = "jei"
-mandatory = false
+type = "optional"
 versionRange = "[1.0.0,)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.kubejs]]
 modId = "roughlyenoughitems"
-mandatory = false
+type = "optional"
 versionRange = "[9.1.572,)"
 ordering = "AFTER"
 side = "BOTH"

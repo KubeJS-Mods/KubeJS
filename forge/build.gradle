@@ -44,7 +44,7 @@ repositories {
 dependencies {
 	neoForge("net.neoforged:neoforge:${rootProject.forge_version}")
 
-	modApi("dev.architectury:architectury-forge:${rootProject.architectury_version}")
+	modApi("dev.architectury:architectury-neoforge:${rootProject.architectury_version}")
 
 	modApi("dev.latvian.mods:rhino-forge:${rootProject.rhino_version}") { transitive false }
 
@@ -55,7 +55,7 @@ dependencies {
 		transitive(false)
 	}
 
-	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}")
+	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:${rootProject.rei_version}")
 	// modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-plugin-compatibilities-forge:${rootProject.rei_comp_version}")
 
 	common(project(path: ":common", configuration: "namedElements")) { transitive false }
@@ -105,8 +105,8 @@ unifiedPublishing {
 		gameVersions = [
 				rootProject.minecraft_version
 		]
-		gameLoaders = ["forge"]
-		displayName = "$mod_name Forge $project.version"
+		gameLoaders = ["neoforge"]
+		displayName = "$mod_name NeoForge $project.version"
 		changelog = getGitChangelog()
 		mainPublication remapJar
 
@@ -139,7 +139,7 @@ unifiedPublishing {
 publishing {
 	publications {
 		mavenForge(MavenPublication) {
-			artifactId = "${rootProject.archives_base_name}-${project.name}"
+			artifactId = "${rootProject.archives_base_name}-neoforge"
 			from components.java
 		}
 	}

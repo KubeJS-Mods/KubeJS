@@ -121,7 +121,7 @@ unifiedPublishing {
 publishing {
 	publications {
 		mavenFabric(MavenPublication) {
-			artifactId = "${rootProject.archives_base_name}-${project.name}"
+			artifactId = "${rootProject.archives_base_name}-fabric"
 			from components.java
 		}
 	}
