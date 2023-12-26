@@ -2,36 +2,31 @@ import java.time.Instant
 
 plugins {
 	id 'base'
-	id 'architectury-plugin' version '3.4-SNAPSHOT'
-	id "dev.architectury.loom" version "1.4-SNAPSHOT" apply false
-	id "com.github.johnrengelman.shadow" version "7.0.0" apply false
-	id "me.shedaniel.unified-publishing" version "0.1.+" apply false
+	id 'java'
+	id 'maven-publish'
+	id "dev.architectury.loom" version "1.4-SNAPSHOT"
+	id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
-architectury {
-	minecraft = project.minecraft_version
-	injectInjectables = false
-}
+apply from: "https://files.latvian.dev/public/markdown-git-changelog.gradle"
 
-allprojects {
-	ext.ENV = System.getenv()
+ext.ENV = System.getenv()
 
-	repositories {
-		mavenCentral()
+repositories {
+	mavenCentral()
 
-		maven {
-			url "https://maven.architectury.dev/"
-		}
-
-		maven {
-			url "https://maven.latvian.dev/releases"
-			content {
-				includeGroup "dev.latvian.mods"
-			}
-		}
-
-		mavenLocal()
+	maven {
+		url "https://maven.architectury.dev/"
 	}
+
+	maven {
+		url "https://maven.latvian.dev/releases"
+		content {
+			includeGroup "dev.latvian.mods"
+		}
+	}
+
+	mavenLocal()
 }
 
 def isLocal = !ENV.containsKey("GITHUB_RUN_NUMBER")
@@ -40,131 +35,182 @@ version = "${mod_version}-${isLocal ? 'local' : "build.${ENV.GITHUB_RUN_NUMBER}"
 group = project.maven_group
 base.archivesBaseName = project.archives_base_name
 
-subprojects {
-	apply plugin: "java"
-	apply plugin: "dev.architectury.loom"
-	apply plugin: 'architectury-plugin'
-	apply plugin: "maven-publish"
-	apply from: "https://files.latvian.dev/public/markdown-git-changelog.gradle"
+loom {
+	silentMojangMappingsLicense()
 
-	version = rootProject.version
-	group = rootProject.group
-	base.archivesBaseName = rootProject.base.archivesBaseName
-
-	loom {
-		silentMojangMappingsLicense()
+	accessWidenerPath = file("src/main/resources/kubejs.accesswidener")
+	interfaceInjection {
+		interfaceInjectionSourceSets.add sourceSets.main
 	}
 
-	compileJava {
-		options.encoding = "UTF-8"
-		options.release.set(17)
-	}
+	runs {
+		client {
+			if (ENV.MC_CLIENT_ARGS) {
+				programArgs ENV.MC_CLIENT_ARGS.split(' ')
+			}
 
-	java {
-		sourceCompatibility = targetCompatibility = '17'
-		withSourcesJar()
-	}
+			vmArgs("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
+			runDir = 'run'
+		}
 
-	dependencies {
-		minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-		mappings loom.layered() {
-			officialMojangMappings()
-			// parchment("org.parchmentmc.data:parchment-1.17.1:2021.10.10")
+		server {
+			runDir = 'run_server'
 		}
 	}
 }
 
-subprojects {
-	if (project.path != ':common') {
-		apply plugin: "com.github.johnrengelman.shadow"
+compileJava {
+	options.encoding = "UTF-8"
+	options.release.set(17)
+}
 
-		/*loom {
-			runConfigs.configureEach { ideConfigGenerated = true }
-			mods {
-				main { // to match the default mod generated for Forge
-					sourceSet project.sourceSets.main
-					sourceSet project(':common').sourceSets.main
-				}
+java {
+	sourceCompatibility = targetCompatibility = '17'
+	withSourcesJar()
+}
+
+repositories {
+	maven {
+		name "ModMaven (JEI)"
+		url "https://modmaven.dev/"
+		content {
+			includeGroup "net.darkhax.bookshelf"
+			includeGroup "net.darkhax.gamestages"
+		}
+	}
+	maven {
+		url "https://maven.blamejared.com"
+		content {
+			includeGroup "mezz.jei"
+		}
+	}
+	maven {
+		url "https://maven.neoforged.net/releases"
+	}
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+	mappings loom.officialMojangMappings()
+
+	neoForge("net.neoforged:neoforge:${rootProject.neoforge_version}")
+
+	modApi("dev.architectury:architectury-neoforge:${rootProject.architectury_version}")
+	modApi("dev.latvian.mods:rhino-neoforge:${rootProject.rhino_version}") { transitive false }
+
+	// todo: reevaluate if we want to depend on jei
+	modCompileOnly("mezz.jei:jei-1.20.2-forge:${rootProject.jei_version}") { transitive(false) }
+
+	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:${rootProject.rei_version}")
+}
+
+processResources {
+	def toReplace = [
+			"version"             : project.version,
+			"min_rhino_version"   : rootProject.min_rhino_version,
+			"architectury_version": rootProject.architectury_version
+	]
+
+	inputs.properties toReplace
+	filesMatching("META-INF/mods.toml") {
+		expand toReplace
+	}
+}
+
+jar {
+	manifest {
+		attributes([
+				"Specification-Title"     : project.mod_id,
+				"Specification-Vendor"    : project.mod_author,
+				"Specification-Version"   : "1",
+				"Implementation-Title"    : project.name,
+				"Implementation-Version"  : version,
+				"Implementation-Vendor"   : project.mod_author,
+				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+		])
+	}
+}
+
+remapJar {
+	archiveBaseName.set "${rootProject.archives_base_name}-neoforge"
+	if (isLocal) {
+		archiveVersion.set "${archiveVersion.get()}.${Instant.now().epochSecond}"
+	}
+	archiveClassifier.set null
+
+	atAccessWideners.add "kubejs.accesswidener"
+}
+
+sourcesJar {
+	from(sourceSets.main.allSource) {
+		exclude("kubejs.accesswidener") // not needed in sources
+	}
+}
+
+unifiedPublishing {
+	project {
+		releaseType = "${ENV.RELEASE_TYPE ?: 'release'}"
+		gameVersions = [
+				rootProject.minecraft_version
+		]
+		gameLoaders = ["neoforge"]
+		displayName = "$mod_name NeoForge $project.version"
+		changelog = getGitChangelog()
+		mainPublication remapJar
+
+		relations {
+			depends {
+				curseforge = modrinth = "architectury-api"
 			}
-			mixin {
-				defaultRefmapName = "kubejs.refmap.json"
-			}
-		}*/
-
-		loom {
-			runs {
-				client {
-					if (ENV.MC_CLIENT_ARGS) {
-						programArgs ENV.MC_CLIENT_ARGS.split(' ')
-					}
-
-					vmArgs("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
-
-					if (ENV.MC_SHARED_ARCH_RUN == "true") {
-						runDir = '../run'
-					}
-				}
-
-				server {
-					if (ENV.MC_SHARED_ARCH_RUN == "true") {
-						runDir = '../run_server'
-					}
-				}
+			depends {
+				curseforge = modrinth = "rhino"
 			}
 		}
 
-		configurations {
-			bundle {
-				canBeResolved(true)
-				canBeConsumed(false)
+		if (ENV.CURSEFORGE_KEY) {
+			curseforge {
+				token = ENV.CURSEFORGE_KEY
+				id = project.curseforge_id
 			}
-
-			common
-			compileClasspath.extendsFrom common
-			runtimeClasspath.extendsFrom common
 		}
 
-		jar {
-			archiveClassifier.set "dev"
-		}
-
-		shadowJar {
-			archiveClassifier.set "dev-shadow"
-			configurations = [
-					project.configurations.bundle
-			]
-		}
-
-		remapJar {
-			dependsOn shadowJar
-			inputFile.set shadowJar.archiveFile
-			archiveBaseName.set "${rootProject.archives_base_name}-${project.name}"
-			if(isLocal) {
-				archiveVersion.set "${archiveVersion.get()}.${Instant.now().epochSecond}"
-			}
-			archiveClassifier.set null
-		}
-
-		sourcesJar {
-			from(project(':common').sourceSets.main.allSource) {
-				exclude("kubejs.accesswidener") // duplicate on fabric, unneeded on forge
+		if (ENV.MODRINTH_TOKEN) {
+			modrinth {
+				token = ENV.MODRINTH_TOKEN
+				id = project.modrinth_id
+				version = "$project.version+$project.name"
 			}
 		}
 	}
 }
 
-task collectJars(type: Copy) {
-	subprojects {
-		if (project.path != ":common") {
-			def remapJar = project.tasks.named('remapJar')
-			dependsOn remapJar
-			from remapJar
+publishing {
+	publications {
+		mavenNeoForge(MavenPublication) {
+			artifactId = "${rootProject.archives_base_name}-neoforge"
+			from components.java
 		}
 	}
 
-	into(buildDir.toPath().resolve("libs"))
-}
+	repositories {
+		if (ENV.MAVEN_TOKEN) {
+			maven {
+				url "https://maven.latvian.dev/releases"
+				credentials {
+					username = "lat"
+					password = "${ENV.MAVEN_TOKEN}"
+				}
+			}
+		}
 
-assemble {
-	dependsOn(collectJars)
+		if (ENV.SAPS_TOKEN) {
+			maven {
+				url "https://maven.saps.dev/releases"
+				credentials {
+					username = "latvian"
+					password = "${ENV.SAPS_TOKEN}"
+				}
+			}
+		}
+	}
 }

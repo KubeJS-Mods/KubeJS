@@ -1,0 +1,83 @@
+accessWidener v2 named
+
+accessible class net/minecraft/server/MinecraftServer$ReloadableResources
+
+# tag-related
+accessible field net/minecraft/tags/TagBuilder entries Ljava/util/List;
+accessible method net/minecraft/tags/TagEntry elementOrTag ()Lnet/minecraft/util/ExtraCodecs$TagOrElementLocation;
+accessible method net/minecraft/util/ExtraCodecs$TagOrElementLocation decoratedId ()Ljava/lang/String;
+accessible field net/minecraft/tags/TagEntry id Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/tags/TagEntry required Z
+accessible field net/minecraft/tags/TagEntry tag Z
+
+accessible field net/minecraft/world/item/crafting/RecipeManager byName Ljava/util/Map;
+accessible field net/minecraft/world/item/crafting/RecipeManager recipes Ljava/util/Map;
+accessible field net/minecraft/server/ReloadableServerResources tagManager Lnet/minecraft/tags/TagManager;
+
+accessible field net/minecraft/world/item/ArmorItem defaultModifiers Lcom/google/common/collect/Multimap;
+mutable field net/minecraft/world/item/ArmorItem defaultModifiers Lcom/google/common/collect/Multimap;
+accessible field net/minecraft/world/item/DiggerItem defaultModifiers Lcom/google/common/collect/Multimap;
+mutable field net/minecraft/world/item/DiggerItem defaultModifiers Lcom/google/common/collect/Multimap;
+accessible field net/minecraft/world/item/SwordItem defaultModifiers Lcom/google/common/collect/Multimap;
+mutable field net/minecraft/world/item/SwordItem defaultModifiers Lcom/google/common/collect/Multimap;
+accessible field net/minecraft/world/item/TridentItem defaultModifiers Lcom/google/common/collect/Multimap;
+mutable field net/minecraft/world/item/TridentItem defaultModifiers Lcom/google/common/collect/Multimap;
+accessible field net/minecraft/world/item/DiggerItem speed F
+mutable field net/minecraft/world/item/DiggerItem speed F
+
+accessible field net/minecraft/world/item/TieredItem tier Lnet/minecraft/world/item/Tier;
+mutable field net/minecraft/world/item/TieredItem tier Lnet/minecraft/world/item/Tier;
+
+accessible method net/minecraft/world/level/block/state/BlockBehaviour$Properties <init> ()V
+
+# accessible method net/minecraft/world/entity/ai/village/poi/PoiType <init> (Ljava/lang/String;Ljava/util/Set;II)V
+# accessible method net/minecraft/world/entity/npc/VillagerType <init> (Ljava/lang/String;)V
+# accessible method net/minecraft/world/entity/npc/VillagerProfession <init> (Ljava/lang/String;Lnet/minecraft/world/entity/ai/village/poi/PoiType;Lcom/google/common/collect/ImmutableSet;Lcom/google/common/collect/ImmutableSet;Lnet/minecraft/sounds/SoundEvent;)V
+
+accessible field net/minecraft/server/packs/resources/MultiPackResourceManager namespacedManagers Ljava/util/Map;
+accessible field net/minecraft/server/packs/resources/MultiPackResourceManager packs Ljava/util/List;
+
+accessible field net/minecraft/commands/Commands$CommandSelection includeIntegrated Z
+accessible field net/minecraft/commands/Commands$CommandSelection includeDedicated Z
+accessible field net/minecraft/commands/synchronization/ArgumentTypeInfos BY_CLASS Ljava/util/Map;
+accessible method net/minecraft/world/level/GameRules$Value deserialize (Ljava/lang/String;)V
+accessible method net/minecraft/world/level/GameRules$Value onChanged (Lnet/minecraft/server/MinecraftServer;)V
+
+accessible field net/minecraft/world/inventory/TransientCraftingContainer menu Lnet/minecraft/world/inventory/AbstractContainerMenu;
+accessible field net/minecraft/world/inventory/CraftingMenu player Lnet/minecraft/world/entity/player/Player;
+accessible field net/minecraft/world/inventory/InventoryMenu owner Lnet/minecraft/world/entity/player/Player;
+accessible field net/minecraft/world/item/CreativeModeTabs CACHED_PARAMETERS Lnet/minecraft/world/item/CreativeModeTab$ItemDisplayParameters;
+
+# recipes
+accessible field net/minecraft/world/item/crafting/ShapelessRecipe ingredients Lnet/minecraft/core/NonNullList;
+accessible field net/minecraft/world/item/crafting/ShapelessRecipe group Ljava/lang/String;
+accessible field net/minecraft/world/item/crafting/ShapelessRecipe result Lnet/minecraft/world/item/ItemStack;
+transitive-extendable class net/minecraft/world/item/crafting/Ingredient
+transitive-accessible method net/minecraft/world/item/crafting/Ingredient <init> (Ljava/util/stream/Stream;)V
+transitive-accessible field net/minecraft/world/item/crafting/Ingredient values [Lnet/minecraft/world/item/crafting/Ingredient$Value;
+transitive-mutable field net/minecraft/world/item/crafting/Ingredient values [Lnet/minecraft/world/item/crafting/Ingredient$Value;
+transitive-accessible field net/minecraft/world/item/crafting/Ingredient itemStacks [Lnet/minecraft/world/item/ItemStack;
+transitive-accessible field net/minecraft/world/item/crafting/Ingredient stackingIds Lit/unimi/dsi/fastutil/ints/IntList;
+transitive-extendable class net/minecraft/world/item/crafting/Ingredient$Value
+
+accessible field net/minecraft/world/item/crafting/ShapedRecipe pattern Lnet/minecraft/world/item/crafting/ShapedRecipePattern;
+accessible field net/minecraft/world/item/crafting/ShapedRecipe result Lnet/minecraft/world/item/ItemStack;
+accessible field net/minecraft/world/item/crafting/ShapedRecipe showNotification Z
+accessible method net/minecraft/world/item/crafting/ShapedRecipePattern matches (Lnet/minecraft/world/inventory/CraftingContainer;IIZ)Z
+
+accessible field net/minecraft/server/level/ServerPlayerGameMode isDestroyingBlock Z
+accessible method net/minecraft/server/commands/TeleportCommand performTeleport (Lnet/minecraft/commands/CommandSourceStack;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FFLnet/minecraft/server/commands/TeleportCommand$LookAt;)V
+accessible field net/minecraft/commands/arguments/selector/EntitySelector predicate Ljava/util/function/Predicate;
+accessible field net/minecraft/world/level/storage/loot/LootContext$EntityTarget name Ljava/lang/String;
+accessible field net/minecraft/world/level/storage/loot/LootDataType codec Lcom/mojang/serialization/Codec;
+
+accessible method net/minecraft/world/entity/npc/VillagerType <init> (Ljava/lang/String;)V
+accessible field net/minecraft/world/entity/item/ItemEntity LIFETIME I
+accessible field net/minecraft/world/entity/item/ItemEntity age I
+accessible field net/minecraft/world/level/Explosion radius F
+mutable field net/minecraft/world/level/Explosion radius F
+
+# client stuff
+accessible class net/minecraft/client/gui/components/AbstractSelectionList$Entry
+accessible field net/minecraft/client/gui/components/ImageButton sprites Lnet/minecraft/client/gui/components/WidgetSprites;
+accessible class net/minecraft/client/Minecraft$GameLoadCookie

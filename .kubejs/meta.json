@@ -1,5 +1,5 @@
 {
-	"minecraft": 2001,
+	"minecraft": 2004,
 	"type": "architectury",
 	"version": {
 		"file": "gradle.properties",
@@ -9,12 +9,8 @@
 	},
 	"downloads": [
 		{
-			"name": "Forge",
-			"url": "https://maven.saps.dev/releases/dev/latvian/mods/kubejs-forge/{version}/kubejs-forge-{version}.jar"
-		},
-		{
-			"name": "Fabric",
-			"url": "https://maven.saps.dev/releases/dev/latvian/mods/kubejs-fabric/{version}/kubejs-fabric-{version}.jar"
+			"name": "NeoForge",
+			"url": "https://maven.saps.dev/releases/dev/latvian/mods/kubejs-forge/{version}/kubejs-neoforge-{version}.jar"
 		}
 	],
 	"event_groups": [
