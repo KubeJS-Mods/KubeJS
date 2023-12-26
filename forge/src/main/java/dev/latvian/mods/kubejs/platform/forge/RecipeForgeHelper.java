@@ -5,17 +5,19 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
+import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
 
 public class RecipeForgeHelper implements RecipePlatformHelper {
-	public static final String FORGE_CONDITIONAL = "forge:conditional";
+	public static final String FORGE_CONDITIONAL = "neoforge:conditional";
 
 	@Override
 	@Nullable
@@ -28,20 +30,26 @@ public class RecipeForgeHelper implements RecipePlatformHelper {
 	@Nullable
 	public JsonObject checkConditions(JsonObject json) {
 		var context = KubeJSReloadListener.resources.getConditionContext();
+		var registry = KubeJSReloadListener.resources.getRegistryAccess();
+		var ops = ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, registry), context);
 
 		if (!json.has("type")) {
 			return null;
 		} else if (json.get("type").getAsString().equals(FORGE_CONDITIONAL)) {
+			// TODO: cleanup and remove once conditional recipes are finally removed from NeoForge
 			for (var ele : GsonHelper.getAsJsonArray(json, "recipes")) {
 				if (!ele.isJsonObject()) {
 					return null;
-				} else if (CraftingHelper.processConditions(GsonHelper.getAsJsonArray(ele.getAsJsonObject(), "conditions"), context)) {
-					return GsonHelper.getAsJsonObject(ele.getAsJsonObject(), "recipe");
+				} else {
+					var obj = ele.getAsJsonObject();
+					if (ICondition.conditionsMatched(ops, obj.getAsJsonArray(ConditionalOps.DEFAULT_CONDITIONS_KEY))) {
+						return GsonHelper.getAsJsonObject(ele.getAsJsonObject(), "recipe");
+					}
 				}
 			}
 
 			return null;
-		} else if (json.get("conditions") instanceof JsonArray arr && !CraftingHelper.processConditions(arr, context)) {
+		} else if (json.get(ConditionalOps.DEFAULT_CONDITIONS_KEY) instanceof JsonArray arr && !ICondition.conditionsMatched(ops, arr)) {
 			return null;
 		}
 
@@ -50,11 +58,6 @@ public class RecipeForgeHelper implements RecipePlatformHelper {
 
 	@Override
 	public Ingredient getCustomIngredient(JsonObject object) {
-		return CraftingHelper.getIngredient(object, false);
-	}
-
-	@Override
-	public boolean processConditions(RecipeManager recipeManager, JsonObject json) {
-		return !json.has("conditions") || CraftingHelper.processConditions(json, "conditions", KubeJSReloadListener.resources.getConditionContext());
+		return Ingredient.fromJson(object, false);
 	}
 }

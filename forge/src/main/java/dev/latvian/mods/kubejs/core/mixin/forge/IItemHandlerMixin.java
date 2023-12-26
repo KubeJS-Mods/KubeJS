@@ -9,9 +9,11 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(value = IItemHandler.class, remap = false)
 public interface IItemHandlerMixin extends InventoryKJS {
+	@Unique
 	default IItemHandler kjs$self() {
 		return (IItemHandler) this;
 	}

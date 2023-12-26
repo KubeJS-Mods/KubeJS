@@ -8,7 +8,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.Nullable;
@@ -31,11 +30,6 @@ public class RecipeFabricHelper implements RecipePlatformHelper {
 	@Override
 	public Ingredient getCustomIngredient(JsonObject object) {
 		return IngredientJS.ofJson(object);
-	}
-
-	@Override
-	public boolean processConditions(RecipeManager recipeManager, JsonObject json) {
-		return true;
 	}
 
 	@Override

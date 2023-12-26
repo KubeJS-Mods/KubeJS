@@ -24,7 +24,7 @@ public abstract class MatchToolMixin {
 	@Shadow
 	@Final
 	@Mutable
-	ItemPredicate predicate;
+	private ItemPredicate predicate;
 
 	@Inject(at = @At("RETURN"), method = "<init>")
 	private void kjs$injectCustomShears(CallbackInfo ci) {
