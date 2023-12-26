@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.platform.neoforge.ingredient;
 
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.platform.neoforge.IngredientForgeHelper;
+import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +14,7 @@ public class ModIngredient extends KubeJSIngredient {
 	public final String mod;
 
 	public ModIngredient(String mod) {
-		super(IngredientForgeHelper.MOD);
+		super(IngredientPlatformHelper.MOD);
 		this.mod = mod;
 	}
 

@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallback;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabEvent;
 import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
 import dev.latvian.mods.kubejs.item.neoforge.ItemDestroyedEventJS;
-import dev.latvian.mods.kubejs.platform.neoforge.IngredientForgeHelper;
+import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -59,7 +59,7 @@ public class KubeJSNeoForge {
 
 		if (!CommonProperties.get().serverOnly) {
 			NeoForgeMod.enableMilkFluid();
-			IngredientForgeHelper.register(bus);
+			IngredientPlatformHelper.register(bus);
 			KubeJSCreativeTabs.init();
 		}
 

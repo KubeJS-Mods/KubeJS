@@ -1,32 +1,50 @@
 package dev.latvian.mods.kubejs.platform;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.util.Lazy;
+import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
+public enum RecipePlatformHelper {
+	INSTANCE;
 
-public interface RecipePlatformHelper {
-	Lazy<RecipePlatformHelper> INSTANCE = Lazy.serviceLoader(RecipePlatformHelper.class);
+	public static RecipePlatformHelper get() {
+		return INSTANCE;
+	}
 
-	static RecipePlatformHelper get() {
-		return INSTANCE.get();
+	public static final String FORGE_CONDITIONAL = "neoforge:conditional";
+
+	@Nullable
+	public RecipeHolder<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
+		// TODO: What is this mess, Forge???
+		return RecipeManager.fromJson(id, json, JsonOps.INSTANCE).orElse(null);
 	}
 
 	@Nullable
-	RecipeHolder<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json);
+	public JsonObject checkConditions(JsonObject json) {
+		var context = KubeJSReloadListener.resources.getConditionContext();
+		var registry = KubeJSReloadListener.resources.getRegistryAccess();
+		var ops = ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, registry), context);
 
-	@Nullable
-	JsonObject checkConditions(JsonObject json);
+		if (!json.has("type")) {
+			return null;
+		} else if (json.get(ConditionalOps.DEFAULT_CONDITIONS_KEY) instanceof JsonArray arr && !ICondition.conditionsMatched(ops, arr)) {
+			return null;
+		}
 
-	Ingredient getCustomIngredient(JsonObject object);
+		return json;
+	}
 
-	default void pingNewRecipes(Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> map) {
-		// Fabric only
+	public Ingredient getCustomIngredient(JsonObject object) {
+		return Ingredient.fromJson(object, false);
 	}
 }

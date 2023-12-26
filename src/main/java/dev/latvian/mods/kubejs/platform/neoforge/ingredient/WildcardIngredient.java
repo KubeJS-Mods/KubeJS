@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.platform.neoforge.ingredient;
 
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.platform.neoforge.IngredientForgeHelper;
+import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +12,7 @@ public class WildcardIngredient extends KubeJSIngredient {
 	public static final Codec<WildcardIngredient> CODEC = Codec.unit(INSTANCE);
 
 	private WildcardIngredient() {
-		super(IngredientForgeHelper.WILDCARD);
+		super(IngredientPlatformHelper.WILDCARD);
 	}
 
 	@Override

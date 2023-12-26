@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.platform.neoforge.ingredient;
 
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.platform.neoforge.IngredientForgeHelper;
+import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +18,7 @@ public class RegExIngredient extends KubeJSIngredient {
 	public final Pattern pattern;
 
 	public RegExIngredient(Pattern pattern) {
-		super(IngredientForgeHelper.REGEX);
+		super(IngredientPlatformHelper.REGEX);
 		if (pattern == null) {
 			throw new IllegalArgumentException("Pattern for a RegExIngredient cannot be null! Check your pattern format");
 		}

@@ -1,47 +1,90 @@
 package dev.latvian.mods.kubejs.platform;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.util.Lazy;
+import dev.latvian.mods.kubejs.platform.neoforge.ingredient.CreativeTabIngredient;
+import dev.latvian.mods.kubejs.platform.neoforge.ingredient.ModIngredient;
+import dev.latvian.mods.kubejs.platform.neoforge.ingredient.RegExIngredient;
+import dev.latvian.mods.kubejs.platform.neoforge.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
+import net.neoforged.neoforge.common.crafting.NBTIngredient;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-public interface IngredientPlatformHelper {
-	Lazy<IngredientPlatformHelper> INSTANCE = Lazy.serviceLoader(IngredientPlatformHelper.class);
+public enum IngredientPlatformHelper {
+	INSTANCE;
 
-	static IngredientPlatformHelper get() {
-		return INSTANCE.get();
+	public static IngredientPlatformHelper get() {
+		return INSTANCE;
 	}
 
-	default InputItem stack(Ingredient ingredient, int count) {
+	public static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, KubeJS.MOD_ID);
+	public static final Supplier<IngredientType<WildcardIngredient>> WILDCARD = INGREDIENT_TYPES.register("wildcard", () -> new IngredientType<>(WildcardIngredient.CODEC));
+	public static final Supplier<IngredientType<ModIngredient>> MOD = INGREDIENT_TYPES.register("mod", () -> new IngredientType<>(ModIngredient.CODEC));
+	public static final Supplier<IngredientType<RegExIngredient>> REGEX = INGREDIENT_TYPES.register("regex", () -> new IngredientType<>(RegExIngredient.CODEC));
+	public static final Supplier<IngredientType<CreativeTabIngredient>> CREATIVE_TAB = INGREDIENT_TYPES.register("creative_tab", () -> new IngredientType<>(CreativeTabIngredient.CODEC));
+
+	public InputItem stack(Ingredient ingredient, int count) {
 		return InputItem.of(ingredient, count);
 	}
 
-	Ingredient wildcard();
+	public static void register(IEventBus bus) {
+		INGREDIENT_TYPES.register(bus);
+	}
 
-	default Ingredient tag(String tag) {
+	public Ingredient wildcard() {
+		return WildcardIngredient.INSTANCE;
+	}
+
+	public Ingredient tag(String tag) {
 		return Ingredient.of(Tags.item(UtilsJS.getMCID(null, tag)));
 	}
 
-	Ingredient mod(String mod);
+	public Ingredient mod(String mod) {
+		return new ModIngredient(mod);
+	}
 
-	Ingredient regex(Pattern pattern);
+	public Ingredient regex(Pattern pattern) {
+		return new RegExIngredient(pattern);
+	}
 
-	Ingredient creativeTab(CreativeModeTab tab);
+	public Ingredient creativeTab(CreativeModeTab tab) {
+		return new CreativeTabIngredient(tab);
+	}
 
-	Ingredient subtract(Ingredient base, Ingredient subtracted);
+	public Ingredient subtract(Ingredient base, Ingredient subtracted) {
+		return DifferenceIngredient.of(base, subtracted);
+	}
 
-	Ingredient or(Ingredient[] ingredients);
+	public Ingredient or(Ingredient[] ingredients) {
+		return ingredients.length == 0 ? Ingredient.EMPTY : CompoundIngredient.of(ingredients);
+	}
 
-	Ingredient and(Ingredient[] ingredients);
+	public Ingredient and(Ingredient[] ingredients) {
+		return ingredients.length == 0 ? Ingredient.EMPTY : ingredients.length == 1 ? ingredients[0] : IntersectionIngredient.of(ingredients);
+	}
 
-	Ingredient strongNBT(ItemStack item);
+	public Ingredient strongNBT(ItemStack item) {
+		return NBTIngredient.of(true, item.copy());
+	}
 
-	Ingredient weakNBT(ItemStack item);
+	public Ingredient weakNBT(ItemStack item) {
+		return item.hasTag() ? NBTIngredient.of(false, item.copy()) : item.kjs$asIngredient();
+	}
 
-	boolean isWildcard(Ingredient ingredient);
+	public boolean isWildcard(Ingredient ingredient) {
+		return ingredient == WildcardIngredient.INSTANCE;
+	}
 }

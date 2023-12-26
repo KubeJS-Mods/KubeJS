@@ -403,7 +403,6 @@ public class RecipesEventJS extends EventJS {
 			recipes.put(entry.getKey(), entry.getValue());
 		}
 
-		RecipePlatformHelper.get().pingNewRecipes(newRecipeMap);
 		recipeManager.byName = recipesByName;
 		recipeManager.recipes = newRecipeMap;
 		ConsoleJS.SERVER.info("Added " + addedRecipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, modified " + modifiedCount + " recipes, with " + failedCount.get() + " failed recipes in " + timer.stop());

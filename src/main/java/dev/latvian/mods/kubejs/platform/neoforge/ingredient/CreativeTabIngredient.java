@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.platform.neoforge.ingredient;
 
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.platform.neoforge.IngredientForgeHelper;
+import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +16,7 @@ public class CreativeTabIngredient extends KubeJSIngredient {
 	public final CreativeModeTab tab;
 
 	public CreativeTabIngredient(CreativeModeTab tab) {
-		super(IngredientForgeHelper.CREATIVE_TAB);
+		super(IngredientPlatformHelper.CREATIVE_TAB);
 		this.tab = tab;
 	}
 
