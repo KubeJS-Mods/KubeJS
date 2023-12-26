@@ -50,16 +50,22 @@ public class PlatformWrapper {
 
 	private static Map<String, ModInfo> allMods;
 
+	@Deprecated
 	public static String getName() {
+		KubeJS.LOGGER.warn("Platform.getName() only exists for legacy reasons! If you have scripts that use this, please update them!");
 		return "neoforge";
 	}
 
+	@Deprecated
 	public static boolean isForge() {
-		return Platform.isNeoForge();
+		KubeJS.LOGGER.warn("Platform.isForge() only exists for legacy reasons! If you have scripts that use this, please update them!");
+		return true;
 	}
 
+	@Deprecated
 	public static boolean isFabric() {
-		return Platform.isFabric();
+		KubeJS.LOGGER.warn("Fabric support has been sunset; Platform.isFabric() will always return false!");
+		return false;
 	}
 
 	public static String getMcVersion() {
