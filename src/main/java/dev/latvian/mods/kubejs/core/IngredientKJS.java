@@ -126,7 +126,6 @@ public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
 
 	@Override
 	default JsonElement toJsonJS() {
-		// FIXME: Use the Codec(? idk if that's the right thing to do on Fabric, it definitely is on Forge)
 		return UtilsJS.toJsonOrThrow(kjs$self(), Ingredient.CODEC);
 	}
 }

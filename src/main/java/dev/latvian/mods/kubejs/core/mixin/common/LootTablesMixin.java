@@ -23,7 +23,6 @@ public abstract class LootTablesMixin {
 
 	@Inject(method = "apply*", at = @At("RETURN"))
 	private void kjs$apply(Map<LootDataType<?>, Map<ResourceLocation, ?>> parsedMap, CallbackInfo ci) {
-		// TODO: choose which of these maps we want to use for the data export
 		if (DataExport.export != null) {
 			// part 2: add loot tables to export
 			for (var entry : elements.entrySet()) {

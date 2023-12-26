@@ -6,9 +6,6 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * TODO: make a common JEI plugin if the need arises
- */
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
 	public static final ResourceLocation ID = new ResourceLocation(KubeJS.MOD_ID, "jei");

@@ -62,7 +62,7 @@ public class ScriptManager implements ClassShutter {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clearCaches);
 
 		unload();
-		scriptType.console.writeToFile(LogType.INIT, "KubeJS " + KubeJS.thisMod.getVersion() + "; MC " + KubeJS.MC_VERSION_NUMBER + " " + PlatformWrapper.getName());
+		scriptType.console.writeToFile(LogType.INIT, "KubeJS " + KubeJS.thisMod.getVersion() + "; MC " + KubeJS.MC_VERSION_NUMBER + " NeoForge");
 		scriptType.console.writeToFile(LogType.INIT, "Loaded plugins:");
 
 		for (var plugin : KubeJSPlugins.getAll()) {
