@@ -6,11 +6,13 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.util.List;
+
 @Mixin(targets = "net/fabricmc/fabric/impl/recipe/ingredient/builtin/CombinedIngredient")
 public abstract class CombinedIngredientMixin implements CustomIngredientKJS {
 	@Shadow(remap = false)
 	@Final
-	protected Ingredient[] ingredients;
+	protected List<Ingredient> ingredients;
 
 	@Override
 	public boolean kjs$canBeUsedForMatching() {

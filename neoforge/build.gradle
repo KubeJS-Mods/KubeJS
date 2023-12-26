@@ -1,0 +1,166 @@
+plugins {
+	id 'me.shedaniel.unified-publishing'
+}
+
+architectury {
+	platformSetupLoomIde()
+	neoForge()
+}
+
+configurations {
+	developmentNeoForge.extendsFrom common
+}
+
+loom {
+	accessWidenerPath = project(":common").file("src/main/resources/kubejs.accesswidener")
+
+	interfaceInjection {
+		interfaceInjectionSourceSets.add project(':common').sourceSets.main
+	}
+}
+
+repositories {
+	maven {
+		name "ModMaven (JEI)"
+		url "https://modmaven.dev/"
+		content {
+			includeGroup "net.darkhax.bookshelf"
+			includeGroup "net.darkhax.gamestages"
+		}
+	}
+	maven {
+		url "https://maven.blamejared.com"
+		content {
+			includeGroup "mezz.jei"
+		}
+	}
+	maven {
+		url "https://maven.neoforged.net/releases"
+	}
+}
+
+dependencies {
+	neoForge("net.neoforged:neoforge:${rootProject.neoforge_version}")
+
+	modApi("dev.architectury:architectury-neoforge:${rootProject.architectury_version}")
+
+	modApi("dev.latvian.mods:rhino-neoforge:${rootProject.rhino_version}") { transitive false }
+
+	//modLocalRuntime modCompileOnly("net.darkhax.bookshelf:Bookshelf-Forge-1.20.1:20.0.2") { transitive false }
+	//modLocalRuntime modCompileOnly("net.darkhax.gamestages:GameStages-Forge-1.20.1:15.0.1") { transitive false }
+
+	modCompileOnly("mezz.jei:jei-1.20.2-forge:${rootProject.jei_version}") {
+		transitive(false)
+	}
+
+	modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:${rootProject.rei_version}")
+	// modLocalRuntime modCompileOnly("me.shedaniel:RoughlyEnoughItems-plugin-compatibilities-forge:${rootProject.rei_comp_version}")
+
+	common(project(path: ":common", configuration: "namedElements")) { transitive false }
+	bundle(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive false }
+}
+
+processResources {
+	def toReplace = [
+			"version"             : project.version,
+			"min_rhino_version"   : rootProject.min_rhino_version,
+			"architectury_version": rootProject.architectury_version
+	]
+
+	inputs.properties toReplace
+	filesMatching("META-INF/mods.toml") {
+		expand toReplace
+	}
+}
+
+jar {
+	manifest {
+		attributes([
+				"Specification-Title"     : project.mod_id,
+				"Specification-Vendor"    : project.mod_author,
+				"Specification-Version"   : "1",
+				"Implementation-Title"    : project.name,
+				"Implementation-Version"  : version,
+				"Implementation-Vendor"   : project.mod_author,
+				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+		])
+	}
+}
+
+remapJar {
+	atAccessWideners.add "kubejs.accesswidener"
+}
+
+components.java {
+	withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+		skip()
+	}
+}
+
+unifiedPublishing {
+	project {
+		releaseType = "${ENV.RELEASE_TYPE ?: 'release'}"
+		gameVersions = [
+				rootProject.minecraft_version
+		]
+		gameLoaders = ["neoforge"]
+		displayName = "$mod_name NeoForge $project.version"
+		changelog = getGitChangelog()
+		mainPublication remapJar
+
+		relations {
+			depends {
+				curseforge = modrinth = "architectury-api"
+			}
+			depends {
+				curseforge = modrinth = "rhino"
+			}
+		}
+
+		if (ENV.CURSEFORGE_KEY) {
+			curseforge {
+				token = ENV.CURSEFORGE_KEY
+				id = project.curseforge_id
+			}
+		}
+
+		if (ENV.MODRINTH_TOKEN) {
+			modrinth {
+				token = ENV.MODRINTH_TOKEN
+				id = project.modrinth_id
+				version = "$project.version+$project.name"
+			}
+		}
+	}
+}
+
+publishing {
+	publications {
+		mavenForge(MavenPublication) {
+			artifactId = "${rootProject.archives_base_name}-neoforge"
+			from components.java
+		}
+	}
+
+	repositories {
+		if (ENV.MAVEN_TOKEN) {
+			maven {
+				url "https://maven.latvian.dev/releases"
+				credentials {
+					username = "lat"
+					password = "${ENV.MAVEN_TOKEN}"
+				}
+			}
+		}
+
+		if (ENV.SAPS_TOKEN) {
+			maven {
+				url "https://maven.saps.dev/releases"
+				credentials {
+					username = "latvian"
+					password = "${ENV.SAPS_TOKEN}"
+				}
+			}
+		}
+	}
+}

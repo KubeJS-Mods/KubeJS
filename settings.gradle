@@ -6,6 +6,6 @@ pluginManagement {
 	}
 }
 
-include "common", "fabric", "forge"
+include "common", "fabric", "neoforge"
 
 rootProject.name = 'KubeJS-1.20.4'

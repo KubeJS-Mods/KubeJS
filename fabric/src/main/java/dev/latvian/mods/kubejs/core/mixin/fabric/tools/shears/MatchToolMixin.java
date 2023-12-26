@@ -18,18 +18,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.Optional;
 
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @Mixin(MatchTool.class)
 public abstract class MatchToolMixin {
 
 	@Shadow
 	@Final
 	@Mutable
-	private ItemPredicate predicate;
+	private Optional<ItemPredicate> predicate;
 
 	@Inject(at = @At("RETURN"), method = "<init>")
 	private void kjs$injectCustomShears(CallbackInfo ci) {
+		if (predicate.isEmpty()) {
+			return;
+		}
+		var original = this.predicate.get();
 		// TODO: I hope this can just be removed at some point
-		var items = predicate.items();
+		var items = original.items();
 		if (items.isPresent()) {
 			var set = new ArrayList<Holder<Item>>();
 			for (var e : RegistryInfo.ITEM.objects.entrySet()) {
@@ -38,8 +43,8 @@ public abstract class MatchToolMixin {
 				}
 			}
 			items.get().forEach(set::add);
-			predicate = new ItemPredicate(predicate.tag(), Optional.of(HolderSet.direct(set)), predicate.count(), predicate.durability(),
-				predicate.enchantments(), predicate.storedEnchantments(), predicate.potion(), predicate.nbt());
+			this.predicate = Optional.of(new ItemPredicate(original.tag(), Optional.of(HolderSet.direct(set)), original.count(), original.durability(),
+				original.enchantments(), original.storedEnchantments(), original.potion(), original.nbt()));
 		}
 	}
 }
