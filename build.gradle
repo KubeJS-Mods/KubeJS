@@ -141,12 +141,6 @@ remapJar {
 	atAccessWideners.add "kubejs.accesswidener"
 }
 
-sourcesJar {
-	from(sourceSets.main.allSource) {
-		exclude("kubejs.accesswidener") // not needed in sources
-	}
-}
-
 unifiedPublishing {
 	project {
 		releaseType = "${ENV.RELEASE_TYPE ?: 'release'}"
