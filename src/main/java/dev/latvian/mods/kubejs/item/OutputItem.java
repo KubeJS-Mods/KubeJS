@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
+import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
@@ -123,10 +123,10 @@ public class OutputItem implements OutputReplacement {
 	}
 
 	public InputItem weakNBT() {
-		return InputItem.of(IngredientPlatformHelper.get().weakNBT(item), item.getCount());
+		return InputItem.of(IngredientHelper.get().weakNBT(item), item.getCount());
 	}
 
 	public InputItem strongNBT() {
-		return InputItem.of(IngredientPlatformHelper.get().strongNBT(item), item.getCount());
+		return InputItem.of(IngredientHelper.get().strongNBT(item), item.getCount());
 	}
 }

@@ -11,9 +11,9 @@ import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.helpers.RecipeHelper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
-import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.IDFilter;
 import dev.latvian.mods.kubejs.recipe.filter.OrFilter;
@@ -282,7 +282,7 @@ public class RecipesEventJS extends EventJS {
 					continue; //Forge: filter anything beginning with "_" as it's used for metadata.
 				}
 
-				json = RecipePlatformHelper.get().checkConditions(GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
+				json = RecipeHelper.get().checkConditions(GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
 
 				if (json == null) {
 					if (DevProperties.get().logSkippedRecipes) {

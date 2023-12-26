@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.core;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.entity.EntityPotionEffectsJS;
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
+import dev.latvian.mods.kubejs.helpers.LevelHelper;
 import dev.latvian.mods.kubejs.item.FoodEatenEventJS;
-import dev.latvian.mods.kubejs.platform.LevelPlatformHelper;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -214,7 +214,7 @@ public interface LivingEntityKJS extends EntityKJS {
 	}
 
 	default double kjs$getReachDistance() {
-		return LevelPlatformHelper.get().getReachDistance(kjs$self());
+		return LevelHelper.get().getReachDistance(kjs$self());
 	}
 
 	default RayTraceResultJS kjs$rayTrace() {

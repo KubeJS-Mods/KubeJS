@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.core.CraftingContainerKJS;
-import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
+import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -40,7 +40,7 @@ public class ModifyRecipeCraftingGrid {
 	}
 
 	public List<ItemStack> findAll() {
-		return findAll(IngredientPlatformHelper.get().wildcard());
+		return findAll(IngredientHelper.get().wildcard());
 	}
 
 	public ItemStack find(Ingredient ingredient, int skip) {

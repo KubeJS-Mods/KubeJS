@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.neoforge;
 
 import dev.latvian.mods.kubejs.BuiltinKubeJSPlugin;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
-import dev.latvian.mods.kubejs.integration.neoforge.jei.JEIEvents;
+import dev.latvian.mods.kubejs.integration.jei.JEIEvents;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;

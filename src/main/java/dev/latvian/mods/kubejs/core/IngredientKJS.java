@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.google.gson.JsonElement;
+import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
-import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.JsonSerializable;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -88,15 +88,15 @@ public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
 	}
 
 	default Ingredient kjs$and(Ingredient ingredient) {
-		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : IngredientPlatformHelper.get().and(new Ingredient[]{kjs$self(), ingredient});
+		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : IngredientHelper.get().and(new Ingredient[]{kjs$self(), ingredient});
 	}
 
 	default Ingredient kjs$or(Ingredient ingredient) {
-		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : IngredientPlatformHelper.get().or(new Ingredient[]{kjs$self(), ingredient});
+		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : IngredientHelper.get().or(new Ingredient[]{kjs$self(), ingredient});
 	}
 
 	default Ingredient kjs$subtract(Ingredient subtracted) {
-		return IngredientPlatformHelper.get().subtract(kjs$self(), subtracted);
+		return IngredientHelper.get().subtract(kjs$self(), subtracted);
 	}
 
 	default InputItem kjs$asStack() {
@@ -108,7 +108,7 @@ public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
 	}
 
 	default boolean kjs$isWildcard() {
-		return IngredientPlatformHelper.get().isWildcard(kjs$self());
+		return IngredientHelper.get().isWildcard(kjs$self());
 	}
 
 	/**

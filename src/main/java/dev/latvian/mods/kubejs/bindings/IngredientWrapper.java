@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.bindings;
 
+import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientActionCallback;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -13,7 +13,7 @@ public interface IngredientWrapper {
 	@Info("A completely empty ingredient that will only match air")
 	Ingredient none = Ingredient.EMPTY;
 	@Info("An ingredient that matches everything")
-	Ingredient all = IngredientPlatformHelper.get().wildcard();
+	Ingredient all = IngredientHelper.get().wildcard();
 
 	@Info("Returns an ingredient of the input")
 	static Ingredient of(Ingredient ingredient) {

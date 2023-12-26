@@ -16,12 +16,12 @@ import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.WithPersistentData;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventResult;
+import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.net.DisplayClientErrorsMessage;
 import dev.latvian.mods.kubejs.net.DisplayServerErrorsMessage;
 import dev.latvian.mods.kubejs.net.PaintMessage;
 import dev.latvian.mods.kubejs.net.ReloadStartupScriptsMessage;
-import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
@@ -523,10 +523,10 @@ public class KubeJSCommands {
 		tags.sort(null);
 
 		for (var id : tags) {
-			player.sendSystemMessage(copy("'#" + id + "'", ChatFormatting.YELLOW, "Item Tag [" + IngredientPlatformHelper.get().tag(id.toString()).kjs$getStacks().size() + " items]"));
+			player.sendSystemMessage(copy("'#" + id + "'", ChatFormatting.YELLOW, "Item Tag [" + IngredientHelper.get().tag(id.toString()).kjs$getStacks().size() + " items]"));
 		}
 
-		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + IngredientPlatformHelper.get().mod(stack.kjs$getMod()).kjs$getStacks().size() + " items]"));
+		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + IngredientHelper.get().mod(stack.kjs$getMod()).kjs$getStacks().size() + " items]"));
 
 		/*var cat = stack.getItem().getItemCategory();
 

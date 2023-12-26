@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.util;
 
 import dev.latvian.mods.kubejs.DevProperties;
-import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
+import dev.latvian.mods.kubejs.helpers.MiscHelper;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -231,7 +231,7 @@ public class ConsoleJS {
 	}
 
 	public synchronized void writeToFile(LogType type, long timestamp, String line) {
-		if (!writeToFile || MiscPlatformHelper.get().isDataGen()) {
+		if (!writeToFile || MiscHelper.get().isDataGen()) {
 			return;
 		}
 

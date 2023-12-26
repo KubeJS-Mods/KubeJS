@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.script;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
+import dev.latvian.mods.kubejs.helpers.MiscHelper;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -36,7 +36,7 @@ public class PlatformWrapper {
 		public void setName(String n) {
 			name = n;
 			customName = n;
-			MiscPlatformHelper.get().setModName(this, name);
+			MiscHelper.get().setModName(this, name);
 		}
 
 		public String getVersion() {
@@ -118,7 +118,7 @@ public class PlatformWrapper {
 	}
 
 	public static boolean isGeneratingData() {
-		return MiscPlatformHelper.get().isDataGen();
+		return MiscHelper.get().isDataGen();
 	}
 
 	public static void breakpoint(Object... args) {

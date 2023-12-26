@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.item.creativetab;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.helpers.MiscHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -16,7 +16,7 @@ public class KubeJSCreativeTabs {
 
 	public static void init() {
 		if (!CommonProperties.get().serverOnly) {
-			REGISTER.register("tab", () -> MiscPlatformHelper.get().creativeModeTab(
+			REGISTER.register("tab", () -> MiscHelper.get().creativeModeTab(
 				Component.literal("KubeJS"),
 				() -> {
 					var is = ItemStackJS.of(CommonProperties.get().creativeModeTabIcon);

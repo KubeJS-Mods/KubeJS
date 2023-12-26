@@ -4,9 +4,9 @@ import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
+import dev.latvian.mods.kubejs.helpers.IngredientHelper;
+import dev.latvian.mods.kubejs.helpers.RecipeHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
-import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -45,7 +45,7 @@ public interface IngredientJS {
 			var reg = UtilsJS.parseRegex(o);
 
 			if (reg != null) {
-				return IngredientPlatformHelper.get().regex(reg);
+				return IngredientHelper.get().regex(reg);
 			}
 
 			return Ingredient.EMPTY;
@@ -73,7 +73,7 @@ public interface IngredientJS {
 			} else if (inList.size() == 1) {
 				return inList.get(0);
 			} else {
-				return IngredientPlatformHelper.get().or(inList.toArray(new Ingredient[0]));
+				return IngredientHelper.get().or(inList.toArray(new Ingredient[0]));
 			}
 		}
 
@@ -94,7 +94,7 @@ public interface IngredientJS {
 					}
 
 					try {
-						in = RecipePlatformHelper.get().getCustomIngredient(json);
+						in = RecipeHelper.get().getCustomIngredient(json);
 					} catch (Exception ex) {
 						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + json.get("type") + ") from " + json + ": " + ex);
 					}
@@ -102,7 +102,7 @@ public interface IngredientJS {
 			} else if (val || map.containsKey("ingredient")) {
 				in = of(val ? map.get("value") : map.get("ingredient"));
 			} else if (map.containsKey("tag")) {
-				in = IngredientPlatformHelper.get().tag(map.get("tag").toString());
+				in = IngredientHelper.get().tag(map.get("tag").toString());
 			} else if (map.containsKey("item")) {
 				in = ItemStackJS.of(map).getItem().kjs$asIngredient();
 			}
@@ -117,11 +117,11 @@ public interface IngredientJS {
 		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
 			return Ingredient.EMPTY;
 		} else if (s.equals("*")) {
-			return IngredientPlatformHelper.get().wildcard();
+			return IngredientHelper.get().wildcard();
 		} else if (s.startsWith("#")) {
-			return IngredientPlatformHelper.get().tag(s.substring(1));
+			return IngredientHelper.get().tag(s.substring(1));
 		} else if (s.startsWith("@")) {
-			return IngredientPlatformHelper.get().mod(s.substring(1));
+			return IngredientHelper.get().mod(s.substring(1));
 		} else if (s.startsWith("%")) {
 			var group = UtilsJS.findCreativeTab(new ResourceLocation(s.substring(1)));
 
@@ -133,13 +133,13 @@ public interface IngredientJS {
 				return Ingredient.EMPTY;
 			}
 
-			return IngredientPlatformHelper.get().creativeTab(group);
+			return IngredientHelper.get().creativeTab(group);
 		}
 
 		var reg = UtilsJS.parseRegex(s);
 
 		if (reg != null) {
-			return IngredientPlatformHelper.get().regex(reg);
+			return IngredientHelper.get().regex(reg);
 		}
 
 		var item = RegistryInfo.ITEM.getValue(new ResourceLocation(s));

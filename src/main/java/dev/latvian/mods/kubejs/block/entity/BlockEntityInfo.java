@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.block.entity;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.core.ServerPlayerKJS;
-import dev.latvian.mods.kubejs.platform.LevelPlatformHelper;
+import dev.latvian.mods.kubejs.helpers.LevelHelper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -108,7 +108,7 @@ public class BlockEntityInfo {
 
 	@HideFromJS
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return LevelPlatformHelper.get().createBlockEntity(pos, state, this);
+		return LevelHelper.get().createBlockEntity(pos, state, this);
 	}
 
 	@HideFromJS

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.util;
 
 import dev.architectury.hooks.fluid.FluidStackHooks;
-import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
+import dev.latvian.mods.kubejs.helpers.MiscHelper;
 
 public interface FluidAmounts {
 	long BUCKET = FluidStackHooks.bucketAmount();
@@ -10,11 +10,11 @@ public interface FluidAmounts {
 
 	long B = BUCKET, MB = MILLIBUCKET;
 
-	long INGOT = MiscPlatformHelper.get().ingotFluidAmount();
+	long INGOT = MiscHelper.get().ingotFluidAmount();
 
 	long NUGGET = INGOT / 9;
 
 	long METAL_BLOCK = INGOT * 9;
 
-	long BOTTLE = MiscPlatformHelper.get().bottleFluidAmount();
+	long BOTTLE = MiscHelper.get().bottleFluidAmount();
 }

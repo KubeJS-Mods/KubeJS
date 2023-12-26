@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.script;
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
+import dev.latvian.mods.kubejs.helpers.MiscHelper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
@@ -168,7 +168,7 @@ public class ScriptManager implements ClassShutter {
 		context.setRemapper(remapper);
 		context.setApplicationClassLoader(KubeJS.class.getClassLoader());
 
-		if (MiscPlatformHelper.get().isDataGen()) {
+		if (MiscHelper.get().isDataGen()) {
 			firstLoad = false;
 			scriptType.console.info("Skipping KubeJS script loading (DataGen)");
 			return;

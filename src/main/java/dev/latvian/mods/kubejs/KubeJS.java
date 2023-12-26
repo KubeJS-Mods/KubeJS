@@ -11,10 +11,10 @@ import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.entity.KubeJSEntityEventHandler;
 import dev.latvian.mods.kubejs.event.StartupEventJS;
 import dev.latvian.mods.kubejs.gui.KubeJSMenu;
+import dev.latvian.mods.kubejs.helpers.MiscHelper;
 import dev.latvian.mods.kubejs.item.KubeJSItemEventHandler;
 import dev.latvian.mods.kubejs.level.KubeJSWorldEventHandler;
 import dev.latvian.mods.kubejs.net.KubeJSNet;
-import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
 import dev.latvian.mods.kubejs.player.KubeJSPlayerEventHandler;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
@@ -115,7 +115,7 @@ public class KubeJS {
 
 		PROXY = EnvExecutor.getEnvSpecific(() -> KubeJSClient::new, () -> KubeJSCommon::new);
 
-		if (!MiscPlatformHelper.get().isDataGen()) {
+		if (!MiscHelper.get().isDataGen()) {
 			new KubeJSBackgroundThread().start();
 			// Required to be called this way because ConsoleJS class hasn't been initialized yet
 			ScriptType.STARTUP.console.setCapturingErrors(true);

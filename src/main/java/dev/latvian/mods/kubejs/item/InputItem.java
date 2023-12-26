@@ -3,9 +3,9 @@ package dev.latvian.mods.kubejs.item;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
+import dev.latvian.mods.kubejs.helpers.IngredientHelper;
+import dev.latvian.mods.kubejs.helpers.RecipeHelper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
-import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
@@ -92,14 +92,14 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonS
 
 			if (o.has("type")) {
 				try {
-					return of(RecipePlatformHelper.get().getCustomIngredient(o), count);
+					return of(RecipeHelper.get().getCustomIngredient(o), count);
 				} catch (Exception ex) {
 					throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o.get("type") + ") from " + o + ": " + ex);
 				}
 			} else if (val || o.has("ingredient")) {
 				return of(IngredientJS.ofJson(val ? o.get("value") : o.get("ingredient")), count);
 			} else if (o.has("tag")) {
-				return IngredientPlatformHelper.get().tag(o.get("tag").getAsString()).kjs$withCount(count);
+				return IngredientHelper.get().tag(o.get("tag").getAsString()).kjs$withCount(count);
 			} else if (o.has("item")) {
 				return ItemStackJS.of(o.get("item").getAsString()).getItem().kjs$asIngredient().kjs$withCount(count);
 			}

@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.gui;
 
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.platform.MiscPlatformHelper;
+import dev.latvian.mods.kubejs.helpers.MiscHelper;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 
 public class KubeJSMenu extends AbstractContainerMenu {
 	public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create("kubejs", Registries.MENU);
-	public static final Supplier<MenuType<KubeJSMenu>> KUBEJS_MENU = MENU_TYPES.register("menu", () -> MiscPlatformHelper.get().createMenuType());
+	public static final Supplier<MenuType<KubeJSMenu>> KUBEJS_MENU = MENU_TYPES.register("menu", () -> MiscHelper.get().createMenuType());
 
 	public static void init() {
 		if (!CommonProperties.get().serverOnly) {

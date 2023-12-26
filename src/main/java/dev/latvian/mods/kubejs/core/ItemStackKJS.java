@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Tags;
@@ -192,11 +192,11 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 	}
 
 	default Ingredient kjs$weakNBT() {
-		return IngredientPlatformHelper.get().weakNBT(kjs$self());
+		return IngredientHelper.get().weakNBT(kjs$self());
 	}
 
 	default Ingredient kjs$strongNBT() {
-		return IngredientPlatformHelper.get().strongNBT(kjs$self());
+		return IngredientHelper.get().strongNBT(kjs$self());
 	}
 
 	default boolean kjs$areItemsEqual(ItemStack other) {

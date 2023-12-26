@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.event.EventResult;
-import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
+import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import me.shedaniel.rei.api.client.entry.filtering.base.BasicFilteringRule;
 import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
@@ -70,7 +70,7 @@ public class HideREIEventJS<T, C> extends EventJS {
 	}
 
 	public void hideAll(@Nullable Object except) {
-		hide(IngredientPlatformHelper.get().wildcard(), except);
+		hide(IngredientHelper.get().wildcard(), except);
 	}
 
 	public void hideAll() {

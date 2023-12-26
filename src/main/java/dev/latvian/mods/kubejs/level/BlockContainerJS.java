@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.level;
 
 import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
-import dev.latvian.mods.kubejs.platform.LevelPlatformHelper;
+import dev.latvian.mods.kubejs.helpers.LevelHelper;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.Tags;
@@ -336,7 +336,7 @@ public class BlockContainerJS implements SpecialEquality {
 		var entity = getEntity();
 
 		if (entity != null) {
-			var c = LevelPlatformHelper.get().getInventoryFromBlockEntity(this, facing);
+			var c = LevelHelper.get().getInventoryFromBlockEntity(this, facing);
 
 			if (c != null) {
 				return c;

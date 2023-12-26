@@ -10,9 +10,9 @@ import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.InputFluid;
 import dev.latvian.mods.kubejs.fluid.OutputFluid;
+import dev.latvian.mods.kubejs.helpers.RecipeHelper;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
-import dev.latvian.mods.kubejs.platform.RecipePlatformHelper;
 import dev.latvian.mods.kubejs.recipe.component.MissingComponentException;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentBuilderMap;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
@@ -519,7 +519,7 @@ public class RecipeJS implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			return new RecipeHolder<>(getOrCreateId(), originalRecipe.getValue());
 		}
 
-		return RecipePlatformHelper.get().fromJson(getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json);
+		return RecipeHelper.get().fromJson(getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json);
 	}
 
 	@Nullable
@@ -530,7 +530,7 @@ public class RecipeJS implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			originalRecipe = new MutableObject<>();
 			try {
 				// todo: this sucks
-				originalRecipe.setValue(RecipePlatformHelper.get().fromJson(type.schemaType.getSerializer(), getOrCreateId(), json).value());
+				originalRecipe.setValue(RecipeHelper.get().fromJson(type.schemaType.getSerializer(), getOrCreateId(), json).value());
 			} catch (Throwable e) {
 				error = e;
 			}

@@ -5,12 +5,12 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.EntityEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
-import dev.latvian.mods.kubejs.entity.neoforge.LivingEntityDropsEventJS;
+import dev.latvian.mods.kubejs.entity.LivingEntityDropsEventJS;
+import dev.latvian.mods.kubejs.helpers.IngredientHelper;
+import dev.latvian.mods.kubejs.item.ItemDestroyedEventJS;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallback;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabEvent;
 import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
-import dev.latvian.mods.kubejs.item.neoforge.ItemDestroyedEventJS;
-import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -64,7 +64,7 @@ public class KubeJSEntryPoint {
 
 		if (!CommonProperties.get().serverOnly) {
 			NeoForgeMod.enableMilkFluid();
-			IngredientPlatformHelper.register(bus);
+			IngredientHelper.register(bus);
 			KubeJSCreativeTabs.init();
 		}
 

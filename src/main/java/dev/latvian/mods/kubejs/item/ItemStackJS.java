@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.platform.IngredientPlatformHelper;
+import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -106,7 +106,7 @@ public interface ItemStackJS {
 			var reg = UtilsJS.parseRegex(o);
 
 			if (reg != null) {
-				return IngredientPlatformHelper.get().regex(reg).kjs$getFirst();
+				return IngredientHelper.get().regex(reg).kjs$getFirst();
 			}
 
 			return ItemStack.EMPTY;
@@ -161,7 +161,7 @@ public interface ItemStackJS {
 
 				return stack;
 			} else if (map.get("tag") instanceof CharSequence s) {
-				var stack = IngredientPlatformHelper.get().tag(s.toString()).kjs$getFirst();
+				var stack = IngredientHelper.get().tag(s.toString()).kjs$getFirst();
 
 				if (map.containsKey("count")) {
 					stack.setCount(UtilsJS.parseInt(map.get("count"), 1));
@@ -178,9 +178,9 @@ public interface ItemStackJS {
 		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
 			return ItemStack.EMPTY;
 		} else if (s.startsWith("#")) {
-			return IngredientPlatformHelper.get().tag(s.substring(1)).kjs$getFirst();
+			return IngredientHelper.get().tag(s.substring(1)).kjs$getFirst();
 		} else if (s.startsWith("@")) {
-			return IngredientPlatformHelper.get().mod(s.substring(1)).kjs$getFirst();
+			return IngredientHelper.get().mod(s.substring(1)).kjs$getFirst();
 		} else if (s.startsWith("%")) {
 			var group = UtilsJS.findCreativeTab(new ResourceLocation(s.substring(1)));
 
@@ -192,13 +192,13 @@ public interface ItemStackJS {
 				return ItemStack.EMPTY;
 			}
 
-			return IngredientPlatformHelper.get().creativeTab(group).kjs$getFirst();
+			return IngredientHelper.get().creativeTab(group).kjs$getFirst();
 		}
 
 		var reg = UtilsJS.parseRegex(s);
 
 		if (reg != null) {
-			return IngredientPlatformHelper.get().regex(reg).kjs$getFirst();
+			return IngredientHelper.get().regex(reg).kjs$getFirst();
 		}
 
 		var spaceIndex = s.indexOf(' ');
@@ -255,7 +255,7 @@ public interface ItemStackJS {
 			if (jsonObj.has("item")) {
 				stack = of(jsonObj.get("item").getAsString());
 			} else if (jsonObj.has("tag")) {
-				stack = IngredientPlatformHelper.get().tag(jsonObj.get("tag").getAsString()).kjs$getFirst();
+				stack = IngredientHelper.get().tag(jsonObj.get("tag").getAsString()).kjs$getFirst();
 			}
 
 			if (stack != null) {
