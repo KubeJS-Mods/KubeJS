@@ -6,17 +6,15 @@ import dev.latvian.mods.kubejs.integration.neoforge.jei.JEIEvents;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
-import dev.latvian.mods.kubejs.util.LegacyCodeHandler;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
+public class NeoForgeKubeJSPlugin extends BuiltinKubeJSPlugin {
 	@Override
 	public void registerEvents() {
 		super.registerEvents();
-		ForgeKubeJSEvents.register();
 
 		if (ModList.get().isLoaded("jei")) {
 			JEIEvents.register();
@@ -27,10 +25,10 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	public void registerClasses(ScriptType type, ClassFilter filter) {
 		super.registerClasses(type, filter);
 
-		filter.allow("net.minecraftforge"); // Forge
-		filter.deny("net.minecraftforge.fml");
-		filter.deny("net.minecraftforge.accesstransformer");
-		filter.deny("net.minecraftforge.coremod");
+		filter.allow("net.neoforged"); // Forge
+		filter.deny("net.neoforged.fml");
+		filter.deny("net.neoforged.accesstransformer");
+		filter.deny("net.neoforged.coremod");
 
 		filter.deny("cpw.mods.modlauncher"); // FML
 		filter.deny("cpw.mods.gross");
@@ -41,10 +39,9 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 		super.registerBindings(event);
 
 		if (event.getType().isStartup()) {
-			event.add("ForgeEvents", new ForgeEventWrapper("ForgeEvents", NeoForge.EVENT_BUS));
-			KubeJSNeoForge.eventBus().ifPresent(bus -> event.add("ForgeModEvents",
-				new ForgeEventWrapper("ForgeModEvents", bus)));
-			event.add("onForgeEvent", new LegacyCodeHandler("onForgeEvent()"));
+			event.add("NativeEvents", new NativeEventWrapper("NativeEvents", NeoForge.EVENT_BUS));
+			KubeJSEntryPoint.eventBus().ifPresent(bus -> event.add("NativeModEvents",
+				new NativeEventWrapper("NativeModEvents", bus)));
 		}
 	}
 

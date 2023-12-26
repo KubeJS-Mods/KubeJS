@@ -6,7 +6,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
-public class BuiltinKubeJSForgeClientPlugin extends BuiltinKubeJSClientPlugin {
+public class NeoForgeKubeJSClientPlugin extends BuiltinKubeJSClientPlugin {
 	@Override
 	public void clientInit() {
 		super.clientInit();

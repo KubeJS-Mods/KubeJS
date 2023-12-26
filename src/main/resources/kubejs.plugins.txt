@@ -1,3 +1,3 @@
-dev.latvian.mods.kubejs.neoforge.BuiltinKubeJSForgePlugin
-dev.latvian.mods.kubejs.neoforge.BuiltinKubeJSForgeClientPlugin client
+dev.latvian.mods.kubejs.neoforge.NeoForgeKubeJSPlugin
+dev.latvian.mods.kubejs.neoforge.NeoForgeKubeJSClientPlugin client
 dev.latvian.mods.kubejs.integration.neoforge.gamestages.GameStagesIntegration gamestages

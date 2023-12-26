@@ -5,8 +5,8 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 
-public record ForgeEventWrapper(String name, IEventBus eventBus) {
-	public Object onEvent(Object eventClass, ForgeEventConsumer consumer) {
+public record NativeEventWrapper(String name, IEventBus eventBus) {
+	public Object onEvent(Object eventClass, NativeEventConsumer consumer) {
 		if (!(eventClass instanceof CharSequence || eventClass instanceof Class)) {
 			throw new RuntimeException("Invalid syntax! " + name + ".onEvent(eventType, function) requires event class and handler");
 		} else if (!KubeJS.getStartupScriptManager().firstLoad) {

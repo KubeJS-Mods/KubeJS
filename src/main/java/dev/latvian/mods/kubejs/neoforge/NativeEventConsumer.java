@@ -5,5 +5,5 @@ import net.neoforged.bus.api.Event;
 import java.util.function.Consumer;
 
 @FunctionalInterface
-public interface ForgeEventConsumer extends Consumer<Event> {
+public interface NativeEventConsumer extends Consumer<Event> {
 }

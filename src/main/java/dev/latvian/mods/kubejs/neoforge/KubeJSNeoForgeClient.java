@@ -16,7 +16,7 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 
 public class KubeJSNeoForgeClient {
 	public KubeJSNeoForgeClient() {
-		var bus = KubeJSNeoForge.eventBus().orElseThrow();
+		var bus = KubeJSEntryPoint.eventBus().orElseThrow();
 		bus.addListener(EventPriority.LOW, this::setupClient);
 		bus.addListener(this::blockColors);
 		bus.addListener(this::itemColors);

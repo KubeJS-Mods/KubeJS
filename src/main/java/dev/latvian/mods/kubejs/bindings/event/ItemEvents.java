@@ -16,6 +16,7 @@ import dev.latvian.mods.kubejs.item.ItemSmeltedEventJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.mods.kubejs.item.custom.ItemArmorTierRegistryEventJS;
 import dev.latvian.mods.kubejs.item.custom.ItemToolTierRegistryEventJS;
+import dev.latvian.mods.kubejs.item.neoforge.ItemDestroyedEventJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -53,4 +54,5 @@ public interface ItemEvents {
 	EventHandler MODEL_PROPERTIES = GROUP.startup("modelProperties", () -> ItemModelPropertiesEventJS.class);
 	EventHandler FIRST_RIGHT_CLICKED = GROUP.common("firstRightClicked", () -> ItemClickedEventJS.class).extra(ItemEvents.SUPPORTS_ITEM);
 	EventHandler FIRST_LEFT_CLICKED = GROUP.common("firstLeftClicked", () -> ItemClickedEventJS.class).extra(ItemEvents.SUPPORTS_ITEM);
+	EventHandler ITEM_DESTROYED = GROUP.common("destroyed", () -> ItemDestroyedEventJS.class).extra(SUPPORTS_ITEM);
 }
