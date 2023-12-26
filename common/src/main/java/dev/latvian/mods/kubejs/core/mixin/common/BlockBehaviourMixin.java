@@ -80,6 +80,7 @@ public abstract class BlockBehaviourMixin implements BlockKJS {
 
 	@Override
 	public void kjs$setRandomTickCallback(Consumer<RandomTickCallbackJS> callback) {
+		kjs$setIsRandomlyTicking(true);
 		this.kjs$randomTickCallback = callback;
 	}
 
