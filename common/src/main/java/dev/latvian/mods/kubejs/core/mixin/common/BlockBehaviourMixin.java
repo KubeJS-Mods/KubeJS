@@ -1,19 +1,30 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.core.BlockKJS;
+import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.function.Consumer;
 
 @Mixin(BlockBehaviour.class)
 @RemapPrefixForJS("kjs$")
@@ -22,6 +33,7 @@ public abstract class BlockBehaviourMixin implements BlockKJS {
 	private CompoundTag kjs$typeData;
 	private ResourceLocation kjs$id;
 	private String kjs$idString;
+	private Consumer<RandomTickCallbackJS> kjs$randomTickCallback;
 
 	@Override
 	public ResourceLocation kjs$getIdLocation() {
@@ -64,6 +76,19 @@ public abstract class BlockBehaviourMixin implements BlockKJS {
 		}
 
 		return kjs$typeData;
+	}
+
+	@Override
+	public void kjs$setRandomTickCallback(Consumer<RandomTickCallbackJS> callback) {
+		this.kjs$randomTickCallback = callback;
+	}
+
+	@Inject(method = "randomTick", at = @At("HEAD"), cancellable = true)
+	private void onRandomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource, CallbackInfo ci) {
+		if (kjs$randomTickCallback != null) {
+			kjs$randomTickCallback.accept(new RandomTickCallbackJS(new BlockContainerJS(serverLevel, blockPos), randomSource));
+			ci.cancel();
+		}
 	}
 
 	@Override

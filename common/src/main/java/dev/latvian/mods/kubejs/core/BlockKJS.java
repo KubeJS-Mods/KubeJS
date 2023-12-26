@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
@@ -10,6 +11,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @RemapPrefixForJS("kjs$")
 public interface BlockKJS extends BlockBuilderProvider {
@@ -42,6 +44,10 @@ public interface BlockKJS extends BlockBuilderProvider {
 	}
 
 	default void kjs$setIsRandomlyTicking(boolean v) {
+		throw new NoMixinException();
+	}
+
+	default void kjs$setRandomTickCallback(Consumer<RandomTickCallbackJS> callback) {
 		throw new NoMixinException();
 	}
 
