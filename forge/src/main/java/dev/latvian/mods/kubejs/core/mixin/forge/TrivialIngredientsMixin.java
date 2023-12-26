@@ -1,12 +1,11 @@
 package dev.latvian.mods.kubejs.core.mixin.forge;
 
-import net.minecraftforge.common.crafting.AbstractIngredient;
-import net.minecraftforge.common.crafting.PartialNBTIngredient;
-import net.minecraftforge.common.crafting.StrictNBTIngredient;
+import dev.latvian.mods.kubejs.core.IngredientKJS;
+import net.neoforged.neoforge.common.crafting.NBTIngredient;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin({PartialNBTIngredient.class, StrictNBTIngredient.class})
-public abstract class TrivialIngredientsMixin extends AbstractIngredient {
+@Mixin({NBTIngredient.class})
+public abstract class TrivialIngredientsMixin implements IngredientKJS {
 	@Override
 	public boolean kjs$canBeUsedForMatching() {
 		return true;

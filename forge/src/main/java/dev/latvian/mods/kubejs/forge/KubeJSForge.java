@@ -35,14 +35,20 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 
 @Mod(KubeJS.MOD_ID)
 public class KubeJSForge {
+
+	private static final ThreadLocal<IEventBus> BUS = new ThreadLocal<>();
+
 	public KubeJSForge(IEventBus bus) throws Throwable {
 		bus.addListener(EventPriority.LOW, KubeJSForge::loadComplete);
 		bus.addListener(EventPriority.LOW, KubeJSForge::initRegistries);
 		bus.addListener(EventPriority.LOW, KubeJSForge::commonSetup);
 		bus.addListener(EventPriority.LOW, KubeJSForge::creativeTab);
+
+		BUS.set(bus);
 
 		KubeJS.instance = new KubeJS();
 		KubeJS.instance.setup();
@@ -148,5 +154,9 @@ public class KubeJSForge {
 				event.getDrops().addAll(e.eventDrops);
 			}
 		}
+	}
+
+	public static Optional<IEventBus> eventBus() {
+		return Optional.ofNullable(BUS.get());
 	}
 }

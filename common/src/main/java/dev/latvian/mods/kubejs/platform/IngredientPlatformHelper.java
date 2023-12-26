@@ -7,10 +7,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.UUID;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public interface IngredientPlatformHelper {
@@ -25,10 +22,6 @@ public interface IngredientPlatformHelper {
 	}
 
 	Ingredient wildcard();
-
-	Ingredient custom(Ingredient parent, Predicate<ItemStack> predicate);
-
-	Ingredient custom(Ingredient parent, @Nullable UUID uuid);
 
 	default Ingredient tag(String tag) {
 		return Ingredient.of(Tags.item(UtilsJS.getMCID(null, tag)));

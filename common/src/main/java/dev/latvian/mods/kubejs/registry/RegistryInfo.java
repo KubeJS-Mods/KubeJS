@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -395,6 +396,14 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 
 	public T getValue(ResourceLocation id) {
 		return getArchitecturyRegistrar().get(id);
+	}
+
+	public Holder<T> getHolder(ResourceLocation id) {
+		return getArchitecturyRegistrar().getHolder(id);
+	}
+
+	public Holder<T> getHolder(ResourceKey<T> key) {
+		return getArchitecturyRegistrar().getHolder(key);
 	}
 
 	public boolean hasValue(ResourceLocation id) {

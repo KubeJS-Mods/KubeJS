@@ -133,8 +133,8 @@ public class KubeJSErrorScreen extends Screen {
 		public final KubeJSErrorScreen screen;
 		public final List<ConsoleLine> lines;
 
-		public ErrorList(KubeJSErrorScreen screen, Minecraft minecraft, int x1, int height, int y0, int y1, List<ConsoleLine> lines) {
-			super(minecraft, x1, height, y0, y1, 48);
+		public ErrorList(KubeJSErrorScreen screen, Minecraft minecraft, int width, int height, int top, int bottom, List<ConsoleLine> lines) {
+			super(minecraft, width, bottom - top, top, 48);
 			this.screen = screen;
 			this.lines = lines;
 

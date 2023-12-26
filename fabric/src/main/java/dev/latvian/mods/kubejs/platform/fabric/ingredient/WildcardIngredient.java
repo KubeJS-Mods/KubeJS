@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.network.FriendlyByteBuf;
@@ -12,7 +12,7 @@ import java.util.List;
 
 public class WildcardIngredient extends KubeJSIngredient {
 	public static final WildcardIngredient INSTANCE = new WildcardIngredient();
-	public static final KubeJSIngredientSerializer<WildcardIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("wildcard"), json -> INSTANCE, buf -> INSTANCE);
+	public static final KubeJSIngredientSerializer<WildcardIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("wildcard"), Codec.unit(INSTANCE), buf -> INSTANCE);
 	public static final Ingredient VANILLA_INSTANCE = INSTANCE.toVanilla();
 
 	private WildcardIngredient() {
@@ -31,10 +31,6 @@ public class WildcardIngredient extends KubeJSIngredient {
 	@Override
 	public List<ItemStack> getMatchingStacks() {
 		return ItemStackJS.getList();
-	}
-
-	@Override
-	public void toJson(JsonObject json) {
 	}
 
 	@Override

@@ -12,15 +12,15 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 
 public class KubeJSForgeClient {
 	public KubeJSForgeClient() {
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.LOW, this::setupClient);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::blockColors);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::itemColors);
-		//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::textureStitch);
+		var bus = KubeJSForge.eventBus().orElseThrow();
+		bus.addListener(EventPriority.LOW, this::setupClient);
+		bus.addListener(this::blockColors);
+		bus.addListener(this::itemColors);
+		//bus.addListener(this::textureStitch);
 	}
 
 	private void setupClient(FMLClientSetupEvent event) {

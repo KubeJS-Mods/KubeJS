@@ -1,10 +1,11 @@
 package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +14,13 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class RegExIngredient extends KubeJSIngredient {
-	public static final KubeJSIngredientSerializer<RegExIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("regex"), RegExIngredient::new, RegExIngredient::new);
+
+	public static final Codec<RegExIngredient> CODEC = ExtraCodecs.stringResolverCodec(UtilsJS::toRegexString, UtilsJS::parseRegex)
+		.fieldOf("pattern")
+		.codec()
+		.xmap(RegExIngredient::new, ingredient -> ingredient.pattern);
+
+	public static final KubeJSIngredientSerializer<RegExIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("regex"), CODEC, RegExIngredient::new);
 
 	public final Pattern pattern;
 
@@ -23,10 +30,6 @@ public class RegExIngredient extends KubeJSIngredient {
 
 	public RegExIngredient(FriendlyByteBuf buf) {
 		this(Pattern.compile(buf.readUtf(), buf.readVarInt()));
-	}
-
-	public RegExIngredient(JsonObject json) {
-		this(UtilsJS.parseRegex(json.get("pattern").getAsString()));
 	}
 
 	@Override
@@ -50,11 +53,6 @@ public class RegExIngredient extends KubeJSIngredient {
 	@Override
 	public KubeJSIngredientSerializer<?> getSerializer() {
 		return SERIALIZER;
-	}
-
-	@Override
-	public void toJson(JsonObject json) {
-		json.addProperty("regex", pattern.toString());
 	}
 
 	@Override

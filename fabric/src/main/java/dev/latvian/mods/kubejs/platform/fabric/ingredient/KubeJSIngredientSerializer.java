@@ -1,26 +1,21 @@
 package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Function;
 
-public record KubeJSIngredientSerializer<T extends KubeJSIngredient>(ResourceLocation id, Function<JsonObject, T> fromJson, Function<FriendlyByteBuf, T> fromNet) implements CustomIngredientSerializer<T> {
+public record KubeJSIngredientSerializer<T extends KubeJSIngredient>(ResourceLocation id, Codec<T> codec, Function<FriendlyByteBuf, T> fromNet) implements CustomIngredientSerializer<T> {
 	@Override
 	public ResourceLocation getIdentifier() {
 		return id;
 	}
 
 	@Override
-	public T read(JsonObject json) {
-		return fromJson.apply(json);
-	}
-
-	@Override
-	public void write(JsonObject json, T ingredient) {
-		ingredient.toJson(json);
+	public Codec<T> getCodec(boolean allowEmpty) {
+		return codec;
 	}
 
 	@Override

@@ -1,12 +1,9 @@
 package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CreativeTabIngredient extends KubeJSIngredient {
-	public static final KubeJSIngredientSerializer<CreativeTabIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("creative_tab"), CreativeTabIngredient::new, CreativeTabIngredient::new);
+
+	public static final Codec<CreativeTabIngredient> CODEC = BuiltInRegistries.CREATIVE_MODE_TAB.byNameCodec()
+		.fieldOf("tab")
+		.codec()
+		.xmap(CreativeTabIngredient::new, ingredient -> ingredient.tab);
+
+	public static final KubeJSIngredientSerializer<CreativeTabIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("creative_tab"), CODEC, CreativeTabIngredient::new);
 
 	public final CreativeModeTab tab;
 
@@ -25,10 +28,6 @@ public class CreativeTabIngredient extends KubeJSIngredient {
 
 	public CreativeTabIngredient(FriendlyByteBuf buf) {
 		this(buf.readById(BuiltInRegistries.CREATIVE_MODE_TAB));
-	}
-
-	public CreativeTabIngredient(JsonObject json) {
-		this(UtilsJS.findCreativeTab(new ResourceLocation(json.get("tab").getAsString())));
 	}
 
 	@Override
@@ -44,11 +43,6 @@ public class CreativeTabIngredient extends KubeJSIngredient {
 	@Override
 	public KubeJSIngredientSerializer<?> getSerializer() {
 		return SERIALIZER;
-	}
-
-	@Override
-	public void toJson(JsonObject json) {
-		json.addProperty("tab", RegistryInfo.CREATIVE_MODE_TAB.getId(tab).toString());
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.platform.fabric.ingredient;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.network.FriendlyByteBuf;
@@ -11,14 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModIngredient extends KubeJSIngredient {
-	public static final KubeJSIngredientSerializer<ModIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("mod"), ModIngredient::ofModFromJson, ModIngredient::ofModFromNetwork);
+
+	public static final Codec<ModIngredient> CODEC = Codec.STRING
+		.fieldOf("mod")
+		.codec()
+		.xmap(ModIngredient::new, ingredient -> ingredient.mod);
+
+	public static final KubeJSIngredientSerializer<ModIngredient> SERIALIZER = new KubeJSIngredientSerializer<>(KubeJS.id("mod"), CODEC, ModIngredient::ofModFromNetwork);
 
 	public static ModIngredient ofModFromNetwork(FriendlyByteBuf buf) {
 		return new ModIngredient(buf.readUtf());
-	}
-
-	public static ModIngredient ofModFromJson(JsonObject json) {
-		return new ModIngredient(json.get("mod").getAsString());
 	}
 
 	public final String mod;
@@ -48,11 +50,6 @@ public class ModIngredient extends KubeJSIngredient {
 	@Override
 	public KubeJSIngredientSerializer<?> getSerializer() {
 		return SERIALIZER;
-	}
-
-	@Override
-	public void toJson(JsonObject json) {
-		json.addProperty("mod", mod);
 	}
 
 	@Override

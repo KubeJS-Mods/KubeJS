@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.forge;
 
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 import java.util.function.Consumer;
 

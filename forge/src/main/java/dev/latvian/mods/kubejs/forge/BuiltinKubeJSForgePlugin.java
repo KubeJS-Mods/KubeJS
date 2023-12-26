@@ -8,10 +8,9 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.LegacyCodeHandler;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 	@Override
@@ -42,8 +41,9 @@ public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
 		super.registerBindings(event);
 
 		if (event.getType().isStartup()) {
-			event.add("ForgeEvents", new ForgeEventWrapper("ForgeEvents", MinecraftForge.EVENT_BUS));
-			event.add("ForgeModEvents", new ForgeEventWrapper("ForgeModEvents", FMLJavaModLoadingContext.get() == null ? null : FMLJavaModLoadingContext.get().getModEventBus()));
+			event.add("ForgeEvents", new ForgeEventWrapper("ForgeEvents", NeoForge.EVENT_BUS));
+			KubeJSForge.eventBus().ifPresent(bus -> event.add("ForgeModEvents",
+				new ForgeEventWrapper("ForgeModEvents", bus)));
 			event.add("onForgeEvent", new LegacyCodeHandler("onForgeEvent()"));
 		}
 	}
