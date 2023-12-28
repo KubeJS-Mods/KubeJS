@@ -10,7 +10,7 @@
 	"downloads": [
 		{
 			"name": "NeoForge",
-			"url": "https://maven.saps.dev/releases/dev/latvian/mods/kubejs-forge/{version}/kubejs-neoforge-{version}.jar"
+			"url": "https://maven.saps.dev/releases/dev/latvian/mods/kubejs-neoforge/{version}/kubejs-neoforge-{version}.jar"
 		}
 	],
 	"event_groups": [
