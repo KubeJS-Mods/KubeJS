@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.item;
 import dev.latvian.mods.kubejs.bindings.ComponentWrapper;
 import dev.latvian.mods.kubejs.event.EventJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.item.ingredient.MatchAllIngredientJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -30,36 +31,49 @@ public class ItemTooltipEventJS extends EventJS {
 
 	public static class StaticTooltipHandlerFromLines implements StaticTooltipHandler {
 		public final List<Component> lines;
+		private final IngredientJS ingredient;
 
-		public StaticTooltipHandlerFromLines(List<Component> l) {
+		public StaticTooltipHandlerFromLines(List<Component> l, IngredientJS comparison) {
 			lines = l;
+			ingredient = comparison == null ? MatchAllIngredientJS.INSTANCE : comparison;
 		}
 
-		public StaticTooltipHandlerFromLines(Object o) {
+		public StaticTooltipHandlerFromLines(Object o, IngredientJS comparison) {
 			lines = new ArrayList<>();
 
 			for (var o1 : ListJS.orSelf(o)) {
 				lines.add(ComponentWrapper.of(o1));
 			}
+
+			ingredient = comparison == null ? MatchAllIngredientJS.INSTANCE : comparison;
 		}
 
 		@Override
 		public void tooltip(ItemStack stack, boolean advanced, List<Component> components) {
+			if (!ingredient.test(ItemStackJS.of(stack))) {
+				return;
+			}
 			components.addAll(lines);
 		}
 	}
 
 	public static class StaticTooltipHandlerFromJSWrapper implements StaticTooltipHandler {
 		private final StaticTooltipHandlerFromJS handler;
+		private final IngredientJS ingredient;
 
-		public StaticTooltipHandlerFromJSWrapper(StaticTooltipHandlerFromJS h) {
+		public StaticTooltipHandlerFromJSWrapper(StaticTooltipHandlerFromJS h, IngredientJS comparison) {
 			handler = h;
+			ingredient = (comparison == null) ? MatchAllIngredientJS.INSTANCE : comparison;
 		}
 
 		@Override
 		public void tooltip(ItemStack stack, boolean advanced, List<Component> components) {
 			List<Object> text = new ArrayList<>(components);
-			handler.accept(ItemStackJS.of(stack), advanced, text);
+			final ItemStackJS itemStack = ItemStackJS.of(stack);
+			if (ingredient != null && !ingredient.test(itemStack)) {
+				return;
+			}
+			handler.accept(itemStack, advanced, text);
 
 			components.clear();
 
@@ -81,10 +95,12 @@ public class ItemTooltipEventJS extends EventJS {
 			return;
 		}
 
-		var l = new StaticTooltipHandlerFromLines(text);
+		final var ingredient = IngredientJS.of(item);
+
+		var l = new StaticTooltipHandlerFromLines(text, ingredient);
 
 		if (!l.lines.isEmpty()) {
-			for (var i : IngredientJS.of(item).getVanillaItems()) {
+			for (var i : ingredient.getVanillaItems()) {
 				if (i != Items.AIR) {
 					map.computeIfAbsent(i, k -> new ArrayList<>()).add(l);
 				}
@@ -93,7 +109,7 @@ public class ItemTooltipEventJS extends EventJS {
 	}
 
 	public void addToAll(Object text) {
-		var l = new StaticTooltipHandlerFromLines(text);
+		var l = new StaticTooltipHandlerFromLines(text, null);
 
 		if (!l.lines.isEmpty()) {
 			map.computeIfAbsent(Items.AIR, k -> new ArrayList<>()).add(l);
@@ -106,9 +122,11 @@ public class ItemTooltipEventJS extends EventJS {
 			return;
 		}
 
-		var l = new StaticTooltipHandlerFromJSWrapper(handler);
+		final var ingredient = IngredientJS.of(item);
 
-		for (var i : IngredientJS.of(item).getVanillaItems()) {
+		var l = new StaticTooltipHandlerFromJSWrapper(handler, ingredient);
+
+		for (var i : ingredient.getVanillaItems()) {
 			if (i != Items.AIR) {
 				map.computeIfAbsent(i, k -> new ArrayList<>()).add(l);
 			}
@@ -116,7 +134,7 @@ public class ItemTooltipEventJS extends EventJS {
 	}
 
 	public void addAdvancedToAll(StaticTooltipHandlerFromJS handler) {
-		map.computeIfAbsent(Items.AIR, k -> new ArrayList<>()).add(new StaticTooltipHandlerFromJSWrapper(handler));
+		map.computeIfAbsent(Items.AIR, k -> new ArrayList<>()).add(new StaticTooltipHandlerFromJSWrapper(handler, null));
 	}
 
 	public boolean isShift() {
