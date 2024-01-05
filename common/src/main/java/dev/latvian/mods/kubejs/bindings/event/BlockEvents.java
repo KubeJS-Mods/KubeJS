@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public interface BlockEvents {
 	EventGroup GROUP = EventGroup.of("BlockEvents");
 
-	Extra SUPPORTS_BLOCK = new Extra().transformer(BlockEvents::transformBlock).toString(o -> ((Block) o).kjs$getId()).identity();
+	Extra SUPPORTS_BLOCK = new Extra().transformer(BlockEvents::transformBlock).toString(o -> ((Block) o).kjs$getId()).identity().describeType(context -> context.javaType(Block.class));
 
 	private static Block transformBlock(Object o) {
 		if (o == null) {
