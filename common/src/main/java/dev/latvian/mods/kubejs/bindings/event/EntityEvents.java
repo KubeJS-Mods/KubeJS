@@ -14,7 +14,7 @@ import net.minecraft.world.entity.EntityType;
 public interface EntityEvents {
 	EventGroup GROUP = EventGroup.of("EntityEvents");
 
-	Extra SUPPORTS_ENTITY_TYPE = new Extra().transformer(EntityEvents::transformEntityType).identity();
+	Extra SUPPORTS_ENTITY_TYPE = new Extra().transformer(EntityEvents::transformEntityType).identity().describeType(context -> context.javaType(EntityType.class));
 
 	private static Object transformEntityType(Object o) {
 		if (o == null || o instanceof EntityType) {
