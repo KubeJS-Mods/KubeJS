@@ -468,7 +468,12 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 			itemBuilder = null;
 			lootTable = EMPTY;
 		} else {
-			i.accept(getOrCreateItemBuilder());
+			if (itemBuilder == null) {
+				itemBuilder = getOrCreateItemBuilder();
+				itemBuilder.blockBuilder = this;
+				ScriptType.STARTUP.console.warn("`item` is called with non-null builder callback after block item is set to null! Creating another block item as fallback.");
+			}
+			i.accept(itemBuilder);
 		}
 
 		return this;
