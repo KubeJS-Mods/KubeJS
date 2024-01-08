@@ -63,6 +63,7 @@ import dev.latvian.mods.kubejs.item.custom.PickaxeItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.RecordItemJS;
 import dev.latvian.mods.kubejs.item.custom.ShearsItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.ShovelItemBuilder;
+import dev.latvian.mods.kubejs.item.custom.SmithingTemplateItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.level.gen.filter.biome.BiomeFilter;
@@ -215,6 +216,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryInfo.ITEM.addType("leggings", ArmorItemBuilder.Leggings.class, ArmorItemBuilder.Leggings::new);
 		RegistryInfo.ITEM.addType("boots", ArmorItemBuilder.Boots.class, ArmorItemBuilder.Boots::new);
 		RegistryInfo.ITEM.addType("music_disc", RecordItemJS.Builder.class, RecordItemJS.Builder::new);
+		RegistryInfo.ITEM.addType("smithing_template", SmithingTemplateItemBuilder.class, SmithingTemplateItemBuilder::new);
 
 		RegistryInfo.FLUID.addType("basic", FluidBuilder.class, FluidBuilder::new);
 		RegistryInfo.ENCHANTMENT.addType("basic", EnchantmentBuilder.class, EnchantmentBuilder::new);
