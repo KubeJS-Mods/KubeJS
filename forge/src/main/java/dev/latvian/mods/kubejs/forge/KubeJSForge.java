@@ -61,7 +61,8 @@ public class KubeJSForge {
 			KubeJSCreativeTabs.init();
 		}
 
-		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> KubeJSForgeClient::new);
+		//noinspection Convert2MethodRef
+		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> new KubeJSForgeClient());
 	}
 
 	private static void initRegistries(RegisterEvent event) {
