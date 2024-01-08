@@ -24,7 +24,7 @@ public abstract class HandheldItemBuilder extends ItemBuilder {
 	}
 
 	public HandheldItemBuilder tier(Tier t) {
-		toolTier = new MutableToolTier(t);
+		toolTier = t instanceof MutableToolTier mtt ? mtt : new MutableToolTier(t);
 		return this;
 	}
 
