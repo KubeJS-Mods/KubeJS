@@ -1,11 +1,14 @@
 package dev.latvian.mods.kubejs.event;
 
+import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
+import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class Extra {
@@ -62,6 +65,7 @@ public class Extra {
 	public boolean required;
 	public Predicate<Object> validator;
 	public Transformer toString;
+	public Function<DescriptionContext, TypeDescJS> describeType;
 
 	public Extra() {
 		this.transformer = Transformer.IDENTITY;
@@ -69,6 +73,7 @@ public class Extra {
 		this.required = false;
 		this.validator = UtilsJS.ALWAYS_TRUE;
 		this.toString = Transformer.IDENTITY;
+		this.describeType = context -> TypeDescJS.STRING;
 	}
 
 	public Extra copy() {
@@ -98,6 +103,11 @@ public class Extra {
 
 	public Extra validator(Predicate<Object> validator) {
 		this.validator = validator;
+		return this;
+	}
+
+	public Extra describeType(Function<DescriptionContext, TypeDescJS> describeType) {
+		this.describeType = describeType;
 		return this;
 	}
 

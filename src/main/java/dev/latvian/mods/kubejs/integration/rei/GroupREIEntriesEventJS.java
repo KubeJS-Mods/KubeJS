@@ -61,8 +61,7 @@ public class GroupREIEntriesEventJS extends EventJS {
 	}
 
 	// predicate-based grouping, again with shortcuts for builtin entry types
-	public void groupItemsIf(ResourceLocation groupId, Component description, Ingredient predicate) {
-		// Ingredient is already a predicate for ItemStack, so just use testVanilla
+	public void groupItemsIf(ResourceLocation groupId, Component description, Predicate<ItemStack> predicate) {
 		registry.group(groupId, description, VanillaEntryTypes.ITEM, (item) -> predicate.test(item.getValue()));
 	}
 

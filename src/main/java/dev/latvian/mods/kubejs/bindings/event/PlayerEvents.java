@@ -16,7 +16,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 
 public interface PlayerEvents {
-	Extra SUPPORTS_MENU_TYPE = new Extra().transformer(PlayerEvents::transformMenuType).identity();
+	Extra SUPPORTS_MENU_TYPE = new Extra().transformer(PlayerEvents::transformMenuType).identity().describeType(context -> context.javaType(MenuType.class));
 
 	static Object transformMenuType(Object o) {
 		if (o == null) {

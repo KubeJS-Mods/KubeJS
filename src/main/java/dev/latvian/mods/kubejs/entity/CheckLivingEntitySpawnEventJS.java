@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 
 @Info("""
@@ -18,14 +19,16 @@ public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS {
 
 	public final double x, y, z;
 	public final MobSpawnType type;
+	public final BaseSpawner spawner;
 
-	public CheckLivingEntitySpawnEventJS(LivingEntity entity, Level level, double x, double y, double z, MobSpawnType type) {
+	public CheckLivingEntitySpawnEventJS(LivingEntity entity, Level level, double x, double y, double z, MobSpawnType type, BaseSpawner spawner) {
 		this.entity = entity;
 		this.level = level;
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.type = type;
+		this.spawner = spawner;
 	}
 
 	@Override
@@ -48,5 +51,10 @@ public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS {
 	@Info("The type of spawn.")
 	public MobSpawnType getType() {
 		return type;
+	}
+
+	@Info("The spawner that spawned the entity.")
+	public BaseSpawner getSpawner() {
+		return spawner;
 	}
 }

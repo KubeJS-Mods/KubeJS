@@ -25,7 +25,7 @@ import net.minecraft.world.level.ItemLike;
 public interface ItemEvents {
 	EventGroup GROUP = EventGroup.of("ItemEvents");
 
-	Extra SUPPORTS_ITEM = new Extra().transformer(ItemEvents::transformItem).toString(o -> ((Item) o).kjs$getId()).identity();
+	Extra SUPPORTS_ITEM = new Extra().transformer(ItemEvents::transformItem).toString(o -> ((Item) o).kjs$getId()).identity().describeType(context -> context.javaType(Item.class));
 
 	private static Object transformItem(Object o) {
 		if (o == null) {

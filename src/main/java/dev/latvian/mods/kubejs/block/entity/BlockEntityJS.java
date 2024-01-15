@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public class BlockEntityJS extends BlockEntity {
 	public final BlockEntityInfo info;
-	public final BlockContainerJS block;
+	protected BlockContainerJS block;
 	public final int x, y, z;
 	public int tick, cycle;
 	public CompoundTag data;
@@ -29,9 +29,6 @@ public class BlockEntityJS extends BlockEntity {
 	public BlockEntityJS(BlockPos blockPos, BlockState blockState, BlockEntityInfo entityInfo) {
 		super(entityInfo.entityType, blockPos, blockState);
 		this.info = entityInfo;
-		this.block = new BlockContainerJS(level, blockPos);
-		this.block.cachedState = blockState;
-		this.block.cachedEntity = this;
 		this.x = blockPos.getX();
 		this.y = blockPos.getY();
 		this.z = blockPos.getZ();
@@ -168,5 +165,13 @@ public class BlockEntityJS extends BlockEntity {
 		if (c) {
 			cycle++;
 		}
+	}
+
+	public BlockContainerJS getBlock() {
+		if (block == null) {
+			this.block = new BlockContainerJS(level, worldPosition);
+			this.block.cachedEntity = this;
+		}
+		return block;
 	}
 }

@@ -81,3 +81,38 @@ mutable field net/minecraft/world/level/Explosion radius F
 accessible class net/minecraft/client/gui/components/AbstractSelectionList$Entry
 accessible field net/minecraft/client/gui/components/ImageButton sprites Lnet/minecraft/client/gui/components/WidgetSprites;
 accessible class net/minecraft/client/Minecraft$GameLoadCookie
+
+# smithing table text components and icons
+accessible field net/minecraft/world/item/SmithingTemplateItem APPLIES_TO_TITLE Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/world/item/SmithingTemplateItem INGREDIENTS_TITLE Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/world/item/SmithingTemplateItem ARMOR_TRIM_ADDITIONS_SLOT_DESCRIPTION Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/world/item/SmithingTemplateItem ARMOR_TRIM_BASE_SLOT_DESCRIPTION Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/world/item/SmithingTemplateItem ARMOR_TRIM_INGREDIENTS Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/world/item/SmithingTemplateItem ARMOR_TRIM_APPLIES_TO Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/world/item/SmithingTemplateItem NETHERITE_UPGRADE Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/world/item/SmithingTemplateItem NETHERITE_UPGRADE_APPLIES_TO Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/world/item/SmithingTemplateItem NETHERITE_UPGRADE_ADDITIONS_SLOT_DESCRIPTION Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/world/item/SmithingTemplateItem NETHERITE_UPGRADE_BASE_SLOT_DESCRIPTION Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/world/item/SmithingTemplateItem NETHERITE_UPGRADE_INGREDIENTS Lnet/minecraft/network/chat/Component;
+accessible method net/minecraft/world/item/SmithingTemplateItem createTrimmableArmorIconList ()Ljava/util/List;
+accessible method net/minecraft/world/item/SmithingTemplateItem createNetheriteUpgradeIconList ()Ljava/util/List;
+accessible method net/minecraft/world/item/SmithingTemplateItem createTrimmableMaterialIconList ()Ljava/util/List;
+accessible method net/minecraft/world/item/SmithingTemplateItem createNetheriteUpgradeMaterialList ()Ljava/util/List;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_HELMET Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_CHESTPLATE Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_LEGGINGS Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_BOOTS Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_HOE Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_AXE Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_SWORD Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_SHOVEL Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_PICKAXE Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_INGOT Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_REDSTONE_DUST Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_QUARTZ Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_EMERALD Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_DIAMOND Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_LAPIS_LAZULI Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem EMPTY_SLOT_AMETHYST_SHARD Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/world/item/SmithingTemplateItem DESCRIPTION_FORMAT Lnet/minecraft/ChatFormatting;
+accessible field net/minecraft/world/item/SmithingTemplateItem TITLE_FORMAT Lnet/minecraft/ChatFormatting;
