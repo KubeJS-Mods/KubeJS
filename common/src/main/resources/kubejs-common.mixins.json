@@ -6,6 +6,7 @@
 		"BlockBehaviourMixin",
 		"BlockMixin",
 		"BlockStateBaseMixin",
+		"CommandSourceStackMixin",
 		"ContainerMixin",
 		"CraftingContainerMixin",
 		"CreativeModeTabMixin",
