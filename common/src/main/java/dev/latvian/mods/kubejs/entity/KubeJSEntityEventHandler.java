@@ -22,7 +22,7 @@ public class KubeJSEntityEventHandler {
 
 	private static EventResult checkSpawn(LivingEntity entity, LevelAccessor la, double x, double y, double z, MobSpawnType type, BaseSpawner spawner) {
 		if (la instanceof Level level && (la.isClientSide() || UtilsJS.staticServer != null) && EntityEvents.CHECK_SPAWN.hasListeners()) {
-			return EntityEvents.CHECK_SPAWN.post(level, entity.getType(), new CheckLivingEntitySpawnEventJS(entity, level, x, y, z, type)).arch();
+			return EntityEvents.CHECK_SPAWN.post(level, entity.getType(), new CheckLivingEntitySpawnEventJS(entity, level, x, y, z, type, spawner)).arch();
 		}
 
 		return EventResult.pass();
