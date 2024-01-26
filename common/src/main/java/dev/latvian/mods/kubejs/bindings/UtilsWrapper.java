@@ -23,6 +23,8 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -244,5 +246,13 @@ public interface UtilsWrapper {
 		}
 
 		return ERROR_PARTICLE;
+	}
+
+	@Info("Parses a block state from the input string. May throw for invalid inputs!")
+	static BlockState parseBlockState(Object o) {
+		if (o instanceof BlockState bs) {
+			return bs;
+		}
+		return o == null ? Blocks.AIR.defaultBlockState() : UtilsJS.parseBlockState(o.toString());
 	}
 }
