@@ -11,6 +11,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import org.jetbrains.annotations.Nullable;
 
 public class KubeJSEntityEventHandler {
 	public static void init() {
@@ -20,7 +21,7 @@ public class KubeJSEntityEventHandler {
 		EntityEvent.ADD.register(KubeJSEntityEventHandler::entitySpawned);
 	}
 
-	private static EventResult checkSpawn(LivingEntity entity, LevelAccessor la, double x, double y, double z, MobSpawnType type, BaseSpawner spawner) {
+	private static EventResult checkSpawn(LivingEntity entity, LevelAccessor la, double x, double y, double z, MobSpawnType type, @Nullable BaseSpawner spawner) {
 		if (la instanceof Level level && (la.isClientSide() || UtilsJS.staticServer != null) && EntityEvents.CHECK_SPAWN.hasListeners()) {
 			return EntityEvents.CHECK_SPAWN.post(level, entity.getType(), new CheckLivingEntitySpawnEventJS(entity, level, x, y, z, type, spawner)).arch();
 		}

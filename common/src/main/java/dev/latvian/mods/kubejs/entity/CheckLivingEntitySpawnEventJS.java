@@ -7,6 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 @Info("""
 	Invoked before an entity is spawned into the world.
@@ -19,9 +20,11 @@ public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS {
 
 	public final double x, y, z;
 	public final MobSpawnType type;
+
+	@Nullable
 	public final BaseSpawner spawner;
 
-	public CheckLivingEntitySpawnEventJS(LivingEntity entity, Level level, double x, double y, double z, MobSpawnType type, BaseSpawner spawner) {
+	public CheckLivingEntitySpawnEventJS(LivingEntity entity, Level level, double x, double y, double z, MobSpawnType type, @Nullable BaseSpawner spawner) {
 		this.entity = entity;
 		this.level = level;
 		this.x = x;
@@ -53,7 +56,8 @@ public class CheckLivingEntitySpawnEventJS extends LivingEntityEventJS {
 		return type;
 	}
 
-	@Info("The spawner that spawned the entity.")
+	@Info("The spawner that spawned the entity. Can be null if the entity was spawned by worldgen.")
+	@Nullable
 	public BaseSpawner getSpawner() {
 		return spawner;
 	}
