@@ -399,12 +399,13 @@ public class RecipesEventJS extends EventJS {
 	private Recipe<?> createRecipe(RecipeJS r) {
 		try {
 			var rec = r.createRecipe();
+			var path = r.kjs$getMod() + "/" + r.getPath();
 
-			if (DataExport.export != null) {
-				DataExport.export.addJson("recipes/" + rec.getId() + ".json", r.json);
+			if (!r.removed && DataExport.export != null) {
+				DataExport.export.addJson("recipes/%s.json".formatted(path), r.json);
 
 				if (r.newRecipe) {
-					DataExport.export.addJson("added_recipes/" + rec.getId() + ".json", r.json);
+					DataExport.export.addJson("added_recipes/%s.json".formatted(path), r.json);
 				}
 			}
 
