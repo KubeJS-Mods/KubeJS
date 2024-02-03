@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -124,7 +125,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 
 	public String getBuilderTranslationKey() {
 		if (translationKey.isEmpty()) {
-			return getTranslationKeyGroup() + '.' + id.getNamespace() + '.' + id.getPath();
+			return Util.makeDescriptionId(getTranslationKeyGroup(), id);
 		}
 
 		return translationKey;
