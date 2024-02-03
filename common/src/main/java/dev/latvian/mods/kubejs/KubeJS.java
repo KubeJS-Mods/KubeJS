@@ -56,7 +56,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class KubeJS {
 	public static final String MOD_ID = "kubejs";
@@ -92,7 +91,6 @@ public class KubeJS {
 	public KubeJS() throws Throwable {
 		instance = this;
 		gameDirectory = Platform.getGameFolder().normalize().toAbsolutePath();
-		Locale.setDefault(Locale.US);
 
 		if (Files.notExists(KubeJSPaths.README)) {
 			try {
