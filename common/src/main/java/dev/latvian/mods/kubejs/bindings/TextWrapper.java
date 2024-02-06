@@ -14,6 +14,8 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.ScoreContents;
+import net.minecraft.network.chat.contents.SelectorContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @Info("The hub for all things text components. Format text to your hearts content!")
 public class TextWrapper {
@@ -180,6 +183,11 @@ public class TextWrapper {
 		return joined;
 	}
 
+	@Info("Returns an empty component")
+	public static MutableComponent empty() {
+		return Component.empty();
+	}
+
 	@Info("Joins all components")
 	public static MutableComponent join(Component... texts) {
 		return join(Component.empty(), Arrays.asList(texts));
@@ -190,9 +198,14 @@ public class TextWrapper {
 		return Component.literal(text);
 	}
 
+	@Info("Returns a plain component of the input")
+	public static MutableComponent literal(String text) {
+		return Component.literal(text);
+	}
+
 	@Info("Returns a translatable component of the input key")
 	public static MutableComponent translate(String key) {
-		return Component.translatable(key, new Object[0]);
+		return Component.translatable(key);
 	}
 
 	@Info("Returns a translatable component of the input key, with args of the objects")
@@ -200,9 +213,34 @@ public class TextWrapper {
 		return Component.translatable(key, objects);
 	}
 
+	@Info("Returns a translatable component of the input key")
+	public static MutableComponent translatable(String key) {
+		return Component.translatable(key);
+	}
+
+	@Info("Returns a translatable component of the input key, with args of the objects")
+	public static MutableComponent translatable(String key, Object... objects) {
+		return Component.translatable(key, objects);
+	}
+
 	@Info("Returns a keybinding component of the input keybinding descriptor")
 	public static MutableComponent keybind(String keybind) {
 		return Component.keybind(keybind);
+	}
+
+	@Info("Returns a score component of the input objective, for the provided selector")
+	public static MutableComponent score(String selector, String objective) {
+		return MutableComponent.create(new ScoreContents(selector, objective));
+	}
+
+	@Info("Returns a component displaying all entities matching the input selector")
+	public static MutableComponent selector(String selector) {
+		return MutableComponent.create(new SelectorContents(selector, Optional.empty()));
+	}
+
+	@Info("Returns a component displaying all entities matching the input selector, with a custom separator")
+	public static MutableComponent selector(String selector, Component separator) {
+		return MutableComponent.create(new SelectorContents(selector, Optional.of(separator)));
 	}
 
 	@Info("Returns a component of the input, colored black")
