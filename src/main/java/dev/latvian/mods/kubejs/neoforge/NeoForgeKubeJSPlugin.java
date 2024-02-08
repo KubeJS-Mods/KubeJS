@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public class NeoForgeKubeJSPlugin extends BuiltinKubeJSPlugin {
@@ -39,8 +40,10 @@ public class NeoForgeKubeJSPlugin extends BuiltinKubeJSPlugin {
 
 		if (event.getType().isStartup()) {
 			event.add(NativeEvents.NAME, NativeEvents.create());
+			event.add("ForgeEvents", new NativeModEventsWrapper("ForgeEvents", NeoForge.EVENT_BUS, true));
+			event.add("NeoForgeEvents", new NativeModEventsWrapper("NeoForgeEvents", NeoForge.EVENT_BUS, true));
 			KubeJSEntryPoint.eventBus().ifPresent(bus -> event.add("NativeModEvents",
-				new NativeModEventsWrapper("NativeModEvents", bus)));
+				new NativeModEventsWrapper("NativeModEvents", bus, false)));
 		}
 	}
 

@@ -5,13 +5,17 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 
-public record NativeModEventsWrapper(String name, IEventBus eventBus) {
+public record NativeModEventsWrapper(String name, IEventBus eventBus, boolean deprecated) {
 	public Object onEvent(Object eventClass, NativeEventConsumer consumer) {
 		if (!(eventClass instanceof CharSequence || eventClass instanceof Class)) {
 			throw new RuntimeException("Invalid syntax! " + name + ".onEvent(eventType, function) requires event class and handler");
 		} else if (!KubeJS.getStartupScriptManager().firstLoad) {
 			ConsoleJS.STARTUP.warn(name + ".onEvent() can't be reloaded! You will have to restart the game for changes to take effect.");
 			return null;
+		}
+
+		if (deprecated) {
+			ConsoleJS.STARTUP.warn("The event " + name + " is deprecated. Use " + NativeEvents.NAME + ".onEvent() instead.");
 		}
 
 		try {
