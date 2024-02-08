@@ -79,7 +79,7 @@ public class NativeEventHandler extends BaseFunction {
 			try {
 				consumer.accept(event);
 			} catch (Exception ex) {
-				ScriptType.STARTUP.console.error(ex.getLocalizedMessage());
+				NativeEvents.throwException("Error in native event '" + NativeEvents.NAME + "." + name + "'", ex);
 			}
 		};
 	}

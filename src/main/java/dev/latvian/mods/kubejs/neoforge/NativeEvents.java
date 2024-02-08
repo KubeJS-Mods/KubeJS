@@ -93,7 +93,7 @@ public class NativeEvents implements CustomJavaToJsWrapper {
 
 		try {
 			var type = eventClass instanceof Class<?> c ? c : Class.forName(eventClass.toString());
-			var secured = secure(consumer);
+			var secured = secure(eventClass, consumer);
 			//noinspection unchecked
 			NeoForge.EVENT_BUS.addListener(priority, false, (Class<Event>) type, secured);
 			directConsumers.add(secured);
@@ -104,15 +104,28 @@ public class NativeEvents implements CustomJavaToJsWrapper {
 		return null;
 	}
 
-	private NativeEventConsumer secure(NativeEventConsumer consumer) {
+	private NativeEventConsumer secure(Object eventClass, NativeEventConsumer consumer) {
 		return event -> {
 			try {
 				consumer.accept(event);
 			} catch (Exception ex) {
-				ScriptType.STARTUP.console.error(ex.getLocalizedMessage(), ex);
-				KubeJS.LOGGER.error(ex.getLocalizedMessage(), ex);
+				throwException("Error in native event when using 'onEvent' for " + eventClass, ex);
 			}
 		};
+	}
+
+	/**
+	 * Helper method to throw and log an exception with the stack trace. Rhino seems to not be able to print the full stacktrace.
+	 * The user still only gets the basic message inside `startup.log`. The full stacktrace will be logged at `latest.log`
+	 *
+	 * @param msg The message
+	 * @param tx  The exception
+	 */
+	public static void throwException(String msg, Throwable tx) {
+		ScriptType.STARTUP.console.error(msg + ": " + tx.getLocalizedMessage());
+		for (var ste : tx.getStackTrace()) {
+			KubeJS.LOGGER.error(ste.toString());
+		}
 	}
 
 	public static class Wrapper extends NativeJavaObject {
