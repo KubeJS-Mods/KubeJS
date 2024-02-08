@@ -13,6 +13,7 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,14 @@ public class NativeEvents implements CustomJavaToJsWrapper {
 		handler = new NativeEventHandler(name, eventClass);
 		handlers.put(name, handler);
 		return handler;
+	}
+
+	public void printAllEvents() {
+		NeoForgeEventsLookup.INSTANCE.getEvents()
+			.entrySet()
+			.stream()
+			.sorted(Comparator.comparing(Map.Entry::getKey))
+			.forEach(entry -> KubeJS.LOGGER.info(entry.getKey() + " - ['" + entry.getValue().getName() + "']"));
 	}
 
 	public Object onEvent(Object eventClass, NativeEventConsumer consumer) {
