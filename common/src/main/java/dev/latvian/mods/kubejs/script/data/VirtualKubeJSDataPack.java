@@ -77,6 +77,10 @@ public class VirtualKubeJSDataPack extends AbstractPackResources implements Expo
 
 	@Override
 	public void listResources(PackType packType, String namespace, String path, ResourceOutput visitor) {
+		if (!path.endsWith("/")) {
+			path = path + "/";
+		}
+
 		for (ResourceLocation r : locationToData.keySet()) {
 			if (!r.getPath().endsWith(".mcmeta")) {
 				if (r.getNamespace().equals(namespace) && r.getPath().startsWith(path)) {
