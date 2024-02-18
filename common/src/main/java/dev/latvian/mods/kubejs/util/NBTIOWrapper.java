@@ -11,7 +11,7 @@ import java.nio.file.Path;
 public interface NBTIOWrapper {
 	@Nullable
 	static CompoundTag read(Path path) throws IOException {
-		if (Files.notExists(path)) {
+		if (!Files.isRegularFile(path)) {
 			return null;
 		}
 
