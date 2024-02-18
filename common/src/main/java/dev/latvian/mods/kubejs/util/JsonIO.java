@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.internal.Streams;
@@ -101,25 +102,23 @@ public class JsonIO {
 		return null;
 	}
 
-	@Nullable
-	public static Map<?, ?> read(Path path) throws IOException {
-		if (Files.notExists(path)) {
+	public static JsonElement readJson(Path path) throws IOException {
+		if (!Files.isRegularFile(path)) {
 			return null;
 		}
 
 		try (var fileReader = Files.newBufferedReader(path)) {
-			var jsonReader = new JsonReader(fileReader);
-			JsonElement element;
-			var lenient = jsonReader.isLenient();
-			jsonReader.setLenient(true);
-			element = Streams.parse(jsonReader);
-
-			if (!element.isJsonNull() && jsonReader.peek() != JsonToken.END_DOCUMENT) {
-				throw new JsonSyntaxException("Did not consume the entire document.");
-			}
-
-			return MapJS.of(element);
+			return JsonParser.parseReader(fileReader);
 		}
+	}
+
+	public static String readString(Path path) throws IOException {
+		return toString(readJson(path));
+	}
+
+	@Nullable
+	public static Map<?, ?> read(Path path) throws IOException {
+		return MapJS.of(readJson(path));
 	}
 
 	public static void write(Path path, @Nullable JsonObject json) throws IOException {
