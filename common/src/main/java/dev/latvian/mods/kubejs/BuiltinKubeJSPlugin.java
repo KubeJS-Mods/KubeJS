@@ -270,7 +270,6 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		filter.allow("java.lang.Comparable");
 		filter.allow("java.lang.CharSequence");
 		filter.allow("java.lang.Void");
-		filter.allow("java.lang.Class");
 		filter.allow("java.lang.Package");
 		filter.allow("java.lang.Appendable");
 		filter.allow("java.lang.AutoCloseable");
