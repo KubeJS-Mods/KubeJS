@@ -117,8 +117,10 @@ public class DataExport {
 			appendLine(logStringBuilder, calendar, line);
 		}
 
-		logStringBuilder.setLength(logStringBuilder.length() - 1);
-		addString("errors.log", logStringBuilder.toString());
+		if (logStringBuilder.length() > 0) {
+			logStringBuilder.setLength(logStringBuilder.length() - 1);
+			addString("errors.log", logStringBuilder.toString());
+		}
 
 		logStringBuilder.setLength(0);
 
@@ -126,8 +128,10 @@ public class DataExport {
 			appendLine(logStringBuilder, calendar, line);
 		}
 
-		logStringBuilder.setLength(logStringBuilder.length() - 1);
-		addString("warnings.log", logStringBuilder.toString());
+		if (logStringBuilder.length() > 0) {
+			logStringBuilder.setLength(logStringBuilder.length() - 1);
+			addString("warnings.log", logStringBuilder.toString());
+		}
 
 		var modArr = new JsonArray();
 
