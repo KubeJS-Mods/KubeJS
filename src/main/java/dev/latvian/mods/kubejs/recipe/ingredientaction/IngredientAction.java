@@ -38,6 +38,7 @@ public abstract class IngredientAction extends IngredientActionFilter {
 		FACTORY_MAP.put("damage", json -> new DamageAction(json.get("damage").getAsInt()));
 		FACTORY_MAP.put("replace", json -> new ReplaceAction(ItemStackJS.resultFromRecipeJson(json.get("item"))));
 		FACTORY_MAP.put("keep", json -> new KeepAction());
+		FACTORY_MAP.put("consume", json -> new ConsumeAction());
 	}
 
 	public static List<IngredientAction> parseList(JsonElement json) {

@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -66,7 +67,13 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	}
 
 	default boolean hasOutput(ReplacementMatch match) {
-		return match instanceof ItemMatch m && m.contains(kjs$getRecipe().getResultItem(UtilsJS.staticRegistryAccess));
+		if (match instanceof ItemMatch m) {
+			var result = kjs$getRecipe().getResultItem(UtilsJS.staticRegistryAccess);
+			//noinspection ConstantValue
+			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.contains(result);
+		}
+
+		return false;
 	}
 
 	default boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {

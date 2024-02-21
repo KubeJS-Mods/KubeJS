@@ -38,6 +38,7 @@ import net.minecraft.ReportedException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -110,7 +111,9 @@ public class RecipesEventJS extends EventJS {
 		}
 
 		try {
-			map.put("out", recipe.getResultItem(UtilsJS.staticRegistryAccess).kjs$toItemString());
+			var result = recipe.getResultItem(UtilsJS.staticRegistryAccess);
+			//noinspection ConstantValue
+			map.put("out", (result == null ? ItemStack.EMPTY : result).kjs$toItemString());
 		} catch (Exception ex) {
 			map.put("out_error", ex.toString());
 		}

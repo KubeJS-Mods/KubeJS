@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 
 public class JsonRecipeJS extends RecipeJS {
 	@Override
@@ -33,14 +34,11 @@ public class JsonRecipeJS extends RecipeJS {
 	}
 
 	@Override
+	@SuppressWarnings("ConstantValue")
 	public boolean hasOutput(ReplacementMatch match) {
 		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
-			var r = getOriginalRecipe().getResultItem(UtilsJS.staticRegistryAccess);
-			//noinspection ConstantValue
-			if (r == null) {
-				throw new NullPointerException("ItemStack should never be null, but recipe " + this + " returned null as the output!");
-			}
-			return r != ItemStack.EMPTY && m.contains(r);
+			var result = ((Recipe<?>) this).getResultItem(UtilsJS.staticRegistryAccess);
+			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.contains(result);
 		}
 
 		return false;

@@ -46,7 +46,9 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 		}
 
 		var modifyResult = kjs$getModifyResult();
-		var result = getResultItem(registryAccess).copy();
+		var result = getResultItem(registryAccess);
+		//noinspection ConstantValue
+		result = (result == null || result.isEmpty()) ? ItemStack.EMPTY : result.copy();
 		if (modifyResult != null) {
 			return modifyResult.modify(new ModifyRecipeCraftingGrid(container), result);
 		}
