@@ -544,7 +544,9 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 			return ItemStack.EMPTY;
 		}
 
-		return getOriginalRecipe().getResultItem();
+		var result = getOriginalRecipe().getResultItem();
+		//noinspection ConstantValue
+		return result == null ? ItemStack.EMPTY : result;
 	}
 
 	public List<Ingredient> getOriginalRecipeIngredients() {
