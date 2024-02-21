@@ -43,29 +43,17 @@ public class NativeEventHandler extends BaseFunction {
 				throw new IllegalStateException("Expected argument to be a function. Event syntax: " + getExampleSyntax());
 			}
 
+			var priority = (EventPriority) Context.jsToJava(cx, unknownPriority, EventPriority.class);
 			var consumer = (NativeEventConsumer) Context.jsToJava(cx, unknownFunction, NativeEventConsumer.class);
 			var securedConsumer = secure(consumer);
 			//noinspection unchecked
-			NeoForge.EVENT_BUS.addListener(getPriority(unknownPriority), false, (Class<Event>) eventClass, securedConsumer);
+			NeoForge.EVENT_BUS.addListener(priority, false, (Class<Event>) eventClass, securedConsumer);
 			consumers.add(securedConsumer);
 		} catch (Exception ex) {
 			ScriptType.STARTUP.console.error(ex.getLocalizedMessage());
 		}
 
 		return null;
-	}
-
-	private EventPriority getPriority(Object unknownPriority) {
-		if (unknownPriority instanceof EventPriority ep) {
-			return ep;
-		}
-
-		try {
-			return EventPriority.valueOf(unknownPriority.toString().toUpperCase());
-		} catch (Exception ex) {
-			ScriptType.STARTUP.console.error("Invalid priority: " + unknownPriority);
-			return EventPriority.NORMAL;
-		}
 	}
 
 	private String getExampleSyntax() {
