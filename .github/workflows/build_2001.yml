@@ -3,10 +3,10 @@ name: Java CI (1.20.1)
 on:
     push:
         branches:
-            - '2002'
+            - '2001'
     workflow_dispatch:
         branches:
-            - '2002'
+            - '2001'
         inputs:
             release_type:
                 description: 'Release Type'
