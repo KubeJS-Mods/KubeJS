@@ -1,13 +1,15 @@
 package dev.latvian.mods.kubejs.gui.chest;
 
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 public class CustomChestMenu extends AbstractContainerMenu {
 	public static final MenuType[] TYPES = {
@@ -33,14 +35,26 @@ public class CustomChestMenu extends AbstractContainerMenu {
 			}
 		}
 
-		for (int y = 0; y < 3; y++) {
-			for (int x = 0; x < 9; x++) {
-				addSlot(new ChestMenuContainerSlot(this, data.rows * 9 + x + y * 9, 8 + x * 18, 103 + y * 18 + k));
+		if (data.playerSlots) {
+			for (int y = 0; y < 3; y++) {
+				for (int x = 0; x < 9; x++) {
+					addSlot(new Slot(inventory, x + y * 9 + 9, 8 + x * 18, 103 + y * 18 + k));
+				}
 			}
-		}
 
-		for (int x = 0; x < 9; x++) {
-			addSlot(new ChestMenuContainerSlot(this, data.rows * 9 + 27 + x, 8 + x * 18, 161 + k));
+			for (int x = 0; x < 9; x++) {
+				addSlot(new Slot(inventory, x, 8 + x * 18, 161 + k));
+			}
+		} else {
+			for (int y = 0; y < 3; y++) {
+				for (int x = 0; x < 9; x++) {
+					addSlot(new ChestMenuContainerSlot(this, data.rows * 9 + x + y * 9, 8 + x * 18, 103 + y * 18 + k));
+				}
+			}
+
+			for (int x = 0; x < 9; x++) {
+				addSlot(new ChestMenuContainerSlot(this, data.rows * 9 + 27 + x, 8 + x * 18, 161 + k));
+			}
 		}
 	}
 
@@ -51,6 +65,14 @@ public class CustomChestMenu extends AbstractContainerMenu {
 
 	@Override
 	public void clicked(int slot, int button, ClickType clickType, Player player) {
+		if (data.playerSlots && slot >= data.rows * 9) {
+			if (data.inventoryClicked != null && slot >= 0 && slot < slots.size()) {
+				data.inventoryClicked.onClick(new ChestMenuInventoryClickEvent(getSlot(slot), clickType, button));
+			}
+
+			return;
+		}
+
 		if (slot >= data.rows * 9) {
 			super.clicked(slot, button, clickType, player);
 		}
@@ -71,18 +93,6 @@ public class CustomChestMenu extends AbstractContainerMenu {
 
 	@Override
 	public void removed(Player player) {
-		if (player.isAlive() && !((ServerPlayer) player).hasDisconnected()) {
-			var playerItems = player.getInventory().items;
-
-			for (int i = 0; i < data.playerInventory.length; i++) {
-				playerItems.set(i, data.playerInventory[i]);
-			}
-		} else {
-			for (var item : data.playerInventory) {
-				player.drop(item, false);
-			}
-		}
-
 		if (data.closed != null) {
 			data.closed.run();
 		}
@@ -93,5 +103,16 @@ public class CustomChestMenu extends AbstractContainerMenu {
 	@Override
 	public ItemStack getCarried() {
 		return data.mouseItem;
+	}
+
+	@Override
+	public void setCarried(ItemStack stack) {
+		data.mouseItem = stack;
+	}
+
+	@Override
+	public void initializeContents(int stateId, List<ItemStack> list, ItemStack carried) {
+		super.initializeContents(stateId, list, carried);
+		data.mouseItem = carried;
 	}
 }

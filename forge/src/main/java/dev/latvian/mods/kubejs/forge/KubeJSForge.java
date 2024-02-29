@@ -62,7 +62,7 @@ public class KubeJSForge {
 		}
 
 		//noinspection Convert2MethodRef
-		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> new KubeJSForgeClient());
+		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> new KubeJSForgeClient());
 	}
 
 	private static void initRegistries(RegisterEvent event) {

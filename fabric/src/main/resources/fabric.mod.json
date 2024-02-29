@@ -9,7 +9,7 @@
 	],
 	"contact": {
 		"sources": "https://github.com/KubeJS-Mods/KubeJS",
-		"issues": "https://kubejs.com/support?source=kubejs&mc=1902&loader=fabric"
+		"issues": "https://kubejs.com/support?source=kubejs&mc=2001&loader=fabric"
 	},
 	"license": "GNU LGPLv3",
 	"icon": "kubejs_logo.png",
@@ -33,7 +33,7 @@
 	],
 	"accessWidener": "kubejs.accesswidener",
 	"depends": {
-		"minecraft": ">=1.18.2",
+		"minecraft": ">=1.20.1",
 		"rhino": ">=${min_rhino_version}",
 		"architectury": ">=${architectury_version}"
 	},

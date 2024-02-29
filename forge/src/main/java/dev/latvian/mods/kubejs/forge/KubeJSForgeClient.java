@@ -23,7 +23,6 @@ public class KubeJSForgeClient {
 		//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::textureStitch);
 	}
 
-	@SuppressWarnings("removal")
 	private void setupClient(FMLClientSetupEvent event) {
 		KubeJS.PROXY.clientSetup();
 

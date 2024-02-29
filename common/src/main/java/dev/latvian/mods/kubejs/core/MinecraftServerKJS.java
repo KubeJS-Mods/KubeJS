@@ -17,7 +17,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
+import java.util.UUID;
 
 @RemapPrefixForJS("kjs$")
 public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, WithPersistentData, DataSenderKJS, MinecraftEnvironmentKJS {
@@ -110,5 +114,9 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 
 		ConsoleJS.SERVER.setCapturingErrors(false);
 		ConsoleJS.SERVER.info("Server resource reload complete!");
+	}
+
+	default Map<UUID, Map<Integer, ItemStack>> kjs$restoreInventories() {
+		throw new NoMixinException();
 	}
 }

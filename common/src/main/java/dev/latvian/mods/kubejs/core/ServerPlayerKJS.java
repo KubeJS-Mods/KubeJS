@@ -30,6 +30,7 @@ import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.function.Consumer;
 
 @RemapPrefixForJS("kjs$")
@@ -185,24 +186,40 @@ public interface ServerPlayerKJS extends PlayerKJS {
 		});
 	}
 
+	default ItemStack[] kjs$captureInventory(boolean autoRestore) {
+		var playerItems = kjs$self().getInventory().items;
+
+		var captured = new ItemStack[playerItems.size()];
+		var map = new HashMap<Integer, ItemStack>();
+
+		for (int i = 0; i < captured.length; i++) {
+			var c = playerItems.set(i, ItemStack.EMPTY);
+
+			if (autoRestore && !c.isEmpty()) {
+				map.put(i, c);
+			}
+
+			captured[i] = c.copy();
+		}
+
+		if (autoRestore && !map.isEmpty()) {
+			kjs$self().getServer().kjs$restoreInventories().put(kjs$self().getUUID(), map);
+		}
+
+		return captured;
+	}
+
 	default void kjs$openChestGUI(Component title, int rows, Consumer<ChestMenuData> gui) {
-		var data = new ChestMenuData(title, Mth.clamp(rows, 1, 6));
+		var data = new ChestMenuData(kjs$self(), title, Mth.clamp(rows, 1, 6));
 		gui.accept(data);
 
 		if (kjs$self().containerMenu instanceof CustomChestMenu open && open.data.rows == data.rows && open.data.title.equals(title)) {
-			data.playerInventory = open.data.playerInventory;
+			data.capturedInventory = open.data.capturedInventory;
 			open.data = data;
-			open.sendAllDataToRemote();
+			data.sync();
 		} else {
-			var playerItems = kjs$self().getInventory().items;
-
-			data.playerInventory = new ItemStack[playerItems.size()];
-
-			for (int i = 0; i < data.playerInventory.length; i++) {
-				data.playerInventory[i] = playerItems.set(i, ItemStack.EMPTY);
-			}
-
-			kjs$self().inventoryMenu.broadcastFullState();
+			data.capturedInventory = data.playerSlots ? new ItemStack[0] : kjs$captureInventory(true);
+			data.sync();
 
 			kjs$self().openMenu(new MenuProvider() {
 				@Override

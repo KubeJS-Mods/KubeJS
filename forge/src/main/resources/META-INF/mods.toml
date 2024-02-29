@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[47,)"
-issueTrackerURL = "https://kubejs.com/support?source=kubejs&mc=1902&loader=forge"
+issueTrackerURL = "https://kubejs.com/support?source=kubejs&mc=2001&loader=forge"
 license = "GNU LGPLv3"
 
 [[mods]]
