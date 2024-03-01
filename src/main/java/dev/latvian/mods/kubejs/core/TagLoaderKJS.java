@@ -64,29 +64,29 @@ public interface TagLoaderKJS<T> {
 				map.put(entry.getKey(), entry.getValue().entries);
 			}
 
-			if (DataExport.export != null) {
-				var loc = "tags/" + regInfo + "/";
-
-				for (var entry : map.entrySet()) {
-					var list = new ArrayList<String>();
-
-					for (var e : entry.getValue()) {
-						list.add(e.entry().toString());
-					}
-
-					list.sort(String.CASE_INSENSITIVE_ORDER);
-					var arr = new JsonArray();
-
-					for (var e : list) {
-						arr.add(e);
-					}
-
-					DataExport.export.addJson(loc + entry.getKey() + ".json", arr);
-				}
-			}
-
 			if (event.totalAdded > 0 || event.totalRemoved > 0 || ConsoleJS.SERVER.shouldPrintDebug()) {
 				ConsoleJS.SERVER.info("[%s] Found %d tags, added %d objects, removed %d objects".formatted(regInfo, event.tags.size(), event.totalAdded, event.totalRemoved));
+			}
+		}
+
+		if (DataExport.export != null) {
+			var loc = "tags/" + regInfo + "/";
+
+			for (var entry : map.entrySet()) {
+				var list = new ArrayList<String>();
+
+				for (var e : entry.getValue()) {
+					list.add(e.entry().toString());
+				}
+
+				list.sort(String.CASE_INSENSITIVE_ORDER);
+				var arr = new JsonArray();
+
+				for (var e : list) {
+					arr.add(e);
+				}
+
+				DataExport.export.addJson(loc + entry.getKey() + ".json", arr);
 			}
 		}
 	}
