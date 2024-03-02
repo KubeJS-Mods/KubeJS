@@ -17,14 +17,19 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelResource;
 
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class KubeJSServerEventHandler {
 	private static final LevelResource PERSISTENT_DATA = new LevelResource("kubejs_persistent_data.nbt");
@@ -51,6 +56,25 @@ public class KubeJSServerEventHandler {
 				var tag = NbtIo.readCompressed(p, NbtAccounter.unlimitedHeap());
 
 				if (tag != null) {
+					var t = tag.getCompound("__restore_inventories");
+
+					if (!t.isEmpty()) {
+						tag.remove("__restore_inventories");
+
+						var playerMap = server.kjs$restoreInventories();
+
+						for (var key : t.getAllKeys()) {
+							var list = t.getList(key, 10);
+							var map = playerMap.computeIfAbsent(UUID.fromString(key), k -> new HashMap<>());
+
+							for (var tag2 : list) {
+								var slot = ((CompoundTag) tag2).getShort("Slot");
+								var stack = ItemStack.of((CompoundTag) tag2);
+								map.put((int) slot, stack);
+							}
+						}
+					}
+
 					server.kjs$getPersistentData().merge(tag);
 				}
 			} catch (Exception ex) {
@@ -87,12 +111,34 @@ public class KubeJSServerEventHandler {
 	}
 
 	private static void serverLevelSaved(ServerLevel level) {
-		var p = level.getServer().getWorldPath(PERSISTENT_DATA);
-
 		if (level.dimension() == Level.OVERWORLD) {
+			var serverData = level.getServer().kjs$getPersistentData().copy();
+			var p = level.getServer().getWorldPath(PERSISTENT_DATA);
+
+			var playerMap = level.getServer().kjs$restoreInventories();
+
+			if (!playerMap.isEmpty()) {
+				var nbt = new CompoundTag();
+
+				for (var entry : playerMap.entrySet()) {
+					var list = new ListTag();
+
+					for (var entry2 : entry.getValue().entrySet()) {
+						var tag = new CompoundTag();
+						tag.putShort("Slot", entry2.getKey().shortValue());
+						entry2.getValue().save(tag);
+						list.add(tag);
+					}
+
+					nbt.put(entry.getKey().toString(), list);
+				}
+
+				serverData.put("__restore_inventories", nbt);
+			}
+
 			Util.ioPool().execute(() -> {
 				try {
-					NbtIo.writeCompressed(level.getServer().kjs$getPersistentData(), p);
+					NbtIo.writeCompressed(serverData, p);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

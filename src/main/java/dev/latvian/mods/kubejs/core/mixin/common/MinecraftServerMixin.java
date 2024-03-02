@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.core.mixin.common;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
+import dev.latvian.mods.kubejs.gui.chest.CustomChestMenu;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
 import dev.latvian.mods.kubejs.server.ServerEventJS;
@@ -14,6 +15,7 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -25,6 +27,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 
@@ -48,6 +53,9 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 
 	@Unique
 	private AttachedData<MinecraftServer> kjs$attachedData;
+
+	@Unique
+	private final Map<UUID, Map<Integer, ItemStack>> kjs$restoreInventories = new HashMap<>(1);
 
 	@Override
 	@Accessor("resources")
@@ -88,6 +96,22 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 			kjs$scheduledEvents.tickAll(kjs$getOverworld().getGameTime());
 		}
 
+		if (!kjs$restoreInventories.isEmpty()) {
+			for (var player : kjs$self().getPlayerList().getPlayers()) {
+				var map = kjs$restoreInventories.get(player.getUUID());
+
+				if (map != null && player.isAlive() && !player.hasDisconnected() && !(player.containerMenu instanceof CustomChestMenu)) {
+					kjs$restoreInventories.remove(player.getUUID());
+
+					var playerItems = player.getInventory().items;
+
+					for (int i = 0; i < playerItems.size(); i++) {
+						playerItems.set(i, map.getOrDefault(i, ItemStack.EMPTY));
+					}
+				}
+			}
+		}
+
 		if (ServerEvents.TICK.hasListeners()) {
 			ServerEvents.TICK.post(ScriptType.SERVER, new ServerEventJS(kjs$self()));
 		}
@@ -100,6 +124,11 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 		}
 
 		return kjs$scheduledEvents;
+	}
+
+	@Override
+	public Map<UUID, Map<Integer, ItemStack>> kjs$restoreInventories() {
+		return kjs$restoreInventories;
 	}
 
 	@Shadow

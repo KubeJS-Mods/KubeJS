@@ -1,22 +1,26 @@
 package dev.latvian.mods.kubejs.gui.chest;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Consumer;
 
 public class ChestMenuData {
+	public final ServerPlayer player;
 	public final Component title;
 	public final int rows;
 	public final ChestMenuSlot[] slots;
-	public ChestMenuClickCallback anyClicked;
+	public ChestMenuClickEvent.Callback anyClicked;
+	public ChestMenuInventoryClickEvent.Callback inventoryClicked;
 	public boolean playerSlots;
 	public Runnable closed;
 	public ItemStack mouseItem;
-	public ItemStack[] playerInventory;
+	public ItemStack[] capturedInventory;
 
-	public ChestMenuData(Component title, int rows) {
+	public ChestMenuData(ServerPlayer player, Component title, int rows) {
+		this.player = player;
 		this.title = title;
 		this.rows = rows;
 		this.slots = new ChestMenuSlot[9 * (rows + 4)];
@@ -26,6 +30,7 @@ public class ChestMenuData {
 		}
 
 		this.anyClicked = null;
+		this.inventoryClicked = null;
 		this.playerSlots = false;
 		this.closed = null;
 		this.mouseItem = ItemStack.EMPTY;
@@ -47,7 +52,7 @@ public class ChestMenuData {
 		}
 	}
 
-	public void button(int x, int y, ItemStack stack, Component displayName, ChestMenuClickCallback leftClicked) {
+	public void button(int x, int y, ItemStack stack, Component displayName, ChestMenuClickEvent.Callback leftClicked) {
 		var slot = getSlot(x, y);
 		slot.setItem(stack.kjs$withName(displayName));
 		slot.setLeftClicked(leftClicked);
@@ -73,5 +78,9 @@ public class ChestMenuData {
 		if (anyClicked != null) {
 			anyClicked.onClick(event);
 		}
+	}
+
+	public void sync() {
+		player.inventoryMenu.broadcastFullState();
 	}
 }

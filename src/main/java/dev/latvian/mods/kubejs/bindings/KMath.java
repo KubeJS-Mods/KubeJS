@@ -79,7 +79,7 @@ public class KMath {
 		return min + value * (max - min);
 	}
 
-	public static double lerp(double value, double min0, double max0, double min1, double max1) {
+	public static double map(double value, double min0, double max0, double min1, double max1) {
 		return min1 + (max1 - min1) * ((value - min0) / (max0 - min0));
 	}
 

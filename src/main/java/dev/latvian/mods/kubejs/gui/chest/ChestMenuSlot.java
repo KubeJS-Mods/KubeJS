@@ -59,39 +59,39 @@ public class ChestMenuSlot {
 		clickHandlers.clear();
 	}
 
-	public void clicked(ClickType type, int button, ChestMenuClickCallback callback, boolean autoHandle) {
+	public void clicked(ClickType type, int button, ChestMenuClickEvent.Callback callback, boolean autoHandle) {
 		clickHandlers.add(new ChestMenuClickHandler(type, button, callback, autoHandle));
 	}
 
-	public void setLeftClicked(ChestMenuClickCallback callback) {
+	public void setLeftClicked(ChestMenuClickEvent.Callback callback) {
 		clicked(ClickType.PICKUP, 0, callback, true);
 	}
 
-	public void setRightClicked(ChestMenuClickCallback callback) {
+	public void setRightClicked(ChestMenuClickEvent.Callback callback) {
 		clicked(ClickType.PICKUP, 1, callback, true);
 	}
 
-	public void setMiddleClicked(ChestMenuClickCallback callback) {
+	public void setMiddleClicked(ChestMenuClickEvent.Callback callback) {
 		clicked(ClickType.CLONE, 2, callback, true);
 	}
 
-	public void setSwapped(ChestMenuClickCallback callback) {
+	public void setSwapped(ChestMenuClickEvent.Callback callback) {
 		clicked(ClickType.SWAP, -1, callback, true);
 	}
 
-	public void setThrown(ChestMenuClickCallback callback) {
+	public void setThrown(ChestMenuClickEvent.Callback callback) {
 		clicked(ClickType.THROW, -1, callback, true);
 	}
 
-	public void setShiftLeftClicked(ChestMenuClickCallback callback) {
+	public void setShiftLeftClicked(ChestMenuClickEvent.Callback callback) {
 		clicked(ClickType.QUICK_MOVE, 0, callback, true);
 	}
 
-	public void setShiftRightClicked(ChestMenuClickCallback callback) {
+	public void setShiftRightClicked(ChestMenuClickEvent.Callback callback) {
 		clicked(ClickType.QUICK_MOVE, 1, callback, true);
 	}
 
-	public void setDoubleClicked(ChestMenuClickCallback callback) {
+	public void setDoubleClicked(ChestMenuClickEvent.Callback callback) {
 		clicked(ClickType.PICKUP_ALL, -1, callback, true);
 	}
 }
