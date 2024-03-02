@@ -30,6 +30,7 @@ import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.JavaMembers;
 import net.minecraft.ChatFormatting;
@@ -57,7 +58,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluids;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -529,6 +532,17 @@ public class KubeJSCommands {
 
 		for (var id : tags) {
 			player.sendSystemMessage(copy("'#" + id + "'", ChatFormatting.YELLOW, "Item Tag [" + IngredientPlatformHelper.get().tag(id.toString()).kjs$getStacks().size() + " items]"));
+		}
+
+		var item = stack.getItem();
+		if (item instanceof BucketItem) {
+			var fluid = ((BucketItem)item).arch$getFluid();
+			if (fluid != Fluids.EMPTY) {
+				List<ResourceLocation> fluidTags = Tags.byFluid(fluid).map(TagKey::location).toList();
+				for (var id : fluidTags) {
+					player.sendSystemMessage(copy("'#" + id + "'", ChatFormatting.LIGHT_PURPLE, "Fluid Tag [" + IngredientPlatformHelper.get().tag(id.toString()).kjs$getStacks().size() + "]"));
+				}
+			}
 		}
 
 		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + IngredientPlatformHelper.get().mod(stack.kjs$getMod()).kjs$getStacks().size() + " items]"));
