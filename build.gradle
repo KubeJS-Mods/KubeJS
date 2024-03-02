@@ -4,7 +4,7 @@ plugins {
 	id 'base'
 	id 'java'
 	id 'maven-publish'
-	id "dev.architectury.loom" version "1.4-SNAPSHOT"
+	id "dev.architectury.loom" version "1.5-SNAPSHOT"
 	id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
