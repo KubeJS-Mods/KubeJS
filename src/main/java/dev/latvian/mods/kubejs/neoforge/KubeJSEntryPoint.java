@@ -20,7 +20,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.IExtensionPoint;
+import net.neoforged.fml.IExtensionPoint.DisplayTest;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -31,7 +31,6 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
-import net.neoforged.neoforge.network.NetworkConstants;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 import java.util.AbstractMap;
@@ -56,7 +55,7 @@ public class KubeJSEntryPoint {
 		KubeJS.instance.setup();
 
 		if (CommonProperties.get().serverOnly) {
-			ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+			ModLoadingContext.get().registerExtensionPoint(DisplayTest.class, () -> new DisplayTest(() -> DisplayTest.IGNORESERVERONLY, (a, b) -> true));
 		}
 
 		NeoForge.EVENT_BUS.addListener(KubeJSEntryPoint::itemDestroyed);
