@@ -43,20 +43,23 @@ import net.minecraft.commands.arguments.ObjectiveArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.ScoreHolderArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.io.FileUtils;
 
@@ -485,12 +488,15 @@ public class KubeJSCommands {
 	}
 
 	private static Component copy(String s, ChatFormatting col, String info) {
-		var component = Component.literal("- ");
-		component.setStyle(component.getStyle().withColor(TextColor.fromLegacyFormat(ChatFormatting.GRAY)));
-		component.setStyle(component.getStyle().withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, s)));
-		component.setStyle(component.getStyle().withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(info + " (Click to copy)"))));
-		component.append(Component.literal(s).withStyle(col));
-		return component;
+		return copy(Component.literal(s).withStyle(col), info);
+	}
+
+	private static Component copy(Component c, String info) {
+		return Component.literal("- ")
+			.withStyle(ChatFormatting.GRAY)
+			.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, c.getString())))
+			.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(info + " (Click to copy)"))))
+			.append(c);
 	}
 
 	private static void link(CommandSourceStack source, ChatFormatting color, String name, String url) {
@@ -522,22 +528,57 @@ public class KubeJSCommands {
 	private static int hand(ServerPlayer player, InteractionHand hand) {
 		player.sendSystemMessage(Component.literal("Item in hand:"));
 		var stack = player.getItemInHand(hand);
+		var holder = stack.getItemHolder();
+
+		// item info
+		// id
 		player.sendSystemMessage(copy(ItemStackJS.toItemString(stack), ChatFormatting.GREEN, "Item ID"));
-
-		List<ResourceLocation> tags = new ArrayList<>(stack.kjs$getTags());
-		tags.sort(null);
-
-		for (var id : tags) {
-			player.sendSystemMessage(copy("'#" + id + "'", ChatFormatting.YELLOW, "Item Tag [" + IngredientPlatformHelper.get().tag(id.toString()).kjs$getStacks().size() + " items]"));
+		// item tags
+		var itemTags = holder.tags().toList();
+		for (var tag : itemTags) {
+			var id = "'#%s'".formatted(tag.location());
+			var size = BuiltInRegistries.ITEM.getTag(tag).map(HolderSet::size).orElse(0);
+			player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Item Tag [" + size + " items]"));
 		}
-
+		// mod
 		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + IngredientPlatformHelper.get().mod(stack.kjs$getMod()).kjs$getStacks().size() + " items]"));
-
+		// TODO: creative tabs (neo has made them client only in 1.20.1, this is fixed in 1.20.4)
 		/*var cat = stack.getItem().getItemCategory();
-
 		if (cat != null) {
 			player.sendSystemMessage(copy("'%" + cat.getRecipeFolderName() + "'", ChatFormatting.LIGHT_PURPLE, "Item Group [" + IngredientPlatformHelper.get().creativeTab(cat).kjs$getStacks().size() + " items]"));
 		}*/
+
+		// block info
+		if (stack.getItem() instanceof BlockItem blockItem) {
+			player.sendSystemMessage(Component.literal("Held block:"));
+			var block = blockItem.getBlock();
+			var blockHolder = block.builtInRegistryHolder();
+			// id
+			player.sendSystemMessage(copy(block.kjs$getId(), ChatFormatting.GREEN, "Block ID"));
+			// block tags
+			var blockTags = blockHolder.tags().toList();
+			for (var tag : blockTags) {
+				var id = "'#%s'".formatted(tag.location());
+				var size = BuiltInRegistries.BLOCK.getTag(tag).map(HolderSet::size).orElse(0);
+				player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Block Tag [" + size + " items]"));
+			}
+		}
+
+		// fluid info (TODO: bucket only for now, make generic in 1.20.4)
+		if (stack.getItem() instanceof BucketItem bucket) {
+			player.sendSystemMessage(Component.literal("Held fluid:"));
+			var fluid = bucket.arch$getFluid();
+			var fluidHolder = fluid.builtInRegistryHolder();
+			// id
+			player.sendSystemMessage(copy(fluidHolder.key().location().toString(), ChatFormatting.GREEN, "Fluid ID"));
+			// fluid tags
+			var fluidTags = fluidHolder.tags().toList();
+			for (var tag : fluidTags) {
+				var id = "'#%s'".formatted(tag.location());
+				var size = BuiltInRegistries.FLUID.getTag(tag).map(HolderSet::size).orElse(0);
+				player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Fluid Tag [" + size + " items]"));
+			}
+		}
 
 		return 1;
 	}
