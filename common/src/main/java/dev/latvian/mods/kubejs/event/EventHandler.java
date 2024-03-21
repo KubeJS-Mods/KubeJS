@@ -14,8 +14,8 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -142,7 +142,7 @@ public final class EventHandler extends BaseFunction {
 			map = eventContainers;
 		} else {
 			if (extraEventContainers == null) {
-				extraEventContainers = extra.identity ? new IdentityHashMap<>() : new HashMap<>();
+				extraEventContainers = extra.identity ? new LinkedHashMap<>() : new HashMap<>();
 			}
 
 			map = extraEventContainers.get(extraId);
@@ -362,7 +362,7 @@ public final class EventHandler extends BaseFunction {
 			return Set.of();
 		}
 
-		var set = new HashSet<>();
+		var set = new LinkedHashSet<>();
 
 		forEachListener(type, c -> {
 			if (c.extraId != null) {
