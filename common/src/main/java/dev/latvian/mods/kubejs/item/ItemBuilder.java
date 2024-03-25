@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
@@ -112,6 +113,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient UseCallback use;
 	public transient FinishUsingCallback finishUsing;
 	public transient ReleaseUsingCallback releaseUsing;
+	public transient Predicate<HurtEnemyContext> hurtEnemy;
 
 	public String texture;
 	public String parentModel;
@@ -140,6 +142,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		finishUsing = null;
 		releaseUsing = null;
 		fireResistant = false;
+		hurtEnemy = null;
 	}
 
 	@Override
@@ -445,6 +448,16 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
+	@Info("""
+		Gets called when the item is used to hurt an entity.
+		
+		For example, when using a sword to hit a mob, this is called.
+		""")
+	public ItemBuilder hurtEnemy(Predicate<HurtEnemyContext> context) {
+		this.hurtEnemy = context;
+		return this;
+	}
+
 	@FunctionalInterface
 	public interface UseCallback {
 		boolean use(Level level, Player player, InteractionHand interactionHand);
@@ -464,4 +477,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public interface NameCallback {
 		Component apply(ItemStack itemStack);
 	}
+
+	public record HurtEnemyContext(ItemStack getItem, LivingEntity getTarget, LivingEntity getAttacker) {}
 }
