@@ -209,6 +209,13 @@ public abstract class ItemMixin implements ItemKJS {
 		}
 	}
 
+	@Inject(method = "hurtEnemy", at = @At("HEAD"), cancellable = true)
+	private void hurtEnemy(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2, CallbackInfoReturnable<Boolean> cir) {
+		if (kjs$itemBuilder != null && kjs$itemBuilder.hurtEnemy != null) {
+			cir.setReturnValue(kjs$itemBuilder.hurtEnemy.test(new ItemBuilder.HurtEnemyContext(itemStack, livingEntity, livingEntity2)));
+		}
+	}
+
 	@Override
 	public Ingredient kjs$asIngredient() {
 		if (kjs$asIngredient == null) {
