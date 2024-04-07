@@ -9,16 +9,15 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 public class KubeJSCreativeTabs {
 	public static final DeferredRegister<CreativeModeTab> REGISTER = DeferredRegister.create(KubeJS.MOD_ID, Registries.CREATIVE_MODE_TAB);
 
-	public static void init() {
+	public static void init() {	
 		if (!CommonProperties.get().serverOnly) {
 			REGISTER.register("tab", () -> MiscPlatformHelper.get().creativeModeTab(
-				Component.literal("KubeJS"),
+				Component.translatable("itemGroup.kubejs.tab"),
 				() -> {
 					var is = ItemStackJS.of(CommonProperties.get().creativeModeTabIcon);
 					return is.isEmpty() ? Items.PURPLE_DYE.getDefaultInstance() : is;
@@ -29,7 +28,6 @@ public class KubeJSCreativeTabs {
 					}
 				}
 			));
-
 			REGISTER.register();
 		}
 	}
