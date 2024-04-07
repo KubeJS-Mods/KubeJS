@@ -40,8 +40,7 @@ public class NeoForgeKubeJSPlugin extends BuiltinKubeJSPlugin {
 
 		if (event.getType().isStartup()) {
 			event.add("NativeEvents", new NativeEventWrapper("NativeEvents", NeoForge.EVENT_BUS));
-			KubeJSEntryPoint.eventBus().ifPresent(bus -> event.add("NativeModEvents",
-				new NativeEventWrapper("NativeModEvents", bus)));
+			KubeJSEntryPoint.eventBus().ifPresent(bus -> event.add("NativeModEvents", new NativeEventWrapper("NativeModEvents", bus)));
 		}
 	}
 

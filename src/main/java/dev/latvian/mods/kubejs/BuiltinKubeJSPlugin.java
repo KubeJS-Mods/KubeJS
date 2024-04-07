@@ -110,7 +110,6 @@ import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.FluidAmounts;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import dev.latvian.mods.kubejs.util.LegacyCodeHandler;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
@@ -344,12 +343,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("ResourceLocation", ResourceLocation.class);
 		event.add("Duration", Duration.class);
 
-		if (event.getType().isServer()) {
-			event.add("settings", new LegacyCodeHandler("settings"));
-		}
-
-		event.add("onEvent", new LegacyCodeHandler("onEvent()"));
-		event.add("java", new LegacyCodeHandler("java()"));
+		// event.add("onEvent", new LegacyCodeHandler("onEvent()"));
 
 		if (event.getType().isServer() && event.manager instanceof ServerScriptManager sm && sm.server != null) {
 			var se = sm.server.kjs$getScheduledEvents();

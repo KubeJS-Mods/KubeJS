@@ -12,17 +12,5 @@
 			"name": "NeoForge",
 			"url": "https://maven.saps.dev/releases/dev/latvian/mods/kubejs-neoforge/{version}/kubejs-neoforge-{version}.jar"
 		}
-	],
-	"event_groups": [
-		"BlockEvents",
-		"ClientEvents",
-		"EntityEvents",
-		"ItemEvents",
-		"LevelEvents",
-		"NetworkEvents",
-		"PlayerEvents",
-		"ServerEvents",
-		"StartupEvents",
-		"WorldgenEvents"
 	]
 }
