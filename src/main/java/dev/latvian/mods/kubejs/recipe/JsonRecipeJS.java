@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
 
 public class JsonRecipeJS extends RecipeJS {
 	@Override
@@ -18,8 +17,15 @@ public class JsonRecipeJS extends RecipeJS {
 	@Override
 	public boolean hasInput(ReplacementMatch match) {
 		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
-			for (var ingredient : getOriginalRecipe().getIngredients()) {
-				if (ingredient != Ingredient.EMPTY && ingredient.kjs$canBeUsedForMatching() && m.contains(ingredient)) {
+			var arr = getOriginalRecipe().getIngredients();
+
+			//noinspection ConstantValue
+			if (arr == null || arr.isEmpty()) {
+				return false;
+			}
+
+			for (var ingredient : arr) {
+				if (ingredient != null && ingredient != Ingredient.EMPTY && ingredient.kjs$canBeUsedForMatching() && m.contains(ingredient)) {
 					return true;
 				}
 			}
@@ -34,10 +40,10 @@ public class JsonRecipeJS extends RecipeJS {
 	}
 
 	@Override
-	@SuppressWarnings("ConstantValue")
 	public boolean hasOutput(ReplacementMatch match) {
 		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
-			var result = ((Recipe<?>) this).getResultItem(UtilsJS.staticRegistryAccess);
+			var result = getOriginalRecipe().getResultItem(UtilsJS.staticRegistryAccess);
+			//noinspection ConstantValue
 			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.contains(result);
 		}
 

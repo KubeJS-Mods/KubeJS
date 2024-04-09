@@ -716,7 +716,11 @@ public class RecipesEventJS extends EventJS {
 	}
 
 	public static void runInParallel(final Runnable runnable) {
-		PARALLEL_THREAD_POOL.invoke(ForkJoinTask.adapt(runnable));
+		try {
+			PARALLEL_THREAD_POOL.invoke(ForkJoinTask.adapt(runnable));
+		} catch (Throwable ex) {
+			ConsoleJS.SERVER.error("Error running a recipe task", ex, SKIP_ERROR);
+		}
 	}
 
 	public static <T> T runInParallel(final Callable<T> callable) {
