@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
 
 public class JsonRecipeJS extends RecipeJS {
 	@Override
@@ -37,7 +36,7 @@ public class JsonRecipeJS extends RecipeJS {
 	@SuppressWarnings("ConstantValue")
 	public boolean hasOutput(ReplacementMatch match) {
 		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
-			var result = ((Recipe<?>) this).getResultItem(UtilsJS.staticRegistryAccess);
+			var result = getOriginalRecipe().getResultItem(UtilsJS.staticRegistryAccess);
 			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.contains(result);
 		}
 
