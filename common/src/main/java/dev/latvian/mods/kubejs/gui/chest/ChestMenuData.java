@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.gui.chest;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
 
@@ -9,7 +10,7 @@ import java.util.function.Consumer;
 
 public class ChestMenuData {
 	public final ServerPlayer player;
-	public final Component title;
+	public Component title;
 	public final int rows;
 	public final ChestMenuSlot[] slots;
 	public ChestMenuClickEvent.Callback anyClicked;
@@ -17,7 +18,7 @@ public class ChestMenuData {
 	public boolean playerSlots;
 	public Runnable closed;
 	public ItemStack mouseItem;
-	public ItemStack[] capturedInventory;
+	public Container capturedInventory;
 
 	public ChestMenuData(ServerPlayer player, Component title, int rows) {
 		this.player = player;
