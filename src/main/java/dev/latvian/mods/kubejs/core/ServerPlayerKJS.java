@@ -21,7 +21,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -186,20 +188,22 @@ public interface ServerPlayerKJS extends PlayerKJS {
 		});
 	}
 
-	default ItemStack[] kjs$captureInventory(boolean autoRestore) {
+	default Container kjs$captureInventory(boolean autoRestore) {
 		var playerItems = kjs$self().getInventory().items;
 
-		var captured = new ItemStack[playerItems.size()];
+		var captured = new SimpleContainer(playerItems.size());
 		var map = new HashMap<Integer, ItemStack>();
 
-		for (int i = 0; i < captured.length; i++) {
+		for (int i = 0; i < playerItems.size(); i++) {
 			var c = playerItems.set(i, ItemStack.EMPTY);
 
-			if (autoRestore && !c.isEmpty()) {
-				map.put(i, c);
-			}
+			if (!c.isEmpty()) {
+				if (autoRestore) {
+					map.put(i, c);
+				}
 
-			captured[i] = c.copy();
+				captured.setItem(i, c.copy());
+			}
 		}
 
 		if (autoRestore && !map.isEmpty()) {
@@ -213,12 +217,16 @@ public interface ServerPlayerKJS extends PlayerKJS {
 		var data = new ChestMenuData(kjs$self(), title, Mth.clamp(rows, 1, 6));
 		gui.accept(data);
 
-		if (kjs$self().containerMenu instanceof CustomChestMenu open && open.data.rows == data.rows && open.data.title.equals(title)) {
+		if (kjs$self().containerMenu instanceof CustomChestMenu open) {
 			data.capturedInventory = open.data.capturedInventory;
+		} else {
+			data.capturedInventory = kjs$captureInventory(true);
+		}
+
+		if (kjs$self().containerMenu instanceof CustomChestMenu open && open.data.rows == data.rows && open.data.title.equals(title)) {
 			open.data = data;
 			data.sync();
 		} else {
-			data.capturedInventory = data.playerSlots ? new ItemStack[0] : kjs$captureInventory(true);
 			data.sync();
 
 			kjs$self().openMenu(new MenuProvider() {
@@ -229,7 +237,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 
 				@Override
 				public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-					return new CustomChestMenu(i, inventory, data);
+					return new CustomChestMenu(i, data);
 				}
 			});
 		}

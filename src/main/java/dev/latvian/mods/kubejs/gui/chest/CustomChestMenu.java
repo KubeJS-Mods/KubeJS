@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.gui.chest;
 
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
@@ -23,7 +22,7 @@ public class CustomChestMenu extends AbstractContainerMenu {
 
 	public ChestMenuData data;
 
-	public CustomChestMenu(int containerId, Inventory inventory, ChestMenuData data) {
+	public CustomChestMenu(int containerId, ChestMenuData data) {
 		super(TYPES[data.rows - 1], containerId);
 		this.data = data;
 
@@ -38,12 +37,12 @@ public class CustomChestMenu extends AbstractContainerMenu {
 		if (data.playerSlots) {
 			for (int y = 0; y < 3; y++) {
 				for (int x = 0; x < 9; x++) {
-					addSlot(new Slot(inventory, x + y * 9 + 9, 8 + x * 18, 103 + y * 18 + k));
+					addSlot(new Slot(data.capturedInventory, x + y * 9 + 9, 8 + x * 18, 103 + y * 18 + k));
 				}
 			}
 
 			for (int x = 0; x < 9; x++) {
-				addSlot(new Slot(inventory, x, 8 + x * 18, 161 + k));
+				addSlot(new Slot(data.capturedInventory, x, 8 + x * 18, 161 + k));
 			}
 		} else {
 			for (int y = 0; y < 3; y++) {
