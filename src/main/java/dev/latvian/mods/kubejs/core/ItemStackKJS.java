@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.core;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.OutputItem;
@@ -16,6 +18,7 @@ import dev.latvian.mods.rhino.mod.util.NbtType;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
@@ -27,15 +30,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.Blocks;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,7 +70,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 			return stack.isEmpty();
 		}
 
-		return ItemStack.isSameItemSameTags(self, stack);
+		return ItemStack.isSameItemSameComponents(self, stack);
 	}
 
 	default ResourceLocation kjs$getIdLocation() {
@@ -102,7 +104,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 	}
 
 	default void kjs$removeTag() {
-		kjs$self().setTag(null);
+		ItemStackJS.setTag(kjs$self(), null);
 	}
 
 	default String kjs$getNbtString() {
@@ -126,30 +128,21 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		var is = kjs$self().copy();
 
 		if (displayName != null) {
-			is.setHoverName(displayName);
+			is.set(DataComponents.CUSTOM_NAME, displayName);
 		} else {
-			is.resetHoverName();
+			is.remove(DataComponents.CUSTOM_NAME);
 		}
 
 		return is;
 	}
 
-	default Map<String, Integer> kjs$getEnchantments() {
-		var map = new HashMap<String, Integer>();
-
-		for (var entry : EnchantmentHelper.getEnchantments(kjs$self()).entrySet()) {
-			var id = RegistryInfo.ENCHANTMENT.getId(entry.getKey());
-
-			if (id != null) {
-				map.put(id.toString(), entry.getValue());
-			}
-		}
-
-		return map;
+	default ItemEnchantments kjs$getEnchantments() {
+		return kjs$self().get(DataComponents.ENCHANTMENTS);
 	}
 
 	default boolean kjs$hasEnchantment(Enchantment enchantment, int level) {
-		return EnchantmentHelper.getItemEnchantmentLevel(enchantment, kjs$self()) >= level;
+		var e = kjs$getEnchantments();
+		return e != null && e.getLevel(enchantment) >= level;
 	}
 
 	@RemapForJS("enchant")
@@ -315,17 +308,8 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 	}
 
 	@Override
-	default JsonObject toJsonJS() {
-		var json = new JsonObject();
-		json.addProperty("item", kjs$getId());
-		json.addProperty("count", kjs$self().getCount());
-		var tag = kjs$self().getTag();
-
-		if (tag != null) {
-			json.addProperty("nbt", tag.toString());
-		}
-
-		return json;
+	default JsonElement toJsonJS() {
+		return ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, kjs$self()).result().orElse(JsonNull.INSTANCE);
 	}
 
 	default OutputItem kjs$withChance(double chance) {

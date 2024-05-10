@@ -11,7 +11,10 @@ import com.mojang.serialization.JsonOps;
 import dev.architectury.hooks.item.ItemStackHooks;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -32,6 +35,8 @@ public abstract class IngredientAction extends IngredientActionFilter {
 		dynamic -> fromJson(dynamic.convert(JsonOps.INSTANCE).getValue()),
 		action -> new Dynamic<>(JsonOps.INSTANCE, action.toJson())
 	);
+
+	public static final StreamCodec<ByteBuf, IngredientAction> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
 
 	static {
 		FACTORY_MAP.put("custom", json -> new CustomIngredientAction(json.get("id").getAsString()));

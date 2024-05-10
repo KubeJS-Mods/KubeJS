@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import com.google.common.collect.Multimap;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
@@ -18,14 +19,14 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class AfterRecipesLoadedEventJS extends EventJS {
-	private final Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> recipeMap;
+	private final Multimap<RecipeType<?>, RecipeHolder<?>> recipeTypeMap;
 	private final Map<ResourceLocation, RecipeHolder<?>> recipeIdMap;
 
 	private List<RecipeLikeKJS> originalRecipes;
 
-	public AfterRecipesLoadedEventJS(Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> r, Map<ResourceLocation, RecipeHolder<?>> n) {
-		recipeMap = r;
-		recipeIdMap = n;
+	public AfterRecipesLoadedEventJS(Multimap<RecipeType<?>, RecipeHolder<?>> recipeTypeMap, Map<ResourceLocation, RecipeHolder<?>> recipeIdMap) {
+		this.recipeTypeMap = recipeTypeMap;
+		this.recipeIdMap = recipeIdMap;
 	}
 
 	private List<RecipeLikeKJS> getOriginalRecipes() {
@@ -74,7 +75,9 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 					map.remove(r.kjs$getOrCreateId());
 				}
 
-				recipeIdMap.remove(r.kjs$getOrCreateId());
+				var holder = recipeIdMap.remove(r.kjs$getOrCreateId());
+				recipeTypeMap.values().remove(holder);
+
 				itr.remove();
 				count++;
 

@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.net.SendDataFromClientMessage;
+import dev.latvian.mods.kubejs.net.SendDataFromClientPayload;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
-import dev.latvian.mods.kubejs.util.NotificationBuilder;
+import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -25,7 +25,7 @@ public interface ClientPlayerKJS extends PlayerKJS {
 	@Override
 	default void kjs$sendData(String channel, @Nullable CompoundTag data) {
 		if (!channel.isEmpty()) {
-			new SendDataFromClientMessage(channel, data).sendToServer();
+			new SendDataFromClientPayload(channel, data).sendToServer();
 		}
 	}
 
@@ -51,7 +51,7 @@ public interface ClientPlayerKJS extends PlayerKJS {
 	}
 
 	@Override
-	default void kjs$notify(NotificationBuilder notification) {
+	default void kjs$notify(NotificationToastData notification) {
 		notification.show();
 	}
 }

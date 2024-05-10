@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.neoforge;
 
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.KubeJSComponents;
 import dev.latvian.mods.kubejs.bindings.event.EntityEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
@@ -11,6 +12,7 @@ import dev.latvian.mods.kubejs.item.ItemDestroyedEventJS;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallback;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabEvent;
 import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
+import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -20,8 +22,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.IExtensionPoint.DisplayTest;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -48,6 +48,7 @@ public class KubeJSEntryPoint {
 		bus.addListener(EventPriority.LOW, KubeJSEntryPoint::initRegistries);
 		bus.addListener(EventPriority.LOW, KubeJSEntryPoint::commonSetup);
 		bus.addListener(EventPriority.LOW, KubeJSEntryPoint::creativeTab);
+		bus.addListener(KubeJSNet::register);
 
 		BUS.set(bus);
 
@@ -55,7 +56,7 @@ public class KubeJSEntryPoint {
 		KubeJS.instance.setup();
 
 		if (CommonProperties.get().serverOnly) {
-			ModLoadingContext.get().registerExtensionPoint(DisplayTest.class, () -> new DisplayTest(() -> DisplayTest.IGNORESERVERONLY, (a, b) -> true));
+			// FIXME ModLoadingContext.get().registerExtensionPoint(DisplayTest.class, () -> new DisplayTest(() -> DisplayTest.IGNORESERVERONLY, (a, b) -> true));
 		}
 
 		NeoForge.EVENT_BUS.addListener(KubeJSEntryPoint::itemDestroyed);
@@ -65,6 +66,7 @@ public class KubeJSEntryPoint {
 			NeoForgeMod.enableMilkFluid();
 			IngredientHelper.register(bus);
 			KubeJSCreativeTabs.init();
+			KubeJSComponents.init();
 		}
 
 		if (FMLEnvironment.dist == Dist.CLIENT) {

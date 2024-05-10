@@ -5,8 +5,8 @@ import dev.latvian.mods.kubejs.core.CraftingContainerKJS;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -36,7 +36,7 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 		return list;
 	}
 
-	default ItemStack kjs$assemble(CraftingContainer container, RegistryAccess registryAccess) {
+	default ItemStack kjs$assemble(CraftingContainer container, HolderLookup.Provider registryAccess) {
 		if (!kjs$getStage().isEmpty()) {
 			var player = getPlayer(((CraftingContainerKJS) container).kjs$getMenu());
 

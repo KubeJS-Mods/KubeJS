@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 
@@ -13,36 +13,8 @@ public class BasicEnchantment extends Enchantment {
 	public final EnchantmentBuilder enchantmentBuilder;
 
 	public BasicEnchantment(EnchantmentBuilder b) {
-		super(b.rarity, b.category, b.slots);
+		super(new EnchantmentDefinition(b.supportedItems, b.primaryItems, b.weight, b.maxLevel, b.minCost, b.maxCost, b.anvilCost, b.requiredFeatures, b.slots == null ? new EquipmentSlot[]{EquipmentSlot.MAINHAND} : b.slots.toArray(new EquipmentSlot[0])));
 		enchantmentBuilder = b;
-	}
-
-	@Override
-	public int getMinLevel() {
-		return enchantmentBuilder.minLevel;
-	}
-
-	@Override
-	public int getMaxLevel() {
-		return enchantmentBuilder.maxLevel;
-	}
-
-	@Override
-	public int getMinCost(int i) {
-		if (enchantmentBuilder.minCost != null) {
-			return enchantmentBuilder.minCost.get(i);
-		}
-
-		return super.getMinCost(i);
-	}
-
-	@Override
-	public int getMaxCost(int i) {
-		if (enchantmentBuilder.maxCost != null) {
-			return enchantmentBuilder.maxCost.get(i);
-		}
-
-		return super.getMaxCost(i);
 	}
 
 	@Override
@@ -54,14 +26,13 @@ public class BasicEnchantment extends Enchantment {
 		return super.getDamageProtection(i, damageSource);
 	}
 
-
 	@Override
-	public float getDamageBonus(int i, MobType mobType) {
+	public float getDamageBonus(int level, EntityType<?> entityType, ItemStack enchantedItem) {
 		if (enchantmentBuilder.damageBonus != null) {
-			return enchantmentBuilder.damageBonus.getDamageBonus(i, UtilsJS.getMobTypeId(mobType));
+			return enchantmentBuilder.damageBonus.getDamageBonus(level, entityType, enchantedItem);
 		}
 
-		return super.getDamageBonus(i, mobType);
+		return super.getDamageBonus(level, entityType, enchantedItem);
 	}
 
 	@Override

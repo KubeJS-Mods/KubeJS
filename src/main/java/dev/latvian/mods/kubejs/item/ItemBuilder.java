@@ -45,32 +45,11 @@ import java.util.function.ToIntFunction;
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class ItemBuilder extends BuilderBase<Item> {
 	public static final Map<String, Tier> TOOL_TIERS = new HashMap<>();
-	public static final Map<String, ArmorMaterial> ARMOR_TIERS = new HashMap<>();
 
 	static {
 		for (var tier : Tiers.values()) {
 			TOOL_TIERS.put(tier.toString().toLowerCase(), tier);
 		}
-
-		for (var tier : ArmorMaterials.values()) {
-			ARMOR_TIERS.put(tier.toString().toLowerCase(), tier);
-		}
-	}
-
-	public static ArmorMaterial toArmorMaterial(Object o) {
-		if (o instanceof ArmorMaterial armorMaterial) {
-			return armorMaterial;
-		}
-
-		String asString = String.valueOf(o);
-
-		ArmorMaterial armorMaterial = ItemBuilder.ARMOR_TIERS.get(asString);
-		if (armorMaterial != null) {
-			return armorMaterial;
-		}
-
-		String withKube = KubeJS.appendModId(asString);
-		return ItemBuilder.ARMOR_TIERS.getOrDefault(withKube, ArmorMaterials.IRON);
 	}
 
 	public static Tier toToolTier(Object o) {
@@ -432,7 +411,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	@Info("""
 		Gets called when the item is used to hurt an entity.
-		
+				
 		For example, when using a sword to hit a mob, this is called.
 		""")
 	public ItemBuilder hurtEnemy(Predicate<HurtEnemyContext> context) {
@@ -460,5 +439,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		Component apply(ItemStack itemStack);
 	}
 
-	public record HurtEnemyContext(ItemStack getItem, LivingEntity getTarget, LivingEntity getAttacker) {}
+	public record HurtEnemyContext(ItemStack getItem, LivingEntity getTarget, LivingEntity getAttacker) {
+	}
 }

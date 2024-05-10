@@ -2,9 +2,13 @@ package dev.latvian.mods.kubejs.loot;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import com.google.gson.JsonParseException;
+import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.KubeJSCodecs;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
@@ -15,6 +19,8 @@ import java.util.function.Consumer;
 
 public interface FunctionContainer {
 	FunctionContainer addFunction(JsonObject o);
+
+	HolderLookup.Provider getRegistryAccess();
 
 	default FunctionContainer addConditionalFunction(Consumer<ConditionalFunction> func) {
 		var conditionalFunction = new ConditionalFunction();
@@ -31,14 +37,14 @@ public interface FunctionContainer {
 	default FunctionContainer count(NumberProvider count) {
 		var o = new JsonObject();
 		o.addProperty("function", "minecraft:set_count");
-		o.add("count", UtilsJS.numberProviderJson(count));
+		o.add("count", KubeJSCodecs.numberProviderJson(count));
 		return addFunction(o);
 	}
 
 	default FunctionContainer enchantWithLevels(NumberProvider levels, boolean treasure) {
 		var o = new JsonObject();
 		o.addProperty("function", "minecraft:enchant_with_levels");
-		o.add("levels", UtilsJS.numberProviderJson(levels));
+		o.add("levels", KubeJSCodecs.numberProviderJson(levels));
 		o.addProperty("treasure", treasure);
 		return addFunction(o);
 	}
@@ -73,7 +79,7 @@ public interface FunctionContainer {
 	default FunctionContainer lootingEnchant(NumberProvider count, int limit) {
 		var o = new JsonObject();
 		o.addProperty("function", "minecraft:looting_enchant");
-		o.add("count", UtilsJS.numberProviderJson(count));
+		o.add("count", KubeJSCodecs.numberProviderJson(count));
 		o.addProperty("limit", limit);
 		return addFunction(o);
 	}
@@ -81,7 +87,7 @@ public interface FunctionContainer {
 	default FunctionContainer damage(NumberProvider damage) {
 		var o = new JsonObject();
 		o.addProperty("function", "minecraft:set_damage");
-		o.add("damage", UtilsJS.numberProviderJson(damage));
+		o.add("damage", KubeJSCodecs.numberProviderJson(damage));
 		return addFunction(o);
 	}
 
@@ -90,7 +96,7 @@ public interface FunctionContainer {
 	default FunctionContainer name(Component name, @Nullable LootContext.EntityTarget entity) {
 		var o = new JsonObject();
 		o.addProperty("function", "minecraft:set_name");
-		o.add("name", Component.Serializer.toJsonTree(name));
+		o.add("name", ComponentSerialization.CODEC.encodeStart(getRegistryAccess().createSerializationContext(JsonOps.INSTANCE), name).getOrThrow(JsonParseException::new));
 
 		if (entity != null) {
 			o.addProperty("entity", entity.name);

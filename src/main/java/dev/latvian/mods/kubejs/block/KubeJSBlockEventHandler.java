@@ -27,7 +27,7 @@ public class KubeJSBlockEventHandler {
 
 	private static EventResult rightClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
 		if (BlockEvents.RIGHT_CLICKED.hasListeners() && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem())) {
-			return BlockEvents.RIGHT_CLICKED.post(player, player.level().getBlockState(pos), new BlockRightClickedEventJS(player, hand, pos, direction)).arch();
+			return BlockEvents.RIGHT_CLICKED.post(player, player.level().getBlockState(pos), new BlockRightClickedEventJS(null, player, hand, pos, direction)).arch();
 		}
 
 		return EventResult.pass();

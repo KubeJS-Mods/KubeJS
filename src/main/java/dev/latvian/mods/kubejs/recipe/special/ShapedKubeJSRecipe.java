@@ -10,15 +10,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import it.unimi.dsi.fastutil.chars.CharArraySet;
 import it.unimi.dsi.fastutil.chars.CharSet;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ExtraCodecs;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -71,9 +68,8 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	private final ModifyRecipeResultCallback modifyResult;
 	private final String stage;
 
-	public ShapedKubeJSRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, ItemStack result,
-							  boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
-		super(group, category, pattern, result);
+	public ShapedKubeJSRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, ItemStack result, boolean showNotification, boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
+		super(group, category, pattern, result, showNotification);
 		this.mirror = mirror;
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
@@ -96,6 +92,10 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 		return modifyResult;
 	}
 
+	public boolean kjs$getMirror() {
+		return mirror;
+	}
+
 	@Override
 	public String kjs$getStage() {
 		return stage;
@@ -107,7 +107,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	}
 
 	@Override
-	public ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
+	public ItemStack assemble(CraftingContainer container, HolderLookup.Provider registryAccess) {
 		return kjs$assemble(container, registryAccess);
 	}
 
@@ -130,77 +130,58 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 	public static class SerializerKJS implements RecipeSerializer<ShapedKubeJSRecipe> {
 
-		// registry replacement-safe(?)
-		private static final RecipeSerializer<ShapedRecipe> SHAPED = UtilsJS.cast(RegistryInfo.RECIPE_SERIALIZER.getValue(new ResourceLocation("crafting_shaped")));
-
 		// TODO: this is still a bit of a mess
-		public static final Codec<ShapedKubeJSRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final MapCodec<ShapedKubeJSRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			// manually copied from the shaped recipe codec
 			// (would be nice if we could just swap out specifically the pattern codec from the underlying codec)
-			ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(ShapedRecipe::getGroup),
+			Codec.STRING.optionalFieldOf("group", "").forGetter(ShapedRecipe::getGroup),
 			CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(ShapedRecipe::category),
 			// kubejs modified keys
 			PATTERN_CODEC.forGetter(recipe -> recipe.pattern),
-			ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(shapedRecipe -> shapedRecipe.result),
-			Codec.BOOL.optionalFieldOf(MIRROR_KEY, true).forGetter(recipe -> recipe.mirror),
+			ItemStack.STRICT_CODEC.fieldOf("result").forGetter(r -> r.result),
+			Codec.BOOL.optionalFieldOf("show_notification", true).forGetter(ShapedRecipe::showNotification),
 			// KubeJS additions
-			IngredientAction.CODEC.listOf().optionalFieldOf("kubejs:actions", List.of()).forGetter(r -> r.ingredientActions),
-			ModifyRecipeResultCallback.CODEC.optionalFieldOf("kubejs:modify_result", null).forGetter(r -> r.modifyResult),
-			Codec.STRING.optionalFieldOf("kubejs:stage", "").forGetter(r -> r.stage)
+			Codec.BOOL.optionalFieldOf(MIRROR_KEY, true).forGetter(ShapedKubeJSRecipe::kjs$getMirror),
+			IngredientAction.CODEC.listOf().optionalFieldOf("kubejs:actions", List.of()).forGetter(ShapedKubeJSRecipe::kjs$getIngredientActions),
+			ModifyRecipeResultCallback.CODEC.optionalFieldOf("kubejs:modify_result", null).forGetter(ShapedKubeJSRecipe::kjs$getModifyResult),
+			Codec.STRING.optionalFieldOf("kubejs:stage", "").forGetter(ShapedKubeJSRecipe::kjs$getStage)
 		).apply(instance, ShapedKubeJSRecipe::new));
 
+		public static final StreamCodec<RegistryFriendlyByteBuf, ShapedKubeJSRecipe> STREAM_CODEC = new StreamCodec<>() {
+			@Override
+			public ShapedKubeJSRecipe decode(RegistryFriendlyByteBuf buf) {
+				var group = buf.readUtf();
+				var category = buf.readEnum(CraftingBookCategory.class);
+				var shapedrecipepattern = ShapedRecipePattern.STREAM_CODEC.decode(buf);
+				var result = ItemStack.STREAM_CODEC.decode(buf);
+				var showNotification = buf.readBoolean();
+
+				var mirror = buf.readBoolean();
+				var ingredientActions = buf.readList(IngredientAction.STREAM_CODEC);
+				var modifyResult = ModifyRecipeResultCallback.STREAM_CODEC.decode(buf);
+				var stage = buf.readUtf();
+
+				return new ShapedKubeJSRecipe(group, category, shapedrecipepattern, result, showNotification, mirror, ingredientActions, modifyResult, stage);
+			}
+
+			@Override
+			public void encode(RegistryFriendlyByteBuf buf, ShapedKubeJSRecipe recipe) {
+				buf.writeUtf(recipe.getGroup());
+				buf.writeEnum(recipe.category());
+				ShapedRecipePattern.STREAM_CODEC.encode(buf, recipe.pattern);
+				ItemStack.STREAM_CODEC.encode(buf, recipe.result);
+				buf.writeBoolean(recipe.showNotification);
+			}
+		};
+
 		@Override
-		public Codec<ShapedKubeJSRecipe> codec() {
+		public MapCodec<ShapedKubeJSRecipe> codec() {
 			return CODEC;
 		}
 
 		@Override
-		public ShapedKubeJSRecipe fromNetwork(FriendlyByteBuf buf) {
-			var shapedRecipe = SHAPED.fromNetwork(buf);
-			var flags = (int) buf.readByte();
-
-			// original values
-			var group = shapedRecipe.getGroup();
-			var category = shapedRecipe.category();
-			var pattern = shapedRecipe.pattern;
-			var result = shapedRecipe.result;
-
-			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : List.of();
-			var stage = (flags & RecipeFlags.STAGE) != 0 ? buf.readUtf() : "";
-			var mirror = (flags & RecipeFlags.MIRROR) != 0;
-
-			// the pattern can be used as-is because the shrinking logic is done serverside
-			// additionally, result modification callbacks do not need to be synced to clients
-			return new ShapedKubeJSRecipe(group, category, pattern, result, mirror, ingredientActions, null, stage);
-		}
-
-		@Override
-		public void toNetwork(FriendlyByteBuf buf, ShapedKubeJSRecipe r) {
-			SHAPED.toNetwork(buf, r);
-
-			int flags = 0;
-
-			if (r.ingredientActions != null && !r.ingredientActions.isEmpty()) {
-				flags |= RecipeFlags.INGREDIENT_ACTIONS;
-			}
-
-			if (r.mirror) {
-				flags |= RecipeFlags.MIRROR;
-			}
-
-			if (!r.stage.isEmpty()) {
-				flags |= RecipeFlags.STAGE;
-			}
-
-			buf.writeByte(flags);
-
-			if (r.ingredientActions != null && !r.ingredientActions.isEmpty()) {
-				IngredientAction.writeList(buf, r.ingredientActions);
-			}
-
-			if (!r.stage.isEmpty()) {
-				buf.writeUtf(r.stage);
-			}
+		public StreamCodec<RegistryFriendlyByteBuf, ShapedKubeJSRecipe> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 
@@ -232,5 +213,4 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			? DataResult.error(() -> "Key defines symbols that aren't used in pattern: " + charSet)
 			: DataResult.success(new ShapedRecipePattern(width, height, nonNullList, Optional.of(data)));
 	}
-
 }

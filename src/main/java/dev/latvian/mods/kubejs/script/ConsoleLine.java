@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.script;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.LogType;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -37,6 +38,31 @@ public class ConsoleLine {
 
 	public static final ConsoleLine[] EMPTY_ARRAY = new ConsoleLine[0];
 
+	public static final StreamCodec<FriendlyByteBuf, ConsoleLine> STREAM_CODEC = new StreamCodec<>() {
+		@Override
+		public ConsoleLine decode(FriendlyByteBuf buf) {
+			var console = ScriptType.VALUES[buf.readByte()].console;
+			var timestamp = buf.readLong();
+			var message = buf.readUtf();
+			var line = new ConsoleLine(console, timestamp, message);
+			line.type = LogType.VALUES[buf.readByte()];
+			line.group = "";
+			line.sourceLines = buf.readList(SourceLine::new);
+			line.stackTrace = buf.readList(FriendlyByteBuf::readUtf);
+			return line;
+		}
+
+		@Override
+		public void encode(FriendlyByteBuf buf, ConsoleLine line) {
+			buf.writeByte(line.console.scriptType.ordinal());
+			buf.writeLong(line.timestamp);
+			buf.writeUtf(line.message);
+			buf.writeByte(line.type.ordinal());
+			buf.writeCollection(line.sourceLines, SourceLine::write);
+			buf.writeCollection(line.stackTrace, FriendlyByteBuf::writeUtf);
+		}
+	};
+
 	public final ConsoleJS console;
 	public final long timestamp;
 	public String message;
@@ -51,25 +77,6 @@ public class ConsoleLine {
 		this.console = console;
 		this.timestamp = timestamp;
 		this.message = message;
-	}
-
-	public ConsoleLine(FriendlyByteBuf buf) {
-		this.console = ScriptType.VALUES[buf.readByte()].console;
-		this.timestamp = buf.readLong();
-		this.message = buf.readUtf();
-		this.type = LogType.VALUES[buf.readByte()];
-		this.group = "";
-		this.sourceLines = buf.readList(SourceLine::new);
-		this.stackTrace = buf.readList(FriendlyByteBuf::readUtf);
-	}
-
-	public static void writeToNet(FriendlyByteBuf buf, ConsoleLine line) {
-		buf.writeByte(line.console.scriptType.ordinal());
-		buf.writeLong(line.timestamp);
-		buf.writeUtf(line.message);
-		buf.writeByte(line.type.ordinal());
-		buf.writeCollection(line.sourceLines, SourceLine::write);
-		buf.writeCollection(line.stackTrace, FriendlyByteBuf::writeUtf);
 	}
 
 	public String getText() {

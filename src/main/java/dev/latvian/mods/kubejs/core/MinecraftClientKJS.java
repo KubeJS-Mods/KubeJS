@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.item.ItemClickedEventJS;
-import dev.latvian.mods.kubejs.net.FirstClickMessage;
+import dev.latvian.mods.kubejs.net.FirstClickPayload;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -90,7 +90,7 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 			ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedEventJS(player, InteractionHand.MAIN_HAND, stack));
 		}
 
-		new FirstClickMessage(0).sendToServer();
+		new FirstClickPayload(0).sendToServer();
 	}
 
 	@HideFromJS
@@ -104,7 +104,7 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 			}
 		}
 
-		new FirstClickMessage(1).sendToServer();
+		new FirstClickPayload(1).sendToServer();
 	}
 
 	@HideFromJS

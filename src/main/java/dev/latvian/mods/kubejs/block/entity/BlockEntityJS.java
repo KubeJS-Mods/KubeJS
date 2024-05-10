@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.rhino.mod.util.NbtType;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.protocol.Packet;
@@ -52,8 +53,8 @@ public class BlockEntityJS extends BlockEntity {
 	}
 
 	@Override
-	protected void saveAdditional(CompoundTag tag) {
-		super.saveAdditional(tag);
+	protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+		super.saveAdditional(tag, provider);
 		tag.put("data", data);
 
 		if (tick > 0) {
@@ -80,8 +81,8 @@ public class BlockEntityJS extends BlockEntity {
 	}
 
 	@Override
-	public void load(CompoundTag tag) {
-		super.load(tag);
+	public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+		super.loadAdditional(tag, provider);
 		data = tag.getCompound("data");
 		tick = tag.getInt("tick");
 		cycle = tag.getInt("cycle");
@@ -103,7 +104,7 @@ public class BlockEntityJS extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag getUpdateTag() {
+	public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
 		var tag = new CompoundTag();
 
 		if (info.sync && !data.isEmpty()) {

@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.item.ItemHandlerUtils;
 import dev.latvian.mods.kubejs.player.KubeJSInventoryListener;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.stages.Stages;
-import dev.latvian.mods.kubejs.util.NotificationBuilder;
+import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 @RemapPrefixForJS("kjs$")
 public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedData<Player> {
@@ -176,13 +177,11 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 		throw new NoMixinException();
 	}
 
-	default void kjs$notify(NotificationBuilder builder) {
+	default void kjs$notify(NotificationToastData builder) {
 		throw new NoMixinException();
 	}
 
-	default void kjs$notify(Component title, Component text) {
-		var n = new NotificationBuilder();
-		n.text = Component.empty().append(title).append("\n").append(text);
-		kjs$notify(n);
+	default void kjs$notify(Component title, @Nullable Component text) {
+		kjs$notify(NotificationToastData.ofTitle(title, text));
 	}
 }

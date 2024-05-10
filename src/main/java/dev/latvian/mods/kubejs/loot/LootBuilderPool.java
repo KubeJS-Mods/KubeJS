@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.loot;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
@@ -22,10 +22,10 @@ public class LootBuilderPool implements FunctionContainer, ConditionContainer {
 	public JsonObject toJson() {
 		var json = new JsonObject();
 
-		json.add("rolls", UtilsJS.numberProviderJson(rolls));
+		json.add("rolls", KubeJSCodecs.numberProviderJson(rolls));
 
 		if (bonusRolls != null) {
-			json.add("bonus_rolls", UtilsJS.numberProviderJson(bonusRolls));
+			json.add("bonus_rolls", KubeJSCodecs.numberProviderJson(bonusRolls));
 		}
 
 		if (conditions.size() > 0) {

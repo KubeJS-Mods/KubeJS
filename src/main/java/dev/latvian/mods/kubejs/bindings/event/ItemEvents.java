@@ -15,7 +15,6 @@ import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
 import dev.latvian.mods.kubejs.item.ItemPickedUpEventJS;
 import dev.latvian.mods.kubejs.item.ItemSmeltedEventJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
-import dev.latvian.mods.kubejs.item.custom.ItemArmorTierRegistryEventJS;
 import dev.latvian.mods.kubejs.item.custom.ItemToolTierRegistryEventJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -41,7 +40,6 @@ public interface ItemEvents {
 
 	EventHandler MODIFICATION = GROUP.startup("modification", () -> ItemModificationEventJS.class);
 	EventHandler TOOL_TIER_REGISTRY = GROUP.startup("toolTierRegistry", () -> ItemToolTierRegistryEventJS.class);
-	EventHandler ARMOR_TIER_REGISTRY = GROUP.startup("armorTierRegistry", () -> ItemArmorTierRegistryEventJS.class);
 	EventHandler RIGHT_CLICKED = GROUP.common("rightClicked", () -> ItemClickedEventJS.class).extra(SUPPORTS_ITEM).hasResult();
 	EventHandler CAN_PICK_UP = GROUP.common("canPickUp", () -> ItemPickedUpEventJS.class).extra(SUPPORTS_ITEM).hasResult();
 	EventHandler PICKED_UP = GROUP.common("pickedUp", () -> ItemPickedUpEventJS.class).extra(SUPPORTS_ITEM);

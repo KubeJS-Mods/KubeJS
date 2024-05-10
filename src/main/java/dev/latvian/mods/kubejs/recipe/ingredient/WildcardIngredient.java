@@ -1,18 +1,26 @@
 package dev.latvian.mods.kubejs.recipe.ingredient;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.Nullable;
 
-public class WildcardIngredient extends KubeJSIngredient {
+import java.util.stream.Stream;
+
+public class WildcardIngredient implements KubeJSIngredient {
 	public static WildcardIngredient INSTANCE = new WildcardIngredient();
 
-	public static final Codec<WildcardIngredient> CODEC = Codec.unit(INSTANCE);
+	public static final MapCodec<WildcardIngredient> CODEC = MapCodec.unit(INSTANCE);
 
 	private WildcardIngredient() {
-		super(IngredientHelper.WILDCARD);
+	}
+
+	@Override
+	public IngredientType<?> getType() {
+		return IngredientHelper.WILDCARD.get();
 	}
 
 	@Override
@@ -21,9 +29,7 @@ public class WildcardIngredient extends KubeJSIngredient {
 	}
 
 	@Override
-	protected void dissolve() {
-		if (this.itemStacks == null) {
-			this.itemStacks = ItemStackJS.getList().toArray(new ItemStack[0]);
-		}
+	public Stream<ItemStack> getItems() {
+		return ItemStackJS.getList().stream();
 	}
 }

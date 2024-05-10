@@ -38,6 +38,10 @@ public abstract class EntityMixin implements EntityKJS {
 		return kjs$persistentData;
 	}
 
+	@Shadow(remap = false)
+	@RemapForJS("getForgePersistentData")
+	public abstract CompoundTag getPersistentData();
+
 	@Inject(method = "saveWithoutId", at = @At("RETURN"))
 	private void saveKJS(CompoundTag tag, CallbackInfoReturnable<CompoundTag> ci) {
 		if (kjs$persistentData != null && !kjs$persistentData.isEmpty()) {

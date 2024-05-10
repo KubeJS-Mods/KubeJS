@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
@@ -31,6 +32,7 @@ import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -513,7 +515,7 @@ public class RecipeJS implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				var o = new JsonObject();
 				o.addProperty("stage", json.get("kubejs:stage").getAsString());
 				o.add("recipe", json);
-				var recipe = UtilsJS.fromJsonOrThrow(o, type.event.stageSerializer.codec());
+				var recipe = type.event.stageSerializer.codec().decode(JsonOps.INSTANCE, JsonOps.INSTANCE.getMap(o).getOrThrow()).result().get();
 				return new RecipeHolder<>(id, recipe);
 			}
 		} else if (originalRecipe != null) {
@@ -636,10 +638,13 @@ public class RecipeJS implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public JsonElement writeOutputItem(OutputItem value) {
 		var json = new JsonObject();
 		json.addProperty("item", value.item.kjs$getId());
-		json.addProperty("count", value.item.getCount());
 
-		if (value.item.getTag() != null) {
-			json.addProperty("nbt", value.item.getTag().toString());
+		if (value.item.getCount() > 1) {
+			json.addProperty("count", value.item.getCount());
+		}
+
+		if (!value.item.isComponentsPatchEmpty()) {
+			json.add("components", DataComponentPatch.CODEC.encodeStart(JsonOps.INSTANCE, value.item.getComponentsPatch()).result().get());
 		}
 
 		if (value.hasChance()) {

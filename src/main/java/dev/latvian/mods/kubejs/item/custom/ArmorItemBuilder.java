@@ -1,20 +1,14 @@
 package dev.latvian.mods.kubejs.item.custom;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.item.MutableArmorTier;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.AnimalArmorItem;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
-
-import java.util.function.Consumer;
 
 public class ArmorItemBuilder extends ItemBuilder {
 	public static class Helmet extends ArmorItemBuilder {
@@ -27,7 +21,6 @@ public class ArmorItemBuilder extends ItemBuilder {
 		public Chestplate(ResourceLocation i) {
 			super(i, ArmorItem.Type.CHESTPLATE);
 		}
-
 	}
 
 	public static class Leggings extends ArmorItemBuilder {
@@ -41,46 +34,51 @@ public class ArmorItemBuilder extends ItemBuilder {
 		public Boots(ResourceLocation i) {
 			super(i, ArmorItem.Type.BOOTS);
 		}
+	}
 
+	public static class AnimalArmor extends ArmorItemBuilder {
+		public AnimalArmorItem.BodyType bodyType;
+		public boolean overlay;
+
+		public AnimalArmor(ResourceLocation i) {
+			super(i, ArmorItem.Type.BODY);
+			bodyType = AnimalArmorItem.BodyType.CANINE;
+			overlay = true;
+		}
+
+		@Override
+		public Item createObject() {
+			return new AnimalArmorItem(material, bodyType, overlay, createItemProperties());
+		}
+
+		public AnimalArmor bodyType(AnimalArmorItem.BodyType type) {
+			bodyType = type;
+			return this;
+		}
+
+		public AnimalArmor overlay(boolean o) {
+			overlay = o;
+			return this;
+		}
 	}
 
 	public final ArmorItem.Type armorType;
-	public MutableArmorTier armorTier;
+	public Holder<ArmorMaterial> material;
 
 	protected ArmorItemBuilder(ResourceLocation i, ArmorItem.Type t) {
 		super(i);
 		armorType = t;
-		armorTier = new MutableArmorTier(id.toString(), ArmorMaterials.IRON);
+		material = ArmorMaterials.IRON;
 		unstackable();
 	}
 
 	@Override
 	public Item createObject() {
-		return new ArmorItem(armorTier, armorType, createItemProperties()) {
-			private boolean modified = false;
-
-			{
-				defaultModifiers = ArrayListMultimap.create(defaultModifiers);
-			}
-
-			@Override
-			public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
-				if (!modified) {
-					modified = true;
-					attributes.forEach((r, m) -> defaultModifiers.put(RegistryInfo.ATTRIBUTE.getValue(r), m));
-				}
-				return super.getDefaultAttributeModifiers(equipmentSlot);
-			}
-		};
+		return new ArmorItem(material, armorType, createItemProperties());
 	}
 
-	public ArmorItemBuilder tier(ArmorMaterial t) {
-		armorTier = new MutableArmorTier(t.getName(), t);
-		return this;
-	}
-
-	public ArmorItemBuilder modifyTier(Consumer<MutableArmorTier> callback) {
-		callback.accept(armorTier);
+	public ArmorItemBuilder material(ResourceLocation id) {
+		material = RegistryInfo.ARMOR_MATERIAL.getHolder(id);
 		return this;
 	}
 }

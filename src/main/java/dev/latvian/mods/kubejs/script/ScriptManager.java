@@ -14,7 +14,7 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.NativeObject;
 import dev.latvian.mods.rhino.Scriptable;
-import dev.latvian.mods.rhino.mod.util.RemappingHelper;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -44,6 +44,7 @@ public class ScriptManager implements ClassShutter {
 	public Scriptable topLevelScope;
 	private Map<String, Either<NativeJavaClass, Boolean>> javaClassCache;
 	public boolean canListenEvents;
+	protected RegistryAccess registryAccess;
 
 	public ScriptManager(ScriptType t) {
 		scriptType = t;
@@ -154,8 +155,6 @@ public class ScriptManager implements ClassShutter {
 	}
 
 	public void load() {
-		var remapper = RemappingHelper.getMinecraftRemapper();
-
 		var startAll = System.currentTimeMillis();
 		context = Context.enter();
 		topLevelScope = context.initStandardObjects();
@@ -164,8 +163,12 @@ public class ScriptManager implements ClassShutter {
 
 		context.setProperty("Type", scriptType);
 		context.setProperty("Console", scriptType.console);
+
+		if (registryAccess != null) {
+			context.setProperty("RegistryAccess", registryAccess);
+		}
+
 		context.setClassShutter(this);
-		context.setRemapper(remapper);
 		context.setApplicationClassLoader(KubeJS.class.getClassLoader());
 
 		if (MiscHelper.get().isDataGen()) {
@@ -176,13 +179,13 @@ public class ScriptManager implements ClassShutter {
 
 		canListenEvents = true;
 
-		var typeWrappers = context.getTypeWrappers();
+		var typeWrappers = new WrapperRegistry(scriptType, context.getTypeWrappers());
 		// typeWrappers.removeAll();
 		var bindingsEvent = new BindingsEvent(this, topLevelScope);
 		var customJavaToJsWrappersEvent = new CustomJavaToJsWrappersEvent(this);
 
 		for (var plugin : KubeJSPlugins.getAll()) {
-			plugin.registerTypeWrappers(scriptType, typeWrappers);
+			plugin.registerTypeWrappers(typeWrappers);
 			plugin.registerBindings(bindingsEvent);
 			plugin.registerCustomJavaToJsWrappers(customJavaToJsWrappersEvent);
 		}
@@ -255,20 +258,7 @@ public class ScriptManager implements ClassShutter {
 				try {
 					either = Either.left(new NativeJavaClass(context, topLevelScope, Class.forName(name)));
 					scriptType.console.info("Loaded Java class '%s'".formatted(name));
-				} catch (Exception ignored1) {
-					var name1 = RemappingHelper.getMinecraftRemapper().getUnmappedClass(name);
-
-					if (!name1.isEmpty()) {
-						if (!isClassAllowed(name1)) {
-							either = Either.right(true);
-						} else {
-							try {
-								either = Either.left(new NativeJavaClass(context, topLevelScope, Class.forName(name1)));
-								scriptType.console.info("Loaded Java class '%s'".formatted(name));
-							} catch (Exception ignored2) {
-							}
-						}
-					}
+				} catch (Exception ignored) {
 				}
 			}
 

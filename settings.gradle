@@ -2,8 +2,9 @@ pluginManagement {
 	repositories {
 		maven { url "https://maven.creeperhost.net/" }
 		maven { url "https://maven.architectury.dev/" }
+		maven { url "https://maven.minecraftforge.net/" }
 		gradlePluginPortal()
 	}
 }
 
-rootProject.name = 'KubeJS-1.20.4'
+rootProject.name = 'KubeJS-1.20.5'

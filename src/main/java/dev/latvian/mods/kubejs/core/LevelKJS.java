@@ -2,18 +2,22 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.ExplosionJS;
-import dev.latvian.mods.kubejs.level.FireworksJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.FireworkRocketEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
@@ -107,8 +111,18 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
 		return type.create(kjs$self());
 	}
 
-	default void kjs$spawnFireworks(double x, double y, double z, FireworksJS f) {
-		kjs$self().addFreshEntity(f.createFireworkRocket(kjs$self(), x, y, z));
+	default void kjs$spawnFireworks(double x, double y, double z, Fireworks f, int lifetime) {
+		var stack = new ItemStack(Items.FIREWORK_ROCKET);
+		stack.set(DataComponents.FIREWORKS, f);
+
+		var rocket = new FireworkRocketEntity(kjs$self(), x, y, z, stack);
+
+		if (lifetime != -1) {
+			((FireworkRocketEntityKJS) rocket).setLifetimeKJS(lifetime);
+		}
+
+		rocket.setInvisible(true);
+		kjs$self().addFreshEntity(rocket);
 	}
 
 	default EntityArrayList kjs$getEntitiesWithin(AABB aabb) {

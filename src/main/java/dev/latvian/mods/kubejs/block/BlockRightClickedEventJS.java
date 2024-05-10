@@ -13,14 +13,15 @@ import net.minecraft.world.item.ItemStack;
 	Invoked when a player right clicks on a block.
 	""")
 public class BlockRightClickedEventJS extends PlayerEventJS {
+	private ItemStack item;
 	private final Player player;
 	private final InteractionHand hand;
 	private final BlockPos pos;
 	private final Direction direction;
 	private BlockContainerJS block;
-	private ItemStack item;
 
-	public BlockRightClickedEventJS(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
+	public BlockRightClickedEventJS(ItemStack item, Player player, InteractionHand hand, BlockPos pos, Direction direction) {
+		this.item = item;
 		this.player = player;
 		this.hand = hand;
 		this.pos = pos;

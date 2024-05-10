@@ -50,7 +50,4 @@ ordering = "AFTER"
 side = "BOTH"
 
 [[mixins]]
-config = "kubejs-common.mixins.json"
-
-[[mixins]]
-config = "kubejs-neoforge.mixins.json"
+config = "kubejs.mixins.json"

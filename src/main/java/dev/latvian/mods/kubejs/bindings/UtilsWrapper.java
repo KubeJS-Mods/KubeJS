@@ -3,12 +3,15 @@ package dev.latvian.mods.kubejs.bindings;
 import com.google.gson.JsonElement;
 import com.mojang.brigadier.StringReader;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.mod.util.CountingMap;
 import net.minecraft.Util;
+import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceKey;
@@ -17,9 +20,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
@@ -148,16 +149,6 @@ public interface UtilsWrapper {
 		return System.currentTimeMillis();
 	}
 
-	@Info("Returns the results of rolling the specified loot table (it does not have to be a chest loot table)")
-	static List<ItemStack> rollChestLoot(ResourceLocation id) {
-		return rollChestLoot(id, null);
-	}
-
-	@Info("Returns the results of rolling the specified loot table with the entity as a parameter (it does not have to be a chest loot table)")
-	static List<ItemStack> rollChestLoot(ResourceLocation id, @Nullable Entity entity) {
-		return UtilsJS.rollChestLoot(id, entity);
-	}
-
 	@Nullable
 	@Info("Returns a copy the object if possible, or the object itself if not")
 	static Object copy(@Nullable Object o) {
@@ -232,14 +223,13 @@ public interface UtilsWrapper {
 		return UtilsJS.snakeCaseToTitleCase(string);
 	}
 
-	static ParticleOptions particleOptions(Object o) {
+	static ParticleOptions particleOptions(Context cx, Object o) {
 		if (o instanceof ParticleOptions po) {
 			return po;
 		} else if (o != null) {
 			try {
 				var reader = new StringReader(o instanceof JsonElement j ? j.getAsString() : o.toString());
-				var particle = RegistryInfo.PARTICLE_TYPE.getValue(ResourceLocation.read(reader));
-				return particle.getDeserializer().fromCommand(particle, reader);
+				return ParticleArgument.readParticle(reader, ServerScriptManager.getLookup(cx));
 			} catch (Exception ignored) {
 			}
 		}

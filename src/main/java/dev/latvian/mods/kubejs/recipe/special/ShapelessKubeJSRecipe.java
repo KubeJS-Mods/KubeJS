@@ -6,18 +6,18 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraftingRecipe {
@@ -59,72 +59,38 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 	}
 
 	@Override
-	public ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
+	public ItemStack assemble(CraftingContainer container, HolderLookup.Provider registryAccess) {
 		return kjs$assemble(container, registryAccess);
 	}
 
 	public static class SerializerKJS implements RecipeSerializer<ShapelessKubeJSRecipe> {
-
-		// registry replacement-safe(?)
-		private static final RecipeSerializer<ShapelessRecipe> SHAPELESS = UtilsJS.cast(RegistryInfo.RECIPE_SERIALIZER.getValue(new ResourceLocation("crafting_shapeless")));
-
-		private static final MapCodec.MapCodecCodec<ShapelessRecipe> SHAPELESS_CODEC = getCodec();
-
-		private static MapCodec.MapCodecCodec<ShapelessRecipe> getCodec() {
-			try {
-				return UtilsJS.cast(SHAPELESS.codec());
-			} catch (ClassCastException e) {
-				throw new IllegalStateException("Original ShapelessRecipe codec is not a MapCodecCodec!");
-			}
-		}
-
-		public static final Codec<ShapelessKubeJSRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			SHAPELESS_CODEC.codec().forGetter(r -> r),
+		public static final MapCodec<ShapelessKubeJSRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+			Serializer.CODEC.forGetter(r -> r),
 			IngredientAction.CODEC.listOf().optionalFieldOf("kubejs:actions", List.of()).forGetter(r -> r.ingredientActions),
 			ModifyRecipeResultCallback.CODEC.optionalFieldOf("kubejs:modify_result", null).forGetter(r -> r.modifyResult),
 			Codec.STRING.optionalFieldOf("kubejs:stage", "").forGetter(r -> r.stage)
 		).apply(instance, ShapelessKubeJSRecipe::new));
 
+		public static final StreamCodec<RegistryFriendlyByteBuf, ShapelessKubeJSRecipe> STREAM_CODEC = StreamCodec.composite(
+			Serializer.STREAM_CODEC,
+			r -> r,
+			ByteBufCodecs.collection(ArrayList::new, IngredientAction.STREAM_CODEC),
+			ShapelessKubeJSRecipe::kjs$getIngredientActions,
+			ModifyRecipeResultCallback.STREAM_CODEC,
+			ShapelessKubeJSRecipe::kjs$getModifyResult,
+			ByteBufCodecs.STRING_UTF8,
+			ShapelessKubeJSRecipe::kjs$getStage,
+			ShapelessKubeJSRecipe::new
+		);
+
 		@Override
-		public Codec<ShapelessKubeJSRecipe> codec() {
+		public MapCodec<ShapelessKubeJSRecipe> codec() {
 			return CODEC;
 		}
 
 		@Override
-		public ShapelessKubeJSRecipe fromNetwork(FriendlyByteBuf buf) {
-			var shapelessRecipe = SHAPELESS.fromNetwork(buf);
-			var flags = (int) buf.readByte();
-
-			List<IngredientAction> ingredientActions = (flags & RecipeFlags.INGREDIENT_ACTIONS) != 0 ? IngredientAction.readList(buf) : List.of();
-			var stage = (flags & RecipeFlags.STAGE) != 0 ? buf.readUtf() : "";
-
-			// result modification callbacks do not need to be synced to clients
-			return new ShapelessKubeJSRecipe(shapelessRecipe, ingredientActions, null, stage);
-		}
-
-		@Override
-		public void toNetwork(FriendlyByteBuf buf, ShapelessKubeJSRecipe r) {
-			SHAPELESS.toNetwork(buf, r);
-
-			int flags = 0;
-
-			if (r.ingredientActions != null && !r.ingredientActions.isEmpty()) {
-				flags |= RecipeFlags.INGREDIENT_ACTIONS;
-			}
-
-			if (!r.stage.isEmpty()) {
-				flags |= RecipeFlags.STAGE;
-			}
-
-			buf.writeByte(flags);
-
-			if (r.ingredientActions != null && !r.ingredientActions.isEmpty()) {
-				IngredientAction.writeList(buf, r.ingredientActions);
-			}
-
-			if (!r.stage.isEmpty()) {
-				buf.writeUtf(r.stage);
-			}
+		public StreamCodec<RegistryFriendlyByteBuf, ShapelessKubeJSRecipe> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

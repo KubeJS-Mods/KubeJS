@@ -55,6 +55,6 @@ public class PotionBuilder extends BuilderBase<Potion> {
 	}
 
 	public PotionBuilder effect(MobEffect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon, @Nullable MobEffectInstance hiddenEffect) {
-		return addEffect(new MobEffectInstance(effect, duration, amplifier, ambient, visible, showIcon, hiddenEffect, effect.createFactorData()));
+		return addEffect(new MobEffectInstance(RegistryInfo.MOB_EFFECT.getHolderOf(effect), duration, amplifier, ambient, visible, showIcon, hiddenEffect));
 	}
 }

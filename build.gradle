@@ -4,34 +4,14 @@ plugins {
 	id 'base'
 	id 'java'
 	id 'maven-publish'
-	id "dev.architectury.loom" version "1.5-SNAPSHOT"
+	id "dev.architectury.loom" version "1.6-SNAPSHOT"
 	id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
-apply from: "https://files.latvian.dev/public/markdown-git-changelog.gradle"
-
 ext.ENV = System.getenv()
-
-repositories {
-	mavenCentral()
-
-	maven {
-		url "https://maven.architectury.dev/"
-	}
-
-	maven {
-		url "https://maven.latvian.dev/releases"
-		content {
-			includeGroup "dev.latvian.mods"
-		}
-	}
-
-	mavenLocal()
-}
-
 def isLocal = !ENV.containsKey("GITHUB_RUN_NUMBER")
 
-version = "${mod_version}-${isLocal ? 'local' : "build.${ENV.GITHUB_RUN_NUMBER}"}"
+version = "${mod_version}-${isLocal ? "local.${Instant.now().epochSecond}" : "build.${ENV.GITHUB_RUN_NUMBER}"}"
 group = project.maven_group
 base.archivesBaseName = project.archives_base_name
 
@@ -61,15 +41,33 @@ loom {
 
 compileJava {
 	options.encoding = "UTF-8"
-	options.release.set(17)
+	options.release.set(21)
 }
 
 java {
-	sourceCompatibility = targetCompatibility = '17'
+	sourceCompatibility = targetCompatibility = '21'
 	withSourcesJar()
 }
 
 repositories {
+	mavenLocal()
+	mavenCentral()
+
+	maven {
+		url "https://maven.architectury.dev/"
+	}
+
+	maven {
+		url "https://maven.latvian.dev/releases"
+		content {
+			includeGroup "dev.latvian.mods"
+		}
+	}
+
+	maven {
+		url "https://maven.neoforged.net/releases"
+	}
+
 	maven {
 		name "ModMaven (JEI)"
 		url "https://modmaven.dev/"
@@ -83,9 +81,6 @@ repositories {
 		content {
 			includeGroup "mezz.jei"
 		}
-	}
-	maven {
-		url "https://maven.neoforged.net/releases"
 	}
 }
 
@@ -132,12 +127,6 @@ jar {
 }
 
 remapJar {
-	archiveBaseName.set "${rootProject.archives_base_name}-neoforge"
-	if (isLocal) {
-		archiveVersion.set "${archiveVersion.get()}.${Instant.now().epochSecond}"
-	}
-	archiveClassifier.set null
-
 	atAccessWideners.add "kubejs.accesswidener"
 }
 
@@ -149,7 +138,7 @@ unifiedPublishing {
 		]
 		gameLoaders = ["neoforge"]
 		displayName = "$mod_name NeoForge $project.version"
-		changelog = getGitChangelog()
+		changelog = 'Changelog not available'
 		mainPublication remapJar
 
 		relations {
@@ -206,5 +195,11 @@ publishing {
 				}
 			}
 		}
+	}
+}
+
+afterEvaluate {
+	tasks.withType(JavaCompile) {
+		options.compilerArgs << "-Xmaxerrs" << "10000"
 	}
 }

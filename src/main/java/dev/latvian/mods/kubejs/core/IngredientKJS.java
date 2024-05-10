@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.google.gson.JsonElement;
+import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -116,7 +117,7 @@ public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
 	 * (The answer is usually no for non-Vanilla ingredients, but can be overridden manually by addons or downstream mods with integration.)
 	 */
 	default boolean kjs$canBeUsedForMatching() {
-		return this.getClass() == Ingredient.class;
+		return true;
 	}
 
 	@Override
@@ -126,6 +127,6 @@ public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
 
 	@Override
 	default JsonElement toJsonJS() {
-		return UtilsJS.toJsonOrThrow(kjs$self(), Ingredient.CODEC);
+		return KubeJSCodecs.toJsonOrThrow(kjs$self(), Ingredient.CODEC);
 	}
 }

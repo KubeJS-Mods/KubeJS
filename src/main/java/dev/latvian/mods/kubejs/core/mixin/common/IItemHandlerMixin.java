@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.core.mixin.neoforge;
+package dev.latvian.mods.kubejs.core.mixin.common;
 
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;

@@ -14,12 +14,17 @@ import dev.latvian.mods.kubejs.server.tag.PreTagEventJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Context;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.FilePackResources;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import org.jetbrains.annotations.Nullable;
@@ -29,6 +34,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerScriptManager extends ScriptManager {
@@ -38,12 +44,17 @@ public class ServerScriptManager extends ScriptManager {
 		return instance;
 	}
 
+	public static HolderLookup.Provider getLookup(Context cx) {
+		return cx.getProperty("RegistryAccess", UtilsJS.staticRegistryAccess);
+	}
+
 	public final MinecraftServer server;
 	public final Map<ResourceKey<?>, PreTagEventJS> preTagEvents = new ConcurrentHashMap<>();
 
 	public ServerScriptManager(@Nullable MinecraftServer server) {
 		super(ScriptType.SERVER);
 		this.server = server;
+		this.registryAccess = server.registryAccess();
 
 		try {
 			if (Files.notExists(KubeJSPaths.DATA)) {
@@ -71,8 +82,8 @@ public class ServerScriptManager extends ScriptManager {
 
 		for (var file : Objects.requireNonNull(KubeJSPaths.DATA.toFile().listFiles())) {
 			if (file.isFile() && file.getName().endsWith(".zip")) {
-				var access = new FilePackResources.FileResourcesSupplier(file, false);
-				list.addLast(access.openPrimary(file.getName()));
+				var access = new FilePackResources.FileResourcesSupplier(file);
+				list.addLast(access.openPrimary(new PackLocationInfo(file.getName(), Component.literal(file.getName()), PackSource.BUILT_IN, Optional.empty())));
 			}
 		}
 

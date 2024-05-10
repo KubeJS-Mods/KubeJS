@@ -1,17 +1,22 @@
 package dev.latvian.mods.kubejs.bindings;
 
 import com.google.gson.JsonObject;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.level.FireworksJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.mod.util.JsonUtils;
+import net.minecraft.Util;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.Fireworks;
+import net.minecraft.world.item.component.ResolvableProfile;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
@@ -19,6 +24,7 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Info("Various item related helper methods")
@@ -78,8 +84,8 @@ public interface ItemWrapper {
 	}
 
 	@Info("Returns a Firework with the input properties")
-	static FireworksJS fireworks(Map<String, Object> properties) {
-		return FireworksJS.of(properties);
+	static Fireworks fireworks(Fireworks fireworks) {
+		return fireworks;
 	}
 
 	@Info("Gets an Item from an item id")
@@ -108,25 +114,23 @@ public interface ItemWrapper {
 
 	static ItemStack playerHead(String name) {
 		var stack = new ItemStack(Items.PLAYER_HEAD);
-		stack.getOrCreateTag().putString("SkullOwner", name);
+		stack.set(DataComponents.PROFILE, new ResolvableProfile(new GameProfile(Util.NIL_UUID, name)));
 		return stack;
 	}
 
-	static ItemStack playerHead(UUID uuid, String textureBase64) {
-		var stack = new ItemStack(Items.PLAYER_HEAD);
-		var so = stack.getOrCreateTagElement("SkullOwner");
-		so.putUUID("Id", uuid);
-
-		if (textureBase64 != null && !textureBase64.isBlank()) {
-			var properties = new CompoundTag();
-			var list = new ListTag();
-			var texture = new CompoundTag();
-			texture.putString("Value", textureBase64);
-			list.add(texture);
-			properties.put("textures", list);
-			so.put("Properties", properties);
+	static ItemStack playerHeadFromBase64(UUID uuid, String textureBase64) {
+		if (uuid == null || uuid.equals(Util.NIL_UUID)) {
+			throw new IllegalArgumentException("UUID can't be null!");
 		}
 
+		if (textureBase64 == null || textureBase64.isBlank()) {
+			throw new IllegalArgumentException("Texture Base 64 can't be empty!");
+		}
+
+		var stack = new ItemStack(Items.PLAYER_HEAD);
+		var properties = new PropertyMap();
+		properties.put("textures", new Property("textures", textureBase64));
+		stack.set(DataComponents.PROFILE, new ResolvableProfile(Optional.empty(), Optional.of(uuid), properties));
 		return stack;
 	}
 
@@ -138,7 +142,7 @@ public interface ItemWrapper {
 		textures.add("SKIN", skin);
 		root.add("textures", textures);
 		var bytes = JsonUtils.toString(root).getBytes(StandardCharsets.UTF_8);
-		return playerHead(UUID.nameUUIDFromBytes(bytes), Base64.getEncoder().encodeToString(bytes));
+		return playerHeadFromBase64(UUID.nameUUIDFromBytes(bytes), Base64.getEncoder().encodeToString(bytes));
 	}
 
 	static ItemStack playerHeadFromSkinHash(String hash) {

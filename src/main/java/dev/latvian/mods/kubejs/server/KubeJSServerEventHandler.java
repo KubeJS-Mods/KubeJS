@@ -69,8 +69,11 @@ public class KubeJSServerEventHandler {
 
 							for (var tag2 : list) {
 								var slot = ((CompoundTag) tag2).getShort("Slot");
-								var stack = ItemStack.of((CompoundTag) tag2);
-								map.put((int) slot, stack);
+								var stack = ItemStack.parse(server.registryAccess(), tag2);
+
+								if (stack.isPresent()) {
+									map.put((int) slot, stack.get());
+								}
 							}
 						}
 					}
@@ -126,7 +129,7 @@ public class KubeJSServerEventHandler {
 					for (var entry2 : entry.getValue().entrySet()) {
 						var tag = new CompoundTag();
 						tag.putShort("Slot", entry2.getKey().shortValue());
-						entry2.getValue().save(tag);
+						entry2.getValue().save(level.registryAccess(), tag);
 						list.add(tag);
 					}
 

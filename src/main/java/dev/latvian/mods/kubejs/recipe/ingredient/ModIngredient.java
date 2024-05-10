@@ -1,21 +1,21 @@
 package dev.latvian.mods.kubejs.recipe.ingredient;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.Nullable;
 
-public class ModIngredient extends KubeJSIngredient {
-	public static final Codec<ModIngredient> CODEC = Codec.STRING
-		.fieldOf("mod")
-		.codec()
-		.xmap(ModIngredient::new, ingredient -> ingredient.mod);
+public record ModIngredient(String mod) implements KubeJSIngredient {
+	public static final MapCodec<ModIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+		Codec.STRING.fieldOf("mod").forGetter(ModIngredient::mod)
+	).apply(instance, ModIngredient::new));
 
-	public final String mod;
-
-	public ModIngredient(String mod) {
-		super(IngredientHelper.MOD);
-		this.mod = mod;
+	@Override
+	public IngredientType<?> getType() {
+		return IngredientHelper.MOD.get();
 	}
 
 	@Override

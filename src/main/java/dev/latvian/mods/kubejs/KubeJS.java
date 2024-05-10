@@ -14,7 +14,6 @@ import dev.latvian.mods.kubejs.gui.KubeJSMenu;
 import dev.latvian.mods.kubejs.helpers.MiscHelper;
 import dev.latvian.mods.kubejs.item.KubeJSItemEventHandler;
 import dev.latvian.mods.kubejs.level.KubeJSWorldEventHandler;
-import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.player.KubeJSPlayerEventHandler;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
@@ -196,7 +195,6 @@ public class KubeJS {
 	}
 
 	public void setup() {
-		KubeJSNet.init();
 		StartupEvents.INIT.post(ScriptType.STARTUP, new StartupEventJS());
 		// KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);
 	}

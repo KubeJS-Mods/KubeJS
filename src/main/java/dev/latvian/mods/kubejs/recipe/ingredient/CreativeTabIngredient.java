@@ -1,23 +1,22 @@
 package dev.latvian.mods.kubejs.recipe.ingredient;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.Nullable;
 
-public class CreativeTabIngredient extends KubeJSIngredient {
-	public static final Codec<CreativeTabIngredient> CODEC = BuiltInRegistries.CREATIVE_MODE_TAB.byNameCodec()
-		.fieldOf("tab")
-		.codec()
-		.xmap(CreativeTabIngredient::new, ingredient -> ingredient.tab);
+public record CreativeTabIngredient(CreativeModeTab tab) implements KubeJSIngredient {
+	public static final MapCodec<CreativeTabIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+		BuiltInRegistries.CREATIVE_MODE_TAB.byNameCodec().fieldOf("tab").forGetter(CreativeTabIngredient::tab)
+	).apply(instance, CreativeTabIngredient::new));
 
-	public final CreativeModeTab tab;
-
-	public CreativeTabIngredient(CreativeModeTab tab) {
-		super(IngredientHelper.CREATIVE_TAB);
-		this.tab = tab;
+	@Override
+	public IngredientType<?> getType() {
+		return IngredientHelper.CREATIVE_TAB.get();
 	}
 
 	@Override

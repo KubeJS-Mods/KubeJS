@@ -8,15 +8,17 @@ import dev.latvian.mods.kubejs.recipe.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.recipe.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
-import net.neoforged.neoforge.common.crafting.NBTIngredient;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
@@ -45,7 +47,7 @@ public enum IngredientHelper {
 	}
 
 	public Ingredient wildcard() {
-		return WildcardIngredient.INSTANCE;
+		return WildcardIngredient.INSTANCE.toVanilla();
 	}
 
 	public Ingredient tag(String tag) {
@@ -53,15 +55,15 @@ public enum IngredientHelper {
 	}
 
 	public Ingredient mod(String mod) {
-		return new ModIngredient(mod);
+		return new ModIngredient(mod).toVanilla();
 	}
 
 	public Ingredient regex(Pattern pattern) {
-		return new RegExIngredient(pattern);
+		return new RegExIngredient(pattern).toVanilla();
 	}
 
 	public Ingredient creativeTab(CreativeModeTab tab) {
-		return new CreativeTabIngredient(tab);
+		return new CreativeTabIngredient(tab).toVanilla();
 	}
 
 	public Ingredient subtract(Ingredient base, Ingredient subtracted) {
@@ -76,15 +78,19 @@ public enum IngredientHelper {
 		return ingredients.length == 0 ? Ingredient.EMPTY : ingredients.length == 1 ? ingredients[0] : IntersectionIngredient.of(ingredients);
 	}
 
-	public Ingredient strongNBT(ItemStack item) {
-		return NBTIngredient.of(true, item.copy());
+	public Ingredient matchComponents(ItemStack item, boolean strong) {
+		return new DataComponentIngredient(HolderSet.direct(item.getItemHolder()), DataComponentPredicate.allOf(item.getComponents()), strong).toVanilla();
 	}
 
-	public Ingredient weakNBT(ItemStack item) {
-		return item.hasTag() ? NBTIngredient.of(false, item.copy()) : item.kjs$asIngredient();
+	public Ingredient strongComponents(ItemStack item) {
+		return matchComponents(item, true);
+	}
+
+	public Ingredient weakComponents(ItemStack item) {
+		return matchComponents(item, false);
 	}
 
 	public boolean isWildcard(Ingredient ingredient) {
-		return ingredient == WildcardIngredient.INSTANCE;
+		return ingredient.getCustomIngredient() == WildcardIngredient.INSTANCE;
 	}
 }

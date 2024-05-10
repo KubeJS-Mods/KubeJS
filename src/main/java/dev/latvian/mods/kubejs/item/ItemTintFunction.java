@@ -9,10 +9,9 @@ import dev.latvian.mods.rhino.mod.util.color.SimpleColor;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.MapItem;
-import net.minecraft.world.item.alchemy.PotionUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -51,13 +50,31 @@ public interface ItemTintFunction {
 		return null;
 	};
 
-	ItemTintFunction POTION = (stack, index) -> new SimpleColor(PotionUtils.getColor(stack));
-	ItemTintFunction MAP = (stack, index) -> new SimpleColor(MapItem.getColor(stack));
-	ItemTintFunction DISPLAY_COLOR_NBT = (stack, index) -> {
-		var tag = stack.getTagElement("display");
+	ItemTintFunction POTION = (stack, index) -> {
+		var potion = stack.get(DataComponents.POTION_CONTENTS);
 
-		if (tag != null && tag.contains("color", 99)) {
-			return new SimpleColor(tag.getInt("color"));
+		if (potion != null) {
+			return new SimpleColor(potion.getColor());
+		}
+
+		return null;
+	};
+
+	ItemTintFunction MAP = (stack, index) -> {
+		var map = stack.get(DataComponents.MAP_COLOR);
+
+		if (map != null) {
+			return new SimpleColor(map.rgb());
+		}
+
+		return null;
+	};
+
+	ItemTintFunction DISPLAY_COLOR_NBT = (stack, index) -> {
+		var color = stack.get(DataComponents.DYED_COLOR);
+
+		if (color != null) {
+			return new SimpleColor(color.rgb());
 		}
 
 		return null;

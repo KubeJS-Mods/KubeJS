@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.level;
 
 import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
+import dev.latvian.mods.kubejs.core.LevelKJS;
 import dev.latvian.mods.kubejs.helpers.LevelHelper;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biomes;
@@ -209,7 +211,7 @@ public class BlockContainerJS implements SpecialEquality {
 		var entity = getEntity();
 
 		if (entity != null) {
-			return entity.saveWithFullMetadata();
+			return entity.saveWithoutMetadata(minecraftLevel.registryAccess());
 		}
 
 		return null;
@@ -220,7 +222,7 @@ public class BlockContainerJS implements SpecialEquality {
 			var entity = getEntity();
 
 			if (entity != null) {
-				entity.load(tag);
+				entity.loadWithComponents(tag, minecraftLevel.registryAccess());
 			}
 		}
 	}
@@ -322,8 +324,8 @@ public class BlockContainerJS implements SpecialEquality {
 		spawnLightning(false);
 	}
 
-	public void spawnFireworks(FireworksJS fireworks) {
-		minecraftLevel.addFreshEntity(fireworks.createFireworkRocket(minecraftLevel, getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D));
+	public void spawnFireworks(Fireworks fireworks, int lifetime) {
+		((LevelKJS) minecraftLevel).kjs$spawnFireworks(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D, fireworks, lifetime);
 	}
 
 	@Nullable

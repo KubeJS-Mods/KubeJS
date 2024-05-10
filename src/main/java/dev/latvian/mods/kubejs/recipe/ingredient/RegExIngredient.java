@@ -1,28 +1,23 @@
 package dev.latvian.mods.kubejs.recipe.ingredient;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
-import dev.latvian.mods.kubejs.util.UtilsJS;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
-public class RegExIngredient extends KubeJSIngredient {
-	public static final Codec<RegExIngredient> CODEC = ExtraCodecs.stringResolverCodec(UtilsJS::toRegexString, UtilsJS::parseRegex)
-		.fieldOf("pattern")
-		.codec()
-		.xmap(RegExIngredient::new, ingredient -> ingredient.pattern);
+public record RegExIngredient(Pattern pattern) implements KubeJSIngredient {
+	public static final MapCodec<RegExIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+		KubeJSCodecs.REGEX.fieldOf("pattern").forGetter(RegExIngredient::pattern)
+	).apply(instance, RegExIngredient::new));
 
-	public final Pattern pattern;
-
-	public RegExIngredient(Pattern pattern) {
-		super(IngredientHelper.REGEX);
-		if (pattern == null) {
-			throw new IllegalArgumentException("Pattern for a RegExIngredient cannot be null! Check your pattern format");
-		}
-		this.pattern = pattern;
+	@Override
+	public IngredientType<?> getType() {
+		return IngredientHelper.REGEX.get();
 	}
 
 	@Override

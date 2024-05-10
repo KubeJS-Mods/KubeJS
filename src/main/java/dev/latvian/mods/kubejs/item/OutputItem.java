@@ -1,12 +1,10 @@
 package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.ItemStack;
@@ -91,10 +89,6 @@ public class OutputItem implements OutputReplacement {
 		return item.getCount();
 	}
 
-	public CompoundTag getNbt() {
-		return item.getTag();
-	}
-
 	@Override
 	public String toString() {
 		return item.kjs$toItemString();
@@ -120,13 +114,5 @@ public class OutputItem implements OutputReplacement {
 		var console = ConsoleJS.getCurrent(ConsoleJS.SERVER);
 		console.warn("You don't need to call .ignoreNBT() anymore, all item ingredients ignore NBT by default!");
 		return InputItem.of(item.getItem().kjs$asIngredient(), item.getCount());
-	}
-
-	public InputItem weakNBT() {
-		return InputItem.of(IngredientHelper.get().weakNBT(item), item.getCount());
-	}
-
-	public InputItem strongNBT() {
-		return InputItem.of(IngredientHelper.get().strongNBT(item), item.getCount());
 	}
 }

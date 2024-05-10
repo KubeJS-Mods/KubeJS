@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.block;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Undefined;
-import dev.latvian.mods.rhino.mod.util.RemappingHelper;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import net.minecraft.world.level.block.SoundType;
 
@@ -25,8 +24,7 @@ public class SoundTypeWrapper implements TypeWrapperFactory<SoundType> {
 				for (var field : SoundType.class.getFields()) {
 					if (field.getType() == SoundType.class && Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) {
 						try {
-							var r = RemappingHelper.getMinecraftRemapper().getMappedField(SoundType.class, field);
-							map.put((r.isBlank() ? field.getName() : r).toLowerCase(), (SoundType) field.get(null));
+							map.put(field.getName().toLowerCase(), (SoundType) field.get(null));
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}

@@ -19,10 +19,10 @@ import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.net.DisplayClientErrorsMessage;
-import dev.latvian.mods.kubejs.net.DisplayServerErrorsMessage;
-import dev.latvian.mods.kubejs.net.PaintMessage;
-import dev.latvian.mods.kubejs.net.ReloadStartupScriptsMessage;
+import dev.latvian.mods.kubejs.net.DisplayClientErrorsPayload;
+import dev.latvian.mods.kubejs.net.DisplayServerErrorsPayload;
+import dev.latvian.mods.kubejs.net.PaintPayload;
+import dev.latvian.mods.kubejs.net.ReloadStartupScriptsPayload;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
@@ -601,7 +601,7 @@ public class KubeJSCommands {
 	private static int errors(CommandSourceStack source, ScriptType type) throws CommandSyntaxException {
 		if (type == ScriptType.CLIENT) {
 			var player = source.getPlayerOrException();
-			new DisplayClientErrorsMessage().sendTo(player);
+			new DisplayClientErrorsPayload().sendTo(player);
 			return 1;
 		}
 
@@ -619,7 +619,7 @@ public class KubeJSCommands {
 		var errors = new ArrayList<>(type.console.errors);
 		var warnings = new ArrayList<>(type.console.warnings);
 		player.sendSystemMessage(Component.literal("You need KubeJS on client side!").withStyle(ChatFormatting.RED), true);
-		new DisplayServerErrorsMessage(type, errors, warnings).sendTo(player);
+		new DisplayServerErrorsPayload(type, errors, warnings).sendTo(player);
 
 		/*
 		var lines = ConsoleJS.SERVER.errors.toArray(ConsoleLine.EMPTY_ARRAY);
@@ -661,7 +661,7 @@ public class KubeJSCommands {
 	private static int reloadStartup(CommandSourceStack source) {
 		KubeJS.getStartupScriptManager().reload(null);
 		source.sendSystemMessage(Component.literal("Done!"));
-		new ReloadStartupScriptsMessage(source.getServer().isDedicatedServer()).sendToAll(source.getServer());
+		new ReloadStartupScriptsPayload(source.getServer().isDedicatedServer()).sendToAll(source.getServer());
 		return 1;
 	}
 
@@ -897,7 +897,7 @@ public class KubeJSCommands {
 	}
 
 	private static int painter(CommandSourceStack source, Collection<ServerPlayer> players, CompoundTag object) {
-		new PaintMessage(object).sendTo(players);
+		new PaintPayload(object).sendTo(players);
 		return 1;
 	}
 

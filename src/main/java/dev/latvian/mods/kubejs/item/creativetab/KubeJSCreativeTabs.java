@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.item.creativetab;
 
-import dev.architectury.registry.registries.DeferredRegister;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.helpers.MiscHelper;
@@ -10,9 +9,10 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class KubeJSCreativeTabs {
-	public static final DeferredRegister<CreativeModeTab> REGISTER = DeferredRegister.create(KubeJS.MOD_ID, Registries.CREATIVE_MODE_TAB);
+	public static final DeferredRegister<CreativeModeTab> REGISTER = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, KubeJS.MOD_ID);
 
 	public static void init() {
 		if (!CommonProperties.get().serverOnly) {
@@ -28,8 +28,6 @@ public class KubeJSCreativeTabs {
 					}
 				}
 			));
-
-			REGISTER.register();
 		}
 	}
 }

@@ -33,7 +33,7 @@ public enum LevelHelper {
 	}
 
 	public boolean isDataCompatible(ItemStack a, ItemStack b) {
-		return a.areAttachmentsCompatible(b);
+		return ItemStack.isSameItemSameComponents(a, b);
 	}
 
 	public double getReachDistance(LivingEntity livingEntity) {

@@ -3,9 +3,9 @@ package dev.latvian.mods.kubejs.stages;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.architectury.hooks.level.entity.PlayerHooks;
-import dev.latvian.mods.kubejs.net.AddStageMessage;
-import dev.latvian.mods.kubejs.net.RemoveStageMessage;
-import dev.latvian.mods.kubejs.net.SyncStagesMessage;
+import dev.latvian.mods.kubejs.net.AddStagePayload;
+import dev.latvian.mods.kubejs.net.RemoveStagePayload;
+import dev.latvian.mods.kubejs.net.SyncStagesPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
@@ -74,7 +74,7 @@ public abstract class Stages {
 	public boolean add(String stage) {
 		if (addNoUpdate(stage)) {
 			if (player instanceof ServerPlayer serverPlayer) {
-				new AddStageMessage(player.getUUID(), stage).sendToAll(serverPlayer.server);
+				new AddStagePayload(player.getUUID(), stage).sendToAll(serverPlayer.server);
 			}
 
 			invokeAdded(this, stage);
@@ -87,7 +87,7 @@ public abstract class Stages {
 	public boolean remove(String stage) {
 		if (removeNoUpdate(stage)) {
 			if (player instanceof ServerPlayer serverPlayer) {
-				new RemoveStageMessage(player.getUUID(), stage).sendToAll(serverPlayer.server);
+				new RemoveStagePayload(player.getUUID(), stage).sendToAll(serverPlayer.server);
 			}
 
 			invokeRemoved(this, stage);
@@ -121,7 +121,7 @@ public abstract class Stages {
 
 	public void sync() {
 		if (player instanceof ServerPlayer serverPlayer) {
-			new SyncStagesMessage(player.getUUID(), getAll()).sendToAll(serverPlayer.server);
+			new SyncStagesPayload(player.getUUID(), getAll()).sendToAll(serverPlayer.server);
 		}
 	}
 

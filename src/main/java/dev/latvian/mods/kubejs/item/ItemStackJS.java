@@ -13,6 +13,9 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -48,7 +51,7 @@ public interface ItemStackJS {
 
 	Lazy<Map<ResourceLocation, Collection<ItemStack>>> CACHED_ITEM_MAP = Lazy.of(() -> {
 		var map = new HashMap<ResourceLocation, Collection<ItemStack>>();
-		var stackList = ItemStackLinkedSet.createTypeAndTagSet();
+		var stackList = ItemStackLinkedSet.createTypeAndComponentsSet();
 
 		stackList.addAll(CreativeModeTabs.searchTab().getDisplayItems());
 
@@ -56,7 +59,7 @@ public interface ItemStackJS {
 			if (!stack.isEmpty()) {
 				map.computeIfAbsent(
 					stack.getItem().kjs$getIdLocation(),
-					_rl -> ItemStackLinkedSet.createTypeAndTagSet()
+					_rl -> ItemStackLinkedSet.createTypeAndComponentsSet()
 				).add(stack.kjs$withCount(1));
 			}
 		}
@@ -97,7 +100,7 @@ public interface ItemStackJS {
 
 			return item.getDefaultInstance();
 		} else if (o instanceof ItemLike itemLike) {
-			return new ItemStack(itemLike.asItem());
+			return itemLike.asItem().getDefaultInstance();
 		} else if (o instanceof JsonElement json) {
 			return resultFromRecipeJson(json);
 		} else if (o instanceof StringTag tag) {
@@ -156,7 +159,7 @@ public interface ItemStackJS {
 				}
 
 				if (map.containsKey("nbt")) {
-					stack.setTag(NBTUtils.toTagCompound(map.get("nbt")));
+					setTag(stack, NBTUtils.toTagCompound(map.get("nbt")));
 				}
 
 				return stack;
@@ -220,7 +223,7 @@ public interface ItemStackJS {
 			var tagStr = s.substring(spaceIndex + 1);
 
 			if (tagStr.length() >= 2 && tagStr.charAt(0) == '{') {
-				stack.setTag(NBTUtils.toTagCompound(tagStr));
+				setTag(stack, NBTUtils.toTagCompound(tagStr));
 			}
 		}
 
@@ -269,9 +272,9 @@ public interface ItemStackJS {
 					var element = jsonObj.get("nbt");
 
 					if (element.isJsonObject()) {
-						stack.setTag(NBTUtils.toTagCompound(element));
+						setTag(stack, NBTUtils.toTagCompound(element));
 					} else {
-						stack.setTag(NBTUtils.toTagCompound(element.getAsString()));
+						setTag(stack, NBTUtils.toTagCompound(element.getAsString()));
 					}
 				}
 
@@ -305,51 +308,7 @@ public interface ItemStackJS {
 		InputItem.PARSE_CACHE.clear();
 	}
 
-	/*
-	@Override
-	public JsonElement toJson() {
-		var c = getCount();
-
-		if (c == 1) {
-			return new DummyItemStackJSIngredient(this).toJson();
-		} else {
-			return new IngredientStackJS(new DummyItemStackJSIngredient(this), c).toJson();
-		}
+	static void setTag(ItemStack stack, CompoundTag tag) {
+		stack.applyComponentsAndValidate(DataComponentPatch.CODEC.parse(NbtOps.INSTANCE, tag).result().get());
 	}
-
-	public JsonElement toResultJson() {
-		if (RecipeJS.currentRecipe != null) {
-			var e = RecipeJS.currentRecipe.serializeItemStack(this);
-
-			if (e != null) {
-				return e;
-			}
-		}
-
-		return toRawResultJson();
-	}
-
-	public JsonElement toRawResultJson() {
-		var json = new JsonObject();
-		json.addProperty("item", getId());
-		json.addProperty("count", getCount());
-
-		var nbt = getNbt();
-
-		if (nbt != null) {
-			if (RecipeJS.currentRecipe != null && RecipeJS.currentRecipe.serializeNBTAsJson()) {
-				json.add("nbt", TagUtils.toJson(nbt));
-			} else {
-				json.addProperty("nbt", nbt.toString());
-			}
-		}
-
-		if (hasChance()) {
-			json.addProperty("chance", getChance());
-		}
-
-		return json;
-	}
-
-	 */
 }

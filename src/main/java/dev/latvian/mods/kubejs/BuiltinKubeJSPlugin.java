@@ -48,6 +48,7 @@ import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.integration.rei.REIEvents;
+import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -58,7 +59,6 @@ import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.AxeItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
 import dev.latvian.mods.kubejs.item.custom.HoeItemBuilder;
-import dev.latvian.mods.kubejs.item.custom.ItemArmorTierRegistryEventJS;
 import dev.latvian.mods.kubejs.item.custom.ItemToolTierRegistryEventJS;
 import dev.latvian.mods.kubejs.item.custom.PickaxeItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.RecordItemJS;
@@ -106,6 +106,7 @@ import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.WrapperRegistry;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.FluidAmounts;
@@ -114,7 +115,7 @@ import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
-import dev.latvian.mods.kubejs.util.NotificationBuilder;
+import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.kubejs.util.RotationAxis;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -126,7 +127,6 @@ import dev.latvian.mods.rhino.mod.wrapper.AABBWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.DirectionWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
-import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import dev.latvian.mods.unit.Unit;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
@@ -146,12 +146,14 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -213,6 +215,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryInfo.ITEM.addType("chestplate", ArmorItemBuilder.Chestplate.class, ArmorItemBuilder.Chestplate::new);
 		RegistryInfo.ITEM.addType("leggings", ArmorItemBuilder.Leggings.class, ArmorItemBuilder.Leggings::new);
 		RegistryInfo.ITEM.addType("boots", ArmorItemBuilder.Boots.class, ArmorItemBuilder.Boots::new);
+		RegistryInfo.ITEM.addType("animal_armor", ArmorItemBuilder.AnimalArmor.class, ArmorItemBuilder.AnimalArmor::new);
 		RegistryInfo.ITEM.addType("music_disc", RecordItemJS.Builder.class, RecordItemJS.Builder::new);
 		RegistryInfo.ITEM.addType("smithing_template", SmithingTemplateItemBuilder.class, SmithingTemplateItemBuilder::new);
 
@@ -229,12 +232,12 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryInfo.VILLAGER_TYPE.addType("basic", VillagerTypeBuilder.class, VillagerTypeBuilder::new);
 		RegistryInfo.VILLAGER_PROFESSION.addType("basic", VillagerProfessionBuilder.class, VillagerProfessionBuilder::new);
 		RegistryInfo.CREATIVE_MODE_TAB.addType("basic", CreativeTabBuilder.class, CreativeTabBuilder::new);
+		RegistryInfo.ARMOR_MATERIAL.addType("basic", ArmorMaterialBuilder.class, ArmorMaterialBuilder::new);
 	}
 
 	@Override
 	public void initStartup() {
 		ItemEvents.TOOL_TIER_REGISTRY.post(ScriptType.STARTUP, new ItemToolTierRegistryEventJS());
-		ItemEvents.ARMOR_TIER_REGISTRY.post(ScriptType.STARTUP, new ItemArmorTierRegistryEventJS());
 		KubeJSRuleTests.init();
 
 		/*
@@ -376,7 +379,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("AABB", AABBWrapper.class);
 		event.add("Stats", Stats.class);
 		event.add("FluidAmounts", FluidAmounts.class);
-		event.add("Notification", NotificationBuilder.class);
+		event.add("Notification", NotificationToastData.class);
 		event.add("InputItem", InputItem.class);
 		event.add("OutputItem", OutputItem.class);
 
@@ -406,79 +409,82 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	}
 
 	@Override
-	public void registerTypeWrappers(ScriptType type, TypeWrappers typeWrappers) {
+	public void registerTypeWrappers(WrapperRegistry registry) {
 		// Java / Minecraft //
-		typeWrappers.registerSimple(String.class, String::valueOf);
-		typeWrappers.registerSimple(CharSequence.class, String::valueOf);
-		typeWrappers.registerSimple(UUID.class, UUIDWrapper::fromString);
-		typeWrappers.registerSimple(Pattern.class, UtilsJS::parseRegex);
-		typeWrappers.registerSimple(JsonObject.class, MapJS::json);
-		typeWrappers.registerSimple(JsonArray.class, ListJS::json);
-		typeWrappers.registerSimple(JsonElement.class, JsonIO::of);
-		typeWrappers.registerSimple(JsonPrimitive.class, JsonIO::primitiveOf);
-		typeWrappers.registerSimple(Path.class, UtilsJS::getPath);
-		typeWrappers.registerSimple(File.class, UtilsJS::getFileFromPath);
-		typeWrappers.register(Unit.class, Painter.INSTANCE::unitOf);
-		typeWrappers.registerSimple(TemporalAmount.class, UtilsJS::getTemporalAmount);
-		typeWrappers.registerSimple(Duration.class, UtilsJS::getDuration);
+		registry.registerSimple(String.class, String::valueOf);
+		registry.registerSimple(CharSequence.class, String::valueOf);
+		registry.registerSimple(UUID.class, UUIDWrapper::fromString);
+		registry.registerSimple(Pattern.class, UtilsJS::parseRegex);
+		registry.registerSimple(JsonObject.class, MapJS::json);
+		registry.registerSimple(JsonArray.class, ListJS::json);
+		registry.registerSimple(JsonElement.class, JsonIO::of);
+		registry.registerSimple(JsonPrimitive.class, JsonIO::primitiveOf);
+		registry.registerSimple(Path.class, UtilsJS::getPath);
+		registry.registerSimple(File.class, UtilsJS::getFileFromPath);
+		registry.register(Unit.class, Painter.INSTANCE::unitOf);
+		registry.registerSimple(TemporalAmount.class, UtilsJS::getTemporalAmount);
+		registry.registerSimple(Duration.class, UtilsJS::getDuration);
 
-		typeWrappers.register(ResourceLocation.class, UtilsJS::getMCID);
-		typeWrappers.registerSimple(CompoundTag.class, NBTUtils::isTagCompound, NBTUtils::toTagCompound);
-		typeWrappers.registerSimple(CollectionTag.class, NBTUtils::isTagCollection, NBTUtils::toTagCollection);
-		typeWrappers.registerSimple(ListTag.class, NBTUtils::isTagCollection, NBTUtils::toTagList);
-		typeWrappers.registerSimple(Tag.class, NBTUtils::toTag);
+		registry.register(ResourceLocation.class, UtilsJS::getMCID);
+		registry.registerSimple(CompoundTag.class, NBTUtils::isTagCompound, NBTUtils::toTagCompound);
+		registry.registerSimple(CollectionTag.class, NBTUtils::isTagCollection, NBTUtils::toTagCollection);
+		registry.registerSimple(ListTag.class, NBTUtils::isTagCollection, NBTUtils::toTagList);
+		registry.registerSimple(Tag.class, NBTUtils::toTag);
 
-		typeWrappers.registerSimple(BlockPos.class, UtilsJS::blockPosOf);
-		typeWrappers.registerSimple(Vec3.class, UtilsJS::vec3Of);
+		registry.registerSimple(BlockPos.class, UtilsJS::blockPosOf);
+		registry.registerSimple(Vec3.class, UtilsJS::vec3Of);
 
-		typeWrappers.register(Item.class, ItemStackJS::getRawItem);
-		typeWrappers.register(ItemLike.class, ItemStackJS::getRawItem);
-		typeWrappers.registerSimple(MobCategory.class, o -> o == null ? null : UtilsJS.byName(MobCategory.CODEC, o.toString()));
+		registry.register(Item.class, ItemStackJS::getRawItem);
+		registry.register(ItemLike.class, ItemStackJS::getRawItem);
+		registry.registerEnumFromStringCodec(MobCategory.class, MobCategory.CODEC);
 
-		typeWrappers.registerSimple(AABB.class, AABBWrapper::wrap);
-		typeWrappers.registerSimple(IntProvider.class, UtilsJS::intProviderOf);
-		typeWrappers.registerSimple(NumberProvider.class, UtilsJS::numberProviderOf);
-		typeWrappers.registerSimple(LootContext.EntityTarget.class, o -> o == null ? null : UtilsJS.byName(LootContext.EntityTarget.CODEC, o.toString().toLowerCase()));
-		typeWrappers.registerSimple(CopyNameFunction.NameSource.class, o -> o == null ? null : UtilsJS.byName(CopyNameFunction.NameSource.CODEC, o.toString().toLowerCase()));
+		registry.registerSimple(AABB.class, AABBWrapper::wrap);
+		registry.registerSimple(IntProvider.class, UtilsJS::intProviderOf);
+		registry.registerSimple(NumberProvider.class, UtilsJS::numberProviderOf);
+		registry.registerEnumFromStringCodec(LootContext.EntityTarget.class, LootContext.EntityTarget.CODEC);
+		registry.registerEnumFromStringCodec(CopyNameFunction.NameSource.class, CopyNameFunction.NameSource.CODEC);
+		registry.registerSimple(Enchantment.Cost.class, EnchantmentBuilder::costOf);
+		registry.registerEnumFromStringCodec(ArmorItem.Type.class, ArmorItem.Type.CODEC);
 
 		// KubeJS //
-		typeWrappers.registerSimple(Map.class, MapJS::of);
-		typeWrappers.registerSimple(List.class, ListJS::of);
-		typeWrappers.registerSimple(Iterable.class, ListJS::of);
-		typeWrappers.registerSimple(Collection.class, ListJS::of);
-		typeWrappers.registerSimple(Set.class, ListJS::ofSet);
-		typeWrappers.registerSimple(ItemStack.class, ItemStackJS::of);
-		typeWrappers.registerSimple(Ingredient.class, IngredientJS::of);
-		typeWrappers.registerSimple(InputReplacement.class, InputReplacement::of);
-		typeWrappers.registerSimple(OutputReplacement.class, OutputReplacement::of);
-		typeWrappers.registerSimple(InputItem.class, InputItem::of);
-		typeWrappers.registerSimple(OutputItem.class, OutputItem::of);
-		typeWrappers.registerSimple(BlockStatePredicate.class, BlockStatePredicate::of);
-		typeWrappers.registerSimple(RuleTest.class, BlockStatePredicate::ruleTestOf);
-		typeWrappers.registerSimple(FluidStackJS.class, FluidStackJS::of);
-		typeWrappers.register(RecipeFilter.class, RecipeFilter::of);
-		typeWrappers.registerSimple(IngredientActionFilter.class, IngredientActionFilter::filterOf);
-		typeWrappers.registerSimple(Tier.class, ItemBuilder::toToolTier);
-		typeWrappers.registerSimple(ArmorMaterial.class, ItemBuilder::toArmorMaterial);
-		typeWrappers.registerSimple(PlayerSelector.class, PlayerSelector::of);
+		registry.registerSimple(Map.class, MapJS::of);
+		registry.registerSimple(List.class, ListJS::of);
+		registry.registerSimple(Iterable.class, ListJS::of);
+		registry.registerSimple(Collection.class, ListJS::of);
+		registry.registerSimple(Set.class, ListJS::ofSet);
+		registry.registerSimple(ItemStack.class, ItemStackJS::of);
+		registry.registerSimple(Ingredient.class, IngredientJS::of);
+		registry.registerSimple(InputReplacement.class, InputReplacement::of);
+		registry.registerSimple(OutputReplacement.class, OutputReplacement::of);
+		registry.registerSimple(InputItem.class, InputItem::of);
+		registry.registerSimple(OutputItem.class, OutputItem::of);
+		registry.registerSimple(BlockStatePredicate.class, BlockStatePredicate::of);
+		registry.registerSimple(RuleTest.class, BlockStatePredicate::ruleTestOf);
+		registry.registerSimple(FluidStackJS.class, FluidStackJS::of);
+		registry.register(RecipeFilter.class, RecipeFilter::of);
+		registry.registerSimple(IngredientActionFilter.class, IngredientActionFilter::filterOf);
+		registry.registerSimple(Tier.class, ItemBuilder::toToolTier);
+		registry.registerSimple(PlayerSelector.class, PlayerSelector::of);
 		// FIXME (high): Damage sources are dynamic registries now!!
 		//typeWrappers.registerSimple(DamageSource.class, DamageSourceWrapper::of);
-		typeWrappers.registerSimple(EntitySelector.class, UtilsJS::entitySelector);
-		typeWrappers.registerSimple(ReplacementMatch.class, ReplacementMatch::of);
-		typeWrappers.registerSimple(Stat.class, PlayerStatsJS::statOf);
-		typeWrappers.register(NotificationBuilder.class, NotificationBuilder::of);
-		typeWrappers.registerSimple(MapColor.class, MapColorHelper::of);
-		typeWrappers.register(SoundType.class, SoundTypeWrapper.INSTANCE);
-		typeWrappers.registerSimple(ParticleOptions.class, UtilsWrapper::particleOptions);
-		typeWrappers.register(ItemTintFunction.class, ItemTintFunction::of);
-		typeWrappers.register(BlockTintFunction.class, BlockTintFunction::of);
+		registry.registerSimple(EntitySelector.class, UtilsJS::entitySelector);
+		registry.registerSimple(ReplacementMatch.class, ReplacementMatch::of);
+		registry.registerSimple(Stat.class, PlayerStatsJS::statOf);
+		registry.registerSimple(MapColor.class, MapColorHelper::of);
+		registry.register(SoundType.class, SoundTypeWrapper.INSTANCE);
+		registry.register(ParticleOptions.class, UtilsWrapper::particleOptions);
+		registry.register(ItemTintFunction.class, ItemTintFunction::of);
+		registry.register(BlockTintFunction.class, BlockTintFunction::of);
 
 		// components //
-		typeWrappers.registerSimple(Component.class, TextWrapper::of);
-		typeWrappers.registerSimple(MutableComponent.class, TextWrapper::of);
-		typeWrappers.registerSimple(Color.class, ColorWrapper::of);
-		typeWrappers.registerSimple(TextColor.class, o -> ColorWrapper.of(o).createTextColorJS());
-		typeWrappers.registerSimple(ClickEvent.class, TextWrapper::clickEventOf);
+		registry.registerSimple(Component.class, TextWrapper::of);
+		registry.registerSimple(MutableComponent.class, TextWrapper::of);
+		registry.registerSimple(Color.class, ColorWrapper::of);
+		registry.registerSimple(TextColor.class, o -> ColorWrapper.of(o).createTextColorJS());
+		registry.registerSimple(ClickEvent.class, TextWrapper::clickEventOf);
+
+		// codecs
+		registry.registerCodec(Fireworks.class, Fireworks.CODEC);
 	}
 
 	@Override

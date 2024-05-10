@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.loot;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.level.storage.loot.LootContext;
 
@@ -56,7 +57,7 @@ public interface ConditionContainer {
 		var s = new JsonObject();
 
 		for (var entry : scores.entrySet()) {
-			s.add(entry.getKey(), UtilsJS.numberProviderJson(UtilsJS.numberProviderOf(entry.getValue())));
+			s.add(entry.getKey(), KubeJSCodecs.numberProviderJson(UtilsJS.numberProviderOf(entry.getValue())));
 		}
 
 		json.add("scores", s);

@@ -7,11 +7,11 @@ import dev.latvian.mods.kubejs.gui.KubeJSMenu;
 import dev.latvian.mods.kubejs.gui.chest.ChestMenuData;
 import dev.latvian.mods.kubejs.gui.chest.CustomChestMenu;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.net.NotificationMessage;
-import dev.latvian.mods.kubejs.net.PaintMessage;
-import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
+import dev.latvian.mods.kubejs.net.NotificationPayload;
+import dev.latvian.mods.kubejs.net.PaintPayload;
+import dev.latvian.mods.kubejs.net.SendDataFromServerPayload;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
-import dev.latvian.mods.kubejs.util.NotificationBuilder;
+import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -45,13 +45,13 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	@Override
 	default void kjs$sendData(String channel, @Nullable CompoundTag data) {
 		if (!channel.isEmpty()) {
-			new SendDataFromServerMessage(channel, data).sendTo(kjs$self());
+			new SendDataFromServerPayload(channel, data).sendTo(kjs$self());
 		}
 	}
 
 	@Override
 	default void kjs$paint(CompoundTag renderer) {
-		new PaintMessage(renderer).sendTo(kjs$self());
+		new PaintPayload(renderer).sendTo(kjs$self());
 	}
 
 	@Override
@@ -155,8 +155,8 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	}
 
 	@Override
-	default void kjs$notify(NotificationBuilder builder) {
-		new NotificationMessage(builder).sendTo(kjs$self());
+	default void kjs$notify(NotificationToastData builder) {
+		new NotificationPayload(builder).sendTo(kjs$self());
 	}
 
 	default void kjs$openGUI(Consumer<KubeJSGUI> gui) {

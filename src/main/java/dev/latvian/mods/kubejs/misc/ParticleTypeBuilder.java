@@ -1,14 +1,18 @@
 package dev.latvian.mods.kubejs.misc;
 
+import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
 public class ParticleTypeBuilder extends BuilderBase<ParticleType<?>> {
 	public transient boolean overrideLimiter;
-	public transient ParticleOptions.Deserializer deserializer;
+	public transient MapCodec<ParticleOptions> codec;
+	public transient StreamCodec<? super RegistryFriendlyByteBuf, ParticleOptions> streamCodec;
 
 	public ParticleTypeBuilder(ResourceLocation i) {
 		super(i);
@@ -22,8 +26,8 @@ public class ParticleTypeBuilder extends BuilderBase<ParticleType<?>> {
 
 	@Override
 	public ParticleType<?> createObject() {
-		if (deserializer != null) {
-			return new ComplexParticleType(overrideLimiter, deserializer);
+		if (codec != null && streamCodec != null) {
+			return new ComplexParticleType(this);
 		}
 
 		return new BasicParticleType(overrideLimiter);
@@ -34,9 +38,13 @@ public class ParticleTypeBuilder extends BuilderBase<ParticleType<?>> {
 		return this;
 	}
 
-	// TODO: Figure out if this is even needed
-	public ParticleTypeBuilder deserializer(ParticleOptions.Deserializer d) {
-		deserializer = d;
+	public ParticleTypeBuilder codec(MapCodec<ParticleOptions> c) {
+		codec = c;
+		return this;
+	}
+
+	public ParticleTypeBuilder streamCodec(StreamCodec<? super RegistryFriendlyByteBuf, ParticleOptions> s) {
+		streamCodec = s;
 		return this;
 	}
 }

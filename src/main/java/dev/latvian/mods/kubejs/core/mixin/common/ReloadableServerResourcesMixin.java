@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;
+import net.minecraft.tags.TagManager;
 import net.minecraft.world.flag.FeatureFlagSet;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,8 +19,8 @@ public abstract class ReloadableServerResourcesMixin {
 		ServerScriptManager.instance.updateResources((ReloadableServerResources) (Object) this, frozen);
 	}
 
-	@Inject(method = "updateRegistryTags(Lnet/minecraft/core/RegistryAccess;)V", at = @At("RETURN"))
-	public void updateRegistryTags(RegistryAccess registryAccess, CallbackInfo ci) {
+	@Inject(method = "updateRegistryTags(Lnet/minecraft/core/RegistryAccess;Lnet/minecraft/tags/TagManager$LoadResult;)V", at = @At("RETURN"))
+	private static void updateRegistryTags(RegistryAccess registryAccess, TagManager.LoadResult<?> result, CallbackInfo ci) {
 		TagContext.INSTANCE.setValue(TagContext.usingRegistry(registryAccess));
 	}
 }

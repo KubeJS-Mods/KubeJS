@@ -6,140 +6,43 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.util.NotificationBuilder;
+import dev.latvian.mods.kubejs.util.IconKJS;
+import dev.latvian.mods.kubejs.util.NotificationToastData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastComponent;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.BiFunction;
 
 public class NotificationToast implements Toast {
-	public interface ToastIcon {
-		void draw(Minecraft mc, GuiGraphics graphics, int x, int y, int size);
-	}
-
-	public static final Map<Integer, BiFunction<Minecraft, String, ToastIcon>> ICONS = new HashMap<>(Map.of(
-		1, TextureIcon::new,
-		2, ItemIcon::new,
-		3, AtlasIcon::of
-	));
-
-	public record TextureIcon(ResourceLocation texture) implements ToastIcon {
-		public TextureIcon(Minecraft ignored, String icon) {
-			this(new ResourceLocation(icon));
-		}
-
-		@Override
-		public void draw(Minecraft mc, GuiGraphics graphics, int x, int y, int size) {
-			RenderSystem.setShaderTexture(0, texture);
-			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-			RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-			var m = graphics.pose().last().pose();
-
-			int p0 = -size / 2;
-			int p1 = p0 + size;
-
-			var buf = Tesselator.getInstance().getBuilder();
-			buf.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-			buf.vertex(m, x + p0, y + p1, 0F).uv(0F, 1F).color(255, 255, 255, 255).endVertex();
-			buf.vertex(m, x + p1, y + p1, 0F).uv(1F, 1F).color(255, 255, 255, 255).endVertex();
-			buf.vertex(m, x + p1, y + p0, 0F).uv(1F, 0F).color(255, 255, 255, 255).endVertex();
-			buf.vertex(m, x + p0, y + p0, 0F).uv(0F, 0F).color(255, 255, 255, 255).endVertex();
-			BufferUploader.drawWithShader(buf.end());
-		}
-	}
-
-	public record ItemIcon(ItemStack stack) implements ToastIcon {
-		public ItemIcon(Minecraft ignored, String icon) {
-			this(ItemStackJS.of(icon));
-		}
-
-		@Override
-		public void draw(Minecraft mc, GuiGraphics graphics, int x, int y, int size) {
-			var m = RenderSystem.getModelViewStack();
-			m.pushPose();
-			m.translate(x - 2D, y + 2D, 0D);
-			float s = size / 16F;
-			m.scale(s, s, s);
-			RenderSystem.applyModelViewMatrix();
-			graphics.renderFakeItem(stack, -8, -8);
-			m.popPose();
-			RenderSystem.applyModelViewMatrix();
-		}
-	}
-
-	public record AtlasIcon(TextureAtlasSprite sprite) implements ToastIcon {
-		public static AtlasIcon of(Minecraft mc, String icon) {
-			var s = icon.split("\\|");
-
-			if (s.length == 2) {
-				return new AtlasIcon(mc.getTextureAtlas(new ResourceLocation(s[0])).apply(new ResourceLocation(s[1])));
-			} else {
-				return new AtlasIcon(mc.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(new ResourceLocation(icon)));
-			}
-		}
-
-		@Override
-		public void draw(Minecraft mc, GuiGraphics graphics, int x, int y, int size) {
-			RenderSystem.setShaderTexture(0, sprite.atlasLocation());
-			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-			RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-			var m = graphics.pose().last().pose();
-
-			int p0 = -size / 2;
-			int p1 = p0 + size;
-
-			float u0 = sprite.getU0();
-			float v0 = sprite.getV0();
-			float u1 = sprite.getU1();
-			float v1 = sprite.getV1();
-
-			var buf = Tesselator.getInstance().getBuilder();
-			buf.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-			buf.vertex(m, x + p0, y + p1, 0F).uv(u0, v1).color(255, 255, 255, 255).endVertex();
-			buf.vertex(m, x + p1, y + p1, 0F).uv(u1, v1).color(255, 255, 255, 255).endVertex();
-			buf.vertex(m, x + p1, y + p0, 0F).uv(u1, v0).color(255, 255, 255, 255).endVertex();
-			buf.vertex(m, x + p0, y + p0, 0F).uv(u0, v0).color(255, 255, 255, 255).endVertex();
-			BufferUploader.drawWithShader(buf.end());
-		}
-	}
-
-	private final NotificationBuilder notification;
+	private final NotificationToastData notification;
 
 	private final long duration;
-	private final ToastIcon icon;
+	private final IconKJS icon;
 	private final List<FormattedCharSequence> text;
 	private int width, height;
 
 	private long lastChanged;
 	private boolean changed;
 
-	public NotificationToast(Minecraft mc, NotificationBuilder notification) {
+	public NotificationToast(Minecraft mc, NotificationToastData notification) {
 		this.notification = notification;
-		this.duration = notification.duration.toMillis();
+		this.duration = notification.duration().toMillis();
 
-		this.icon = ICONS.containsKey(this.notification.iconType) ? ICONS.get(this.notification.iconType).apply(mc, this.notification.icon) : null;
+		this.icon = notification.icon();
 
 		this.text = new ArrayList<>(2);
 		this.width = 0;
 		this.height = 0;
 
-		if (!TextWrapper.isEmpty(notification.text)) {
-			this.text.addAll(mc.font.split(notification.text, 240));
+		if (!TextWrapper.isEmpty(notification.text())) {
+			this.text.addAll(mc.font.split(notification.text(), 240));
 		}
 
 		for (var l : this.text) {
@@ -200,17 +103,17 @@ public class NotificationToast implements Toast {
 		int w = width();
 		int h = height();
 
-		int oc = notification.outlineColor.getRgbJS();
+		int oc = notification.outlineColor().getRgbJS();
 		int ocr = FastColor.ARGB32.red(oc);
 		int ocg = FastColor.ARGB32.green(oc);
 		int ocb = FastColor.ARGB32.blue(oc);
 
-		int bc = notification.borderColor.getRgbJS();
+		int bc = notification.borderColor().getRgbJS();
 		int bcr = FastColor.ARGB32.red(bc);
 		int bcg = FastColor.ARGB32.green(bc);
 		int bcb = FastColor.ARGB32.blue(bc);
 
-		int bgc = notification.backgroundColor.getRgbJS();
+		int bgc = notification.backgroundColor().getRgbJS();
 		int bgcr = FastColor.ARGB32.red(bgc);
 		int bgcg = FastColor.ARGB32.green(bgc);
 		int bgcb = FastColor.ARGB32.blue(bgc);
@@ -226,14 +129,14 @@ public class NotificationToast implements Toast {
 		drawRectangle(m, 2, 2, w - 2, h - 2, bgcr, bgcg, bgcb);
 
 		if (icon != null) {
-			icon.draw(mc, graphics, 14, h / 2, notification.iconSize);
+			icon.draw(mc, graphics, 14, h / 2, notification.iconSize());
 		}
 
 		int th = icon == null ? 6 : 26;
 		int tv = (h - text.size() * 10) / 2 + 1;
 
 		for (var i = 0; i < text.size(); i++) {
-			graphics.drawString(mc.font, text.get(i), th, tv + i * 10, 0xFFFFFF, notification.textShadow);
+			graphics.drawString(mc.font, text.get(i), th, tv + i * 10, 0xFFFFFF, notification.textShadow());
 		}
 
 		poseStack.popPose();

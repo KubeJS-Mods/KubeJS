@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.core.mixin.neoforge;
+package dev.latvian.mods.kubejs.core.mixin.common;
 
 import dev.latvian.mods.kubejs.core.IngredientKJS;
 import net.minecraft.world.item.crafting.Ingredient;

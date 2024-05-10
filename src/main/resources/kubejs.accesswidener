@@ -11,19 +11,18 @@ accessible field net/minecraft/tags/TagEntry required Z
 accessible field net/minecraft/tags/TagEntry tag Z
 
 accessible field net/minecraft/world/item/crafting/RecipeManager byName Ljava/util/Map;
-accessible field net/minecraft/world/item/crafting/RecipeManager recipes Ljava/util/Map;
+accessible field net/minecraft/world/item/crafting/RecipeManager byType Lcom/google/common/collect/Multimap;
+accessible field net/minecraft/world/item/crafting/RecipeManager registries Lnet/minecraft/core/HolderLookup$Provider;
 accessible field net/minecraft/server/ReloadableServerResources tagManager Lnet/minecraft/tags/TagManager;
+accessible field net/minecraft/world/item/crafting/ShapelessRecipe$Serializer CODEC Lcom/mojang/serialization/MapCodec;
+# accessible field net/minecraft/world/item/crafting/ShapedRecipe$Serializer CODEC Lcom/mojang/serialization/MapCodec;
 
-accessible field net/minecraft/world/item/ArmorItem defaultModifiers Lcom/google/common/collect/Multimap;
-mutable field net/minecraft/world/item/ArmorItem defaultModifiers Lcom/google/common/collect/Multimap;
-accessible field net/minecraft/world/item/DiggerItem defaultModifiers Lcom/google/common/collect/Multimap;
-mutable field net/minecraft/world/item/DiggerItem defaultModifiers Lcom/google/common/collect/Multimap;
-accessible field net/minecraft/world/item/SwordItem defaultModifiers Lcom/google/common/collect/Multimap;
-mutable field net/minecraft/world/item/SwordItem defaultModifiers Lcom/google/common/collect/Multimap;
-accessible field net/minecraft/world/item/TridentItem defaultModifiers Lcom/google/common/collect/Multimap;
-mutable field net/minecraft/world/item/TridentItem defaultModifiers Lcom/google/common/collect/Multimap;
-accessible field net/minecraft/world/item/DiggerItem speed F
-mutable field net/minecraft/world/item/DiggerItem speed F
+# attributes
+accessible class net/minecraft/world/effect/MobEffect$AttributeTemplate
+accessible field net/minecraft/world/effect/MobEffect attributeModifiers Ljava/util/Map;
+accessible method net/minecraft/world/effect/MobEffect$AttributeTemplate <init> (Ljava/util/UUID;DLnet/minecraft/world/entity/ai/attributes/AttributeModifier$Operation;)V
+accessible field net/minecraft/world/item/ArmorItem defaultModifiers Ljava/util/function/Supplier;
+mutable field net/minecraft/world/item/ArmorItem defaultModifiers Ljava/util/function/Supplier;
 
 accessible field net/minecraft/world/item/TieredItem tier Lnet/minecraft/world/item/Tier;
 mutable field net/minecraft/world/item/TieredItem tier Lnet/minecraft/world/item/Tier;

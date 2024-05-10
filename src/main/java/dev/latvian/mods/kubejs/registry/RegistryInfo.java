@@ -40,6 +40,7 @@ import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.entity.schedule.Schedule;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Instrument;
 import net.minecraft.world.item.Item;
@@ -55,7 +56,7 @@ import net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterList;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -92,6 +93,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.rule.blockentity.RuleBlockEntityModifierType;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
@@ -154,8 +156,9 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	public static final RegistryInfo<GameEvent> GAME_EVENT = of(Registries.GAME_EVENT, GameEvent.class);
 	public static final RegistryInfo<PositionSourceType> POSITION_SOURCE_TYPE = of(Registries.POSITION_SOURCE_TYPE, PositionSourceType.class);
 	public static final RegistryInfo<StatType> STAT_TYPE = of(Registries.STAT_TYPE, StatType.class);
-	public static final RegistryInfo<VillagerType> VILLAGER_TYPE = of(Registries.VILLAGER_TYPE, VillagerType.class);
 	public static final RegistryInfo<VillagerProfession> VILLAGER_PROFESSION = of(Registries.VILLAGER_PROFESSION, VillagerProfession.class);
+	public static final RegistryInfo<VillagerType> VILLAGER_TYPE = of(Registries.VILLAGER_TYPE, VillagerType.class);
+	public static final RegistryInfo<ArmorMaterial> ARMOR_MATERIAL = of(Registries.ARMOR_MATERIAL, ArmorMaterial.class);
 	public static final RegistryInfo<PoiType> POINT_OF_INTEREST_TYPE = of(Registries.POINT_OF_INTEREST_TYPE, PoiType.class);
 	public static final RegistryInfo<MemoryModuleType> MEMORY_MODULE_TYPE = of(Registries.MEMORY_MODULE_TYPE, MemoryModuleType.class);
 	public static final RegistryInfo<SensorType> SENSOR_TYPE = of(Registries.SENSOR_TYPE, SensorType.class);
@@ -230,12 +233,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	public static final RegistryInfo<String> DECORATED_POT_PATTERNS = of(Registries.DECORATED_POT_PATTERNS, String.class);
 	public static final RegistryInfo<NoiseGeneratorSettings> NOISE_SETTINGS = of(Registries.NOISE_SETTINGS, NoiseGeneratorSettings.class);
 	public static final RegistryInfo<MultiNoiseBiomeSourceParameterList> MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST = of(Registries.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, MultiNoiseBiomeSourceParameterList.class);
-
-	/**
-	 * Add your registry to these to make sure it comes after vanilla registries, if it depends on them.
-	 * Only works on Fabric, since Forge already has ordered registries.
-	 */
-	public static final LinkedList<RegistryInfo<?>> AFTER_VANILLA = new LinkedList<>();
+	public static final RegistryInfo<LootTable> LOOT_TABLE = of(Registries.LOOT_TABLE, LootTable.class);
 
 	public final ResourceKey<? extends Registry<T>> key;
 	public final Class<?> objectBaseClass;
@@ -404,6 +402,10 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 
 	public Holder<T> getHolder(ResourceKey<T> key) {
 		return getArchitecturyRegistrar().getHolder(key);
+	}
+
+	public Holder<T> getHolderOf(T value) {
+		return getHolder(getId(value));
 	}
 
 	public boolean hasValue(ResourceLocation id) {

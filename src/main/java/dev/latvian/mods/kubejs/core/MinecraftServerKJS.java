@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
+import dev.latvian.mods.kubejs.net.SendDataFromServerPayload;
 import dev.latvian.mods.kubejs.player.AdvancementJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.server.DataExport;
@@ -95,7 +95,7 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 
 	@Override
 	default void kjs$sendData(String channel, @Nullable CompoundTag data) {
-		new SendDataFromServerMessage(channel, data).sendToAll(kjs$self());
+		new SendDataFromServerPayload(channel, data).sendToAll(kjs$self());
 	}
 
 	@HideFromJS

@@ -1,16 +1,15 @@
 package dev.latvian.mods.kubejs.item;
 
-import com.google.common.collect.Lists;
-import dev.architectury.hooks.item.food.FoodPropertiesHooks;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodProperties;
-import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -22,22 +21,20 @@ public class FoodBuilder {
 	private boolean meat;
 	private boolean alwaysEdible;
 	private boolean fastToEat;
-	private final List<Pair<Supplier<MobEffectInstance>, Float>> effects = Lists.newArrayList();
+	private List<FoodProperties.PossibleEffect> effects;
 	public Consumer<FoodEatenEventJS> eaten;
 
 	public FoodBuilder() {
 	}
 
 	public FoodBuilder(FoodProperties properties) {
-		hunger = properties.getNutrition();
-		saturation = properties.getSaturationModifier();
+		hunger = properties.nutrition();
+		saturation = properties.saturation();
 		meat = properties.isMeat();
 		alwaysEdible = properties.canAlwaysEat();
 		fastToEat = properties.isFastFood();
-
-		properties.getEffects().forEach(pair -> {
-			effects.add(Pair.of(pair::getFirst, pair.getSecond()));
-		});
+		effects = new ArrayList<>();
+		effects.addAll(properties.effects());
 	}
 
 	@Info("Sets the hunger restored.")
@@ -95,7 +92,7 @@ public class FoodBuilder {
 			@Param(name = "probability", value = "The probability of the effect being applied. 1 = 100%.")
 		})
 	public FoodBuilder effect(ResourceLocation mobEffectId, int duration, int amplifier, float probability) {
-		effects.add(Pair.of(new EffectSupplier(mobEffectId, duration, amplifier), probability));
+		effects.add(new FoodProperties.PossibleEffect(new EffectSupplier(mobEffectId, duration, amplifier), probability));
 		return this;
 	}
 
@@ -105,11 +102,7 @@ public class FoodBuilder {
 			return this;
 		}
 
-		effects.removeIf(pair -> {
-			var effectInstance = pair.getKey().get();
-			return effectInstance.getDescriptionId().equals(mobEffect.getDescriptionId());
-		});
-
+		effects.removeIf(e -> e.effectSupplier().get().getEffect().value() == mobEffect);
 		return this;
 	}
 
@@ -127,14 +120,14 @@ public class FoodBuilder {
 	public FoodProperties build() {
 		var b = new FoodProperties.Builder();
 		b.nutrition(hunger);
-		b.saturationMod(saturation);
+		b.saturationModifier(saturation);
 
 		if (meat) {
 			b.meat();
 		}
 
 		if (alwaysEdible) {
-			b.alwaysEat();
+			b.alwaysEdible();
 		}
 
 		if (fastToEat) {
@@ -142,7 +135,7 @@ public class FoodBuilder {
 		}
 
 		for (var effect : effects) {
-			FoodPropertiesHooks.effect(b, effect.getLeft(), effect.getRight());
+			b.effect(effect.effectSupplier(), effect.probability());
 		}
 
 		return b.build();
@@ -153,7 +146,7 @@ public class FoodBuilder {
 		private final int duration;
 		private final int amplifier;
 
-		private MobEffect cachedEffect;
+		private Holder<MobEffect> cachedEffect;
 
 		public EffectSupplier(ResourceLocation id, int duration, int amplifier) {
 			this.id = id;
@@ -164,7 +157,7 @@ public class FoodBuilder {
 		@Override
 		public MobEffectInstance get() {
 			if (cachedEffect == null) {
-				cachedEffect = RegistryInfo.MOB_EFFECT.getValue(id);
+				cachedEffect = RegistryInfo.MOB_EFFECT.getHolder(id);
 
 				if (cachedEffect == null) {
 					var effectIds = RegistryInfo.MOB_EFFECT.entrySet().stream().map(entry -> entry.getKey().location()).collect(Collectors.toSet());

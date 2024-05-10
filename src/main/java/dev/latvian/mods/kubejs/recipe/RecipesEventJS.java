@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -398,7 +399,7 @@ public class RecipesEventJS extends EventJS {
 
 		KubeJSPlugins.forEachPlugin(p -> p.injectRuntimeRecipes(this, recipeManager, recipesByName));
 
-		var newRecipeMap = new HashMap<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>>();
+		var recipesByType = ImmutableMultimap.<RecipeType<?>, RecipeHolder<?>>builder();
 
 		for (var entry : recipesByName.entrySet()) {
 			var type = entry.getValue().value().getType();
@@ -407,7 +408,7 @@ public class RecipesEventJS extends EventJS {
 		}
 
 		recipeManager.byName = recipesByName;
-		recipeManager.recipes = newRecipeMap;
+		recipeManager.byType = recipesByType.build();
 		ConsoleJS.SERVER.info("Added " + addedRecipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, modified " + modifiedCount + " recipes, with " + failedCount.get() + " failed recipes in " + timer.stop());
 		RecipeJS.itemErrors = false;
 
