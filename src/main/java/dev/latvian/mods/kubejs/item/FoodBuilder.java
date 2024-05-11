@@ -7,6 +7,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.food.FoodConstants;
 import net.minecraft.world.food.FoodProperties;
 
 import java.util.ArrayList;
@@ -16,30 +17,33 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class FoodBuilder {
-	private int hunger;
+	private int nutrition;
 	private float saturation;
-	private boolean meat;
 	private boolean alwaysEdible;
-	private boolean fastToEat;
-	private List<FoodProperties.PossibleEffect> effects;
+	private float eatSeconds;
+	private final List<FoodProperties.PossibleEffect> effects;
 	public Consumer<FoodEatenEventJS> eaten;
 
 	public FoodBuilder() {
+		this.nutrition = 0;
+		this.saturation = 0;
+		this.alwaysEdible = false;
+		this.eatSeconds = 0.6F;
+		this.effects = new ArrayList<>();
 	}
 
 	public FoodBuilder(FoodProperties properties) {
-		hunger = properties.nutrition();
-		saturation = properties.saturation();
-		meat = properties.isMeat();
-		alwaysEdible = properties.canAlwaysEat();
-		fastToEat = properties.isFastFood();
-		effects = new ArrayList<>();
-		effects.addAll(properties.effects());
+		this.nutrition = properties.nutrition();
+		this.saturation = properties.saturation();
+		this.alwaysEdible = properties.canAlwaysEat();
+		this.eatSeconds = properties.eatSeconds();
+		this.effects = new ArrayList<>();
+		this.effects.addAll(properties.effects());
 	}
 
 	@Info("Sets the hunger restored.")
-	public FoodBuilder hunger(int h) {
-		hunger = h;
+	public FoodBuilder nutrition(int h) {
+		nutrition = h;
 		return this;
 	}
 
@@ -47,17 +51,6 @@ public class FoodBuilder {
 	public FoodBuilder saturation(float s) {
 		saturation = s;
 		return this;
-	}
-
-	@Info("Sets whether the food is meat.")
-	public FoodBuilder meat(boolean flag) {
-		meat = flag;
-		return this;
-	}
-
-	@Info("Sets the food is meat.")
-	public FoodBuilder meat() {
-		return meat(true);
 	}
 
 	@Info("Sets whether the food is always edible.")
@@ -71,15 +64,15 @@ public class FoodBuilder {
 		return alwaysEdible(true);
 	}
 
-	@Info("Sets whether the food is fast to eat (having half of the eating time).")
-	public FoodBuilder fastToEat(boolean flag) {
-		fastToEat = flag;
+	@Info("Sets seconds it takes to eat the food.")
+	public FoodBuilder eatSeconds(float seconds) {
+		eatSeconds = seconds;
 		return this;
 	}
 
 	@Info("Sets the food is fast to eat (having half of the eating time).")
 	public FoodBuilder fastToEat() {
-		return fastToEat(true);
+		return eatSeconds(0.8F);
 	}
 
 	@Info(value = """
@@ -118,27 +111,7 @@ public class FoodBuilder {
 	}
 
 	public FoodProperties build() {
-		var b = new FoodProperties.Builder();
-		b.nutrition(hunger);
-		b.saturationModifier(saturation);
-
-		if (meat) {
-			b.meat();
-		}
-
-		if (alwaysEdible) {
-			b.alwaysEdible();
-		}
-
-		if (fastToEat) {
-			b.fast();
-		}
-
-		for (var effect : effects) {
-			b.effect(effect.effectSupplier(), effect.probability());
-		}
-
-		return b.build();
+		return new FoodProperties(nutrition, FoodConstants.saturationByModifier(nutrition, saturation), alwaysEdible, eatSeconds, effects);
 	}
 
 	private static class EffectSupplier implements Supplier<MobEffectInstance> {

@@ -27,6 +27,7 @@ public class ShearsItemBuilder extends ItemBuilder {
 		parentModel("minecraft:item/handheld");
 		unstackable();
 		tag(TAG);
+		tool = ShearsItem.createToolProperties();
 	}
 
 	public ShearsItemBuilder speedBaseline(float f) {

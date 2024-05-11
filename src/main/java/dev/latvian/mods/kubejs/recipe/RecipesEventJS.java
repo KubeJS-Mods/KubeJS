@@ -402,9 +402,7 @@ public class RecipesEventJS extends EventJS {
 		var recipesByType = ImmutableMultimap.<RecipeType<?>, RecipeHolder<?>>builder();
 
 		for (var entry : recipesByName.entrySet()) {
-			var type = entry.getValue().value().getType();
-			var recipes = newRecipeMap.computeIfAbsent(type, k -> new HashMap<>());
-			recipes.put(entry.getKey(), entry.getValue());
+			recipesByType.put(entry.getValue().value().getType(), entry.getValue());
 		}
 
 		recipeManager.byName = recipesByName;

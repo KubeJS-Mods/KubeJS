@@ -2,18 +2,18 @@ package dev.latvian.mods.kubejs.net;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
-public record SyncStagesPayload(UUID player, List<String> stages) implements CustomPacketPayload {
-	public static final StreamCodec<FriendlyByteBuf, SyncStagesPayload> STREAM_CODEC = StreamCodec.composite(
+public record SyncStagesPayload(UUID player, Collection<String> stages) implements CustomPacketPayload {
+	public static final StreamCodec<ByteBuf, SyncStagesPayload> STREAM_CODEC = StreamCodec.composite(
 		KubeJSCodecs.UUID_STREAM_CODEC,
 		SyncStagesPayload::player,
 		ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.STRING_UTF8),

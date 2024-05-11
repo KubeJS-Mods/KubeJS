@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.net;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.UUID;
 
 public record AddStagePayload(UUID player, String stage) implements CustomPacketPayload {
-	public static final StreamCodec<FriendlyByteBuf, AddStagePayload> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<ByteBuf, AddStagePayload> STREAM_CODEC = StreamCodec.composite(
 		KubeJSCodecs.UUID_STREAM_CODEC,
 		AddStagePayload::player,
 		ByteBufCodecs.STRING_UTF8,

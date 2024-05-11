@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.bindings;
 
 import com.google.gson.JsonParseException;
+import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.JSObjectType;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -136,7 +137,7 @@ public class TextWrapper {
 		if (json != null) {
 			var action = GsonHelper.getAsString(json, "action");
 			var value = GsonHelper.getAsString(json, "value");
-			return UtilsJS.fromJsonOrThrow(json, ClickEvent.CODEC);
+			return KubeJSCodecs.fromJsonOrThrow(json, ClickEvent.CODEC);
 		}
 
 		var s = o.toString();

@@ -161,8 +161,4 @@ public interface IngredientJS {
 				.result().map(Pair::getFirst).orElseThrow();
 		}
 	}
-
-	static Ingredient ofNetwork(FriendlyByteBuf buf) {
-		return Ingredient.fromNetwork(buf);
-	}
 }

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.block.callbacks;
 
-import com.google.common.collect.ImmutableMap;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -96,7 +95,7 @@ public class BlockStateModifyCallbackJS {
 	}
 
 	@Info("Get a map of this blocks properties to it's value")
-	public ImmutableMap<Property<?>, Comparable<?>> getValues() {
+	public Map<Property<?>, Comparable<?>> getValues() {
 		return state.getValues();
 	}
 

@@ -7,10 +7,10 @@ import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import org.jetbrains.annotations.Nullable;
 
 public enum LevelHelper {
@@ -37,7 +37,7 @@ public enum LevelHelper {
 	}
 
 	public double getReachDistance(LivingEntity livingEntity) {
-		return livingEntity.getAttribute(NeoForgeMod.ENTITY_REACH.value()).getValue();
+		return livingEntity.getAttribute(Attributes.BLOCK_INTERACTION_RANGE).getValue();
 	}
 
 	public BlockEntityJS createBlockEntity(BlockPos pos, BlockState state, BlockEntityInfo info) {

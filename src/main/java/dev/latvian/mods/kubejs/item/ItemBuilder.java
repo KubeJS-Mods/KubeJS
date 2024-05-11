@@ -13,14 +13,13 @@ import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -28,6 +27,8 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
@@ -97,6 +98,9 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public JsonObject textureJson;
 	public JsonObject modelJson;
 
+	public transient Tool tool;
+	public transient ItemAttributeModifiers itemAttributeModifiers;
+
 	public ItemBuilder(ResourceLocation i) {
 		super(i);
 		maxStackSize = 64;
@@ -119,6 +123,9 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		releaseUsing = null;
 		fireResistant = false;
 		hurtEnemy = null;
+
+		tool = null;
+		itemAttributeModifiers = null;
 	}
 
 	@Override
@@ -335,6 +342,14 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 		if (fireResistant) {
 			properties.fireResistant();
+		}
+
+		if (tool != null) {
+			properties.component(DataComponents.TOOL, tool);
+		}
+
+		if (itemAttributeModifiers != null) {
+			properties.attributes(itemAttributeModifiers);
 		}
 
 		return properties;

@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.helpers.LevelHelper;
 import dev.latvian.mods.kubejs.item.FoodEatenEventJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -139,7 +140,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		var stack = kjs$self().getItemBySlot(slot);
 
 		if (!stack.isEmpty()) {
-			stack.hurtAndBreak(amount, kjs$self(), livingEntity -> onBroken.accept(stack));
+			stack.hurtAndBreak(amount, kjs$self().getRandom(), kjs$self(), () -> onBroken.accept(stack));
 
 			if (stack.isEmpty()) {
 				kjs$self().setItemSlot(slot, ItemStack.EMPTY);
@@ -189,7 +190,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		AttributeInstance instance = kjs$self().getAttribute(Attributes.MOVEMENT_SPEED);
 		if (instance != null) {
 			instance.removeModifier(KJS_PLAYER_CUSTOM_SPEED);
-			instance.addTransientModifier(kjs$createSpeedModifier(speed, AttributeModifier.Operation.ADDITION));
+			instance.addTransientModifier(kjs$createSpeedModifier(speed, AttributeModifier.Operation.ADD_VALUE));
 		}
 	}
 
@@ -197,7 +198,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		AttributeInstance instance = kjs$self().getAttribute(Attributes.MOVEMENT_SPEED);
 		if (instance != null) {
 			instance.removeModifier(KJS_PLAYER_CUSTOM_SPEED);
-			instance.addTransientModifier(kjs$createSpeedModifier(speed, AttributeModifier.Operation.MULTIPLY_BASE));
+			instance.addTransientModifier(kjs$createSpeedModifier(speed, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
 		}
 	}
 
@@ -205,7 +206,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		AttributeInstance instance = kjs$self().getAttribute(Attributes.MOVEMENT_SPEED);
 		if (instance != null) {
 			instance.removeModifier(KJS_PLAYER_CUSTOM_SPEED);
-			instance.addTransientModifier(kjs$createSpeedModifier(speed, AttributeModifier.Operation.MULTIPLY_TOTAL));
+			instance.addTransientModifier(kjs$createSpeedModifier(speed, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
 		}
 	}
 
@@ -221,7 +222,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		return kjs$rayTrace(kjs$getReachDistance());
 	}
 
-	default double kjs$getAttributeTotalValue(Attribute attribute) {
+	default double kjs$getAttributeTotalValue(Holder<Attribute> attribute) {
 		AttributeInstance instance = kjs$self().getAttribute(attribute);
 		if (instance != null) {
 			return instance.getValue();
@@ -229,7 +230,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		return 0.0;
 	}
 
-	default double kjs$getAttributeBaseValue(Attribute attribute) {
+	default double kjs$getAttributeBaseValue(Holder<Attribute> attribute) {
 		AttributeInstance instance = kjs$self().getAttribute(attribute);
 		if (instance != null) {
 			return instance.getBaseValue();
@@ -237,14 +238,14 @@ public interface LivingEntityKJS extends EntityKJS {
 		return 0.0;
 	}
 
-	default void kjs$setAttributeBaseValue(Attribute attribute, double value) {
+	default void kjs$setAttributeBaseValue(Holder<Attribute> attribute, double value) {
 		AttributeInstance instance = kjs$self().getAttribute(attribute);
 		if (instance != null) {
 			instance.setBaseValue(value);
 		}
 	}
 
-	default void kjs$modifyAttribute(Attribute attribute, String identifier, double d, AttributeModifier.Operation operation) {
+	default void kjs$modifyAttribute(Holder<Attribute> attribute, String identifier, double d, AttributeModifier.Operation operation) {
 		AttributeInstance instance = kjs$self().getAttribute(attribute);
 		if (instance != null) {
 			UUID uuid = new UUID(identifier.hashCode(), identifier.hashCode());
@@ -253,7 +254,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		}
 	}
 
-	default void kjs$removeAttribute(Attribute attribute, String identifier) {
+	default void kjs$removeAttribute(Holder<Attribute> attribute, String identifier) {
 		AttributeInstance instance = kjs$self().getAttribute(attribute);
 		if (instance != null) {
 			instance.removeModifier(new UUID(identifier.hashCode(), identifier.hashCode()));

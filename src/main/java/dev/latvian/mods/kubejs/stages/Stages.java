@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.net.RemoveStagePayload;
 import dev.latvian.mods.kubejs.net.SyncStagesPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -74,6 +75,7 @@ public abstract class Stages {
 	public boolean add(String stage) {
 		if (addNoUpdate(stage)) {
 			if (player instanceof ServerPlayer serverPlayer) {
+				PacketDistributor.sendToAllPlayers();
 				new AddStagePayload(player.getUUID(), stage).sendToAll(serverPlayer.server);
 			}
 

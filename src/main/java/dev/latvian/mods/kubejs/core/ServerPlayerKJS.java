@@ -29,6 +29,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
@@ -45,13 +46,13 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	@Override
 	default void kjs$sendData(String channel, @Nullable CompoundTag data) {
 		if (!channel.isEmpty()) {
-			new SendDataFromServerPayload(channel, data).sendTo(kjs$self());
+			PacketDistributor.sendToPlayer(kjs$self(), new SendDataFromServerPayload(channel, data));
 		}
 	}
 
 	@Override
 	default void kjs$paint(CompoundTag renderer) {
-		new PaintPayload(renderer).sendTo(kjs$self());
+		PacketDistributor.sendToPlayer(kjs$self(), new PaintPayload(renderer));
 	}
 
 	@Override
@@ -156,7 +157,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 
 	@Override
 	default void kjs$notify(NotificationToastData builder) {
-		new NotificationPayload(builder).sendTo(kjs$self());
+		PacketDistributor.sendToPlayer(kjs$self(), new NotificationPayload(builder));
 	}
 
 	default void kjs$openGUI(Consumer<KubeJSGUI> gui) {

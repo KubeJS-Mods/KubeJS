@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("resource")
@@ -90,7 +91,7 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 			ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedEventJS(player, InteractionHand.MAIN_HAND, stack));
 		}
 
-		new FirstClickPayload(0).sendToServer();
+		PacketDistributor.sendToServer(new FirstClickPayload(0));
 	}
 
 	@HideFromJS
@@ -104,7 +105,7 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 			}
 		}
 
-		new FirstClickPayload(1).sendToServer();
+		PacketDistributor.sendToServer(new FirstClickPayload(1));
 	}
 
 	@HideFromJS
