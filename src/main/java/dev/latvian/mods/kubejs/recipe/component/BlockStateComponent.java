@@ -28,7 +28,6 @@ public record BlockStateComponent(ComponentRole crole, boolean preferObjectForm)
 	public static final RecipeComponent<BlockState> OUTPUT_STRING = new BlockStateComponent(ComponentRole.OUTPUT, false);
 	public static final RecipeComponent<BlockState> BLOCK_STRING = new BlockStateComponent(ComponentRole.OTHER, false);
 
-
 	@Override
 	public ComponentRole role() {
 		return crole;
@@ -47,7 +46,7 @@ public record BlockStateComponent(ComponentRole crole, boolean preferObjectForm)
 	@Override
 	public JsonElement write(RecipeJS recipe, BlockState value) {
 		if (preferObjectForm) {
-			return BlockState.CODEC.encode(value, JsonOps.INSTANCE, new JsonObject()).getOrThrow(true, message -> {
+			return BlockState.CODEC.encode(value, JsonOps.INSTANCE, new JsonObject()).getPartialOrThrow(message -> {
 				throw new RecipeExceptionJS("Failed to write blockstate to object form: " + message);
 			});
 		} else {
@@ -72,7 +71,7 @@ public record BlockStateComponent(ComponentRole crole, boolean preferObjectForm)
 			// this is formatted like so:
 			// { Name: "blockid", Properties: {Property: "value"}}
 			{
-				return BlockState.CODEC.parse(JsonOps.INSTANCE, GSON.toJsonTree(from)).getOrThrow(true, message -> {
+				return BlockState.CODEC.parse(JsonOps.INSTANCE, GSON.toJsonTree(from)).getPartialOrThrow(message -> {
 					throw new RecipeExceptionJS("Failed to parse blockstate: " + message);
 				});
 			}

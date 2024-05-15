@@ -1,8 +1,7 @@
 package dev.latvian.mods.kubejs.item;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.google.gson.JsonObject;
+import dev.architectury.registry.fuel.FuelRegistry;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
@@ -10,7 +9,6 @@ import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.typings.Param;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import net.minecraft.core.component.DataComponents;
@@ -18,7 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -37,7 +34,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -85,7 +81,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient ToIntFunction<ItemStack> barWidth;
 	public transient NameCallback nameGetter;
 
-	public transient Multimap<ResourceLocation, AttributeModifier> attributes;
 	public transient UseAnim anim;
 	public transient ToIntFunction<ItemStack> useDuration;
 	public transient UseCallback use;
@@ -115,7 +110,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		parentModel = "";
 		foodBuilder = null;
 		modelJson = null;
-		attributes = ArrayListMultimap.create();
 		anim = null;
 		useDuration = null;
 		use = null;
@@ -136,6 +130,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	@Override
 	public Item transformObject(Item obj) {
 		obj.kjs$setItemBuilder(this);
+
+		if (burnTime > 0) {
+			FuelRegistry.register(burnTime, obj);
+		}
+
 		return obj;
 	}
 
@@ -353,24 +352,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		}
 
 		return properties;
-	}
-
-	@Info(value = """
-		Adds an attribute modifier to the item.
-					
-		An attribute modifier is something like a damage boost or a speed boost.
-		On tools, they're applied when the item is held, on armor, they're
-		applied when the item is worn.
-		""",
-		params = {
-			@Param(name = "attribute", value = "The resource location of the attribute, e.g. 'generic.attack_damage'"),
-			@Param(name = "identifier", value = "A unique identifier for the modifier. Modifiers are considered the same if they have the same identifier."),
-			@Param(name = "d", value = "The amount of the modifier."),
-			@Param(name = "operation", value = "The operation to apply the modifier with. Can be ADDITION, MULTIPLY_BASE, or MULTIPLY_TOTAL.")
-		})
-	public ItemBuilder modifyAttribute(ResourceLocation attribute, String identifier, double d, AttributeModifier.Operation operation) {
-		attributes.put(attribute, new AttributeModifier(new UUID(identifier.hashCode(), identifier.hashCode()), identifier, d, operation));
-		return this;
 	}
 
 	@Info("Determines the animation of the item when used, e.g. eating food.")

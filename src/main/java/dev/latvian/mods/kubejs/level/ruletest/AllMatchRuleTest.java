@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.level.ruletest;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
@@ -11,11 +11,10 @@ import java.util.List;
 
 public class AllMatchRuleTest extends RuleTest {
 
-	public static final Codec<AllMatchRuleTest> CODEC = RuleTest.CODEC
+	public static final MapCodec<AllMatchRuleTest> CODEC = RuleTest.CODEC
 		.listOf()
 		.fieldOf("rules")
-		.xmap(AllMatchRuleTest::new, (t) -> t.rules)
-		.codec();
+		.xmap(AllMatchRuleTest::new, (t) -> t.rules);
 
 	public final List<RuleTest> rules;
 

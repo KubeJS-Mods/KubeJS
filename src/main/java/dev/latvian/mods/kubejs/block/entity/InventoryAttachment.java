@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.typings.desc.PrimitiveDescJS;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.rhino.mod.util.NbtType;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.Containers;
@@ -48,7 +49,7 @@ public class InventoryAttachment extends SimpleContainer implements BlockEntityA
 	}
 
 	@Override
-	public CompoundTag writeAttachment() {
+	public CompoundTag writeAttachment(HolderLookup.Provider registries) {
 		var tag = new CompoundTag();
 		var list = new ListTag();
 
@@ -57,8 +58,8 @@ public class InventoryAttachment extends SimpleContainer implements BlockEntityA
 
 			if (!stack.isEmpty()) {
 				var itemTag = new CompoundTag();
-				itemTag.putByte("Slot", (byte) i);
-				stack.save(itemTag);
+				itemTag.putByte("slot", (byte) i);
+				stack.save(registries, itemTag);
 				list.add(itemTag);
 			}
 		}
@@ -68,7 +69,7 @@ public class InventoryAttachment extends SimpleContainer implements BlockEntityA
 	}
 
 	@Override
-	public void readAttachment(CompoundTag tag) {
+	public void readAttachment(HolderLookup.Provider registries, CompoundTag tag) {
 		for (int i = 0; i < getContainerSize(); ++i) {
 			removeItemNoUpdate(i);
 		}
@@ -77,10 +78,10 @@ public class InventoryAttachment extends SimpleContainer implements BlockEntityA
 
 		for (int i = 0; i < list.size(); ++i) {
 			var itemTag = list.getCompound(i);
-			var slot = itemTag.getByte("Slot");
+			var slot = itemTag.getByte("slot");
 
 			if (slot >= 0 && slot < getContainerSize()) {
-				setItem(slot, ItemStack.of(itemTag));
+				setItem(slot, ItemStack.parse(registries, itemTag).orElse(ItemStack.EMPTY));
 			}
 		}
 	}

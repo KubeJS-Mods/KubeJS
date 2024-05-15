@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.block;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockStateMirrorCallbackJS;
@@ -10,13 +11,14 @@ import dev.latvian.mods.kubejs.block.callbacks.BlockStateRotateCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.EntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.EntitySteppedOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.drop.BlockDropSupplier;
+import dev.latvian.mods.kubejs.block.drop.BlockDrops;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityBuilder;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityInfo;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
-import dev.latvian.mods.kubejs.loot.LootBuilder;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -25,10 +27,9 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -37,6 +38,10 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -52,9 +57,6 @@ import java.util.function.Predicate;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class BlockBuilder extends BuilderBase<Block> {
-	private static final Consumer<LootBuilder> EMPTY = loot -> {
-	};
-
 	private static final BlockBehaviour.StatePredicate ALWAYS_FALSE_STATE_PREDICATE = (blockState, blockGetter, blockPos) -> false;
 	private static final BlockBehaviour.StateArgumentPredicate<?> ALWAYS_FALSE_STATE_ARG_PREDICATE = (blockState, blockGetter, blockPos, type) -> false;
 
@@ -78,7 +80,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient float speedFactor = Float.NaN;
 	public transient float jumpFactor = Float.NaN;
 	public Consumer<RandomTickCallbackJS> randomTickCallback;
-	public Consumer<LootBuilder> lootTable;
+	public BlockDropSupplier drops;
 	public JsonObject blockstateJson;
 	public JsonObject modelJson;
 	public transient boolean noValidSpawns;
@@ -120,7 +122,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		noCollision = false;
 		notSolid = false;
 		randomTickCallback = null;
-		lootTable = null;
+		drops = null;
 		blockstateJson = null;
 		modelJson = null;
 		noValidSpawns = false;
@@ -172,24 +174,38 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public void generateDataJsons(DataJsonGenerator generator) {
-		if (this.lootTable == EMPTY) {
-			return;
+		var table = generateLootTable();
+
+		if (table != null) {
+			generator.json(newID("loot_tables/blocks/", ""), LootTable.CODEC.encodeStart(JsonOps.INSTANCE, new Holder.Direct<>(table)).getOrThrow());
+		}
+	}
+
+	@Nullable
+	public LootTable generateLootTable() {
+		if (drops == BlockDropSupplier.NO_DROPS) {
+			return null;
 		}
 
-		var lootBuilder = new LootBuilder(null);
-		lootBuilder.type = "minecraft:block";
+		var blockDrops = drops == null ? BlockDrops.createDefault(get().asItem()) : drops.get();
 
-		if (lootTable != null) {
-			lootTable.accept(lootBuilder);
-		} else if (get().asItem() != Items.AIR) {
-			lootBuilder.addPool(pool -> {
-				pool.survivesExplosion();
-				pool.addItem(new ItemStack(get()));
-			});
+		if (blockDrops.items().length == 0) {
+			return null;
 		}
 
-		var json = lootBuilder.toJson();
-		generator.json(newID("loot_tables/blocks/", ""), json);
+		var pool = new LootPool.Builder();
+
+		if (blockDrops.rolls() != null) {
+			pool.setRolls(blockDrops.rolls());
+		}
+
+		pool.when(ExplosionCondition.survivesExplosion());
+
+		for (var drop : blockDrops.items()) {
+			pool.add(LootItem.lootTableItem(drop.item()));
+		}
+
+		return new LootTable.Builder().withPool(pool).build();
 	}
 
 	@Override
@@ -466,7 +482,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public BlockBuilder item(@Nullable Consumer<BlockItemBuilder> i) {
 		if (i == null) {
 			itemBuilder = null;
-			lootTable = EMPTY;
+			drops = BlockDropSupplier.NO_DROPS;
 		} else {
 			if (itemBuilder == null) {
 				itemBuilder = getOrCreateItemBuilder();
@@ -558,9 +574,15 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return blockStateProperties.contains(BlockStateProperties.WATERLOGGED);
 	}
 
+	@Info("Change drops of this block")
+	public BlockBuilder drops(BlockDropSupplier drops) {
+		this.drops = drops == null ? BlockDropSupplier.NO_DROPS : drops;
+		return this;
+	}
+
 	@Info("Clears all drops for the block.")
 	public BlockBuilder noDrops() {
-		lootTable = EMPTY;
+		drops = BlockDropSupplier.NO_DROPS;
 		return this;
 	}
 
@@ -791,7 +813,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 			properties.requiresCorrectToolForDrops();
 		}
 
-		if (lootTable == EMPTY) {
+		if (drops == BlockDropSupplier.NO_DROPS) {
 			properties.noLootTable();
 		}
 

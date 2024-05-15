@@ -2,8 +2,6 @@ package dev.latvian.mods.kubejs.level;
 
 import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
-import dev.latvian.mods.kubejs.core.LevelKJS;
-import dev.latvian.mods.kubejs.helpers.LevelHelper;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.Tags;
@@ -30,6 +28,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -325,7 +324,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public void spawnFireworks(Fireworks fireworks, int lifetime) {
-		((LevelKJS) minecraftLevel).kjs$spawnFireworks(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D, fireworks, lifetime);
+		minecraftLevel.kjs$spawnFireworks(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D, fireworks, lifetime);
 	}
 
 	@Nullable
@@ -338,10 +337,10 @@ public class BlockContainerJS implements SpecialEquality {
 		var entity = getEntity();
 
 		if (entity != null) {
-			var c = LevelHelper.get().getInventoryFromBlockEntity(this, facing);
+			var c = minecraftLevel.getCapability(Capabilities.ItemHandler.BLOCK, getPos(), getBlockState(), getEntity(), facing);
 
-			if (c != null) {
-				return c;
+			if (c instanceof InventoryKJS inv) {
+				return inv;
 			} else if (entity instanceof InventoryKJS inv) {
 				return inv;
 			}

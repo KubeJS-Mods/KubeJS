@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.util.WrappedJS;
@@ -11,6 +12,7 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -37,7 +39,7 @@ public interface ComponentKJS extends Component, Iterable<Component>, JsonSerial
 	@Override
 	@RemapForJS("toJson")
 	default JsonElement toJsonJS() {
-		return Component.Serializer.toJsonTree(kjs$self());
+		return ComponentSerialization.CODEC.encodeStart(JsonOps.INSTANCE, kjs$self()).getOrThrow();
 	}
 
 	default boolean kjs$hasStyle() {

@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
-import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.server.packs.resources.IoSupplier;
 
 import javax.imageio.ImageIO;
@@ -54,12 +53,12 @@ public interface WindowKJS {
 				var img = ImageIO.read(in);
 
 				return List.of(
-					new GeneratedData(KubeJS.id("icon_16x.png"), Lazy.of(new KJSScaledIconProvider(img, 16)), true),
-					new GeneratedData(KubeJS.id("icon_24x.png"), Lazy.of(new KJSScaledIconProvider(img, 24)), true),
-					new GeneratedData(KubeJS.id("icon_32x.png"), Lazy.of(new KJSScaledIconProvider(img, 32)), true),
-					new GeneratedData(KubeJS.id("icon_48x.png"), Lazy.of(new KJSScaledIconProvider(img, 48)), true),
-					new GeneratedData(KubeJS.id("icon_128.png"), Lazy.of(new KJSScaledIconProvider(img, 128)), true),
-					new GeneratedData(KubeJS.id("icon_256x.png"), Lazy.of(new KJSScaledIconProvider(img, 256)), true)
+					new GeneratedData(KubeJS.id("icon_16x.png"), new KJSScaledIconProvider(img, 16)),
+					new GeneratedData(KubeJS.id("icon_24x.png"), new KJSScaledIconProvider(img, 24)),
+					new GeneratedData(KubeJS.id("icon_32x.png"), new KJSScaledIconProvider(img, 32)),
+					new GeneratedData(KubeJS.id("icon_48x.png"), new KJSScaledIconProvider(img, 48)),
+					new GeneratedData(KubeJS.id("icon_128.png"), new KJSScaledIconProvider(img, 128)),
+					new GeneratedData(KubeJS.id("icon_256x.png"), new KJSScaledIconProvider(img, 256))
 				);
 			}
 		}

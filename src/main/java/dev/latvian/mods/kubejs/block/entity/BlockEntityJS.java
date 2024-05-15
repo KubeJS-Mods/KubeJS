@@ -53,8 +53,8 @@ public class BlockEntityJS extends BlockEntity {
 	}
 
 	@Override
-	protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-		super.saveAdditional(tag, provider);
+	protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+		super.saveAdditional(tag, registries);
 		tag.put("data", data);
 
 		if (tick > 0) {
@@ -73,7 +73,7 @@ public class BlockEntityJS extends BlockEntity {
 			var list = new ListTag();
 
 			for (var att : attachments) {
-				list.add(att.writeAttachment());
+				list.add(att.writeAttachment(registries));
 			}
 
 			tag.put("attachments", list);
@@ -81,8 +81,8 @@ public class BlockEntityJS extends BlockEntity {
 	}
 
 	@Override
-	public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-		super.loadAdditional(tag, provider);
+	public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+		super.loadAdditional(tag, registries);
 		data = tag.getCompound("data");
 		tick = tag.getInt("tick");
 		cycle = tag.getInt("cycle");
@@ -93,11 +93,11 @@ public class BlockEntityJS extends BlockEntity {
 
 			if (attachments.length == list.size()) {
 				for (int i = 0; i < attachments.length; i++) {
-					attachments[i].readAttachment(list.getCompound(i));
+					attachments[i].readAttachment(registries, list.getCompound(i));
 				}
 			} else {
 				for (var att : attachments) {
-					att.readAttachment(new CompoundTag());
+					att.readAttachment(registries, new CompoundTag());
 				}
 			}
 		}

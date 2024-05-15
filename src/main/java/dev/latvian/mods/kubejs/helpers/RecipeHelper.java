@@ -3,13 +3,12 @@ package dev.latvian.mods.kubejs.helpers;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
-import net.minecraft.resources.RegistryOps;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
@@ -25,15 +24,20 @@ public enum RecipeHelper {
 
 	@Nullable
 	public RecipeHolder<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
-		// TODO: What is this mess, Forge???
-		return RecipeManager.fromJson(id, json, JsonOps.INSTANCE).orElse(null);
+		try {
+			return new RecipeHolder<>(id, serializer.codec().decode(JsonOps.INSTANCE, JsonOps.INSTANCE.getMap(json).result().get()).getOrThrow());
+		} catch (Exception e) {
+			if (!FMLLoader.isProduction()) {
+				e.printStackTrace();
+			}
+
+			return null;
+		}
 	}
 
 	@Nullable
-	public JsonObject checkConditions(JsonObject json) {
-		var context = KubeJSReloadListener.resources.getConditionContext();
-		var registry = KubeJSReloadListener.resources.getRegistryAccess();
-		var ops = ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, registry), context);
+	public JsonObject checkConditions(HolderLookup.Provider registry, JsonObject json) {
+		var ops = ConditionalOps.create(JsonOps.INSTANCE, registry);
 
 		if (!json.has("type")) {
 			return null;
@@ -45,6 +49,6 @@ public enum RecipeHelper {
 	}
 
 	public Ingredient getCustomIngredient(JsonObject object) {
-		return Ingredient.fromJson(object, false);
+		return Ingredient.CODEC.decode(JsonOps.INSTANCE, object).getOrThrow().getFirst();
 	}
 }

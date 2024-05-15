@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.WrapperRegistry;
 import dev.latvian.mods.kubejs.util.ClassFilter;
+import net.minecraft.core.component.DataComponentPatch;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -50,7 +51,7 @@ public class NeoForgeKubeJSPlugin extends BuiltinKubeJSPlugin {
 
 		registry.registerSimple(FluidStack.class, o -> {
 			var fs = FluidStackJS.of(o);
-			return fs.kjs$isEmpty() ? FluidStack.EMPTY : new FluidStack(fs.getFluid(), (int) fs.kjs$getAmount(), fs.getNbt());
+			return fs.kjs$isEmpty() ? FluidStack.EMPTY : new FluidStack(fs.getFluid().builtInRegistryHolder(), (int) fs.kjs$getAmount(), DataComponentPatch.EMPTY);
 		});
 	}
 }

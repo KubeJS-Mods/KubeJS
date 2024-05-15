@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 @RemapPrefixForJS("kjs$")
@@ -25,7 +26,7 @@ public interface ClientPlayerKJS extends PlayerKJS {
 	@Override
 	default void kjs$sendData(String channel, @Nullable CompoundTag data) {
 		if (!channel.isEmpty()) {
-			new SendDataFromClientPayload(channel, data).sendToServer();
+			PacketDistributor.sendToServer(new SendDataFromClientPayload(channel, data));
 		}
 	}
 

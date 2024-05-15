@@ -21,7 +21,6 @@ import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 
 import java.time.Duration;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -30,22 +29,9 @@ public interface KubeJSCodecs {
 	Codec<Duration> DURATION = stringResolverCodec(Duration::toString, UtilsJS::getDuration);
 	Codec<Color> RHINO_COLOR = stringResolverCodec(Color::toString, ColorWrapper::of);
 
-	StreamCodec<RegistryFriendlyByteBuf, Pattern> REGEX_STREAM = ByteBufCodecs.fromCodecWithRegistries(REGEX);
-	StreamCodec<RegistryFriendlyByteBuf, Duration> DURATION_STREAM = ByteBufCodecs.fromCodecWithRegistries(DURATION);
-	StreamCodec<RegistryFriendlyByteBuf, Color> RHINO_COLOR_STREAM = ByteBufCodecs.fromCodecWithRegistries(RHINO_COLOR);
-
-	StreamCodec<ByteBuf, UUID> UUID_STREAM_CODEC = new StreamCodec<ByteBuf, UUID>() {
-		@Override
-		public UUID decode(ByteBuf buf) {
-			return new UUID(buf.readLong(), buf.readLong());
-		}
-
-		@Override
-		public void encode(ByteBuf buf, UUID uuid) {
-			buf.writeLong(uuid.getMostSignificantBits());
-			buf.writeLong(uuid.getLeastSignificantBits());
-		}
-	};
+	StreamCodec<ByteBuf, Pattern> REGEX_STREAM = ByteBufCodecs.fromCodec(REGEX);
+	StreamCodec<ByteBuf, Duration> DURATION_STREAM = ByteBufCodecs.fromCodec(DURATION);
+	StreamCodec<ByteBuf, Color> RHINO_COLOR_STREAM = ByteBufCodecs.fromCodec(RHINO_COLOR);
 
 	StreamCodec<? super RegistryFriendlyByteBuf, IntProvider> INT_PROVIDER_STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(IntProvider.CODEC);
 

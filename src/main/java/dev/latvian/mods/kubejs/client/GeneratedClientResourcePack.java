@@ -16,10 +16,13 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.FilePackResources;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.PackSource;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -27,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public class GeneratedClientResourcePack extends GeneratedResourcePack {
 	public static List<PackResources> inject(Minecraft client, List<PackResources> packs) {
@@ -49,8 +53,8 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 
 			for (var file : Objects.requireNonNull(KubeJSPaths.ASSETS.toFile().listFiles())) {
 				if (file.isFile() && file.getName().endsWith(".zip")) {
-					var access = new FilePackResources.FileResourcesSupplier(file, false);
-					injected.add(access.openPrimary(file.getName()));
+					var access = new FilePackResources.FileResourcesSupplier(file);
+					injected.add(access.openPrimary(new PackLocationInfo(file.getName(), Component.empty(), PackSource.BUILT_IN, Optional.empty())));
 				}
 			}
 
@@ -150,12 +154,6 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 				generator.json(new ResourceLocation(e1.getKey() + ":lang/" + e2.getKey()), e2.getValue());
 			}
 		}
-	}
-
-	@Override
-	protected boolean forgetFile(String path) {
-		// return path.endsWith(".png") || path.endsWith(".ogg");
-		return super.forgetFile(path);
 	}
 
 	@Override

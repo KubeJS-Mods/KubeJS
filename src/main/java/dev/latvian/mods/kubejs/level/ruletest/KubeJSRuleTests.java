@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.level.ruletest;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.latvian.mods.kubejs.KubeJS;
 import net.minecraft.core.registries.Registries;
@@ -15,7 +15,7 @@ public interface KubeJSRuleTests {
 	RuleTestType<AllMatchRuleTest> ALL_MATCH = register("all_match", AllMatchRuleTest.CODEC);
 	RuleTestType<AnyMatchRuleTest> ANY_MATCH = register("any_match", AnyMatchRuleTest.CODEC);
 
-	static <P extends RuleTest> RuleTestType<P> register(String id, Codec<P> codec) {
+	static <P extends RuleTest> RuleTestType<P> register(String id, MapCodec<P> codec) {
 		var type = (RuleTestType<P>) () -> codec;
 		RULE_TEST_TYPES.register(id, () -> type);
 		return type;

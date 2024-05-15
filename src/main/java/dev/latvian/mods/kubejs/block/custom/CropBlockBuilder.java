@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.block.custom;
 
-import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
@@ -9,7 +8,6 @@ import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.block.SeedItemBuilder;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
@@ -17,7 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -26,7 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
@@ -93,46 +90,6 @@ public class CropBlockBuilder extends BlockBuilder {
 
 		soundType(SoundType.CROP);
 		mapColor(MapColor.PLANT);
-
-		//This should work as a minimum crop-like table
-		lootTable = loot -> {
-			var condition = new JsonObject();
-			condition.addProperty("condition", "minecraft:block_state_property");
-			condition.addProperty("block", this.newID("", "").toString());
-			var properties = new JsonObject();
-			properties.addProperty("age", String.valueOf(this.age));
-			condition.add("properties", properties);
-
-			var function = new JsonObject();
-			function.addProperty("function", "minecraft:apply_bonus");
-			function.addProperty("enchantment", "minecraft:fortune");
-			function.addProperty("formula", "minecraft:binomial_with_bonus_count");
-			var parameters = new JsonObject();
-			parameters.addProperty("extra", 3);
-			parameters.addProperty("probability", 0.5714286); //Same as vanilla
-			function.add("parameters", parameters);
-
-			if (dropSeed) {
-				loot.addPool(bonuses -> {
-					bonuses.rolls = ConstantValue.exactly(1.0f);
-					bonuses.bonusRolls = ConstantValue.exactly(0.0f);
-					bonuses.addItem(new ItemStack(itemBuilder.get()))
-						.addCondition(condition)
-						.addFunction(function);
-					bonuses.addItem(new ItemStack(itemBuilder.get()));
-				});
-			}
-
-			for (Pair<Object, Double> output : outputs) {
-				loot.addPool(crops -> {
-					crops.rolls = ConstantValue.exactly(1.0f);
-					crops.bonusRolls = ConstantValue.exactly(0.0f);
-					crops.addItem(ItemStackJS.of(output.getFirst()))
-						.addCondition(condition)
-						.randomChance(output.getSecond());
-				});
-			}
-		};
 
 		for (int a = 0; a <= age; a++) {
 			texture(String.valueOf(a), id.getNamespace() + ":block/" + id.getPath() + a);
@@ -210,6 +167,56 @@ public class CropBlockBuilder extends BlockBuilder {
 	public BlockBuilder randomTick(@Nullable Consumer<RandomTickCallbackJS> randomTickCallback) {
 		KubeJS.LOGGER.warn("randomTick is overridden by growTick to return grow speed, use it instead.");
 		return this;
+	}
+
+	// FIXME
+	@Override
+	@Nullable
+	public LootTable generateLootTable() {
+		if (drops != null) {
+			return super.generateLootTable();
+		}
+
+		/*
+		var condition = new JsonObject();
+			condition.addProperty("condition", "minecraft:block_state_property");
+			condition.addProperty("block", this.newID("", "").toString());
+			var properties = new JsonObject();
+			properties.addProperty("age", String.valueOf(this.age));
+			condition.add("properties", properties);
+
+			var function = new JsonObject();
+			function.addProperty("function", "minecraft:apply_bonus");
+			function.addProperty("enchantment", "minecraft:fortune");
+			function.addProperty("formula", "minecraft:binomial_with_bonus_count");
+			var parameters = new JsonObject();
+			parameters.addProperty("extra", 3);
+			parameters.addProperty("probability", 0.5714286); //Same as vanilla
+			function.add("parameters", parameters);
+
+			if (dropSeed) {
+				loot.addPool(bonuses -> {
+					bonuses.rolls = ConstantValue.exactly(1.0f);
+					bonuses.bonusRolls = ConstantValue.exactly(0.0f);
+					bonuses.addItem(new ItemStack(itemBuilder.get()))
+						.addCondition(condition)
+						.addFunction(function);
+					bonuses.addItem(new ItemStack(itemBuilder.get()));
+				});
+			}
+
+			for (var output : outputs) {
+				loot.addPool(crops -> {
+					crops.rolls = ConstantValue.exactly(1.0f);
+					crops.bonusRolls = ConstantValue.exactly(0.0f);
+					crops.addItem(ItemStackJS.of(output.getFirst()))
+						.addCondition(condition)
+						.randomChance(output.getSecond());
+				});
+			}
+		 */
+
+		return null;
 	}
 
 	@Override

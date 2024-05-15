@@ -55,7 +55,7 @@
 			"dev/latvian/mods/kubejs/core/ItemFrameEntityKJS"
 		],
 		"net/minecraft/class_1263": [
-			"dev/latvian/mods/kubejs/core/InventoryKJS"
+			"dev/latvian/mods/kubejs/core/ContainerKJS"
 		],
 		"net/minecraft/class_1715": [
 			"dev/latvian/mods/kubejs/core/CraftingContainerKJS"

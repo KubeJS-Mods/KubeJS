@@ -20,12 +20,12 @@ public class ResourceGenerator {
 		map = m;
 	}
 
-	public void add(ResourceLocation id, Supplier<byte[]> data, boolean alwaysForget) {
-		map.put(id, new GeneratedData(id, Lazy.of(data), alwaysForget));
+	public void add(ResourceLocation id, Supplier<byte[]> data) {
+		map.put(id, new GeneratedData(id, data));
 	}
 
-	public void add(ResourceLocation id, Supplier<byte[]> data) {
-		add(id, data, false);
+	public void addCached(ResourceLocation id, Supplier<byte[]> data) {
+		add(id, Lazy.of(data));
 	}
 
 	public void json(ResourceLocation id, JsonElement json) {

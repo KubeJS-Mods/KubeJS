@@ -4,12 +4,10 @@ import com.google.common.collect.Multimap;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 
@@ -31,13 +29,7 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 
 	private List<RecipeLikeKJS> getOriginalRecipes() {
 		if (originalRecipes == null) {
-			originalRecipes = new ArrayList<>();
-
-			for (var map : recipeMap.values()) {
-				for (var entry : map.entrySet()) {
-					originalRecipes.add(entry.getValue());
-				}
-			}
+			originalRecipes = new ArrayList<>(recipeIdMap.values());
 		}
 
 		return originalRecipes;
@@ -69,12 +61,6 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 			var r = itr.next();
 
 			if (filter.test(r)) {
-				var map = recipeMap.get(((Recipe<?>) r).getType());
-
-				if (map != null) {
-					map.remove(r.kjs$getOrCreateId());
-				}
-
 				var holder = recipeIdMap.remove(r.kjs$getOrCreateId());
 				recipeTypeMap.values().remove(holder);
 
@@ -90,10 +76,5 @@ public class AfterRecipesLoadedEventJS extends EventJS {
 		}
 
 		return count;
-	}
-
-	@Override
-	protected void afterPosted(EventResult isCanceled) {
-		recipeMap.values().removeIf(Map::isEmpty);
 	}
 }

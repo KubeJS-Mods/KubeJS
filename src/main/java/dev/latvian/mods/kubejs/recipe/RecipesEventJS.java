@@ -286,7 +286,7 @@ public class RecipesEventJS extends EventJS {
 					continue; //Forge: filter anything beginning with "_" as it's used for metadata.
 				}
 
-				json = RecipeHelper.get().checkConditions(GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
+				json = RecipeHelper.get().checkConditions(recipeManager.registries, GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
 
 				if (json == null) {
 					if (DevProperties.get().logSkippedRecipes) {

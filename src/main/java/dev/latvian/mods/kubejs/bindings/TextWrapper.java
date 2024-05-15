@@ -1,9 +1,12 @@
 package dev.latvian.mods.kubejs.bindings;
 
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.JSObjectType;
+import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -13,6 +16,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.chat.contents.ScoreContents;
@@ -45,7 +49,7 @@ public class TextWrapper {
 			var s = tag.getAsString();
 			if (s.startsWith("{") && s.endsWith("}")) {
 				try {
-					return Component.Serializer.fromJson(s);
+					return (MutableComponent) ComponentSerialization.CODEC.decode(JsonOps.INSTANCE, JsonIO.GSON.fromJson(s, JsonObject.class)).getOrThrow().getFirst();
 				} catch (JsonParseException ex) {
 					return Component.literal("Error: " + ex);
 				}

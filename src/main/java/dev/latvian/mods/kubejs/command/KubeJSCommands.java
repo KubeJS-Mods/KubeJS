@@ -52,6 +52,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -61,6 +62,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -601,7 +603,7 @@ public class KubeJSCommands {
 	private static int errors(CommandSourceStack source, ScriptType type) throws CommandSyntaxException {
 		if (type == ScriptType.CLIENT) {
 			var player = source.getPlayerOrException();
-			new DisplayClientErrorsPayload().sendTo(player);
+			PacketDistributor.sendToPlayer(player, new DisplayClientErrorsPayload());
 			return 1;
 		}
 
@@ -619,7 +621,7 @@ public class KubeJSCommands {
 		var errors = new ArrayList<>(type.console.errors);
 		var warnings = new ArrayList<>(type.console.warnings);
 		player.sendSystemMessage(Component.literal("You need KubeJS on client side!").withStyle(ChatFormatting.RED), true);
-		new DisplayServerErrorsPayload(type, errors, warnings).sendTo(player);
+		PacketDistributor.sendToPlayer(player, new DisplayServerErrorsPayload(type.ordinal(), errors, warnings));
 
 		/*
 		var lines = ConsoleJS.SERVER.errors.toArray(ConsoleLine.EMPTY_ARRAY);
@@ -661,7 +663,7 @@ public class KubeJSCommands {
 	private static int reloadStartup(CommandSourceStack source) {
 		KubeJS.getStartupScriptManager().reload(null);
 		source.sendSystemMessage(Component.literal("Done!"));
-		new ReloadStartupScriptsPayload(source.getServer().isDedicatedServer()).sendToAll(source.getServer());
+		PacketDistributor.sendToAllPlayers(new ReloadStartupScriptsPayload(source.getServer().isDedicatedServer()));
 		return 1;
 	}
 
@@ -897,7 +899,12 @@ public class KubeJSCommands {
 	}
 
 	private static int painter(CommandSourceStack source, Collection<ServerPlayer> players, CompoundTag object) {
-		new PaintPayload(object).sendTo(players);
+		var payload = new ClientboundCustomPayloadPacket(new PaintPayload(object));
+
+		for (var player : players) {
+			player.connection.send(payload);
+		}
+
 		return 1;
 	}
 

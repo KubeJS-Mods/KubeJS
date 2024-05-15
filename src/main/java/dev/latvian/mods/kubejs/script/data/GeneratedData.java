@@ -12,9 +12,10 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.function.Supplier;
 
-public record GeneratedData(ResourceLocation id, Lazy<byte[]> data, boolean alwaysForget) implements IoSupplier<InputStream> {
-	public static final GeneratedData INTERNAL_RELOAD = new GeneratedData(KubeJS.id("__internal.reload"), Lazy.of(() -> new byte[0]), false);
+public record GeneratedData(ResourceLocation id, Supplier<byte[]> data) implements IoSupplier<InputStream> {
+	public static final GeneratedData INTERNAL_RELOAD = new GeneratedData(KubeJS.id("__internal.reload"), Lazy.of(() -> new byte[0]));
 
 	public static final GeneratedData PACK_META = new GeneratedData(KubeJS.id("pack.mcmeta"), Lazy.of(() -> {
 		var json = new JsonObject();
@@ -23,27 +24,21 @@ public record GeneratedData(ResourceLocation id, Lazy<byte[]> data, boolean alwa
 		pack.addProperty("pack_format", 15);
 		json.add("pack", pack);
 		return json.toString().getBytes(StandardCharsets.UTF_8);
-	}), false);
+	}));
 
-	public static final GeneratedData PACK_ICON = new GeneratedData(KubeJS.id("textures/kubejs_logo.png"), Lazy.of(() -> {
+	public static final GeneratedData PACK_ICON = new GeneratedData(KubeJS.id("textures/kubejs_logo.png"), () -> {
 		try {
 			return Files.readAllBytes(Platform.getMod(KubeJS.MOD_ID).findResource("assets", "kubejs", "textures", "kubejs_logo.png").get());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return new byte[0];
 		}
-	}), true);
+	});
 
 	@Override
 	@NotNull
 	public InputStream get() {
-		var in = new ByteArrayInputStream(data.get());
-
-		if (alwaysForget) {
-			data.forget();
-		}
-
-		return in;
+		return new ByteArrayInputStream(data.get());
 	}
 
 	@Override

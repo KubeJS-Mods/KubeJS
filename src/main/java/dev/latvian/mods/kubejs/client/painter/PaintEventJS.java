@@ -62,7 +62,7 @@ public class PaintEventJS extends ClientEventJS {
 	}
 
 	public void multiplyWithMatrix(Matrix4f m) {
-		matrices.mulPoseMatrix(m);
+		matrices.mulPose(m);
 	}
 
 	public Matrix4f getMatrix() {

@@ -4,11 +4,13 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.Lazy;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,10 +23,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
 public abstract class GeneratedResourcePack implements ExportablePackResources {
+	public static final PackLocationInfo PACK_LOCATION_INFO = new PackLocationInfo(KubeJS.MOD_ID, Component.empty(), PackSource.BUILT_IN, Optional.empty());
+
 	private static Stream<Path> tryWalk(Path path) {
 		try {
 			return Files.walk(path);
@@ -108,14 +113,14 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 							continue;
 						}
 
-						var data = new GeneratedData(new ResourceLocation(ns, pathStr), Lazy.of(() -> {
+						var data = new GeneratedData(new ResourceLocation(ns, pathStr), () -> {
 							try {
 								return Files.readAllBytes(path);
 							} catch (Exception ex) {
 								ex.printStackTrace();
 								return new byte[0];
 							}
-						}), forgetFile(pathStr));
+						});
 
 						if (debug) {
 							KubeJS.LOGGER.info("- File found: '" + data.id() + "' (" + data.data().get().length + " bytes)");
@@ -146,10 +151,6 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 		}
 
 		return generated;
-	}
-
-	protected boolean forgetFile(String path) {
-		return true;
 	}
 
 	protected boolean skipFile(GeneratedData data) {
@@ -231,8 +232,8 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 	}
 
 	@Override
-	public boolean isBuiltin() {
-		return true;
+	public PackLocationInfo location() {
+		return PACK_LOCATION_INFO;
 	}
 
 	@Override

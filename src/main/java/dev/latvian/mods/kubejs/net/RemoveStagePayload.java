@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.net;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSCodecs;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public record RemoveStagePayload(UUID player, String stage) implements CustomPacketPayload {
 	public static final StreamCodec<ByteBuf, RemoveStagePayload> STREAM_CODEC = StreamCodec.composite(
-		KubeJSCodecs.UUID_STREAM_CODEC,
+		UUIDUtil.STREAM_CODEC,
 		RemoveStagePayload::player,
 		ByteBufCodecs.STRING_UTF8,
 		RemoveStagePayload::stage,

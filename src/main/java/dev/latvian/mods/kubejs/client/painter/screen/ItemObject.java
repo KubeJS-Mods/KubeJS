@@ -87,9 +87,9 @@ public class ItemObject extends BoxObject {
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-		PoseStack modelViewStack = RenderSystem.getModelViewStack();
-		modelViewStack.pushPose();
-		modelViewStack.mulPoseMatrix(poseStack.last().pose());
+		var modelViewStack = RenderSystem.getModelViewStack();
+		modelViewStack.pushMatrix();
+		modelViewStack.mul(poseStack.last().pose());
 		// modelViewStack.translate(x, y, 100.0D + this.blitOffset);
 		modelViewStack.scale(1F, -1F, 1F);
 		modelViewStack.scale(16F, 16F, 16F);
@@ -109,7 +109,7 @@ public class ItemObject extends BoxObject {
 			Lighting.setupFor3DItems();
 		}
 
-		modelViewStack.popPose();
+		modelViewStack.popMatrix();
 		RenderSystem.applyModelViewMatrix();
 
 		if (renderOverlay) {

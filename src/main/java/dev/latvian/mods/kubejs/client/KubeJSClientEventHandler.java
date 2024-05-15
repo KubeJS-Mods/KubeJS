@@ -96,7 +96,7 @@ public class KubeJSClientEventHandler {
 			}
 
 			if (stack.getItem() instanceof SpawnEggItem item) {
-				Tags.byEntityType(item.getType(stack.getTag())).forEach(addToTempTags);
+				Tags.byEntityType(item.getType(stack)).forEach(addToTempTags);
 			}
 
 			for (var instance : tempTagNames.values()) {

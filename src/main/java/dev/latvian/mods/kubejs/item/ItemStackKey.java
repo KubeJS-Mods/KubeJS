@@ -1,12 +1,9 @@
 package dev.latvian.mods.kubejs.item;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 public class ItemStackKey {
 	public static ItemStackKey EMPTY = new ItemStackKey(Items.AIR, null);
@@ -14,30 +11,26 @@ public class ItemStackKey {
 	public static ItemStackKey of(ItemStack stack) {
 		if (stack.isEmpty()) {
 			return EMPTY;
-		} else if (stack.getTag() == null) {
+		} else if (stack.getComponents().isEmpty()) {
 			return stack.getItem().kjs$getTypeItemStackKey();
 		}
 
-		return new ItemStackKey(stack);
+		return new ItemStackKey(stack.getItem(), stack.getComponentsPatch());
 	}
 
-	private final Item item;
-	private final CompoundTag tag;
+	public final Item item;
+	public final DataComponentPatch patch;
 	private int hashCode = 0;
 
-	public ItemStackKey(Item item, @Nullable CompoundTag tag) {
+	public ItemStackKey(Item item, DataComponentPatch patch) {
 		this.item = item;
-		this.tag = tag;
-	}
-
-	private ItemStackKey(ItemStack is) {
-		this(is.getItem(), is.getTag());
+		this.patch = patch;
 	}
 
 	@Override
 	public int hashCode() {
 		if (hashCode == 0) {
-			hashCode = item == Items.AIR ? 0 : tag == null ? item.hashCode() : (item.hashCode() * 31 + tag.hashCode());
+			hashCode = item == Items.AIR ? 0 : (item.hashCode() * 31 + patch.hashCode());
 
 			if (hashCode == 0) {
 				hashCode = 1;
@@ -50,7 +43,7 @@ public class ItemStackKey {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ItemStackKey k) {
-			return item == k.item && hashCode() == k.hashCode() && Objects.equals(tag, k.tag);
+			return item == k.item && hashCode() == k.hashCode() && patch.equals(k.patch);
 		}
 
 		return false;

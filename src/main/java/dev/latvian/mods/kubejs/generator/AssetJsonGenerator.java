@@ -75,10 +75,10 @@ public class AssetJsonGenerator extends ResourceGenerator {
 		}
 
 		var st1 = st;
-		add(new ResourceLocation(target.getNamespace(), "textures/" + target.getPath() + ".png"), () -> st1.create(colors), true);
+		add(new ResourceLocation(target.getNamespace(), "textures/" + target.getPath() + ".png"), () -> st1.create(colors));
 
 		if (st.mcmeta != null) {
-			add(new ResourceLocation(target.getNamespace(), "textures/" + target.getPath() + ".png.mcmeta"), () -> st1.mcmeta, false);
+			add(new ResourceLocation(target.getNamespace(), "textures/" + target.getPath() + ".png.mcmeta"), () -> st1.mcmeta);
 		}
 	}
 }

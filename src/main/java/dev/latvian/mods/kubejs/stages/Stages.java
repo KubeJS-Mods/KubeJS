@@ -74,9 +74,8 @@ public abstract class Stages {
 
 	public boolean add(String stage) {
 		if (addNoUpdate(stage)) {
-			if (player instanceof ServerPlayer serverPlayer) {
-				PacketDistributor.sendToAllPlayers();
-				new AddStagePayload(player.getUUID(), stage).sendToAll(serverPlayer.server);
+			if (player instanceof ServerPlayer) {
+				PacketDistributor.sendToAllPlayers(new AddStagePayload(player.getUUID(), stage));
 			}
 
 			invokeAdded(this, stage);
@@ -88,8 +87,8 @@ public abstract class Stages {
 
 	public boolean remove(String stage) {
 		if (removeNoUpdate(stage)) {
-			if (player instanceof ServerPlayer serverPlayer) {
-				new RemoveStagePayload(player.getUUID(), stage).sendToAll(serverPlayer.server);
+			if (player instanceof ServerPlayer) {
+				PacketDistributor.sendToAllPlayers(new RemoveStagePayload(player.getUUID(), stage));
 			}
 
 			invokeRemoved(this, stage);
@@ -123,7 +122,7 @@ public abstract class Stages {
 
 	public void sync() {
 		if (player instanceof ServerPlayer serverPlayer) {
-			new SyncStagesPayload(player.getUUID(), getAll()).sendToAll(serverPlayer.server);
+			PacketDistributor.sendToAllPlayers(new SyncStagesPayload(player.getUUID(), getAll()));
 		}
 	}
 
