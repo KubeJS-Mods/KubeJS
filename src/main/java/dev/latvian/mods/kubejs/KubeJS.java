@@ -128,7 +128,6 @@ public class KubeJS {
 		LOGGER.info("Done in " + pluginTimer.stop());
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);
-		KubeJSPlugins.forEachPlugin(KubeJSPlugin::registerEvents);
 
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP);
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT);

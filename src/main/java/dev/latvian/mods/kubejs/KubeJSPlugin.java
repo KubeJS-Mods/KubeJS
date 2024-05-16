@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
 import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.client.LangEventJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
+import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
@@ -16,7 +17,6 @@ import dev.latvian.mods.kubejs.script.WrapperRegistry;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.ClassFilter;
-import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
@@ -46,7 +46,7 @@ public class KubeJSPlugin {
 	/**
 	 * Call {@link EventGroup#register()} of events your mod adds
 	 */
-	public void registerEvents() {
+	public void registerEvents(EventGroupRegistry registry) {
 	}
 
 	public void registerClasses(ScriptType type, ClassFilter filter) {

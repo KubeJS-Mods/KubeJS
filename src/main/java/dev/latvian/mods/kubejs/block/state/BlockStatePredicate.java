@@ -9,9 +9,10 @@ import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
+import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.mod.util.NBTUtils;
+import dev.latvian.mods.rhino.Context;
 import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
@@ -78,7 +79,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		return Simple.NONE;
 	}
 
-	static BlockStatePredicate of(Object o) {
+	static BlockStatePredicate of(Context cx, Object o) {
 		if (o == null || o == Simple.ALL) {
 			return Simple.ALL;
 		} else if (o == Simple.NONE) {
@@ -92,7 +93,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			var predicates = new ArrayList<BlockStatePredicate>();
 
 			for (var o1 : list) {
-				var p = of(o1);
+				var p = of(cx, o1);
 				if (p == Simple.ALL) {
 					return Simple.ALL;
 				} else if (p != Simple.NONE) {
@@ -112,11 +113,11 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			var predicates = new ArrayList<BlockStatePredicate>();
 
 			if (map.get("or") != null) {
-				predicates.add(of(map.get("or")));
+				predicates.add(of(cx, map.get("or")));
 			}
 
 			if (map.get("not") != null) {
-				predicates.add(new NotMatch(of(map.get("not"))));
+				predicates.add(new NotMatch(of(cx, map.get("not"))));
 			}
 
 			return new AndMatch(predicates);
@@ -125,17 +126,17 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		return ofSingle(o);
 	}
 
-	static RuleTest ruleTestOf(Object o) {
+	static RuleTest ruleTestOf(Context cx, Object o) {
 		if (o instanceof RuleTest rule) {
 			return rule;
 		} else if (o instanceof BlockStatePredicate bsp && bsp.asRuleTest() != null) {
 			return bsp.asRuleTest();
 		}
 
-		return Optional.ofNullable(NBTUtils.toTagCompound(o))
+		return Optional.ofNullable(NBTUtils.toTagCompound(cx, o))
 			.map(tag -> RuleTest.CODEC.parse(NbtOps.INSTANCE, tag))
 			.flatMap(DataResult::result)
-			.or(() -> Optional.ofNullable(of(o).asRuleTest()))
+			.or(() -> Optional.ofNullable(of(cx, o).asRuleTest()))
 			.orElseThrow(() -> new IllegalArgumentException("Could not parse valid rule test from " + o + "!"));
 	}
 

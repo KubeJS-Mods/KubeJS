@@ -14,8 +14,6 @@ import dev.latvian.mods.kubejs.server.tag.PreTagEventJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.Context;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -44,17 +42,13 @@ public class ServerScriptManager extends ScriptManager {
 		return instance;
 	}
 
-	public static HolderLookup.Provider getLookup(Context cx) {
-		return cx.getProperty("RegistryAccess", UtilsJS.staticRegistryAccess);
-	}
-
 	public final MinecraftServer server;
 	public final Map<ResourceKey<?>, PreTagEventJS> preTagEvents = new ConcurrentHashMap<>();
 
 	public ServerScriptManager(@Nullable MinecraftServer server) {
 		super(ScriptType.SERVER);
 		this.server = server;
-		this.registryAccess = server.registryAccess();
+		this.registries = server.registryAccess();
 
 		try {
 			if (Files.notExists(KubeJSPaths.DATA)) {

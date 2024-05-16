@@ -14,7 +14,8 @@ public class ScriptFile implements Comparable<ScriptFile> {
 	}
 
 	public void load() throws Throwable {
-		pack.manager.context.evaluateString(pack.scope, String.join("\n", info.lines), info.location, 1, null);
+		var cx = (KubeJSContext) pack.manager.contextFactory.enter();
+		cx.evaluateString(cx.topLevelScope, String.join("\n", info.lines), info.location, 1, null);
 		info.lines = UtilsJS.EMPTY_STRING_ARRAY; // free memory
 	}
 

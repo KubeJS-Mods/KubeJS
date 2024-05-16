@@ -5,6 +5,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.ISubtypeRegistration;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -16,22 +17,11 @@ public class JEISubtypesEventJS extends EventJS {
 	public interface Interpreter extends Function<ItemStack, Object> {
 	}
 
-	private static class NBTKeyInterpreter implements IIngredientSubtypeInterpreter<ItemStack> {
-		private final String key;
-
-		private NBTKeyInterpreter(String k) {
-			key = k;
-		}
-
+	public record DataComponentTypeInterpreter(DataComponentType<?> key) implements IIngredientSubtypeInterpreter<ItemStack> {
 		@Override
 		public String apply(ItemStack stack, UidContext context) {
-			var nbt = stack.getTag();
-
-			if (nbt == null || !nbt.contains(key)) {
-				return "";
-			}
-
-			return String.valueOf(nbt.get(key));
+			var o = stack.getComponents().get(key);
+			return o == null ? "" : o.toString();
 		}
 	}
 
@@ -52,8 +42,8 @@ public class JEISubtypesEventJS extends EventJS {
 		registration.useNbtForSubtypes(items.kjs$getItemTypes().toArray(new Item[0]));
 	}
 
-	public void useNBTKey(Ingredient items, String key) {
-		var in = new NBTKeyInterpreter(key);
+	public void useNBTKey(Ingredient items, DataComponentType<?> key) {
+		var in = new DataComponentTypeInterpreter(key);
 
 		for (var item : items.kjs$getItemTypes()) {
 			registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, in);

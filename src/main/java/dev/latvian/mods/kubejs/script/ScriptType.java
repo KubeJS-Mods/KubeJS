@@ -3,10 +3,9 @@ package dev.latvian.mods.kubejs.script;
 import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.event.EventGroup;
+import dev.latvian.mods.kubejs.event.EventGroups;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
@@ -30,10 +29,6 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 	}
 
 	public static final ScriptType[] VALUES = values();
-
-	public static ScriptType getCurrent(Context cx) {
-		return (ScriptType) cx.getProperty("Type");
-	}
 
 	public final String name;
 	public final ConsoleJS console;
@@ -92,7 +87,7 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 	public void unload() {
 		console.resetFile();
 
-		for (var group : EventGroup.getGroups().values()) {
+		for (var group : EventGroups.ALL.get().map().values()) {
 			for (var handler : group.getHandlers().values()) {
 				handler.clear(this);
 			}

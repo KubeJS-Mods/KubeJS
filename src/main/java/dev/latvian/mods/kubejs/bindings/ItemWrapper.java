@@ -7,10 +7,10 @@ import com.mojang.authlib.properties.PropertyMap;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.rhino.mod.util.JsonUtils;
+import dev.latvian.mods.kubejs.util.JsonUtils;
 import net.minecraft.Util;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -44,20 +44,20 @@ public interface ItemWrapper {
 	}
 
 	@Info("Returns an ItemStack of the input, with the specified NBT data")
-	static ItemStack of(ItemStack in, CompoundTag tag) {
-		return in.kjs$withNBT(tag);
+	static ItemStack of(ItemStack in, DataComponentPatch components) {
+		return in.kjs$withComponents(components);
 	}
 
 	@Info("Returns an ItemStack of the input, with the specified count and NBT data")
-	static ItemStack of(ItemStack in, int count, CompoundTag nbt) {
-		var is = in.kjs$withNBT(nbt);
+	static ItemStack of(ItemStack in, int count, DataComponentPatch components) {
+		var is = in.kjs$withComponents(components);
 		is.setCount(count);
 		return is;
 	}
 
 	@Info("Returns an ItemStack of the input, with the specified NBT data")
-	static ItemStack withNBT(ItemStack in, CompoundTag nbt) {
-		return in.kjs$withNBT(nbt);
+	static ItemStack withComponents(ItemStack in, DataComponentPatch components) {
+		return in.kjs$withComponents(components);
 	}
 
 	@Info("Get a list of most items in the game. Items not in a creative tab are ignored")

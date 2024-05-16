@@ -71,7 +71,7 @@ public class KubeJSClientEventHandler {
 		}
 	}
 
-	private void itemTooltip(ItemStack stack, List<Component> lines, TooltipFlag flag) {
+	private void itemTooltip(ItemStack stack, List<Component> lines, Item.TooltipContext tooltipContext, TooltipFlag flag) {
 		if (stack.isEmpty()) {
 			return;
 		}

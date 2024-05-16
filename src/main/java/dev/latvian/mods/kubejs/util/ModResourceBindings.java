@@ -32,7 +32,7 @@ public class ModResourceBindings {
 			var addedBindings = new ArrayList<>();
 			for (var provider : providers) {
 				String name = provider.name();
-				if (!provider.test(event.getType())) {
+				if (!provider.test(event.type())) {
 					continue;
 				}
 
@@ -40,10 +40,10 @@ public class ModResourceBindings {
 					event.add(name, provider.generate());
 					addedBindings.add(name);
 				} catch (Exception e) {
-					KubeJS.LOGGER.error("Error adding binding for script type {} from mod '{}': {}", event.getType(), modName, name, e);
+					KubeJS.LOGGER.error("Error adding binding for script type {} from mod '{}': {}", event.type(), modName, name, e);
 				}
 			}
-			KubeJS.LOGGER.info("Added bindings for script type {} from mod '{}': {}", event.getType(), modName, addedBindings);
+			KubeJS.LOGGER.info("Added bindings for script type {} from mod '{}': {}", event.type(), modName, addedBindings);
 		}
 	}
 

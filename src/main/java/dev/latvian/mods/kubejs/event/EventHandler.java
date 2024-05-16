@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.kubejs.DevProperties;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
 import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
@@ -103,7 +104,7 @@ public final class EventHandler extends BaseFunction {
 		return eventContainers != null || extraEventContainers != null && extraEventContainers.containsKey(extraId);
 	}
 
-	public void listen(ScriptType type, @Nullable Object extraId, IEventHandler handler) {
+	public void listen(@Nullable Context cx, ScriptType type, @Nullable Object extraId, IEventHandler handler) {
 		if (!type.manager.get().canListenEvents) {
 			throw new IllegalStateException("Event handler '" + this + "' can only be registered during script loading!");
 		}
@@ -130,7 +131,7 @@ public final class EventHandler extends BaseFunction {
 		}
 
 		var line = new int[1];
-		var source = Context.getSourcePositionFromStack(type.manager.get().context, line);
+		var source = cx == null ? "java" : Context.getSourcePositionFromStack(cx, line);
 
 		EventHandlerContainer[] map;
 
@@ -167,7 +168,7 @@ public final class EventHandler extends BaseFunction {
 	public void listenJava(ScriptType type, @Nullable Object extraId, IEventHandler handler) {
 		var b = type.manager.get().canListenEvents;
 		type.manager.get().canListenEvents = true;
-		listen(type, extraId, handler);
+		listen(null, type, extraId, handler);
 		type.manager.get().canListenEvents = b;
 	}
 
@@ -312,20 +313,16 @@ public final class EventHandler extends BaseFunction {
 
 	@Override
 	public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-		ScriptType type = cx.getProperty("Type", null);
-
-		if (type == null) {
-			throw new IllegalStateException("Unknown script type!");
-		}
+		ScriptType type = ((KubeJSContext) cx).getType();
 
 		try {
 			if (args.length == 1) {
-				listen(type, null, (IEventHandler) Context.jsToJava(cx, args[0], IEventHandler.class));
+				listen(cx, type, null, (IEventHandler) cx.jsToJava(args[0], IEventHandler.class));
 			} else if (args.length == 2) {
-				var handler = (IEventHandler) Context.jsToJava(cx, args[1], IEventHandler.class);
+				var handler = (IEventHandler) cx.jsToJava(args[1], IEventHandler.class);
 
 				for (var o : ListJS.orSelf(args[0])) {
-					listen(type, o, handler);
+					listen(cx, type, o, handler);
 				}
 			}
 		} catch (Exception ex) {

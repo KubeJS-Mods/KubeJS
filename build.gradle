@@ -69,17 +69,11 @@ repositories {
 	}
 
 	maven {
-		name "ModMaven (JEI)"
-		url "https://modmaven.dev/"
-		content {
-			includeGroup "net.darkhax.bookshelf"
-			includeGroup "net.darkhax.gamestages"
-		}
-	}
-	maven {
 		url "https://maven.blamejared.com"
 		content {
 			includeGroup "mezz.jei"
+			includeGroup "net.darkhax.bookshelf"
+			includeGroup "net.darkhax.gamestages"
 		}
 	}
 }

@@ -86,9 +86,9 @@ public class ScheduledEvents {
 		public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
 			if (clear) {
 				scheduledEvents.clear(ScriptRuntime.toInt32(cx, args[0]));
-				return Undefined.instance;
+				return Undefined.INSTANCE;
 			} else {
-				var timer = (TemporalAmount) Context.jsToJava(cx, args[1], TemporalAmount.class);
+				var timer = (TemporalAmount) cx.jsToJava(args[1], TemporalAmount.class);
 				var callback = (Callback) NativeJavaObject.createInterfaceAdapter(cx, Callback.class, (ScriptableObject) args[0]);
 				return scheduledEvents.schedule(timer, interval, callback).id;
 			}

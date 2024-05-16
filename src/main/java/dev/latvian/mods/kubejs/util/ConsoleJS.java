@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.util;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.helpers.MiscHelper;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
@@ -37,20 +38,16 @@ public class ConsoleJS {
 	public static ConsoleJS CLIENT;
 
 	public static ConsoleJS getCurrent(ConsoleJS def) {
-		Context cx = ScriptManager.getCurrentContext();
-		return cx == null ? def : getCurrent(cx);
+		var cxf = ScriptManager.getCurrentContextFactory();
+		return cxf == null ? def : getCurrent(cxf.enter());
 	}
 
 	public static ConsoleJS getCurrent(@Nullable Context cx) {
-		if (cx == null) {
-			cx = ScriptManager.getCurrentContext();
-
-			if (cx == null) {
-				return STARTUP;
-			}
+		if (cx instanceof KubeJSContext kcx) {
+			return kcx.getConsole();
 		}
 
-		return cx.getProperty("Console", null);
+		return STARTUP;
 	}
 
 	private static final Pattern GARBAGE_PATTERN = Pattern.compile("(?:TRANSFORMER|LAYER PLUGIN)/\\w+@[^/]+/");
@@ -196,7 +193,7 @@ public class ConsoleJS {
 
 		if (line.sourceLines.isEmpty()) {
 			int[] lineP = {0};
-			var source = Context.getSourcePositionFromStack(scriptType.manager.get().context, lineP);
+			var source = Context.getSourcePositionFromStack(scriptType.manager.get().contextFactory.enter(), lineP);
 			line.withSourceLine(source, lineP[0]);
 		}
 
@@ -380,7 +377,7 @@ public class ConsoleJS {
 
 	public int getScriptLine() {
 		var linep = new int[]{0};
-		Context.getSourcePositionFromStack(scriptType.manager.get().context, linep);
+		Context.getSourcePositionFromStack(scriptType.manager.get().contextFactory.enter(), linep);
 		return linep[0];
 	}
 

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.fluid.FluidStackJS;
+import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import me.shedaniel.rei.api.client.registry.entry.CollapsibleEntryRegistry;
@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -32,8 +33,8 @@ public class GroupREIEntriesEventJS extends EventJS {
 		group(groupId, description, EntryIngredients.ofIngredient(entries));
 	}
 
-	public void groupFluids(ResourceLocation groupId, Component description, FluidStackJS... entries) {
-		group(groupId, description, EntryIngredients.of(VanillaEntryTypes.FLUID, CollectionUtils.map(entries, FluidStackJS::getFluidStack)));
+	public void groupFluids(ResourceLocation groupId, Component description, FluidStack... entries) {
+		group(groupId, description, EntryIngredients.of(VanillaEntryTypes.FLUID, CollectionUtils.map(entries, FluidWrapper::toArch)));
 	}
 
 	public void groupEntries(ResourceLocation groupId, Component description, ResourceLocation entryTypeId, Object entries) {
@@ -47,7 +48,7 @@ public class GroupREIEntriesEventJS extends EventJS {
 		groupItemsIf(group, description, item.getItem().kjs$asIngredient());
 	}
 
-	public void groupSameFluid(ResourceLocation group, Component description, FluidStackJS fluid) {
+	public void groupSameFluid(ResourceLocation group, Component description, FluidStack fluid) {
 		groupFluidsIf(group, description, stack -> stack.getFluid().equals(fluid.getFluid()));
 	}
 
@@ -65,8 +66,8 @@ public class GroupREIEntriesEventJS extends EventJS {
 		registry.group(groupId, description, VanillaEntryTypes.ITEM, (item) -> predicate.test(item.getValue()));
 	}
 
-	public void groupFluidsIf(ResourceLocation groupId, Component description, Predicate<FluidStackJS> predicate) {
-		registry.group(groupId, description, VanillaEntryTypes.FLUID, (fluid) -> predicate.test(FluidStackJS.of(fluid.getValue())));
+	public void groupFluidsIf(ResourceLocation groupId, Component description, Predicate<FluidStack> predicate) {
+		registry.group(groupId, description, VanillaEntryTypes.FLUID, (fluid) -> predicate.test(FluidWrapper.fromArch(fluid.getValue())));
 	}
 
 	// the difference between these next two methods:

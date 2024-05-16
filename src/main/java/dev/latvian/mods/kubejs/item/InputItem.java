@@ -10,7 +10,7 @@ import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.rhino.mod.util.JsonSerializable;
+import dev.latvian.mods.kubejs.util.JsonSerializable;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;

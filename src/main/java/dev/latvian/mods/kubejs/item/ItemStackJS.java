@@ -2,16 +2,17 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.MapJS;
+import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
-import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
@@ -159,7 +160,7 @@ public interface ItemStackJS {
 				}
 
 				if (map.containsKey("nbt")) {
-					setTag(stack, NBTUtils.toTagCompound(map.get("nbt")));
+					setTag(stack, NBTUtils.toTagCompound(null, map.get("nbt"))); // FIXME null
 				}
 
 				return stack;
@@ -223,7 +224,7 @@ public interface ItemStackJS {
 			var tagStr = s.substring(spaceIndex + 1);
 
 			if (tagStr.length() >= 2 && tagStr.charAt(0) == '{') {
-				setTag(stack, NBTUtils.toTagCompound(tagStr));
+				setTag(stack, NBTUtils.toTagCompound(null, tagStr)); // FIXME null
 			}
 		}
 
@@ -253,33 +254,8 @@ public interface ItemStackJS {
 			return ItemStack.EMPTY;
 		} else if (json.isJsonPrimitive()) {
 			return of(json.getAsString());
-		} else if (json instanceof JsonObject jsonObj) {
-			ItemStack stack = null;
-			if (jsonObj.has("item")) {
-				stack = of(jsonObj.get("item").getAsString());
-			} else if (jsonObj.has("tag")) {
-				stack = IngredientHelper.get().tag(jsonObj.get("tag").getAsString()).kjs$getFirst();
-			}
-
-			if (stack != null) {
-				if (jsonObj.has("count")) {
-					stack.setCount(jsonObj.get("count").getAsInt());
-				} else if (jsonObj.has("amount")) {
-					stack.setCount(jsonObj.get("amount").getAsInt());
-				}
-
-				if (jsonObj.has("nbt")) {
-					var element = jsonObj.get("nbt");
-
-					if (element.isJsonObject()) {
-						setTag(stack, NBTUtils.toTagCompound(element));
-					} else {
-						setTag(stack, NBTUtils.toTagCompound(element.getAsString()));
-					}
-				}
-
-				return stack;
-			}
+		} else if (json instanceof JsonObject) {
+			return ItemStack.OPTIONAL_CODEC.decode(JsonOps.INSTANCE, json).getOrThrow().getFirst();
 		}
 
 		return ItemStack.EMPTY;

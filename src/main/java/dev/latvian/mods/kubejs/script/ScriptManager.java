@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.script;
 
-import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.helpers.MiscHelper;
@@ -9,12 +8,7 @@ import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.LogType;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.ClassShutter;
-import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.NativeJavaClass;
-import dev.latvian.mods.rhino.NativeObject;
-import dev.latvian.mods.rhino.Scriptable;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -27,24 +21,27 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-public class ScriptManager implements ClassShutter {
-	private static final ThreadLocal<Context> CURRENT_CONTEXT = new ThreadLocal<>();
+public class ScriptManager {
+	private static final ThreadLocal<KubeJSContextFactory> CURRENT_CONTEXT = new ThreadLocal<>();
 
 	@Nullable
-	public static Context getCurrentContext() {
+	public static KubeJSContextFactory getCurrentContextFactory() {
 		return CURRENT_CONTEXT.get();
+	}
+
+	public static KubeJSContext getCurrentContext() {
+		return (KubeJSContext) Objects.requireNonNull(getCurrentContextFactory()).enter();
 	}
 
 	public final ScriptType scriptType;
 	public final Map<String, ScriptPack> packs;
 	private final ClassFilter classFilter;
 	public boolean firstLoad;
-	public Context context;
-	public Scriptable topLevelScope;
-	private Map<String, Either<NativeJavaClass, Boolean>> javaClassCache;
+	public KubeJSContextFactory contextFactory;
 	public boolean canListenEvents;
-	protected RegistryAccess registryAccess;
+	protected HolderLookup.Provider registries;
 
 	public ScriptManager(ScriptType t) {
 		scriptType = t;
@@ -56,7 +53,6 @@ public class ScriptManager implements ClassShutter {
 	public void unload() {
 		packs.clear();
 		scriptType.unload();
-		javaClassCache = null;
 	}
 
 	public void reload(@Nullable ResourceManager resourceManager) {
@@ -156,20 +152,9 @@ public class ScriptManager implements ClassShutter {
 
 	public void load() {
 		var startAll = System.currentTimeMillis();
-		context = Context.enter();
-		topLevelScope = context.initStandardObjects();
 
-		CURRENT_CONTEXT.set(context);
-
-		context.setProperty("Type", scriptType);
-		context.setProperty("Console", scriptType.console);
-
-		if (registryAccess != null) {
-			context.setProperty("RegistryAccess", registryAccess);
-		}
-
-		context.setClassShutter(this);
-		context.setApplicationClassLoader(KubeJS.class.getClassLoader());
+		contextFactory = new KubeJSContextFactory(this);
+		CURRENT_CONTEXT.set(contextFactory);
 
 		if (MiscHelper.get().isDataGen()) {
 			firstLoad = false;
@@ -179,18 +164,14 @@ public class ScriptManager implements ClassShutter {
 
 		canListenEvents = true;
 
-		var typeWrappers = new WrapperRegistry(scriptType, context.getTypeWrappers());
+		var typeWrappers = new WrapperRegistry(scriptType, contextFactory.getTypeWrappers());
 		// typeWrappers.removeAll();
-		var bindingsEvent = new BindingsEvent(this, topLevelScope);
-		var customJavaToJsWrappersEvent = new CustomJavaToJsWrappersEvent(this);
+		var customJavaToJsWrappersEvent = new CustomJavaToJsWrappersEvent(scriptType, contextFactory);
 
 		for (var plugin : KubeJSPlugins.getAll()) {
 			plugin.registerTypeWrappers(typeWrappers);
-			plugin.registerBindings(bindingsEvent);
 			plugin.registerCustomJavaToJsWrappers(customJavaToJsWrappersEvent);
 		}
-
-		KubeJSPlugins.addSidedBindings(bindingsEvent);
 
 		for (var reg : BuiltInRegistries.REGISTRY.registryKeySet()) {
 			var info = RegistryInfo.of(reg);
@@ -209,9 +190,6 @@ public class ScriptManager implements ClassShutter {
 
 		for (var pack : packs.values()) {
 			try {
-				pack.scope = new NativeObject(context);
-				pack.scope.setParentScope(topLevelScope);
-
 				for (var file : pack.scripts) {
 					t++;
 					var start = System.currentTimeMillis();
@@ -232,53 +210,5 @@ public class ScriptManager implements ClassShutter {
 		scriptType.console.info("Loaded " + i + "/" + t + " KubeJS " + scriptType.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s with " + scriptType.console.errors.size() + " errors and " + scriptType.console.warnings.size() + " warnings");
 		firstLoad = false;
 		canListenEvents = false;
-	}
-
-	public NativeJavaClass loadJavaClass(String name, boolean error) {
-		if (name == null || name.equals("null") || name.isEmpty()) {
-			if (error) {
-				throw Context.reportRuntimeError("Class name can't be empty!", context);
-			} else {
-				return null;
-			}
-		}
-
-		if (javaClassCache == null) {
-			javaClassCache = new HashMap<>();
-		}
-
-		var either = javaClassCache.get(name);
-
-		if (either == null) {
-			either = Either.right(false);
-
-			if (!isClassAllowed(name)) {
-				either = Either.right(true);
-			} else {
-				try {
-					either = Either.left(new NativeJavaClass(context, topLevelScope, Class.forName(name)));
-					scriptType.console.info("Loaded Java class '%s'".formatted(name));
-				} catch (Exception ignored) {
-				}
-			}
-
-			javaClassCache.put(name, either);
-		}
-
-		var l = either.left().orElse(null);
-
-		if (l != null) {
-			return l;
-		} else if (error) {
-			var found = either.right().orElse(false);
-			throw Context.reportRuntimeError((found ? "Failed to load Java class '%s': Class is not allowed by class filter!" : "Failed to load Java class '%s': Class could not be found!").formatted(name), context);
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public boolean visibleToScripts(String fullClassName, int type) {
-		return type != ClassShutter.TYPE_CLASS_IN_PACKAGE || isClassAllowed(fullClassName);
 	}
 }

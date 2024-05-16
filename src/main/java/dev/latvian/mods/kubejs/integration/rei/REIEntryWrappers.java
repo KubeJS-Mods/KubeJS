@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.integration.rei;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import dev.latvian.mods.kubejs.core.IngredientKJS;
-import dev.latvian.mods.kubejs.fluid.FluidStackJS;
+import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import me.shedaniel.rei.api.common.entry.type.EntryType;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
@@ -24,7 +24,7 @@ public class REIEntryWrappers {
 	public REIEntryWrappers() {
 		this.entryWrappers = new HashMap<>();
 		add(VanillaEntryTypes.ITEM, IngredientJS::of, Function.identity(), IngredientKJS::kjs$getDisplayStacks);
-		add(VanillaEntryTypes.FLUID, o -> FluidStackJS.of(o).getFluidStack(), fs -> fs::isFluidEqual, List::of);
+		add(VanillaEntryTypes.FLUID, FluidWrapper::wrapArch, fs -> fs::isFluidEqual, List::of);
 		EVENT.invoker().accept(this);
 	}
 

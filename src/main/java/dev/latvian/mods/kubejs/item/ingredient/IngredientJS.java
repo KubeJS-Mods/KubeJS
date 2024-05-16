@@ -2,10 +2,10 @@ package dev.latvian.mods.kubejs.item.ingredient;
 
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
-import dev.latvian.mods.kubejs.helpers.RecipeHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
@@ -14,10 +14,8 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Wrapper;
-import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
@@ -80,34 +78,7 @@ public interface IngredientJS {
 		var map = MapJS.of(o);
 
 		if (map != null) {
-			Ingredient in = Ingredient.EMPTY;
-			var val = map.containsKey("value");
-
-			if (map.containsKey("type")) {
-				if ("forge:nbt".equals(map.get("type"))) {
-					in = ItemStackJS.of(map.get("item")).kjs$withNBT(NBTUtils.toTagCompound(map.get("nbt"))).kjs$strongNBT();
-				} else {
-					var json = MapJS.json(o);
-
-					if (json == null) {
-						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o + " is not a json object");
-					}
-
-					try {
-						in = RecipeHelper.get().getCustomIngredient(json);
-					} catch (Exception ex) {
-						throw new RecipeExceptionJS("Failed to parse custom ingredient (" + json.get("type") + ") from " + json + ": " + ex);
-					}
-				}
-			} else if (val || map.containsKey("ingredient")) {
-				in = of(val ? map.get("value") : map.get("ingredient"));
-			} else if (map.containsKey("tag")) {
-				in = IngredientHelper.get().tag(map.get("tag").toString());
-			} else if (map.containsKey("item")) {
-				in = ItemStackJS.of(map).getItem().kjs$asIngredient();
-			}
-
-			return in;
+			return Ingredient.CODEC.decode(JavaOps.INSTANCE, map).result().map(Pair::getFirst).orElse(Ingredient.EMPTY);
 		}
 
 		return ItemStackJS.of(o).kjs$asIngredient();
@@ -157,8 +128,7 @@ public interface IngredientJS {
 		} else if (json.isJsonPrimitive()) {
 			return of(json.getAsString());
 		} else {
-			return Ingredient.CODEC.decode(JsonOps.INSTANCE, json)
-				.result().map(Pair::getFirst).orElseThrow();
+			return Ingredient.CODEC.decode(JsonOps.INSTANCE, json).result().map(Pair::getFirst).orElseThrow();
 		}
 	}
 }

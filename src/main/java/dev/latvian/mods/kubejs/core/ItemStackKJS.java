@@ -3,49 +3,44 @@ package dev.latvian.mods.kubejs.core;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.mojang.serialization.JsonOps;
-import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.JsonSerializable;
+import dev.latvian.mods.kubejs.util.NBTSerializable;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.mod.util.JsonSerializable;
-import dev.latvian.mods.rhino.mod.util.NBTSerializable;
-import dev.latvian.mods.rhino.mod.util.NBTUtils;
-import dev.latvian.mods.rhino.mod.util.NbtType;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.mod.util.ToStringJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.Blocks;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 @RemapPrefixForJS("kjs$")
-public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSerializable, IngredientSupplierKJS {
+public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSerializable, IngredientSupplierKJS, ToStringJS {
 	default ItemStack kjs$self() {
 		return (ItemStack) this;
 	}
@@ -107,20 +102,13 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		ItemStackJS.setTag(kjs$self(), null);
 	}
 
-	default String kjs$getNbtString() {
-		return String.valueOf(kjs$self().getTag());
+	default String kjs$getComponentString() {
+		return kjs$self().getComponentsPatch().toString(); // FIXME: Use actual component patch syntax
 	}
 
-	default ItemStack kjs$withNBT(CompoundTag nbt) {
+	default ItemStack kjs$withComponents(DataComponentPatch components) {
 		var is = kjs$self().copy();
-		var tag0 = is.getTag();
-
-		if (tag0 == null) {
-			is.setTag(nbt);
-		} else {
-			is.setTag(tag0.merge(nbt));
-		}
-
+		is.applyComponents(components);
 		return is;
 	}
 
@@ -163,13 +151,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 	@RemapForJS("enchant")
 	default ItemStack kjs$enchantCopy(Enchantment enchantment, int level) {
 		var is = kjs$self().copy();
-
-		if (is.getItem() == Items.ENCHANTED_BOOK) {
-			EnchantedBookItem.addEnchantment(is, new EnchantmentInstance(enchantment, level));
-		} else {
-			is.enchant(enchantment, level);
-		}
-
+		is.enchant(enchantment, level);
 		return is;
 	}
 
@@ -184,26 +166,12 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		return kjs$self().getItem().kjs$asIngredient();
 	}
 
-	default Ingredient kjs$weakNBT() {
-		return IngredientHelper.get().weakNBT(kjs$self());
-	}
-
-	default Ingredient kjs$strongNBT() {
-		return IngredientHelper.get().strongNBT(kjs$self());
-	}
-
 	default boolean kjs$areItemsEqual(ItemStack other) {
 		return kjs$self().getItem() == other.getItem();
 	}
 
 	default boolean kjs$isNBTEqual(ItemStack other) {
-		if (kjs$self().hasTag() == other.hasTag()) {
-			var nbt = kjs$self().getTag();
-			var nbt2 = other.getTag();
-			return Objects.equals(nbt, nbt2);
-		}
-
-		return false;
+		return ItemStack.isSameItemSameComponents(kjs$self(), other);
 	}
 
 	default float kjs$getHarvestSpeed(@Nullable BlockContainerJS block) {
@@ -216,8 +184,8 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 
 	@Override
 	@RemapForJS("toNBT")
-	default CompoundTag toNBTJS() {
-		return kjs$self().save(new CompoundTag());
+	default CompoundTag toNBTJS(Context cx) {
+		return (CompoundTag) kjs$self().save(((KubeJSContext) cx).getRegistries(), new CompoundTag());
 	}
 
 	/* default String kjs$getCreativeTab() {
@@ -229,76 +197,55 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		return kjs$self().getItem().kjs$getTypeData();
 	}
 
+	@Override
+	default String toStringJS(Context cx) {
+		return kjs$toItemString();
+	}
+
 	default String kjs$toItemString() {
 		var is = kjs$self();
-
-		var builder = new StringBuilder();
-
 		var count = is.getCount();
-		var hasNbt = is.hasTag();
 
-		if (count > 1 && !hasNbt) {
-			builder.append('\'');
-			builder.append(count);
-			builder.append("x ");
-			builder.append(kjs$getId());
-			builder.append('\'');
-		} else if (hasNbt) {
-			builder.append("Item.of('");
-			builder.append(is.kjs$getId());
-			builder.append('\'');
-			List<Pair<String, Integer>> enchants = null;
-
-			if (count > 1) {
-				builder.append(", ");
-				builder.append(count);
-			}
-
-			var t = is.getTag();
-
-			if (t != null && !t.isEmpty()) {
-				var key = is.getItem() == Items.ENCHANTED_BOOK ? "StoredEnchantments" : "Enchantments";
-
-				if (t.contains(key, NbtType.LIST)) {
-					var l = t.getList(key, NbtType.COMPOUND);
-					enchants = new ArrayList<>(l.size());
-
-					for (var i = 0; i < l.size(); i++) {
-						var t1 = l.getCompound(i);
-						enchants.add(Pair.of(t1.getString("id"), t1.getInt("lvl")));
-					}
-
-					t = t.copy();
-					t.remove(key);
-
-					if (t.isEmpty()) {
-						t = null;
-					}
-				}
-			}
-
-			if (t != null) {
-				builder.append(", ");
-				NBTUtils.quoteAndEscapeForJS(builder, t.toString());
-			}
-
-			builder.append(')');
-
-			if (enchants != null) {
-				for (var e : enchants) {
-					builder.append(".enchant('");
-					builder.append(e.getKey());
-					builder.append("', ");
-					builder.append(e.getValue());
-					builder.append(')');
-				}
-			}
-		} else {
-			builder.append('\'');
-			builder.append(kjs$getId());
-			builder.append('\'');
+		if (count <= 0) {
+			return "minecraft:air";
 		}
 
+		var builder = new StringBuilder();
+		builder.append('\'');
+
+		if (count > 1) {
+			builder.append(count);
+			builder.append("x ");
+		}
+
+		builder.append(kjs$getId());
+
+		if (!is.isComponentsPatchEmpty()) {
+			builder.append('[');
+			boolean first = true;
+
+			for (var entry : is.getComponentsPatch().entrySet()) {
+				if (first) {
+					first = false;
+				} else {
+					builder.append(',');
+				}
+
+				if (entry.getValue().isPresent()) {
+					builder.append(RegistryInfo.DATA_COMPONENT_TYPE.getId(entry.getKey()));
+					builder.append('=');
+					builder.append(entry.getKey().codec().encodeStart(JsonOps.INSTANCE, UtilsJS.cast(entry.getValue().get())));
+				} else {
+					builder.append('!');
+					builder.append(RegistryInfo.DATA_COMPONENT_TYPE.getId(entry.getKey()));
+					builder.append("={}");
+				}
+			}
+
+			builder.append(']');
+		}
+
+		builder.append('\'');
 		return builder.toString();
 	}
 
@@ -316,22 +263,15 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		return OutputItem.of(kjs$self(), chance);
 	}
 
-	default ItemStack kjs$withLore(Component[] text) {
+	default ItemStack kjs$withLore(Component[] lines) {
 		var is = kjs$self().copy();
+		is.set(DataComponents.LORE, new ItemLore(List.of(lines)));
+		return is;
+	}
 
-		if (text.length > 0) {
-			var tag = is.getOrCreateTag();
-			var display = tag.getCompound("display");
-			var lore = display.getList("Lore", NbtType.STRING);
-
-			for (var t : text) {
-				lore.add(StringTag.valueOf(Component.Serializer.toJson(t)));
-			}
-
-			display.put("Lore", lore);
-			tag.put("display", display);
-		}
-
+	default ItemStack kjs$withLore(Component[] lines, Component[] styledLines) {
+		var is = kjs$self().copy();
+		is.set(DataComponents.LORE, new ItemLore(List.of(lines), List.of(styledLines)));
 		return is;
 	}
 }

@@ -13,8 +13,4 @@ public interface REIEvents {
 	EventHandler REMOVE_CATEGORIES = GROUP.client("removeCategories", () -> RemoveREICategoryEventJS.class);
 	EventHandler REMOVE_RECIPES = GROUP.client("removeRecipes", () -> RemoveREIRecipeEventJS.class);
 	EventHandler GROUP_ENTRIES = GROUP.client("groupEntries", () -> GroupREIEntriesEventJS.class);
-
-	static void register() {
-		GROUP.register();
-	}
 }

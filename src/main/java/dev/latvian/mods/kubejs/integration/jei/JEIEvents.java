@@ -15,8 +15,4 @@ public interface JEIEvents {
 	EventHandler ADD_ITEMS = GROUP.client("addItems", () -> AddJEIEventJS.class);
 	EventHandler ADD_FLUIDS = GROUP.client("addFluids", () -> AddJEIEventJS.class);
 	EventHandler INFORMATION = GROUP.client("information", () -> InformationJEIEventJS.class);
-
-	static void register() {
-		GROUP.register();
-	}
 }

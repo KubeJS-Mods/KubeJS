@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeJS;
 import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -13,6 +12,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeComponent<T> {
 	@SuppressWarnings("unchecked")
@@ -63,9 +63,7 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 					return (T) recipe.readOutputItem(from).item.getItem();
 				}
 			} else if (registry == RegistryInfo.FLUID) {
-				if (from instanceof FluidStackJS fs) {
-					return (T) fs.getFluid();
-				} else if (recipe.readOutputFluid(from) instanceof FluidStackJS fs) {
+				if (from instanceof FluidStack fs) {
 					return (T) fs.getFluid();
 				}
 			}

@@ -1,62 +1,67 @@
 package dev.latvian.mods.kubejs.fluid;
 
+import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FluidWrapper {
-	public static final ResourceLocation WATER_ID = new ResourceLocation("minecraft:water");
-	public static final ResourceLocation LAVA_ID = new ResourceLocation("minecraft:lava");
-
-	public static FluidStackJS of(FluidStackJS o) {
-		return FluidStackJS.of(o);
+public interface FluidWrapper {
+	static FluidStack wrap(Object o) {
+		return FluidStack.EMPTY; // FIXME
 	}
 
-	public static FluidStackJS of(FluidStackJS o, int amount) {
+	static dev.architectury.fluid.FluidStack wrapArch(Object o) {
+		return toArch(wrap(o));
+	}
+
+	static FluidStack of(FluidStack o) {
+		return o;
+	}
+
+	static FluidStack of(FluidStack o, int amount) {
 		o.setAmount(amount);
 		return o;
 	}
 
-	public static FluidStackJS of(FluidStackJS o, CompoundTag nbt) {
-		o.setNbt(nbt);
+	static FluidStack of(FluidStack o, DataComponentPatch components) {
+		o.applyComponents(components);
 		return o;
 	}
 
-	public static FluidStackJS of(FluidStackJS o, int amount, CompoundTag nbt) {
+	static FluidStack of(FluidStack o, int amount, DataComponentPatch components) {
 		o.setAmount(amount);
-		o.setNbt(nbt);
+		o.applyComponents(components);
 		return o;
 	}
 
-	public static FluidStackJS water() {
-		return new UnboundFluidStackJS(WATER_ID);
+	static FluidStack water() {
+		return water(FluidType.BUCKET_VOLUME);
 	}
 
-	public static FluidStackJS lava() {
-		return new UnboundFluidStackJS(LAVA_ID);
+	static FluidStack lava() {
+		return lava(FluidType.BUCKET_VOLUME);
 	}
 
-	public static FluidStackJS water(int amount) {
-		FluidStackJS fs = new UnboundFluidStackJS(WATER_ID);
-		fs.setAmount(amount);
-		return fs;
+	static FluidStack water(int amount) {
+		return new FluidStack(Fluids.WATER, amount);
 	}
 
-	public static FluidStackJS lava(int amount) {
-		FluidStackJS fs = new UnboundFluidStackJS(LAVA_ID);
-		fs.setAmount(amount);
-		return fs;
+	static FluidStack lava(int amount) {
+		return new FluidStack(Fluids.LAVA, amount);
 	}
 
-	public static Fluid getType(ResourceLocation id) {
+	static Fluid getType(ResourceLocation id) {
 		return RegistryInfo.FLUID.getValue(id);
 	}
 
-	public static List<String> getTypes() {
+	static List<String> getTypes() {
 		var types = new ArrayList<String>();
 
 		for (var entry : RegistryInfo.FLUID.entrySet()) {
@@ -66,15 +71,23 @@ public class FluidWrapper {
 		return types;
 	}
 
-	public static FluidStackJS getEmpty() {
-		return EmptyFluidStackJS.INSTANCE;
+	static FluidStack getEmpty() {
+		return FluidStack.EMPTY;
 	}
 
-	public static boolean exists(ResourceLocation id) {
+	static boolean exists(ResourceLocation id) {
 		return RegistryInfo.FLUID.hasValue(id);
 	}
 
-	public static ResourceLocation getId(Fluid fluid) {
+	static ResourceLocation getId(Fluid fluid) {
 		return RegistryInfo.FLUID.getId(fluid);
+	}
+
+	static FluidStack fromArch(dev.architectury.fluid.FluidStack stack) {
+		return FluidStackHooksForge.toForge(stack);
+	}
+
+	static dev.architectury.fluid.FluidStack toArch(FluidStack stack) {
+		return FluidStackHooksForge.fromForge(stack);
 	}
 }

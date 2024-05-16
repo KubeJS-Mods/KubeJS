@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.integration.gamestages;
 
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.event.EventGroup;
+import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.stages.StageCreationEvent;
 import dev.latvian.mods.kubejs.stages.Stages;
 
@@ -21,8 +22,8 @@ public class GameStagesIntegration extends KubeJSPlugin {
 	}
 
 	@Override
-	public void registerEvents() {
-		GROUP.register();
+	public void registerEvents(EventGroupRegistry registry) {
+		registry.register(GROUP);
 	}
 
 	private static void override(StageCreationEvent event) {

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.latvian.mods.kubejs.event.EventJS;
-import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.entry.type.EntryType;
@@ -10,6 +9,7 @@ import me.shedaniel.rei.plugin.client.BuiltinClientPlugin;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Arrays;
 
@@ -24,7 +24,7 @@ public class InformationREIEventJS extends EventJS {
 		add(VanillaEntryTypes.ITEM, stacks, title, description);
 	}
 
-	public void addFluid(FluidStackJS stacks, Component title, Component[] description) {
+	public void addFluid(FluidStack[] stacks, Component title, Component[] description) {
 		add(VanillaEntryTypes.FLUID, stacks, title, description);
 	}
 

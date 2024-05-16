@@ -2,12 +2,12 @@ package dev.latvian.mods.kubejs.block.entity;
 
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.rhino.mod.util.NbtType;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -89,7 +89,7 @@ public class BlockEntityJS extends BlockEntity {
 		placerId = tag.contains("placer") ? tag.getUUID("placer") : null;
 
 		if (attachments.length > 0) {
-			var list = tag.getList("attachments", NbtType.COMPOUND);
+			var list = tag.getList("attachments", Tag.TAG_COMPOUND);
 
 			if (attachments.length == list.size()) {
 				for (int i = 0; i < attachments.length; i++) {

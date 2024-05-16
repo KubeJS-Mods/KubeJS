@@ -3,18 +3,11 @@ package dev.latvian.mods.kubejs.event;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
 public final class EventGroup {
-	private static final Map<String, EventGroup> MAP = new HashMap<>();
-
-	public static Map<String, EventGroup> getGroups() {
-		return Collections.unmodifiableMap(MAP);
-	}
-
 	public static EventGroup of(String name) {
 		return new EventGroup(name);
 	}
@@ -25,10 +18,6 @@ public final class EventGroup {
 	private EventGroup(String n) {
 		name = n;
 		handlers = new HashMap<>();
-	}
-
-	public void register() {
-		MAP.put(name, this);
 	}
 
 	@Override

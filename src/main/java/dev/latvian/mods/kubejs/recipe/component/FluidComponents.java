@@ -1,18 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import com.google.gson.JsonElement;
-import com.mojang.datafixers.util.Either;
-import dev.latvian.mods.kubejs.fluid.FluidLike;
-import dev.latvian.mods.kubejs.fluid.InputFluid;
-import dev.latvian.mods.kubejs.fluid.OutputFluid;
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
-import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import org.jetbrains.annotations.Nullable;
-
 public interface FluidComponents {
+	/* FIXME
 	RecipeComponent<InputFluid> INPUT = new RecipeComponent<>() {
 		@Override
 		public String componentType() {
@@ -123,4 +112,5 @@ public interface FluidComponents {
 	RecipeComponent<OutputFluid[]> OUTPUT_ARRAY = OUTPUT.asArray();
 	RecipeComponent<Either<OutputFluid, OutputItem>> OUTPUT_OR_ITEM = OUTPUT.or(ItemComponents.OUTPUT);
 	RecipeComponent<Either<OutputFluid, OutputItem>[]> OUTPUT_OR_ITEM_ARRAY = OUTPUT_OR_ITEM.asArray();
+	 */
 }

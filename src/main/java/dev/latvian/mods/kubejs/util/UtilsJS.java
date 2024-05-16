@@ -17,8 +17,6 @@ import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Wrapper;
-import dev.latvian.mods.rhino.mod.util.Copyable;
-import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
@@ -240,7 +238,7 @@ public class UtilsJS {
 	@Nullable
 	public static Object copy(@Nullable Object o) {
 		if (o instanceof Copyable copyable) {
-			return copyable.copy();
+			return copyable.copyJS();
 		} else if (o instanceof JsonElement json) {
 			return JsonIO.copy(json);
 		} else if (o instanceof Tag tag) {
@@ -629,7 +627,7 @@ public class UtilsJS {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static IntProvider intProviderOf(Object o) {
+	public static IntProvider intProviderOf(Context cx, Object o) {
 		if (o instanceof Number n) {
 			return ConstantInt.of(n.intValue());
 		} else if (o instanceof List l && !l.isEmpty()) {
@@ -643,7 +641,7 @@ public class UtilsJS {
 			if (intBounds != null) {
 				return intBounds;
 			} else if (m.containsKey("clamped")) {
-				var source = intProviderOf(m.get("clamped"));
+				var source = intProviderOf(cx, m.get("clamped"));
 				var clampTo = parseIntBounds(m);
 				if (clampTo != null) {
 					return ClampedInt.of(source, clampTo.getMinValue(), clampTo.getMaxValue());
@@ -657,7 +655,7 @@ public class UtilsJS {
 				}
 			}
 
-			var decoded = IntProvider.CODEC.parse(NbtOps.INSTANCE, NBTUtils.toTagCompound(m)).result();
+			var decoded = IntProvider.CODEC.parse(NbtOps.INSTANCE, NBTUtils.toTagCompound(cx, m)).result();
 			if (decoded.isPresent()) {
 				return decoded.get();
 			}
@@ -817,7 +815,7 @@ public class UtilsJS {
 	}
 
 	public static <T> T makeFunctionProxy(ScriptType type, Class<T> targetClass, BaseFunction function) {
-		return cast(NativeJavaObject.createInterfaceAdapter(type.manager.get().context, targetClass, function));
+		return cast(NativeJavaObject.createInterfaceAdapter(type.manager.get().contextFactory.enter(), targetClass, function));
 	}
 
 	public static TemporalAmount getTemporalAmount(Object o) {

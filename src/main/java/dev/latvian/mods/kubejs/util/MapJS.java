@@ -2,8 +2,7 @@ package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import dev.latvian.mods.rhino.mod.util.JsonUtils;
-import dev.latvian.mods.rhino.mod.util.NBTUtils;
+import dev.latvian.mods.rhino.Context;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.Nullable;
@@ -44,8 +43,8 @@ public interface MapJS {
 
 	@Nullable
 	@Deprecated
-	static CompoundTag nbt(@Nullable Object map) {
-		return NBTUtils.toTagCompound(map);
+	static CompoundTag nbt(Context cx, @Nullable Object map) {
+		return NBTUtils.toTagCompound(cx, map);
 	}
 
 	@Nullable

@@ -2,6 +2,11 @@ accessWidener v2 named
 
 accessible class net/minecraft/server/MinecraftServer$ReloadableResources
 
+# nbt related
+accessible field net/minecraft/nbt/CompoundTag tags Ljava/util/Map;
+accessible method net/minecraft/nbt/CompoundTag readNamedTagData (Lnet/minecraft/nbt/TagType;Ljava/lang/String;Ljava/io/DataInput;Lnet/minecraft/nbt/NbtAccounter;)Lnet/minecraft/nbt/Tag;
+accessible method net/minecraft/nbt/ListTag <init> (Ljava/util/List;B)V
+
 # tag-related
 accessible field net/minecraft/tags/TagBuilder entries Ljava/util/List;
 accessible method net/minecraft/tags/TagEntry elementOrTag ()Lnet/minecraft/util/ExtraCodecs$TagOrElementLocation;

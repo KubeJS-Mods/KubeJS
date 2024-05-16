@@ -8,9 +8,6 @@ import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
-import dev.latvian.mods.kubejs.fluid.FluidStackJS;
-import dev.latvian.mods.kubejs.fluid.InputFluid;
-import dev.latvian.mods.kubejs.fluid.OutputFluid;
 import dev.latvian.mods.kubejs.helpers.RecipeHelper;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
@@ -657,32 +654,6 @@ public class RecipeJS implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		}
 
 		return json;
-	}
-
-	// -- Fluids -- //
-
-	public boolean inputFluidHasPriority(Object from) {
-		return from instanceof InputFluid || from instanceof JsonObject j && j.has("fluid");
-	}
-
-	public InputFluid readInputFluid(Object from) {
-		return FluidStackJS.of(from);
-	}
-
-	public JsonElement writeInputFluid(InputFluid value) {
-		return ((FluidStackJS) value).toJson();
-	}
-
-	public boolean outputFluidHasPriority(Object from) {
-		return from instanceof OutputFluid || from instanceof JsonObject j && j.has("fluid");
-	}
-
-	public OutputFluid readOutputFluid(Object from) {
-		return FluidStackJS.of(from);
-	}
-
-	public JsonElement writeOutputFluid(OutputFluid value) {
-		return ((FluidStackJS) value).toJson();
 	}
 
 	// -- End -- //

@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
@@ -41,13 +40,13 @@ import dev.latvian.mods.kubejs.block.entity.InventoryAttachment;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
-import dev.latvian.mods.kubejs.event.EventGroup;
+import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.event.EventGroupWrapper;
+import dev.latvian.mods.kubejs.event.EventGroups;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
-import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
-import dev.latvian.mods.kubejs.integration.rei.REIEvents;
+import dev.latvian.mods.kubejs.integration.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
@@ -106,19 +105,20 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.WrapperRegistry;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ClassFilter;
+import dev.latvian.mods.kubejs.util.CollectionTagWrapper;
+import dev.latvian.mods.kubejs.util.CompoundTagWrapper;
 import dev.latvian.mods.kubejs.util.FluidAmounts;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
+import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.kubejs.util.RotationAxis;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
+import dev.latvian.mods.kubejs.util.StringWithContext;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.mod.util.CollectionTagWrapper;
-import dev.latvian.mods.rhino.mod.util.CompoundTagWrapper;
-import dev.latvian.mods.rhino.mod.util.NBTUtils;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.wrapper.AABBWrapper;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
@@ -128,6 +128,8 @@ import dev.latvian.mods.unit.Unit;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
@@ -162,6 +164,7 @@ import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -245,19 +248,16 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	}
 
 	@Override
-	public void registerEvents() {
-		StartupEvents.GROUP.register();
-		ServerEvents.GROUP.register();
-		LevelEvents.GROUP.register();
-		NetworkEvents.GROUP.register();
-		ItemEvents.GROUP.register();
-		BlockEvents.GROUP.register();
-		EntityEvents.GROUP.register();
-		PlayerEvents.GROUP.register();
-
-		if (Platform.isModLoaded("roughlyenoughitems")) {
-			REIEvents.register();
-		}
+	public void registerEvents(EventGroupRegistry registry) {
+		registry.register(StartupEvents.GROUP);
+		registry.register(ServerEvents.GROUP);
+		registry.register(LevelEvents.GROUP);
+		registry.register(NetworkEvents.GROUP);
+		registry.register(ItemEvents.GROUP);
+		registry.register(BlockEvents.GROUP);
+		registry.register(EntityEvents.GROUP);
+		registry.register(PlayerEvents.GROUP);
+		registry.register(RecipeViewerEvents.GROUP);
 	}
 
 	@Override
@@ -335,10 +335,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	public void registerBindings(BindingsEvent event) {
 		event.add("global", GLOBAL);
 		event.add("Platform", PlatformWrapper.class);
-		event.add("console", event.getType().console);
+		event.add("console", event.type().console);
 
-		for (var group : EventGroup.getGroups().values()) {
-			event.add(group.name, new EventGroupWrapper(event.getType(), group));
+		for (var group : EventGroups.ALL.get().map().values()) {
+			event.add(group.name, new EventGroupWrapper(event.type(), group));
 		}
 
 		event.add("JavaMath", Math.class);
@@ -347,7 +347,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		// event.add("onEvent", new LegacyCodeHandler("onEvent()"));
 
-		if (event.getType().isServer() && event.manager instanceof ServerScriptManager sm && sm.server != null) {
+		if (event.type().isServer() && event.context().kjsFactory.manager instanceof ServerScriptManager sm && sm.server != null) {
 			var se = sm.server.kjs$getScheduledEvents();
 
 			event.add("setTimeout", new ScheduledEvents.TimeoutJSFunction(se, false, false));
@@ -358,7 +358,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		event.add("KMath", KMath.class);
 		event.add("Utils", UtilsWrapper.class);
-		event.add("Java", new JavaWrapper(event.manager));
+		event.add("Java", JavaWrapper.class);
 		event.add("Text", TextWrapper.class);
 		event.add("Component", TextWrapper.class);
 		event.add("UUID", UUIDWrapper.class);
@@ -407,6 +407,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 	@Override
 	public void registerTypeWrappers(WrapperRegistry registry) {
+		registry.register(StringWithContext.class, StringWithContext::of);
+
 		// Java / Minecraft //
 		registry.registerSimple(String.class, String::valueOf);
 		registry.registerSimple(CharSequence.class, String::valueOf);
@@ -423,10 +425,12 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		registry.registerSimple(Duration.class, UtilsJS::getDuration);
 
 		registry.register(ResourceLocation.class, UtilsJS::getMCID);
-		registry.registerSimple(CompoundTag.class, NBTUtils::isTagCompound, NBTUtils::toTagCompound);
-		registry.registerSimple(CollectionTag.class, NBTUtils::isTagCollection, NBTUtils::toTagCollection);
-		registry.registerSimple(ListTag.class, NBTUtils::isTagCollection, NBTUtils::toTagList);
-		registry.registerSimple(Tag.class, NBTUtils::toTag);
+		registry.register(CompoundTag.class, NBTUtils::isTagCompound, NBTUtils::toTagCompound);
+		registry.register(CollectionTag.class, NBTUtils::isTagCollection, NBTUtils::toTagCollection);
+		registry.register(ListTag.class, NBTUtils::isTagCollection, NBTUtils::toTagList);
+		registry.register(Tag.class, NBTUtils::toTag);
+		registry.register(DataComponentMap.class, KubeJSComponents::mapOf);
+		registry.register(DataComponentPatch.class, KubeJSComponents::patchOf);
 
 		registry.registerSimple(BlockPos.class, UtilsJS::blockPosOf);
 		registry.registerSimple(Vec3.class, UtilsJS::vec3Of);
@@ -436,7 +440,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		registry.registerEnumFromStringCodec(MobCategory.class, MobCategory.CODEC);
 
 		registry.registerSimple(AABB.class, AABBWrapper::wrap);
-		registry.registerSimple(IntProvider.class, UtilsJS::intProviderOf);
+		registry.register(IntProvider.class, UtilsJS::intProviderOf);
 		registry.registerSimple(NumberProvider.class, UtilsJS::numberProviderOf);
 		registry.registerEnumFromStringCodec(LootContext.EntityTarget.class, LootContext.EntityTarget.CODEC);
 		registry.registerEnumFromStringCodec(CopyNameFunction.NameSource.class, CopyNameFunction.NameSource.CODEC);
@@ -455,9 +459,10 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		registry.registerSimple(OutputReplacement.class, OutputReplacement::of);
 		registry.registerSimple(InputItem.class, InputItem::of);
 		registry.registerSimple(OutputItem.class, OutputItem::of);
-		registry.registerSimple(BlockStatePredicate.class, BlockStatePredicate::of);
-		registry.registerSimple(RuleTest.class, BlockStatePredicate::ruleTestOf);
-		registry.registerSimple(FluidStackJS.class, FluidStackJS::of);
+		registry.register(BlockStatePredicate.class, BlockStatePredicate::of);
+		registry.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
+		registry.registerSimple(FluidStack.class, FluidWrapper::wrap);
+		registry.registerSimple(dev.architectury.fluid.FluidStack.class, FluidWrapper::wrapArch);
 		registry.register(RecipeFilter.class, RecipeFilter::of);
 		registry.registerSimple(IngredientActionFilter.class, IngredientActionFilter::filterOf);
 		registry.registerSimple(Tier.class, ItemBuilder::toToolTier);
@@ -570,14 +575,14 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.register("outputItemArray", ItemComponents.OUTPUT_ARRAY);
 		event.register("outputItemIdWithCount", ItemComponents.OUTPUT_ID_WITH_COUNT);
 
-		event.register("inputFluid", FluidComponents.INPUT);
-		event.register("inputFluidArray", FluidComponents.INPUT_ARRAY);
-		event.register("inputFluidOrItem", FluidComponents.INPUT_OR_ITEM);
-		event.register("inputFluidOrItemArray", FluidComponents.INPUT_OR_ITEM_ARRAY);
-		event.register("outputFluid", FluidComponents.OUTPUT);
-		event.register("outputFluidArray", FluidComponents.OUTPUT_ARRAY);
-		event.register("outputFluidOrItem", FluidComponents.OUTPUT_OR_ITEM);
-		event.register("outputFluidOrItemArray", FluidComponents.OUTPUT_OR_ITEM_ARRAY);
+		// event.register("inputFluid", FluidComponents.INPUT);
+		// event.register("inputFluidArray", FluidComponents.INPUT_ARRAY);
+		// event.register("inputFluidOrItem", FluidComponents.INPUT_OR_ITEM);
+		// event.register("inputFluidOrItemArray", FluidComponents.INPUT_OR_ITEM_ARRAY);
+		// event.register("outputFluid", FluidComponents.OUTPUT);
+		// event.register("outputFluidArray", FluidComponents.OUTPUT_ARRAY);
+		// event.register("outputFluidOrItem", FluidComponents.OUTPUT_OR_ITEM);
+		// event.register("outputFluidOrItemArray", FluidComponents.OUTPUT_OR_ITEM_ARRAY);
 
 		event.register("inputBlock", BlockComponent.INPUT);
 		event.register("outputBlock", BlockComponent.OUTPUT);

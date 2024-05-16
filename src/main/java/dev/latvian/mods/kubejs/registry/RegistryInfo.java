@@ -15,6 +15,7 @@ import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -159,6 +160,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	public static final RegistryInfo<VillagerProfession> VILLAGER_PROFESSION = of(Registries.VILLAGER_PROFESSION, VillagerProfession.class);
 	public static final RegistryInfo<VillagerType> VILLAGER_TYPE = of(Registries.VILLAGER_TYPE, VillagerType.class);
 	public static final RegistryInfo<ArmorMaterial> ARMOR_MATERIAL = of(Registries.ARMOR_MATERIAL, ArmorMaterial.class);
+	public static final RegistryInfo<DataComponentType> DATA_COMPONENT_TYPE = of(Registries.DATA_COMPONENT_TYPE, DataComponentType.class);
 	public static final RegistryInfo<PoiType> POINT_OF_INTEREST_TYPE = of(Registries.POINT_OF_INTEREST_TYPE, PoiType.class);
 	public static final RegistryInfo<MemoryModuleType> MEMORY_MODULE_TYPE = of(Registries.MEMORY_MODULE_TYPE, MemoryModuleType.class);
 	public static final RegistryInfo<SensorType> SENSOR_TYPE = of(Registries.SENSOR_TYPE, SensorType.class);

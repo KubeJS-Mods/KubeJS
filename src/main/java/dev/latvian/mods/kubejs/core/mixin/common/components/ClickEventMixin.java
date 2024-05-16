@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.core.mixin.common.components;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.rhino.mod.util.JsonSerializable;
+import dev.latvian.mods.kubejs.util.JsonSerializable;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.Util;
 import net.minecraft.network.chat.ClickEvent;

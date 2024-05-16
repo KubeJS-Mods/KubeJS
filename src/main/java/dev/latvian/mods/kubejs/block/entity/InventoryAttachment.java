@@ -3,10 +3,10 @@ package dev.latvian.mods.kubejs.block.entity;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.typings.desc.PrimitiveDescJS;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
-import dev.latvian.mods.rhino.mod.util.NbtType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
@@ -74,7 +74,7 @@ public class InventoryAttachment extends SimpleContainer implements BlockEntityA
 			removeItemNoUpdate(i);
 		}
 
-		var list = tag.getList("items", NbtType.COMPOUND);
+		var list = tag.getList("items", Tag.TAG_COMPOUND);
 
 		for (int i = 0; i < list.size(); ++i) {
 			var itemTag = list.getCompound(i);

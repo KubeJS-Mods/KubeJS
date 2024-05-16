@@ -10,7 +10,6 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.Util;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -60,11 +59,11 @@ public interface KubeJSCodecs {
 	}
 
 	static <E, X extends Throwable> E fromJsonOrThrow(JsonElement json, Codec<E> codec, Function<String, X> onError) throws X {
-		return Util.getOrThrow(codec.parse(JsonOps.INSTANCE, json), onError);
+		return codec.parse(JsonOps.INSTANCE, json).getOrThrow(onError);
 	}
 
 	static <E, X extends Throwable> JsonElement toJsonOrThrow(E value, Codec<E> codec, Function<String, X> onError) throws X {
-		return Util.getOrThrow(codec.encodeStart(JsonOps.INSTANCE, value), onError);
+		return codec.encodeStart(JsonOps.INSTANCE, value).getOrThrow(onError);
 	}
 
 	static <T> String getUniqueId(T input, Codec<T> codec) {

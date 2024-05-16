@@ -15,7 +15,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.WithPersistentData;
-import dev.latvian.mods.kubejs.event.EventGroup;
+import dev.latvian.mods.kubejs.event.EventGroups;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -23,6 +23,7 @@ import dev.latvian.mods.kubejs.net.DisplayClientErrorsPayload;
 import dev.latvian.mods.kubejs.net.DisplayServerErrorsPayload;
 import dev.latvian.mods.kubejs.net.PaintPayload;
 import dev.latvian.mods.kubejs.net.ReloadStartupScriptsPayload;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
@@ -271,7 +272,7 @@ public class KubeJSCommands {
 	}
 
 	private static int dumpEvents(CommandSourceStack source) {
-		var groups = EventGroup.getGroups();
+		var groups = EventGroups.ALL.get().map();
 
 		var output = KubeJSPaths.LOCAL.resolve("event_groups");
 
@@ -344,9 +345,9 @@ public class KubeJSCommands {
 				}
 
 				var scriptManager = ScriptType.SERVER.manager.get();
-				var cx = scriptManager.context;
+				var cx = (KubeJSContext) scriptManager.contextFactory.enter();
 
-				var members = JavaMembers.lookupClass(cx, scriptManager.topLevelScope, eventType, null, false);
+				var members = JavaMembers.lookupClass(cx, cx.topLevelScope, eventType, null, false);
 
 				var hasDocumentedMembers = false;
 				var documentedMembers = new StringBuilder("### Documented members:\n\n");
