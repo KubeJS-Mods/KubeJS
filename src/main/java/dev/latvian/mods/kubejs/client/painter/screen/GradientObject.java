@@ -58,7 +58,7 @@ public class GradientObject extends BoxObject {
 	}
 
 	@Override
-	public void draw(PaintScreenEventJS event) {
+	public void draw(PaintScreenKubeEvent event) {
 		var colBL = colorBL.getInt(event);
 		var colBR = colorBR.getInt(event);
 		var colTR = colorTR.getInt(event);

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
@@ -20,7 +20,7 @@ public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factor
 			}
 		};
 
-		static Factory defaultWith(BiFunction<RecipeJS, RecipeKey<?>, Object> valueSupplier) {
+		static Factory defaultWith(BiFunction<KubeRecipe, RecipeKey<?>, Object> valueSupplier) {
 			return (recipe, schemaType, keys, from) -> {
 				DEFAULT.setValues(recipe, schemaType, keys, from);
 
@@ -34,7 +34,7 @@ public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factor
 			};
 		}
 
-		default RecipeJS create(RecipeTypeFunction type, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from) {
+		default KubeRecipe create(RecipeTypeFunction type, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from) {
 			var r = schemaType.schema.factory.get();
 			r.type = type;
 			r.json = new JsonObject();
@@ -45,7 +45,7 @@ public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factor
 			return r;
 		}
 
-		void setValues(RecipeJS recipe, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from);
+		void setValues(KubeRecipe recipe, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from);
 	}
 
 	@Override

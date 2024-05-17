@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.block.KubeJSBlockEventHandler;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.entity.KubeJSEntityEventHandler;
-import dev.latvian.mods.kubejs.event.StartupEventJS;
+import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.gui.KubeJSMenu;
 import dev.latvian.mods.kubejs.helpers.MiscHelper;
 import dev.latvian.mods.kubejs.item.KubeJSItemEventHandler;
@@ -194,14 +194,14 @@ public class KubeJS {
 	}
 
 	public void setup() {
-		StartupEvents.INIT.post(ScriptType.STARTUP, new StartupEventJS());
+		StartupEvents.INIT.post(ScriptType.STARTUP, KubeStartupEvent.BASIC);
 		// KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);
 	}
 
 	public void loadComplete() {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::afterInit);
 		ScriptsLoadedEvent.EVENT.invoker().run();
-		StartupEvents.POST_INIT.post(ScriptType.STARTUP, new StartupEventJS());
+		StartupEvents.POST_INIT.post(ScriptType.STARTUP, KubeStartupEvent.BASIC);
 		UtilsJS.postModificationEvents();
 		RecipeNamespace.getAll();
 

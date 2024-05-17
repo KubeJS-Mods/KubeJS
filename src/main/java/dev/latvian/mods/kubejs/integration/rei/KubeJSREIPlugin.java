@@ -49,7 +49,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 		if (REIEvents.ADD.hasListeners()) {
 			for (var wrapper : entryWrappers.getWrappers()) {
 				if (REIEvents.ADD.hasListeners(wrapper.type().getId())) {
-					REIEvents.ADD.post(new AddREIEventJS<>(registry, wrapper), wrapper.type().getId());
+					REIEvents.ADD.post(new AddREIKubeEvent<>(registry, wrapper), wrapper.type().getId());
 				}
 			}
 		}
@@ -63,7 +63,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 			for (var wrapper : entryWrappers.getWrappers()) {
 				if (REIEvents.HIDE.hasListeners(wrapper.type().getId())) {
-					REIEvents.HIDE.post(new HideREIEventJS<>(registry, wrapper, rule, allEntries), wrapper.type().getId());
+					REIEvents.HIDE.post(new HideREIKubeEvent<>(registry, wrapper, rule, allEntries), wrapper.type().getId());
 				}
 			}
 		}
@@ -72,7 +72,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	@Override
 	public void registerDisplays(DisplayRegistry registry) {
 		if (REIEvents.INFORMATION.hasListeners()) {
-			REIEvents.INFORMATION.post(new InformationREIEventJS(entryWrappers));
+			REIEvents.INFORMATION.post(new InformationREIKubeEvent(entryWrappers));
 		}
 		registry.registerVisibilityPredicate((cat, display) -> {
 			var id = display.getDisplayLocation();
@@ -96,11 +96,11 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 			recipesRemoved.clear();
 
 			if (REIEvents.REMOVE_CATEGORIES.hasListeners()) {
-				REIEvents.REMOVE_CATEGORIES.post(new RemoveREICategoryEventJS(categoriesRemoved));
+				REIEvents.REMOVE_CATEGORIES.post(new RemoveREICategoryKubeEvent(categoriesRemoved));
 			}
 
 			if (REIEvents.REMOVE_RECIPES.hasListeners()) {
-				REIEvents.REMOVE_RECIPES.post(new RemoveREIRecipeEventJS(recipesRemoved));
+				REIEvents.REMOVE_RECIPES.post(new RemoveREIRecipeKubeEvent(recipesRemoved));
 			}
 		}
 	}
@@ -109,7 +109,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	@Override
 	public void registerCollapsibleEntries(CollapsibleEntryRegistry registry) {
 		if (REIEvents.GROUP_ENTRIES.hasListeners()) {
-			REIEvents.GROUP_ENTRIES.post(new GroupREIEntriesEventJS(entryWrappers, registry));
+			REIEvents.GROUP_ENTRIES.post(new GroupREIEntriesKubeEvent(entryWrappers, registry));
 		}
 	}
 

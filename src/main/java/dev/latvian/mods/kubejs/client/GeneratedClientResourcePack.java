@@ -82,9 +82,9 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 
 		KubeJSPlugins.forEachPlugin(generator, KubeJSPlugin::generateAssetJsons);
 
-		var langMap = new HashMap<LangEventJS.Key, String>();
-		var langEvents = new HashMap<String, LangEventJS>();
-		var enUsLangEvent = langEvents.computeIfAbsent("en_us", s -> new LangEventJS(s, langMap));
+		var langMap = new HashMap<LangKubeEvent.Key, String>();
+		var langEvents = new HashMap<String, LangKubeEvent>();
+		var enUsLangEvent = langEvents.computeIfAbsent("en_us", s -> new LangKubeEvent(s, langMap));
 
 		if (Platform.isModLoaded("jade")) {
 			for (var mod : PlatformWrapper.getMods().values()) {
@@ -100,13 +100,13 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 
 		KubeJSPlugins.forEachPlugin(enUsLangEvent, KubeJSPlugin::generateLang);
 
-		ClientEvents.HIGH_ASSETS.post(ScriptType.CLIENT, new GenerateClientAssetsEventJS(generator));
+		ClientEvents.HIGH_ASSETS.post(ScriptType.CLIENT, new GenerateClientAssetsKubeEvent(generator));
 
 		for (var lang : ClientEvents.LANG.findUniqueExtraIds(ScriptType.CLIENT)) {
 			var l = String.valueOf(lang);
 
-			if (LangEventJS.PATTERN.matcher(l).matches()) {
-				ClientEvents.LANG.post(ScriptType.CLIENT, l, langEvents.computeIfAbsent(l, k -> new LangEventJS(k, langMap)));
+			if (LangKubeEvent.PATTERN.matcher(l).matches()) {
+				ClientEvents.LANG.post(ScriptType.CLIENT, l, langEvents.computeIfAbsent(l, k -> new LangKubeEvent(k, langMap)));
 			} else {
 				ConsoleJS.CLIENT.error("Invalid language key: " + l);
 			}
@@ -128,7 +128,7 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 								var lang = fileName.substring(0, fileName.length() - 5);
 
 								for (var entry : json.entrySet()) {
-									langMap.put(new LangEventJS.Key(ns, lang, entry.getKey()), entry.getValue().getAsString());
+									langMap.put(new LangKubeEvent.Key(ns, lang, entry.getKey()), entry.getValue().getAsString());
 								}
 							} catch (Exception ex) {
 								ex.printStackTrace();

@@ -32,7 +32,7 @@ public class RectangleObject extends BoxObject {
 	}
 
 	@Override
-	public void draw(PaintScreenEventJS event) {
+	public void draw(PaintScreenKubeEvent event) {
 		var aw = w.getFloat(event);
 		var ah = h.getFloat(event);
 		var ax = event.alignX(x.getFloat(event), aw, alignX);

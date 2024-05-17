@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
@@ -46,13 +46,13 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 	}
 
 	@Override
-	public JsonElement write(RecipeJS recipe, T value) {
+	public JsonElement write(KubeRecipe recipe, T value) {
 		return new JsonPrimitive(registry.getId(value).toString());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T read(RecipeJS recipe, Object from) {
+	public T read(KubeRecipe recipe, Object from) {
 		if (registry.objectBaseClass != Object.class && registry.objectBaseClass.isInstance(from)) {
 			return (T) from;
 		} else if (!(from instanceof CharSequence) && !(from instanceof JsonPrimitive) && !(from instanceof ResourceLocation)) {
@@ -73,7 +73,7 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 	}
 
 	@Override
-	public boolean hasPriority(RecipeJS recipe, Object from) {
+	public boolean hasPriority(KubeRecipe recipe, Object from) {
 		return (registry.objectBaseClass != Object.class && registry.objectBaseClass.isInstance(from)) || (from instanceof CharSequence && UtilsJS.getMCID(null, from.toString()) != null) || (from instanceof JsonPrimitive json && json.isString() && UtilsJS.getMCID(null, json.getAsString()) != null);
 	}
 

@@ -50,7 +50,7 @@ public class TextObject extends BoxObject {
 	}
 
 	@Override
-	public void preDraw(PaintScreenEventJS event) {
+	public void preDraw(PaintScreenKubeEvent event) {
 		float maxTextWidth = 0F;
 
 		for (int i = 0; i < text.length; i++) {
@@ -63,7 +63,7 @@ public class TextObject extends BoxObject {
 	}
 
 	@Override
-	public void draw(PaintScreenEventJS event) {
+	public void draw(PaintScreenKubeEvent event) {
 		var ls = lineSpacing.getFloat(event);
 		var ax = event.alignX(x.getFloat(event), w.getFloat(event), alignX);
 		var ay = event.alignY(y.getFloat(event), h.getFloat(event), alignY);

@@ -26,7 +26,7 @@ import dev.latvian.mods.kubejs.net.ReloadStartupScriptsPayload;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
-import dev.latvian.mods.kubejs.server.CustomCommandEventJS;
+import dev.latvian.mods.kubejs.server.CustomCommandKubeEvent;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -515,7 +515,7 @@ public class KubeJSCommands {
 
 	private static int customCommand(CommandSourceStack source, String id) {
 		if (ServerEvents.CUSTOM_COMMAND.hasListeners()) {
-			var result = ServerEvents.CUSTOM_COMMAND.post(new CustomCommandEventJS(source.getLevel(), source.getEntity(), BlockPos.containing(source.getPosition()), id), id);
+			var result = ServerEvents.CUSTOM_COMMAND.post(new CustomCommandKubeEvent(source.getLevel(), source.getEntity(), BlockPos.containing(source.getPosition()), id), id);
 
 			if (result.type() == EventResult.Type.ERROR) {
 				source.sendFailure(Component.literal(result.value().toString()));

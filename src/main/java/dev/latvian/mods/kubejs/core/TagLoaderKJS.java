@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.server.tag.TagEventFilter;
-import dev.latvian.mods.kubejs.server.tag.TagEventJS;
+import dev.latvian.mods.kubejs.server.tag.TagKubeEvent;
 import dev.latvian.mods.kubejs.server.tag.TagWrapper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.core.Registry;
@@ -33,7 +33,7 @@ public interface TagLoaderKJS<T> {
 		if (regInfo.hasDefaultTags || ServerEvents.TAGS.hasListeners(reg.key())) {
 			var preEvent = ssm.preTagEvents.get(reg.key());
 
-			var event = new TagEventJS(regInfo, reg);
+			var event = new TagKubeEvent(regInfo, reg);
 
 			for (var entry : map.entrySet()) {
 				var w = new TagWrapper(event, entry.getKey(), entry.getValue());
@@ -51,7 +51,7 @@ public interface TagLoaderKJS<T> {
 			}
 
 			if (preEvent == null) {
-				ServerEvents.TAGS.post(event, regInfo.key, TagEventJS.TAG_EVENT_HANDLER);
+				ServerEvents.TAGS.post(event, regInfo.key, TagKubeEvent.TAG_EVENT_HANDLER);
 			} else {
 				for (var a : preEvent.actions) {
 					a.accept(event);

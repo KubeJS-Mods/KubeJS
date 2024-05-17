@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.entity.EntityPotionEffectsJS;
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
-import dev.latvian.mods.kubejs.item.FoodEatenEventJS;
+import dev.latvian.mods.kubejs.item.FoodEatenKubeEvent;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
@@ -32,7 +32,7 @@ public interface LivingEntityKJS extends EntityKJS {
 
 	default void kjs$foodEaten(ItemStack is) {
 		if (this instanceof LivingEntity entity) {
-			var event = new FoodEatenEventJS(entity, is);
+			var event = new FoodEatenKubeEvent(entity, is);
 			var i = is.getItem();
 			var b = i.kjs$getItemBuilder();
 

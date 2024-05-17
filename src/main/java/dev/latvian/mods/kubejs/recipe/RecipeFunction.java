@@ -9,10 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RecipeFunction extends NativeJavaObject {
-	public final RecipeJS recipe;
+	public final KubeRecipe recipe;
 	public final Map<String, RecipeComponentValueFunction> builderFunctions;
 
-	public RecipeFunction(Context cx, Scriptable scope, Class<?> staticType, RecipeJS recipe) {
+	public RecipeFunction(Context cx, Scriptable scope, Class<?> staticType, KubeRecipe recipe) {
 		super(scope, recipe, staticType, cx);
 		this.recipe = recipe;
 		var map = recipe.getAllValueMap();
@@ -29,7 +29,7 @@ public class RecipeFunction extends NativeJavaObject {
 
 	@Override
 	public Object get(Context cx, String name, Scriptable start) {
-		if (recipe instanceof ErroredRecipeJS errored) {
+		if (recipe instanceof ErroredKubeRecipe errored) {
 			return errored.dummyFunction;
 		}
 

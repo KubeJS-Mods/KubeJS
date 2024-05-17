@@ -1,29 +1,15 @@
 package dev.latvian.mods.kubejs.integration.gamestages;
 
 import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.event.EventGroup;
-import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.stages.StageCreationEvent;
-import dev.latvian.mods.kubejs.stages.Stages;
+import dev.latvian.mods.kubejs.stages.StageEvents;
 
 public class GameStagesIntegration extends KubeJSPlugin {
-
-	public static final EventGroup GROUP = EventGroup.of("GameStageEvents");
-
-	/*
-		public static final EventHandler STAGE_ADDED = GROUP.common("stageAdded", () -> GameStageEventJS.class).extra(Extra.STRING);
-		public static final EventHandler STAGE_REMOVED = GROUP.common("stageRemoved", () -> GameStageEventJS.class).extra(Extra.STRING);
-	*/
 	@Override
 	public void init() {
-		Stages.overrideCreation(GameStagesIntegration::override);
+		StageEvents.overrideCreation(GameStagesIntegration::override);
 		/*NeoForge.EVENT_BUS.addListener(GameStagesIntegration::stageAdded);
 		NeoForge.EVENT_BUS.addListener(GameStagesIntegration::stageRemoved);*/
-	}
-
-	@Override
-	public void registerEvents(EventGroupRegistry registry) {
-		registry.register(GROUP);
 	}
 
 	private static void override(StageCreationEvent event) {

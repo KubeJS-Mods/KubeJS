@@ -13,7 +13,7 @@ public interface OutputReplacementTransformer {
 		}
 
 		@Override
-		public Object replaceOutput(RecipeJS recipe, ReplacementMatch match, OutputReplacement original) {
+		public Object replaceOutput(KubeRecipe recipe, ReplacementMatch match, OutputReplacement original) {
 			return transformer.transform(recipe, match, original, with);
 		}
 	}

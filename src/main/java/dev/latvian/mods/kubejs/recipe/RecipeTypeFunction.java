@@ -19,12 +19,12 @@ import java.util.stream.Collectors;
 public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 	public static final Pattern SKIP_ERROR = Pattern.compile("dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipeTypeFunction\\.call");
 
-	public final RecipesEventJS event;
+	public final RecipesKubeEvent event;
 	public final ResourceLocation id;
 	public final String idString;
 	public final RecipeSchemaType schemaType;
 
-	public RecipeTypeFunction(RecipesEventJS event, RecipeSchemaType schemaType) {
+	public RecipeTypeFunction(RecipesKubeEvent event, RecipeSchemaType schemaType) {
 		this.event = event;
 		this.id = schemaType.id;
 		this.idString = id.toString();
@@ -32,19 +32,19 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 	}
 
 	@Override
-	public RecipeJS call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args0) {
+	public KubeRecipe call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args0) {
 		try {
 			return createRecipe(args0);
 		} catch (RecipeExceptionJS rex) {
 			if (rex.error) {
 				throw rex;
 			} else {
-				return new ErroredRecipeJS(event, "Failed to create recipe for type '%s'".formatted(idString), rex, SKIP_ERROR);
+				return new ErroredKubeRecipe(event, "Failed to create recipe for type '%s'".formatted(idString), rex, SKIP_ERROR);
 			}
 		}
 	}
 
-	public RecipeJS createRecipe(Object[] args) {
+	public KubeRecipe createRecipe(Object[] args) {
 		try {
 			for (int i = 0; i < args.length; i++) {
 				args[i] = Wrapper.unwrapped(args[i]);

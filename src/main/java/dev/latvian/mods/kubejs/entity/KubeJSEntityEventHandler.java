@@ -23,23 +23,23 @@ public class KubeJSEntityEventHandler {
 
 	private static EventResult checkSpawn(LivingEntity entity, LevelAccessor la, double x, double y, double z, MobSpawnType type, @Nullable BaseSpawner spawner) {
 		if (la instanceof Level level && (la.isClientSide() || UtilsJS.staticServer != null) && EntityEvents.CHECK_SPAWN.hasListeners()) {
-			return EntityEvents.CHECK_SPAWN.post(level, entity.getType(), new CheckLivingEntitySpawnEventJS(entity, level, x, y, z, type, spawner)).arch();
+			return EntityEvents.CHECK_SPAWN.post(level, entity.getType(), new CheckLivingEntitySpawnKubeEvent(entity, level, x, y, z, type, spawner)).arch();
 		}
 
 		return EventResult.pass();
 	}
 
 	private static EventResult livingDeath(LivingEntity entity, DamageSource source) {
-		return EntityEvents.DEATH.hasListeners() ? EntityEvents.DEATH.post(entity, entity.getType(), new LivingEntityDeathEventJS(entity, source)).arch() : EventResult.pass();
+		return EntityEvents.DEATH.hasListeners() ? EntityEvents.DEATH.post(entity, entity.getType(), new LivingEntityDeathKubeEvent(entity, source)).arch() : EventResult.pass();
 	}
 
 	private static EventResult livingHurt(LivingEntity entity, DamageSource source, float amount) {
-		return EntityEvents.HURT.hasListeners() ? EntityEvents.HURT.post(entity, entity.getType(), new LivingEntityHurtEventJS(entity, source, amount)).arch() : EventResult.pass();
+		return EntityEvents.HURT.hasListeners() ? EntityEvents.HURT.post(entity, entity.getType(), new LivingEntityHurtKubeEvent(entity, source, amount)).arch() : EventResult.pass();
 	}
 
 	private static EventResult entitySpawned(Entity entity, Level level) {
 		if ((level.isClientSide() || UtilsJS.staticServer != null) && EntityEvents.SPAWNED.hasListeners()) {
-			return EntityEvents.SPAWNED.post(level, entity.getType(), new EntitySpawnedEventJS(entity, level)).arch();
+			return EntityEvents.SPAWNED.post(level, entity.getType(), new EntitySpawnedKubeEvent(entity, level)).arch();
 		}
 
 		return EventResult.pass();

@@ -31,7 +31,7 @@ public class EventHandlerContainer {
 		this.line = line;
 	}
 
-	public EventResult handle(EventJS event, EventExceptionHandler exh) throws EventExit {
+	public EventResult handle(KubeEvent event, EventExceptionHandler exh) throws EventExit {
 		var itr = this;
 
 		do {

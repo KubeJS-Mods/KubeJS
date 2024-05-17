@@ -30,13 +30,13 @@ public final class EventHandler extends BaseFunction {
 	public final EventGroup group;
 	public final String name;
 	public final ScriptTypePredicate scriptTypePredicate;
-	public final Supplier<Class<? extends EventJS>> eventType;
+	public final Supplier<Class<? extends KubeEvent>> eventType;
 	private boolean hasResult;
 	public transient Extra extra;
 	private EventHandlerContainer[] eventContainers;
 	private Map<Object, EventHandlerContainer[]> extraEventContainers;
 
-	EventHandler(EventGroup g, String n, ScriptTypePredicate st, Supplier<Class<? extends EventJS>> e) {
+	EventHandler(EventGroup g, String n, ScriptTypePredicate st, Supplier<Class<? extends KubeEvent>> e) {
 		group = g;
 		name = n;
 		scriptTypePredicate = st;
@@ -173,9 +173,9 @@ public final class EventHandler extends BaseFunction {
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS, EventExceptionHandler)
+	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent, EventExceptionHandler)
 	 */
-	public EventResult post(EventJS event) {
+	public EventResult post(KubeEvent event) {
 		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
 			return post(type, null, event);
 		} else {
@@ -184,24 +184,24 @@ public final class EventHandler extends BaseFunction {
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS, EventExceptionHandler)
+	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent, EventExceptionHandler)
 	 */
-	public EventResult post(ScriptTypeHolder scriptType, EventJS event) {
+	public EventResult post(ScriptTypeHolder scriptType, KubeEvent event) {
 		return post(scriptType, null, event);
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS, EventExceptionHandler)
+	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent, EventExceptionHandler)
 	 */
 	// sth, event, exh
-	public EventResult post(ScriptTypeHolder scriptType, EventJS event, EventExceptionHandler exh) {
+	public EventResult post(ScriptTypeHolder scriptType, KubeEvent event, EventExceptionHandler exh) {
 		return post(scriptType, null, event, exh);
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS, EventExceptionHandler)
+	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent, EventExceptionHandler)
 	 */
-	public EventResult post(EventJS event, @Nullable Object extraId) {
+	public EventResult post(KubeEvent event, @Nullable Object extraId) {
 		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
 			return post(type, extraId, event);
 		} else {
@@ -210,9 +210,9 @@ public final class EventHandler extends BaseFunction {
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS, EventExceptionHandler)
+	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent, EventExceptionHandler)
 	 */
-	public EventResult post(EventJS event, @Nullable Object extraId, EventExceptionHandler exh) {
+	public EventResult post(KubeEvent event, @Nullable Object extraId, EventExceptionHandler exh) {
 		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
 			return post(type, extraId, event, exh);
 		} else {
@@ -221,22 +221,22 @@ public final class EventHandler extends BaseFunction {
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, EventJS, EventExceptionHandler)
+	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent, EventExceptionHandler)
 	 */
-	public EventResult post(ScriptTypeHolder type, @Nullable Object extraId, EventJS event) {
+	public EventResult post(ScriptTypeHolder type, @Nullable Object extraId, KubeEvent event) {
 		return post(type, extraId, event, null);
 	}
 
 	/**
-	 * @return EventResult that can contain an object. What previously returned true on {@link EventJS#cancel()} now returns {@link EventResult#interruptFalse()}
-	 * @see EventJS#cancel()
-	 * @see EventJS#success()
-	 * @see EventJS#exit()
-	 * @see EventJS#cancel(Object)
-	 * @see EventJS#success(Object)
-	 * @see EventJS#exit(Object)
+	 * @return EventResult that can contain an object. What previously returned true on {@link KubeEvent#cancel()} now returns {@link EventResult#interruptFalse()}
+	 * @see KubeEvent#cancel()
+	 * @see KubeEvent#success()
+	 * @see KubeEvent#exit()
+	 * @see KubeEvent#cancel(Object)
+	 * @see KubeEvent#success(Object)
+	 * @see KubeEvent#exit(Object)
 	 */
-	public EventResult post(ScriptTypeHolder type, @Nullable Object extraId, EventJS event, EventExceptionHandler exh) {
+	public EventResult post(ScriptTypeHolder type, @Nullable Object extraId, KubeEvent event, EventExceptionHandler exh) {
 		if (!hasListeners()) {
 			return EventResult.PASS;
 		}
@@ -298,7 +298,7 @@ public final class EventHandler extends BaseFunction {
 		return eventResult;
 	}
 
-	private void postToHandlers(ScriptType type, EventHandlerContainer[] containers, EventJS event, @Nullable EventExceptionHandler exh) throws EventExit {
+	private void postToHandlers(ScriptType type, EventHandlerContainer[] containers, KubeEvent event, @Nullable EventExceptionHandler exh) throws EventExit {
 		var handler = containers[type.ordinal()];
 
 		if (handler != null) {

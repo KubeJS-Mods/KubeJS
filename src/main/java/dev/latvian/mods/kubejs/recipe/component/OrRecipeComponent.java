@@ -5,7 +5,7 @@ import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
@@ -38,7 +38,7 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 	}
 
 	@Override
-	public JsonElement write(RecipeJS recipe, Either<H, L> value) {
+	public JsonElement write(KubeRecipe recipe, Either<H, L> value) {
 		if (value.left().isPresent()) {
 			return high.write(recipe, value.left().get());
 		} else {
@@ -47,7 +47,7 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 	}
 
 	@Override
-	public Either<H, L> read(RecipeJS recipe, Object from) {
+	public Either<H, L> read(KubeRecipe recipe, Object from) {
 		if (high.hasPriority(recipe, from)) {
 			// if high has priority, only try to read high
 			return Either.left(high.read(recipe, from));
@@ -71,13 +71,13 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 	}
 
 	@Override
-	public boolean isInput(RecipeJS recipe, Either<H, L> value, ReplacementMatch match) {
+	public boolean isInput(KubeRecipe recipe, Either<H, L> value, ReplacementMatch match) {
 		var l = value.left();
 		return l.isPresent() ? high.isInput(recipe, l.get(), match) : low.isInput(recipe, value.right().get(), match);
 	}
 
 	@Override
-	public Either<H, L> replaceInput(RecipeJS recipe, Either<H, L> original, ReplacementMatch match, InputReplacement with) {
+	public Either<H, L> replaceInput(KubeRecipe recipe, Either<H, L> original, ReplacementMatch match, InputReplacement with) {
 		var l = original.left();
 
 		if (l.isPresent()) {
@@ -90,13 +90,13 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 	}
 
 	@Override
-	public boolean isOutput(RecipeJS recipe, Either<H, L> value, ReplacementMatch match) {
+	public boolean isOutput(KubeRecipe recipe, Either<H, L> value, ReplacementMatch match) {
 		var l = value.left();
 		return l.isPresent() ? high.isOutput(recipe, l.get(), match) : low.isOutput(recipe, value.right().get(), match);
 	}
 
 	@Override
-	public Either<H, L> replaceOutput(RecipeJS recipe, Either<H, L> original, ReplacementMatch match, OutputReplacement with) {
+	public Either<H, L> replaceOutput(KubeRecipe recipe, Either<H, L> original, ReplacementMatch match, OutputReplacement with) {
 		var l = original.left();
 
 		if (l.isPresent()) {

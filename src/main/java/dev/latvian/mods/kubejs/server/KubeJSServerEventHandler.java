@@ -7,9 +7,9 @@ import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.latvian.mods.kubejs.bindings.event.LevelEvents;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.command.CommandRegistryEventJS;
+import dev.latvian.mods.kubejs.command.CommandRegistryKubeEvent;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
-import dev.latvian.mods.kubejs.level.SimpleLevelEventJS;
+import dev.latvian.mods.kubejs.level.SimpleLevelKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
@@ -90,16 +90,16 @@ public class KubeJSServerEventHandler {
 		KubeJSCommands.register(dispatcher);
 
 		if (ServerEvents.COMMAND_REGISTRY.hasListeners()) {
-			ServerEvents.COMMAND_REGISTRY.post(ScriptType.SERVER, new CommandRegistryEventJS(dispatcher, registry, selection));
+			ServerEvents.COMMAND_REGISTRY.post(ScriptType.SERVER, new CommandRegistryKubeEvent(dispatcher, registry, selection));
 		}
 	}
 
 	private static void serverStarting(MinecraftServer server) {
-		ServerEvents.LOADED.post(ScriptType.SERVER, new ServerEventJS(server));
+		ServerEvents.LOADED.post(ScriptType.SERVER, new ServerKubeEvent(server));
 	}
 
 	private static void serverStopping(MinecraftServer server) {
-		ServerEvents.UNLOADED.post(ScriptType.SERVER, new ServerEventJS(server));
+		ServerEvents.UNLOADED.post(ScriptType.SERVER, new ServerKubeEvent(server));
 	}
 
 	private static void serverStopped(MinecraftServer server) {
@@ -109,7 +109,7 @@ public class KubeJSServerEventHandler {
 
 	private static void serverLevelLoaded(ServerLevel level) {
 		if (LevelEvents.LOADED.hasListeners()) {
-			LevelEvents.LOADED.post(new SimpleLevelEventJS(level), level.dimension().location());
+			LevelEvents.LOADED.post(new SimpleLevelKubeEvent(level), level.dimension().location());
 		}
 	}
 
@@ -151,7 +151,7 @@ public class KubeJSServerEventHandler {
 
 	public static EventResult command(CommandPerformEvent event) {
 		if (ServerEvents.COMMAND.hasListeners()) {
-			var e = new CommandEventJS(event);
+			var e = new CommandKubeEvent(event);
 			return ServerEvents.COMMAND.post(e, e.getCommandName()).arch();
 		}
 

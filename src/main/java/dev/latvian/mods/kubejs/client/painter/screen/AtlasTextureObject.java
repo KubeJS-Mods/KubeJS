@@ -29,7 +29,7 @@ public class AtlasTextureObject extends BoxObject {
 	}
 
 	@Override
-	public void draw(PaintScreenEventJS event) {
+	public void draw(PaintScreenKubeEvent event) {
 		if (texture == null) {
 			return;
 		}

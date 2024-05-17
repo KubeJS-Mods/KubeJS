@@ -3,13 +3,14 @@ package dev.latvian.mods.kubejs.stages;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
-public class NoStages extends Stages {
+public record NoStages(Player player) implements Stages {
 	public static final NoStages NULL_INSTANCE = new NoStages(null);
 
-	private NoStages(Player player) {
-		super(player);
+	@Override
+	public Player getPlayer() {
+		return player;
 	}
 
 	@Override
@@ -24,7 +25,7 @@ public class NoStages extends Stages {
 
 	@Override
 	public Collection<String> getAll() {
-		return List.of();
+		return Set.of();
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +26,7 @@ import java.util.UUID;
 @RemapPrefixForJS("kjs$")
 public abstract class EntityMixin implements EntityKJS {
 	@Shadow
-	public abstract boolean removeTag(String string);
+	public abstract void playerTouch(Player arg);
 
 	private CompoundTag kjs$persistentData;
 
@@ -72,11 +73,7 @@ public abstract class EntityMixin implements EntityKJS {
 	}
 
 	@Shadow
-	@RemapForJS("stepHeight")
-	public float maxUpStep;
-
-	@Shadow
-	@RemapForJS("age")
+	@RemapForJS("tickCount")
 	public int tickCount;
 
 	@Shadow

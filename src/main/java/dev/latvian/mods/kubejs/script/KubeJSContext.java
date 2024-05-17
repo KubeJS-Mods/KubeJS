@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.mods.kubejs.util.WithContext;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.Scriptable;
@@ -15,14 +16,16 @@ import java.util.Map;
 
 public class KubeJSContext extends Context {
 	public final KubeJSContextFactory kjsFactory;
+	public final WithContext<?> nullWithContext;
 	public final Scriptable topLevelScope;
 	private Map<String, Either<NativeJavaClass, Boolean>> javaClassCache;
 
 	public KubeJSContext(KubeJSContextFactory factory) {
 		super(factory);
-		kjsFactory = factory;
+		this.kjsFactory = factory;
+		this.nullWithContext = new WithContext<>(this, null);
 		setApplicationClassLoader(KubeJS.class.getClassLoader());
-		topLevelScope = initSafeStandardObjects();
+		this.topLevelScope = initSafeStandardObjects();
 
 		var bindingsEvent = new BindingsEvent(this, topLevelScope);
 

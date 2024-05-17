@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 
@@ -25,12 +25,12 @@ public class BooleanComponent implements RecipeComponent<Boolean> {
 	}
 
 	@Override
-	public JsonElement write(RecipeJS recipe, Boolean value) {
+	public JsonElement write(KubeRecipe recipe, Boolean value) {
 		return new JsonPrimitive(value);
 	}
 
 	@Override
-	public Boolean read(RecipeJS recipe, Object from) {
+	public Boolean read(KubeRecipe recipe, Object from) {
 		if (from instanceof Boolean n) {
 			return n;
 		} else if (from instanceof JsonPrimitive json) {
@@ -43,7 +43,7 @@ public class BooleanComponent implements RecipeComponent<Boolean> {
 	}
 
 	@Override
-	public boolean hasPriority(RecipeJS recipe, Object from) {
+	public boolean hasPriority(KubeRecipe recipe, Object from) {
 		return from instanceof Boolean || from instanceof JsonPrimitive json && json.isBoolean();
 	}
 

@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.recipe.schema.minecraft;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
@@ -21,12 +21,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface ShapedRecipeSchema {
-	class ShapedRecipeJS extends RecipeJS {
-		public RecipeJS noMirror() {
+	class ShapedKubeRecipe extends KubeRecipe {
+		public KubeRecipe noMirror() {
 			return setValue(KJS_MIRROR, false);
 		}
 
-		public RecipeJS noShrink() {
+		public KubeRecipe noShrink() {
 			return setValue(KJS_SHRINK, false);
 		}
 
@@ -140,8 +140,8 @@ public interface ShapedRecipeSchema {
 	// Used for shaped recipes with 2D ingredient array
 	RecipeKey<InputItem[][]> INGREDIENTS = ItemComponents.INPUT_ARRAY.asArray().key("ingredients");
 
-	RecipeSchema SCHEMA = new RecipeSchema(ShapedRecipeJS.class, ShapedRecipeJS::new, RESULT, PATTERN, KEY, KJS_MIRROR, KJS_SHRINK)
+	RecipeSchema SCHEMA = new RecipeSchema(ShapedKubeRecipe.class, ShapedKubeRecipe::new, RESULT, PATTERN, KEY, KJS_MIRROR, KJS_SHRINK)
 		.constructor(RESULT, PATTERN, KEY)
-		.constructor((recipe, schemaType, keys, from) -> ((ShapedRecipeJS) recipe).set2DValues(from), RESULT, INGREDIENTS)
+		.constructor((recipe, schemaType, keys, from) -> ((ShapedKubeRecipe) recipe).set2DValues(from), RESULT, INGREDIENTS)
 		.uniqueOutputId(RESULT);
 }

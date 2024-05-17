@@ -14,5 +14,5 @@ public interface EventExceptionHandler {
 	 * @implNote The thrown exception will never be an instance of {@link EventExit} or {@link WrappedException},
 	 * as those are already handled by the container itself.
 	 */
-	Throwable handle(EventJS event, EventHandlerContainer container, Throwable ex);
+	Throwable handle(KubeEvent event, EventHandlerContainer container, Throwable ex);
 }

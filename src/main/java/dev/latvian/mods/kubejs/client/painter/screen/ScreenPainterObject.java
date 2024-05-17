@@ -11,10 +11,10 @@ public abstract class ScreenPainterObject extends PainterObject {
 	public Unit z = FixedNumberUnit.ZERO;
 	public ScreenDrawMode draw = ScreenDrawMode.INGAME;
 
-	public void preDraw(PaintScreenEventJS event) {
+	public void preDraw(PaintScreenKubeEvent event) {
 	}
 
-	public abstract void draw(PaintScreenEventJS event);
+	public abstract void draw(PaintScreenKubeEvent event);
 
 	@Override
 	protected void load(PainterObjectProperties properties) {

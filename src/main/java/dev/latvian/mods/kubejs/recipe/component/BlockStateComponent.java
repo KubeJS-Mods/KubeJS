@@ -6,7 +6,7 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -44,7 +44,7 @@ public record BlockStateComponent(ComponentRole crole, boolean preferObjectForm)
 	}
 
 	@Override
-	public JsonElement write(RecipeJS recipe, BlockState value) {
+	public JsonElement write(KubeRecipe recipe, BlockState value) {
 		if (preferObjectForm) {
 			return BlockState.CODEC.encode(value, JsonOps.INSTANCE, new JsonObject()).getPartialOrThrow(message -> {
 				throw new RecipeExceptionJS("Failed to write blockstate to object form: " + message);
@@ -56,7 +56,7 @@ public record BlockStateComponent(ComponentRole crole, boolean preferObjectForm)
 	}
 
 	@Override
-	public BlockState read(RecipeJS recipe, Object from) {
+	public BlockState read(KubeRecipe recipe, Object from) {
 		if (from instanceof BlockState s) {
 			return s;
 		} else if (from instanceof Block b) {
@@ -79,12 +79,12 @@ public record BlockStateComponent(ComponentRole crole, boolean preferObjectForm)
 	}
 
 	@Override
-	public boolean isInput(RecipeJS recipe, BlockState value, ReplacementMatch match) {
+	public boolean isInput(KubeRecipe recipe, BlockState value, ReplacementMatch match) {
 		return crole.isInput() && match instanceof BlockStatePredicate m2 && m2.test(value);
 	}
 
 	@Override
-	public boolean isOutput(RecipeJS recipe, BlockState value, ReplacementMatch match) {
+	public boolean isOutput(KubeRecipe recipe, BlockState value, ReplacementMatch match) {
 		return crole.isOutput() && match instanceof BlockStatePredicate m2 && m2.test(value);
 	}
 

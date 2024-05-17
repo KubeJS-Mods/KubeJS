@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.registry;
 
-import dev.latvian.mods.kubejs.client.LangEventJS;
+import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -124,7 +124,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		return translationKey;
 	}
 
-	public void generateLang(LangEventJS lang) {
+	public void generateLang(LangKubeEvent lang) {
 		if (displayName != null) {
 			lang.add(id.getNamespace(), getBuilderTranslationKey(), displayName.getString());
 		} else {

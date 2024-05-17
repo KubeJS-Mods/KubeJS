@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
@@ -59,13 +59,13 @@ public record EnumComponent<T extends Enum<T>>(Class<T> enumType, Function<T, St
 	}
 
 	@Override
-	public JsonPrimitive write(RecipeJS recipe, T value) {
+	public JsonPrimitive write(KubeRecipe recipe, T value) {
 		return new JsonPrimitive(toStringFunc.apply(value));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public T read(RecipeJS recipe, Object from) {
+	public T read(KubeRecipe recipe, Object from) {
 		if (enumType.isInstance(from)) {
 			return (T) from;
 		} else {

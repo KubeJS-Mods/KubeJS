@@ -99,7 +99,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient Consumer<BlockExplodedCallbackJS> explodedCallback;
 	public transient Consumer<BlockStateRotateCallbackJS> rotateStateModification;
 	public transient Consumer<BlockStateMirrorCallbackJS> mirrorStateModification;
-	public transient Consumer<BlockRightClickedEventJS> rightClick;
+	public transient Consumer<BlockRightClickedKubeEvent> rightClick;
 	public transient BlockEntityInfo blockEntityInfo;
 
 	public BlockBuilder(ResourceLocation i) {
@@ -774,7 +774,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Info("Set the callback used for right-clicking on the block")
-	public BlockBuilder rightClick(Consumer<BlockRightClickedEventJS> callbackJS) {
+	public BlockBuilder rightClick(Consumer<BlockRightClickedKubeEvent> callbackJS) {
 		rightClick = callbackJS;
 		return this;
 	}

@@ -16,7 +16,7 @@ public class KubeJSInventoryListener implements ContainerListener {
 	@Override
 	public void slotChanged(AbstractContainerMenu container, int index, ItemStack stack) {
 		if (PlayerEvents.INVENTORY_CHANGED.hasListeners() && !stack.isEmpty() && container.getSlot(index).container == player.getInventory()) {
-			PlayerEvents.INVENTORY_CHANGED.post(player, stack.getItem(), new InventoryChangedEventJS(player, stack, index));
+			PlayerEvents.INVENTORY_CHANGED.post(player, stack.getItem(), new InventoryChangedKubeEvent(player, stack, index));
 		}
 	}
 

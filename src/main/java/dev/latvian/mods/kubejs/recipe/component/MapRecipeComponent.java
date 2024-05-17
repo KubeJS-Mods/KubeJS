@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
@@ -41,7 +41,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public JsonObject write(RecipeJS recipe, TinyMap<K, V> value) {
+	public JsonObject write(KubeRecipe recipe, TinyMap<K, V> value) {
 		var json = new JsonObject();
 
 		for (var entry : value.entries()) {
@@ -53,7 +53,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public TinyMap<K, V> read(RecipeJS recipe, Object from) {
+	public TinyMap<K, V> read(KubeRecipe recipe, Object from) {
 		if (from instanceof TinyMap map) {
 			return map;
 		} else if (from instanceof JsonObject o) {
@@ -93,7 +93,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public boolean isInput(RecipeJS recipe, TinyMap<K, V> value, ReplacementMatch match) {
+	public boolean isInput(KubeRecipe recipe, TinyMap<K, V> value, ReplacementMatch match) {
 		for (var entry : value.entries()) {
 			if (component.isInput(recipe, entry.value(), match)) {
 				return true;
@@ -104,7 +104,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public TinyMap<K, V> replaceInput(RecipeJS recipe, TinyMap<K, V> original, ReplacementMatch match, InputReplacement with) {
+	public TinyMap<K, V> replaceInput(KubeRecipe recipe, TinyMap<K, V> original, ReplacementMatch match, InputReplacement with) {
 		var map = original;
 
 		for (int i = 0; i < original.entries().length; i++) {
@@ -123,7 +123,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public boolean isOutput(RecipeJS recipe, TinyMap<K, V> value, ReplacementMatch match) {
+	public boolean isOutput(KubeRecipe recipe, TinyMap<K, V> value, ReplacementMatch match) {
 		for (var entry : value.entries()) {
 			if (component.isOutput(recipe, entry.value(), match)) {
 				return true;
@@ -134,7 +134,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public TinyMap<K, V> replaceOutput(RecipeJS recipe, TinyMap<K, V> original, ReplacementMatch match, OutputReplacement with) {
+	public TinyMap<K, V> replaceOutput(KubeRecipe recipe, TinyMap<K, V> original, ReplacementMatch match, OutputReplacement with) {
 		var map = original;
 
 		for (int i = 0; i < original.entries().length; i++) {

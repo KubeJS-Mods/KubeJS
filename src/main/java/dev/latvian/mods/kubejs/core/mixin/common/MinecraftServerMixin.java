@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
 import dev.latvian.mods.kubejs.gui.chest.CustomChestMenu;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
-import dev.latvian.mods.kubejs.server.ServerEventJS;
+import dev.latvian.mods.kubejs.server.ServerKubeEvent;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
@@ -113,7 +113,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 		}
 
 		if (ServerEvents.TICK.hasListeners()) {
-			ServerEvents.TICK.post(ScriptType.SERVER, new ServerEventJS(kjs$self()));
+			ServerEvents.TICK.post(ScriptType.SERVER, new ServerKubeEvent(kjs$self()));
 		}
 	}
 

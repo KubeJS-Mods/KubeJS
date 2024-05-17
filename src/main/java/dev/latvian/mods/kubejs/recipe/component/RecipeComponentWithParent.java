@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
@@ -43,37 +43,37 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 
 	@Override
 	@Nullable
-	default JsonElement write(RecipeJS recipe, T value) {
+	default JsonElement write(KubeRecipe recipe, T value) {
 		return parentComponent().write(recipe, value);
 	}
 
 	@Override
-	default T read(RecipeJS recipe, Object from) {
+	default T read(KubeRecipe recipe, Object from) {
 		return parentComponent().read(recipe, from);
 	}
 
 	@Override
-	default boolean hasPriority(RecipeJS recipe, Object from) {
+	default boolean hasPriority(KubeRecipe recipe, Object from) {
 		return parentComponent().hasPriority(recipe, from);
 	}
 
 	@Override
-	default boolean isInput(RecipeJS recipe, T value, ReplacementMatch match) {
+	default boolean isInput(KubeRecipe recipe, T value, ReplacementMatch match) {
 		return parentComponent().isInput(recipe, value, match);
 	}
 
 	@Override
-	default T replaceInput(RecipeJS recipe, T original, ReplacementMatch match, InputReplacement with) {
+	default T replaceInput(KubeRecipe recipe, T original, ReplacementMatch match, InputReplacement with) {
 		return parentComponent().replaceInput(recipe, original, match, with);
 	}
 
 	@Override
-	default boolean isOutput(RecipeJS recipe, T value, ReplacementMatch match) {
+	default boolean isOutput(KubeRecipe recipe, T value, ReplacementMatch match) {
 		return parentComponent().isOutput(recipe, value, match);
 	}
 
 	@Override
-	default T replaceOutput(RecipeJS recipe, T original, ReplacementMatch match, OutputReplacement with) {
+	default T replaceOutput(KubeRecipe recipe, T original, ReplacementMatch match, OutputReplacement with) {
 		return parentComponent().replaceOutput(recipe, original, match, with);
 	}
 

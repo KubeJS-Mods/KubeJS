@@ -11,7 +11,7 @@ public interface OutputReplacement {
 		return new OutputReplacementTransformer.Replacement(this, transformer);
 	}
 
-	default Object replaceOutput(RecipeJS recipe, ReplacementMatch match, OutputReplacement original) {
+	default Object replaceOutput(KubeRecipe recipe, ReplacementMatch match, OutputReplacement original) {
 		return this;
 	}
 }

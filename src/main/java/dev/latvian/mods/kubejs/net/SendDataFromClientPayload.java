@@ -26,7 +26,7 @@ public record SendDataFromClientPayload(String channel, CompoundTag data) implem
 
 	public void handle(IPayloadContext ctx) {
 		if (!channel.isEmpty() && ctx.player() instanceof ServerPlayer serverPlayer && NetworkEvents.DATA_RECEIVED.hasListeners(channel)) {
-			ctx.enqueueWork(() -> NetworkEvents.DATA_RECEIVED.post(ScriptType.SERVER, channel, new NetworkEventJS(serverPlayer, channel, data)));
+			ctx.enqueueWork(() -> NetworkEvents.DATA_RECEIVED.post(ScriptType.SERVER, channel, new NetworkKubeEvent(serverPlayer, channel, data)));
 		}
 	}
 }

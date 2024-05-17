@@ -15,8 +15,8 @@ import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.gui.KubeJSMenu;
 import dev.latvian.mods.kubejs.gui.KubeJSScreen;
-import dev.latvian.mods.kubejs.item.ItemModelPropertiesEventJS;
-import dev.latvian.mods.kubejs.net.NetworkEventJS;
+import dev.latvian.mods.kubejs.item.ItemModelPropertiesKubeEvent;
+import dev.latvian.mods.kubejs.net.NetworkKubeEvent;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -93,11 +93,11 @@ public class KubeJSClient extends KubeJSCommon {
 			KubeJS.LOGGER.info("CLIENT SETUP");
 		}
 
-		ClientEvents.INIT.post(ScriptType.STARTUP, new ClientInitEventJS());
-		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesEventJS());
+		ClientEvents.INIT.post(ScriptType.STARTUP, new ClientInitKubeEvent());
+		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesKubeEvent());
 
 		ClientEvents.ATLAS_SPRITE_REGISTRY.listenJava(ScriptType.CLIENT, TextureAtlas.LOCATION_BLOCKS, event -> {
-			var e = (AtlasSpriteRegistryEventJS) event;
+			var e = (AtlasSpriteRegistryKubeEvent) event;
 
 			for (var builder : RegistryInfo.FLUID) {
 				if (builder instanceof FluidBuilder b) {
@@ -117,7 +117,7 @@ public class KubeJSClient extends KubeJSCommon {
 	@Override
 	public void handleDataFromServerPacket(String channel, @Nullable CompoundTag data) {
 		if (NetworkEvents.DATA_RECEIVED.hasListeners(channel)) {
-			NetworkEvents.DATA_RECEIVED.post(ScriptType.CLIENT, channel, new NetworkEventJS(Minecraft.getInstance().player, channel, data));
+			NetworkEvents.DATA_RECEIVED.post(ScriptType.CLIENT, channel, new NetworkKubeEvent(Minecraft.getInstance().player, channel, data));
 		}
 	}
 

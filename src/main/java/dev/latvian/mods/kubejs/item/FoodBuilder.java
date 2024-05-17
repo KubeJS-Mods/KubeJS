@@ -22,7 +22,7 @@ public class FoodBuilder {
 	private boolean alwaysEdible;
 	private float eatSeconds;
 	private final List<FoodProperties.PossibleEffect> effects;
-	public Consumer<FoodEatenEventJS> eaten;
+	public Consumer<FoodEatenKubeEvent> eaten;
 
 	public FoodBuilder() {
 		this.nutrition = 0;
@@ -105,7 +105,7 @@ public class FoodBuilder {
 		Note: This is currently not having effect in `ItemEvents.modification`,
 		as firing this callback requires an `ItemBuilder` instance in the `Item`.
 		""")
-	public FoodBuilder eaten(Consumer<FoodEatenEventJS> e) {
+	public FoodBuilder eaten(Consumer<FoodEatenKubeEvent> e) {
 		eaten = e;
 		return this;
 	}

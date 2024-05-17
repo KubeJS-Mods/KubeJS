@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -32,12 +32,12 @@ public record BlockComponent(ComponentRole crole) implements RecipeComponent<Blo
 	}
 
 	@Override
-	public JsonPrimitive write(RecipeJS recipe, Block value) {
+	public JsonPrimitive write(KubeRecipe recipe, Block value) {
 		return new JsonPrimitive(String.valueOf(RegistryInfo.BLOCK.getId(value)));
 	}
 
 	@Override
-	public Block read(RecipeJS recipe, Object from) {
+	public Block read(KubeRecipe recipe, Object from) {
 		if (from instanceof Block b) {
 			return b;
 		} else if (from instanceof BlockState s) {
@@ -50,12 +50,12 @@ public record BlockComponent(ComponentRole crole) implements RecipeComponent<Blo
 	}
 
 	@Override
-	public boolean isInput(RecipeJS recipe, Block value, ReplacementMatch match) {
+	public boolean isInput(KubeRecipe recipe, Block value, ReplacementMatch match) {
 		return crole.isInput() && match instanceof BlockStatePredicate m2 && m2.testBlock(value);
 	}
 
 	@Override
-	public boolean isOutput(RecipeJS recipe, Block value, ReplacementMatch match) {
+	public boolean isOutput(KubeRecipe recipe, Block value, ReplacementMatch match) {
 		return crole.isOutput() && match instanceof BlockStatePredicate m2 && m2.testBlock(value);
 	}
 

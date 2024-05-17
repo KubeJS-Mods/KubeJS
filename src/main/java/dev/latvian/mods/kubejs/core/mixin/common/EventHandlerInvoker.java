@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
 import dev.latvian.mods.kubejs.event.EventHandler;
-import dev.latvian.mods.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.event.EventResult;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,5 +14,5 @@ public interface EventHandlerInvoker {
 	EventHandler callHasResult();
 
 	@Invoker(remap = false)
-	EventResult callPost(EventJS event, @Nullable Object extraId);
+	EventResult callPost(KubeEvent event, @Nullable Object extraId);
 }

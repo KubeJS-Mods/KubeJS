@@ -2,12 +2,12 @@ package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
 import dev.latvian.mods.kubejs.client.ClientProperties;
-import dev.latvian.mods.kubejs.client.LangEventJS;
+import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
-import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
+import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistryEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
@@ -85,7 +85,7 @@ public class KubeJSPlugin {
 	public void generateAssetJsons(AssetJsonGenerator generator) {
 	}
 
-	public void generateLang(LangEventJS event) {
+	public void generateLang(LangKubeEvent event) {
 	}
 
 	public void loadCommonProperties(CommonProperties properties) {
@@ -111,6 +111,6 @@ public class KubeJSPlugin {
 	/**
 	 * Only use this method if your mod adds runtime recipes and is conflicting with KubeJS recipe manager. Disable your other hook if "kubejs" mod is loaded!
 	 */
-	public void injectRuntimeRecipes(RecipesEventJS event, RecipeManager manager, Map<ResourceLocation, RecipeHolder<?>> recipesByName) {
+	public void injectRuntimeRecipes(RecipesKubeEvent event, RecipeManager manager, Map<ResourceLocation, RecipeHolder<?>> recipesByName) {
 	}
 }

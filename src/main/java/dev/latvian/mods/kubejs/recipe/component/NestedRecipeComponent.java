@@ -2,27 +2,27 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 
-public class NestedRecipeComponent implements RecipeComponent<RecipeJS> {
-	public static final RecipeComponent<RecipeJS> RECIPE = new NestedRecipeComponent();
-	public static final RecipeComponent<RecipeJS[]> RECIPE_ARRAY = RECIPE.asArray();
+public class NestedRecipeComponent implements RecipeComponent<KubeRecipe> {
+	public static final RecipeComponent<KubeRecipe> RECIPE = new NestedRecipeComponent();
+	public static final RecipeComponent<KubeRecipe[]> RECIPE_ARRAY = RECIPE.asArray();
 
 	@Override
 	public Class<?> componentClass() {
-		return RecipeJS.class;
+		return KubeRecipe.class;
 	}
 
 	@Override
-	public JsonElement write(RecipeJS recipe, RecipeJS value) {
+	public JsonElement write(KubeRecipe recipe, KubeRecipe value) {
 		value.serialize();
 		value.json.addProperty("type", value.type.idString);
 		return value.json;
 	}
 
 	@Override
-	public RecipeJS read(RecipeJS recipe, Object from) {
-		if (from instanceof RecipeJS r) {
+	public KubeRecipe read(KubeRecipe recipe, Object from) {
+		if (from instanceof KubeRecipe r) {
 			r.newRecipe = false;
 			return r;
 		} else if (from instanceof JsonObject json && json.has("type")) {
@@ -35,7 +35,7 @@ public class NestedRecipeComponent implements RecipeComponent<RecipeJS> {
 	}
 
 	@Override
-	public boolean hasPriority(RecipeJS recipe, Object from) {
-		return from instanceof RecipeJS || from instanceof JsonObject json && json.has("type");
+	public boolean hasPriority(KubeRecipe recipe, Object from) {
+		return from instanceof KubeRecipe || from instanceof JsonObject json && json.has("type");
 	}
 }

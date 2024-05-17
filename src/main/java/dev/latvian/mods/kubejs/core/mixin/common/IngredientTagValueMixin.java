@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
-import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
+import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +22,7 @@ public abstract class IngredientTagValueMixin {
 
 	@Inject(method = "getItems", at = @At("HEAD"), cancellable = true)
 	private void kjs$getItems(CallbackInfoReturnable<Collection<ItemStack>> info) {
-		if (RecipesEventJS.instance != null) {
+		if (RecipesKubeEvent.instance != null) {
 			info.setReturnValue(TagContext.INSTANCE.getValue().patchIngredientTags(tag));
 		}
 	}

@@ -35,25 +35,25 @@ public final class EventGroup {
 		return obj == this || obj instanceof EventGroup g && name.equals(g.name);
 	}
 
-	public EventHandler add(String name, ScriptTypePredicate scriptType, Supplier<Class<? extends EventJS>> eventType) {
+	public EventHandler add(String name, ScriptTypePredicate scriptType, Supplier<Class<? extends KubeEvent>> eventType) {
 		EventHandler handler = new EventHandler(this, name, scriptType, eventType);
 		handlers.put(name, handler);
 		return handler;
 	}
 
-	public EventHandler startup(String name, Supplier<Class<? extends EventJS>> eventType) {
+	public EventHandler startup(String name, Supplier<Class<? extends KubeEvent>> eventType) {
 		return add(name, ScriptType.STARTUP, eventType);
 	}
 
-	public EventHandler server(String name, Supplier<Class<? extends EventJS>> eventType) {
+	public EventHandler server(String name, Supplier<Class<? extends KubeEvent>> eventType) {
 		return add(name, ScriptType.SERVER, eventType);
 	}
 
-	public EventHandler client(String name, Supplier<Class<? extends EventJS>> eventType) {
+	public EventHandler client(String name, Supplier<Class<? extends KubeEvent>> eventType) {
 		return add(name, ScriptType.CLIENT, eventType);
 	}
 
-	public EventHandler common(String name, Supplier<Class<? extends EventJS>> eventType) {
+	public EventHandler common(String name, Supplier<Class<? extends KubeEvent>> eventType) {
 		return add(name, ScriptTypePredicate.COMMON, eventType);
 	}
 

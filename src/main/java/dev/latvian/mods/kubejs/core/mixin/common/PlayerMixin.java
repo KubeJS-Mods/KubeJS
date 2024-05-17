@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.core.PlayerKJS;
 import dev.latvian.mods.kubejs.player.KubeJSInventoryListener;
+import dev.latvian.mods.kubejs.stages.StageEvents;
 import dev.latvian.mods.kubejs.stages.Stages;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
@@ -12,18 +13,24 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(value = Player.class, priority = 1001)
 @RemapPrefixForJS("kjs$")
 public abstract class PlayerMixin implements PlayerKJS {
+	@Unique
 	private Stages kjs$stages;
+
+	@Unique
 	private AttachedData<Player> kjs$attachedData;
+
+	@Unique
 	private KubeJSInventoryListener kjs$inventoryChangeListener;
 
 	@Override
 	public Stages kjs$getStages() {
 		if (kjs$stages == null) {
-			kjs$stages = Stages.create(kjs$self());
+			kjs$stages = StageEvents.create(kjs$self());
 		}
 
 		return kjs$stages;

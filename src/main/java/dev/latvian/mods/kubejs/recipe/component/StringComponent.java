@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
@@ -37,12 +37,12 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 		}
 
 		@Override
-		public JsonElement write(RecipeJS recipe, Character value) {
+		public JsonElement write(KubeRecipe recipe, Character value) {
 			return new JsonPrimitive(value);
 		}
 
 		@Override
-		public Character read(RecipeJS recipe, Object from) {
+		public Character read(KubeRecipe recipe, Object from) {
 			return from instanceof Character c ? c : String.valueOf(from).charAt(0);
 		}
 
@@ -77,12 +77,12 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 	}
 
 	@Override
-	public JsonPrimitive write(RecipeJS recipe, String value) {
+	public JsonPrimitive write(KubeRecipe recipe, String value) {
 		return new JsonPrimitive(value);
 	}
 
 	@Override
-	public String read(RecipeJS recipe, Object from) {
+	public String read(KubeRecipe recipe, Object from) {
 		var str = from instanceof JsonPrimitive json ? json.getAsString() : String.valueOf(from);
 
 		if (!predicate.test(str)) {
@@ -97,7 +97,7 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 	}
 
 	@Override
-	public boolean hasPriority(RecipeJS recipe, Object from) {
+	public boolean hasPriority(KubeRecipe recipe, Object from) {
 		return from instanceof CharSequence || from instanceof JsonPrimitive json && json.isString();
 	}
 

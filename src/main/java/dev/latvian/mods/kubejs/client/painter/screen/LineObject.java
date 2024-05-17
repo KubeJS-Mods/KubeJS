@@ -32,7 +32,7 @@ public class LineObject extends ScreenPainterObject {
 	}
 
 	@Override
-	public void draw(PaintScreenEventJS event) {
+	public void draw(PaintScreenKubeEvent event) {
 		var ax = x.getFloat(event);
 		var ay = y.getFloat(event);
 		var az = z.getFloat(event);

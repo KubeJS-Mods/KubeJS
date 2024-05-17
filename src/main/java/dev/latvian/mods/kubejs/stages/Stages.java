@@ -1,112 +1,65 @@
 package dev.latvian.mods.kubejs.stages;
 
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
-import dev.architectury.hooks.level.entity.PlayerHooks;
+import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.net.AddStagePayload;
 import dev.latvian.mods.kubejs.net.RemoveStagePayload;
 import dev.latvian.mods.kubejs.net.SyncStagesPayload;
+import dev.latvian.mods.kubejs.player.StageChangedEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.Consumer;
 
-public abstract class Stages {
-	private static final Event<Consumer<StageCreationEvent>> OVERRIDE_CREATION = EventFactory.createConsumerLoop();
-	private static final Event<Consumer<StageChangeEvent>> ADDED = EventFactory.createConsumerLoop();
-	private static final Event<Consumer<StageChangeEvent>> REMOVED = EventFactory.createConsumerLoop();
+public interface Stages {
+	Player getPlayer();
 
-	public static Stages create(Player player) {
-		if (PlayerHooks.isFake(player)) {
-			return NoStages.NULL_INSTANCE;
-		}
+	boolean addNoUpdate(String stage);
 
-		var event = new StageCreationEvent(player);
-		OVERRIDE_CREATION.invoker().accept(event);
-		return event.getPlayerStages() == null ? new TagWrapperStages(player) : event.getPlayerStages();
-	}
+	boolean removeNoUpdate(String stage);
 
-	public static void overrideCreation(Consumer<StageCreationEvent> event) {
-		OVERRIDE_CREATION.register(event);
-	}
+	Collection<String> getAll();
 
-	public static void added(Consumer<StageChangeEvent> event) {
-		ADDED.register(event);
-	}
-
-	public static void invokeAdded(Stages stages, String stage) {
-		ADDED.invoker().accept(new StageChangeEvent(stages, stage));
-	}
-
-	public static void removed(Consumer<StageChangeEvent> event) {
-		REMOVED.register(event);
-	}
-
-	public static void invokeRemoved(Stages stages, String stage) {
-		REMOVED.invoker().accept(new StageChangeEvent(stages, stage));
-	}
-
-	public static Stages get(@Nullable Player player) {
-		return player == null ? NoStages.NULL_INSTANCE : player.kjs$getStages();
-	}
-
-	// End of static //
-
-	public final Player player;
-
-	public Stages(Player p) {
-		player = p;
-	}
-
-	public abstract boolean addNoUpdate(String stage);
-
-	public abstract boolean removeNoUpdate(String stage);
-
-	public abstract Collection<String> getAll();
-
-	public boolean has(String stage) {
+	default boolean has(String stage) {
 		return getAll().contains(stage);
 	}
 
-	public boolean add(String stage) {
+	default boolean add(String stage) {
 		if (addNoUpdate(stage)) {
-			if (player instanceof ServerPlayer) {
+			if (getPlayer() instanceof ServerPlayer player) {
 				PacketDistributor.sendToAllPlayers(new AddStagePayload(player.getUUID(), stage));
 			}
 
-			invokeAdded(this, stage);
+			PlayerEvents.STAGE_ADDED.post(new StageChangedEvent(getPlayer(), this, stage), stage);
 			return true;
 		}
 
 		return false;
 	}
 
-	public boolean remove(String stage) {
+	default boolean remove(String stage) {
 		if (removeNoUpdate(stage)) {
-			if (player instanceof ServerPlayer) {
+			if (getPlayer() instanceof ServerPlayer player) {
 				PacketDistributor.sendToAllPlayers(new RemoveStagePayload(player.getUUID(), stage));
 			}
 
-			invokeRemoved(this, stage);
+			PlayerEvents.STAGE_REMOVED.post(new StageChangedEvent(getPlayer(), this, stage), stage);
 			return true;
 		}
 
 		return false;
 	}
 
-	public final boolean set(String stage, boolean enabled) {
+	default boolean set(String stage, boolean enabled) {
 		return enabled ? add(stage) : remove(stage);
 	}
 
-	public final boolean toggle(String stage) {
+	default boolean toggle(String stage) {
 		return set(stage, !has(stage));
 	}
 
-	public boolean clear() {
+	default boolean clear() {
 		var all = getAll();
 
 		if (all.isEmpty()) {
@@ -120,13 +73,13 @@ public abstract class Stages {
 		return true;
 	}
 
-	public void sync() {
-		if (player instanceof ServerPlayer serverPlayer) {
-			PacketDistributor.sendToAllPlayers(new SyncStagesPayload(player.getUUID(), getAll()));
+	default void sync() {
+		if (getPlayer() instanceof ServerPlayer player) {
+			PacketDistributor.sendToPlayer(player, new SyncStagesPayload(getAll()));
 		}
 	}
 
-	public void replace(Collection<String> stages) {
+	default void replace(Collection<String> stages) {
 		var all = getAll();
 
 		for (var s : new ArrayList<>(all)) {
@@ -136,5 +89,7 @@ public abstract class Stages {
 		for (var s : stages) {
 			addNoUpdate(s);
 		}
+
+		sync();
 	}
 }

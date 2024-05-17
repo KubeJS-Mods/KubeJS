@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.event.EventGroups;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.neoforged.fml.loading.FMLPaths;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 	}
 
 	public Path getLogFile() {
-		var dir = Platform.getGameFolder().resolve("logs/kubejs");
+		var dir = FMLPaths.GAMEDIR.get().resolve("logs/kubejs");
 		var file = dir.resolve(name + ".log");
 
 		try {

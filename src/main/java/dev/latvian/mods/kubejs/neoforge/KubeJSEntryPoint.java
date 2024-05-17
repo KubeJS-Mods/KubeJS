@@ -6,11 +6,11 @@ import dev.latvian.mods.kubejs.KubeJSComponents;
 import dev.latvian.mods.kubejs.bindings.event.EntityEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
-import dev.latvian.mods.kubejs.entity.LivingEntityDropsEventJS;
+import dev.latvian.mods.kubejs.entity.LivingEntityDropsKubeEvent;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
-import dev.latvian.mods.kubejs.item.ItemDestroyedEventJS;
+import dev.latvian.mods.kubejs.item.ItemDestroyedKubeEvent;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallback;
-import dev.latvian.mods.kubejs.item.creativetab.CreativeTabEvent;
+import dev.latvian.mods.kubejs.item.creativetab.CreativeTabKubeEvent;
 import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
 import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -135,7 +135,7 @@ public class KubeJSEntryPoint {
 		var tabId = event.getTabKey().location();
 
 		if (StartupEvents.MODIFY_CREATIVE_TAB.hasListeners(tabId)) {
-			StartupEvents.MODIFY_CREATIVE_TAB.post(ScriptType.STARTUP, tabId, new CreativeTabEvent(event.getTab(), event.hasPermissions(), new CreativeTabCallbackForge(event)));
+			StartupEvents.MODIFY_CREATIVE_TAB.post(ScriptType.STARTUP, tabId, new CreativeTabKubeEvent(event.getTab(), event.hasPermissions(), new CreativeTabCallbackForge(event)));
 		}
 	}
 
@@ -145,13 +145,13 @@ public class KubeJSEntryPoint {
 
 	private static void itemDestroyed(PlayerDestroyItemEvent event) {
 		if (ItemEvents.ITEM_DESTROYED.hasListeners()) {
-			ItemEvents.ITEM_DESTROYED.post(event.getEntity(), event.getOriginal().getItem(), new ItemDestroyedEventJS(event));
+			ItemEvents.ITEM_DESTROYED.post(event.getEntity(), event.getOriginal().getItem(), new ItemDestroyedKubeEvent(event));
 		}
 	}
 
 	private static void livingDrops(LivingDropsEvent event) {
 		if (EntityEvents.ENTITY_DROPS.hasListeners()) {
-			var e = new LivingEntityDropsEventJS(event);
+			var e = new LivingEntityDropsKubeEvent(event);
 
 			if (EntityEvents.ENTITY_DROPS.post(event.getEntity(), e.getEntity().getType(), e).interruptFalse()) {
 				event.setCanceled(true);

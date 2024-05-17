@@ -3,14 +3,14 @@ package dev.latvian.mods.kubejs.server;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.recipe.RecipesEventJS;
+import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.script.data.DataPackEventJS;
+import dev.latvian.mods.kubejs.script.data.DataPackKubeEvent;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
-import dev.latvian.mods.kubejs.server.tag.PreTagEventJS;
+import dev.latvian.mods.kubejs.server.tag.PreTagKubeEvent;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -43,7 +43,7 @@ public class ServerScriptManager extends ScriptManager {
 	}
 
 	public final MinecraftServer server;
-	public final Map<ResourceKey<?>, PreTagEventJS> preTagEvents = new ConcurrentHashMap<>();
+	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents = new ConcurrentHashMap<>();
 
 	public ServerScriptManager(@Nullable MinecraftServer server) {
 		super(ScriptType.SERVER);
@@ -88,13 +88,13 @@ public class ServerScriptManager extends ScriptManager {
 		ConsoleJS.SERVER.setCapturingErrors(true);
 		reload(wrappedResourceManager);
 
-		ServerEvents.LOW_DATA.post(ScriptType.SERVER, new DataPackEventJS(virtualDataPackLow, wrappedResourceManager));
-		ServerEvents.HIGH_DATA.post(ScriptType.SERVER, new DataPackEventJS(virtualDataPackHigh, wrappedResourceManager));
+		ServerEvents.LOW_DATA.post(ScriptType.SERVER, new DataPackKubeEvent(virtualDataPackLow, wrappedResourceManager));
+		ServerEvents.HIGH_DATA.post(ScriptType.SERVER, new DataPackKubeEvent(virtualDataPackHigh, wrappedResourceManager));
 
 		ConsoleJS.SERVER.info("Scripts loaded");
 
 		// note we only set this map on the logical server, it'll be null on the client!
-		RecipesEventJS.customIngredientMap = new HashMap<>();
+		RecipesKubeEvent.customIngredientMap = new HashMap<>();
 
 		CustomIngredientAction.MAP.clear();
 
@@ -102,10 +102,10 @@ public class ServerScriptManager extends ScriptManager {
 		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::onServerReload);
 
-		PreTagEventJS.handle(preTagEvents);
+		PreTagKubeEvent.handle(preTagEvents);
 
 		if (ServerEvents.RECIPES.hasListeners()) {
-			RecipesEventJS.instance = new RecipesEventJS();
+			RecipesKubeEvent.instance = new RecipesKubeEvent();
 		}
 
 		return wrappedResourceManager;

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.level;
 
-import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -29,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -386,7 +386,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	private static boolean isReal(Player p) {
-		return !PlayerHooks.isFake(p);
+		return !(p instanceof FakePlayer);
 	}
 
 	public EntityArrayList getPlayersInRadius(double radius) {

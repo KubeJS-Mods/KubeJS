@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
@@ -59,12 +59,12 @@ public record TagKeyComponent<T>(ResourceKey<? extends Registry<T>> registry, Cl
 	}
 
 	@Override
-	public JsonPrimitive write(RecipeJS recipe, TagKey<T> value) {
+	public JsonPrimitive write(KubeRecipe recipe, TagKey<T> value) {
 		return new JsonPrimitive(value.location().toString());
 	}
 
 	@Override
-	public TagKey<T> read(RecipeJS recipe, Object from) {
+	public TagKey<T> read(KubeRecipe recipe, Object from) {
 		if (from instanceof TagKey<?> k) {
 			return (TagKey<T>) k;
 		}
@@ -79,7 +79,7 @@ public record TagKeyComponent<T>(ResourceKey<? extends Registry<T>> registry, Cl
 	}
 
 	@Override
-	public boolean hasPriority(RecipeJS recipe, Object from) {
+	public boolean hasPriority(KubeRecipe recipe, Object from) {
 		return from instanceof TagKey<?> || (from instanceof CharSequence && from.toString().startsWith("#")) || (from instanceof JsonPrimitive json && json.isString() && json.getAsString().startsWith("#"));
 	}
 

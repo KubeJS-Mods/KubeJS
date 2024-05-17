@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.item.custom;
 
-import dev.latvian.mods.kubejs.client.LangEventJS;
+import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.ChatFormatting;
@@ -252,7 +252,7 @@ public class SmithingTemplateItemBuilder extends ItemBuilder {
 	}
 
 	@Override
-	public void generateLang(LangEventJS lang) {
+	public void generateLang(LangKubeEvent lang) {
 		// call super as we still use the display name for the 'upgrade description'
 		// we don't use a custom lang key for that as vanillas format depends on it being an upgrade or trim, and we don't know which it is
 		super.generateLang(lang);

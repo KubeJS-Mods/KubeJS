@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.UnaryOperator;
@@ -24,12 +24,12 @@ public class MappingRecipeComponent<T> implements RecipeComponentWithParent<T> {
 	}
 
 	@Override
-	public T read(RecipeJS recipe, Object from) {
+	public T read(KubeRecipe recipe, Object from) {
 		return RecipeComponentWithParent.super.read(recipe, mappingTo.apply(from));
 	}
 
 	@Override
-	public @Nullable JsonElement write(RecipeJS recipe, T value) {
+	public @Nullable JsonElement write(KubeRecipe recipe, T value) {
 		return mappingFrom.apply(RecipeComponentWithParent.super.write(recipe, value));
 	}
 

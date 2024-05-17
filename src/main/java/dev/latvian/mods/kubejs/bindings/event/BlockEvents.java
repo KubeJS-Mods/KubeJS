@@ -1,13 +1,13 @@
 package dev.latvian.mods.kubejs.bindings.event;
 
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
-import dev.latvian.mods.kubejs.block.BlockBrokenEventJS;
-import dev.latvian.mods.kubejs.block.BlockLeftClickedEventJS;
-import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
-import dev.latvian.mods.kubejs.block.BlockPlacedEventJS;
-import dev.latvian.mods.kubejs.block.BlockRightClickedEventJS;
-import dev.latvian.mods.kubejs.block.DetectorBlockEventJS;
-import dev.latvian.mods.kubejs.block.FarmlandTrampledEventJS;
+import dev.latvian.mods.kubejs.block.BlockBrokenKubeEvent;
+import dev.latvian.mods.kubejs.block.BlockLeftClickedKubeEvent;
+import dev.latvian.mods.kubejs.block.BlockModificationKubeEvent;
+import dev.latvian.mods.kubejs.block.BlockPlacedKubeEvent;
+import dev.latvian.mods.kubejs.block.BlockRightClickedKubeEvent;
+import dev.latvian.mods.kubejs.block.DetectorBlockKubeEvent;
+import dev.latvian.mods.kubejs.block.FarmlandTrampledKubeEvent;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.Extra;
@@ -38,13 +38,13 @@ public interface BlockEvents {
 		return block == Blocks.AIR ? null : block;
 	}
 
-	EventHandler MODIFICATION = GROUP.startup("modification", () -> BlockModificationEventJS.class);
-	EventHandler RIGHT_CLICKED = GROUP.common("rightClicked", () -> BlockRightClickedEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
-	EventHandler LEFT_CLICKED = GROUP.common("leftClicked", () -> BlockLeftClickedEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
-	EventHandler PLACED = GROUP.common("placed", () -> BlockPlacedEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
-	EventHandler BROKEN = GROUP.common("broken", () -> BlockBrokenEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
-	EventHandler DETECTOR_CHANGED = GROUP.common("detectorChanged", () -> DetectorBlockEventJS.class).extra(Extra.STRING);
-	EventHandler DETECTOR_POWERED = GROUP.common("detectorPowered", () -> DetectorBlockEventJS.class).extra(Extra.STRING);
-	EventHandler DETECTOR_UNPOWERED = GROUP.common("detectorUnpowered", () -> DetectorBlockEventJS.class).extra(Extra.STRING);
-	EventHandler FARMLAND_TRAMPLED = GROUP.common("farmlandTrampled", () -> FarmlandTrampledEventJS.class).extra(SUPPORTS_BLOCK).hasResult();
+	EventHandler MODIFICATION = GROUP.startup("modification", () -> BlockModificationKubeEvent.class);
+	EventHandler RIGHT_CLICKED = GROUP.common("rightClicked", () -> BlockRightClickedKubeEvent.class).extra(SUPPORTS_BLOCK).hasResult();
+	EventHandler LEFT_CLICKED = GROUP.common("leftClicked", () -> BlockLeftClickedKubeEvent.class).extra(SUPPORTS_BLOCK).hasResult();
+	EventHandler PLACED = GROUP.common("placed", () -> BlockPlacedKubeEvent.class).extra(SUPPORTS_BLOCK).hasResult();
+	EventHandler BROKEN = GROUP.common("broken", () -> BlockBrokenKubeEvent.class).extra(SUPPORTS_BLOCK).hasResult();
+	EventHandler DETECTOR_CHANGED = GROUP.common("detectorChanged", () -> DetectorBlockKubeEvent.class).extra(Extra.STRING);
+	EventHandler DETECTOR_POWERED = GROUP.common("detectorPowered", () -> DetectorBlockKubeEvent.class).extra(Extra.STRING);
+	EventHandler DETECTOR_UNPOWERED = GROUP.common("detectorUnpowered", () -> DetectorBlockKubeEvent.class).extra(Extra.STRING);
+	EventHandler FARMLAND_TRAMPLED = GROUP.common("farmlandTrampled", () -> FarmlandTrampledKubeEvent.class).extra(SUPPORTS_BLOCK).hasResult();
 }

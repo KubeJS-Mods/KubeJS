@@ -2,12 +2,12 @@ package dev.latvian.mods.kubejs.client.painter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
-import dev.latvian.mods.kubejs.client.ClientEventJS;
+import dev.latvian.mods.kubejs.client.ClientKubeEvent;
 import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
 import dev.latvian.mods.kubejs.client.painter.screen.GradientObject;
 import dev.latvian.mods.kubejs.client.painter.screen.ItemObject;
 import dev.latvian.mods.kubejs.client.painter.screen.LineObject;
-import dev.latvian.mods.kubejs.client.painter.screen.PaintScreenEventJS;
+import dev.latvian.mods.kubejs.client.painter.screen.PaintScreenKubeEvent;
 import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
@@ -133,7 +133,7 @@ public class Painter implements UnitVariables {
 				screenObjects = null;
 
 				if (ClientEvents.PAINTER_UPDATED.hasListeners()) {
-					ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientEventJS());
+					ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientKubeEvent());
 				}
 			}
 		});
@@ -146,7 +146,7 @@ public class Painter implements UnitVariables {
 				screenObjects = null;
 
 				if (ClientEvents.PAINTER_UPDATED.hasListeners()) {
-					ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientEventJS());
+					ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientKubeEvent());
 				}
 			}
 		});
@@ -185,7 +185,7 @@ public class Painter implements UnitVariables {
 
 		RenderSystem.enableDepthTest();
 
-		var event = new PaintScreenEventJS(mc, graphics, this, delta);
+		var event = new PaintScreenKubeEvent(mc, graphics, this, delta);
 		deltaUnit.set(delta);
 		screenWidthUnit.set(event.width);
 		screenHeightUnit.set(event.height);
@@ -219,7 +219,7 @@ public class Painter implements UnitVariables {
 			return;
 		}
 
-		var event = new PaintScreenEventJS(mc, screen, graphics, this, mouseX, mouseY, delta);
+		var event = new PaintScreenKubeEvent(mc, screen, graphics, this, mouseX, mouseY, delta);
 		deltaUnit.set(delta);
 		screenWidthUnit.set(event.width);
 		screenHeightUnit.set(event.height);

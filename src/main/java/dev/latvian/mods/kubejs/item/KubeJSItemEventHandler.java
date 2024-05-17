@@ -6,7 +6,7 @@ import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
-import dev.latvian.mods.kubejs.player.InventoryChangedEventJS;
+import dev.latvian.mods.kubejs.player.InventoryChangedKubeEvent;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -33,38 +33,38 @@ public class KubeJSItemEventHandler {
 		var stack = player.getItemInHand(hand);
 
 		if (!player.getCooldowns().isOnCooldown(stack.getItem())) {
-			return ItemEvents.RIGHT_CLICKED.post(player, stack.getItem(), new ItemClickedEventJS(player, hand, stack)).archCompound();
+			return ItemEvents.RIGHT_CLICKED.post(player, stack.getItem(), new ItemClickedKubeEvent(player, hand, stack)).archCompound();
 		}
 
 		return CompoundEventResult.pass();
 	}
 
 	private static EventResult canPickUp(Player player, ItemEntity entity, ItemStack stack) {
-		return ItemEvents.CAN_PICK_UP.hasListeners() ? ItemEvents.CAN_PICK_UP.post(player, stack.getItem(), new ItemPickedUpEventJS(player, entity, stack)).arch() : EventResult.pass();
+		return ItemEvents.CAN_PICK_UP.hasListeners() ? ItemEvents.CAN_PICK_UP.post(player, stack.getItem(), new ItemPickedUpKubeEvent(player, entity, stack)).arch() : EventResult.pass();
 	}
 
 	private static void pickup(Player player, ItemEntity entity, ItemStack stack) {
 		if (ItemEvents.PICKED_UP.hasListeners()) {
-			ItemEvents.PICKED_UP.post(player, stack.getItem(), new ItemPickedUpEventJS(player, entity, stack));
+			ItemEvents.PICKED_UP.post(player, stack.getItem(), new ItemPickedUpKubeEvent(player, entity, stack));
 		}
 	}
 
 	private static EventResult drop(Player player, ItemEntity entity) {
-		return ItemEvents.DROPPED.hasListeners() ? ItemEvents.DROPPED.post(player, entity.getItem().getItem(), new ItemDroppedEventJS(player, entity)).arch() : EventResult.pass();
+		return ItemEvents.DROPPED.hasListeners() ? ItemEvents.DROPPED.post(player, entity.getItem().getItem(), new ItemDroppedKubeEvent(player, entity)).arch() : EventResult.pass();
 	}
 
 	private static EventResult entityInteract(Player player, Entity entity, InteractionHand hand) {
-		return ItemEvents.ENTITY_INTERACTED.hasListeners() ? ItemEvents.ENTITY_INTERACTED.post(player, player.getItemInHand(hand).getItem(), new ItemEntityInteractedEventJS(player, entity, hand)).arch() : EventResult.pass();
+		return ItemEvents.ENTITY_INTERACTED.hasListeners() ? ItemEvents.ENTITY_INTERACTED.post(player, player.getItemInHand(hand).getItem(), new ItemEntityInteractedKubeEvent(player, entity, hand)).arch() : EventResult.pass();
 	}
 
 	private static void crafted(Player player, ItemStack stack, Container grid) {
 		if (!stack.isEmpty()) {
 			if (ItemEvents.CRAFTED.hasListeners()) {
-				ItemEvents.CRAFTED.post(player, stack.getItem(), new ItemCraftedEventJS(player, stack, grid));
+				ItemEvents.CRAFTED.post(player, stack.getItem(), new ItemCraftedKubeEvent(player, stack, grid));
 			}
 
 			if (PlayerEvents.INVENTORY_CHANGED.hasListeners()) {
-				PlayerEvents.INVENTORY_CHANGED.post(player, stack.getItem(), new InventoryChangedEventJS(player, stack, -1));
+				PlayerEvents.INVENTORY_CHANGED.post(player, stack.getItem(), new InventoryChangedKubeEvent(player, stack, -1));
 			}
 		}
 	}
@@ -72,11 +72,11 @@ public class KubeJSItemEventHandler {
 	private static void smelted(Player player, ItemStack stack) {
 		if (!stack.isEmpty()) {
 			if (ItemEvents.SMELTED.hasListeners()) {
-				ItemEvents.SMELTED.post(player, stack.getItem(), new ItemSmeltedEventJS(player, stack));
+				ItemEvents.SMELTED.post(player, stack.getItem(), new ItemSmeltedKubeEvent(player, stack));
 			}
 
 			if (PlayerEvents.INVENTORY_CHANGED.hasListeners()) {
-				PlayerEvents.INVENTORY_CHANGED.post(player, stack.getItem(), new InventoryChangedEventJS(player, stack, -1));
+				PlayerEvents.INVENTORY_CHANGED.post(player, stack.getItem(), new InventoryChangedKubeEvent(player, stack, -1));
 			}
 		}
 	}

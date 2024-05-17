@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
-import dev.latvian.mods.kubejs.block.BlockRightClickedEventJS;
+import dev.latvian.mods.kubejs.block.BlockRightClickedKubeEvent;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
@@ -338,7 +338,7 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 	public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
 		if (blockBuilder.rightClick != null) {
 			if (!level.isClientSide()) {
-				blockBuilder.rightClick.accept(new BlockRightClickedEventJS(stack, player, hand, pos, hit.getDirection()));
+				blockBuilder.rightClick.accept(new BlockRightClickedKubeEvent(stack, player, hand, pos, hit.getDirection()));
 			}
 
 			return ItemInteractionResult.SUCCESS;

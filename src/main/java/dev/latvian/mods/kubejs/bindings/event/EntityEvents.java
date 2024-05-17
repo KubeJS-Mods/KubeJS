@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.bindings.event;
 
-import dev.latvian.mods.kubejs.entity.CheckLivingEntitySpawnEventJS;
-import dev.latvian.mods.kubejs.entity.EntitySpawnedEventJS;
-import dev.latvian.mods.kubejs.entity.LivingEntityDeathEventJS;
-import dev.latvian.mods.kubejs.entity.LivingEntityDropsEventJS;
-import dev.latvian.mods.kubejs.entity.LivingEntityHurtEventJS;
+import dev.latvian.mods.kubejs.entity.CheckLivingEntitySpawnKubeEvent;
+import dev.latvian.mods.kubejs.entity.EntitySpawnedKubeEvent;
+import dev.latvian.mods.kubejs.entity.LivingEntityDeathKubeEvent;
+import dev.latvian.mods.kubejs.entity.LivingEntityDropsKubeEvent;
+import dev.latvian.mods.kubejs.entity.LivingEntityHurtKubeEvent;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.Extra;
@@ -26,9 +26,9 @@ public interface EntityEvents {
 		return id == null ? null : RegistryInfo.ENTITY_TYPE.getValue(id);
 	}
 
-	EventHandler DEATH = GROUP.common("death", () -> LivingEntityDeathEventJS.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
-	EventHandler HURT = GROUP.common("hurt", () -> LivingEntityHurtEventJS.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
-	EventHandler CHECK_SPAWN = GROUP.common("checkSpawn", () -> CheckLivingEntitySpawnEventJS.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
-	EventHandler SPAWNED = GROUP.common("spawned", () -> EntitySpawnedEventJS.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
-	EventHandler ENTITY_DROPS = GROUP.common("drops", () -> LivingEntityDropsEventJS.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
+	EventHandler DEATH = GROUP.common("death", () -> LivingEntityDeathKubeEvent.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
+	EventHandler HURT = GROUP.common("hurt", () -> LivingEntityHurtKubeEvent.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
+	EventHandler CHECK_SPAWN = GROUP.common("checkSpawn", () -> CheckLivingEntitySpawnKubeEvent.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
+	EventHandler SPAWNED = GROUP.common("spawned", () -> EntitySpawnedKubeEvent.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
+	EventHandler ENTITY_DROPS = GROUP.common("drops", () -> LivingEntityDropsKubeEvent.class).extra(SUPPORTS_ENTITY_TYPE).hasResult();
 }

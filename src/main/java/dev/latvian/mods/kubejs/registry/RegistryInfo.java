@@ -435,7 +435,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	}
 
 	public void fireRegistryEvent() {
-		var event = new RegistryEventJS<>(this);
+		var event = new RegistryKubeEvent<>(this);
 		StartupEvents.REGISTRY.post(event, key);
 		event.created.forEach(BuilderBase::createAdditionalObjects);
 	}

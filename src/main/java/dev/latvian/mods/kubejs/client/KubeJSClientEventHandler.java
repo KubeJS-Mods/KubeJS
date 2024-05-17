@@ -10,7 +10,7 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
-import dev.latvian.mods.kubejs.item.ItemTooltipEventJS;
+import dev.latvian.mods.kubejs.item.ItemTooltipKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Tags;
@@ -42,7 +42,7 @@ import java.util.function.Consumer;
 
 public class KubeJSClientEventHandler {
 	private static final ResourceLocation RECIPE_BUTTON_TEXTURE = new ResourceLocation("textures/gui/recipe_button.png");
-	public static Map<Item, List<ItemTooltipEventJS.StaticTooltipHandler>> staticItemTooltips = null;
+	public static Map<Item, List<ItemTooltipKubeEvent.StaticTooltipHandler>> staticItemTooltips = null;
 	private final Map<ResourceLocation, TagInstance> tempTagNames = new LinkedHashMap<>();
 
 	public void init() {
@@ -61,13 +61,13 @@ public class KubeJSClientEventHandler {
 
 	private void debugInfoLeft(List<String> lines) {
 		if (Minecraft.getInstance().player != null && ClientEvents.DEBUG_LEFT.hasListeners()) {
-			ClientEvents.DEBUG_LEFT.post(ScriptType.CLIENT, new DebugInfoEventJS(lines));
+			ClientEvents.DEBUG_LEFT.post(ScriptType.CLIENT, new DebugInfoKubeEvent(lines));
 		}
 	}
 
 	private void debugInfoRight(List<String> lines) {
 		if (Minecraft.getInstance().player != null && ClientEvents.DEBUG_RIGHT.hasListeners()) {
-			ClientEvents.DEBUG_RIGHT.post(ScriptType.CLIENT, new DebugInfoEventJS(lines));
+			ClientEvents.DEBUG_RIGHT.post(ScriptType.CLIENT, new DebugInfoKubeEvent(lines));
 		}
 	}
 
@@ -108,7 +108,7 @@ public class KubeJSClientEventHandler {
 
 		if (staticItemTooltips == null) {
 			staticItemTooltips = new HashMap<>();
-			ItemEvents.TOOLTIP.post(ScriptType.CLIENT, new ItemTooltipEventJS(staticItemTooltips));
+			ItemEvents.TOOLTIP.post(ScriptType.CLIENT, new ItemTooltipKubeEvent(staticItemTooltips));
 		}
 
 		try {
@@ -129,11 +129,11 @@ public class KubeJSClientEventHandler {
 	}
 
 	private void loggedIn(LocalPlayer player) {
-		ClientEvents.LOGGED_IN.post(ScriptType.CLIENT, new ClientEventJS());
+		ClientEvents.LOGGED_IN.post(ScriptType.CLIENT, new ClientKubeEvent());
 	}
 
 	private void loggedOut(LocalPlayer player) {
-		ClientEvents.LOGGED_OUT.post(ScriptType.CLIENT, new ClientEventJS());
+		ClientEvents.LOGGED_OUT.post(ScriptType.CLIENT, new ClientKubeEvent());
 		Painter.INSTANCE.clear();
 	}
 

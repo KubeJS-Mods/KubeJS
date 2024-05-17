@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.ItemMatch;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.TinyMap;
@@ -31,22 +31,22 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public boolean hasPriority(RecipeJS recipe, Object from) {
+		public boolean hasPriority(KubeRecipe recipe, Object from) {
 			return recipe.inputItemHasPriority(from);
 		}
 
 		@Override
-		public JsonElement write(RecipeJS recipe, InputItem value) {
+		public JsonElement write(KubeRecipe recipe, InputItem value) {
 			return recipe.writeInputItem(value);
 		}
 
 		@Override
-		public InputItem read(RecipeJS recipe, Object from) {
+		public InputItem read(KubeRecipe recipe, Object from) {
 			return recipe.readInputItem(from);
 		}
 
 		@Override
-		public boolean isInput(RecipeJS recipe, InputItem value, ReplacementMatch match) {
+		public boolean isInput(KubeRecipe recipe, InputItem value, ReplacementMatch match) {
 			return match instanceof ItemMatch m && value.validForMatching() && m.contains(value.ingredient);
 		}
 
@@ -79,7 +79,7 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public JsonElement write(RecipeJS recipe, InputItem[] value) {
+		public JsonElement write(KubeRecipe recipe, InputItem[] value) {
 			var json = new JsonArray();
 
 			for (var in : value) {
@@ -114,22 +114,22 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public boolean hasPriority(RecipeJS recipe, Object from) {
+		public boolean hasPriority(KubeRecipe recipe, Object from) {
 			return recipe.outputItemHasPriority(from);
 		}
 
 		@Override
-		public JsonElement write(RecipeJS recipe, OutputItem value) {
+		public JsonElement write(KubeRecipe recipe, OutputItem value) {
 			return recipe.writeOutputItem(value);
 		}
 
 		@Override
-		public OutputItem read(RecipeJS recipe, Object from) {
+		public OutputItem read(KubeRecipe recipe, Object from) {
 			return recipe.readOutputItem(from);
 		}
 
 		@Override
-		public boolean isOutput(RecipeJS recipe, OutputItem value, ReplacementMatch match) {
+		public boolean isOutput(KubeRecipe recipe, OutputItem value, ReplacementMatch match) {
 			return match instanceof ItemMatch m && !value.isEmpty() && m.contains(value.item);
 		}
 
@@ -157,13 +157,13 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public void writeToJson(RecipeJS recipe, RecipeComponentValue<OutputItem> cv, JsonObject json) {
+		public void writeToJson(KubeRecipe recipe, RecipeComponentValue<OutputItem> cv, JsonObject json) {
 			json.addProperty(cv.key.name, cv.value.item.kjs$getId());
 			json.addProperty("count", cv.value.item.getCount());
 		}
 
 		@Override
-		public void readFromJson(RecipeJS recipe, RecipeComponentValue<OutputItem> cv, JsonObject json) {
+		public void readFromJson(KubeRecipe recipe, RecipeComponentValue<OutputItem> cv, JsonObject json) {
 			RecipeComponentWithParent.super.readFromJson(recipe, cv, json);
 
 			if (cv.value != null && json.has("count")) {
@@ -172,7 +172,7 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public void readFromMap(RecipeJS recipe, RecipeComponentValue<OutputItem> cv, Map<?, ?> map) {
+		public void readFromMap(KubeRecipe recipe, RecipeComponentValue<OutputItem> cv, Map<?, ?> map) {
 			RecipeComponentWithParent.super.readFromMap(recipe, cv, map);
 
 			if (cv.value != null && map.containsKey("count")) {

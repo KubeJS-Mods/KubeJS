@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.ClientProperties;
-import dev.latvian.mods.kubejs.item.ItemClickedEventJS;
+import dev.latvian.mods.kubejs.item.ItemClickedKubeEvent;
 import dev.latvian.mods.kubejs.net.FirstClickPayload;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -88,7 +88,7 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 		if (ItemEvents.FIRST_LEFT_CLICKED.hasListeners()) {
 			var player = kjs$self().player;
 			var stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-			ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedEventJS(player, InteractionHand.MAIN_HAND, stack));
+			ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedKubeEvent(player, InteractionHand.MAIN_HAND, stack));
 		}
 
 		PacketDistributor.sendToServer(new FirstClickPayload(0));
@@ -101,7 +101,7 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 
 			for (var hand : InteractionHand.values()) {
 				var stack = player.getItemInHand(hand);
-				ItemEvents.FIRST_RIGHT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedEventJS(player, hand, stack));
+				ItemEvents.FIRST_RIGHT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedKubeEvent(player, hand, stack));
 			}
 		}
 

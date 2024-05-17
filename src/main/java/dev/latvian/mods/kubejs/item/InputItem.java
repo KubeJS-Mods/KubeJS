@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.helpers.RecipeHelper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.JsonSerializable;
 import dev.latvian.mods.rhino.util.RemapForJS;
@@ -179,7 +179,7 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonS
 	}
 
 	@Override
-	public Object replaceInput(RecipeJS recipe, ReplacementMatch match, InputReplacement original) {
+	public Object replaceInput(KubeRecipe recipe, ReplacementMatch match, InputReplacement original) {
 		if (original instanceof InputItem o) {
 			return withCount(o.count);
 		}

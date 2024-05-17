@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
@@ -100,7 +100,7 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default boolean hasPriority(RecipeJS recipe, Object from) {
+	default boolean hasPriority(KubeRecipe recipe, Object from) {
 		return from instanceof Number || from instanceof JsonPrimitive json && json.isNumber();
 	}
 
@@ -111,12 +111,12 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		}
 
 		@Override
-		public JsonPrimitive write(RecipeJS recipe, Integer value) {
+		public JsonPrimitive write(KubeRecipe recipe, Integer value) {
 			return new JsonPrimitive(value);
 		}
 
 		@Override
-		public Integer read(RecipeJS recipe, Object from) {
+		public Integer read(KubeRecipe recipe, Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).intValue(), min, max);
 		}
 
@@ -141,12 +141,12 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		}
 
 		@Override
-		public JsonPrimitive write(RecipeJS recipe, Long value) {
+		public JsonPrimitive write(KubeRecipe recipe, Long value) {
 			return new JsonPrimitive(value);
 		}
 
 		@Override
-		public Long read(RecipeJS recipe, Object from) {
+		public Long read(KubeRecipe recipe, Object from) {
 			long val = NumberComponent.numberOf(from).longValue();
 			return (val < min) ? min : Math.min(val, max);
 		}
@@ -172,12 +172,12 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		}
 
 		@Override
-		public JsonPrimitive write(RecipeJS recipe, Float value) {
+		public JsonPrimitive write(KubeRecipe recipe, Float value) {
 			return new JsonPrimitive(value);
 		}
 
 		@Override
-		public Float read(RecipeJS recipe, Object from) {
+		public Float read(KubeRecipe recipe, Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).floatValue(), min, max);
 		}
 
@@ -202,12 +202,12 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		}
 
 		@Override
-		public JsonPrimitive write(RecipeJS recipe, Double value) {
+		public JsonPrimitive write(KubeRecipe recipe, Double value) {
 			return new JsonPrimitive(value);
 		}
 
 		@Override
-		public Double read(RecipeJS recipe, Object from) {
+		public Double read(KubeRecipe recipe, Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).doubleValue(), min, max);
 		}
 

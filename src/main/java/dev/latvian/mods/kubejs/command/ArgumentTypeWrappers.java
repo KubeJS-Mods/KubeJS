@@ -127,12 +127,12 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 		return wrapper;
 	}
 
-	public static <T> ArgumentTypeWrapper registry(CommandRegistryEventJS event, ResourceLocation reg) {
+	public static <T> ArgumentTypeWrapper registry(CommandRegistryKubeEvent event, ResourceLocation reg) {
 		return new ArgumentTypeWrapper() {
 			final ResourceKey<Registry<T>> key = ResourceKey.createRegistryKey(reg);
 
 			@Override
-			public ArgumentType<?> create(CommandRegistryEventJS event) {
+			public ArgumentType<?> create(CommandRegistryKubeEvent event) {
 				return ResourceArgument.resource(event.context, key);
 			}
 
@@ -146,7 +146,7 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 	public ArgumentTypeWrapper time(int minRequired) {
 		return new ArgumentTypeWrapper() {
 			@Override
-			public ArgumentType<?> create(CommandRegistryEventJS event) {
+			public ArgumentType<?> create(CommandRegistryKubeEvent event) {
 				return TimeArgument.time(minRequired);
 			}
 
@@ -186,7 +186,7 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 	}
 
 	@Override
-	public ArgumentType<?> create(CommandRegistryEventJS event) {
+	public ArgumentType<?> create(CommandRegistryKubeEvent event) {
 		return factory.apply(event.context);
 	}
 

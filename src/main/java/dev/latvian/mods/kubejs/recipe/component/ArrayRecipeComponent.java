@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
@@ -46,12 +46,12 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
-	public boolean hasPriority(RecipeJS recipe, Object from) {
+	public boolean hasPriority(KubeRecipe recipe, Object from) {
 		return from instanceof Iterable<?> || from != null && from.getClass().isArray();
 	}
 
 	@Override
-	public JsonElement write(RecipeJS recipe, T[] value) {
+	public JsonElement write(KubeRecipe recipe, T[] value) {
 		if (canWriteSelf && value.length == 1) {
 			var v1 = component.write(recipe, value[0]);
 			return v1 == null ? new JsonArray() : v1;
@@ -72,7 +72,7 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public T[] read(RecipeJS recipe, Object from) {
+	public T[] read(KubeRecipe recipe, Object from) {
 		if (from.getClass() == arrayClass) {
 			return (T[]) from;
 		} else if (from instanceof Iterable<?> iterable) {
@@ -124,7 +124,7 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
-	public boolean isInput(RecipeJS recipe, T[] value, ReplacementMatch match) {
+	public boolean isInput(KubeRecipe recipe, T[] value, ReplacementMatch match) {
 		for (var v : value) {
 			if (component.isInput(recipe, v, match)) {
 				return true;
@@ -135,7 +135,7 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
-	public T[] replaceInput(RecipeJS recipe, T[] original, ReplacementMatch match, InputReplacement with) {
+	public T[] replaceInput(KubeRecipe recipe, T[] original, ReplacementMatch match, InputReplacement with) {
 		var arr = original;
 
 		for (int i = 0; i < original.length; i++) {
@@ -155,7 +155,7 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
-	public boolean isOutput(RecipeJS recipe, T[] value, ReplacementMatch match) {
+	public boolean isOutput(KubeRecipe recipe, T[] value, ReplacementMatch match) {
 		for (var v : value) {
 			if (component.isOutput(recipe, v, match)) {
 				return true;
@@ -166,7 +166,7 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
-	public T[] replaceOutput(RecipeJS recipe, T[] original, ReplacementMatch match, OutputReplacement with) {
+	public T[] replaceOutput(KubeRecipe recipe, T[] original, ReplacementMatch match, OutputReplacement with) {
 		var arr = original;
 
 		for (int i = 0; i < original.length; i++) {

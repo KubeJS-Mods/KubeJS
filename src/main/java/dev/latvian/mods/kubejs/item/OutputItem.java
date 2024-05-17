@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.util.valueproviders.IntProvider;
@@ -99,7 +99,7 @@ public class OutputItem implements OutputReplacement {
 	}
 
 	@Override
-	public Object replaceOutput(RecipeJS recipe, ReplacementMatch match, OutputReplacement original) {
+	public Object replaceOutput(KubeRecipe recipe, ReplacementMatch match, OutputReplacement original) {
 		if (original instanceof OutputItem o) {
 			var replacement = new OutputItem(item.copy(), o.chance, o.rolls);
 			replacement.item.setCount(o.getCount());

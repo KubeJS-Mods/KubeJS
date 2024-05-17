@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.net;
 
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
-import dev.latvian.mods.kubejs.item.ItemClickedEventJS;
+import dev.latvian.mods.kubejs.item.ItemClickedKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -24,13 +24,13 @@ public record FirstClickPayload(int clickType) implements CustomPacketPayload {
 			if (clickType == 0 && ItemEvents.FIRST_LEFT_CLICKED.hasListeners()) {
 				ctx.enqueueWork(() -> {
 					var stack = serverPlayer.getItemInHand(InteractionHand.MAIN_HAND);
-					ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.SERVER, stack.getItem(), new ItemClickedEventJS(serverPlayer, InteractionHand.MAIN_HAND, stack));
+					ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.SERVER, stack.getItem(), new ItemClickedKubeEvent(serverPlayer, InteractionHand.MAIN_HAND, stack));
 				});
 			} else if (clickType == 1 && ItemEvents.FIRST_RIGHT_CLICKED.hasListeners()) {
 				ctx.enqueueWork(() -> {
 					for (var hand : InteractionHand.values()) {
 						var stack = serverPlayer.getItemInHand(hand);
-						ItemEvents.FIRST_RIGHT_CLICKED.post(ScriptType.SERVER, stack.getItem(), new ItemClickedEventJS(serverPlayer, hand, stack));
+						ItemEvents.FIRST_RIGHT_CLICKED.post(ScriptType.SERVER, stack.getItem(), new ItemClickedKubeEvent(serverPlayer, hand, stack));
 					}
 				});
 			}

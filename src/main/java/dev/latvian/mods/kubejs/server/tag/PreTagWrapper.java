@@ -7,31 +7,31 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class PreTagWrapper extends TagWrapper {
-	public record AddAction(ResourceLocation tag, Object[] filters) implements Consumer<TagEventJS> {
+	public record AddAction(ResourceLocation tag, Object[] filters) implements Consumer<TagKubeEvent> {
 		@Override
-		public void accept(TagEventJS e) {
+		public void accept(TagKubeEvent e) {
 			e.add(tag, filters);
 		}
 	}
 
-	public record RemoveAction(ResourceLocation tag, Object[] filters) implements Consumer<TagEventJS> {
+	public record RemoveAction(ResourceLocation tag, Object[] filters) implements Consumer<TagKubeEvent> {
 		@Override
-		public void accept(TagEventJS e) {
+		public void accept(TagKubeEvent e) {
 			e.remove(tag, filters);
 		}
 	}
 
-	public record RemoveAllAction(ResourceLocation tag) implements Consumer<TagEventJS> {
+	public record RemoveAllAction(ResourceLocation tag) implements Consumer<TagKubeEvent> {
 		@Override
-		public void accept(TagEventJS e) {
+		public void accept(TagKubeEvent e) {
 			e.removeAll(tag);
 		}
 	}
 
-	public final PreTagEventJS preEvent;
+	public final PreTagKubeEvent preEvent;
 	public final ResourceLocation id;
 
-	public PreTagWrapper(PreTagEventJS e, ResourceLocation i) {
+	public PreTagWrapper(PreTagKubeEvent e, ResourceLocation i) {
 		super(e, i, null);
 		preEvent = e;
 		id = i;

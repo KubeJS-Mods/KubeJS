@@ -71,7 +71,7 @@ public class DetectorBlock extends Block {
 			level.setBlock(blockPos, blockState.setValue(BlockStateProperties.POWERED, p), 2);
 
 			if (BlockEvents.DETECTOR_CHANGED.hasListeners(builder.detectorId) || (p ? BlockEvents.DETECTOR_POWERED : BlockEvents.DETECTOR_UNPOWERED).hasListeners(builder.detectorId)) {
-				var e = new DetectorBlockEventJS(builder.detectorId, level, blockPos, p);
+				var e = new DetectorBlockKubeEvent(builder.detectorId, level, blockPos, p);
 				BlockEvents.DETECTOR_CHANGED.post(level, builder.detectorId, e);
 
 				if (p) {

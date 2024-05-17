@@ -25,13 +25,16 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 		return kjs$self().value();
 	}
 
+	@Override
 	default String kjs$getGroup() {
 		return kjs$getRecipe().getGroup();
 	}
 
+	@Override
 	default void kjs$setGroup(String group) {
 	}
 
+	@Override
 	default ResourceLocation kjs$getOrCreateId() {
 		return kjs$self().id();
 	}
@@ -41,15 +44,18 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 		return kjs$getRecipe().getSerializer();
 	}
 
+	@Override
 	default RecipeSchema kjs$getSchema() {
 		var s = kjs$getType();
 		return RecipeNamespace.getAll().get(s.getNamespace()).get(s.getPath()).schema;
 	}
 
+	@Override
 	default ResourceLocation kjs$getType() {
 		return RegistryInfo.RECIPE_SERIALIZER.getId(kjs$getSerializer());
 	}
 
+	@Override
 	default boolean hasInput(ReplacementMatch match) {
 		if (match instanceof ItemMatch m) {
 			for (var in : kjs$getRecipe().getIngredients()) {
@@ -62,10 +68,12 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 		return false;
 	}
 
+	@Override
 	default boolean replaceInput(ReplacementMatch match, InputReplacement with) {
 		return false;
 	}
 
+	@Override
 	default boolean hasOutput(ReplacementMatch match) {
 		if (match instanceof ItemMatch m) {
 			var result = kjs$getRecipe().getResultItem(UtilsJS.staticRegistryAccess);
@@ -76,6 +84,7 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 		return false;
 	}
 
+	@Override
 	default boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {
 		return false;
 	}

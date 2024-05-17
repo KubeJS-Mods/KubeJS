@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.recipe.schema;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.RecipeSchemaRegistryEventJS;
+import dev.latvian.mods.kubejs.recipe.RecipeSchemaRegistryKubeEvent;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.SpecialRecipeSchema;
@@ -31,7 +31,7 @@ public class RecipeNamespace extends LinkedHashMap<String, RecipeSchemaType> {
 			}
 
 			KubeJSPlugins.forEachPlugin(new RegisterRecipeSchemasEvent(all, mappedRecipes), KubeJSPlugin::registerRecipeSchemas);
-			StartupEvents.RECIPE_SCHEMA_REGISTRY.post(ScriptType.STARTUP, new RecipeSchemaRegistryEventJS(all, mappedRecipes));
+			StartupEvents.RECIPE_SCHEMA_REGISTRY.post(ScriptType.STARTUP, new RecipeSchemaRegistryKubeEvent(all, mappedRecipes));
 		}
 
 		return all;

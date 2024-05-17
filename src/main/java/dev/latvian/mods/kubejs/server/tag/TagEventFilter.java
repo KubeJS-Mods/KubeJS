@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public interface TagEventFilter {
-	static TagEventFilter of(TagEventJS event, Object o) {
+	static TagEventFilter of(TagKubeEvent event, Object o) {
 		if (o instanceof TagEventFilter f) {
 			return f;
 		} else if (o instanceof Collection<?> list) {
@@ -47,7 +47,7 @@ public interface TagEventFilter {
 		}
 	}
 
-	static TagEventFilter unwrap(TagEventJS event, Object[] array) {
+	static TagEventFilter unwrap(TagKubeEvent event, Object[] array) {
 		var filter = array.length == 1 ? of(event, array[0]) : of(event, Arrays.asList(array));
 
 		/*
@@ -80,7 +80,7 @@ public interface TagEventFilter {
 
 		for (var id : wrapper.event.getElementIds()) {
 			if (testElementId(id)) {
-				wrapper.entries.add(new TagLoader.EntryWithSource(TagEntry.element(id), TagEventJS.SOURCE));
+				wrapper.entries.add(new TagLoader.EntryWithSource(TagEntry.element(id), TagKubeEvent.SOURCE));
 				count++;
 			}
 		}
@@ -188,7 +188,7 @@ public interface TagEventFilter {
 		@Override
 		public int add(TagWrapper wrapper) {
 			if (wrapper.event.getElementIds().contains(id)) {
-				wrapper.entries.add(new TagLoader.EntryWithSource(TagEntry.element(id), TagEventJS.SOURCE));
+				wrapper.entries.add(new TagLoader.EntryWithSource(TagEntry.element(id), TagKubeEvent.SOURCE));
 				return 1;
 			} else {
 				var msg = "No such element %s in registry %s".formatted(id, wrapper.event.registry);
@@ -217,7 +217,7 @@ public interface TagEventFilter {
 
 		@Override
 		public int add(TagWrapper wrapper) {
-			wrapper.entries.add(new TagLoader.EntryWithSource(TagEntry.tag(tag.id), TagEventJS.SOURCE));
+			wrapper.entries.add(new TagLoader.EntryWithSource(TagEntry.tag(tag.id), TagKubeEvent.SOURCE));
 			return 1;
 		}
 

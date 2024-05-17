@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.WrappedJS;
@@ -32,11 +32,11 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 		return copy;
 	}
 
-	public boolean isInput(RecipeJS recipe, ReplacementMatch match) {
+	public boolean isInput(KubeRecipe recipe, ReplacementMatch match) {
 		return value != null && key.component.role().isInput() && key.component.isInput(recipe, value, match);
 	}
 
-	public boolean replaceInput(RecipeJS recipe, ReplacementMatch match, InputReplacement with) {
+	public boolean replaceInput(KubeRecipe recipe, ReplacementMatch match, InputReplacement with) {
 		if (!key.component.role().isInput()) {
 			return false;
 		}
@@ -52,11 +52,11 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 		return false;
 	}
 
-	public boolean isOutput(RecipeJS recipe, ReplacementMatch match) {
+	public boolean isOutput(KubeRecipe recipe, ReplacementMatch match) {
 		return value != null && key.component.role().isOutput() && key.component.isOutput(recipe, value, match);
 	}
 
-	public boolean replaceOutput(RecipeJS recipe, ReplacementMatch match, OutputReplacement with) {
+	public boolean replaceOutput(KubeRecipe recipe, ReplacementMatch match, OutputReplacement with) {
 		if (!key.component.role().isOutput()) {
 			return false;
 		}

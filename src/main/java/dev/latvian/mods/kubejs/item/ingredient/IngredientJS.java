@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -97,7 +97,7 @@ public interface IngredientJS {
 			var group = UtilsJS.findCreativeTab(new ResourceLocation(s.substring(1)));
 
 			if (group == null) {
-				if (RecipeJS.itemErrors) {
+				if (KubeRecipe.itemErrors) {
 					throw new RecipeExceptionJS("Item group '" + s.substring(1) + "' not found!").error();
 				}
 

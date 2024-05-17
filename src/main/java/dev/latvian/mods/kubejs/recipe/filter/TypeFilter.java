@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.filter;
 
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 
@@ -12,7 +12,7 @@ public class TypeFilter implements RecipeFilter {
 	public TypeFilter(ResourceLocation t) {
 		type = t;
 
-		if (RecipeJS.itemErrors && !RegistryInfo.RECIPE_SERIALIZER.hasValue(type)) {
+		if (KubeRecipe.itemErrors && !RegistryInfo.RECIPE_SERIALIZER.hasValue(type)) {
 			throw new RecipeExceptionJS("Type '" + type + "' doesn't exist!").error();
 		}
 	}

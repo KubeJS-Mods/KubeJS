@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
@@ -82,7 +82,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public JsonElement write(RecipeJS recipe, RecipeComponentBuilderMap value) {
+	public JsonElement write(KubeRecipe recipe, RecipeComponentBuilderMap value) {
 		var json = new JsonObject();
 
 		for (var val : value.holders) {
@@ -97,7 +97,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public RecipeComponentBuilderMap read(RecipeJS recipe, Object from) {
+	public RecipeComponentBuilderMap read(KubeRecipe recipe, Object from) {
 		var value = new RecipeComponentBuilderMap(this);
 
 		if (from instanceof JsonObject json) {
@@ -124,7 +124,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public boolean hasPriority(RecipeJS recipe, Object from) {
+	public boolean hasPriority(KubeRecipe recipe, Object from) {
 		if (from instanceof Map m) {
 			if (hasPriority != null) {
 				return hasPriority.test(m.keySet());
@@ -155,7 +155,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public boolean isInput(RecipeJS recipe, RecipeComponentBuilderMap value, ReplacementMatch match) {
+	public boolean isInput(KubeRecipe recipe, RecipeComponentBuilderMap value, ReplacementMatch match) {
 		for (var e : value.holders) {
 			if (e.isInput(recipe, match)) {
 				return true;
@@ -166,7 +166,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public RecipeComponentBuilderMap replaceInput(RecipeJS recipe, RecipeComponentBuilderMap original, ReplacementMatch match, InputReplacement with) {
+	public RecipeComponentBuilderMap replaceInput(KubeRecipe recipe, RecipeComponentBuilderMap original, ReplacementMatch match, InputReplacement with) {
 		for (var e : original.holders) {
 			if (e.replaceInput(recipe, match, with)) {
 				original.hasChanged = true;
@@ -177,7 +177,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public boolean isOutput(RecipeJS recipe, RecipeComponentBuilderMap value, ReplacementMatch match) {
+	public boolean isOutput(KubeRecipe recipe, RecipeComponentBuilderMap value, ReplacementMatch match) {
 		for (var e : value.holders) {
 			if (e.isOutput(recipe, match)) {
 				return true;
@@ -188,7 +188,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public RecipeComponentBuilderMap replaceOutput(RecipeJS recipe, RecipeComponentBuilderMap original, ReplacementMatch match, OutputReplacement with) {
+	public RecipeComponentBuilderMap replaceOutput(KubeRecipe recipe, RecipeComponentBuilderMap original, ReplacementMatch match, OutputReplacement with) {
 		for (var e : original.holders) {
 			if (e.replaceOutput(recipe, match, with)) {
 				original.hasChanged = true;

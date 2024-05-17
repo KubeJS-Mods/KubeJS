@@ -10,11 +10,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 public class TagWrapper {
-	public final TagEventJS event;
+	public final TagKubeEvent event;
 	public final ResourceLocation id;
 	public final List<TagLoader.EntryWithSource> entries;
 
-	public TagWrapper(TagEventJS e, ResourceLocation i, List<TagLoader.EntryWithSource> t) {
+	public TagWrapper(TagKubeEvent e, ResourceLocation i, List<TagLoader.EntryWithSource> t) {
 		event = e;
 		id = i;
 		entries = t;

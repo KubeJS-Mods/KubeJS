@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import dev.latvian.mods.kubejs.recipe.RecipeJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
@@ -40,17 +40,17 @@ public record TimeComponent(String name, long scale) implements RecipeComponent<
 	}
 
 	@Override
-	public JsonElement write(RecipeJS recipe, Long value) {
+	public JsonElement write(KubeRecipe recipe, Long value) {
 		return new JsonPrimitive(value / scale);
 	}
 
 	@Override
-	public boolean hasPriority(RecipeJS recipe, Object from) {
+	public boolean hasPriority(KubeRecipe recipe, Object from) {
 		return from instanceof Number || from instanceof JsonPrimitive json && json.isNumber();
 	}
 
 	@Override
-	public Long read(RecipeJS recipe, Object from) {
+	public Long read(KubeRecipe recipe, Object from) {
 		if (from instanceof Number) {
 			return ((Number) from).longValue() * scale;
 		}

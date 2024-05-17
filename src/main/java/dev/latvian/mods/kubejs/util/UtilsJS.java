@@ -8,8 +8,8 @@ import com.mojang.brigadier.StringReader;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
-import dev.latvian.mods.kubejs.block.BlockModificationEventJS;
-import dev.latvian.mods.kubejs.item.ItemModificationEventJS;
+import dev.latvian.mods.kubejs.block.BlockModificationKubeEvent;
+import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -488,8 +488,8 @@ public class UtilsJS {
 	// TODO: We could probably make these generic for RegistryObjectBuilderTypes,
 	//  so maybe look into that to allow people to modify builtin fluids, etc. as well.
 	public static void postModificationEvents() {
-		BlockEvents.MODIFICATION.post(ScriptType.STARTUP, new BlockModificationEventJS());
-		ItemEvents.MODIFICATION.post(ScriptType.STARTUP, new ItemModificationEventJS());
+		BlockEvents.MODIFICATION.post(ScriptType.STARTUP, new BlockModificationKubeEvent());
+		ItemEvents.MODIFICATION.post(ScriptType.STARTUP, new ItemModificationKubeEvent());
 	}
 
 	public static Class<?> getRawType(Type type) {

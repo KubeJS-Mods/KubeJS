@@ -6,7 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 
 public interface ArgumentTypeWrapper {
-	ArgumentType<?> create(CommandRegistryEventJS event);
+	ArgumentType<?> create(CommandRegistryKubeEvent event);
 
 	Object getResult(CommandContext<CommandSourceStack> context, String input) throws CommandSyntaxException;
 }
