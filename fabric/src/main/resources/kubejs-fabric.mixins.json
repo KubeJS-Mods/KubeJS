@@ -8,6 +8,7 @@
 		"DifferenceIngredientMixin",
 		"IngredientMatchingMixin",
 		"NbtIngredientMixin",
+		"ShapedRecipeMixin",
 		"tools.shears.BlockInteractShearsMixin",
 		"tools.shears.EntityInteractShearsMixin",
 		"tools.shears.MatchToolMixin",

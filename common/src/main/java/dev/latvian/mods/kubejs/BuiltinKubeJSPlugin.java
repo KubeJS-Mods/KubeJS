@@ -26,6 +26,7 @@ import dev.latvian.mods.kubejs.block.DetectorBlock;
 import dev.latvian.mods.kubejs.block.MapColorHelper;
 import dev.latvian.mods.kubejs.block.SoundTypeWrapper;
 import dev.latvian.mods.kubejs.block.custom.BasicBlockJS;
+import dev.latvian.mods.kubejs.block.custom.CarpetBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.ButtonBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.CropBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FallingBlockBuilder;
@@ -203,6 +204,7 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		RegistryInfo.BLOCK.addType("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
 		RegistryInfo.BLOCK.addType("crop", CropBlockBuilder.class, CropBlockBuilder::new);
 		RegistryInfo.BLOCK.addType("cardinal", HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);
+		RegistryInfo.BLOCK.addType("carpet", CarpetBlockBuilder.class, CarpetBlockBuilder::new);
 
 		RegistryInfo.ITEM.addType("basic", BasicItemJS.Builder.class, BasicItemJS.Builder::new);
 		RegistryInfo.ITEM.addType("sword", SwordItemBuilder.class, SwordItemBuilder::new);
