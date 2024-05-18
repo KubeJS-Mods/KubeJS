@@ -21,24 +21,4 @@ public abstract class MutableComponentMixin implements ComponentKJS {
 	@HideFromJS
 	@Shadow
 	public abstract MutableComponent append(String string);
-
-	@Override
-	public Iterator<Component> iterator() {
-		if (!kjs$hasSiblings()) {
-			return UtilsJS.cast(List.of(kjs$self()).iterator());
-		}
-
-		List<Component> list = new LinkedList<>();
-		list.add(kjs$self());
-
-		for (var child : getSiblings()) {
-			if (child instanceof ComponentKJS wrapped) {
-				wrapped.forEach(list::add);
-			} else {
-				list.add(child);
-			}
-		}
-
-		return list.iterator();
-	}
 }
