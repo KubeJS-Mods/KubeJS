@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
+import com.google.common.collect.Iterators;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
@@ -14,20 +15,44 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Extensions for components, will be injected into
  * {@link MutableComponent} at runtime.
  */
 @RemapPrefixForJS("kjs$")
-public interface ComponentKJS extends Component, Iterable<Component>, JsonSerializable, WrappedJS {
+public interface ComponentKJS extends Component, JsonSerializable, WrappedJS {
 
-	@Override
-	default Iterator<Component> iterator() {
-		throw new NoMixinException();
+	default Iterable<Component> kjs$asIterable() {
+		return new Iterable<>() {
+			@NotNull
+			@Override
+			public Iterator<Component> iterator() {
+				if (!kjs$hasSiblings()) {
+					return Iterators.forArray(kjs$self());
+				}
+
+				List<Component> list = new LinkedList<>();
+				list.add(kjs$self());
+
+				for (var child : getSiblings()) {
+					if (child instanceof ComponentKJS wrapped) {
+						wrapped.forEach(list::add);
+					} else {
+						list.add(child);
+					}
+				}
+
+				return list.iterator();
+			}
+		};
 	}
 
 	default MutableComponent kjs$self() {
@@ -46,6 +71,10 @@ public interface ComponentKJS extends Component, Iterable<Component>, JsonSerial
 
 	default boolean kjs$hasSiblings() {
 		return !getSiblings().isEmpty();
+	}
+
+	default void forEach(Consumer<? super Component> action) {
+		kjs$asIterable().forEach(action);
 	}
 
 	// region ChatFormatting extensions
