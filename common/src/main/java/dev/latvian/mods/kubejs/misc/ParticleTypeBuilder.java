@@ -51,7 +51,6 @@ public class ParticleTypeBuilder extends BuilderBase<ParticleType<?>> {
 		return this;
 	}
 
-	// TODO: For some reason this does NOT work on first resource load without the breakpoints in ParticleEngine
 	@Override
 	public void generateAssetJsons(AssetJsonGenerator generator) {
 		generator.particle(id, assetGen);
