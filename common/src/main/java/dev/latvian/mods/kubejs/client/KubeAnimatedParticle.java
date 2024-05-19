@@ -32,7 +32,7 @@ public class KubeAnimatedParticle extends SimpleAnimatedParticle {
 	public void setColor(Color color, boolean alpha) {
 		setColor(color.getRgbJS());
 		if (alpha) {
-			// setAlpha(color.getArgbJS()); TODO: Eugh bitwise math
+			setAlpha((color.getArgbJS() >> 24) / 255.0F);
 		}
 	}
 

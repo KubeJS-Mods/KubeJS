@@ -87,7 +87,7 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 		return Screen.hasAltDown();
 	}
 
-	// TODO: A different name may be better, or perhaps this should be in ClientLevelKJS
+	// PR Review: A different name may be better, or perhaps this should be in ClientLevelKJS
 	default KubeAnimatedParticle kjs$customParticle(SpriteSet spriteSet, double x, double y, double z) {
 		return kjs$customParticle(kjs$self().level, spriteSet, x, y, z);
 	}

@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
 import dev.latvian.mods.kubejs.client.ParticleGenerator;
+import dev.latvian.mods.kubejs.client.SoundGenerator;
 import dev.latvian.mods.kubejs.client.StencilTexture;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
@@ -22,10 +23,12 @@ import java.util.function.Consumer;
 
 public class AssetJsonGenerator extends ResourceGenerator {
 	private final Map<String, StencilTexture> stencils;
+	private final Map<String, SoundGenerator> sounds;
 
 	public AssetJsonGenerator(Map<ResourceLocation, GeneratedData> m) {
 		super(ConsoleJS.CLIENT, m);
 		this.stencils = new HashMap<>();
+		this.sounds = new HashMap<>();
 	}
 
 	public void blockState(ResourceLocation id, Consumer<VariantBlockStateGenerator> consumer) {
@@ -51,6 +54,14 @@ public class AssetJsonGenerator extends ResourceGenerator {
 	public void particle(ResourceLocation id, Consumer<ParticleGenerator> consumer) {
 		var gen = Util.make(new ParticleGenerator(), consumer);
 		json(new ResourceLocation(id.getNamespace(), "particles/" + id.getPath()), gen.toJson());
+	}
+
+	public void sounds(String mod, Consumer<SoundGenerator> consumer) {
+		if (sounds.containsKey(mod)) {
+			consumer.accept(sounds.get(mod));
+		} else {
+			sounds.put(mod, Util.make(new SoundGenerator(), consumer));
+		}
 	}
 
 	public static ResourceLocation asItemModelLocation(ResourceLocation id) {
@@ -86,5 +97,9 @@ public class AssetJsonGenerator extends ResourceGenerator {
 		if (st.mcmeta != null) {
 			add(new ResourceLocation(target.getNamespace(), "textures/" + target.getPath() + ".png.mcmeta"), () -> st1.mcmeta, false);
 		}
+	}
+
+	public void buildSounds() {
+		sounds.forEach((mod, gen) -> json(new ResourceLocation(mod, "sounds"), gen.toJson()));
 	}
 }

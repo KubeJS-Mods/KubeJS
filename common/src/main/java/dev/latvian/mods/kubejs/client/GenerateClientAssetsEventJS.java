@@ -62,4 +62,8 @@ public class GenerateClientAssetsEventJS extends EventJS {
 	public void particle(ResourceLocation id, Consumer<ParticleGenerator> consumer) {
 		generator.particle(id, consumer);
 	}
+
+	public void sounds(String namespace, Consumer<SoundGenerator> consumer) {
+		generator.sounds(namespace, consumer);
+	}
 }
