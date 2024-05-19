@@ -55,7 +55,6 @@
 		"LocalPlayerMixin",
 		"MinecraftClientMixin",
 		"OptionsMixin",
-		"ParticleEngineMixin",
 		"ScreenMixin",
 		"WindowMixin",
 		"WorldOpenFlowsMixin",

@@ -46,6 +46,8 @@ public class SoundGenerator {
 			return this;
 		}
 
+		public SoundEntry replace() { return replace(true); }
+
 		public SoundEntry subtitle(String subtitle) {
 			this.subtitle = subtitle;
 			return this;
@@ -120,6 +122,8 @@ public class SoundGenerator {
 			return complex();
 		}
 
+		public SoundInstance stream() { return stream(true); }
+
 		public SoundInstance attenuationDistance(int i) {
 			attenuationDistance = i;
 			return complex();
@@ -129,6 +133,8 @@ public class SoundGenerator {
 			preload = b;
 			return complex();
 		}
+
+		public SoundInstance preload() { return preload(true); }
 
 		public SoundInstance asReferenceToEvent() {
 			isEventReference = true;

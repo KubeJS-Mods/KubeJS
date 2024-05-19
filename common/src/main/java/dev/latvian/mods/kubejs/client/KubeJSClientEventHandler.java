@@ -58,6 +58,7 @@ public class KubeJSClientEventHandler {
 		ClientGuiEvent.RENDER_POST.register(Painter.INSTANCE::guiScreenDraw);
 		ClientGuiEvent.INIT_PRE.register(this::guiPreInit);
 		ClientGuiEvent.INIT_POST.register(this::guiPostInit);
+		ClientLifecycleEvent.CLIENT_STARTED.register(this::clientStart);
 		//ClientTextureStitchEvent.POST.register(this::postAtlasStitch);
 	}
 
@@ -169,6 +170,10 @@ public class KubeJSClientEventHandler {
 				}
 			}
 		}
+	}
+
+	private void clientStart(Minecraft mc) {
+		ClientEvents.PARTICLE_PROVIDER_REGISTRY.post(new ParticleProviderRegistryEventJS());
 	}
 
 	/*private void postAtlasStitch(TextureAtlas atlas) {
