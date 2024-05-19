@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientGuiEvent;
+import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
@@ -57,6 +58,7 @@ public class KubeJSClientEventHandler {
 		ClientGuiEvent.RENDER_POST.register(Painter.INSTANCE::guiScreenDraw);
 		ClientGuiEvent.INIT_PRE.register(this::guiPreInit);
 		ClientGuiEvent.INIT_POST.register(this::guiPostInit);
+		ClientLifecycleEvent.CLIENT_SETUP.register(this::clientSetup);
 		//ClientTextureStitchEvent.POST.register(this::postAtlasStitch);
 	}
 
@@ -168,6 +170,10 @@ public class KubeJSClientEventHandler {
 				}
 			}
 		}
+	}
+
+	private void clientSetup(Minecraft mc) {
+		ClientEvents.PARTICLE_PROVIDER_REGISTRY.post(new ParticleProviderRegistryEventJS());
 	}
 
 	/*private void postAtlasStitch(TextureAtlas atlas) {

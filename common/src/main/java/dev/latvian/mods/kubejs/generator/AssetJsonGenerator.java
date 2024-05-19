@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
+import dev.latvian.mods.kubejs.client.ParticleGenerator;
 import dev.latvian.mods.kubejs.client.StencilTexture;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
@@ -45,6 +46,11 @@ public class AssetJsonGenerator extends ResourceGenerator {
 	public void itemModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
 		var gen = Util.make(new ModelGenerator(), consumer);
 		json(asItemModelLocation(id), gen.toJson());
+	}
+
+	public void particle(ResourceLocation id, Consumer<ParticleGenerator> consumer) {
+		var gen = Util.make(new ParticleGenerator(), consumer);
+		json(new ResourceLocation(id.getNamespace(), "particles/" + id.getPath()), gen.toJson());
 	}
 
 	public static ResourceLocation asItemModelLocation(ResourceLocation id) {

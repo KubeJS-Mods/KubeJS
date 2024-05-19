@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.ClientProperties;
+import dev.latvian.mods.kubejs.client.KubeAnimatedParticle;
 import dev.latvian.mods.kubejs.item.ItemClickedEventJS;
 import dev.latvian.mods.kubejs.net.FirstClickMessage;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -11,6 +12,8 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import org.jetbrains.annotations.Nullable;
@@ -82,6 +85,15 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 
 	default boolean kjs$isAltDown() {
 		return Screen.hasAltDown();
+	}
+
+	// TODO: A different name may be better, or perhaps this should be in ClientLevelKJS
+	default KubeAnimatedParticle kjs$customParticle(SpriteSet spriteSet, double x, double y, double z) {
+		return kjs$customParticle(kjs$self().level, spriteSet, x, y, z);
+	}
+
+	default KubeAnimatedParticle kjs$customParticle(ClientLevel level, SpriteSet spriteSet, double x, double y, double z) {
+		return new KubeAnimatedParticle(level, spriteSet, x, y, z);
 	}
 
 	@HideFromJS
