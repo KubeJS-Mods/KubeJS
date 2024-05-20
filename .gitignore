@@ -24,3 +24,10 @@ run
 run_server
 .vscode
 .architectury-transformer/
+
+# metadata (macOS)
+.DS_Store
+
+# metadata (windows)
+Thumbs.db
+desktop.ini
