@@ -2,12 +2,12 @@ package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColor;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.renderer.BiomeColors;
@@ -24,6 +24,8 @@ import java.util.List;
 
 @FunctionalInterface
 public interface BlockTintFunction {
+	TypeInfo TYPE_INFO = TypeInfo.of(BlockTintFunction.class);
+
 	Color getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index);
 
 	record Fixed(Color color) implements BlockTintFunction {
@@ -95,7 +97,7 @@ public interface BlockTintFunction {
 				return f;
 			}
 		} else if (o instanceof BaseFunction function) {
-			return (BlockTintFunction) NativeJavaObject.createInterfaceAdapter(cx, BlockTintFunction.class, function);
+			return (BlockTintFunction) cx.createInterfaceAdapter(TYPE_INFO, function);
 		}
 
 		return new Fixed(ColorWrapper.of(o));

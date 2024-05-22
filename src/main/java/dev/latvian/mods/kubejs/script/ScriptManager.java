@@ -166,11 +166,9 @@ public class ScriptManager {
 
 		var typeWrappers = new WrapperRegistry(scriptType, contextFactory.getTypeWrappers());
 		// typeWrappers.removeAll();
-		var customJavaToJsWrappersEvent = new CustomJavaToJsWrappersEvent(scriptType, contextFactory);
 
 		for (var plugin : KubeJSPlugins.getAll()) {
 			plugin.registerTypeWrappers(typeWrappers);
-			plugin.registerCustomJavaToJsWrappers(customJavaToJsWrappersEvent);
 		}
 
 		for (var reg : BuiltInRegistries.REGISTRY.registryKeySet()) {

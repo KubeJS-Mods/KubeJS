@@ -27,6 +27,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Wrapper;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.component.DataComponentPatch;
@@ -66,7 +67,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	protected List<IngredientAction> recipeIngredientActions;
 
 	@Override
-	public final Scriptable convertJavaToJs(Context cx, Scriptable scope, Class<?> staticType) {
+	public final Scriptable convertJavaToJs(Context cx, Scriptable scope, TypeInfo staticType) {
 		return new RecipeFunction(cx, scope, staticType, this);
 	}
 

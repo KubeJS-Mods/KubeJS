@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValueFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +13,7 @@ public class RecipeFunction extends NativeJavaObject {
 	public final KubeRecipe recipe;
 	public final Map<String, RecipeComponentValueFunction> builderFunctions;
 
-	public RecipeFunction(Context cx, Scriptable scope, Class<?> staticType, KubeRecipe recipe) {
+	public RecipeFunction(Context cx, Scriptable scope, TypeInfo staticType, KubeRecipe recipe) {
 		super(scope, recipe, staticType, cx);
 		this.recipe = recipe;
 		var map = recipe.getAllValueMap();

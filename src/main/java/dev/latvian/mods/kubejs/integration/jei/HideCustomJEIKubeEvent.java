@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.BaseFunction;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.runtime.IJeiRuntime;
@@ -29,36 +30,34 @@ public class HideCustomJEIKubeEvent implements KubeEvent {
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public HideJEIKubeEvent get(IIngredientType s) {
-		return events.computeIfAbsent(s, type -> {
-			return new HideJEIKubeEvent(runtime, type, o -> {
-				Function<Object, String> idFn = it -> runtime.getIngredientManager().getIngredientHelper(UtilsJS.cast(type)).getUniqueId(it, UidContext.Ingredient);
-				List<Predicate> predicates = new ArrayList<>();
+		return events.computeIfAbsent(s, type -> new HideJEIKubeEvent(runtime, type, o -> {
+			Function<Object, String> idFn = it -> runtime.getIngredientManager().getIngredientHelper(UtilsJS.cast(type)).getUniqueId(it, UidContext.Ingredient);
+			List<Predicate> predicates = new ArrayList<>();
 
-				for (Object o1 : ListJS.orSelf(o)) {
-					var regex = UtilsJS.parseRegex(o1);
-					if (regex != null) {
-						predicates.add(it -> regex.asPredicate().test(idFn.apply(it)));
-					} else if (o1 instanceof Predicate p) {
-						predicates.add(p);
-					} else if (o instanceof BaseFunction f) {
-						predicates.add(UtilsJS.makeFunctionProxy(ScriptType.CLIENT, Predicate.class, f));
-					} else if (o1 instanceof CharSequence || o1 instanceof ResourceLocation) {
-						predicates.add(it -> Objects.equals(idFn.apply(it), o1.toString()));
-					} else {
-						predicates.add(Predicate.isEqual(o1));
+			for (Object o1 : ListJS.orSelf(o)) {
+				var regex = UtilsJS.parseRegex(o1);
+				if (regex != null) {
+					predicates.add(it -> regex.asPredicate().test(idFn.apply(it)));
+				} else if (o1 instanceof Predicate p) {
+					predicates.add(p);
+				} else if (o instanceof BaseFunction f) {
+					predicates.add(UtilsJS.makeFunctionProxy(ScriptType.CLIENT, TypeInfo.RAW_PREDICATE, f));
+				} else if (o1 instanceof CharSequence || o1 instanceof ResourceLocation) {
+					predicates.add(it -> Objects.equals(idFn.apply(it), o1.toString()));
+				} else {
+					predicates.add(Predicate.isEqual(o1));
+				}
+			}
+
+			return (Predicate) (it) -> {
+				for (Predicate p : predicates) {
+					if (p.test(it)) {
+						return true;
 					}
 				}
-
-				return (Predicate) (it) -> {
-					for (Predicate p : predicates) {
-						if (p.test(it)) {
-							return true;
-						}
-					}
-					return false;
-				};
-			}, o -> true);
-		});
+				return false;
+			};
+		}, o -> true));
 	}
 
 	@Override

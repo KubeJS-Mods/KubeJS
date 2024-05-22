@@ -2,12 +2,12 @@ package dev.latvian.mods.kubejs.util;
 
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.ScriptableObject;
 import dev.latvian.mods.rhino.Undefined;
+import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
@@ -68,10 +68,14 @@ public class ScheduledEvents {
 
 	@FunctionalInterface
 	public interface Callback {
+		TypeInfo TYPE_INFO = TypeInfo.of(Callback.class);
+
 		void onCallback(ScheduledEvent event);
 	}
 
 	public static class TimeoutJSFunction extends BaseFunction {
+		private static final TypeInfo TEMPORAL_AMOUNT_TYPE_INFO = TypeInfo.of(TemporalAmount.class);
+
 		public final ScheduledEvents scheduledEvents;
 		public final boolean clear;
 		public final boolean interval;
@@ -88,8 +92,8 @@ public class ScheduledEvents {
 				scheduledEvents.clear(ScriptRuntime.toInt32(cx, args[0]));
 				return Undefined.INSTANCE;
 			} else {
-				var timer = (TemporalAmount) cx.jsToJava(args[1], TemporalAmount.class);
-				var callback = (Callback) NativeJavaObject.createInterfaceAdapter(cx, Callback.class, (ScriptableObject) args[0]);
+				var timer = (TemporalAmount) cx.jsToJava(args[1], TEMPORAL_AMOUNT_TYPE_INFO);
+				var callback = (Callback) cx.createInterfaceAdapter(Callback.TYPE_INFO, (ScriptableObject) args[0]);
 				return scheduledEvents.schedule(timer, interval, callback).id;
 			}
 		}

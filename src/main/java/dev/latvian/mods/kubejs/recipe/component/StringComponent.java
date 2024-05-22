@@ -7,9 +7,9 @@ import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.ScriptableObject;
 import dev.latvian.mods.rhino.Wrapper;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Predicate;
@@ -57,7 +57,7 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 		.add("filter", TypeDescJS.ANY),
 		(cx, scope, args) -> {
 			var error = String.valueOf(Wrapper.unwrapped(args.getOrDefault("error", "invalid string")));
-			var filter = args.get("filter") instanceof ScriptableObject obj ? NativeJavaObject.createInterfaceAdapter(cx, Predicate.class, obj) : UtilsJS.ALWAYS_TRUE;
+			var filter = args.get("filter") instanceof ScriptableObject obj ? cx.createInterfaceAdapter(TypeInfo.RAW_PREDICATE.withParams(TypeInfo.STRING), obj) : UtilsJS.ALWAYS_TRUE;
 			return new StringComponent(error, (Predicate) filter);
 		});
 

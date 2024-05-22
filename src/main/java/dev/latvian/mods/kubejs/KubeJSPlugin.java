@@ -11,7 +11,6 @@ import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistryEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
-import dev.latvian.mods.kubejs.script.CustomJavaToJsWrappersEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.WrapperRegistry;
 import dev.latvian.mods.kubejs.server.DataExport;
@@ -44,7 +43,7 @@ public class KubeJSPlugin {
 	}
 
 	/**
-	 * Call {@link EventGroup#register()} of events your mod adds
+	 * Call {@link EventGroupRegistry#register(EventGroup)} for event groups your mod adds
 	 */
 	public void registerEvents(EventGroupRegistry registry) {
 	}
@@ -56,9 +55,6 @@ public class KubeJSPlugin {
 	}
 
 	public void registerTypeWrappers(WrapperRegistry registry) {
-	}
-
-	public void registerCustomJavaToJsWrappers(CustomJavaToJsWrappersEvent event) {
 	}
 
 	public void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {

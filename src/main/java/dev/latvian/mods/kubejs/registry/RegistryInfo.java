@@ -11,6 +11,7 @@ import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Holder;
@@ -415,7 +416,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	}
 
 	@Override
-	public T wrap(Context cx, Object o) {
+	public T wrap(Context cx, Object o, TypeInfo target) {
 		if (o == null) {
 			return null;
 		} else if (objectBaseClass.isInstance(o)) {

@@ -5,11 +5,11 @@ import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Wrapper;
+import dev.latvian.mods.rhino.util.wrap.DirectTypeWrapperFactory;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
+import dev.latvian.mods.rhino.util.wrap.TypeWrapperValidator;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraft.util.StringRepresentable;
-
-import java.util.function.Predicate;
 
 public class WrapperRegistry {
 	public final ScriptType type;
@@ -20,7 +20,7 @@ public class WrapperRegistry {
 		this.typeWrappers = typeWrappers;
 	}
 
-	public <T> void register(Class<T> target, Predicate<Object> validator, TypeWrapperFactory<T> factory) {
+	public <T> void register(Class<T> target, TypeWrapperValidator validator, TypeWrapperFactory<T> factory) {
 		typeWrappers.register(target, validator, factory);
 	}
 
@@ -28,12 +28,12 @@ public class WrapperRegistry {
 		typeWrappers.register(target, factory);
 	}
 
-	public <T> void registerSimple(Class<T> target, Predicate<Object> validator, TypeWrapperFactory.Simple<T> factory) {
-		typeWrappers.registerSimple(target, validator, factory);
+	public <T> void registerSimple(Class<T> target, TypeWrapperValidator validator, DirectTypeWrapperFactory<T> factory) {
+		typeWrappers.registerDirect(target, validator, factory);
 	}
 
-	public <T> void registerSimple(Class<T> target, TypeWrapperFactory.Simple<T> factory) {
-		typeWrappers.registerSimple(target, factory);
+	public <T> void registerSimple(Class<T> target, DirectTypeWrapperFactory<T> factory) {
+		typeWrappers.registerDirect(target, factory);
 	}
 
 	public <T extends Enum<T> & StringRepresentable> void registerEnumFromStringCodec(Class<T> target, Codec<T> codec, T defaultValue, boolean forceLowerCase) {

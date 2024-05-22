@@ -8,7 +8,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Undefined;
-import dev.latvian.mods.rhino.util.ValueUnwrapper;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.EncoderException;
 import net.minecraft.nbt.ByteArrayTag;
@@ -46,8 +45,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface NBTUtils {
-	ValueUnwrapper VALUE_UNWRAPPER = (contextData, scope, value) -> value instanceof Tag tag ? fromTag(tag) : value;
-
 	@Nullable
 	static Object fromTag(@Nullable Tag t) {
 		if (t == null || t instanceof EndTag) {

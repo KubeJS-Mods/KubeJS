@@ -15,11 +15,11 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
@@ -814,8 +814,8 @@ public class UtilsJS {
 		return RegistryInfo.CREATIVE_MODE_TAB.getValue(id);
 	}
 
-	public static <T> T makeFunctionProxy(ScriptType type, Class<T> targetClass, BaseFunction function) {
-		return cast(NativeJavaObject.createInterfaceAdapter(type.manager.get().contextFactory.enter(), targetClass, function));
+	public static <T> T makeFunctionProxy(ScriptType type, TypeInfo targetClass, BaseFunction function) {
+		return cast(type.manager.get().contextFactory.enter().createInterfaceAdapter(targetClass, function));
 	}
 
 	public static TemporalAmount getTemporalAmount(Object o) {

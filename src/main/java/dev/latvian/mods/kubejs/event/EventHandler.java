@@ -11,6 +11,7 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Wrapper;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +28,8 @@ import java.util.function.Supplier;
  * <p><code>public static final EventHandler CLIENT_RIGHT_CLICKED = ItemEvents.GROUP.client("clientRightClicked", () -> ItemClickedEventJS.class).extra(ItemEvents.SUPPORTS_ITEM);</code></p>
  */
 public final class EventHandler extends BaseFunction {
+	private static final TypeInfo EVENT_HANDLER_TYPE_INFO = TypeInfo.of(IEventHandler.class);
+
 	public final EventGroup group;
 	public final String name;
 	public final ScriptTypePredicate scriptTypePredicate;
@@ -317,9 +320,9 @@ public final class EventHandler extends BaseFunction {
 
 		try {
 			if (args.length == 1) {
-				listen(cx, type, null, (IEventHandler) cx.jsToJava(args[0], IEventHandler.class));
+				listen(cx, type, null, (IEventHandler) cx.jsToJava(args[0], EVENT_HANDLER_TYPE_INFO));
 			} else if (args.length == 2) {
-				var handler = (IEventHandler) cx.jsToJava(args[1], IEventHandler.class);
+				var handler = (IEventHandler) cx.jsToJava(args[1], EVENT_HANDLER_TYPE_INFO);
 
 				for (var o : ListJS.orSelf(args[0])) {
 					listen(cx, type, o, handler);

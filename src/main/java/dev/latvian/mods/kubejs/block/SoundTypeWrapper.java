@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.block;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Undefined;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import net.minecraft.world.level.block.SoundType;
 
@@ -39,7 +40,7 @@ public class SoundTypeWrapper implements TypeWrapperFactory<SoundType> {
 	}
 
 	@Override
-	public SoundType wrap(Context cx, Object o) {
+	public SoundType wrap(Context cx, Object o, TypeInfo target) {
 		if (o instanceof SoundType t) {
 			return t;
 		} else if (o == null || Undefined.isUndefined(o)) {

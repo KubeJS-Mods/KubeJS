@@ -8,8 +8,8 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.loading.moddiscovery.ModInfo;
+import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.network.IContainerFactory;
 
 import java.util.function.Supplier;
@@ -36,7 +36,7 @@ public enum MiscHelper {
 	}
 
 	public boolean isDataGen() {
-		return ModLoader.isDataGenRunning();
+		return DatagenModLoader.isRunningDataGen();
 	}
 
 	public long ingotFluidAmount() {

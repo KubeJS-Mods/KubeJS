@@ -79,7 +79,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		return Simple.NONE;
 	}
 
-	static BlockStatePredicate of(Context cx, Object o) {
+	static BlockStatePredicate of(Object o) {
 		if (o == null || o == Simple.ALL) {
 			return Simple.ALL;
 		} else if (o == Simple.NONE) {
@@ -93,7 +93,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			var predicates = new ArrayList<BlockStatePredicate>();
 
 			for (var o1 : list) {
-				var p = of(cx, o1);
+				var p = of(o1);
 				if (p == Simple.ALL) {
 					return Simple.ALL;
 				} else if (p != Simple.NONE) {
@@ -113,11 +113,11 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			var predicates = new ArrayList<BlockStatePredicate>();
 
 			if (map.get("or") != null) {
-				predicates.add(of(cx, map.get("or")));
+				predicates.add(of(map.get("or")));
 			}
 
 			if (map.get("not") != null) {
-				predicates.add(new NotMatch(of(cx, map.get("not"))));
+				predicates.add(new NotMatch(of(map.get("not"))));
 			}
 
 			return new AndMatch(predicates);
@@ -136,7 +136,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		return Optional.ofNullable(NBTUtils.toTagCompound(cx, o))
 			.map(tag -> RuleTest.CODEC.parse(NbtOps.INSTANCE, tag))
 			.flatMap(DataResult::result)
-			.or(() -> Optional.ofNullable(of(cx, o).asRuleTest()))
+			.or(() -> Optional.ofNullable(of(o).asRuleTest()))
 			.orElseThrow(() -> new IllegalArgumentException("Could not parse valid rule test from " + o + "!"));
 	}
 

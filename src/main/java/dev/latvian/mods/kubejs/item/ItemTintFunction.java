@@ -2,11 +2,11 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.mod.util.color.Color;
 import dev.latvian.mods.rhino.mod.util.color.SimpleColor;
 import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.component.DataComponents;
@@ -18,6 +18,8 @@ import java.util.List;
 
 @FunctionalInterface
 public interface ItemTintFunction {
+	TypeInfo TYPE_INFO = TypeInfo.of(ItemTintFunction.class);
+
 	Color getColor(ItemStack stack, int index);
 
 	record Fixed(Color color) implements ItemTintFunction {
@@ -111,7 +113,7 @@ public interface ItemTintFunction {
 				return f;
 			}
 		} else if (o instanceof BaseFunction function) {
-			return (ItemTintFunction) NativeJavaObject.createInterfaceAdapter(cx, ItemTintFunction.class, function);
+			return (ItemTintFunction) cx.createInterfaceAdapter(TYPE_INFO, function);
 		}
 
 		return new Fixed(ColorWrapper.of(o));

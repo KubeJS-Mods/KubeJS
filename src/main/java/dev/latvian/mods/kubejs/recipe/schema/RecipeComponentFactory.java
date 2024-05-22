@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,7 +53,7 @@ public interface RecipeComponentFactory extends CustomJavaToJsWrapper {
 	RecipeComponent<?> create(Context cx, Scriptable scope, Map<String, Object> args);
 
 	@Override
-	default Scriptable convertJavaToJs(Context cx, Scriptable scope, Class<?> staticType) {
+	default Scriptable convertJavaToJs(Context cx, Scriptable scope, TypeInfo staticType) {
 		return new RecipeComponentFactoryJS(this);
 	}
 }
