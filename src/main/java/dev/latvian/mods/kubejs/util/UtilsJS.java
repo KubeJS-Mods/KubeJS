@@ -16,8 +16,6 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
-import dev.latvian.mods.rhino.mod.util.color.Color;
-import dev.latvian.mods.rhino.mod.util.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.ResourceLocationException;
@@ -32,7 +30,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -899,14 +896,6 @@ public class UtilsJS {
 
 			return d;
 		}
-	}
-
-	public static void writeColor(FriendlyByteBuf buf, Color color) {
-		buf.writeInt(color.getArgbJS());
-	}
-
-	public static Color readColor(FriendlyByteBuf buf) {
-		return new SimpleColorWithAlpha(buf.readInt());
 	}
 
 	public static void appendTimestamp(StringBuilder builder, Calendar calendar) {

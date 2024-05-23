@@ -6,9 +6,9 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.bindings.ColorWrapper;
+import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.mod.util.color.Color;
-import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -26,11 +26,11 @@ import java.util.regex.Pattern;
 public interface KubeJSCodecs {
 	Codec<Pattern> REGEX = stringResolverCodec(UtilsJS::toRegexString, UtilsJS::parseRegex);
 	Codec<Duration> DURATION = stringResolverCodec(Duration::toString, UtilsJS::getDuration);
-	Codec<Color> RHINO_COLOR = stringResolverCodec(Color::toString, ColorWrapper::of);
+	Codec<Color> COLOR = stringResolverCodec(Color::toString, ColorWrapper::of);
 
 	StreamCodec<ByteBuf, Pattern> REGEX_STREAM = ByteBufCodecs.fromCodec(REGEX);
 	StreamCodec<ByteBuf, Duration> DURATION_STREAM = ByteBufCodecs.fromCodec(DURATION);
-	StreamCodec<ByteBuf, Color> RHINO_COLOR_STREAM = ByteBufCodecs.fromCodec(RHINO_COLOR);
+	StreamCodec<ByteBuf, Color> COLOR_STREAM = ByteBufCodecs.fromCodec(COLOR);
 
 	StreamCodec<? super RegistryFriendlyByteBuf, IntProvider> INT_PROVIDER_STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(IntProvider.CODEC);
 

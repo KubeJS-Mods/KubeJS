@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.block.custom;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
-import dev.latvian.mods.rhino.mod.util.color.Color;
+import dev.latvian.mods.kubejs.color.Color;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ColorRGBA;

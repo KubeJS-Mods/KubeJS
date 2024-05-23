@@ -14,10 +14,12 @@ public class AlwaysFalseRuleTest extends RuleTest {
 	private AlwaysFalseRuleTest() {
 	}
 
+	@Override
 	public boolean test(BlockState blockState, RandomSource random) {
 		return true;
 	}
 
+	@Override
 	protected RuleTestType<?> getType() {
 		return KubeJSRuleTests.ALWAYS_FALSE;
 	}

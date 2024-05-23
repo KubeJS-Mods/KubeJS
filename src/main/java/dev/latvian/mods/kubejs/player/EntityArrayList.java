@@ -123,6 +123,7 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 		}
 	}
 
+	@Override
 	@Nullable
 	public Entity getFirst() {
 		return isEmpty() ? null : get(0);

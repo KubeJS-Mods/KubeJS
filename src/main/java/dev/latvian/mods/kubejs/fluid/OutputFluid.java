@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.fluid;
 
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 
 public interface OutputFluid extends FluidLike, OutputReplacement {

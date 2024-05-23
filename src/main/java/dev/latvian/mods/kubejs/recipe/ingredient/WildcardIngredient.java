@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.recipe.ingredient;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;

@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.block;
 
+import dev.latvian.mods.kubejs.bindings.ColorWrapper;
+import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.SimpleColor;
+import dev.latvian.mods.kubejs.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Undefined;
-import dev.latvian.mods.rhino.mod.util.color.Color;
-import dev.latvian.mods.rhino.mod.util.color.SimpleColor;
-import dev.latvian.mods.rhino.mod.util.color.SimpleColorWithAlpha;
-import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;

@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.client.painter;
 
-import dev.latvian.mods.rhino.mod.wrapper.ColorWrapper;
+import dev.latvian.mods.kubejs.bindings.ColorWrapper;
 import dev.latvian.mods.unit.FixedColorUnit;
 import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.Unit;

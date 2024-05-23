@@ -6,5 +6,6 @@ import java.util.function.Supplier;
 
 @FunctionalInterface
 public interface LazyComponentKJS extends Supplier<Component> {
+	@Override
 	Component get();
 }

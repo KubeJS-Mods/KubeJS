@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.util;
 
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapForJS;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.Tag;
 
 /**

@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.rhino.mod.wrapper.UUIDWrapper;
+import dev.latvian.mods.kubejs.bindings.UUIDWrapper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;

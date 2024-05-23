@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.bindings.event;
 
 import dev.latvian.mods.kubejs.client.AtlasSpriteRegistryKubeEvent;
-import dev.latvian.mods.kubejs.client.ClientKubeEvent;
 import dev.latvian.mods.kubejs.client.ClientInitKubeEvent;
+import dev.latvian.mods.kubejs.client.ClientKubeEvent;
 import dev.latvian.mods.kubejs.client.DebugInfoKubeEvent;
 import dev.latvian.mods.kubejs.client.GenerateClientAssetsKubeEvent;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;

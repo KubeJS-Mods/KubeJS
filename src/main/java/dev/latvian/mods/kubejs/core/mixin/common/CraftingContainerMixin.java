@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(CraftingContainer.class)
 public interface CraftingContainerMixin extends CraftingContainerKJS {
+	@Override
 	@Nullable
 	default AbstractContainerMenu kjs$getMenu() {
 		return this instanceof TransientCraftingContainer container ? container.menu : null;

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 
 import java.util.IdentityHashMap;
