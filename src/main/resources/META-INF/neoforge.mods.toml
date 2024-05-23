@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[2,)"
-issueTrackerURL = "https://kubejs.com/support?source=kubejs&mc=2004&loader=neoforge"
+issueTrackerURL = "https://kubejs.com/support?source=kubejs&mc=2006&loader=neoforge"
 license = "GNU LGPLv3"
 
 [[mods]]
@@ -17,7 +17,7 @@ license = "GNU LGPLv3"
 [[dependencies.kubejs]]
 modId = "neoforge"
 type = "required"
-versionRange = "[20.4.60-beta,)"
+versionRange = "[20.6.75-beta,)"
 ordering = "NONE"
 side = "BOTH"
 

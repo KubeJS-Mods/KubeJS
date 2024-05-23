@@ -22,6 +22,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -43,7 +44,7 @@ public class KubeJSEntryPoint {
 
 	private static final ThreadLocal<IEventBus> BUS = new ThreadLocal<>();
 
-	public KubeJSEntryPoint(IEventBus bus) throws Throwable {
+	public KubeJSEntryPoint(IEventBus bus, Dist dist, ModContainer container) throws Throwable {
 		bus.addListener(EventPriority.LOW, KubeJSEntryPoint::loadComplete);
 		bus.addListener(EventPriority.LOW, KubeJSEntryPoint::initRegistries);
 		bus.addListener(EventPriority.LOW, KubeJSEntryPoint::commonSetup);
