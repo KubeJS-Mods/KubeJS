@@ -21,11 +21,8 @@ public enum RecipeHelper {
 		return INSTANCE;
 	}
 
-	public static final String FORGE_CONDITIONAL = "neoforge:conditional";
-
 	@Nullable
 	public RecipeHolder<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
-		// TODO: What is this mess, Forge???
 		return RecipeManager.fromJson(id, json, JsonOps.INSTANCE).orElse(null);
 	}
 
@@ -33,11 +30,11 @@ public enum RecipeHelper {
 	public JsonObject checkConditions(JsonObject json) {
 		var context = KubeJSReloadListener.resources.getConditionContext();
 		var registry = KubeJSReloadListener.resources.getRegistryAccess();
-		var ops = ConditionalOps.create(RegistryOps.create(JsonOps.INSTANCE, registry), context);
+		var ops = new ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, registry), context);
 
 		if (!json.has("type")) {
 			return null;
-		} else if (json.get(ConditionalOps.DEFAULT_CONDITIONS_KEY) instanceof JsonArray arr && !ICondition.conditionsMatched(ops, arr)) {
+		} else if (json.get(ConditionalOps.DEFAULT_CONDITIONS_KEY).isJsonArray() && !ICondition.conditionsMatched(ops, json)) {
 			return null;
 		}
 
