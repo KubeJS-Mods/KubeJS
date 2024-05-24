@@ -4,7 +4,6 @@ import com.google.common.base.Stopwatch;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
@@ -32,9 +31,9 @@ import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.WrappedException;
-import dev.latvian.mods.rhino.mod.util.JsonUtils;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.ReportedException;
+import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.util.GsonHelper;
@@ -277,42 +276,22 @@ public class RecipesEventJS extends EventJS {
 		for (var entry : datapackRecipeMap.entrySet()) {
 			var recipeId = entry.getKey();
 
-			var recipeIdAndType = recipeId + "[unknown:type]";
-			JsonObject json;
+			if (recipeId == null || recipeId.getPath().startsWith("_")) {
+				continue; //Forge: filter anything beginning with "_" as it's used for metadata.
+			}
 
-			try {
-				if (recipeId == null || (Platform.isNeoForge() && recipeId.getPath().startsWith("_"))) {
-					continue; //Forge: filter anything beginning with "_" as it's used for metadata.
-				}
-
-				json = RecipeHelper.get().checkConditions(GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
-
-				if (json == null) {
-					if (DevProperties.get().logSkippedRecipes) {
-						ConsoleJS.SERVER.info("Skipping recipe " + recipeId + ", conditions not met");
-					}
-
-					continue;
-				} else if (!json.has("type")) {
-					if (DevProperties.get().logSkippedRecipes) {
-						ConsoleJS.SERVER.info("Skipping recipe " + recipeId + ", missing type");
-					}
-
-					continue;
-				}
-
-				if (DataExport.export != null) {
-					exportedRecipes.add(recipeId.toString(), JsonUtils.copy(json));
-				}
-			} catch (Exception ex) {
+			var jsonResult = RecipeHelper.get().validate(entry.getValue());
+			if (jsonResult.error().isPresent()) {
+				var error = jsonResult.error().get();
 				if (DevProperties.get().logSkippedRecipes) {
-					ConsoleJS.SERVER.warn("Skipping recipe %s, failed to load: ".formatted(recipeId), ex);
+					ConsoleJS.SERVER.info("Skipping recipe %s, %s".formatted(recipeId, error.message()));
 				}
 				continue;
 			}
 
+			var json = Util.getOrThrow(jsonResult, JsonParseException::new);
 			var typeStr = GsonHelper.getAsString(json, "type");
-			recipeIdAndType = recipeId + "[" + typeStr + "]";
+			var recipeIdAndType = recipeId + "[" + typeStr + "]";
 			var type = getRecipeFunction(typeStr);
 
 			if (type == null) {

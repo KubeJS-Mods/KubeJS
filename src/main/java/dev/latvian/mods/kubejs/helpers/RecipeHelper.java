@@ -1,17 +1,19 @@
 package dev.latvian.mods.kubejs.helpers;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
-import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.Nullable;
 
 public enum RecipeHelper {
@@ -26,19 +28,27 @@ public enum RecipeHelper {
 		return RecipeManager.fromJson(id, json, JsonOps.INSTANCE).orElse(null);
 	}
 
-	@Nullable
-	public JsonObject checkConditions(JsonObject json) {
-		var context = KubeJSReloadListener.resources.getConditionContext();
-		var registry = KubeJSReloadListener.resources.getRegistryAccess();
-		var ops = new ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, registry), context);
-
-		if (!json.has("type")) {
-			return null;
-		} else if (json.get(ConditionalOps.DEFAULT_CONDITIONS_KEY).isJsonArray() && !ICondition.conditionsMatched(ops, json)) {
-			return null;
+	public DataResult<JsonObject> validate(JsonElement jsonElement) {
+		if (!jsonElement.isJsonObject()) {
+			return DataResult.error(() -> "not a json object: " + jsonElement);
 		}
 
-		return json;
+		var json = GsonHelper.convertToJsonObject(jsonElement, "top element");
+		var context = KubeJSReloadListener.resources.getConditionContext();
+		var registry = KubeJSReloadListener.resources.getRegistryAccess();
+
+		if (!json.has("type")) {
+			return DataResult.error(() -> "missing type");
+		}
+
+		var ops = new ConditionalOps<>(RegistryOps.create(JsonOps.INSTANCE, registry), context);
+		var codec = ConditionalOps.createConditionalCodec(Codec.unit(json));
+
+		return codec.parse(ops, json)
+			.mapError(str -> "error while parsing conditions: " + str)
+			.flatMap(optional -> optional
+				.map(DataResult::success)
+				.orElseGet(() -> DataResult.error(() -> "conditions not met")));
 	}
 
 	public Ingredient getCustomIngredient(JsonObject object) {
