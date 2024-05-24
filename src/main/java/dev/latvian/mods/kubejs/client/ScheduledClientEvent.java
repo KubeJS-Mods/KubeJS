@@ -4,9 +4,7 @@ import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import net.minecraft.client.Minecraft;
 
 public class ScheduledClientEvent extends ScheduledEvents.ScheduledEvent {
-	public static ScheduledEvents make(Minecraft client) {
-		return new ScheduledEvents(() -> new ScheduledClientEvent(client));
-	}
+	public static final ScheduledEvents EVENTS = new ScheduledEvents(() -> new ScheduledClientEvent(Minecraft.getInstance()));
 
 	public final Minecraft client;
 

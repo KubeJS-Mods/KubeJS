@@ -17,7 +17,6 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackLocationInfo;
@@ -25,7 +24,6 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
-import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -42,13 +40,11 @@ public class ServerScriptManager extends ScriptManager {
 		return instance;
 	}
 
-	public final MinecraftServer server;
 	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents = new ConcurrentHashMap<>();
 
-	public ServerScriptManager(@Nullable MinecraftServer server) {
+	public ServerScriptManager(RegistryAccess registryAccess) {
 		super(ScriptType.SERVER);
-		this.server = server;
-		this.registries = server.registryAccess();
+		this.registries = registryAccess;
 
 		try {
 			if (Files.notExists(KubeJSPaths.DATA)) {

@@ -13,7 +13,6 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackResources;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,9 +24,6 @@ import java.util.concurrent.CompletableFuture;
 @Mixin(Minecraft.class)
 @RemapPrefixForJS("kjs$")
 public abstract class MinecraftClientMixin implements MinecraftClientKJS {
-	@Unique
-	private ScheduledEvents kjs$scheduledEvents;
-
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void kjs$init(CallbackInfo ci) {
 		CompletableFuture.runAsync(() -> kjs$afterResourcesLoaded(false), kjs$self());
@@ -63,9 +59,7 @@ public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 	@Inject(method = "tick", at = @At("RETURN"))
 	private void kjs$postTickClient(CallbackInfo ci) {
 		if (kjs$self().level != null && kjs$self().player != null) {
-			if (kjs$scheduledEvents != null) {
-				kjs$scheduledEvents.tickAll(kjs$self().level.getGameTime());
-			}
+			ScheduledClientEvent.EVENTS.tickAll(kjs$self().level.getGameTime());
 
 			if (ClientEvents.TICK.hasListeners()) {
 				try {
@@ -79,11 +73,7 @@ public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 
 	@Override
 	public ScheduledEvents kjs$getScheduledEvents() {
-		if (kjs$scheduledEvents == null) {
-			kjs$scheduledEvents = ScheduledClientEvent.make(kjs$self());
-		}
-
-		return kjs$scheduledEvents;
+		return ScheduledClientEvent.EVENTS;
 	}
 
 	@Inject(method = "reloadResourcePacks(ZLnet/minecraft/client/Minecraft$GameLoadCookie;)Ljava/util/concurrent/CompletableFuture;", at = @At("TAIL"))

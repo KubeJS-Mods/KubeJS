@@ -38,7 +38,11 @@ public class KubeJSContext extends Context {
 
 	@Override
 	public boolean visibleToScripts(String fullClassName, ClassVisibilityContext type) {
-		return type != ClassVisibilityContext.CLASS_IN_PACKAGE || kjsFactory.manager.isClassAllowed(fullClassName);
+		if (type == ClassVisibilityContext.CLASS_IN_PACKAGE || type == ClassVisibilityContext.ARGUMENT) {
+			return kjsFactory.manager.isClassAllowed(fullClassName);
+		}
+
+		return true;
 	}
 
 	public ScriptType getType() {

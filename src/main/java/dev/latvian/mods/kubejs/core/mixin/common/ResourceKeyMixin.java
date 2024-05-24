@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.resources.ResourceKey;
@@ -30,7 +31,7 @@ public abstract class ResourceKeyMixin implements SpecialEquality {
 	}
 
 	@Override
-	public boolean specialEquals(Object o, boolean shallow) {
+	public boolean specialEquals(Context cx, Object o, boolean shallow) {
 		if (this == o) {
 			return true;
 		} else if (o instanceof ResourceKey) {

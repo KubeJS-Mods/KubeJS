@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
-import dev.architectury.registry.fuel.FuelRegistry;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
@@ -8,6 +7,8 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -15,11 +16,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -27,6 +26,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -39,6 +39,8 @@ import java.util.stream.Stream;
 @Mixin(value = Item.class, priority = 1001)
 @RemapPrefixForJS("kjs$")
 public abstract class ItemMixin implements ItemKJS {
+	@Shadow
+	private DataComponentMap components;
 	private ItemBuilder kjs$itemBuilder;
 	private CompoundTag kjs$typeData;
 	private Ingredient kjs$asIngredient;
@@ -92,50 +94,26 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Override
-	@Accessor("maxStackSize")
-	@Mutable
-	public abstract void kjs$setMaxStackSize(int i);
-
-	@Override
-	@Accessor("maxDamage")
-	@Mutable
-	public abstract void kjs$setMaxDamage(int i);
+	public <T> void kjs$overrideComponent(DataComponentType<T> type, T value) {
+		DataComponentMap.Builder builder = DataComponentMap.builder().addAll(this.components);
+		builder.set(type, value);
+		this.components = Item.Properties.COMPONENT_INTERNER.intern(Item.Properties.validateComponents(builder.build()));
+	}
 
 	@Override
 	@Accessor("craftingRemainingItem")
 	@Mutable
 	public abstract void kjs$setCraftingRemainder(Item i);
 
-	@Override
-	@Accessor("isFireResistant")
-	@Mutable
-	public abstract void kjs$setFireResistant(boolean b);
-
-	@Override
-	@Accessor("rarity")
-	@Mutable
-	public abstract void kjs$setRarity(Rarity r);
-
-	@Override
-	@RemapForJS("setBurnTime")
-	public void kjs$setBurnTime(int i) {
-		FuelRegistry.register(i, (Item) (Object) this);
-	}
-
-	@Override
-	@Accessor("foodProperties")
-	@Mutable
-	public abstract void kjs$setFoodProperties(FoodProperties properties);
-
 	@Inject(method = "isFoil", at = @At("HEAD"), cancellable = true)
-	private void isFoilKJS(ItemStack itemStack, CallbackInfoReturnable<Boolean> ci) {
+	private void isFoil(ItemStack itemStack, CallbackInfoReturnable<Boolean> ci) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.glow) {
 			ci.setReturnValue(true);
 		}
 	}
 
 	@Inject(method = "appendHoverText", at = @At("RETURN"))
-	private void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn, CallbackInfo ci) {
+	private void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn, CallbackInfo ci) {
 		if (kjs$itemBuilder != null && !kjs$itemBuilder.tooltip.isEmpty()) {
 			tooltip.addAll(kjs$itemBuilder.tooltip);
 		}

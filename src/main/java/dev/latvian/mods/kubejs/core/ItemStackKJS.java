@@ -46,7 +46,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 	}
 
 	@Override
-	default boolean specialEquals(Object o, boolean shallow) {
+	default boolean specialEquals(Context cx, Object o, boolean shallow) {
 		if (o instanceof CharSequence) {
 			return kjs$getId().equals(UtilsJS.getID(o.toString()));
 		} else if (o instanceof ItemStack s) {

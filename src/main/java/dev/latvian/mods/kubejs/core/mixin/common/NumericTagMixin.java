@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.nbt.NumericTag;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,7 +15,7 @@ public abstract class NumericTagMixin implements SpecialEquality {
 	public abstract double getAsDouble();
 
 	@Override
-	public boolean specialEquals(Object o, boolean shallow) {
+	public boolean specialEquals(Context cx, Object o, boolean shallow) {
 		if (o instanceof Boolean b) {
 			return b == (getAsByte() != 0);
 		} else if (o instanceof Number n1) {

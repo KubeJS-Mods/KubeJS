@@ -1,33 +1,21 @@
 package dev.latvian.mods.kubejs.bindings;
 
+import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Context;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
+
 public class DamageSourceWrapper {
-	/*private static Map<String, DamageSource> damageSourceMap;
-
-	public static DamageSource of(Object name) {
-		if (name instanceof DamageSource damageSource) {
-			return damageSource;
-		}
-
-		if (name instanceof Player player) {
-			return DamageSource.playerAttack(player);
-		}
-
-		if (damageSourceMap == null) {
-			damageSourceMap = new HashMap<>();
-
-			try {
-				for (var field : DamageSource.class.getDeclaredFields()) {
-					field.setAccessible(true);
-
-					if (Modifier.isStatic(field.getModifiers()) && field.getType() == DamageSource.class) {
-						var s = (DamageSource) field.get(null);
-						damageSourceMap.put(s.getMsgId(), s);
-					}
-				}
-			} catch (Exception ignored) {
-			}
-		}
-
-		return damageSourceMap.getOrDefault(String.valueOf(name), DamageSource.GENERIC);
-	}*/
+	public static DamageSource of(Context cx, Object from) {
+		return switch (from) {
+			case DamageSource source -> source;
+			case Player player -> ServerLifecycleHooks.getCurrentServer().kjs$getOverworld().damageSources().playerAttack(player);
+			case LivingEntity livingEntity -> ServerLifecycleHooks.getCurrentServer().kjs$getOverworld().damageSources().mobAttack(livingEntity);
+			case null, default -> ServerLifecycleHooks.getCurrentServer().kjs$getOverworld().damageSources().source(ResourceKey.create(Registries.DAMAGE_TYPE, UtilsJS.getMCID(cx, from)));
+		};
+	}
 }

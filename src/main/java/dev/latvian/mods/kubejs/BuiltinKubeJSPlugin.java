@@ -7,6 +7,7 @@ import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.bindings.AABBWrapper;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.ColorWrapper;
+import dev.latvian.mods.kubejs.bindings.DamageSourceWrapper;
 import dev.latvian.mods.kubejs.bindings.DirectionWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
@@ -103,9 +104,11 @@ import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingTrimRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.StonecuttingRecipeSchema;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.WrapperRegistry;
+import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.FluidAmounts;
@@ -344,8 +347,8 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 
 		// event.add("onEvent", new LegacyCodeHandler("onEvent()"));
 
-		if (event.type().isServer() && event.context().kjsFactory.manager instanceof ServerScriptManager sm && sm.server != null) {
-			var se = sm.server.kjs$getScheduledEvents();
+		if (event.type().isServer() && event.context().kjsFactory.manager instanceof ServerScriptManager) {
+			var se = ScheduledServerEvent.EVENTS;
 
 			event.add("setTimeout", new ScheduledEvents.TimeoutJSFunction(se, false, false));
 			event.add("clearTimeout", new ScheduledEvents.TimeoutJSFunction(se, true, false));
@@ -418,23 +421,23 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		registry.registerSimple(JsonPrimitive.class, JsonIO::primitiveOf);
 		registry.registerSimple(Path.class, UtilsJS::getPath);
 		registry.registerSimple(File.class, UtilsJS::getFileFromPath);
-		registry.register(Unit.class, (cx, o, target) -> Painter.INSTANCE.unitOf(cx, o));
+		registry.register(Unit.class, (cx, from, target) -> Painter.INSTANCE.unitOf(cx, from));
 		registry.registerSimple(TemporalAmount.class, UtilsJS::getTemporalAmount);
 		registry.registerSimple(Duration.class, UtilsJS::getDuration);
 
-		registry.register(ResourceLocation.class, (cx, o, target) -> UtilsJS.getMCID(cx, o));
-		registry.register(CompoundTag.class, (o, target) -> NBTUtils.isTagCompound(o), (cx, o, target) -> NBTUtils.toTagCompound(cx, o));
-		registry.register(CollectionTag.class, (o, target) -> NBTUtils.isTagCollection(o), (cx, o, target) -> NBTUtils.toTagCollection(cx, o));
-		registry.register(ListTag.class, (o, target) -> NBTUtils.isTagCollection(o), (cx, o, target) -> NBTUtils.toTagList(cx, o));
-		registry.register(Tag.class, (cx, o, target) -> NBTUtils.toTag(cx, o));
-		registry.register(DataComponentMap.class, (cx, o, target) -> KubeJSComponents.mapOf(cx, o));
-		registry.register(DataComponentPatch.class, (cx, o, target) -> KubeJSComponents.patchOf(cx, o));
+		registry.register(ResourceLocation.class, (cx, from, target) -> UtilsJS.getMCID(cx, from));
+		registry.register(CompoundTag.class, (from, target) -> NBTUtils.isTagCompound(from), (cx, o, target) -> NBTUtils.toTagCompound(cx, o));
+		registry.register(CollectionTag.class, (from, target) -> NBTUtils.isTagCollection(from), (cx, o, target) -> NBTUtils.toTagCollection(cx, o));
+		registry.register(ListTag.class, (from, target) -> NBTUtils.isTagCollection(from), (cx, o, target) -> NBTUtils.toTagList(cx, o));
+		registry.register(Tag.class, (cx, from, target) -> NBTUtils.toTag(cx, from));
+		registry.register(DataComponentMap.class, (cx, from, target) -> KubeJSComponents.mapOf(cx, from));
+		registry.register(DataComponentPatch.class, (cx, from, target) -> KubeJSComponents.patchOf(cx, from));
 
 		registry.registerSimple(BlockPos.class, UtilsJS::blockPosOf);
 		registry.registerSimple(Vec3.class, UtilsJS::vec3Of);
 
-		registry.register(Item.class, (cx, o, target) -> ItemStackJS.getRawItem(cx, o));
-		registry.register(ItemLike.class, (cx, o, target) -> ItemStackJS.getRawItem(cx, o));
+		registry.register(Item.class, (cx, from, target) -> ItemStackJS.getRawItem(cx, from));
+		registry.register(ItemLike.class, (cx, from, target) -> ItemStackJS.getRawItem(cx, from));
 		registry.registerEnumFromStringCodec(MobCategory.class, MobCategory.CODEC);
 
 		registry.registerSimple(AABB.class, AABBWrapper::wrap);
@@ -458,29 +461,28 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		registry.registerSimple(InputItem.class, InputItem::of);
 		registry.registerSimple(OutputItem.class, OutputItem::of);
 		registry.registerSimple(BlockStatePredicate.class, BlockStatePredicate::of);
-		registry.register(RuleTest.class, (cx, o, target) -> BlockStatePredicate.ruleTestOf(cx, o));
+		registry.register(RuleTest.class, (cx, from, target) -> BlockStatePredicate.ruleTestOf(cx, from));
 		registry.registerSimple(FluidStack.class, FluidWrapper::wrap);
 		registry.registerSimple(dev.architectury.fluid.FluidStack.class, FluidWrapper::wrapArch);
-		registry.register(RecipeFilter.class, (cx, o, target) -> RecipeFilter.of(cx, o));
+		registry.register(RecipeFilter.class, (cx, from, target) -> RecipeFilter.of(cx, from));
 		registry.registerSimple(IngredientActionFilter.class, IngredientActionFilter::filterOf);
 		registry.registerSimple(Tier.class, ItemBuilder::toToolTier);
 		registry.registerSimple(PlayerSelector.class, PlayerSelector::of);
-		// FIXME (high): Damage sources are dynamic registries now!!
-		//typeWrappers.registerSimple(DamageSource.class, DamageSourceWrapper::of);
+		registry.register(DamageSource.class, (cx, from, target) -> DamageSourceWrapper.of(cx, from));
 		registry.registerSimple(EntitySelector.class, UtilsJS::entitySelector);
 		registry.registerSimple(ReplacementMatch.class, ReplacementMatch::of);
 		registry.registerSimple(Stat.class, PlayerStatsJS::statOf);
 		registry.registerSimple(MapColor.class, MapColorHelper::of);
 		registry.register(SoundType.class, SoundTypeWrapper.INSTANCE);
-		registry.register(ParticleOptions.class, (cx, o, target) -> UtilsWrapper.particleOptions(cx, o));
-		registry.register(ItemTintFunction.class, (cx, o, target) -> ItemTintFunction.of(cx, o));
-		registry.register(BlockTintFunction.class, (cx, o, target) -> BlockTintFunction.of(cx, o));
+		registry.register(ParticleOptions.class, (cx, from, target) -> UtilsWrapper.particleOptions(new WithContext<>((KubeJSContext) cx, from)));
+		registry.register(ItemTintFunction.class, (cx, from, target) -> ItemTintFunction.of(cx, from));
+		registry.register(BlockTintFunction.class, (cx, from, target) -> BlockTintFunction.of(cx, from));
 
 		// components //
 		registry.registerSimple(Component.class, TextWrapper::of);
 		registry.registerSimple(MutableComponent.class, TextWrapper::of);
 		registry.registerSimple(Color.class, ColorWrapper::of);
-		registry.registerSimple(TextColor.class, o -> ColorWrapper.of(o).createTextColorJS());
+		registry.registerSimple(TextColor.class, from -> ColorWrapper.of(from).createTextColorJS());
 		registry.registerSimple(ClickEvent.class, TextWrapper::clickEventOf);
 
 		// codecs

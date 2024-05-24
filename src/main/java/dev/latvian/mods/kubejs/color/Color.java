@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.color;
 
 import dev.latvian.mods.kubejs.bindings.ColorWrapper;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.network.chat.TextColor;
 
@@ -28,7 +29,7 @@ public interface Color extends SpecialEquality {
 	}
 
 	@Override
-	default boolean specialEquals(Object o, boolean shallow) {
+	default boolean specialEquals(Context cx, Object o, boolean shallow) {
 		Color c = ColorWrapper.of(o);
 		return shallow ? (getArgbJS() == c.getArgbJS()) : (getRgbJS() == c.getRgbJS());
 	}

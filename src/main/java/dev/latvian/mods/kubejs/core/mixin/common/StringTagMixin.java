@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin.common;
 
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.nbt.StringTag;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,7 +12,7 @@ public abstract class StringTagMixin implements SpecialEquality {
 	public abstract String getAsString();
 
 	@Override
-	public boolean specialEquals(Object o, boolean shallow) {
+	public boolean specialEquals(Context cx, Object o, boolean shallow) {
 		if (o instanceof CharSequence s) {
 			return s.equals(getAsString());
 		}

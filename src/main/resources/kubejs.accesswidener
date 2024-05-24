@@ -1,6 +1,7 @@
 accessWidener v2 named
 
 accessible class net/minecraft/server/MinecraftServer$ReloadableResources
+accessible field net/minecraft/world/item/Item$Properties COMPONENT_INTERNER Lcom/google/common/collect/Interner;
 
 # nbt related
 accessible field net/minecraft/nbt/CompoundTag tags Ljava/util/Map;

@@ -113,10 +113,10 @@ public class KubeJSErrorScreen extends Screen {
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int mx, int my, float delta) {
-		this.renderBackground(guiGraphics, mx, my, delta);
+		// this.renderBackground(guiGraphics, mx, my, delta);
+		super.render(guiGraphics, mx, my, delta);
 		this.list.render(guiGraphics, mx, my, delta);
 		guiGraphics.drawCenteredString(this.font, "KubeJS " + scriptType.name + " script " + (viewing == errors ? "errors" : "warnings"), this.width / 2, 12, 0xFFFFFF);
-		super.render(guiGraphics, mx, my, delta);
 	}
 
 	@Override

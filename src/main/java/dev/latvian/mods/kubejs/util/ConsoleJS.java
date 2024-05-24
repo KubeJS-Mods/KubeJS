@@ -192,9 +192,13 @@ public class ConsoleJS {
 		}
 
 		if (line.sourceLines.isEmpty()) {
-			int[] lineP = {0};
-			var source = Context.getSourcePositionFromStack(scriptType.manager.get().contextFactory.enter(), lineP);
-			line.withSourceLine(source, lineP[0]);
+			var factory = scriptType.manager.get().contextFactory;
+
+			if (factory != null) {
+				int[] lineP = {0};
+				var source = Context.getSourcePositionFromStack(factory.enter(), lineP);
+				line.withSourceLine(source, lineP[0]);
+			}
 		}
 
 		return line;

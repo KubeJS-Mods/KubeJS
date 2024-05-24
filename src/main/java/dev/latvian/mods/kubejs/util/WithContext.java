@@ -11,7 +11,7 @@ public record WithContext<T>(KubeJSContext cx, T value) {
 		if (cx instanceof KubeJSContext kcx) {
 			var type = target.param(0);
 
-			if (type.convert()) {
+			if (type.shouldConvert()) {
 				return new WithContext(kcx, cx.jsToJava(o, type));
 			} else {
 				return new WithContext(kcx, o);

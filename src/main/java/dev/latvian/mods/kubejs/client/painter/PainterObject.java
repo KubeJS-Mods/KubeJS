@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.client.painter;
 
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import dev.latvian.mods.unit.FixedBooleanUnit;
 import dev.latvian.mods.unit.Unit;
@@ -50,7 +51,7 @@ public abstract class PainterObject implements SpecialEquality {
 	}
 
 	@Override
-	public boolean specialEquals(Object o, boolean shallow) {
+	public boolean specialEquals(Context cx, Object o, boolean shallow) {
 		if (this == o || id == o) {
 			return true;
 		} else if (o instanceof PainterObject po) {

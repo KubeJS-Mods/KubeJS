@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -402,7 +403,7 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	@Override
-	public boolean specialEquals(Object o, boolean shallow) {
+	public boolean specialEquals(Context cx, Object o, boolean shallow) {
 		if (o instanceof CharSequence || o instanceof ResourceLocation) {
 			return getId().equals(o.toString());
 		}

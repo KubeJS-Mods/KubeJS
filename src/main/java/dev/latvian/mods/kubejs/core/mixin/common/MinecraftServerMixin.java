@@ -46,9 +46,6 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	private final CompoundTag kjs$persistentData = new CompoundTag();
 
 	@Unique
-	private ScheduledEvents kjs$scheduledEvents;
-
-	@Unique
 	private ServerLevel kjs$overworld;
 
 	@Unique
@@ -92,9 +89,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 
 	@Inject(method = "tickServer", at = @At("RETURN"))
 	private void kjs$postTickServer(BooleanSupplier booleanSupplier, CallbackInfo ci) {
-		if (kjs$scheduledEvents != null) {
-			kjs$scheduledEvents.tickAll(kjs$getOverworld().getGameTime());
-		}
+		ScheduledServerEvent.EVENTS.tickAll(kjs$getOverworld().getGameTime());
 
 		if (!kjs$restoreInventories.isEmpty()) {
 			for (var player : kjs$self().getPlayerList().getPlayers()) {
@@ -119,11 +114,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 
 	@Override
 	public ScheduledEvents kjs$getScheduledEvents() {
-		if (kjs$scheduledEvents == null) {
-			kjs$scheduledEvents = ScheduledServerEvent.make(kjs$self());
-		}
-
-		return kjs$scheduledEvents;
+		return ScheduledServerEvent.EVENTS;
 	}
 
 	@Override
