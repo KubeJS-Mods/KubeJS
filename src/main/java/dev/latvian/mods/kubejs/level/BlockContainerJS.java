@@ -142,8 +142,8 @@ public class BlockContainerJS implements SpecialEquality {
 		return RegistryInfo.BLOCK.getId(getBlockState().getBlock()).toString();
 	}
 
-	public Collection<ResourceLocation> getTags() {
-		return Tags.byBlockState(getBlockState()).map(TagKey::location).collect(Collectors.toSet());
+	public Collection<ResourceLocation> getTags(Context cx) {
+		return Tags.byBlockState(cx, getBlockState()).map(TagKey::location).collect(Collectors.toSet());
 	}
 
 	public boolean hasTag(ResourceLocation tag) {

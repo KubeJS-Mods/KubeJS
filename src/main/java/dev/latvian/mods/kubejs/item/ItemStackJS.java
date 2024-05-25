@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -261,8 +262,8 @@ public interface ItemStackJS {
 		return ItemStack.EMPTY;
 	}
 
-	static String toItemString(Object object) {
-		return ItemStackJS.of(object).kjs$toItemString();
+	static String toItemString(HolderLookup.Provider registries, Object object) {
+		return ItemStackJS.of(object).kjs$toItemString0(registries);
 	}
 
 	static List<ItemStack> getList() {

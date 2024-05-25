@@ -35,6 +35,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.WrappedException;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.ReportedException;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.util.GsonHelper;
@@ -88,7 +89,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 	};
 
-	private static String recipeToString(Recipe<?> recipe) {
+	private String recipeToString(Recipe<?> recipe) {
 		var map = new LinkedHashMap<String, Object>();
 		map.put("type", RegistryInfo.RECIPE_SERIALIZER.getId(recipe.getSerializer()));
 
@@ -99,7 +100,7 @@ public class RecipesKubeEvent implements KubeEvent {
 				var list = new ArrayList<String>();
 
 				for (var item : ingredient.getItems()) {
-					list.add(item.kjs$toItemString());
+					list.add(item.kjs$toItemString0(registries));
 				}
 
 				in.add(list);
@@ -113,23 +114,13 @@ public class RecipesKubeEvent implements KubeEvent {
 		try {
 			var result = recipe.getResultItem(UtilsJS.staticRegistryAccess);
 			//noinspection ConstantValue
-			map.put("out", (result == null ? ItemStack.EMPTY : result).kjs$toItemString());
+			map.put("out", (result == null ? ItemStack.EMPTY : result).kjs$toItemString0(registries));
 		} catch (Exception ex) {
 			map.put("out_error", ex.toString());
 		}
 
 		return map.toString();
 	}
-
-	private static final BinaryOperator<RecipeHolder<?>> MERGE_ORIGINAL = (a, b) -> {
-		ConsoleJS.SERVER.warn("Duplicate original recipe for id " + a.id() + "!\nRecipe A: " + recipeToString(a.value()) + "\nRecipe B: " + recipeToString(b.value()) + "\nUsing last one encountered.");
-		return b;
-	};
-
-	private static final BinaryOperator<RecipeHolder<?>> MERGE_ADDED = (a, b) -> {
-		ConsoleJS.SERVER.error("Duplicate added recipe for id " + a.id() + "!\nRecipe A: " + recipeToString(a.value()) + "\nRecipe B: " + recipeToString(b.value()) + "\nUsing last one encountered.");
-		return b;
-	};
 
 	private static final Function<RecipeHolder<?>, ResourceLocation> RECIPE_ID = RecipeHolder::id;
 	private static final Predicate<RecipeHolder<?>> RECIPE_NON_NULL = Objects::nonNull;
@@ -174,8 +165,11 @@ public class RecipesKubeEvent implements KubeEvent {
 	@HideFromJS
 	public static RecipesKubeEvent instance;
 
+	public final HolderLookup.Provider registries;
 	public final Map<ResourceLocation, KubeRecipe> originalRecipes;
 	public final Collection<KubeRecipe> addedRecipes;
+	private final BinaryOperator<RecipeHolder<?>> mergeOriginal, mergeAdded;
+
 
 	public final AtomicInteger failedCount;
 	public final Map<ResourceLocation, KubeRecipe> takenIds;
@@ -195,14 +189,25 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	final RecipeSerializer<?> stageSerializer;
 
-	public RecipesKubeEvent() {
+	public RecipesKubeEvent(HolderLookup.Provider registries) {
 		ConsoleJS.SERVER.info("Initializing recipe event...");
-		originalRecipes = new HashMap<>();
-		addedRecipes = new ConcurrentLinkedQueue<>();
-		recipeFunctions = new HashMap<>();
-		takenIds = new ConcurrentHashMap<>();
+		this.registries = registries;
+		this.originalRecipes = new HashMap<>();
+		this.addedRecipes = new ConcurrentLinkedQueue<>();
+		this.recipeFunctions = new HashMap<>();
+		this.takenIds = new ConcurrentHashMap<>();
 
-		failedCount = new AtomicInteger(0);
+		this.mergeOriginal = (a, b) -> {
+			ConsoleJS.SERVER.warn("Duplicate original recipe for id " + a.id() + "!\nRecipe A: " + recipeToString(a.value()) + "\nRecipe B: " + recipeToString(b.value()) + "\nUsing last one encountered.");
+			return b;
+		};
+
+		this.mergeAdded = (a, b) -> {
+			ConsoleJS.SERVER.error("Duplicate added recipe for id " + a.id() + "!\nRecipe A: " + recipeToString(a.value()) + "\nRecipe B: " + recipeToString(b.value()) + "\nUsing last one encountered.");
+			return b;
+		};
+
+		this.failedCount = new AtomicInteger(0);
 
 		var allNamespaces = RecipeNamespace.getAll();
 
@@ -382,7 +387,7 @@ public class RecipesKubeEvent implements KubeEvent {
 				.filter(RECIPE_NOT_REMOVED)
 				.map(this::createRecipe)
 				.filter(RECIPE_NON_NULL)
-				.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, MERGE_ORIGINAL))));
+				.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, mergeOriginal))));
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating datapack recipes", ex, SKIP_ERROR);
 		}
@@ -391,7 +396,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			recipesByName.putAll(runInParallel(() -> addedRecipes.parallelStream()
 				.map(this::createRecipe)
 				.filter(RECIPE_NON_NULL)
-				.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, MERGE_ADDED))));
+				.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, mergeAdded))));
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating script recipes", ex, SKIP_ERROR);
 		}

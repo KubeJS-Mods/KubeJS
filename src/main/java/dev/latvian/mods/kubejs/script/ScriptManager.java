@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -21,33 +22,24 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class ScriptManager {
-	private static final ThreadLocal<KubeJSContextFactory> CURRENT_CONTEXT = new ThreadLocal<>();
-
-	@Nullable
-	public static KubeJSContextFactory getCurrentContextFactory() {
-		return CURRENT_CONTEXT.get();
-	}
-
-	public static KubeJSContext getCurrentContext() {
-		return (KubeJSContext) Objects.requireNonNull(getCurrentContextFactory()).enter();
-	}
-
 	public final ScriptType scriptType;
 	public final Map<String, ScriptPack> packs;
 	private final ClassFilter classFilter;
 	public boolean firstLoad;
 	public KubeJSContextFactory contextFactory;
 	public boolean canListenEvents;
-	protected HolderLookup.Provider registries;
 
 	public ScriptManager(ScriptType t) {
 		scriptType = t;
 		packs = new LinkedHashMap<>();
 		firstLoad = true;
 		classFilter = KubeJSPlugins.createClassFilter(scriptType);
+	}
+
+	public HolderLookup.Provider getRegistries() {
+		return UtilsJS.staticRegistryAccess;
 	}
 
 	public void unload() {
@@ -154,7 +146,7 @@ public class ScriptManager {
 		var startAll = System.currentTimeMillis();
 
 		contextFactory = new KubeJSContextFactory(this);
-		CURRENT_CONTEXT.set(contextFactory);
+		scriptType.console.contextFactory = new WeakReference<>(contextFactory);
 
 		if (MiscHelper.get().isDataGen()) {
 			firstLoad = false;

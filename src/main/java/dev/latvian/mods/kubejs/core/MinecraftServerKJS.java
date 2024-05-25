@@ -30,8 +30,6 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 		return (MinecraftServer) this;
 	}
 
-	MinecraftServer.ReloadableResources kjs$getReloadableResources();
-
 	ServerLevel kjs$getOverworld();
 
 	@Override

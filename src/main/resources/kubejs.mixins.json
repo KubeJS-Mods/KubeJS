@@ -1,12 +1,13 @@
 {
 	"required": true,
-	"package": "dev.latvian.mods.kubejs.core.mixin.common",
+	"package": "dev.latvian.mods.kubejs.core.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
 		"BlockBehaviourMixin",
 		"BlockMixin",
 		"BlockStateBaseMixin",
 		"ChatFormattingMixin",
+		"ClickEventMixin",
 		"CollectionTagMixin",
 		"CommandSourceStackMixin",
 		"CompoundTagMixin",
@@ -34,6 +35,7 @@
 		"LivingEntityMixin",
 		"LootDataTypeMixin",
 		"MinecraftServerMixin",
+		"MutableComponentMixin",
 		"NumericTagMixin",
 		"PlayerListMixin",
 		"PlayerMixin",
@@ -50,10 +52,7 @@
 		"TagManagerMixin",
 		"TextColorMixin",
 		"UtilMixin",
-		"components.ClickEventMixin",
-		"components.MutableComponentMixin",
-		"inject_resources.MinecraftServerMixin",
-		"inject_resources.WorldLoaderPackConfigMixin"
+		"WorldLoaderPackConfigMixin"
 	],
 	"client": [
 		"AbstractClientPlayerMixin",

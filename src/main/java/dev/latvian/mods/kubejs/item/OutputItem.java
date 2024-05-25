@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.Context;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.ItemStack;
@@ -89,11 +90,6 @@ public class OutputItem implements OutputReplacement {
 		return item.getCount();
 	}
 
-	@Override
-	public String toString() {
-		return item.kjs$toItemString();
-	}
-
 	public boolean isEmpty() {
 		return this == EMPTY;
 	}
@@ -110,8 +106,8 @@ public class OutputItem implements OutputReplacement {
 	}
 
 	@Deprecated
-	public InputItem ignoreNBT() {
-		var console = ConsoleJS.getCurrent(ConsoleJS.SERVER);
+	public InputItem ignoreNBT(Context cx) {
+		var console = ConsoleJS.getCurrent(cx);
 		console.warn("You don't need to call .ignoreNBT() anymore, all item ingredients ignore NBT by default!");
 		return InputItem.of(item.getItem().kjs$asIngredient(), item.getCount());
 	}

@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -111,6 +112,20 @@ public interface IngredientJS {
 
 		if (reg != null) {
 			return IngredientHelper.get().regex(reg);
+		}
+
+		var i = s.indexOf('[');
+
+		if (i != -1) {
+			KubeJS.LOGGER.warn("Ingredient with components: " + s);
+			s = s.substring(0, i);
+		}
+
+		i = s.indexOf('{');
+
+		if (i != -1) {
+			KubeJS.LOGGER.warn("Ingredient with components: " + s);
+			s = s.substring(0, i);
 		}
 
 		var item = RegistryInfo.ITEM.getValue(new ResourceLocation(s));

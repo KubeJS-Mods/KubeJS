@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.server.tag.PreTagKubeEvent;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -34,17 +35,23 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerScriptManager extends ScriptManager {
-	public static ServerScriptManager instance;
+	private static ServerScriptManager staticInstance;
 
-	public static ScriptManager getScriptManager() {
-		return instance;
+	public static ServerScriptManager getScriptManager() {
+		// return ((ReloadableServerResourcesKJS) ServerLifecycleHooks.getCurrentServer().getServerResources().managers()).kjs$getServerScriptManager();
+		// I hate this, but it's required for Console.SERVER
+		return staticInstance;
 	}
 
-	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents = new ConcurrentHashMap<>();
+	public final ReloadableServerResources resources;
+	public final HolderLookup.Provider registries;
+	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
 
-	public ServerScriptManager(RegistryAccess registryAccess) {
+	public ServerScriptManager(ReloadableServerResources resources, RegistryAccess registryAccess) {
 		super(ScriptType.SERVER);
+		this.resources = resources;
 		this.registries = registryAccess;
+		this.preTagEvents = new ConcurrentHashMap<>();
 
 		try {
 			if (Files.notExists(KubeJSPaths.DATA)) {
@@ -53,6 +60,13 @@ public class ServerScriptManager extends ScriptManager {
 		} catch (Throwable ex) {
 			throw new RuntimeException("KubeJS failed to register it's script loader!", ex);
 		}
+
+		staticInstance = this;
+	}
+
+	@Override
+	public HolderLookup.Provider getRegistries() {
+		return registries;
 	}
 
 	public void updateResources(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
@@ -60,7 +74,7 @@ public class ServerScriptManager extends ScriptManager {
 		UtilsJS.staticRegistryAccess = registryAccess;
 	}
 
-	public MultiPackResourceManager wrapResourceManager(CloseableResourceManager original) {
+	public MultiPackResourceManager wrapResourceManager(HolderLookup.Provider registries, CloseableResourceManager original) {
 		var virtualDataPackLow = new VirtualKubeJSDataPack(false);
 		var virtualDataPackHigh = new VirtualKubeJSDataPack(true);
 
@@ -101,7 +115,7 @@ public class ServerScriptManager extends ScriptManager {
 		PreTagKubeEvent.handle(preTagEvents);
 
 		if (ServerEvents.RECIPES.hasListeners()) {
-			RecipesKubeEvent.instance = new RecipesKubeEvent();
+			RecipesKubeEvent.instance = new RecipesKubeEvent(registries);
 		}
 
 		return wrappedResourceManager;

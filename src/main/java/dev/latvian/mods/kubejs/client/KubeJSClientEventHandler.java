@@ -80,23 +80,24 @@ public class KubeJSClientEventHandler {
 
 		if (advanced && ClientProperties.get().getShowTagNames() && Screen.hasShiftDown()) {
 			var addToTempTags = (Consumer<TagKey<?>>) tag -> tempTagNames.computeIfAbsent(tag.location(), TagInstance::new).registries.add(tag.registry());
+			var cx = ScriptType.CLIENT.manager.get().contextFactory.enter();
 
-			Tags.byItemStack(stack).forEach(addToTempTags);
+			Tags.byItemStack(cx, stack).forEach(addToTempTags);
 
 			if (stack.getItem() instanceof BlockItem item) {
-				Tags.byBlock(item.getBlock()).forEach(addToTempTags);
+				Tags.byBlock(cx, item.getBlock()).forEach(addToTempTags);
 			}
 
 			if (stack.getItem() instanceof BucketItem bucket) {
 				Fluid fluid = FluidBucketHooks.getFluid(bucket);
 
 				if (fluid != Fluids.EMPTY) {
-					Tags.byFluid(fluid).forEach(addToTempTags);
+					Tags.byFluid(cx, fluid).forEach(addToTempTags);
 				}
 			}
 
 			if (stack.getItem() instanceof SpawnEggItem item) {
-				Tags.byEntityType(item.getType(stack)).forEach(addToTempTags);
+				Tags.byEntityType(cx, item.getType(stack)).forEach(addToTempTags);
 			}
 
 			for (var instance : tempTagNames.values()) {

@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.core.WithPersistentData;
 import dev.latvian.mods.kubejs.event.EventGroups;
 import dev.latvian.mods.kubejs.event.EventResult;
@@ -28,7 +29,6 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.server.CustomCommandKubeEvent;
 import dev.latvian.mods.kubejs.server.DataExport;
-import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -344,7 +344,7 @@ public class KubeJSCommands {
 					builder.append("\n\n");
 				}
 
-				var scriptManager = ScriptType.SERVER.manager.get();
+				var scriptManager = ((ReloadableServerResourcesKJS) source.getServer().getServerResources().managers()).kjs$getServerScriptManager();
 				var cx = (KubeJSContext) scriptManager.contextFactory.enter();
 
 				var members = JavaMembers.lookupClass(cx, cx.topLevelScope, eventType, null, false);
@@ -535,7 +535,7 @@ public class KubeJSCommands {
 
 		// item info
 		// id
-		player.sendSystemMessage(copy(ItemStackJS.toItemString(stack), ChatFormatting.GREEN, "Item ID"));
+		player.sendSystemMessage(copy(ItemStackJS.toItemString(player.server.registryAccess(), stack), ChatFormatting.GREEN, "Item ID"));
 		// item tags
 		var itemTags = holder.tags().toList();
 		for (var tag : itemTags) {
@@ -596,7 +596,8 @@ public class KubeJSCommands {
 	}
 
 	private static int dump(List<ItemStack> stacks, ServerPlayer player, String name) {
-		var dump = stacks.stream().filter(is -> !is.isEmpty()).map(ItemStackJS::toItemString).toList();
+		var registries = player.server.registryAccess();
+		var dump = stacks.stream().filter(is -> !is.isEmpty()).map(is -> ItemStackJS.toItemString(registries, is)).toList();
 		player.sendSystemMessage(copy(dump.toString(), ChatFormatting.WHITE, name + " Item List"));
 		return 1;
 	}
@@ -669,7 +670,8 @@ public class KubeJSCommands {
 	}
 
 	private static int reloadServer(CommandSourceStack source) {
-		ServerScriptManager.instance.reload(source.getServer().kjs$getReloadableResources().resourceManager());
+		var resources = source.getServer().getServerResources();
+		((ReloadableServerResourcesKJS) resources.managers()).kjs$getServerScriptManager().reload(resources.resourceManager());
 		source.sendSuccess(() -> Component.literal("Done! To reload recipes, tags, loot tables and other datapack things, run ")
 				.append(Component.literal("'/reload'")
 					.kjs$clickRunCommand("/reload")

@@ -54,7 +54,7 @@ public class KubeJSContext extends Context {
 	}
 
 	public HolderLookup.Provider getRegistries() {
-		return kjsFactory.manager.registries;
+		return kjsFactory.manager.getRegistries();
 	}
 
 	public NativeJavaClass loadJavaClass(String name, boolean error) {

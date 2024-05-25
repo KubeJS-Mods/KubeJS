@@ -4,9 +4,9 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.helpers.MiscHelper;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
-import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.ContextFactory;
 import dev.latvian.mods.rhino.EcmaError;
 import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.WrappedException;
@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,11 +37,6 @@ public class ConsoleJS {
 	public static ConsoleJS STARTUP;
 	public static ConsoleJS SERVER;
 	public static ConsoleJS CLIENT;
-
-	public static ConsoleJS getCurrent(ConsoleJS def) {
-		var cxf = ScriptManager.getCurrentContextFactory();
-		return cxf == null ? def : getCurrent(cxf.enter());
-	}
 
 	public static ConsoleJS getCurrent(@Nullable Context cx) {
 		if (cx instanceof KubeJSContext kcx) {
@@ -71,6 +67,7 @@ public class ConsoleJS {
 	private boolean writeToFile;
 	private final List<String> writeQueue;
 	private final Calendar calendar;
+	public WeakReference<ContextFactory> contextFactory;
 
 	public ConsoleJS(ScriptType m, Logger log) {
 		this.scriptType = m;
@@ -192,7 +189,7 @@ public class ConsoleJS {
 		}
 
 		if (line.sourceLines.isEmpty()) {
-			var factory = scriptType.manager.get().contextFactory;
+			var factory = contextFactory == null ? null : contextFactory.get();
 
 			if (factory != null) {
 				int[] lineP = {0};
@@ -380,9 +377,15 @@ public class ConsoleJS {
 	}
 
 	public int getScriptLine() {
-		var linep = new int[]{0};
-		Context.getSourcePositionFromStack(scriptType.manager.get().contextFactory.enter(), linep);
-		return linep[0];
+		var factory = contextFactory == null ? null : contextFactory.get();
+
+		if (factory != null) {
+			var linep = new int[]{0};
+			Context.getSourcePositionFromStack(factory.enter(), linep);
+			return linep[0];
+		}
+
+		return 0;
 	}
 
 	public void printClass(String className, boolean tree) {

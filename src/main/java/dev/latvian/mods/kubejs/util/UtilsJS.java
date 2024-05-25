@@ -23,6 +23,7 @@ import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
@@ -88,7 +89,7 @@ public class UtilsJS {
 	public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 	public static MinecraftServer staticServer = null;
-	public static RegistryAccess staticRegistryAccess = RegistryAccess.EMPTY; // FIXME
+	public static HolderLookup.Provider staticRegistryAccess = RegistryAccess.EMPTY; // FIXME
 	public static final ResourceLocation UNKNOWN_ID = new ResourceLocation("unknown", "unknown");
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
 	public static final Pattern TEMPORAL_AMOUNT_PATTERN = Pattern.compile("(\\d+)\\s*(y|M|d|w|h|m|s|ms|ns|t)\\b");
@@ -811,8 +812,8 @@ public class UtilsJS {
 		return RegistryInfo.CREATIVE_MODE_TAB.getValue(id);
 	}
 
-	public static <T> T makeFunctionProxy(ScriptType type, TypeInfo targetClass, BaseFunction function) {
-		return cast(type.manager.get().contextFactory.enter().createInterfaceAdapter(targetClass, function));
+	public static <T> T makeFunctionProxy(Context cx, TypeInfo targetClass, BaseFunction function) {
+		return cast(cx.createInterfaceAdapter(targetClass, function));
 	}
 
 	public static TemporalAmount getTemporalAmount(Object o) {

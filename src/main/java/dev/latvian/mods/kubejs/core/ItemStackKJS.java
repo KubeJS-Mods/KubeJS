@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.KubeJSComponents;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
@@ -18,6 +19,8 @@ import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import dev.latvian.mods.rhino.util.ToStringJS;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -76,8 +79,8 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		return kjs$self().getItem().kjs$getId();
 	}
 
-	default Collection<ResourceLocation> kjs$getTags() {
-		return Tags.byItem(kjs$self().getItem()).map(TagKey::location).collect(Collectors.toSet());
+	default Collection<ResourceLocation> kjs$getTags(Context cx) {
+		return Tags.byItem(cx, kjs$self().getItem()).map(TagKey::location).collect(Collectors.toSet());
 	}
 
 	default boolean kjs$hasTag(ResourceLocation tag) {
@@ -102,11 +105,17 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		ItemStackJS.setTag(kjs$self(), null);
 	}
 
-	default String kjs$getComponentString() {
-		return kjs$self().getComponentsPatch().toString(); // FIXME: Use actual component patch syntax
+	default String kjs$getComponentString(KubeJSContext cx) {
+		return KubeJSComponents.patchToString(new StringBuilder(), cx.getRegistries(), kjs$self().getComponentsPatch()).toString();
 	}
 
-	default ItemStack kjs$withComponents(DataComponentPatch components) {
+	default ItemStack kjs$withComponents(DataComponentMap components) {
+		var is = kjs$self().copy();
+		is.applyComponents(components);
+		return is;
+	}
+
+	default ItemStack kjs$withComponentPatch(DataComponentPatch components) {
 		var is = kjs$self().copy();
 		is.applyComponents(components);
 		return is;
@@ -160,8 +169,8 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 	}
 
 	@Deprecated
-	default Ingredient kjs$ignoreNBT() {
-		var console = ConsoleJS.getCurrent(ConsoleJS.SERVER);
+	default Ingredient kjs$ignoreNBT(Context cx) {
+		var console = ConsoleJS.getCurrent(cx);
 		console.warn("You don't need to call .ignoreNBT() anymore, all item ingredients ignore NBT by default!");
 		return kjs$self().getItem().kjs$asIngredient();
 	}
@@ -199,10 +208,14 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 
 	@Override
 	default String toStringJS(Context cx) {
-		return kjs$toItemString();
+		return kjs$toItemString0(((KubeJSContext) cx).getRegistries());
 	}
 
-	default String kjs$toItemString() {
+	default String kjs$toItemString(KubeJSContext cx) {
+		return kjs$toItemString0(cx.getRegistries());
+	}
+
+	default String kjs$toItemString0(HolderLookup.Provider registries) {
 		var is = kjs$self();
 		var count = is.getCount();
 
@@ -221,28 +234,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		builder.append(kjs$getId());
 
 		if (!is.isComponentsPatchEmpty()) {
-			builder.append('[');
-			boolean first = true;
-
-			for (var entry : is.getComponentsPatch().entrySet()) {
-				if (first) {
-					first = false;
-				} else {
-					builder.append(',');
-				}
-
-				if (entry.getValue().isPresent()) {
-					builder.append(RegistryInfo.DATA_COMPONENT_TYPE.getId(entry.getKey()));
-					builder.append('=');
-					builder.append(entry.getKey().codec().encodeStart(JsonOps.INSTANCE, UtilsJS.cast(entry.getValue().get())));
-				} else {
-					builder.append('!');
-					builder.append(RegistryInfo.DATA_COMPONENT_TYPE.getId(entry.getKey()));
-					builder.append("={}");
-				}
-			}
-
-			builder.append(']');
+			KubeJSComponents.patchToString(builder, registries, is.getComponentsPatch());
 		}
 
 		builder.append('\'');
