@@ -38,9 +38,9 @@ public record NotificationToastData(
 		ComponentSerialization.CODEC.optionalFieldOf("text", Component.empty()).forGetter(NotificationToastData::text),
 		IconKJS.CODEC.optionalFieldOf("icon", IconKJS.NONE).forGetter(NotificationToastData::icon),
 		Codec.INT.optionalFieldOf("icon_size", 16).forGetter(NotificationToastData::iconSize),
-		KubeJSCodecs.COLOR.optionalFieldOf("outline_color", SimpleColor.BLACK).forGetter(NotificationToastData::outlineColor),
-		KubeJSCodecs.COLOR.optionalFieldOf("border_color", DEFAULT_BORDER_COLOR).forGetter(NotificationToastData::borderColor),
-		KubeJSCodecs.COLOR.optionalFieldOf("background_color", DEFAULT_BACKGROUND_COLOR).forGetter(NotificationToastData::backgroundColor),
+		Color.CODEC.optionalFieldOf("outline_color", SimpleColor.BLACK).forGetter(NotificationToastData::outlineColor),
+		Color.CODEC.optionalFieldOf("border_color", DEFAULT_BORDER_COLOR).forGetter(NotificationToastData::borderColor),
+		Color.CODEC.optionalFieldOf("background_color", DEFAULT_BACKGROUND_COLOR).forGetter(NotificationToastData::backgroundColor),
 		Codec.BOOL.optionalFieldOf("text_shadow", false).forGetter(NotificationToastData::textShadow)
 	).apply(instance, NotificationToastData::new));
 
@@ -51,9 +51,9 @@ public record NotificationToastData(
 			var text = ComponentSerialization.STREAM_CODEC.decode(buf);
 			var icon = IconKJS.STREAM_CODEC.decode(buf);
 			var iconSize = ByteBufCodecs.VAR_INT.decode(buf);
-			var outlineColor = KubeJSCodecs.COLOR_STREAM.decode(buf);
-			var borderColor = KubeJSCodecs.COLOR_STREAM.decode(buf);
-			var backgroundColor = KubeJSCodecs.COLOR_STREAM.decode(buf);
+			var outlineColor = Color.STREAM_CODEC.decode(buf);
+			var borderColor = Color.STREAM_CODEC.decode(buf);
+			var backgroundColor = Color.STREAM_CODEC.decode(buf);
 			var textShadow = ByteBufCodecs.BOOL.decode(buf);
 			return new NotificationToastData(duration, text, icon, iconSize, outlineColor, borderColor, backgroundColor, textShadow);
 		}
@@ -64,9 +64,9 @@ public record NotificationToastData(
 			ComponentSerialization.STREAM_CODEC.encode(buf, data.text());
 			IconKJS.STREAM_CODEC.encode(buf, data.icon());
 			ByteBufCodecs.VAR_INT.encode(buf, data.iconSize());
-			KubeJSCodecs.COLOR_STREAM.encode(buf, data.outlineColor());
-			KubeJSCodecs.COLOR_STREAM.encode(buf, data.borderColor());
-			KubeJSCodecs.COLOR_STREAM.encode(buf, data.backgroundColor());
+			Color.STREAM_CODEC.encode(buf, data.outlineColor());
+			Color.STREAM_CODEC.encode(buf, data.borderColor());
+			Color.STREAM_CODEC.encode(buf, data.backgroundColor());
 			ByteBufCodecs.BOOL.encode(buf, data.textShadow());
 		}
 	};

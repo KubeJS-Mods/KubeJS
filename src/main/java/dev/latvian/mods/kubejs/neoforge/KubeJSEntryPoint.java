@@ -15,7 +15,7 @@ import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
 import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -77,7 +77,7 @@ public class KubeJSEntryPoint {
 
 	private static void initRegistries(RegisterEvent event) {
 		var info = RegistryInfo.of(event.getRegistryKey());
-		info.registerObjects((id, supplier) -> event.register(UtilsJS.cast(info.key), id, supplier));
+		info.registerObjects((id, supplier) -> event.register(Cast.to(info.key), id, supplier));
 	}
 
 	private static void commonSetup(FMLCommonSetupEvent event) {

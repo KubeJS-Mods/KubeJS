@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
+import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
@@ -36,7 +37,7 @@ public interface RecipeFilter extends Predicate<RecipeLikeKJS> {
 			} else if (s.equals("-")) {
 				return ConstantFilter.FALSE;
 			} else {
-				var r = UtilsJS.parseRegex(s);
+				var r = RegExpJS.of(s);
 				return r == null ? new IDFilter(UtilsJS.getMCID(cx, s)) : RegexIDFilter.of(r);
 			}
 		}
@@ -81,7 +82,7 @@ public interface RecipeFilter extends Predicate<RecipeLikeKJS> {
 			var id = map.get("id");
 
 			if (id != null) {
-				var pattern = UtilsJS.parseRegex(id);
+				var pattern = RegExpJS.of(id);
 				predicate.list.add(pattern == null ? new IDFilter(UtilsJS.getMCID(cx, id)) : RegexIDFilter.of(pattern));
 			}
 

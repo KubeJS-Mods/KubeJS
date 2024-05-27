@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTUtils;
+import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
@@ -108,7 +109,7 @@ public interface ItemStackJS {
 		} else if (o instanceof StringTag tag) {
 			return of(tag.getAsString());
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
-			var reg = UtilsJS.parseRegex(o);
+			var reg = RegExpJS.of(o);
 
 			if (reg != null) {
 				return IngredientHelper.get().regex(reg).kjs$getFirst();
@@ -200,7 +201,7 @@ public interface ItemStackJS {
 			return IngredientHelper.get().creativeTab(group).kjs$getFirst();
 		}
 
-		var reg = UtilsJS.parseRegex(s);
+		var reg = RegExpJS.of(s);
 
 		if (reg != null) {
 			return IngredientHelper.get().regex(reg).kjs$getFirst();

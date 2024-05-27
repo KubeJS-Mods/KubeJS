@@ -1,11 +1,19 @@
 package dev.latvian.mods.kubejs.color;
 
+import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.bindings.ColorWrapper;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.SpecialEquality;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 public interface Color extends SpecialEquality {
+	Codec<Color> CODEC = KubeJSCodecs.stringResolverCodec(Color::toString, ColorWrapper::of);
+	StreamCodec<ByteBuf, Color> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
+
 	int getArgbJS();
 
 	default int getRgbJS() {

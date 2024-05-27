@@ -6,8 +6,6 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
-import dev.latvian.mods.kubejs.bindings.ColorWrapper;
-import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -21,16 +19,10 @@ import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
 public interface KubeJSCodecs {
-	Codec<Pattern> REGEX = stringResolverCodec(UtilsJS::toRegexString, UtilsJS::parseRegex);
 	Codec<Duration> DURATION = stringResolverCodec(Duration::toString, UtilsJS::getDuration);
-	Codec<Color> COLOR = stringResolverCodec(Color::toString, ColorWrapper::of);
-
-	StreamCodec<ByteBuf, Pattern> REGEX_STREAM = ByteBufCodecs.fromCodec(REGEX);
-	StreamCodec<ByteBuf, Duration> DURATION_STREAM = ByteBufCodecs.fromCodec(DURATION);
-	StreamCodec<ByteBuf, Color> COLOR_STREAM = ByteBufCodecs.fromCodec(COLOR);
+	StreamCodec<ByteBuf, Duration> DURATION_STREAM = ByteBufCodecs.STRING_UTF8.map(UtilsJS::getDuration, Duration::toString);
 
 	StreamCodec<? super RegistryFriendlyByteBuf, IntProvider> INT_PROVIDER_STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(IntProvider.CODEC);
 

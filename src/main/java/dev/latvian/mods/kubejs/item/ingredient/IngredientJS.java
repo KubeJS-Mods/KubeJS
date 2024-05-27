@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
+import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
@@ -41,7 +42,7 @@ public interface IngredientJS {
 		} else if (o instanceof TagKey<?> tag) {
 			return Ingredient.of(TagKey.create(Registries.ITEM, tag.location()));
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
-			var reg = UtilsJS.parseRegex(o);
+			var reg = RegExpJS.of(o);
 
 			if (reg != null) {
 				return IngredientHelper.get().regex(reg);
@@ -108,7 +109,7 @@ public interface IngredientJS {
 			return IngredientHelper.get().creativeTab(group);
 		}
 
-		var reg = UtilsJS.parseRegex(s);
+		var reg = RegExpJS.of(s);
 
 		if (reg != null) {
 			return IngredientHelper.get().regex(reg);

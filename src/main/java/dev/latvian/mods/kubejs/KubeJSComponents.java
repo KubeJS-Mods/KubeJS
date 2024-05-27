@@ -6,6 +6,7 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.HolderLookup;
@@ -24,6 +25,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 public interface KubeJSComponents {
 	DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, KubeJS.MOD_ID);
+
 	DynamicCommandExceptionType ERROR_UNKNOWN_COMPONENT = new DynamicCommandExceptionType((object) -> Component.translatableEscape("arguments.item.component.unknown", object));
 	Dynamic2CommandExceptionType ERROR_MALFORMED_COMPONENT = new Dynamic2CommandExceptionType((object, object2) -> Component.translatableEscape("arguments.item.component.malformed", object, object2));
 	SimpleCommandExceptionType ERROR_EXPECTED_COMPONENT = new SimpleCommandExceptionType(Component.translatable("arguments.item.component.expected"));
@@ -45,7 +47,7 @@ public interface KubeJSComponents {
 			reader.skipWhitespace();
 			int i = reader.getCursor();
 			var dataResult = dataComponentType.codecOrThrow().parse(registryOps, new TagParser(reader).readValue());
-			builder.set(dataComponentType, UtilsJS.cast(dataResult.getOrThrow((string) -> {
+			builder.set(dataComponentType, Cast.to(dataResult.getOrThrow((string) -> {
 				reader.setCursor(i);
 				return ERROR_MALFORMED_COMPONENT.createWithContext(reader, dataComponentType.toString(), string);
 			})));

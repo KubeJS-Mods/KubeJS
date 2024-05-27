@@ -16,13 +16,13 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
-import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
@@ -82,7 +82,6 @@ import java.util.regex.Pattern;
 
 public class UtilsJS {
 	public static final Random RANDOM = new Random();
-	public static final Pattern REGEX_PATTERN = Pattern.compile("/(.*)/([a-z]*)");
 	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft:air");
 	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[:_/]");
 	public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in", "and", "or", "but", "for"));
@@ -111,88 +110,13 @@ public class UtilsJS {
 		}
 	}
 
+	/**
+	 * Use {@link Cast#to(Object)}
+	 */
+	@Deprecated(forRemoval = true)
 	@SuppressWarnings("unchecked")
 	public static <T> T cast(Object o) {
 		return (T) o;
-	}
-
-	@Nullable
-	public static Pattern parseRegex(Object o) {
-		if (o instanceof CharSequence || o instanceof NativeRegExp) {
-			return regex(o.toString());
-		} else if (o instanceof Pattern pattern) {
-			return pattern;
-		}
-
-		return null;
-	}
-
-	@Nullable
-	public static Pattern regex(String string) {
-		if (string.length() < 3) {
-			return null;
-		}
-
-		var matcher = REGEX_PATTERN.matcher(string);
-
-		if (matcher.matches()) {
-			var flags = 0;
-			var f = matcher.group(2);
-
-			for (var i = 0; i < f.length(); i++) {
-				switch (f.charAt(i)) {
-					case 'd' -> flags |= Pattern.UNIX_LINES;
-					case 'i' -> flags |= Pattern.CASE_INSENSITIVE;
-					case 'x' -> flags |= Pattern.COMMENTS;
-					case 'm' -> flags |= Pattern.MULTILINE;
-					case 's' -> flags |= Pattern.DOTALL;
-					case 'u' -> flags |= Pattern.UNICODE_CASE;
-					case 'U' -> flags |= Pattern.UNICODE_CHARACTER_CLASS;
-				}
-			}
-
-			return Pattern.compile(matcher.group(1), flags);
-		}
-
-		return null;
-	}
-
-	public static String toRegexString(Pattern pattern) {
-		var sb = new StringBuilder("/");
-		sb.append(pattern.pattern());
-		sb.append('/');
-
-		var flags = pattern.flags();
-
-		if ((flags & Pattern.UNIX_LINES) != 0) {
-			sb.append('d');
-		}
-
-		if ((flags & Pattern.CASE_INSENSITIVE) != 0) {
-			sb.append('i');
-		}
-
-		if ((flags & Pattern.COMMENTS) != 0) {
-			sb.append('x');
-		}
-
-		if ((flags & Pattern.MULTILINE) != 0) {
-			sb.append('m');
-		}
-
-		if ((flags & Pattern.DOTALL) != 0) {
-			sb.append('s');
-		}
-
-		if ((flags & Pattern.UNICODE_CASE) != 0) {
-			sb.append('u');
-		}
-
-		if ((flags & Pattern.UNICODE_CHARACTER_CLASS) != 0) {
-			sb.append('U');
-		}
-
-		return sb.toString();
 	}
 
 	public static void queueIO(Runnable runnable) {
@@ -404,6 +328,8 @@ public class UtilsJS {
 			return id;
 		} else if (o instanceof ResourceKey<?> key) {
 			return key.location();
+		} else if (o instanceof Holder<?> holder) {
+			return holder.unwrapKey().get().location();
 		}
 
 		var s = o instanceof JsonPrimitive p ? p.getAsString() : o.toString();

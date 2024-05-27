@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTUtils;
+import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
@@ -152,7 +153,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			return new TagMatch((TagKey<Block>) tag);
 		}
 
-		var pattern = UtilsJS.parseRegex(o);
+		var pattern = RegExpJS.of(o);
 		return pattern == null ? BlockStatePredicate.fromString(o.toString()) : new RegexMatch(pattern);
 	}
 

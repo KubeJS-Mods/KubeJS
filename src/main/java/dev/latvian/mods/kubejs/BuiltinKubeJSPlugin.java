@@ -119,14 +119,17 @@ import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
 import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
+import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.RotationAxis;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.kubejs.util.StringWithContext;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WithContext;
+import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
 import dev.latvian.mods.unit.Unit;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -139,6 +142,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
@@ -409,12 +413,15 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 	public void registerTypeWrappers(WrapperRegistry registry) {
 		registry.register(StringWithContext.class, (cx, o, target) -> StringWithContext.of(cx, o));
 		registry.register(WithContext.class, WithContext::of);
+		registry.register(Holder.class, KubeJSTypeWrappers::holder);
+		registry.register(ResourceKey.class, KubeJSTypeWrappers::resourceKey);
+		registry.register(RegistryPredicate.class, RegistryPredicate::of);
 
 		// Java / Minecraft //
 		registry.registerSimple(String.class, String::valueOf);
 		registry.registerSimple(CharSequence.class, String::valueOf);
 		registry.registerSimple(UUID.class, UUIDWrapper::fromString);
-		registry.registerSimple(Pattern.class, UtilsJS::parseRegex);
+		registry.registerSimple(Pattern.class, RegExpJS::of);
 		registry.registerSimple(JsonObject.class, MapJS::json);
 		registry.registerSimple(JsonArray.class, ListJS::json);
 		registry.registerSimple(JsonElement.class, JsonIO::of);

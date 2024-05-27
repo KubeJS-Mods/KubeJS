@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
@@ -105,7 +106,9 @@ import net.minecraft.world.level.storage.loot.providers.score.LootScoreProviderT
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -115,6 +118,7 @@ import java.util.Set;
 
 public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>, TypeWrapperFactory<T> {
 	public static final Map<ResourceKey<? extends Registry<?>>, RegistryInfo<?>> MAP = Collections.synchronizedMap(new LinkedHashMap<>());
+	private static final Map<Class<?>, List<RegistryInfo<?>>> CLASS_MAP = Collections.synchronizedMap(new IdentityHashMap<>());
 	public static final List<BuilderBase<?>> ALL_BUILDERS = new LinkedList<>();
 
 	@Info("Platform-agnostic wrapper of minecraft registries, can be used to register content or get objects from the registry")
@@ -124,8 +128,9 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 		var r = MAP.get(key);
 
 		if (r == null) {
-			var reg = new RegistryInfo<>(UtilsJS.cast(key), type);
+			var reg = new RegistryInfo<>(Cast.to(key), type);
 			MAP.put(key, reg);
+			CLASS_MAP.computeIfAbsent(type, k -> new ArrayList<>(1)).add(reg);
 			return reg;
 		}
 
@@ -133,7 +138,25 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	}
 
 	public static RegistryInfo<?> of(ResourceKey<? extends Registry<?>> key) {
-		return of(UtilsJS.cast(key), Object.class);
+		return of(Cast.to(key), Object.class);
+	}
+
+	@Nullable
+	public static RegistryInfo<?> ofClass(Class<?> type) {
+		if (type == Object.class) {
+			return null;
+		} else if (type == Block.class) {
+			return BLOCK;
+		} else if (type == Item.class) {
+			return ITEM;
+		} else {
+			var list = CLASS_MAP.get(type);
+			return list == null || list.size() != 1 ? null : list.getFirst();
+		}
+	}
+
+	public static List<RegistryInfo<?>> allOfClass(Class<?> type) {
+		return CLASS_MAP.getOrDefault(type, List.of());
 	}
 
 	public static final RegistryInfo<SoundEvent> SOUND_EVENT = of(Registries.SOUND_EVENT, SoundEvent.class);

@@ -2,7 +2,9 @@ package dev.latvian.mods.kubejs.integration.jei;
 
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.event.KubeEvent;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ListJS;
+import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
@@ -31,11 +33,11 @@ public class HideCustomJEIKubeEvent implements KubeEvent {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public HideJEIKubeEvent get(Context cx, IIngredientType s) {
 		return events.computeIfAbsent(s, type -> new HideJEIKubeEvent(runtime, type, o -> {
-			Function<Object, String> idFn = it -> runtime.getIngredientManager().getIngredientHelper(UtilsJS.cast(type)).getUniqueId(it, UidContext.Ingredient);
+			Function<Object, String> idFn = it -> runtime.getIngredientManager().getIngredientHelper(Cast.to(type)).getUniqueId(it, UidContext.Ingredient);
 			List<Predicate> predicates = new ArrayList<>();
 
 			for (Object o1 : ListJS.orSelf(o)) {
-				var regex = UtilsJS.parseRegex(o1);
+				var regex = RegExpJS.of(o1);
 				if (regex != null) {
 					predicates.add(it -> regex.asPredicate().test(idFn.apply(it)));
 				} else if (o1 instanceof Predicate p) {
