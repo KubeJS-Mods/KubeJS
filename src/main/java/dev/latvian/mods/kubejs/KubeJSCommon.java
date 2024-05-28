@@ -6,12 +6,13 @@ import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class KubeJSCommon {
-	public void init() {
+	public void init(IEventBus bus) {
 	}
 
 	public void clientSetup() {

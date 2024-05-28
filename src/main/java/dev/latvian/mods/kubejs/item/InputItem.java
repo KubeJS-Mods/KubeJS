@@ -24,7 +24,7 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonS
 	public static final InputItem EMPTY = new InputItem(Ingredient.EMPTY, 0);
 	public static final Map<String, InputItem> PARSE_CACHE = new HashMap<>();
 
-	public static InputItem of(Ingredient ingredient, int count) {
+	public static InputItem create(Ingredient ingredient, int count) {
 		return count <= 0 || ingredient == Ingredient.EMPTY ? EMPTY : new InputItem(ingredient, count);
 	}
 
@@ -32,9 +32,9 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonS
 		if (o instanceof InputItem in) {
 			return in;
 		} else if (o instanceof ItemStack stack) {
-			return stack.isEmpty() ? EMPTY : of(Ingredient.of(stack), stack.getCount());
+			return stack.isEmpty() ? EMPTY : create(Ingredient.of(stack), stack.getCount());
 		} else if (o instanceof OutputItem out) {
-			return out.isEmpty() ? EMPTY : of(Ingredient.of(out.item), out.getCount());
+			return out.isEmpty() ? EMPTY : create(Ingredient.of(out.item), out.getCount());
 		} else if (o instanceof CharSequence) {
 			var str = o.toString();
 
@@ -61,14 +61,14 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonS
 					}
 
 					int count = Integer.parseInt(str.substring(0, x));
-					cached = of(IngredientJS.of(str.substring(x + 2)), count);
+					cached = create(IngredientJS.of(str.substring(x + 2)), count);
 				} catch (Exception ignore) {
 					throw new RecipeExceptionJS("Invalid item input: " + str);
 				}
 			}
 
 			if (cached == null) {
-				cached = of(IngredientJS.of(str), 1);
+				cached = create(IngredientJS.of(str), 1);
 			}
 
 			PARSE_CACHE.put(str, cached);
@@ -77,7 +77,7 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonS
 			return ofJson(json);
 		}
 
-		return of(IngredientJS.of(o), 1);
+		return create(IngredientJS.of(o), 1);
 	}
 
 	static InputItem ofJson(JsonElement json) {
@@ -92,12 +92,12 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonS
 
 			if (o.has("type")) {
 				try {
-					return of(RecipeHelper.get().getCustomIngredient(o), count);
+					return create(RecipeHelper.get().getCustomIngredient(o), count);
 				} catch (Exception ex) {
 					throw new RecipeExceptionJS("Failed to parse custom ingredient (" + o.get("type") + ") from " + o + ": " + ex);
 				}
 			} else if (val || o.has("ingredient")) {
-				return of(IngredientJS.ofJson(val ? o.get("value") : o.get("ingredient")), count);
+				return create(IngredientJS.ofJson(val ? o.get("value") : o.get("ingredient")), count);
 			} else if (o.has("tag")) {
 				return IngredientHelper.get().tag(o.get("tag").getAsString()).kjs$withCount(count);
 			} else if (o.has("item")) {
@@ -106,7 +106,7 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonS
 
 			return EMPTY;
 		} else {
-			return of(IngredientJS.ofJson(json), 1);
+			return create(IngredientJS.ofJson(json), 1);
 		}
 	}
 

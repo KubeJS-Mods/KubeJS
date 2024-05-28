@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.block.predicate;
 
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -106,7 +106,7 @@ public class BlockIDPredicate implements BlockPredicate {
 		var state = getBlock().defaultBlockState();
 
 		for (var object : getBlockProperties()) {
-			state = state.setValue(object.property, UtilsJS.cast(object.value));
+			state = state.setValue(object.property, Cast.to(object.value));
 		}
 
 		return state;

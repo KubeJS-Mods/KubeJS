@@ -88,7 +88,11 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 		if (ItemEvents.FIRST_LEFT_CLICKED.hasListeners()) {
 			var player = kjs$self().player;
 			var stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-			ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedKubeEvent(player, InteractionHand.MAIN_HAND, stack));
+			var key = stack.getItem().kjs$getRegistryKey();
+
+			if (ItemEvents.FIRST_LEFT_CLICKED.hasListeners(key)) {
+				ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.CLIENT, key, new ItemClickedKubeEvent(player, InteractionHand.MAIN_HAND, stack));
+			}
 		}
 
 		PacketDistributor.sendToServer(new FirstClickPayload(0));
@@ -101,7 +105,11 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 
 			for (var hand : InteractionHand.values()) {
 				var stack = player.getItemInHand(hand);
-				ItemEvents.FIRST_RIGHT_CLICKED.post(ScriptType.CLIENT, stack.getItem(), new ItemClickedKubeEvent(player, hand, stack));
+				var key = stack.getItem().kjs$getRegistryKey();
+
+				if (ItemEvents.FIRST_RIGHT_CLICKED.hasListeners(key)) {
+					ItemEvents.FIRST_RIGHT_CLICKED.post(ScriptType.CLIENT, key, new ItemClickedKubeEvent(player, hand, stack));
+				}
 			}
 		}
 

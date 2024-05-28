@@ -40,8 +40,10 @@ public interface LivingEntityKJS extends EntityKJS {
 				b.foodBuilder.eaten.accept(event);
 			}
 
-			if (ItemEvents.FOOD_EATEN.hasListeners()) {
-				ItemEvents.FOOD_EATEN.post(entity, i, event);
+			var key = i.kjs$getRegistryKey();
+
+			if (ItemEvents.FOOD_EATEN.hasListeners(key)) {
+				ItemEvents.FOOD_EATEN.post(entity, key, event);
 			}
 		}
 	}

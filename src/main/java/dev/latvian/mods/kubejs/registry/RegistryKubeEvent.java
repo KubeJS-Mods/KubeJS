@@ -1,9 +1,7 @@
 package dev.latvian.mods.kubejs.registry;
 
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
-import dev.latvian.mods.kubejs.util.StringWithContext;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.ID;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,14 +16,14 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent {
 		this.created = new LinkedList<>();
 	}
 
-	public BuilderBase<? extends T> create(StringWithContext id, String type) {
+	public BuilderBase<? extends T> create(String id, String type) {
 		var t = registry.types.get(type);
 
 		if (t == null) {
 			throw new IllegalArgumentException("Unknown type '" + type + "' for object '" + id + "'!");
 		}
 
-		var b = t.factory().createBuilder(UtilsJS.getMCID(id.cx(), KubeJS.appendModId(id.string())));
+		var b = t.factory().createBuilder(ID.kjs(id));
 
 		if (b == null) {
 			throw new IllegalArgumentException("Unknown type '" + type + "' for object '" + id + "'!");
@@ -37,14 +35,14 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent {
 		return b;
 	}
 
-	public BuilderBase<? extends T> create(StringWithContext id) {
+	public BuilderBase<? extends T> create(String id) {
 		var t = registry.getDefaultType();
 
 		if (t == null) {
 			throw new IllegalArgumentException("Registry for type '" + registry.key.location() + "' doesn't have any builders registered!");
 		}
 
-		var b = t.factory().createBuilder(UtilsJS.getMCID(id.cx(), KubeJS.appendModId(id.string())));
+		var b = t.factory().createBuilder(ID.kjs(id));
 
 		if (b == null) {
 			throw new IllegalArgumentException("Unknown type '" + t.type() + "' for object '" + id + "'!");
@@ -56,12 +54,12 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent {
 		return b;
 	}
 
-	public CustomBuilderObject createCustom(StringWithContext id, Supplier<Object> object) {
+	public CustomBuilderObject createCustom(String id, Supplier<Object> object) {
 		if (object == null) {
 			throw new IllegalArgumentException("Tried to register a null object with id: " + id);
 		}
-		var rl = UtilsJS.getMCID(id.cx(), KubeJS.appendModId(id.string()));
 
+		var rl = ID.kjs(id);
 		var b = new CustomBuilderObject(rl, object, registry);
 		registry.addBuilder(b);
 		created.add(b);

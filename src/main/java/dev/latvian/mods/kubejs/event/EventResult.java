@@ -1,8 +1,12 @@
 package dev.latvian.mods.kubejs.event;
 
 import dev.architectury.event.CompoundEventResult;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.Cast;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 public class EventResult {
 	public enum Type {
@@ -75,10 +79,27 @@ public class EventResult {
 
 	public <T> CompoundEventResult<T> archCompound() {
 		return switch (type) {
-			case INTERRUPT_DEFAULT -> CompoundEventResult.interruptDefault(UtilsJS.cast(value));
-			case INTERRUPT_FALSE -> CompoundEventResult.interruptFalse(UtilsJS.cast(value));
-			case INTERRUPT_TRUE -> CompoundEventResult.interruptTrue(UtilsJS.cast(value));
+			case INTERRUPT_DEFAULT -> CompoundEventResult.interruptDefault(Cast.to(value));
+			case INTERRUPT_FALSE -> CompoundEventResult.interruptFalse(Cast.to(value));
+			case INTERRUPT_TRUE -> CompoundEventResult.interruptTrue(Cast.to(value));
 			default -> CompoundEventResult.pass();
 		};
+	}
+
+	public boolean applyCancel(ICancellableEvent event) {
+		if (interruptFalse()) {
+			event.setCanceled(true);
+			return true;
+		}
+
+		return false;
+	}
+
+	public void applyTristate(Consumer<TriState> consumer) {
+		if (interruptFalse()) {
+			consumer.accept(TriState.FALSE);
+		} else if (interruptTrue()) {
+			consumer.accept(TriState.TRUE);
+		}
 	}
 }

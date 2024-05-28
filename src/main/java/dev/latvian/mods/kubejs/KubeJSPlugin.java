@@ -26,87 +26,82 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 import java.util.Map;
 
-public class KubeJSPlugin {
-	public void init() {
+public interface KubeJSPlugin {
+	default void init() {
 	}
 
-	public void initStartup() {
+	default void initStartup() {
 	}
 
-	public void clientInit() {
+	default void clientInit() {
 	}
 
-	public void afterInit() {
+	default void afterInit() {
 	}
 
-	public void onServerReload() {
+	default void onServerReload() {
 	}
 
 	/**
 	 * Call {@link EventGroupRegistry#register(EventGroup)} for event groups your mod adds
 	 */
-	public void registerEvents(EventGroupRegistry registry) {
+	default void registerEvents(EventGroupRegistry registry) {
 	}
 
-	public void registerClasses(ScriptType type, ClassFilter filter) {
+	default void registerClasses(ScriptType type, ClassFilter filter) {
 	}
 
-	public void registerBindings(BindingsEvent event) {
+	default void registerBindings(BindingsEvent event) {
 	}
 
-	public void registerTypeWrappers(WrapperRegistry registry) {
+	default void registerTypeWrappers(WrapperRegistry registry) {
 	}
 
-	public void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
+	default void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
 	}
 
-	public void registerRecipeComponents(RecipeComponentFactoryRegistryEvent event) {
+	default void registerRecipeComponents(RecipeComponentFactoryRegistryEvent event) {
 	}
 
-	public void registerBlockEntityAttachments(List<BlockEntityAttachmentType> types) {
+	default void registerBlockEntityAttachments(List<BlockEntityAttachmentType> types) {
 	}
 
-	public void attachServerData(AttachedData<MinecraftServer> event) {
+	default void attachServerData(AttachedData<MinecraftServer> event) {
 	}
 
-	public void attachLevelData(AttachedData<Level> event) {
+	default void attachLevelData(AttachedData<Level> event) {
 	}
 
-	public void attachPlayerData(AttachedData<Player> event) {
+	default void attachPlayerData(AttachedData<Player> event) {
 	}
 
-	public void generateDataJsons(DataJsonGenerator generator) {
+	default void generateDataJsons(DataJsonGenerator generator) {
 	}
 
-	public void generateAssetJsons(AssetJsonGenerator generator) {
+	default void generateAssetJsons(AssetJsonGenerator generator) {
 	}
 
-	public void generateLang(LangKubeEvent event) {
+	default void generateLang(LangKubeEvent event) {
 	}
 
-	public void loadCommonProperties(CommonProperties properties) {
+	default void loadCommonProperties(CommonProperties properties) {
 	}
 
-	public void loadClientProperties(ClientProperties properties) {
+	default void loadClientProperties(ClientProperties properties) {
 	}
 
-	public void loadDevProperties(DevProperties properties) {
+	default void loadDevProperties(DevProperties properties) {
 	}
 
-	public void clearCaches() {
+	default void clearCaches() {
 	}
 
-	public void exportServerData(DataExport export) {
-	}
-
-	@Override
-	public String toString() {
-		return getClass().getName();
+	default void exportServerData(DataExport export) {
 	}
 
 	/**
 	 * Only use this method if your mod adds runtime recipes and is conflicting with KubeJS recipe manager. Disable your other hook if "kubejs" mod is loaded!
 	 */
-	public void injectRuntimeRecipes(RecipesKubeEvent event, RecipeManager manager, Map<ResourceLocation, RecipeHolder<?>> recipesByName) {
+	default void injectRuntimeRecipes(RecipesKubeEvent event, RecipeManager manager, Map<ResourceLocation, RecipeHolder<?>> recipesByName) {
 	}
 }

@@ -4,7 +4,7 @@ import dev.architectury.registry.fuel.FuelRegistry;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
 import dev.latvian.mods.kubejs.item.MutableToolTier;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.Util;
 import net.minecraft.core.component.DataComponentType;
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 @RemapPrefixForJS("kjs$")
-public interface ItemKJS extends IngredientSupplierKJS {
+public interface ItemKJS extends IngredientSupplierKJS, WithRegistryKeyKJS<Item> {
 	@Nullable
 	default ItemBuilder kjs$getItemBuilder() {
 		throw new NoMixinException();
@@ -28,8 +28,13 @@ public interface ItemKJS extends IngredientSupplierKJS {
 		throw new NoMixinException();
 	}
 
+	@Override
+	default RegistryInfo<Item> kjs$getKubeRegistry() {
+		return RegistryInfo.ITEM;
+	}
+
 	default ResourceLocation kjs$getIdLocation() {
-		return UtilsJS.UNKNOWN_ID;
+		return kjs$getRegistryKey().location();
 	}
 
 	default String kjs$getId() {

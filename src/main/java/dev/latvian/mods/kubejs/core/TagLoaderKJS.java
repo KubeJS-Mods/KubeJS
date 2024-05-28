@@ -29,7 +29,7 @@ public interface TagLoaderKJS<T> {
 
 		var regInfo = RegistryInfo.of(reg.key());
 
-		if (regInfo.hasDefaultTags || ServerEvents.TAGS.hasListeners(reg.key())) {
+		if (regInfo.hasDefaultTags || ServerEvents.TAGS.hasListeners(regInfo.key)) {
 			var preEvent = kjs$getResources().kjs$getServerScriptManager().preTagEvents.get(reg.key());
 
 			var event = new TagKubeEvent(regInfo, reg);
@@ -50,7 +50,7 @@ public interface TagLoaderKJS<T> {
 			}
 
 			if (preEvent == null) {
-				ServerEvents.TAGS.post(event, regInfo.key, TagKubeEvent.TAG_EVENT_HANDLER);
+				ServerEvents.TAGS.post(event, regInfo.key);
 			} else {
 				for (var a : preEvent.actions) {
 					a.accept(event);

@@ -39,6 +39,6 @@ public class AnyMatchRuleTest extends RuleTest {
 
 	@Override
 	protected RuleTestType<?> getType() {
-		return KubeJSRuleTests.ANY_MATCH;
+		return KubeJSRuleTests.ANY_MATCH.get();
 	}
 }

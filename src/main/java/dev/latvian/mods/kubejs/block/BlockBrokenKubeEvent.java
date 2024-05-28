@@ -1,62 +1,42 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.architectury.utils.value.IntValue;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.player.KubePlayerEvent;
 import dev.latvian.mods.kubejs.typings.Info;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
 @Info(value = """
 	Invoked when a block is destroyed by a player.
 	""")
 public class BlockBrokenKubeEvent implements KubePlayerEvent {
-	private final ServerPlayer entity;
-	private final Level level;
-	private final BlockPos pos;
-	private final BlockState state;
-	@Nullable
-	private final IntValue xp;
+	private final BlockEvent.BreakEvent event;
 
-	public BlockBrokenKubeEvent(ServerPlayer entity, Level level, BlockPos pos, BlockState state, @Nullable IntValue xp) {
-		this.entity = entity;
-		this.level = level;
-		this.pos = pos;
-		this.state = state;
-		this.xp = xp;
+	public BlockBrokenKubeEvent(BlockEvent.BreakEvent event) {
+		this.event = event;
 	}
 
 	@Override
 	@Info("The player that broke the block.")
-	public ServerPlayer getEntity() {
-		return entity;
+	public Player getEntity() {
+		return event.getPlayer();
 	}
 
 	@Info("The block that was broken.")
 	public BlockContainerJS getBlock() {
-		return new BlockContainerJS(level, pos) {
-			@Override
-			public BlockState getBlockState() {
-				return state;
-			}
-		};
+		var block = new BlockContainerJS((Level) event.getLevel(), event.getPos());
+		block.cachedState = event.getState();
+		return block;
 	}
 
 	@Info("The experience dropped by the block. Always `0` on Fabric.")
 	public int getXp() {
-		if (xp == null) {
-			return 0;
-		}
-		return xp.getAsInt();
+		return event.getExpToDrop();
 	}
 
 	@Info("Sets the experience dropped by the block. Only works on Forge.")
 	public void setXp(int xp) {
-		if (this.xp != null) {
-			this.xp.accept(xp);
-		}
+		event.setExpToDrop(xp);
 	}
 }

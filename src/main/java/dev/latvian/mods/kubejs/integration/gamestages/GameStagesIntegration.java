@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.stages.StageCreationEvent;
 import dev.latvian.mods.kubejs.stages.StageEvents;
 
-public class GameStagesIntegration extends KubeJSPlugin {
+public class GameStagesIntegration implements KubeJSPlugin {
 	@Override
 	public void init() {
 		StageEvents.overrideCreation(GameStagesIntegration::override);

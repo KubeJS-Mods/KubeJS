@@ -2,9 +2,10 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -14,13 +15,23 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @RemapPrefixForJS("kjs$")
-public interface BlockKJS extends BlockBuilderProvider {
+public interface BlockKJS extends BlockBuilderProvider, WithRegistryKeyKJS<Block> {
 	default void kjs$setBlockBuilder(BlockBuilder b) {
 		throw new NoMixinException();
 	}
 
+	@Override
+	default RegistryInfo<Block> kjs$getKubeRegistry() {
+		return RegistryInfo.BLOCK;
+	}
+
+	@Override
+	default ResourceKey<Block> kjs$getRegistryKey() {
+		throw new NoMixinException();
+	}
+
 	default ResourceLocation kjs$getIdLocation() {
-		return UtilsJS.UNKNOWN_ID;
+		return kjs$getRegistryKey().location();
 	}
 
 	default String kjs$getId() {

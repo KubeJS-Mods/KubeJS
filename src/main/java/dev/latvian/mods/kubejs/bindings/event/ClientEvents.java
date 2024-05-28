@@ -10,9 +10,12 @@ import dev.latvian.mods.kubejs.client.painter.screen.PaintScreenKubeEvent;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.Extra;
+import dev.latvian.mods.kubejs.event.SpecializedEventHandler;
+import net.minecraft.resources.ResourceLocation;
 
 public interface ClientEvents {
 	EventGroup GROUP = EventGroup.of("ClientEvents");
+
 	// add low assets
 	EventHandler HIGH_ASSETS = GROUP.client("highPriorityAssets", () -> GenerateClientAssetsKubeEvent.class);
 	EventHandler INIT = GROUP.startup("init", () -> ClientInitKubeEvent.class);
@@ -23,6 +26,6 @@ public interface ClientEvents {
 	EventHandler DEBUG_LEFT = GROUP.client("leftDebugInfo", () -> DebugInfoKubeEvent.class);
 	EventHandler DEBUG_RIGHT = GROUP.client("rightDebugInfo", () -> DebugInfoKubeEvent.class);
 	EventHandler PAINT_SCREEN = GROUP.client("paintScreen", () -> PaintScreenKubeEvent.class);
-	EventHandler ATLAS_SPRITE_REGISTRY = GROUP.client("atlasSpriteRegistry", () -> AtlasSpriteRegistryKubeEvent.class).extra(Extra.REQUIRES_ID);
-	EventHandler LANG = GROUP.client("lang", () -> LangKubeEvent.class).extra(Extra.REQUIRES_STRING);
+	SpecializedEventHandler<ResourceLocation> ATLAS_SPRITE_REGISTRY = GROUP.client("atlasSpriteRegistry", Extra.ID, () -> AtlasSpriteRegistryKubeEvent.class).required();
+	SpecializedEventHandler<String> LANG = GROUP.client("lang", Extra.STRING, () -> LangKubeEvent.class).required();
 }

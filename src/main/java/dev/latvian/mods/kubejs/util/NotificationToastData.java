@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.util;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.client.NotificationToast;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.color.SimpleColor;
@@ -34,7 +33,7 @@ public record NotificationToastData(
 	public static final Color DEFAULT_BACKGROUND_COLOR = new SimpleColor(0x241335);
 
 	public static final MapCodec<NotificationToastData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-		KubeJSCodecs.DURATION.optionalFieldOf("duration", DEFAULT_DURATION).forGetter(NotificationToastData::duration),
+		TimeJS.DURATION.optionalFieldOf("duration", DEFAULT_DURATION).forGetter(NotificationToastData::duration),
 		ComponentSerialization.CODEC.optionalFieldOf("text", Component.empty()).forGetter(NotificationToastData::text),
 		IconKJS.CODEC.optionalFieldOf("icon", IconKJS.NONE).forGetter(NotificationToastData::icon),
 		Codec.INT.optionalFieldOf("icon_size", 16).forGetter(NotificationToastData::iconSize),
@@ -47,7 +46,7 @@ public record NotificationToastData(
 	public static final StreamCodec<RegistryFriendlyByteBuf, NotificationToastData> STREAM_CODEC = new StreamCodec<>() {
 		@Override
 		public NotificationToastData decode(RegistryFriendlyByteBuf buf) {
-			var duration = KubeJSCodecs.DURATION_STREAM.decode(buf);
+			var duration = TimeJS.DURATION_STREAM.decode(buf);
 			var text = ComponentSerialization.STREAM_CODEC.decode(buf);
 			var icon = IconKJS.STREAM_CODEC.decode(buf);
 			var iconSize = ByteBufCodecs.VAR_INT.decode(buf);
@@ -60,7 +59,7 @@ public record NotificationToastData(
 
 		@Override
 		public void encode(RegistryFriendlyByteBuf buf, NotificationToastData data) {
-			KubeJSCodecs.DURATION_STREAM.encode(buf, data.duration());
+			TimeJS.DURATION_STREAM.encode(buf, data.duration());
 			ComponentSerialization.STREAM_CODEC.encode(buf, data.text());
 			IconKJS.STREAM_CODEC.encode(buf, data.icon());
 			ByteBufCodecs.VAR_INT.encode(buf, data.iconSize());

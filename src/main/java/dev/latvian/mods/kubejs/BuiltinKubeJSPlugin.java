@@ -80,6 +80,8 @@ import dev.latvian.mods.kubejs.misc.PotionBuilder;
 import dev.latvian.mods.kubejs.misc.SoundEventBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerProfessionBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerTypeBuilder;
+import dev.latvian.mods.kubejs.neoforge.KubeJSEntryPoint;
+import dev.latvian.mods.kubejs.neoforge.NativeEventWrapper;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
@@ -104,7 +106,6 @@ import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingTrimRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.StonecuttingRecipeSchema;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.WrapperRegistry;
@@ -112,6 +113,7 @@ import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.FluidAmounts;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -122,9 +124,8 @@ import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.RotationAxis;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
-import dev.latvian.mods.kubejs.util.StringWithContext;
+import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.kubejs.util.WithContext;
 import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
 import dev.latvian.mods.unit.Unit;
 import net.minecraft.commands.arguments.selector.EntitySelector;
@@ -168,6 +169,7 @@ import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -187,7 +189,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-public class BuiltinKubeJSPlugin extends KubeJSPlugin {
+public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	public static final HashMap<String, Object> GLOBAL = new HashMap<>();
 
 	@Override
@@ -330,6 +332,15 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		filter.deny("org.spongepowered.asm"); // Sponge ASM
 		filter.deny("org.openjdk.nashorn"); // Nashorn
 		filter.deny("jdk.nashorn"); // Nashorn
+		filter.deny("org.lwjgl.system"); // LWJGL
+
+		filter.allow("net.neoforged"); // Forge
+		filter.deny("net.neoforged.fml");
+		filter.deny("net.neoforged.accesstransformer");
+		filter.deny("net.neoforged.coremod");
+
+		filter.deny("cpw.mods.modlauncher"); // FML
+		filter.deny("cpw.mods.gross");
 
 		// Mods
 		filter.allow("mezz.jei"); // JEI
@@ -407,90 +418,93 @@ public class BuiltinKubeJSPlugin extends KubeJSPlugin {
 		event.add("SoundType", SoundType.class);
 
 		event.add("BlockProperties", BlockStateProperties.class);
+
+		if (event.type().isStartup()) {
+			event.add("NativeEvents", new NativeEventWrapper("NativeEvents", NeoForge.EVENT_BUS));
+			KubeJSEntryPoint.eventBus().ifPresent(bus -> event.add("NativeModEvents", new NativeEventWrapper("NativeModEvents", bus)));
+		}
 	}
 
 	@Override
 	public void registerTypeWrappers(WrapperRegistry registry) {
-		registry.register(StringWithContext.class, (cx, o, target) -> StringWithContext.of(cx, o));
-		registry.register(WithContext.class, WithContext::of);
-		registry.register(Holder.class, KubeJSTypeWrappers::holder);
-		registry.register(ResourceKey.class, KubeJSTypeWrappers::resourceKey);
+		registry.register(Holder.class, KubeJSTypeWrappers::holderOf);
+		registry.register(ResourceKey.class, KubeJSTypeWrappers::resourceKeyOf);
 		registry.register(RegistryPredicate.class, RegistryPredicate::of);
 
 		// Java / Minecraft //
-		registry.registerSimple(String.class, String::valueOf);
-		registry.registerSimple(CharSequence.class, String::valueOf);
-		registry.registerSimple(UUID.class, UUIDWrapper::fromString);
-		registry.registerSimple(Pattern.class, RegExpJS::of);
-		registry.registerSimple(JsonObject.class, MapJS::json);
-		registry.registerSimple(JsonArray.class, ListJS::json);
-		registry.registerSimple(JsonElement.class, JsonIO::of);
-		registry.registerSimple(JsonPrimitive.class, JsonIO::primitiveOf);
-		registry.registerSimple(Path.class, UtilsJS::getPath);
-		registry.registerSimple(File.class, UtilsJS::getFileFromPath);
-		registry.register(Unit.class, (cx, from, target) -> Painter.INSTANCE.unitOf(cx, from));
-		registry.registerSimple(TemporalAmount.class, UtilsJS::getTemporalAmount);
-		registry.registerSimple(Duration.class, UtilsJS::getDuration);
+		registry.register(String.class, String::valueOf);
+		registry.register(CharSequence.class, String::valueOf);
+		registry.register(UUID.class, UUIDWrapper::fromString);
+		registry.register(Pattern.class, RegExpJS::of);
+		registry.register(JsonObject.class, MapJS::json);
+		registry.register(JsonArray.class, ListJS::json);
+		registry.register(JsonElement.class, JsonIO::of);
+		registry.register(JsonPrimitive.class, JsonIO::primitiveOf);
+		registry.register(Path.class, KubeJSTypeWrappers::pathOf);
+		registry.register(File.class, KubeJSTypeWrappers::fileOf);
+		registry.register(Unit.class, Painter.INSTANCE::unitOf);
+		registry.register(TemporalAmount.class, TimeJS::temporalAmountOf);
+		registry.register(Duration.class, TimeJS::durationOf);
 
-		registry.register(ResourceLocation.class, (cx, from, target) -> UtilsJS.getMCID(cx, from));
-		registry.register(CompoundTag.class, (from, target) -> NBTUtils.isTagCompound(from), (cx, o, target) -> NBTUtils.toTagCompound(cx, o));
-		registry.register(CollectionTag.class, (from, target) -> NBTUtils.isTagCollection(from), (cx, o, target) -> NBTUtils.toTagCollection(cx, o));
-		registry.register(ListTag.class, (from, target) -> NBTUtils.isTagCollection(from), (cx, o, target) -> NBTUtils.toTagList(cx, o));
-		registry.register(Tag.class, (cx, from, target) -> NBTUtils.toTag(cx, from));
-		registry.register(DataComponentMap.class, (cx, from, target) -> KubeJSComponents.mapOf(cx, from));
-		registry.register(DataComponentPatch.class, (cx, from, target) -> KubeJSComponents.patchOf(cx, from));
+		registry.register(ResourceLocation.class, ID::mc);
+		registry.register(CompoundTag.class, (from, target) -> NBTUtils.isTagCompound(from), NBTUtils::toTagCompound);
+		registry.register(CollectionTag.class, (from, target) -> NBTUtils.isTagCollection(from), NBTUtils::toTagCollection);
+		registry.register(ListTag.class, (from, target) -> NBTUtils.isTagCollection(from), NBTUtils::toTagList);
+		registry.register(Tag.class, NBTUtils::toTag);
+		registry.register(DataComponentMap.class, KubeJSComponents::mapOf);
+		registry.register(DataComponentPatch.class, KubeJSComponents::patchOf);
 
-		registry.registerSimple(BlockPos.class, UtilsJS::blockPosOf);
-		registry.registerSimple(Vec3.class, UtilsJS::vec3Of);
+		registry.register(BlockPos.class, KubeJSTypeWrappers::blockPosOf);
+		registry.register(Vec3.class, KubeJSTypeWrappers::vec3Of);
 
-		registry.register(Item.class, (cx, from, target) -> ItemStackJS.getRawItem(cx, from));
-		registry.register(ItemLike.class, (cx, from, target) -> ItemStackJS.getRawItem(cx, from));
+		registry.register(Item.class, ItemStackJS::getRawItem);
+		registry.register(ItemLike.class, ItemStackJS::getRawItem);
 		registry.registerEnumFromStringCodec(MobCategory.class, MobCategory.CODEC);
 
-		registry.registerSimple(AABB.class, AABBWrapper::wrap);
-		registry.register(IntProvider.class, (cx, o, target) -> UtilsJS.intProviderOf(cx, o));
-		registry.registerSimple(NumberProvider.class, UtilsJS::numberProviderOf);
+		registry.register(AABB.class, AABBWrapper::wrap);
+		registry.register(IntProvider.class, KubeJSTypeWrappers::intProviderOf);
+		registry.register(NumberProvider.class, KubeJSTypeWrappers::numberProviderOf);
 		registry.registerEnumFromStringCodec(LootContext.EntityTarget.class, LootContext.EntityTarget.CODEC);
 		registry.registerEnumFromStringCodec(CopyNameFunction.NameSource.class, CopyNameFunction.NameSource.CODEC);
-		registry.registerSimple(Enchantment.Cost.class, EnchantmentBuilder::costOf);
+		registry.register(Enchantment.Cost.class, EnchantmentBuilder::costOf);
 		registry.registerEnumFromStringCodec(ArmorItem.Type.class, ArmorItem.Type.CODEC);
 
 		// KubeJS //
-		registry.registerSimple(Map.class, MapJS::of);
-		registry.registerSimple(List.class, ListJS::of);
-		registry.registerSimple(Iterable.class, ListJS::of);
-		registry.registerSimple(Collection.class, ListJS::of);
-		registry.registerSimple(Set.class, ListJS::ofSet);
-		registry.registerSimple(ItemStack.class, ItemStackJS::of);
-		registry.registerSimple(Ingredient.class, IngredientJS::of);
-		registry.registerSimple(InputReplacement.class, InputReplacement::of);
-		registry.registerSimple(OutputReplacement.class, OutputReplacement::of);
-		registry.registerSimple(InputItem.class, InputItem::of);
-		registry.registerSimple(OutputItem.class, OutputItem::of);
-		registry.registerSimple(BlockStatePredicate.class, BlockStatePredicate::of);
-		registry.register(RuleTest.class, (cx, from, target) -> BlockStatePredicate.ruleTestOf(cx, from));
-		registry.registerSimple(FluidStack.class, FluidWrapper::wrap);
-		registry.registerSimple(dev.architectury.fluid.FluidStack.class, FluidWrapper::wrapArch);
-		registry.register(RecipeFilter.class, (cx, from, target) -> RecipeFilter.of(cx, from));
-		registry.registerSimple(IngredientActionFilter.class, IngredientActionFilter::filterOf);
-		registry.registerSimple(Tier.class, ItemBuilder::toToolTier);
-		registry.registerSimple(PlayerSelector.class, PlayerSelector::of);
-		registry.register(DamageSource.class, (cx, from, target) -> DamageSourceWrapper.of(cx, from));
-		registry.registerSimple(EntitySelector.class, UtilsJS::entitySelector);
-		registry.registerSimple(ReplacementMatch.class, ReplacementMatch::of);
-		registry.registerSimple(Stat.class, PlayerStatsJS::statOf);
-		registry.registerSimple(MapColor.class, MapColorHelper::of);
+		registry.register(Map.class, MapJS::of);
+		registry.register(List.class, ListJS::of);
+		registry.register(Iterable.class, ListJS::of);
+		registry.register(Collection.class, ListJS::of);
+		registry.register(Set.class, ListJS::ofSet);
+		registry.register(ItemStack.class, ItemStackJS::of);
+		registry.register(Ingredient.class, IngredientJS::of);
+		registry.register(InputReplacement.class, InputReplacement::of);
+		registry.register(OutputReplacement.class, OutputReplacement::of);
+		registry.register(InputItem.class, InputItem::of);
+		registry.register(OutputItem.class, OutputItem::of);
+		registry.register(BlockStatePredicate.class, BlockStatePredicate::of);
+		registry.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
+		registry.register(FluidStack.class, FluidWrapper::wrap);
+		registry.register(dev.architectury.fluid.FluidStack.class, FluidWrapper::wrapArch);
+		registry.register(RecipeFilter.class, RecipeFilter::of);
+		registry.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
+		registry.register(Tier.class, ItemBuilder::toolTierOf);
+		registry.register(PlayerSelector.class, PlayerSelector::of);
+		registry.register(DamageSource.class, DamageSourceWrapper::of);
+		registry.register(EntitySelector.class, UtilsJS::entitySelector);
+		registry.register(ReplacementMatch.class, ReplacementMatch::of);
+		registry.register(Stat.class, PlayerStatsJS::statOf);
+		registry.register(MapColor.class, MapColorHelper::of);
 		registry.register(SoundType.class, SoundTypeWrapper.INSTANCE);
-		registry.register(ParticleOptions.class, (cx, from, target) -> UtilsWrapper.particleOptions(new WithContext<>((KubeJSContext) cx, from)));
-		registry.register(ItemTintFunction.class, (cx, from, target) -> ItemTintFunction.of(cx, from));
-		registry.register(BlockTintFunction.class, (cx, from, target) -> BlockTintFunction.of(cx, from));
+		registry.register(ParticleOptions.class, UtilsWrapper::particleOptions);
+		registry.register(ItemTintFunction.class, ItemTintFunction::of);
+		registry.register(BlockTintFunction.class, BlockTintFunction::of);
 
 		// components //
-		registry.registerSimple(Component.class, TextWrapper::of);
-		registry.registerSimple(MutableComponent.class, TextWrapper::of);
-		registry.registerSimple(Color.class, ColorWrapper::of);
-		registry.registerSimple(TextColor.class, from -> ColorWrapper.of(from).createTextColorJS());
-		registry.registerSimple(ClickEvent.class, TextWrapper::clickEventOf);
+		registry.register(Component.class, TextWrapper::of);
+		registry.register(MutableComponent.class, TextWrapper::of);
+		registry.register(Color.class, ColorWrapper::of);
+		registry.register(TextColor.class, ColorWrapper::textColorOf);
+		registry.register(ClickEvent.class, TextWrapper::clickEventOf);
 
 		// codecs
 		registry.registerCodec(Fireworks.class, Fireworks.CODEC);

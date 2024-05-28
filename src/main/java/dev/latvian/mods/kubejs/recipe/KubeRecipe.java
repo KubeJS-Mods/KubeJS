@@ -22,6 +22,7 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
@@ -73,7 +74,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 
 	public void deserialize(boolean merge) {
 		for (var v : valueMap.holders) {
-			v.key.component.readFromJson(this, UtilsJS.cast(v), json);
+			v.key.component.readFromJson(this, Cast.to(v), json);
 
 			if (v.value != null) {
 				if (merge) {
@@ -92,7 +93,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 					throw new RecipeExceptionJS("Value not set for " + v.key + " in recipe " + this);
 				}
 
-				v.key.component.writeToJson(this, UtilsJS.cast(v), json);
+				v.key.component.writeToJson(this, Cast.to(v), json);
 			}
 		}
 	}
@@ -104,11 +105,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			throw new MissingComponentException(key.name, key, valueMap.keySet());
 		}
 
-		return UtilsJS.cast(v.value);
+		return Cast.to(v.value);
 	}
 
 	public <T> KubeRecipe setValue(RecipeKey<T> key, T value) {
-		RecipeComponentValue<T> v = UtilsJS.cast(valueMap.getHolder(key));
+		RecipeComponentValue<T> v = Cast.to(valueMap.getHolder(key));
 
 		if (v == null) {
 			throw new MissingComponentException(key.name, key, valueMap.keySet());
@@ -135,11 +136,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	// intended for use by scripts
-	public KubeRecipe set(String key, Object value) {
+	public KubeRecipe set(Context cx, String key, Object value) {
 		for (var h : valueMap.holders) {
 			for (var name : h.key.names) {
 				if (name.equals(key)) {
-					h.value = UtilsJS.cast(h.key.component.read(this, Wrapper.unwrapped(value)));
+					h.value = Cast.to(h.key.component.read(this, Wrapper.unwrapped(value)));
 					h.write();
 					save();
 					return this;
@@ -162,7 +163,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				for (var v : valueMap.holders) {
 					if (v.key.alwaysWrite || !v.key.optional()) {
 						if (v.key.alwaysWrite) {
-							v.value = UtilsJS.cast(v.key.component.read(this, v.key.optional.getDefaultValue(type.schemaType)));
+							v.value = Cast.to(v.key.component.read(this, v.key.optional.getDefaultValue(type.schemaType)));
 						}
 
 						v.write();
@@ -294,7 +295,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public final RecipeComponentValue<?>[] inputValues() {
 		if (inputValues == null) {
 			if (type.schemaType.schema.inputCount() == 0) {
-				inputValues = UtilsJS.cast(RecipeComponentValue.EMPTY_ARRAY);
+				inputValues = Cast.to(RecipeComponentValue.EMPTY_ARRAY);
 			} else {
 				var list = new ArrayList<>(type.schemaType.schema.inputCount());
 
@@ -315,7 +316,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public final RecipeComponentValue<?>[] outputValues() {
 		if (outputValues == null) {
 			if (type.schemaType.schema.outputCount() == 0) {
-				outputValues = UtilsJS.cast(RecipeComponentValue.EMPTY_ARRAY);
+				outputValues = Cast.to(RecipeComponentValue.EMPTY_ARRAY);
 			} else {
 				var list = new ArrayList<>(type.schemaType.schema.outputCount());
 

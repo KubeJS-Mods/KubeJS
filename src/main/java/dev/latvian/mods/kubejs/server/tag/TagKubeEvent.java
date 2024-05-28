@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.server.tag;
 import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -87,7 +87,7 @@ public class TagKubeEvent implements KubeEvent {
 
 	public Set<ResourceLocation> getElementIds() {
 		if (elementIds == null) {
-			elementIds = UtilsJS.cast(vanillaRegistry.holders().map(Holder.Reference::key).map(ResourceKey::location).collect(Collectors.toSet()));
+			elementIds = Cast.to(vanillaRegistry.holders().map(Holder.Reference::key).map(ResourceKey::location).collect(Collectors.toSet()));
 		}
 
 		return elementIds;

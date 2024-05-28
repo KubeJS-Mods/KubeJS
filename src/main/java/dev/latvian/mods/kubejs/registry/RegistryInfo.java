@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -265,6 +266,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	public final Class<?> objectBaseClass;
 	public final Map<String, BuilderType<T>> types;
 	public final Map<ResourceLocation, BuilderBase<? extends T>> objects;
+	public final ResourceKey<T> unknownKey;
 	public boolean hasDefaultTags = false;
 	private BuilderType<T> defaultType;
 	public boolean bypassServerOnly;
@@ -277,6 +279,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 		this.objectBaseClass = objectBaseClass;
 		this.types = new LinkedHashMap<>();
 		this.objects = new LinkedHashMap<>();
+		this.unknownKey = ResourceKey.create(key, UtilsJS.UNKNOWN_ID);
 		this.bypassServerOnly = false;
 		this.autoWrap = objectBaseClass != Codec.class && objectBaseClass != ResourceLocation.class && objectBaseClass != String.class;
 		this.languageKeyPrefix = key.location().getPath().replace('/', '.');
@@ -438,6 +441,11 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 		return getArchitecturyRegistrar().contains(id);
 	}
 
+	@Nullable
+	public ResourceKey<T> getKeyOf(T value) {
+		return getVanillaRegistry().getResourceKey(value).orElse(null);
+	}
+
 	@Override
 	public T wrap(Context cx, Object o, TypeInfo target) {
 		if (o == null) {
@@ -446,7 +454,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 			return (T) o;
 		}
 
-		var id = UtilsJS.getMCID(cx, o);
+		var id = ID.mc(o);
 		var value = getValue(id);
 
 		if (value == null) {

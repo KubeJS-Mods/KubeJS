@@ -1,34 +1,18 @@
 package dev.latvian.mods.kubejs.gui;
 
-import dev.architectury.registry.registries.DeferredRegister;
-import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.helpers.MiscHelper;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.function.Supplier;
-
 public class KubeJSMenu extends AbstractContainerMenu {
-	public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create("kubejs", Registries.MENU);
-	public static final Supplier<MenuType<KubeJSMenu>> KUBEJS_MENU = MENU_TYPES.register("menu", () -> MiscHelper.get().createMenuType());
-
-	public static void init() {
-		if (!CommonProperties.get().serverOnly) {
-			MENU_TYPES.register();
-		}
-	}
-
 	public final Player player;
 	public final KubeJSGUI guiData;
 
 	public KubeJSMenu(int id, Inventory inventory, KubeJSGUI guiData) {
-		super(KUBEJS_MENU.get(), id);
+		super(KubeJSMenus.MENU.get(), id);
 		this.player = inventory.player;
 		this.guiData = guiData;
 

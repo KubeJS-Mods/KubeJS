@@ -6,16 +6,8 @@ import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
-import dev.latvian.mods.kubejs.block.KubeJSBlockEventHandler;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
-import dev.latvian.mods.kubejs.entity.KubeJSEntityEventHandler;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
-import dev.latvian.mods.kubejs.gui.KubeJSMenu;
-import dev.latvian.mods.kubejs.helpers.MiscHelper;
-import dev.latvian.mods.kubejs.item.KubeJSItemEventHandler;
-import dev.latvian.mods.kubejs.level.KubeJSWorldEventHandler;
-import dev.latvian.mods.kubejs.player.KubeJSPlayerEventHandler;
-import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
@@ -26,7 +18,6 @@ import dev.latvian.mods.kubejs.script.ScriptPack;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
-import dev.latvian.mods.kubejs.server.KubeJSServerEventHandler;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
@@ -34,6 +25,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.bus.api.IEventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +47,8 @@ public class KubeJS {
 	public static final String MOD_ID = "kubejs";
 	public static final String MOD_NAME = "KubeJS";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
-	public static final int MC_VERSION_NUMBER = 2004;
-	public static final String MC_VERSION_STRING = "1.20.4";
+	public static final int MC_VERSION_NUMBER = 2006;
+	public static final String MC_VERSION_STRING = "1.20.6";
 	public static String QUERY;
 	public static final Component NAME_COMPONENT = Component.literal(MOD_NAME);
 
@@ -81,7 +73,7 @@ public class KubeJS {
 
 	public static Mod thisMod;
 
-	public KubeJS() throws Throwable {
+	public KubeJS(IEventBus bus) throws Throwable {
 		instance = this;
 		gameDirectory = Platform.getGameFolder().normalize().toAbsolutePath();
 
@@ -112,7 +104,7 @@ public class KubeJS {
 
 		PROXY = EnvExecutor.getEnvSpecific(() -> KubeJSClient::new, () -> KubeJSCommon::new);
 
-		if (!MiscHelper.get().isDataGen()) {
+		if (!PlatformWrapper.isGeneratingData()) {
 			new KubeJSBackgroundThread().start();
 			// Required to be called this way because ConsoleJS class hasn't been initialized yet
 			ScriptType.STARTUP.console.setCapturingErrors(true);
@@ -136,16 +128,7 @@ public class KubeJS {
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::initStartup);
 
-		KubeJSWorldEventHandler.init();
-		KubeJSPlayerEventHandler.init();
-		KubeJSEntityEventHandler.init();
-		KubeJSBlockEventHandler.init();
-		KubeJSItemEventHandler.init();
-		KubeJSServerEventHandler.init();
-		KubeJSRecipeEventHandler.init();
-		KubeJSMenu.init();
-
-		PROXY.init();
+		PROXY.init(bus);
 
 		for (var extraId : StartupEvents.REGISTRY.findUniqueExtraIds(ScriptType.STARTUP)) {
 			if (extraId instanceof ResourceKey<?> key) {
@@ -175,10 +158,6 @@ public class KubeJS {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	public static String appendModId(String id) {
-		return id.indexOf(':') == -1 ? (MOD_ID + ":" + id) : id;
 	}
 
 	public static Path getGameDirectory() {

@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.util;
 
 import dev.latvian.mods.kubejs.DevProperties;
-import dev.latvian.mods.kubejs.helpers.MiscHelper;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.ContextFactory;
@@ -229,7 +229,7 @@ public class ConsoleJS {
 	}
 
 	public synchronized void writeToFile(LogType type, long timestamp, String line) {
-		if (!writeToFile || MiscHelper.get().isDataGen()) {
+		if (!writeToFile || PlatformWrapper.isGeneratingData()) {
 			return;
 		}
 
@@ -237,7 +237,7 @@ public class ConsoleJS {
 		var sb = new StringBuilder();
 
 		sb.append('[');
-		UtilsJS.appendTimestamp(sb, calendar);
+		TimeJS.appendTimestamp(sb, calendar);
 		sb.append(']');
 		sb.append(' ');
 		sb.append('[');

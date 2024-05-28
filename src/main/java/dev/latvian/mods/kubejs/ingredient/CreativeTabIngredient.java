@@ -1,8 +1,7 @@
-package dev.latvian.mods.kubejs.recipe.ingredient;
+package dev.latvian.mods.kubejs.ingredient;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +15,7 @@ public record CreativeTabIngredient(CreativeModeTab tab) implements KubeJSIngred
 
 	@Override
 	public IngredientType<?> getType() {
-		return IngredientHelper.CREATIVE_TAB.get();
+		return KubeJSIngredients.CREATIVE_TAB.get();
 	}
 
 	@Override

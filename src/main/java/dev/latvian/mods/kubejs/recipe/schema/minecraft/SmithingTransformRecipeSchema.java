@@ -20,7 +20,7 @@ public interface SmithingTransformRecipeSchema {
 		.constructor(RESULT, TEMPLATE, BASE, ADDITION)
 		.constructor(RecipeConstructor.Factory.defaultWith((recipe, key) -> {
 			if (key == TEMPLATE) {
-				return InputItem.of(Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), 1);
+				return InputItem.create(Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), 1);
 			} else {
 				return null;
 			}

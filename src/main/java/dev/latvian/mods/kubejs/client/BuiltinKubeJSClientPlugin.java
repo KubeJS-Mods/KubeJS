@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import net.minecraft.client.Minecraft;
 
-public class BuiltinKubeJSClientPlugin extends KubeJSPlugin {
+public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 	@Override
 	public void clientInit() {
 		Painter.INSTANCE.registerBuiltinObjects();

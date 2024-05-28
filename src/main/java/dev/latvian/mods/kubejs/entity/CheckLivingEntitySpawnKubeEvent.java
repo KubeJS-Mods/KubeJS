@@ -1,12 +1,15 @@
 package dev.latvian.mods.kubejs.entity;
 
+import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.SpawnerJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 @Info("""
@@ -19,19 +22,20 @@ public class CheckLivingEntitySpawnKubeEvent implements KubeLivingEntityEvent {
 	private final Level level;
 
 	public final double x, y, z;
-	public final MobSpawnType type;
+	public final transient MobSpawnType type;
+	private final Either<BlockEntity, Entity> spawnerEither;
 
 	@Nullable
-	public final BaseSpawner spawner;
+	public transient SpawnerJS spawner;
 
-	public CheckLivingEntitySpawnKubeEvent(LivingEntity entity, Level level, double x, double y, double z, MobSpawnType type, @Nullable BaseSpawner spawner) {
+	public CheckLivingEntitySpawnKubeEvent(LivingEntity entity, Level level, double x, double y, double z, MobSpawnType type, Either<BlockEntity, Entity> spawnerEither) {
 		this.entity = entity;
 		this.level = level;
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.type = type;
-		this.spawner = spawner;
+		this.spawnerEither = spawnerEither;
 	}
 
 	@Override
@@ -58,7 +62,11 @@ public class CheckLivingEntitySpawnKubeEvent implements KubeLivingEntityEvent {
 
 	@Info("The spawner that spawned the entity. Can be null if the entity was spawned by worldgen.")
 	@Nullable
-	public BaseSpawner getSpawner() {
+	public SpawnerJS getSpawner() {
+		if (spawner == null) {
+			spawner = SpawnerJS.of(spawnerEither);
+		}
+
 		return spawner;
 	}
 }

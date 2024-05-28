@@ -21,7 +21,7 @@ public class AlwaysFalseRuleTest extends RuleTest {
 
 	@Override
 	protected RuleTestType<?> getType() {
-		return KubeJSRuleTests.ALWAYS_FALSE;
+		return KubeJSRuleTests.ALWAYS_FALSE.get();
 	}
 }
 

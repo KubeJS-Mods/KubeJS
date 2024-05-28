@@ -459,7 +459,7 @@ public class KubeJSCommands {
 				builder.append("```js\n");
 				builder.append(fullName).append('(');
 				if (handler.extra != null) {
-					builder.append(handler.extra.required ? "extra_id, " : "/* extra_id (optional), */ ");
+					builder.append(handler.extraRequired ? "extra_id, " : "/* extra_id (optional), */ ");
 				}
 				builder.append("(event) => {\n");
 				builder.append("\t// This space (un)intentionally left blank\n");
@@ -514,7 +514,7 @@ public class KubeJSCommands {
 	}
 
 	private static int customCommand(CommandSourceStack source, String id) {
-		if (ServerEvents.CUSTOM_COMMAND.hasListeners()) {
+		if (ServerEvents.CUSTOM_COMMAND.hasListeners(id)) {
 			var result = ServerEvents.CUSTOM_COMMAND.post(new CustomCommandKubeEvent(source.getLevel(), source.getEntity(), BlockPos.containing(source.getPosition()), id), id);
 
 			if (result.type() == EventResult.Type.ERROR) {

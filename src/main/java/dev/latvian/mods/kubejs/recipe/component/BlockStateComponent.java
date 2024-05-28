@@ -4,13 +4,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.MapJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -62,11 +62,11 @@ public record BlockStateComponent(ComponentRole crole, boolean preferObjectForm)
 		} else if (from instanceof Block b) {
 			return b.defaultBlockState();
 		} else if (from instanceof JsonPrimitive json) {
-			return UtilsJS.parseBlockState(json.getAsString());
+			return BlockWrapper.parseBlockState(json.getAsString());
 		} else {
 			Map<?, ?> map = MapJS.of(from);
 			if (map == null) {
-				return UtilsJS.parseBlockState(String.valueOf(from));
+				return BlockWrapper.parseBlockState(String.valueOf(from));
 			} else
 			// this is formatted like so:
 			// { Name: "blockid", Properties: {Property: "value"}}

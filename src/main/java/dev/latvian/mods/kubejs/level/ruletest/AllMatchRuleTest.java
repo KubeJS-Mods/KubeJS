@@ -38,6 +38,6 @@ public class AllMatchRuleTest extends RuleTest {
 
 	@Override
 	protected RuleTestType<?> getType() {
-		return KubeJSRuleTests.ALL_MATCH;
+		return KubeJSRuleTests.ALL_MATCH.get();
 	}
 }

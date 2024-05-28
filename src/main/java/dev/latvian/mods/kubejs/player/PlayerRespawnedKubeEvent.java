@@ -10,13 +10,11 @@ import net.minecraft.server.level.ServerPlayer;
 	""")
 public class PlayerRespawnedKubeEvent implements KubePlayerEvent {
 	private final ServerPlayer player;
-	private final ServerPlayer oldPlayer;
-	private final boolean keepData;
+	private final boolean endConquered;
 
-	public PlayerRespawnedKubeEvent(ServerPlayer player, ServerPlayer oldPlayer, boolean keepData) {
+	public PlayerRespawnedKubeEvent(ServerPlayer player, boolean endConquered) {
 		this.player = player;
-		this.oldPlayer = oldPlayer;
-		this.keepData = keepData;
+		this.endConquered = endConquered;
 	}
 
 	@Override
@@ -25,13 +23,7 @@ public class PlayerRespawnedKubeEvent implements KubePlayerEvent {
 		return player;
 	}
 
-	@Info("Gets the player that was before respawn. Note that this entity is already removed from the world.")
-	public ServerPlayer getOldPlayer() {
-		return oldPlayer;
-	}
-
-	@Info("Gets whether the player's data was kept, e.g. when returning from the end.")
-	public boolean getKeepData() {
-		return keepData;
+	public boolean isEndConquered() {
+		return endConquered;
 	}
 }

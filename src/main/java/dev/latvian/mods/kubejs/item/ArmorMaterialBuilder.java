@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -60,8 +59,8 @@ public class ArmorMaterialBuilder extends BuilderBase<ArmorMaterial> {
 		);
 	}
 
-	public ArmorMaterialBuilder defense(Map<Object, Integer> v) {
-		defense = UtilsJS.remap(v, ArmorItem.Type.class, Integer.class, false);
+	public ArmorMaterialBuilder defense(Map<ArmorItem.Type, Integer> v) {
+		defense = v;
 		return this;
 	}
 

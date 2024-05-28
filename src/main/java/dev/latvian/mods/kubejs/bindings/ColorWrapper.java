@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.kubejs.color.SimpleColorWithAlpha;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.DyeColor;
 
 import java.util.HashMap;
@@ -52,6 +53,10 @@ public interface ColorWrapper {
 		}
 
 		return NONE;
+	}
+
+	static TextColor textColorOf(Object o) {
+		return of(o).createTextColorJS();
 	}
 
 	static Color createMapped(Object o, String... names) {

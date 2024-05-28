@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 public class OutputItem implements OutputReplacement {
 	public static final OutputItem EMPTY = new OutputItem(ItemStack.EMPTY, Double.NaN, null);
 
-	public static OutputItem of(ItemStack item, double chance) {
+	public static OutputItem create(ItemStack item, double chance) {
 		return item.isEmpty() ? EMPTY : new OutputItem(item, chance, null);
 	}
 
@@ -22,7 +22,7 @@ public class OutputItem implements OutputReplacement {
 		if (from instanceof OutputItem out) {
 			return out;
 		} else if (from instanceof ItemStack stack) {
-			return of(stack, Double.NaN);
+			return create(stack, Double.NaN);
 		}
 
 		var item = ItemStackJS.of(from);
@@ -109,6 +109,6 @@ public class OutputItem implements OutputReplacement {
 	public InputItem ignoreNBT(Context cx) {
 		var console = ConsoleJS.getCurrent(cx);
 		console.warn("You don't need to call .ignoreNBT() anymore, all item ingredients ignore NBT by default!");
-		return InputItem.of(item.getItem().kjs$asIngredient(), item.getCount());
+		return InputItem.create(item.getItem().kjs$asIngredient(), item.getCount());
 	}
 }

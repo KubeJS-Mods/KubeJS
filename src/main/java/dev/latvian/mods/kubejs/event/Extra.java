@@ -1,17 +1,17 @@
 package dev.latvian.mods.kubejs.event;
 
-import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
-import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
+import dev.latvian.mods.kubejs.core.WithRegistryKeyKJS;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class Extra {
+public class Extra<T> {
 	@FunctionalInterface
 	public interface Transformer {
 		Transformer IDENTITY = o -> o;
@@ -20,12 +20,17 @@ public class Extra {
 		Object transform(Object source);
 	}
 
-	public static final Extra STRING = new Extra().transformer(Extra::toString);
-	public static final Extra REQUIRES_STRING = STRING.copy().required();
-	public static final Extra ID = new Extra().transformer(Extra::toResourceLocation);
-	public static final Extra REQUIRES_ID = ID.copy().required();
-	public static final Extra REGISTRY = new Extra().transformer(Extra::toRegistryKey).identity();
-	public static final Extra REQUIRES_REGISTRY = REGISTRY.copy().required();
+	public static <T> Extra<T> create(Class<T> type) {
+		return new Extra<>(type);
+	}
+
+	public static final Extra<String> STRING = create(String.class).transformer(Extra::toString);
+	public static final Extra<ResourceLocation> ID = create(ResourceLocation.class).transformer(Extra::toResourceLocation);
+	public static final Extra<ResourceKey<Registry<?>>> REGISTRY = Cast.to(create(ResourceKey.class).transformer(Extra::toRegistryKey).identity());
+
+	public static <T> Extra<ResourceKey<T>> registryKey(ResourceKey<Registry<T>> registry, Class<?> type) {
+		return Cast.to(create(ResourceKey.class).identity().transformer(o -> toKey(registry, o)).describeType(TypeInfo.of(ResourceKey.class).withParams(TypeInfo.of(type))));
+	}
 
 	private static String toString(Object object) {
 		if (object == null) {
@@ -47,6 +52,21 @@ public class Extra {
 		return s.isBlank() ? null : ResourceLocation.tryParse(s);
 	}
 
+	private static ResourceKey<?> toKey(ResourceKey registry, Object object) {
+		if (object == null) {
+			return null;
+		} else if (object instanceof ResourceKey<?> rl) {
+			return rl;
+		} else if (object instanceof WithRegistryKeyKJS<?> wrk) {
+			return wrk.kjs$getRegistryKey();
+		} else if (object instanceof ResourceLocation rl) {
+			return ResourceKey.create(registry, rl);
+		} else {
+			var s = object.toString();
+			return s.isBlank() ? null : ResourceKey.create(registry, new ResourceLocation(s));
+		}
+	}
+
 	private static ResourceKey<? extends Registry<?>> toRegistryKey(Object object) {
 		if (object == null) {
 			return null;
@@ -60,58 +80,43 @@ public class Extra {
 		return s.isBlank() ? null : ResourceKey.createRegistryKey(new ResourceLocation(s));
 	}
 
+	public final Class<T> type;
 	public Transformer transformer;
 	public boolean identity;
-	public boolean required;
 	public Predicate<Object> validator;
 	public Transformer toString;
-	public Function<DescriptionContext, TypeDescJS> describeType;
+	public TypeInfo describeType;
 
-	public Extra() {
+	private Extra(Class<T> type) {
+		this.type = type;
 		this.transformer = Transformer.IDENTITY;
 		this.identity = false;
-		this.required = false;
 		this.validator = UtilsJS.ALWAYS_TRUE;
 		this.toString = Transformer.IDENTITY;
-		this.describeType = context -> TypeDescJS.STRING;
+		this.describeType = TypeInfo.STRING;
 	}
 
-	public Extra copy() {
-		Extra t = new Extra();
-		t.transformer = transformer;
-		t.identity = identity;
-		t.required = required;
-		t.validator = validator;
-		t.toString = toString;
-		return t;
-	}
-
-	public Extra transformer(Transformer factory) {
+	public Extra<T> transformer(Transformer factory) {
 		this.transformer = factory;
 		return this;
 	}
 
-	public Extra identity() {
+	public Extra<T> identity() {
 		this.identity = true;
 		return this;
 	}
 
-	public Extra required() {
-		this.required = true;
-		return this;
-	}
-
-	public Extra validator(Predicate<Object> validator) {
+	public Extra<T> validator(Predicate<Object> validator) {
 		this.validator = validator;
 		return this;
 	}
 
-	public Extra describeType(Function<DescriptionContext, TypeDescJS> describeType) {
+	public Extra<T> describeType(TypeInfo describeType) {
 		this.describeType = describeType;
 		return this;
 	}
 
-	public Extra toString(Transformer factory) {
+	public Extra<T> toString(Transformer factory) {
 		this.toString = factory;
 		return this;
 	}

@@ -6,10 +6,10 @@ import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegExpJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +38,7 @@ public interface RecipeFilter extends Predicate<RecipeLikeKJS> {
 				return ConstantFilter.FALSE;
 			} else {
 				var r = RegExpJS.of(s);
-				return r == null ? new IDFilter(UtilsJS.getMCID(cx, s)) : RegexIDFilter.of(r);
+				return r == null ? new IDFilter(ID.mc(s)) : RegexIDFilter.of(r);
 			}
 		}
 
@@ -83,13 +83,13 @@ public interface RecipeFilter extends Predicate<RecipeLikeKJS> {
 
 			if (id != null) {
 				var pattern = RegExpJS.of(id);
-				predicate.list.add(pattern == null ? new IDFilter(UtilsJS.getMCID(cx, id)) : RegexIDFilter.of(pattern));
+				predicate.list.add(pattern == null ? new IDFilter(ID.mc(id)) : RegexIDFilter.of(pattern));
 			}
 
 			var type = map.get("type");
 
 			if (type != null) {
-				predicate.list.add(new TypeFilter(UtilsJS.getMCID(cx, type)));
+				predicate.list.add(new TypeFilter(ID.mc(type)));
 			}
 
 			var group = map.get("group");

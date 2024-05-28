@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
+import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.helpers.RecipeHelper;
@@ -26,8 +27,8 @@ import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.DataExport;
-import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
@@ -38,6 +39,7 @@ import net.minecraft.ReportedException;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.Bootstrap;
+import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -269,8 +271,10 @@ public class RecipesKubeEvent implements KubeEvent {
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonElement> datapackRecipeMap) {
 		ConsoleJS.SERVER.info("Processing recipes...");
 		KubeRecipe.itemErrors = false;
+		var resources = ((RecipeManagerKJS) recipeManager).kjs$getResources();
+		var cx = resources.kjs$getServerScriptManager().contextFactory.enter();
 
-		TagContext.INSTANCE.setValue(TagContext.fromLoadResult(KubeJSReloadListener.resources.tagManager.getResult()));
+		TagContext.INSTANCE.setValue(TagContext.fromLoadResult(((ReloadableServerResources) resources).tagManager.getResult()));
 
 		// clear recipe event specific maps
 		RecipesKubeEvent.MODIFY_RESULT_CALLBACKS.clear();
@@ -619,7 +623,7 @@ public class RecipesKubeEvent implements KubeEvent {
 	public RecipeTypeFunction getRecipeFunction(@Nullable String id) {
 		if (id == null || id.isEmpty()) {
 			return null;
-		} else if (recipeFunctions.get(UtilsJS.getID(id)) instanceof RecipeTypeFunction fn) {
+		} else if (recipeFunctions.get(ID.string(id)) instanceof RecipeTypeFunction fn) {
 			return fn;
 		} else {
 			return null;

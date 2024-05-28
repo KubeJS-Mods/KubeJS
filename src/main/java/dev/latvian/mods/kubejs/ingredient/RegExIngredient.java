@@ -1,8 +1,7 @@
-package dev.latvian.mods.kubejs.recipe.ingredient;
+package dev.latvian.mods.kubejs.ingredient;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.util.RegExpJS;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.IngredientType;
@@ -17,7 +16,7 @@ public record RegExIngredient(Pattern pattern) implements KubeJSIngredient {
 
 	@Override
 	public IngredientType<?> getType() {
-		return IngredientHelper.REGEX.get();
+		return KubeJSIngredients.REGEX.get();
 	}
 
 	@Override

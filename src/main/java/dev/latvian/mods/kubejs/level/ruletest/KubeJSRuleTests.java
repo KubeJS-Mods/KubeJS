@@ -1,27 +1,27 @@
 package dev.latvian.mods.kubejs.level.ruletest;
 
 import com.mojang.serialization.MapCodec;
-import dev.architectury.registry.registries.DeferredRegister;
 import dev.latvian.mods.kubejs.KubeJS;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public interface KubeJSRuleTests {
-	DeferredRegister<RuleTestType<?>> RULE_TEST_TYPES = DeferredRegister.create(KubeJS.MOD_ID, Registries.RULE_TEST);
+	DeferredRegister<RuleTestType<?>> RULE_TEST_TYPES = DeferredRegister.create(Registries.RULE_TEST, KubeJS.MOD_ID);
 
-	RuleTestType<InvertRuleTest> INVERT = register("invert", InvertRuleTest.CODEC);
-	RuleTestType<AlwaysFalseRuleTest> ALWAYS_FALSE = register("always_false", AlwaysFalseRuleTest.CODEC);
-	RuleTestType<AllMatchRuleTest> ALL_MATCH = register("all_match", AllMatchRuleTest.CODEC);
-	RuleTestType<AnyMatchRuleTest> ANY_MATCH = register("any_match", AnyMatchRuleTest.CODEC);
+	Supplier<RuleTestType<InvertRuleTest>> INVERT = register("invert", InvertRuleTest.CODEC);
+	Supplier<RuleTestType<AlwaysFalseRuleTest>> ALWAYS_FALSE = register("always_false", AlwaysFalseRuleTest.CODEC);
+	Supplier<RuleTestType<AllMatchRuleTest>> ALL_MATCH = register("all_match", AllMatchRuleTest.CODEC);
+	Supplier<RuleTestType<AnyMatchRuleTest>> ANY_MATCH = register("any_match", AnyMatchRuleTest.CODEC);
 
-	static <P extends RuleTest> RuleTestType<P> register(String id, MapCodec<P> codec) {
+	static <P extends RuleTest> Supplier<RuleTestType<P>> register(String id, MapCodec<P> codec) {
 		var type = (RuleTestType<P>) () -> codec;
-		RULE_TEST_TYPES.register(id, () -> type);
-		return type;
+		return RULE_TEST_TYPES.register(id, () -> type);
 	}
 
 	static void init() {
-		RULE_TEST_TYPES.register();
 	}
 }

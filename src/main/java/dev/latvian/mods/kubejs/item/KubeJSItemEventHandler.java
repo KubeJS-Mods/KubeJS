@@ -1,83 +1,107 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.architectury.event.CompoundEventResult;
-import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.InteractionEvent;
-import dev.architectury.event.events.common.PlayerEvent;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.player.InventoryChangedKubeEvent;
-import net.minecraft.world.Container;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
+@EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSItemEventHandler {
-	public static void init() {
-		InteractionEvent.RIGHT_CLICK_ITEM.register(KubeJSItemEventHandler::rightClick);
-		PlayerEvent.PICKUP_ITEM_PRE.register(KubeJSItemEventHandler::canPickUp);
-		PlayerEvent.PICKUP_ITEM_POST.register(KubeJSItemEventHandler::pickup);
-		PlayerEvent.DROP_ITEM.register(KubeJSItemEventHandler::drop);
-		InteractionEvent.INTERACT_ENTITY.register(KubeJSItemEventHandler::entityInteract);
-		PlayerEvent.CRAFT_ITEM.register(KubeJSItemEventHandler::crafted);
-		PlayerEvent.SMELT_ITEM.register(KubeJSItemEventHandler::smelted);
-	}
+	@SubscribeEvent
+	public static void rightClick(PlayerInteractEvent.RightClickItem event) {
+		var stack = event.getItemStack();
+		var key = stack.getItem().kjs$getRegistryKey();
 
-	private static CompoundEventResult<ItemStack> rightClick(Player player, InteractionHand hand) {
-		if (!ItemEvents.RIGHT_CLICKED.hasListeners()) {
-			return CompoundEventResult.pass();
-		}
-
-		var stack = player.getItemInHand(hand);
-
-		if (!player.getCooldowns().isOnCooldown(stack.getItem())) {
-			return ItemEvents.RIGHT_CLICKED.post(player, stack.getItem(), new ItemClickedKubeEvent(player, hand, stack)).archCompound();
-		}
-
-		return CompoundEventResult.pass();
-	}
-
-	private static EventResult canPickUp(Player player, ItemEntity entity, ItemStack stack) {
-		return ItemEvents.CAN_PICK_UP.hasListeners() ? ItemEvents.CAN_PICK_UP.post(player, stack.getItem(), new ItemPickedUpKubeEvent(player, entity, stack)).arch() : EventResult.pass();
-	}
-
-	private static void pickup(Player player, ItemEntity entity, ItemStack stack) {
-		if (ItemEvents.PICKED_UP.hasListeners()) {
-			ItemEvents.PICKED_UP.post(player, stack.getItem(), new ItemPickedUpKubeEvent(player, entity, stack));
+		if (ItemEvents.RIGHT_CLICKED.hasListeners(key) && !event.getEntity().getCooldowns().isOnCooldown(stack.getItem())) {
+			ItemEvents.RIGHT_CLICKED.post(event.getEntity(), key, new ItemClickedKubeEvent(event.getEntity(), event.getHand(), stack)).applyCancel(event);
 		}
 	}
 
-	private static EventResult drop(Player player, ItemEntity entity) {
-		return ItemEvents.DROPPED.hasListeners() ? ItemEvents.DROPPED.post(player, entity.getItem().getItem(), new ItemDroppedKubeEvent(player, entity)).arch() : EventResult.pass();
+	@SubscribeEvent
+	public static void leftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
+		// TODO: Implement me
 	}
 
-	private static EventResult entityInteract(Player player, Entity entity, InteractionHand hand) {
-		return ItemEvents.ENTITY_INTERACTED.hasListeners() ? ItemEvents.ENTITY_INTERACTED.post(player, player.getItemInHand(hand).getItem(), new ItemEntityInteractedKubeEvent(player, entity, hand)).arch() : EventResult.pass();
+	@SubscribeEvent
+	public static void itemPickupPre(ItemEntityPickupEvent.Pre event) {
+		var key = event.getItemEntity().getItem().getItem().kjs$getRegistryKey();
+
+		if (ItemEvents.CAN_PICK_UP.hasListeners(key)) {
+			ItemEvents.CAN_PICK_UP.post(event.getPlayer(), key, new ItemPickedUpKubeEvent(event.getPlayer(), event.getItemEntity(), event.getItemEntity().getItem())).applyTristate(event::setCanPickup);
+		}
 	}
 
-	private static void crafted(Player player, ItemStack stack, Container grid) {
-		if (!stack.isEmpty()) {
-			if (ItemEvents.CRAFTED.hasListeners()) {
-				ItemEvents.CRAFTED.post(player, stack.getItem(), new ItemCraftedKubeEvent(player, stack, grid));
+	@SubscribeEvent
+	public static void itemPickupPost(ItemEntityPickupEvent.Post event) {
+		var key = event.getCurrentStack().getItem().kjs$getRegistryKey();
+
+		if (ItemEvents.PICKED_UP.hasListeners(key)) {
+			ItemEvents.PICKED_UP.post(event.getPlayer(), key, new ItemPickedUpKubeEvent(event.getPlayer(), event.getItemEntity(), event.getCurrentStack()));
+		}
+	}
+
+	@SubscribeEvent
+	public static void itemDrop(ItemTossEvent event) {
+		var key = event.getEntity().getItem().getItem().kjs$getRegistryKey();
+
+		if (ItemEvents.DROPPED.hasListeners(key)) {
+			ItemEvents.DROPPED.post(event.getPlayer(), key, new ItemDroppedKubeEvent(event.getPlayer(), event.getEntity())).applyCancel(event);
+		}
+	}
+
+	@SubscribeEvent
+	public static void entityInteract(PlayerInteractEvent.EntityInteract event) {
+		var stack = event.getItemStack();
+		var key = stack.getItem().kjs$getRegistryKey();
+
+		if (ItemEvents.ENTITY_INTERACTED.hasListeners(key)) {
+			ItemEvents.ENTITY_INTERACTED.post(event.getEntity(), key, new ItemEntityInteractedKubeEvent(event.getEntity(), event.getTarget(), event.getHand(), stack)).applyCancel(event);
+		}
+	}
+
+	@SubscribeEvent
+	public static void crafted(PlayerEvent.ItemCraftedEvent event) {
+		if (!event.getCrafting().isEmpty()) {
+			var key = event.getCrafting().getItem().kjs$getRegistryKey();
+
+			if (ItemEvents.CRAFTED.hasListeners(key)) {
+				ItemEvents.CRAFTED.post(event.getEntity(), key, new ItemCraftedKubeEvent(event.getEntity(), event.getCrafting(), event.getInventory()));
 			}
 
-			if (PlayerEvents.INVENTORY_CHANGED.hasListeners()) {
-				PlayerEvents.INVENTORY_CHANGED.post(player, stack.getItem(), new InventoryChangedKubeEvent(player, stack, -1));
+			if (PlayerEvents.INVENTORY_CHANGED.hasListeners(key)) {
+				PlayerEvents.INVENTORY_CHANGED.post(event.getEntity(), key, new InventoryChangedKubeEvent(event.getEntity(), event.getCrafting(), -1));
 			}
 		}
 	}
 
-	private static void smelted(Player player, ItemStack stack) {
-		if (!stack.isEmpty()) {
-			if (ItemEvents.SMELTED.hasListeners()) {
-				ItemEvents.SMELTED.post(player, stack.getItem(), new ItemSmeltedKubeEvent(player, stack));
+	@SubscribeEvent
+	public static void smelted(PlayerEvent.ItemSmeltedEvent event) {
+		if (!event.getSmelting().isEmpty()) {
+			var key = event.getSmelting().getItem().kjs$getRegistryKey();
+
+			if (ItemEvents.SMELTED.hasListeners(key)) {
+				ItemEvents.SMELTED.post(event.getEntity(), key, new ItemSmeltedKubeEvent(event.getEntity(), event.getSmelting()));
 			}
 
-			if (PlayerEvents.INVENTORY_CHANGED.hasListeners()) {
-				PlayerEvents.INVENTORY_CHANGED.post(player, stack.getItem(), new InventoryChangedKubeEvent(player, stack, -1));
+			if (PlayerEvents.INVENTORY_CHANGED.hasListeners(key)) {
+				PlayerEvents.INVENTORY_CHANGED.post(event.getEntity(), key, new InventoryChangedKubeEvent(event.getEntity(), event.getSmelting(), -1));
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void itemDestroyed(PlayerDestroyItemEvent event) {
+		var key = event.getOriginal().getItem().kjs$getRegistryKey();
+
+		if (ItemEvents.ITEM_DESTROYED.hasListeners(key)) {
+			ItemEvents.ITEM_DESTROYED.post(event.getEntity(), key, new ItemDestroyedKubeEvent(event));
 		}
 	}
 }

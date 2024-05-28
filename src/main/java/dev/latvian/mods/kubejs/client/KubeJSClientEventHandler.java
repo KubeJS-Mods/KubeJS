@@ -10,6 +10,8 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
+import dev.latvian.mods.kubejs.gui.KubeJSMenus;
+import dev.latvian.mods.kubejs.gui.KubeJSScreen;
 import dev.latvian.mods.kubejs.item.ItemTooltipKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -32,6 +34,8 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -45,7 +49,7 @@ public class KubeJSClientEventHandler {
 	public static Map<Item, List<ItemTooltipKubeEvent.StaticTooltipHandler>> staticItemTooltips = null;
 	private final Map<ResourceLocation, TagInstance> tempTagNames = new LinkedHashMap<>();
 
-	public void init() {
+	public void init(IEventBus bus) {
 		ClientGuiEvent.DEBUG_TEXT_LEFT.register(this::debugInfoLeft);
 		ClientGuiEvent.DEBUG_TEXT_RIGHT.register(this::debugInfoRight);
 		ClientTooltipEvent.ITEM.register(this::itemTooltip);
@@ -56,6 +60,8 @@ public class KubeJSClientEventHandler {
 		ClientGuiEvent.RENDER_POST.register(Painter.INSTANCE::guiScreenDraw);
 		ClientGuiEvent.INIT_PRE.register(this::guiPreInit);
 		ClientGuiEvent.INIT_POST.register(this::guiPostInit);
+		bus.addListener(this::registerMenuScreens);
+
 		//ClientTextureStitchEvent.POST.register(this::postAtlasStitch);
 	}
 
@@ -218,4 +224,8 @@ public class KubeJSClientEventHandler {
 			ex.printStackTrace();
 		}
 	}*/
+
+	private void registerMenuScreens(RegisterMenuScreensEvent event) {
+		event.register(KubeJSMenus.MENU.get(), KubeJSScreen::new);
+	}
 }

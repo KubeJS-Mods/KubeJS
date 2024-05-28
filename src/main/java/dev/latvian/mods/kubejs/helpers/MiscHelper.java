@@ -9,7 +9,6 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.moddiscovery.ModInfo;
-import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.network.IContainerFactory;
 
 import java.util.function.Supplier;
@@ -33,10 +32,6 @@ public enum MiscHelper {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	public boolean isDataGen() {
-		return DatagenModLoader.isRunningDataGen();
 	}
 
 	public long ingotFluidAmount() {

@@ -10,10 +10,10 @@ import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonSerializable;
 import dev.latvian.mods.kubejs.util.NBTSerializable;
 import dev.latvian.mods.kubejs.util.Tags;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -51,7 +51,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 	@Override
 	default boolean specialEquals(Context cx, Object o, boolean shallow) {
 		if (o instanceof CharSequence) {
-			return kjs$getId().equals(UtilsJS.getID(o.toString()));
+			return kjs$getId().equals(ID.string(o.toString()));
 		} else if (o instanceof ItemStack s) {
 			return kjs$equalsIgnoringCount(s);
 		}
@@ -147,7 +147,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		var is = kjs$self();
 
 		for (var entry : enchantments.entrySet()) {
-			var enchantment = RegistryInfo.ENCHANTMENT.getValue(UtilsJS.getMCID(null, entry.getKey()));
+			var enchantment = RegistryInfo.ENCHANTMENT.getValue(ID.mc(entry.getKey()));
 
 			if (enchantment != null && entry.getValue() instanceof Number number) {
 				is = is.kjs$enchantCopy(enchantment, number.intValue());
@@ -252,7 +252,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 	}
 
 	default OutputItem kjs$withChance(double chance) {
-		return OutputItem.of(kjs$self(), chance);
+		return OutputItem.create(kjs$self(), chance);
 	}
 
 	default ItemStack kjs$withLore(Component[] lines) {

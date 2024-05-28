@@ -11,23 +11,21 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-public class KubeJSCreativeTabs {
-	public static final DeferredRegister<CreativeModeTab> REGISTER = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, KubeJS.MOD_ID);
+import java.util.function.Supplier;
 
-	public static void init() {
-		if (!CommonProperties.get().serverOnly) {
-			REGISTER.register("tab", () -> MiscHelper.get().creativeModeTab(
-				Component.literal("KubeJS"),
-				() -> {
-					var is = ItemStackJS.of(CommonProperties.get().creativeModeTabIcon);
-					return is.isEmpty() ? Items.PURPLE_DYE.getDefaultInstance() : is;
-				},
-				(params, output) -> {
-					for (var b : RegistryInfo.ITEM) {
-						output.accept(b.get().getDefaultInstance());
-					}
-				}
-			));
+public interface KubeJSCreativeTabs {
+	DeferredRegister<CreativeModeTab> REGISTRY = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, KubeJS.MOD_ID);
+
+	Supplier<CreativeModeTab> TAB = REGISTRY.register("tab", () -> MiscHelper.get().creativeModeTab(
+		Component.literal("KubeJS"),
+		() -> {
+			var is = ItemStackJS.of(CommonProperties.get().creativeModeTabIcon);
+			return is.isEmpty() ? Items.PURPLE_DYE.getDefaultInstance() : is;
+		},
+		(params, output) -> {
+			for (var b : RegistryInfo.ITEM) {
+				output.accept(b.get().getDefaultInstance());
+			}
 		}
-	}
+	));
 }

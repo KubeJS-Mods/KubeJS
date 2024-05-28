@@ -5,52 +5,31 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.brigadier.StringReader;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockModificationKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import net.minecraft.ResourceLocationException;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.valueproviders.ClampedInt;
-import net.minecraft.util.valueproviders.ClampedNormalInt;
-import net.minecraft.util.valueproviders.ConstantInt;
-import net.minecraft.util.valueproviders.IntProvider;
-import net.minecraft.util.valueproviders.UniformInt;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
-import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
@@ -58,20 +37,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.nio.file.Path;
-import java.time.Duration;
-import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -89,11 +59,10 @@ public class UtilsJS {
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 	public static MinecraftServer staticServer = null;
 	public static HolderLookup.Provider staticRegistryAccess = RegistryAccess.EMPTY; // FIXME
+	public static ReloadableServerResources staticResources = null;
 	public static final ResourceLocation UNKNOWN_ID = new ResourceLocation("unknown", "unknown");
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
-	public static final Pattern TEMPORAL_AMOUNT_PATTERN = Pattern.compile("(\\d+)\\s*(y|M|d|w|h|m|s|ms|ns|t)\\b");
 
-	private static Collection<BlockState> ALL_STATE_CACHE = null;
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
 	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, e -> true, MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_RANDOM, false, null, null, null, true);
 
@@ -110,50 +79,11 @@ public class UtilsJS {
 		}
 	}
 
-	/**
-	 * Use {@link Cast#to(Object)}
-	 */
-	@Deprecated(forRemoval = true)
-	@SuppressWarnings("unchecked")
-	public static <T> T cast(Object o) {
-		return (T) o;
-	}
-
 	public static void queueIO(Runnable runnable) {
 		try {
 			runnable.run();
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		}
-	}
-
-	@Nullable
-	public static Path getPath(Object o) {
-		try {
-			if (o instanceof Path) {
-				return KubeJS.verifyFilePath((Path) o);
-			} else if (o == null || o.toString().isEmpty()) {
-				return null;
-			}
-
-			return KubeJS.verifyFilePath(KubeJS.getGameDirectory().resolve(o.toString()));
-		} catch (Exception ex) {
-			return null;
-		}
-	}
-
-	@Nullable
-	public static File getFileFromPath(Object o) {
-		try {
-			if (o instanceof File) {
-				return KubeJS.verifyFilePath(((File) o).toPath()).toFile();
-			} else if (o == null || o.toString().isEmpty()) {
-				return null;
-			}
-
-			return KubeJS.verifyFilePath(KubeJS.getGameDirectory().resolve(o.toString())).toFile();
-		} catch (Exception ex) {
-			return null;
 		}
 	}
 
@@ -172,12 +102,20 @@ public class UtilsJS {
 	@Nullable
 	public static Object wrap(@Nullable Object o, JSObjectType type) {
 		//Primitives and already normalized objects
-		if (o == null || o instanceof WrappedJS || o instanceof Tag || o instanceof Number || o instanceof Character || o instanceof String || o instanceof Enum || o.getClass().isPrimitive() && !o.getClass().isArray()) {
+		if (o == null || o instanceof WrappedJS || o instanceof Number || o instanceof Character || o instanceof String || o instanceof Enum || o.getClass().isPrimitive() && !o.getClass().isArray()) {
 			return o;
 		} else if (o instanceof CharSequence || o instanceof ResourceLocation) {
 			return o.toString();
+		} else if (o instanceof EndTag || o instanceof JsonNull) {
+			return null;
 		} else if (o instanceof Wrapper w) {
 			return wrap(w.unwrap(), type);
+		} else if (o instanceof NumericTag tag) {
+			return tag.getAsNumber();
+		} else if (o instanceof StringTag tag) {
+			return tag.getAsString();
+		} else if (o instanceof Tag) {
+			return o;
 		}
 		// Maps
 		else if (o instanceof Map) {
@@ -222,28 +160,6 @@ public class UtilsJS {
 			}
 
 			return map;
-		}
-		// GSON and NBT Null
-		else if (o instanceof JsonNull || o instanceof EndTag) {
-			return null;
-		}
-		// NBT
-		else if (o instanceof CompoundTag tag) {
-			if (!type.checkMap()) {
-				return null;
-			}
-
-			var map = new HashMap<String, Tag>(tag.size());
-
-			for (var s : tag.getAllKeys()) {
-				map.put(s, tag.get(s));
-			}
-
-			return map;
-		} else if (o instanceof NumericTag tag) {
-			return tag.getAsNumber();
-		} else if (o instanceof StringTag tag) {
-			return tag.getAsString();
 		}
 
 		return o;
@@ -307,96 +223,6 @@ public class UtilsJS {
 		} catch (Exception ex) {
 			return def;
 		}
-	}
-
-	public static String getID(@Nullable String s) {
-		if (s == null || s.isEmpty()) {
-			return "minecraft:air";
-		}
-
-		if (s.indexOf(':') == -1) {
-			return "minecraft:" + s;
-		}
-
-		return s;
-	}
-
-	public static ResourceLocation getMCID(@Nullable Context cx, @Nullable Object o, boolean preferKJS) {
-		if (o == null) {
-			return null;
-		} else if (o instanceof ResourceLocation id) {
-			return id;
-		} else if (o instanceof ResourceKey<?> key) {
-			return key.location();
-		} else if (o instanceof Holder<?> holder) {
-			return holder.unwrapKey().get().location();
-		}
-
-		var s = o instanceof JsonPrimitive p ? p.getAsString() : o.toString();
-
-		if (s.indexOf(':') == -1 && preferKJS) {
-			s = "kubejs:" + s;
-		}
-
-		try {
-			return new ResourceLocation(s);
-		} catch (ResourceLocationException ex) {
-			ConsoleJS.getCurrent(cx).error("Could not create ID from '%s'!".formatted(s), ex);
-		}
-
-		return null;
-	}
-
-	public static ResourceLocation getMCID(@Nullable Context cx, @Nullable Object o) {
-		return getMCID(cx, o, false);
-	}
-
-	public static String getNamespace(@Nullable String s) {
-		if (s == null || s.isEmpty()) {
-			return "minecraft";
-		}
-
-		var i = s.indexOf(':');
-		return i == -1 ? "minecraft" : s.substring(0, i);
-	}
-
-	public static String getPath(@Nullable String s) {
-		if (s == null || s.isEmpty()) {
-			return "air";
-		}
-
-		var i = s.indexOf(':');
-		return i == -1 ? s : s.substring(i + 1);
-	}
-
-	public static BlockState parseBlockState(String string) {
-		if (string.isEmpty()) {
-			return Blocks.AIR.defaultBlockState();
-		}
-
-		var i = string.indexOf('[');
-		var hasProperties = i >= 0 && string.indexOf(']') == string.length() - 1;
-		var state = RegistryInfo.BLOCK.getValue(new ResourceLocation(hasProperties ? string.substring(0, i) : string)).defaultBlockState();
-
-		if (hasProperties) {
-			for (var s : string.substring(i + 1, string.length() - 1).split(",")) {
-				var s1 = s.split("=", 2);
-
-				if (s1.length == 2 && !s1[0].isEmpty() && !s1[1].isEmpty()) {
-					var p = state.getBlock().getStateDefinition().getProperty(s1[0]);
-
-					if (p != null) {
-						Optional<?> o = p.getValue(s1[1]);
-
-						if (o.isPresent()) {
-							state = state.setValue(p, UtilsJS.cast(o.get()));
-						}
-					}
-				}
-			}
-		}
-
-		return state;
 	}
 
 	public static <T> Predicate<T> onMatchDo(Predicate<T> predicate, Consumer<T> onMatch) {
@@ -550,126 +376,6 @@ public class UtilsJS {
 		return joiner.toString();
 	}
 
-	@SuppressWarnings("unchecked")
-	public static IntProvider intProviderOf(Context cx, Object o) {
-		if (o instanceof Number n) {
-			return ConstantInt.of(n.intValue());
-		} else if (o instanceof List l && !l.isEmpty()) {
-			var min = (Number) l.get(0);
-			var max = l.size() >= 2 ? (Number) l.get(1) : min;
-			return UniformInt.of(min.intValue(), max.intValue());
-		} else if (o instanceof Map) {
-			var m = (Map<String, Object>) o;
-
-			var intBounds = parseIntBounds(m);
-			if (intBounds != null) {
-				return intBounds;
-			} else if (m.containsKey("clamped")) {
-				var source = intProviderOf(cx, m.get("clamped"));
-				var clampTo = parseIntBounds(m);
-				if (clampTo != null) {
-					return ClampedInt.of(source, clampTo.getMinValue(), clampTo.getMaxValue());
-				}
-			} else if (m.containsKey("clamped_normal")) {
-				var clampTo = parseIntBounds(m);
-				var mean = ((Number) m.get("mean")).intValue();
-				var deviation = ((Number) m.get("deviation")).intValue();
-				if (clampTo != null) {
-					return ClampedNormalInt.of(mean, deviation, clampTo.getMinValue(), clampTo.getMaxValue());
-				}
-			}
-
-			var decoded = IntProvider.CODEC.parse(NbtOps.INSTANCE, NBTUtils.toTagCompound(cx, m)).result();
-			if (decoded.isPresent()) {
-				return decoded.get();
-			}
-		}
-
-		return ConstantInt.of(0);
-	}
-
-	private static UniformInt parseIntBounds(Map<String, Object> m) {
-		if (m.get("bounds") instanceof List bounds) {
-			return UniformInt.of(UtilsJS.parseInt(bounds.get(0), 0), UtilsJS.parseInt(bounds.get(1), 0));
-		} else if (m.containsKey("min") && m.containsKey("max")) {
-			return UniformInt.of(((Number) m.get("min")).intValue(), ((Number) m.get("max")).intValue());
-		} else if (m.containsKey("min_inclusive") && m.containsKey("max_inclusive")) {
-			return UniformInt.of(((Number) m.get("min_inclusive")).intValue(), ((Number) m.get("max_inclusive")).intValue());
-		} else if (m.containsKey("value")) {
-			var f = ((Number) m.get("value")).intValue();
-			return UniformInt.of(f, f);
-		}
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static NumberProvider numberProviderOf(Object o) {
-		if (o instanceof Number n) {
-			var f = n.floatValue();
-			return UniformGenerator.between(f, f);
-		} else if (o instanceof List l && !l.isEmpty()) {
-			var min = (Number) l.get(0);
-			var max = l.size() >= 2 ? (Number) l.get(1) : min;
-			return UniformGenerator.between(min.floatValue(), max.floatValue());
-		} else if (o instanceof Map) {
-			var m = (Map<String, Object>) o;
-			if (m.containsKey("min") && m.containsKey("max")) {
-				return UniformGenerator.between(((Number) m.get("min")).intValue(), ((Number) m.get("max")).floatValue());
-			} else if (m.containsKey("n") && m.containsKey("p")) {
-				return BinomialDistributionGenerator.binomial(((Number) m.get("n")).intValue(), ((Number) m.get("p")).floatValue());
-			} else if (m.containsKey("value")) {
-				var f = ((Number) m.get("value")).floatValue();
-				return UniformGenerator.between(f, f);
-			}
-		}
-
-		return ConstantValue.exactly(0);
-	}
-
-	public static Vec3 vec3Of(@Nullable Object o) {
-		if (o instanceof Vec3 vec) {
-			return vec;
-		} else if (o instanceof Entity entity) {
-			return entity.position();
-		} else if (o instanceof List<?> list && list.size() >= 3) {
-			return new Vec3(UtilsJS.parseDouble(list.get(0), 0), UtilsJS.parseDouble(list.get(1), 0), UtilsJS.parseDouble(list.get(2), 0));
-		} else if (o instanceof BlockPos pos) {
-			return new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
-		} else if (o instanceof BlockContainerJS block) {
-			return new Vec3(block.getPos().getX() + 0.5D, block.getPos().getY() + 0.5D, block.getPos().getZ() + 0.5D);
-		}
-
-		return Vec3.ZERO;
-	}
-
-	public static BlockPos blockPosOf(@Nullable Object o) {
-		if (o instanceof BlockPos pos) {
-			return pos;
-		} else if (o instanceof List<?> list && list.size() >= 3) {
-			return new BlockPos(UtilsJS.parseInt(list.get(0), 0), UtilsJS.parseInt(list.get(1), 0), UtilsJS.parseInt(list.get(2), 0));
-		} else if (o instanceof BlockContainerJS block) {
-			return block.getPos();
-		} else if (o instanceof Vec3 vec) {
-			return BlockPos.containing(vec.x, vec.y, vec.z);
-		}
-
-		return BlockPos.ZERO;
-	}
-
-	public static Collection<BlockState> getAllBlockStates() {
-		if (ALL_STATE_CACHE != null) {
-			return ALL_STATE_CACHE;
-		}
-
-		var states = new HashSet<BlockState>();
-		for (var block : RegistryInfo.BLOCK.getArchitecturyRegistrar()) {
-			states.addAll(block.getStateDefinition().getPossibleStates());
-		}
-
-		ALL_STATE_CACHE = Collections.unmodifiableCollection(states);
-		return ALL_STATE_CACHE;
-	}
-
 	public static String toTitleCase(String s) {
 		return toTitleCase(s, false);
 	}
@@ -739,149 +445,6 @@ public class UtilsJS {
 	}
 
 	public static <T> T makeFunctionProxy(Context cx, TypeInfo targetClass, BaseFunction function) {
-		return cast(cx.createInterfaceAdapter(targetClass, function));
-	}
-
-	public static TemporalAmount getTemporalAmount(Object o) {
-		if (o instanceof TemporalAmount d) {
-			return d;
-		} else if (o instanceof Number n) {
-			return Duration.ofMillis(n.longValue());
-		} else if (o instanceof CharSequence) {
-			var matcher = TEMPORAL_AMOUNT_PATTERN.matcher(o.toString());
-
-			var millis = 0L;
-			var nanos = 0L;
-			var ticks = -1L;
-
-			while (matcher.find()) {
-				var amount = Double.parseDouble(matcher.group(1));
-
-				switch (matcher.group(2)) {
-					case "t" -> {
-						if (ticks == -1L) {
-							ticks = 0L;
-						}
-
-						ticks += amount;
-					}
-
-					case "ns" -> nanos += (long) amount;
-					case "ms" -> millis += (long) amount;
-					case "s" -> millis = (long) (amount * 1000D);
-					case "m" -> millis = (long) (amount * 60000D);
-					case "h" -> millis = (long) (amount * 60000D) * 60L;
-					case "d" -> millis = (long) (amount * 24D * 86400L) * 1000L;
-					case "w" -> millis = (long) (amount * 24D * 86400L) * 7000L;
-					case "M" -> millis = (long) (amount * 31556952D / 12D) * 1000L;
-					case "y" -> millis = (long) (amount * 31556952D) * 1000L;
-					default -> throw new IllegalArgumentException("Invalid temporal unit: " + matcher.group(2));
-				}
-			}
-
-			if (ticks != -1L) {
-				return new TickDuration(ticks + millis / 50L);
-			}
-
-			return Duration.ofMillis(millis).plusNanos(nanos);
-		} else {
-			throw new IllegalArgumentException("Invalid temporal amount: " + o);
-		}
-	}
-
-	public static long getTickDuration(Object o) {
-		if (o instanceof Number n) {
-			return n.longValue();
-		} else if (o instanceof JsonPrimitive json) {
-			return json.getAsLong();
-		}
-
-		var t = getTemporalAmount(o);
-
-		if (t instanceof TickDuration d) {
-			return d.ticks();
-		} else if (t instanceof Duration d) {
-			return d.toMillis() / 50L;
-		} else {
-			return 0L;
-		}
-	}
-
-	public static Duration getDuration(Object o) {
-		var t = getTemporalAmount(o);
-
-		if (t instanceof Duration d) {
-			return d;
-		} else if (t instanceof TickDuration d) {
-			return Duration.ofMillis(d.ticks() * 50L);
-		} else {
-			var d = Duration.ZERO;
-
-			for (var unit : t.getUnits()) {
-				d = d.plus(t.get(unit), unit);
-			}
-
-			return d;
-		}
-	}
-
-	public static void appendTimestamp(StringBuilder builder, Calendar calendar) {
-		int h = calendar.get(Calendar.HOUR_OF_DAY);
-		int m = calendar.get(Calendar.MINUTE);
-		int s = calendar.get(Calendar.SECOND);
-
-		if (h < 10) {
-			builder.append('0');
-		}
-
-		builder.append(h);
-		builder.append(':');
-
-		if (m < 10) {
-			builder.append('0');
-		}
-
-		builder.append(m);
-		builder.append(':');
-
-		if (s < 10) {
-			builder.append('0');
-		}
-
-		builder.append(s);
-	}
-
-	public static <K, V> Map<K, V> remap(Map<?, ?> original, Class<K> keyClass, Class<V> valueClass, boolean linked) {
-		if (original.isEmpty()) {
-			return Map.of();
-		}
-
-		var map = linked ? new LinkedHashMap<K, V>() : new HashMap<K, V>();
-
-		for (var entry : original.entrySet()) {
-			var okey = entry.getKey();
-			var ovalue = entry.getValue();
-
-			if (okey == null || ovalue == null) {
-				continue;
-			}
-
-			Object key = null;
-			Object value = null;
-
-			if (keyClass.isInstance(okey)) {
-				key = okey;
-			}
-
-			if (valueClass.isInstance(ovalue)) {
-				value = ovalue;
-			}
-
-			if (key != null && value != null) {
-				map.put(keyClass.cast(key), valueClass.cast(value));
-			}
-		}
-
-		return map;
+		return Cast.to(cx.createInterfaceAdapter(targetClass, function));
 	}
 }

@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonObject;
 import dev.architectury.registry.fuel.FuelRegistry;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
@@ -11,6 +10,7 @@ import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -49,20 +49,19 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		}
 	}
 
-	public static Tier toToolTier(Object o) {
+	public static Tier toolTierOf(Object o) {
 		if (o instanceof Tier tier) {
 			return tier;
 		}
 
-		String asString = String.valueOf(o);
+		var asString = String.valueOf(o);
+		var toolTier = ItemBuilder.TOOL_TIERS.get(asString);
 
-		Tier toolTier = ItemBuilder.TOOL_TIERS.get(asString);
 		if (toolTier != null) {
 			return toolTier;
 		}
 
-		String withKube = KubeJS.appendModId(asString);
-		return ItemBuilder.TOOL_TIERS.getOrDefault(withKube, Tiers.IRON);
+		return ItemBuilder.TOOL_TIERS.getOrDefault(ID.kjsString(asString), Tiers.IRON);
 	}
 
 	public transient int maxStackSize;

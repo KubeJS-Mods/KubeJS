@@ -34,7 +34,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 	@Override
 	public KubeRecipe call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args0) {
 		try {
-			return createRecipe(args0);
+			return createRecipe(cx, args0);
 		} catch (RecipeExceptionJS rex) {
 			if (rex.error) {
 				throw rex;
@@ -44,7 +44,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 		}
 	}
 
-	public KubeRecipe createRecipe(Object[] args) {
+	public KubeRecipe createRecipe(Context cx, Object[] args) {
 		try {
 			for (int i = 0; i < args.length; i++) {
 				args[i] = Wrapper.unwrapped(args[i]);
@@ -81,7 +81,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 				argMap.put(key, Wrapper.unwrapped(args[index++]));
 			}
 
-			var recipe = constructor.factory().create(this, schemaType, constructor.keys(), argMap);
+			var recipe = constructor.factory().create(cx, this, schemaType, constructor.keys(), argMap);
 			recipe.afterLoaded();
 			return event.addRecipe(recipe, false);
 		} catch (RecipeExceptionJS rex) {

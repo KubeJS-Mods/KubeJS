@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTUtils;
@@ -15,6 +16,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
@@ -41,6 +43,7 @@ import java.util.regex.Pattern;
 public interface ItemStackJS {
 	Map<String, ItemStack> PARSE_CACHE = new HashMap<>();
 	ItemStack[] EMPTY_ARRAY = new ItemStack[0];
+	TypeInfo TYPE_INFO = TypeInfo.of(ItemStack.class);
 
 	Lazy<List<String>> CACHED_ITEM_TYPE_LIST = Lazy.of(() -> {
 		var cachedItemTypeList = new ArrayList<String>();
@@ -134,7 +137,7 @@ public interface ItemStackJS {
 				s = s.substring(spaceIndex + 1);
 			}
 
-			cached = parse(s);
+			cached = ofString(s);
 			cached.setCount(count);
 			PARSE_CACHE.put(os, cached);
 			return cached.copy();
@@ -144,7 +147,7 @@ public interface ItemStackJS {
 
 		if (map != null) {
 			if (map.containsKey("item")) {
-				var id = UtilsJS.getMCID(null, map.get("item").toString());
+				var id = ID.mc(map.get("item").toString());
 				var item = RegistryInfo.ITEM.getValue(id);
 
 				if (item == Items.AIR) {
@@ -180,7 +183,7 @@ public interface ItemStackJS {
 		return ItemStack.EMPTY;
 	}
 
-	static ItemStack parse(String s) {
+	static ItemStack ofString(String s) {
 		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
 			return ItemStack.EMPTY;
 		} else if (s.startsWith("#")) {
@@ -243,7 +246,7 @@ public interface ItemStackJS {
 			if (s.isEmpty()) {
 				return Items.AIR;
 			} else if (s.charAt(0) != '#') {
-				return RegistryInfo.ITEM.getValue(UtilsJS.getMCID(cx, s));
+				return RegistryInfo.ITEM.getValue(ID.mc(s));
 			}
 		}
 

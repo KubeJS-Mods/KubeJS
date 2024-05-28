@@ -5,7 +5,8 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.rhino.Context;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
@@ -16,7 +17,7 @@ public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factor
 	public interface Factory {
 		Factory DEFAULT = (recipe, schemaType, keys, from) -> {
 			for (var key : keys) {
-				recipe.setValue(key, UtilsJS.cast(from.getValue(recipe, key)));
+				recipe.setValue(key, Cast.to(from.getValue(recipe, key)));
 			}
 		};
 
@@ -28,13 +29,13 @@ public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factor
 					var v = valueSupplier.apply(recipe, key);
 
 					if (v != null) {
-						recipe.setValue(key, UtilsJS.cast(v));
+						recipe.setValue(key, Cast.to(v));
 					}
 				}
 			};
 		}
 
-		default KubeRecipe create(RecipeTypeFunction type, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from) {
+		default KubeRecipe create(Context cx, RecipeTypeFunction type, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from) {
 			var r = schemaType.schema.factory.get();
 			r.type = type;
 			r.json = new JsonObject();

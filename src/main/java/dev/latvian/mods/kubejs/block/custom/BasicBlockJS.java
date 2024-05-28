@@ -338,7 +338,7 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 	public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
 		if (blockBuilder.rightClick != null) {
 			if (!level.isClientSide()) {
-				blockBuilder.rightClick.accept(new BlockRightClickedKubeEvent(stack, player, hand, pos, hit.getDirection()));
+				blockBuilder.rightClick.accept(new BlockRightClickedKubeEvent(stack, player, hand, pos, hit.getDirection(), hit));
 			}
 
 			return ItemInteractionResult.SUCCESS;

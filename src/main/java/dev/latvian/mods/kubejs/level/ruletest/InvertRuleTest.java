@@ -25,6 +25,6 @@ public class InvertRuleTest extends RuleTest {
 
 	@Override
 	protected RuleTestType<?> getType() {
-		return KubeJSRuleTests.INVERT;
+		return KubeJSRuleTests.INVERT.get();
 	}
 }

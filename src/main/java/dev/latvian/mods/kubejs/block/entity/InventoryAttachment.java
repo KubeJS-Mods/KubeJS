@@ -57,9 +57,8 @@ public class InventoryAttachment extends SimpleContainer implements BlockEntityA
 			var stack = getItem(i);
 
 			if (!stack.isEmpty()) {
-				var itemTag = new CompoundTag();
+				var itemTag = (CompoundTag) stack.save(registries, new CompoundTag());
 				itemTag.putByte("slot", (byte) i);
-				stack.save(registries, itemTag);
 				list.add(itemTag);
 			}
 		}

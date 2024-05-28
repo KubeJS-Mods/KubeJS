@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.Cast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,8 +88,8 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 		for (var val : value.holders) {
 			if (val.value != null) {
 				var vc = new RecipeComponentValue<>(val.key, val.getIndex());
-				vc.value = UtilsJS.cast(val.value);
-				val.key.component.writeToJson(recipe, UtilsJS.cast(vc), json);
+				vc.value = Cast.to(val.value);
+				val.key.component.writeToJson(recipe, Cast.to(vc), json);
 			}
 		}
 
@@ -102,7 +102,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 
 		if (from instanceof JsonObject json) {
 			for (var holder : value.holders) {
-				holder.key.component.readFromJson(recipe, UtilsJS.cast(holder), json);
+				holder.key.component.readFromJson(recipe, Cast.to(holder), json);
 
 				if (!holder.key.optional() && holder.value == null) {
 					throw new IllegalArgumentException("Missing required key '" + holder.key + "'!");
@@ -110,7 +110,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 			}
 		} else if (from instanceof Map<?, ?> map) {
 			for (var holder : value.holders) {
-				holder.key.component.readFromMap(recipe, UtilsJS.cast(holder), map);
+				holder.key.component.readFromMap(recipe, Cast.to(holder), map);
 
 				if (!holder.key.optional() && holder.value == null) {
 					throw new IllegalArgumentException("Missing required key '" + holder.key + "'!");

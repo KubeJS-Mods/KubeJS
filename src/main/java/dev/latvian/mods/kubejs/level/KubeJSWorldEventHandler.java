@@ -1,52 +1,49 @@
 package dev.latvian.mods.kubejs.level;
 
-import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.ExplosionEvent;
-import dev.architectury.event.events.common.LifecycleEvent;
-import dev.architectury.event.events.common.TickEvent;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.LevelEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
-import java.util.List;
-
+@EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSWorldEventHandler {
-	public static void init() {
-		LifecycleEvent.SERVER_LEVEL_LOAD.register(KubeJSWorldEventHandler::levelLoad);
-		LifecycleEvent.SERVER_LEVEL_UNLOAD.register(KubeJSWorldEventHandler::levelUnload);
-		TickEvent.SERVER_LEVEL_POST.register(KubeJSWorldEventHandler::levelPostTick);
-		ExplosionEvent.PRE.register(KubeJSWorldEventHandler::preExplosion);
-		ExplosionEvent.DETONATE.register(KubeJSWorldEventHandler::detonateExplosion);
-	}
-
-	private static void levelLoad(ServerLevel level) {
-		if (LevelEvents.LOADED.hasListeners()) {
-			LevelEvents.LOADED.post(new SimpleLevelKubeEvent(level), level.dimension().location());
+	@SubscribeEvent
+	public static void serverLevelLoad(LevelEvent.Load event) {
+		if (event.getLevel() instanceof ServerLevel level && LevelEvents.LOADED.hasListeners(level.dimension())) {
+			LevelEvents.LOADED.post(new SimpleLevelKubeEvent(level), level.dimension());
 		}
 	}
 
-	private static void levelUnload(ServerLevel level) {
-		if (LevelEvents.UNLOADED.hasListeners()) {
-			LevelEvents.UNLOADED.post(new SimpleLevelKubeEvent(level), level.dimension().location());
+	@SubscribeEvent
+	public static void serverLevelUnload(LevelEvent.Unload event) {
+		if (event.getLevel() instanceof ServerLevel level && LevelEvents.UNLOADED.hasListeners(level.dimension())) {
+			LevelEvents.UNLOADED.post(new SimpleLevelKubeEvent(level), level.dimension());
 		}
 	}
 
-	private static void levelPostTick(ServerLevel level) {
-		if (LevelEvents.TICK.hasListeners()) {
-			LevelEvents.TICK.post(ScriptType.SERVER, level.dimension().location(), new SimpleLevelKubeEvent(level));
+	@SubscribeEvent
+	public static void serverTickEvent(LevelTickEvent.Post event) {
+		if (event.getLevel() instanceof ServerLevel level && LevelEvents.TICK.hasListeners(level.dimension())) {
+			LevelEvents.TICK.post(ScriptType.SERVER, level.dimension(), new SimpleLevelKubeEvent(level));
 		}
 	}
 
-	private static EventResult preExplosion(Level level, Explosion explosion) {
-		return LevelEvents.BEFORE_EXPLOSION.hasListeners() ? LevelEvents.BEFORE_EXPLOSION.post(level, new ExplosionKubeEvent.Before(level, explosion)).arch() : EventResult.pass();
+	@SubscribeEvent
+	public static void preExplosion(ExplosionEvent.Start event) {
+		if (event.getLevel() instanceof ServerLevel level && LevelEvents.BEFORE_EXPLOSION.hasListeners(level.dimension())) {
+			LevelEvents.BEFORE_EXPLOSION.post(level, level.dimension(), new ExplosionKubeEvent.Before(level, event.getExplosion())).applyCancel(event);
+		}
 	}
 
-	private static void detonateExplosion(Level level, Explosion explosion, List<Entity> affectedEntities) {
-		if (LevelEvents.AFTER_EXPLOSION.hasListeners()) {
-			LevelEvents.AFTER_EXPLOSION.post(level, new ExplosionKubeEvent.After(level, explosion, affectedEntities));
+	@SubscribeEvent
+	public static void detonateExplosion(ExplosionEvent.Detonate event) {
+		if (event.getLevel() instanceof ServerLevel level && LevelEvents.AFTER_EXPLOSION.hasListeners(level.dimension())) {
+			LevelEvents.AFTER_EXPLOSION.post(level, level.dimension(), new ExplosionKubeEvent.After(level, event.getExplosion(), event.getAffectedEntities()));
 		}
 	}
 }

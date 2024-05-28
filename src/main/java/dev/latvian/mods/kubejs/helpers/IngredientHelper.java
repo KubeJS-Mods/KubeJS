@@ -1,28 +1,22 @@
 package dev.latvian.mods.kubejs.helpers;
 
-import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.ingredient.CreativeTabIngredient;
+import dev.latvian.mods.kubejs.ingredient.ModIngredient;
+import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
+import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.recipe.ingredient.CreativeTabIngredient;
-import dev.latvian.mods.kubejs.recipe.ingredient.ModIngredient;
-import dev.latvian.mods.kubejs.recipe.ingredient.RegExIngredient;
-import dev.latvian.mods.kubejs.recipe.ingredient.WildcardIngredient;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Tags;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
-import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 public enum IngredientHelper {
@@ -32,18 +26,8 @@ public enum IngredientHelper {
 		return INSTANCE;
 	}
 
-	public static final DeferredRegister<IngredientType<?>> INGREDIENT_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.INGREDIENT_TYPES, KubeJS.MOD_ID);
-	public static final Supplier<IngredientType<WildcardIngredient>> WILDCARD = INGREDIENT_TYPES.register("wildcard", () -> new IngredientType<>(WildcardIngredient.CODEC));
-	public static final Supplier<IngredientType<ModIngredient>> MOD = INGREDIENT_TYPES.register("mod", () -> new IngredientType<>(ModIngredient.CODEC));
-	public static final Supplier<IngredientType<RegExIngredient>> REGEX = INGREDIENT_TYPES.register("regex", () -> new IngredientType<>(RegExIngredient.CODEC));
-	public static final Supplier<IngredientType<CreativeTabIngredient>> CREATIVE_TAB = INGREDIENT_TYPES.register("creative_tab", () -> new IngredientType<>(CreativeTabIngredient.CODEC));
-
 	public InputItem stack(Ingredient ingredient, int count) {
-		return InputItem.of(ingredient, count);
-	}
-
-	public static void register(IEventBus bus) {
-		INGREDIENT_TYPES.register(bus);
+		return InputItem.create(ingredient, count);
 	}
 
 	public Ingredient wildcard() {
@@ -51,7 +35,7 @@ public enum IngredientHelper {
 	}
 
 	public Ingredient tag(String tag) {
-		return Ingredient.of(Tags.item(UtilsJS.getMCID(null, tag)));
+		return Ingredient.of(Tags.item(ID.mc(tag)));
 	}
 
 	public Ingredient mod(String mod) {

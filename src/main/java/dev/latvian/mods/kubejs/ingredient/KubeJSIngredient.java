@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.recipe.ingredient;
+package dev.latvian.mods.kubejs.ingredient;
 
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.world.item.ItemStack;

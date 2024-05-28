@@ -1,10 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
-import com.mojang.brigadier.CommandDispatcher;
-import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.CommandPerformEvent;
-import dev.architectury.event.events.common.CommandRegistrationEvent;
-import dev.architectury.event.events.common.LifecycleEvent;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.LevelEvents;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.command.CommandRegistryKubeEvent;
@@ -13,39 +9,46 @@ import dev.latvian.mods.kubejs.level.SimpleLevelKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
-import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelResource;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.CommandEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.UUID;
 
+@EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSServerEventHandler {
 	private static final LevelResource PERSISTENT_DATA = new LevelResource("kubejs_persistent_data.nbt");
 
-	public static void init() {
-		LifecycleEvent.SERVER_BEFORE_START.register(KubeJSServerEventHandler::serverBeforeStart);
-		CommandRegistrationEvent.EVENT.register(KubeJSServerEventHandler::registerCommands);
-		LifecycleEvent.SERVER_STARTING.register(KubeJSServerEventHandler::serverStarting);
-		LifecycleEvent.SERVER_STOPPING.register(KubeJSServerEventHandler::serverStopping);
-		LifecycleEvent.SERVER_STOPPED.register(KubeJSServerEventHandler::serverStopped);
-		LifecycleEvent.SERVER_LEVEL_SAVE.register(KubeJSServerEventHandler::serverLevelSaved);
-		LifecycleEvent.SERVER_LEVEL_LOAD.register(KubeJSServerEventHandler::serverLevelLoaded);
-		CommandPerformEvent.EVENT.register(KubeJSServerEventHandler::command);
+	@SubscribeEvent
+	public static void registerCommands(RegisterCommandsEvent event) {
+		KubeJSCommands.register(event.getDispatcher());
+
+		if (ServerEvents.COMMAND_REGISTRY.hasListeners()) {
+			ServerEvents.COMMAND_REGISTRY.post(ScriptType.SERVER, new CommandRegistryKubeEvent(event.getDispatcher(), event.getBuildContext(), event.getCommandSelection()));
+		}
 	}
 
-	public static void serverBeforeStart(MinecraftServer server) {
+	@SubscribeEvent
+	public static void serverBeforeStart(ServerAboutToStartEvent event) {
+		var server = event.getServer();
+
 		UtilsJS.staticServer = server;
 		UtilsJS.staticRegistryAccess = server.registryAccess();
 
@@ -86,35 +89,36 @@ public class KubeJSServerEventHandler {
 		}
 	}
 
-	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext registry, Commands.CommandSelection selection) {
-		KubeJSCommands.register(dispatcher);
-
-		if (ServerEvents.COMMAND_REGISTRY.hasListeners()) {
-			ServerEvents.COMMAND_REGISTRY.post(ScriptType.SERVER, new CommandRegistryKubeEvent(dispatcher, registry, selection));
-		}
+	@SubscribeEvent
+	public static void serverStarting(ServerStartingEvent event) {
+		ServerEvents.LOADED.post(ScriptType.SERVER, new ServerKubeEvent(event.getServer()));
 	}
 
-	private static void serverStarting(MinecraftServer server) {
-		ServerEvents.LOADED.post(ScriptType.SERVER, new ServerKubeEvent(server));
+	@SubscribeEvent
+	public static void serverStopping(ServerStoppingEvent event) {
+		ServerEvents.UNLOADED.post(ScriptType.SERVER, new ServerKubeEvent(event.getServer()));
 	}
 
-	private static void serverStopping(MinecraftServer server) {
-		ServerEvents.UNLOADED.post(ScriptType.SERVER, new ServerKubeEvent(server));
-	}
-
-	private static void serverStopped(MinecraftServer server) {
+	@SubscribeEvent
+	public static void serverStopped(ServerStoppedEvent event) {
 		UtilsJS.staticServer = null;
 		UtilsJS.staticRegistryAccess = RegistryAccess.EMPTY;
 	}
 
-	private static void serverLevelLoaded(ServerLevel level) {
-		if (LevelEvents.LOADED.hasListeners()) {
-			LevelEvents.LOADED.post(new SimpleLevelKubeEvent(level), level.dimension().location());
+	@SubscribeEvent
+	public static void serverLevelLoaded(LevelEvent.Load event) {
+		if (event.getLevel() instanceof ServerLevel level && LevelEvents.LOADED.hasListeners(level.dimension())) {
+			LevelEvents.LOADED.post(new SimpleLevelKubeEvent(level), level.dimension());
 		}
 	}
 
-	private static void serverLevelSaved(ServerLevel level) {
-		if (level.dimension() == Level.OVERWORLD) {
+	@SubscribeEvent
+	public static void serverLevelSaved(LevelEvent.Save event) {
+		if (event.getLevel() instanceof ServerLevel level && LevelEvents.SAVED.hasListeners(level.dimension())) {
+			LevelEvents.SAVED.post(new SimpleLevelKubeEvent(level), level.dimension());
+		}
+
+		if (event.getLevel() instanceof ServerLevel level && level.dimension() == Level.OVERWORLD) {
 			var serverData = level.getServer().kjs$getPersistentData().copy();
 			var p = level.getServer().getWorldPath(PERSISTENT_DATA);
 
@@ -149,12 +153,14 @@ public class KubeJSServerEventHandler {
 		}
 	}
 
-	public static EventResult command(CommandPerformEvent event) {
+	@SubscribeEvent
+	public static void command(CommandEvent event) {
 		if (ServerEvents.COMMAND.hasListeners()) {
 			var e = new CommandKubeEvent(event);
-			return ServerEvents.COMMAND.post(e, e.getCommandName()).arch();
-		}
 
-		return EventResult.pass();
+			if (ServerEvents.COMMAND.hasListeners(e.getCommandName())) {
+				ServerEvents.COMMAND.post(e, e.getCommandName()).applyCancel(event);
+			}
+		}
 	}
 }

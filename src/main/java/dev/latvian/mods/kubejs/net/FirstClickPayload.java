@@ -24,13 +24,21 @@ public record FirstClickPayload(int clickType) implements CustomPacketPayload {
 			if (clickType == 0 && ItemEvents.FIRST_LEFT_CLICKED.hasListeners()) {
 				ctx.enqueueWork(() -> {
 					var stack = serverPlayer.getItemInHand(InteractionHand.MAIN_HAND);
-					ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.SERVER, stack.getItem(), new ItemClickedKubeEvent(serverPlayer, InteractionHand.MAIN_HAND, stack));
+					var key = stack.getItem().kjs$getRegistryKey();
+
+					if (ItemEvents.FIRST_LEFT_CLICKED.hasListeners(key)) {
+						ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.SERVER, key, new ItemClickedKubeEvent(serverPlayer, InteractionHand.MAIN_HAND, stack));
+					}
 				});
 			} else if (clickType == 1 && ItemEvents.FIRST_RIGHT_CLICKED.hasListeners()) {
 				ctx.enqueueWork(() -> {
 					for (var hand : InteractionHand.values()) {
 						var stack = serverPlayer.getItemInHand(hand);
-						ItemEvents.FIRST_RIGHT_CLICKED.post(ScriptType.SERVER, stack.getItem(), new ItemClickedKubeEvent(serverPlayer, hand, stack));
+						var key = stack.getItem().kjs$getRegistryKey();
+
+						if (ItemEvents.FIRST_RIGHT_CLICKED.hasListeners(key)) {
+							ItemEvents.FIRST_RIGHT_CLICKED.post(ScriptType.SERVER, key, new ItemClickedKubeEvent(serverPlayer, hand, stack));
+						}
 					}
 				});
 			}

@@ -4,14 +4,14 @@ import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -45,7 +45,7 @@ public abstract class ItemMixin implements ItemKJS {
 	private CompoundTag kjs$typeData;
 	private Ingredient kjs$asIngredient;
 	private ItemStackKey kjs$typeItemStackKey;
-	private ResourceLocation kjs$id;
+	private ResourceKey<Item> kjs$registryKey;
 	private String kjs$idString;
 
 	@Override
@@ -61,13 +61,17 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Override
-	public ResourceLocation kjs$getIdLocation() {
-		if (kjs$id == null) {
-			var id = RegistryInfo.ITEM.getId(kjs$self());
-			kjs$id = id == null ? UtilsJS.UNKNOWN_ID : id;
+	public ResourceKey<Item> kjs$getRegistryKey() {
+		if (kjs$registryKey == null) {
+			try {
+				kjs$registryKey = kjs$self().builtInRegistryHolder().key();
+			} catch (Exception ex) {
+				var id = RegistryInfo.ITEM.getId(kjs$self());
+				kjs$registryKey = id == null ? RegistryInfo.ITEM.unknownKey : ResourceKey.create(Registries.ITEM, id);
+			}
 		}
 
-		return kjs$id;
+		return kjs$registryKey;
 	}
 
 	@Override

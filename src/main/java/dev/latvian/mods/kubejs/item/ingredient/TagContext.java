@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.item.ingredient;
 import com.google.common.collect.Iterables;
 import dev.architectury.extensions.injected.InjectedRegistryEntryExtension;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -59,7 +59,7 @@ public interface TagContext {
 			@Override
 			public <T> boolean contains(TagKey<T> tag, T value) {
 				if (value instanceof InjectedRegistryEntryExtension<?> ext) {
-					Holder<T> holder = UtilsJS.cast(ext.arch$holder());
+					Holder<T> holder = Cast.to(ext.arch$holder());
 					return holder.is(tag);
 				}
 
@@ -74,7 +74,7 @@ public interface TagContext {
 
 	static TagContext fromLoadResult(List<TagManager.LoadResult<?>> results) {
 		final Map<ResourceKey<? extends Registry<?>>, Map<ResourceLocation, Collection<Holder<?>>>> tags = results.stream()
-			.collect(Collectors.toMap(result -> UtilsJS.cast(result.key()), result -> UtilsJS.cast(result.tags())));
+			.collect(Collectors.toMap(result -> Cast.to(result.key()), result -> Cast.to(result.tags())));
 
 		if (!tags.containsKey(Registries.ITEM)) {
 			ConsoleJS.SERVER.warn("Failed to load item tags during recipe event! Using replaceInput etc. will not work!");
@@ -84,7 +84,7 @@ public interface TagContext {
 		return new TagContext() {
 			@Override
 			public <T> Iterable<Holder<T>> getTag(TagKey<T> tag) {
-				return UtilsJS.cast(tags.get(tag.registry()).getOrDefault(tag.location(), Set.of()));
+				return Cast.to(tags.get(tag.registry()).getOrDefault(tag.location(), Set.of()));
 			}
 		};
 	}

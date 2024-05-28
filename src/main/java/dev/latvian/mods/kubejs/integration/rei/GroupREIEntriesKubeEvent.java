@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.Tags;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import me.shedaniel.rei.api.client.registry.entry.CollapsibleEntryRegistry;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
@@ -41,7 +41,7 @@ public class GroupREIEntriesKubeEvent implements KubeEvent {
 		var entryType = KubeJSREIPlugin.getTypeOrThrow(entryTypeId);
 		var wrapper = entryWrappers.getWrapper(entryType);
 		var list = wrapper.entryList(entries);
-		group(groupId, description, UtilsJS.cast(list));
+		group(groupId, description, Cast.to(list));
 	}
 
 	public void groupSameItem(ResourceLocation group, Component description, ItemStack item) {

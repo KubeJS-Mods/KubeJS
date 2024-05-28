@@ -7,7 +7,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
+import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import it.unimi.dsi.fastutil.chars.CharArraySet;
@@ -78,7 +78,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return KubeJSRecipeEventHandler.SHAPED.get();
+		return KubeJSRecipeSerializers.SHAPED.get();
 	}
 
 	@Override

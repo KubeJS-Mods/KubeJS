@@ -23,8 +23,8 @@ import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -830,7 +830,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 
 		if (noValidSpawns) {
-			properties.isValidSpawn(UtilsJS.cast(ALWAYS_FALSE_STATE_ARG_PREDICATE));
+			properties.isValidSpawn(Cast.to(ALWAYS_FALSE_STATE_ARG_PREDICATE));
 		}
 
 		if (!suffocating) {

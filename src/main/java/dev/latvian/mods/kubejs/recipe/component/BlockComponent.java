@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
+import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -43,9 +43,9 @@ public record BlockComponent(ComponentRole crole) implements RecipeComponent<Blo
 		} else if (from instanceof BlockState s) {
 			return s.getBlock();
 		} else if (from instanceof JsonPrimitive json) {
-			return UtilsJS.parseBlockState(json.getAsString()).getBlock();
+			return BlockWrapper.parseBlockState(json.getAsString()).getBlock();
 		} else {
-			return UtilsJS.parseBlockState(String.valueOf(from)).getBlock();
+			return BlockWrapper.parseBlockState(String.valueOf(from)).getBlock();
 		}
 	}
 

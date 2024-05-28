@@ -2,12 +2,12 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.helpers.MiscHelper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.LogType;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -148,7 +148,7 @@ public class ScriptManager {
 		contextFactory = new KubeJSContextFactory(this);
 		scriptType.console.contextFactory = new WeakReference<>(contextFactory);
 
-		if (MiscHelper.get().isDataGen()) {
+		if (PlatformWrapper.isGeneratingData()) {
 			firstLoad = false;
 			scriptType.console.info("Skipping KubeJS script loading (DataGen)");
 			return;
@@ -168,7 +168,7 @@ public class ScriptManager {
 
 			if (info.autoWrap && info.objectBaseClass != Object.class && info.objectBaseClass != null) {
 				try {
-					typeWrappers.register(info.objectBaseClass, UtilsJS.cast(info));
+					typeWrappers.register(info.objectBaseClass, (TypeWrapperFactory) info);
 				} catch (IllegalArgumentException ignored) {
 					scriptType.console.info("Skipped registry type wrapper for " + info.key.location());
 				}

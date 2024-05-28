@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
@@ -82,7 +82,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 			.temperature(temperature)
 			.lighterThanAir(isGaseous)
 			.bucketItem(() -> Optional.ofNullable(bucketItem).map(Supplier::get))
-			.block(() -> Optional.ofNullable(block).map(Supplier::get).map(UtilsJS::cast));
+			.block(() -> Optional.ofNullable(block).map(Supplier::get).map(Cast::to));
 
 		this.attributes = attributes;
 		return attributes;

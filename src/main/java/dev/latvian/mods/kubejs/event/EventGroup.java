@@ -36,7 +36,7 @@ public final class EventGroup {
 	}
 
 	public EventHandler add(String name, ScriptTypePredicate scriptType, Supplier<Class<? extends KubeEvent>> eventType) {
-		EventHandler handler = new EventHandler(this, name, scriptType, eventType);
+		var handler = new EventHandler(this, name, scriptType, eventType);
 		handlers.put(name, handler);
 		return handler;
 	}
@@ -55,6 +55,28 @@ public final class EventGroup {
 
 	public EventHandler common(String name, Supplier<Class<? extends KubeEvent>> eventType) {
 		return add(name, ScriptTypePredicate.COMMON, eventType);
+	}
+
+	public <T> SpecializedEventHandler<T> add(String name, ScriptTypePredicate scriptType, Extra<T> extra, Supplier<Class<? extends KubeEvent>> eventType) {
+		var handler = new SpecializedEventHandler<>(this, name, scriptType, extra, eventType);
+		handlers.put(name, handler);
+		return handler;
+	}
+
+	public <T> SpecializedEventHandler<T> startup(String name, Extra<T> extra, Supplier<Class<? extends KubeEvent>> eventType) {
+		return add(name, ScriptType.STARTUP, extra, eventType);
+	}
+
+	public <T> SpecializedEventHandler<T> server(String name, Extra<T> extra, Supplier<Class<? extends KubeEvent>> eventType) {
+		return add(name, ScriptType.SERVER, extra, eventType);
+	}
+
+	public <T> SpecializedEventHandler<T> client(String name, Extra<T> extra, Supplier<Class<? extends KubeEvent>> eventType) {
+		return add(name, ScriptType.CLIENT, extra, eventType);
+	}
+
+	public <T> SpecializedEventHandler<T> common(String name, Extra<T> extra, Supplier<Class<? extends KubeEvent>> eventType) {
+		return add(name, ScriptTypePredicate.COMMON, extra, eventType);
 	}
 
 	public Map<String, EventHandler> getHandlers() {

@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.recipe;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeOptional;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.Cast;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -114,7 +114,7 @@ public final class RecipeKey<T> {
 	 * @see #optional(RecipeOptional)
 	 */
 	public RecipeKey<T> defaultOptional() {
-		optional = UtilsJS.cast(RecipeOptional.DEFAULT);
+		optional = Cast.to(RecipeOptional.DEFAULT);
 		return this;
 	}
 

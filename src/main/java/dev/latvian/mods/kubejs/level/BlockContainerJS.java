@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.level;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.Tags;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.core.BlockPos;
@@ -165,7 +165,7 @@ public class BlockContainerJS implements SpecialEquality {
 				var property = pmap.get(String.valueOf(entry.getKey()));
 
 				if (property != null) {
-					state = state.setValue(property, UtilsJS.cast(property.getValue(String.valueOf(entry.getValue())).orElseThrow()));
+					state = state.setValue(property, Cast.to(property.getValue(String.valueOf(entry.getValue())).orElseThrow()));
 				}
 			}
 		}

@@ -12,7 +12,8 @@ import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.LogType;
+import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
@@ -78,7 +79,7 @@ public class DataExport {
 	private void appendLine(StringBuilder sb, Calendar calendar, ConsoleLine line) {
 		calendar.setTimeInMillis(line.timestamp);
 		sb.append('[');
-		UtilsJS.appendTimestamp(sb, calendar);
+		TimeJS.appendTimestamp(sb, calendar);
 		sb.append(']');
 		sb.append(' ');
 		sb.append('[');
@@ -86,7 +87,7 @@ public class DataExport {
 		sb.append(']');
 		sb.append(' ');
 
-		if (line.type.equals("ERROR")) {
+		if (line.type == LogType.ERROR) {
 			sb.append('!');
 			sb.append(' ');
 		}

@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.Wrapper;
 
@@ -55,7 +55,7 @@ public record TimeComponent(String name, long scale) implements RecipeComponent<
 			return ((Number) from).longValue() * scale;
 		}
 
-		return UtilsJS.getTickDuration(from);
+		return TimeJS.tickDurationOf(from);
 	}
 
 	@Override

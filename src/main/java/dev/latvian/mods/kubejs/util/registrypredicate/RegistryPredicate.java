@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.util.registrypredicate;
 
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegExpJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
@@ -34,7 +34,7 @@ public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
 				return EntireRegistryPredicate.FALSE;
 			} else if (s.startsWith("#")) {
 				var reg = RegistryInfo.ofClass(target.param(0).asClass());
-				var tag = UtilsJS.getMCID(cx, s.substring(1));
+				var tag = ID.mc(s.substring(1));
 
 				if (reg != null) {
 					return new RegistryTagKeyPredicate<>(TagKey.create(reg.key, tag));
@@ -50,7 +50,7 @@ public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
 					return new RegistryRegExpPredicate<>(pattern);
 				} else {
 					var reg = RegistryInfo.ofClass(target.param(0).asClass());
-					var id = UtilsJS.getMCID(cx, s);
+					var id = ID.mc(s);
 
 					if (reg != null) {
 						return new RegistryHolderPredicate<>(reg.getHolder(id));

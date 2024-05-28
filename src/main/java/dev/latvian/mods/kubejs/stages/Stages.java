@@ -31,7 +31,10 @@ public interface Stages {
 				PacketDistributor.sendToAllPlayers(new AddStagePayload(player.getUUID(), stage));
 			}
 
-			PlayerEvents.STAGE_ADDED.post(new StageChangedEvent(getPlayer(), this, stage), stage);
+			if (PlayerEvents.STAGE_ADDED.hasListeners(stage)) {
+				PlayerEvents.STAGE_ADDED.post(new StageChangedEvent(getPlayer(), this, stage), stage);
+			}
+
 			return true;
 		}
 
@@ -44,7 +47,10 @@ public interface Stages {
 				PacketDistributor.sendToAllPlayers(new RemoveStagePayload(player.getUUID(), stage));
 			}
 
-			PlayerEvents.STAGE_REMOVED.post(new StageChangedEvent(getPlayer(), this, stage), stage);
+			if (PlayerEvents.STAGE_REMOVED.hasListeners(stage)) {
+				PlayerEvents.STAGE_REMOVED.post(new StageChangedEvent(getPlayer(), this, stage), stage);
+			}
+
 			return true;
 		}
 

@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.client.BlockTintFunctionWrapper;
 import dev.latvian.mods.kubejs.client.ItemTintFunctionWrapper;
+import dev.latvian.mods.kubejs.client.KubeJSClientEventHandler;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
@@ -11,16 +12,19 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 public class KubeJSNeoForgeClient {
-	public KubeJSNeoForgeClient() {
-		var bus = KubeJSEntryPoint.eventBus().orElseThrow();
+	public KubeJSNeoForgeClient(IEventBus bus) {
 		bus.addListener(EventPriority.LOW, this::setupClient);
 		bus.addListener(this::blockColors);
 		bus.addListener(this::itemColors);
 		//bus.addListener(this::textureStitch);
+		NeoForge.EVENT_BUS.addListener(EventPriority.LOW, this::openScreenEvent);
 	}
 
 	private void setupClient(FMLClientSetupEvent event) {
@@ -80,4 +84,12 @@ public class KubeJSNeoForgeClient {
 	/*private void textureStitch(TextureStitchEvent.Pre event) {
 		ClientEvents.ATLAS_SPRITE_REGISTRY.post(new AtlasSpriteRegistryEventJS(event::addSprite), event.getAtlas().location());
 	}*/
+
+	private void openScreenEvent(ScreenEvent.Opening event) {
+		var s = KubeJSClientEventHandler.setScreen(event.getScreen());
+
+		if (s != null && event.getScreen() != s) {
+			event.setNewScreen(s);
+		}
+	}
 }

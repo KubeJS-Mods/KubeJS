@@ -2,8 +2,6 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.architectury.hooks.PackRepositoryHooks;
 import dev.architectury.platform.Platform;
-import dev.architectury.registry.menu.MenuRegistry;
-import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSPaths;
@@ -13,8 +11,6 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
-import dev.latvian.mods.kubejs.gui.KubeJSMenu;
-import dev.latvian.mods.kubejs.gui.KubeJSScreen;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesKubeEvent;
 import dev.latvian.mods.kubejs.net.NetworkKubeEvent;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -33,6 +29,7 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -43,7 +40,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class KubeJSClient extends KubeJSCommon {
 	@Override
-	public void init() {
+	public void init(IEventBus bus) {
 		// You'd think that this is impossible, but not when you use runData gradle task
 		if (Minecraft.getInstance() == null) {
 			return;
@@ -51,7 +48,7 @@ public class KubeJSClient extends KubeJSCommon {
 
 		reloadClientScripts();
 
-		new KubeJSClientEventHandler().init();
+		new KubeJSClientEventHandler().init(bus);
 		var list = Minecraft.getInstance().getResourcePackRepository();
 		PackRepositoryHooks.addSource(list, new KubeJSResourcePackFinder());
 
@@ -108,10 +105,6 @@ public class KubeJSClient extends KubeJSCommon {
 
 			return null;
 		});
-
-		if (!CommonProperties.get().serverOnly) {
-			MenuRegistry.registerScreenFactory(KubeJSMenu.KUBEJS_MENU.get(), KubeJSScreen::new);
-		}
 	}
 
 	@Override

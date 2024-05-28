@@ -3,13 +3,14 @@ package dev.latvian.mods.kubejs.bindings;
 import com.google.gson.JsonElement;
 import com.mojang.brigadier.StringReader;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.CountingMap;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.kubejs.util.WithContext;
 import dev.latvian.mods.kubejs.util.WrappedJS;
+import dev.latvian.mods.rhino.Context;
 import net.minecraft.Util;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -223,14 +224,15 @@ public interface UtilsWrapper {
 		return UtilsJS.snakeCaseToTitleCase(string);
 	}
 
-	static ParticleOptions particleOptions(WithContext<Object> o) {
-		if (o.value() instanceof ParticleOptions po) {
+	static ParticleOptions particleOptions(Context cx, Object o) {
+		if (o instanceof ParticleOptions po) {
 			return po;
 		} else if (o != null) {
 			try {
-				var reader = new StringReader(o.value() instanceof JsonElement j ? j.getAsString() : o.toString());
-				return ParticleArgument.readParticle(reader, o.cx().getRegistries());
-			} catch (Exception ignored) {
+				var reader = new StringReader(o instanceof JsonElement j ? j.getAsString() : o.toString());
+				return ParticleArgument.readParticle(reader, ((KubeJSContext) cx).getRegistries());
+			} catch (Exception ex) {
+				((KubeJSContext) cx).getConsole().warn("Failed to parse ParticleOptions from " + o + ": " + ex);
 			}
 		}
 
@@ -242,6 +244,6 @@ public interface UtilsWrapper {
 		if (o instanceof BlockState bs) {
 			return bs;
 		}
-		return o == null ? Blocks.AIR.defaultBlockState() : UtilsJS.parseBlockState(o.toString());
+		return o == null ? Blocks.AIR.defaultBlockState() : BlockWrapper.parseBlockState(o.toString());
 	}
 }

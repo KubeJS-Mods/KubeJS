@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -15,7 +15,7 @@ public class DamageSourceWrapper {
 			case DamageSource source -> source;
 			case Player player -> ServerLifecycleHooks.getCurrentServer().kjs$getOverworld().damageSources().playerAttack(player);
 			case LivingEntity livingEntity -> ServerLifecycleHooks.getCurrentServer().kjs$getOverworld().damageSources().mobAttack(livingEntity);
-			case null, default -> ServerLifecycleHooks.getCurrentServer().kjs$getOverworld().damageSources().source(ResourceKey.create(Registries.DAMAGE_TYPE, UtilsJS.getMCID(cx, from)));
+			case null, default -> ServerLifecycleHooks.getCurrentServer().kjs$getOverworld().damageSources().source(ResourceKey.create(Registries.DAMAGE_TYPE, ID.mc(from)));
 		};
 	}
 }

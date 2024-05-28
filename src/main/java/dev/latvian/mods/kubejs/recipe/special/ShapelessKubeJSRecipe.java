@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.recipe.special;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.recipe.KubeJSRecipeEventHandler;
+import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import net.minecraft.core.HolderLookup;
@@ -34,7 +34,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return KubeJSRecipeEventHandler.SHAPELESS.get();
+		return KubeJSRecipeSerializers.SHAPELESS.get();
 	}
 
 	@Override

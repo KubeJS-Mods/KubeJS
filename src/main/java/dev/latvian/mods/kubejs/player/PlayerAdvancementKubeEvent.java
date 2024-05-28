@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.typings.Info;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.advancements.AdvancementNode;
 import net.minecraft.server.level.ServerPlayer;
 
 @Info("""
@@ -9,11 +9,11 @@ import net.minecraft.server.level.ServerPlayer;
 	""")
 public class PlayerAdvancementKubeEvent implements KubePlayerEvent {
 	private final ServerPlayer player;
-	private final ResourceLocation id;
+	private final AdvancementNode advancementNode;
 
-	public PlayerAdvancementKubeEvent(ServerPlayer player, ResourceLocation id) {
+	public PlayerAdvancementKubeEvent(ServerPlayer player, AdvancementNode advancementNode) {
 		this.player = player;
-		this.id = id;
+		this.advancementNode = advancementNode;
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class PlayerAdvancementKubeEvent implements KubePlayerEvent {
 	}
 
 	@Info("Returns the advancement that was obtained.")
-	public AdvancementJS getAdvancement() {
-		return player.server.kjs$getAdvancement(id);
+	public AdvancementNode getAdvancement() {
+		return advancementNode;
 	}
 }

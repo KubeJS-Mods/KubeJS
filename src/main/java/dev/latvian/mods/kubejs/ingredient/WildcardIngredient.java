@@ -1,7 +1,6 @@
-package dev.latvian.mods.kubejs.recipe.ingredient;
+package dev.latvian.mods.kubejs.ingredient;
 
 import com.mojang.serialization.MapCodec;
-import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.IngredientType;
@@ -19,7 +18,7 @@ public class WildcardIngredient implements KubeJSIngredient {
 
 	@Override
 	public IngredientType<?> getType() {
-		return IngredientHelper.WILDCARD.get();
+		return KubeJSIngredients.WILDCARD.get();
 	}
 
 	@Override

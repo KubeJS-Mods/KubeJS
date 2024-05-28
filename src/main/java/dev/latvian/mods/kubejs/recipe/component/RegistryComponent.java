@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -69,12 +69,12 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 			}
 		}
 
-		return registry.getValue(UtilsJS.getMCID(null, from));
+		return registry.getValue(ID.mc(from));
 	}
 
 	@Override
 	public boolean hasPriority(KubeRecipe recipe, Object from) {
-		return (registry.objectBaseClass != Object.class && registry.objectBaseClass.isInstance(from)) || (from instanceof CharSequence && UtilsJS.getMCID(null, from.toString()) != null) || (from instanceof JsonPrimitive json && json.isString() && UtilsJS.getMCID(null, json.getAsString()) != null);
+		return (registry.objectBaseClass != Object.class && registry.objectBaseClass.isInstance(from)) || (from instanceof CharSequence && ID.mc(from.toString()) != null) || (from instanceof JsonPrimitive json && json.isString() && ID.mc(json.getAsString()) != null);
 	}
 
 	@Override

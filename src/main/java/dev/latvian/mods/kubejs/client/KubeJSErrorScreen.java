@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.LogType;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.TimeJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -191,7 +191,7 @@ public class KubeJSErrorScreen extends Screen {
 
 			var sb = new StringBuilder();
 			calendar.setTimeInMillis(line.timestamp);
-			UtilsJS.appendTimestamp(sb, calendar);
+			TimeJS.appendTimestamp(sb, calendar);
 			this.timestampText = Component.literal(sb.toString()).getVisualOrderText();
 
 			this.errorText = new ArrayList<>(minecraft.font.split(Component.literal(line.message), errorList.getRowWidth()).stream().limit(3L).toList());

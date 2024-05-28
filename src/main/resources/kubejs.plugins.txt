@@ -1,5 +1,5 @@
-dev.latvian.mods.kubejs.neoforge.NeoForgeKubeJSPlugin
-dev.latvian.mods.kubejs.neoforge.NeoForgeKubeJSClientPlugin client
+dev.latvian.mods.kubejs.BuiltinKubeJSPlugin
+dev.latvian.mods.kubejs.client.BuiltinKubeJSClientPlugin client
 dev.latvian.mods.kubejs.integration.gamestages.GameStagesIntegration gamestages
 dev.latvian.mods.kubejs.integration.jei.JEIIntegration jei
 dev.latvian.mods.kubejs.integration.rei.REIIntegration roughlyenoughitems

@@ -14,12 +14,13 @@ public class ItemEntityInteractedKubeEvent implements KubePlayerEvent {
 	private final Player player;
 	private final Entity entity;
 	private final InteractionHand hand;
+	private final ItemStack item;
 
-	public ItemEntityInteractedKubeEvent(Player player, Entity entity, InteractionHand hand) {
-
+	public ItemEntityInteractedKubeEvent(Player player, Entity entity, InteractionHand hand, ItemStack item) {
 		this.player = player;
 		this.entity = entity;
 		this.hand = hand;
+		this.item = item;
 	}
 
 	@Override
@@ -35,7 +36,7 @@ public class ItemEntityInteractedKubeEvent implements KubePlayerEvent {
 
 	@Info("The item that was used to interact with the entity.")
 	public ItemStack getItem() {
-		return player.getItemInHand(hand);
+		return item;
 	}
 
 	@Info("The entity that was interacted with.")

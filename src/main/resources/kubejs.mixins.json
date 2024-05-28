@@ -3,6 +3,7 @@
 	"package": "dev.latvian.mods.kubejs.core.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
+		"AdvancementNodeMixin",
 		"BlockBehaviourMixin",
 		"BlockMixin",
 		"BlockStateBaseMixin",
@@ -20,6 +21,7 @@
 		"DirectionMixin",
 		"DyeColorMixin",
 		"EntityMixin",
+		"EntityTypeMixin",
 		"EventHandlerBridgeMixin",
 		"EventHandlerInvoker",
 		"FireworkRocketEntityMixin",
@@ -34,6 +36,7 @@
 		"LevelMixin",
 		"LivingEntityMixin",
 		"LootDataTypeMixin",
+		"MenuTypeMixin",
 		"MinecraftServerMixin",
 		"MutableComponentMixin",
 		"NumericTagMixin",

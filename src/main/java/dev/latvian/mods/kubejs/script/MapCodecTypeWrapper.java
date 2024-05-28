@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.script;
 import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.MapJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -22,7 +22,7 @@ public record MapCodecTypeWrapper<T>(Class<T> target, MapCodec<T> codec, T defau
 		if (o == null) {
 			return defaultValue;
 		} else if (target.asClass().isInstance(o)) {
-			return UtilsJS.cast(o);
+			return Cast.to(o);
 		} else if (o instanceof Tag tag) {
 			return codec.decode(NbtOps.INSTANCE, NbtOps.INSTANCE.getMap(tag).getOrThrow()).result().get();
 		} else if (o instanceof Map<?, ?> map) {

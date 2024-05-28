@@ -7,7 +7,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -16,14 +15,10 @@ import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 
-import java.time.Duration;
 import java.util.Optional;
 import java.util.function.Function;
 
 public interface KubeJSCodecs {
-	Codec<Duration> DURATION = stringResolverCodec(Duration::toString, UtilsJS::getDuration);
-	StreamCodec<ByteBuf, Duration> DURATION_STREAM = ByteBufCodecs.STRING_UTF8.map(UtilsJS::getDuration, Duration::toString);
-
 	StreamCodec<? super RegistryFriendlyByteBuf, IntProvider> INT_PROVIDER_STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(IntProvider.CODEC);
 
 	static <E> Codec<E> stringResolverCodec(Function<E, String> toStringFunction, Function<String, E> fromStringFunction) {

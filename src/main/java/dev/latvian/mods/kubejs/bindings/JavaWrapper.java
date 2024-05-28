@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.bindings;
 
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.StringWithContext;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +13,8 @@ public interface JavaWrapper {
 		The returned object can have public static methods and fields accessed directly from it.
 		Constructors can be used with the new keyword.
 		""")
-	static Object loadClass(StringWithContext className) {
-		return className.cx().loadJavaClass(className.string(), true);
+	static Object loadClass(KubeJSContext cx, String className) {
+		return cx.loadJavaClass(className, true);
 	}
 
 	@Info("""
@@ -23,12 +23,12 @@ public interface JavaWrapper {
 		Constructors can be used with the new keyword.
 		""")
 	@Nullable
-	static Object tryLoadClass(StringWithContext className) {
-		return className.cx().loadJavaClass(className.string(), false);
+	static Object tryLoadClass(KubeJSContext cx, String className) {
+		return cx.loadJavaClass(className, false);
 	}
 
 	@Info("Creates a custom ConsoleJS instance for you to use to, well, log stuff")
-	static ConsoleJS createConsole(StringWithContext name) {
-		return new ConsoleJS(name.cx().getType(), LoggerFactory.getLogger(name.string()));
+	static ConsoleJS createConsole(KubeJSContext cx, String name) {
+		return new ConsoleJS(cx.getType(), LoggerFactory.getLogger(name));
 	}
 }

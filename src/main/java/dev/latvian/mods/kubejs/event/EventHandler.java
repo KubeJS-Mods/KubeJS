@@ -15,10 +15,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -27,7 +24,7 @@ import java.util.function.Supplier;
  * <h3>Example</h3>
  * <p><code>public static final EventHandler CLIENT_RIGHT_CLICKED = ItemEvents.GROUP.client("clientRightClicked", () -> ItemClickedEventJS.class).extra(ItemEvents.SUPPORTS_ITEM);</code></p>
  */
-public final class EventHandler extends BaseFunction {
+public class EventHandler extends BaseFunction {
 	private static final TypeInfo EVENT_HANDLER_TYPE_INFO = TypeInfo.of(IEventHandler.class);
 
 	public final EventGroup group;
@@ -35,24 +32,26 @@ public final class EventHandler extends BaseFunction {
 	public final ScriptTypePredicate scriptTypePredicate;
 	public final Supplier<Class<? extends KubeEvent>> eventType;
 	private boolean hasResult;
-	public transient Extra extra;
-	private EventHandlerContainer[] eventContainers;
-	private Map<Object, EventHandlerContainer[]> extraEventContainers;
+	public transient Extra<?> extra;
+	public transient boolean extraRequired;
+	protected EventHandlerContainer[] eventContainers;
+	public transient EventExceptionHandler exceptionHandler;
 
 	EventHandler(EventGroup g, String n, ScriptTypePredicate st, Supplier<Class<? extends KubeEvent>> e) {
-		group = g;
-		name = n;
-		scriptTypePredicate = st;
-		eventType = e;
-		hasResult = false;
-		extra = null;
-		eventContainers = null;
-		extraEventContainers = null;
+		this.group = g;
+		this.name = n;
+		this.scriptTypePredicate = st;
+		this.eventType = e;
+		this.hasResult = false;
+		this.extra = null;
+		this.eventContainers = null;
+		this.exceptionHandler = null;
 	}
 
 	/**
 	 * Allow event.cancel() to be called
 	 */
+	@HideFromJS
 	public EventHandler hasResult() {
 		hasResult = true;
 		return this;
@@ -63,8 +62,8 @@ public final class EventHandler extends BaseFunction {
 	}
 
 	@HideFromJS
-	public EventHandler extra(Extra extra) {
-		this.extra = extra;
+	public EventHandler exceptionHandler(EventExceptionHandler handler) {
+		this.exceptionHandler = handler;
 		return this;
 	}
 
@@ -77,34 +76,10 @@ public final class EventHandler extends BaseFunction {
 				eventContainers = null;
 			}
 		}
-
-		if (extraEventContainers != null) {
-			var entries = extraEventContainers.entrySet().iterator();
-
-			while (entries.hasNext()) {
-				var entry = entries.next();
-				entry.getValue()[type.ordinal()] = null;
-
-				if (EventHandlerContainer.isEmpty(entry.getValue())) {
-					entries.remove();
-				}
-			}
-
-			if (extraEventContainers.isEmpty()) {
-				extraEventContainers = null;
-			}
-		}
 	}
 
 	public boolean hasListeners() {
-		return eventContainers != null || extraEventContainers != null;
-	}
-
-	/**
-	 * Important! extraId won't be transformed for performance reasons. Only use this over {@link EventHandler#hasListeners()} if you think this will be more performant. Recommended only with identity extra IDs.
-	 */
-	public boolean hasListeners(Object extraId) {
-		return eventContainers != null || extraEventContainers != null && extraEventContainers.containsKey(extraId);
+		return eventContainers != null;
 	}
 
 	public void listen(@Nullable Context cx, ScriptType type, @Nullable Object extraId, IEventHandler handler) {
@@ -121,7 +96,7 @@ public final class EventHandler extends BaseFunction {
 			extraId = extra.transformer.transform(extraId);
 		}
 
-		if (extra != null && extra.required && extraId == null) {
+		if (extra != null && extraRequired && extraId == null) {
 			throw new IllegalArgumentException("Event handler '" + this + "' requires extra id!");
 		}
 
@@ -136,28 +111,7 @@ public final class EventHandler extends BaseFunction {
 		var line = new int[1];
 		var source = cx == null ? "java" : Context.getSourcePositionFromStack(cx, line);
 
-		EventHandlerContainer[] map;
-
-		if (extraId == null) {
-			if (eventContainers == null) {
-				eventContainers = new EventHandlerContainer[ScriptType.VALUES.length];
-			}
-
-			map = eventContainers;
-		} else {
-			if (extraEventContainers == null) {
-				extraEventContainers = extra.identity ? new IdentityHashMap<>() : new HashMap<>();
-			}
-
-			map = extraEventContainers.get(extraId);
-
-			//noinspection Java8MapApi
-			if (map == null) {
-				map = new EventHandlerContainer[ScriptType.VALUES.length];
-				extraEventContainers.put(extraId, map);
-			}
-		}
-
+		var map = createMap(extraId);
 		var index = type.ordinal();
 
 		if (map[index] == null) {
@@ -167,16 +121,24 @@ public final class EventHandler extends BaseFunction {
 		}
 	}
 
+	protected EventHandlerContainer[] createMap(@Nullable Object extraId) {
+		if (eventContainers == null) {
+			eventContainers = new EventHandlerContainer[ScriptType.VALUES.length];
+		}
+
+		return eventContainers;
+	}
+
 	@HideFromJS
 	public void listenJava(ScriptType type, @Nullable Object extraId, IEventHandler handler) {
 		var b = type.manager.get().canListenEvents;
 		type.manager.get().canListenEvents = true;
-		listen(null, type, extraId, handler);
+		listen(type.manager.get().contextFactory.enter(), type, extraId, handler);
 		type.manager.get().canListenEvents = b;
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent, EventExceptionHandler)
+	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent)
 	 */
 	public EventResult post(KubeEvent event) {
 		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
@@ -187,22 +149,14 @@ public final class EventHandler extends BaseFunction {
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent, EventExceptionHandler)
+	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent)
 	 */
 	public EventResult post(ScriptTypeHolder scriptType, KubeEvent event) {
 		return post(scriptType, null, event);
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent, EventExceptionHandler)
-	 */
-	// sth, event, exh
-	public EventResult post(ScriptTypeHolder scriptType, KubeEvent event, EventExceptionHandler exh) {
-		return post(scriptType, null, event, exh);
-	}
-
-	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent, EventExceptionHandler)
+	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent)
 	 */
 	public EventResult post(KubeEvent event, @Nullable Object extraId) {
 		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
@@ -210,24 +164,6 @@ public final class EventHandler extends BaseFunction {
 		} else {
 			throw new IllegalStateException("You must specify which script type to post event to");
 		}
-	}
-
-	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent, EventExceptionHandler)
-	 */
-	public EventResult post(KubeEvent event, @Nullable Object extraId, EventExceptionHandler exh) {
-		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
-			return post(type, extraId, event, exh);
-		} else {
-			throw new IllegalStateException("You must specify which script type to post event to");
-		}
-	}
-
-	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent, EventExceptionHandler)
-	 */
-	public EventResult post(ScriptTypeHolder type, @Nullable Object extraId, KubeEvent event) {
-		return post(type, extraId, event, null);
 	}
 
 	/**
@@ -239,19 +175,14 @@ public final class EventHandler extends BaseFunction {
 	 * @see KubeEvent#success(Object)
 	 * @see KubeEvent#exit(Object)
 	 */
-	public EventResult post(ScriptTypeHolder type, @Nullable Object extraId, KubeEvent event, EventExceptionHandler exh) {
+	public EventResult post(ScriptTypeHolder type, @Nullable Object extraId, KubeEvent event) {
 		if (!hasListeners()) {
 			return EventResult.PASS;
 		}
 
 		var scriptType = type.kjs$getScriptType();
 
-		if (extraId != null && extra != null) {
-			extraId = Wrapper.unwrapped(extraId);
-			extraId = extra.transformer.transform(extraId);
-		}
-
-		if (extra != null && extra.required && extraId == null) {
+		if (extra != null && extraRequired && extraId == null) {
 			throw new IllegalArgumentException("Event handler '" + this + "' requires extra id!");
 		}
 
@@ -262,21 +193,37 @@ public final class EventHandler extends BaseFunction {
 		var eventResult = EventResult.PASS;
 
 		try {
-			var extraContainers = extraEventContainers == null ? null : extraEventContainers.get(extraId);
+			var extraContainers = this instanceof SpecializedEventHandler<?> h ? (h.extraEventContainers == null ? null : h.extraEventContainers.get(extraId)) : null;
 
 			if (extraContainers != null) {
-				postToHandlers(scriptType, extraContainers, event, exh);
+				var handler = extraContainers[scriptType.ordinal()];
+
+				if (handler != null) {
+					handler.handle(event, exceptionHandler);
+				}
 
 				if (!scriptType.isStartup()) {
-					postToHandlers(ScriptType.STARTUP, extraContainers, event, exh);
+					handler = extraContainers[ScriptType.STARTUP.ordinal()];
+
+					if (handler != null) {
+						handler.handle(event, exceptionHandler);
+					}
 				}
 			}
 
 			if (eventContainers != null) {
-				postToHandlers(scriptType, eventContainers, event, exh);
+				var handler = eventContainers[scriptType.ordinal()];
+
+				if (handler != null) {
+					handler.handle(event, exceptionHandler);
+				}
 
 				if (!scriptType.isStartup()) {
-					postToHandlers(ScriptType.STARTUP, eventContainers, event, exh);
+					handler = eventContainers[ScriptType.STARTUP.ordinal()];
+
+					if (handler != null) {
+						handler.handle(event, exceptionHandler);
+					}
 				}
 			}
 		} catch (EventExit exit) {
@@ -299,14 +246,6 @@ public final class EventHandler extends BaseFunction {
 
 		event.afterPosted(eventResult);
 		return eventResult;
-	}
-
-	private void postToHandlers(ScriptType type, EventHandlerContainer[] containers, KubeEvent event, @Nullable EventExceptionHandler exh) throws EventExit {
-		var handler = containers[type.ordinal()];
-
-		if (handler != null) {
-			handler.handle(event, exh);
-		}
 	}
 
 	@Override
@@ -342,17 +281,6 @@ public final class EventHandler extends BaseFunction {
 			while (c != null) {
 				callback.accept(c);
 				c = c.child;
-			}
-		}
-
-		if (extraEventContainers != null) {
-			for (var entry : extraEventContainers.entrySet()) {
-				var c = entry.getValue()[type.ordinal()];
-
-				while (c != null) {
-					callback.accept(c);
-					c = c.child;
-				}
 			}
 		}
 	}

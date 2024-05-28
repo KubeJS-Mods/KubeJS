@@ -18,7 +18,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 @RemapPrefixForJS("kjs$")
 public interface RecipeHolderKJS extends RecipeLikeKJS {
 	default RecipeHolder<?> kjs$self() {
-		return UtilsJS.cast(this);
+		return (RecipeHolder<?>) this;
 	}
 
 	default Recipe<?> kjs$getRecipe() {

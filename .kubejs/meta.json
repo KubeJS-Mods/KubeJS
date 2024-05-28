@@ -1,6 +1,6 @@
 {
-	"minecraft": 2004,
-	"type": "architectury",
+	"minecraft": 2006,
+	"type": "neoforge",
 	"version": {
 		"file": "gradle.properties",
 		"pattern": "^mod_version=([\\w.]+)$",

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.Wrapper;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +47,7 @@ public class RecipeComponentBuilderMap extends AbstractMap<RecipeKey<?>, Object>
 	@Override
 	public Set<Map.Entry<RecipeKey<?>, Object>> entrySet() {
 		if (holderSet == null) {
-			holderSet = UtilsJS.cast(Set.of(holders));
+			holderSet = Cast.to(Set.of(holders));
 		}
 
 		return holderSet;
@@ -57,7 +57,7 @@ public class RecipeComponentBuilderMap extends AbstractMap<RecipeKey<?>, Object>
 	public Object put(RecipeKey<?> key, Object value) {
 		for (var holder : holders) {
 			if (holder.key == key) {
-				return holder.setValue(UtilsJS.cast(Wrapper.unwrapped(value)));
+				return holder.setValue(Cast.to(Wrapper.unwrapped(value)));
 			}
 		}
 

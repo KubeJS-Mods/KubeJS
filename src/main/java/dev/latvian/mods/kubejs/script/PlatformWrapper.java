@@ -4,6 +4,7 @@ import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.helpers.MiscHelper;
+import net.neoforged.neoforge.data.loading.DatagenModLoader;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -124,7 +125,7 @@ public class PlatformWrapper {
 	}
 
 	public static boolean isGeneratingData() {
-		return MiscHelper.get().isDataGen();
+		return DatagenModLoader.isRunningDataGen();
 	}
 
 	public static void breakpoint(Object... args) {

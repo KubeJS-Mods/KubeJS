@@ -2,13 +2,13 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.net.SendDataFromServerPayload;
-import dev.latvian.mods.kubejs.player.AdvancementJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.ChatFormatting;
+import net.minecraft.advancements.AdvancementNode;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -87,9 +87,8 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 	}
 
 	@Nullable
-	default AdvancementJS kjs$getAdvancement(ResourceLocation id) {
-		var a = kjs$self().getAdvancements().tree().get(id);
-		return a == null ? null : new AdvancementJS(a);
+	default AdvancementNode kjs$getAdvancement(ResourceLocation id) {
+		return kjs$self().getAdvancements().tree().get(id);
 	}
 
 	@Override

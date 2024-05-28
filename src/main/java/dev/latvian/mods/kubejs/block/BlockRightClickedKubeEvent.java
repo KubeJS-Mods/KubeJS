@@ -8,6 +8,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.Nullable;
 
 @Info("""
 	Invoked when a player right clicks on a block.
@@ -18,14 +20,16 @@ public class BlockRightClickedKubeEvent implements KubePlayerEvent {
 	private final InteractionHand hand;
 	private final BlockPos pos;
 	private final Direction direction;
+	private final BlockHitResult hitResult;
 	private BlockContainerJS block;
 
-	public BlockRightClickedKubeEvent(ItemStack item, Player player, InteractionHand hand, BlockPos pos, Direction direction) {
+	public BlockRightClickedKubeEvent(ItemStack item, Player player, InteractionHand hand, BlockPos pos, Direction direction, @Nullable BlockHitResult hitResult) {
 		this.item = item;
 		this.player = player;
 		this.hand = hand;
 		this.pos = pos;
 		this.direction = direction;
+		this.hitResult = hitResult;
 	}
 
 	@Override
@@ -60,5 +64,10 @@ public class BlockRightClickedKubeEvent implements KubePlayerEvent {
 	@Info("The face of the block being right clicked.")
 	public Direction getFacing() {
 		return direction;
+	}
+
+	@Nullable
+	public BlockHitResult getHitResult() {
+		return hitResult;
 	}
 }

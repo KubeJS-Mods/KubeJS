@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.block.state;
 
 import com.mojang.serialization.DataResult;
+import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.level.ruletest.AllMatchRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.AlwaysFalseRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.AnyMatchRuleTest;
@@ -12,7 +13,6 @@ import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.Tags;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -64,7 +64,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		} else if (s.startsWith("#")) {
 			return new TagMatch(Tags.block(new ResourceLocation(s.substring(1))));
 		} else if (s.indexOf('[') != -1) {
-			var state = UtilsJS.parseBlockState(s);
+			var state = BlockWrapper.parseBlockState(s);
 
 			if (state != Blocks.AIR.defaultBlockState()) {
 				return new StateMatch(state);
@@ -159,7 +159,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 
 	default Collection<BlockState> getBlockStates() {
 		var states = new HashSet<BlockState>();
-		for (var state : UtilsJS.getAllBlockStates()) {
+		for (var state : BlockWrapper.getAllBlockStates()) {
 			if (test(state)) {
 				states.add(state);
 			}
@@ -226,7 +226,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 
 		@Override
 		public Collection<BlockState> getBlockStates() {
-			return match ? UtilsJS.getAllBlockStates() : List.of();
+			return match ? BlockWrapper.getAllBlockStates() : List.of();
 		}
 	}
 
@@ -329,9 +329,9 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		public RegexMatch(Pattern p) {
 			pattern = p;
 			matchedBlocks = new LinkedHashSet<>();
-			for (var state : UtilsJS.getAllBlockStates()) {
+			for (var state : BlockWrapper.getAllBlockStates()) {
 				var block = state.getBlock();
-				if (!matchedBlocks.contains(block) && pattern.matcher(RegistryInfo.BLOCK.getId(block).toString()).find()) {
+				if (!matchedBlocks.contains(block) && pattern.matcher(block.kjs$getId()).find()) {
 					matchedBlocks.add(state.getBlock());
 				}
 			}

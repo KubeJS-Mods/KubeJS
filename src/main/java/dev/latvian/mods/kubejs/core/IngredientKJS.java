@@ -100,11 +100,11 @@ public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
 	}
 
 	default InputItem kjs$asStack() {
-		return InputItem.of(kjs$self(), 1);
+		return InputItem.create(kjs$self(), 1);
 	}
 
 	default InputItem kjs$withCount(int count) {
-		return InputItem.of(kjs$self(), count);
+		return InputItem.create(kjs$self(), count);
 	}
 
 	default boolean kjs$isWildcard() {

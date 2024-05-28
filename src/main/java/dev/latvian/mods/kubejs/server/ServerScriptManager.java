@@ -13,7 +13,6 @@ import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.server.tag.PreTagKubeEvent;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
@@ -67,11 +66,6 @@ public class ServerScriptManager extends ScriptManager {
 	@Override
 	public HolderLookup.Provider getRegistries() {
 		return registries;
-	}
-
-	public void updateResources(ReloadableServerResources serverResources, RegistryAccess registryAccess) {
-		KubeJSReloadListener.resources = serverResources;
-		UtilsJS.staticRegistryAccess = registryAccess;
 	}
 
 	public MultiPackResourceManager wrapResourceManager(HolderLookup.Provider registries, CloseableResourceManager original) {

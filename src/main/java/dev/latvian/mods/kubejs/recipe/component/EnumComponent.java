@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.NativeJavaClass;
 
 import java.util.function.BiFunction;
@@ -45,7 +45,7 @@ public record EnumComponent<T extends Enum<T>>(Class<T> enumType, Function<T, St
 	};
 
 	public EnumComponent(Class<T> enumType) {
-		this(enumType, UtilsJS.cast(DEFAULT_TO_STRING), UtilsJS.cast(DEFAULT_TO_ENUM));
+		this(enumType, Cast.to(DEFAULT_TO_STRING), Cast.to(DEFAULT_TO_ENUM));
 	}
 
 	@Override

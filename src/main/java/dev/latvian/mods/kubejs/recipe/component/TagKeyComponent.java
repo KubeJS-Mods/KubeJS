@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.Wrapper;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -29,7 +29,7 @@ public record TagKeyComponent<T>(ResourceKey<? extends Registry<T>> registry, Cl
 		.add("registry", TypeDescJS.STRING)
 		.add("class", TypeDescJS.STRING, true),
 		(cx, scope, args) -> {
-			var registry = ResourceKey.createRegistryKey(UtilsJS.getMCID(cx, Wrapper.unwrapped(args.get("registry"))));
+			var registry = ResourceKey.createRegistryKey(ID.mc(Wrapper.unwrapped(args.get("registry"))));
 			Class<?> type = Object.class;
 
 			if (args.containsKey("class")) {

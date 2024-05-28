@@ -1,51 +1,51 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.BlockEvent;
-import dev.architectury.event.events.common.InteractionEvent;
-import dev.architectury.utils.value.IntValue;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
+@EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSBlockEventHandler {
+	@SubscribeEvent
+	public static void rightClick(PlayerInteractEvent.RightClickBlock event) {
+		var state = event.getLevel().getBlockState(event.getPos());
 
-	public static void init() {
-		InteractionEvent.RIGHT_CLICK_BLOCK.register(KubeJSBlockEventHandler::rightClick);
-		InteractionEvent.LEFT_CLICK_BLOCK.register(KubeJSBlockEventHandler::leftClick);
-		BlockEvent.BREAK.register(KubeJSBlockEventHandler::blockBreak);
-		BlockEvent.PLACE.register(KubeJSBlockEventHandler::blockPlace);
-		InteractionEvent.FARMLAND_TRAMPLE.register(KubeJSBlockEventHandler::farmlandTrample);
-	}
-
-	private static EventResult rightClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
-		if (BlockEvents.RIGHT_CLICKED.hasListeners() && !player.getCooldowns().isOnCooldown(player.getItemInHand(hand).getItem())) {
-			return BlockEvents.RIGHT_CLICKED.post(player, player.level().getBlockState(pos), new BlockRightClickedKubeEvent(null, player, hand, pos, direction)).arch();
+		if (event.getLevel() instanceof Level level && BlockEvents.RIGHT_CLICKED.hasListeners(state.kjs$getRegistryKey()) && !event.getEntity().getCooldowns().isOnCooldown(event.getEntity().getItemInHand(event.getHand()).getItem())) {
+			BlockEvents.RIGHT_CLICKED.post(level, state.kjs$getRegistryKey(), new BlockRightClickedKubeEvent(null, event.getEntity(), event.getHand(), event.getPos(), event.getFace(), event.getHitVec())).applyCancel(event);
 		}
-
-		return EventResult.pass();
 	}
 
-	private static EventResult leftClick(Player player, InteractionHand hand, BlockPos pos, Direction direction) {
-		return BlockEvents.LEFT_CLICKED.hasListeners() ? BlockEvents.LEFT_CLICKED.post(player, player.level().getBlockState(pos), new BlockLeftClickedKubeEvent(player, hand, pos, direction)).arch() : EventResult.pass();
+	@SubscribeEvent
+	public static void leftClick(PlayerInteractEvent.LeftClickBlock event) {
+		var state = event.getLevel().getBlockState(event.getPos());
+
+		if (event.getLevel() instanceof Level level && BlockEvents.LEFT_CLICKED.hasListeners(state.kjs$getRegistryKey())) {
+			BlockEvents.LEFT_CLICKED.post(level, state.kjs$getRegistryKey(), new BlockLeftClickedKubeEvent(event)).applyCancel(event);
+		}
 	}
 
-	private static EventResult blockBreak(Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) {
-		return BlockEvents.BROKEN.hasListeners(state.getBlock()) ? BlockEvents.BROKEN.post(level, state.getBlock(), new BlockBrokenKubeEvent(player, level, pos, state, xp)).arch() : EventResult.pass();
+	@SubscribeEvent
+	public static void blockBreak(BlockEvent.BreakEvent event) {
+		if (event.getLevel() instanceof Level level && BlockEvents.BROKEN.hasListeners(event.getState().kjs$getRegistryKey())) {
+			BlockEvents.BROKEN.post(level, event.getState().kjs$getRegistryKey(), new BlockBrokenKubeEvent(event)).applyCancel(event);
+		}
 	}
 
-	private static EventResult blockPlace(Level level, BlockPos pos, BlockState state, @Nullable Entity placer) {
-		return BlockEvents.PLACED.hasListeners(state.getBlock()) ? BlockEvents.PLACED.post(level, state.getBlock(), new BlockPlacedKubeEvent(placer, level, pos, state)).arch() : EventResult.pass();
+	@SubscribeEvent
+	public static void blockPlace(BlockEvent.EntityPlaceEvent event) {
+		if (event.getLevel() instanceof Level level && BlockEvents.PLACED.hasListeners(event.getPlacedBlock().kjs$getRegistryKey())) {
+			BlockEvents.PLACED.post(level, event.getPlacedBlock().kjs$getRegistryKey(), new BlockPlacedKubeEvent(event)).applyCancel(event);
+		}
 	}
 
-	private static EventResult farmlandTrample(Level level, BlockPos pos, BlockState state, float distance, @Nullable Entity entity) {
-		return BlockEvents.FARMLAND_TRAMPLED.hasListeners(state.getBlock()) ? BlockEvents.FARMLAND_TRAMPLED.post(level, state.getBlock(), new FarmlandTrampledKubeEvent(level, pos, state, distance, entity)).arch() : EventResult.pass();
+	@SubscribeEvent
+	public static void farmlandTrample(BlockEvent.FarmlandTrampleEvent event) {
+		if (event.getLevel() instanceof Level level && BlockEvents.FARMLAND_TRAMPLED.hasListeners(event.getState().kjs$getRegistryKey())) {
+			BlockEvents.FARMLAND_TRAMPLED.post(level, event.getState().kjs$getRegistryKey(), new FarmlandTrampledKubeEvent(event)).applyCancel(event);
+		}
 	}
 }
