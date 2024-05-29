@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.core.WithRegistryKeyKJS;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
@@ -9,6 +10,8 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 public interface ID {
+	ResourceLocation UNKNOWN = new ResourceLocation("unknown", "unknown");
+
 	static String string(@Nullable String id) {
 		if (id == null || id.isEmpty()) {
 			return "";
@@ -60,6 +63,8 @@ public interface ID {
 			return key.location();
 		} else if (o instanceof Holder<?> holder) {
 			return holder.unwrapKey().get().location();
+		} else if (o instanceof WithRegistryKeyKJS<?> key) {
+			return key.kjs$getIdLocation();
 		}
 
 		var s = o instanceof JsonPrimitive p ? p.getAsString() : o.toString();

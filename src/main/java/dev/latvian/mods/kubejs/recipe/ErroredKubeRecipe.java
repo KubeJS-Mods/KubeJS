@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
+import net.minecraft.core.HolderLookup;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -40,7 +41,7 @@ public class ErroredKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public boolean hasInput(ReplacementMatch match) {
+	public boolean hasInput(HolderLookup.Provider registries, ReplacementMatch match) {
 		return false;
 	}
 
@@ -50,7 +51,7 @@ public class ErroredKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public boolean hasOutput(ReplacementMatch match) {
+	public boolean hasOutput(HolderLookup.Provider registries, ReplacementMatch match) {
 		return false;
 	}
 

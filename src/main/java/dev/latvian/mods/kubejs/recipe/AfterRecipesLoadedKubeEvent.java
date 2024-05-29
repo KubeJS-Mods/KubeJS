@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -17,12 +18,14 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class AfterRecipesLoadedKubeEvent implements KubeEvent {
+	private final HolderLookup.Provider registries;
 	private final Multimap<RecipeType<?>, RecipeHolder<?>> recipeTypeMap;
 	private final Map<ResourceLocation, RecipeHolder<?>> recipeIdMap;
 
 	private List<RecipeLikeKJS> originalRecipes;
 
-	public AfterRecipesLoadedKubeEvent(Multimap<RecipeType<?>, RecipeHolder<?>> recipeTypeMap, Map<ResourceLocation, RecipeHolder<?>> recipeIdMap) {
+	public AfterRecipesLoadedKubeEvent(HolderLookup.Provider registries, Multimap<RecipeType<?>, RecipeHolder<?>> recipeTypeMap, Map<ResourceLocation, RecipeHolder<?>> recipeIdMap) {
+		this.registries = registries;
 		this.recipeTypeMap = recipeTypeMap;
 		this.recipeIdMap = recipeIdMap;
 	}
@@ -39,7 +42,7 @@ public class AfterRecipesLoadedKubeEvent implements KubeEvent {
 		if (filter == ConstantFilter.TRUE) {
 			getOriginalRecipes().forEach(consumer);
 		} else if (filter != ConstantFilter.FALSE) {
-			getOriginalRecipes().stream().filter(filter).forEach(consumer);
+			getOriginalRecipes().stream().filter(r -> filter.test(registries, r)).forEach(consumer);
 		}
 	}
 
@@ -47,7 +50,7 @@ public class AfterRecipesLoadedKubeEvent implements KubeEvent {
 		if (filter == ConstantFilter.TRUE) {
 			return getOriginalRecipes().size();
 		} else if (filter != ConstantFilter.FALSE) {
-			return (int) getOriginalRecipes().stream().filter(filter).count();
+			return (int) getOriginalRecipes().stream().filter(r -> filter.test(registries, r)).count();
 		}
 
 		return 0;
@@ -60,7 +63,7 @@ public class AfterRecipesLoadedKubeEvent implements KubeEvent {
 		while (itr.hasNext()) {
 			var r = itr.next();
 
-			if (filter.test(r)) {
+			if (filter.test(registries, r)) {
 				var holder = recipeIdMap.remove(r.kjs$getOrCreateId());
 				recipeTypeMap.values().remove(holder);
 

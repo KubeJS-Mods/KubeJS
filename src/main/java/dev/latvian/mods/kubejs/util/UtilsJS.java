@@ -18,15 +18,11 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.world.item.CreativeModeTab;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,10 +53,6 @@ public class UtilsJS {
 	public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in", "and", "or", "but", "for"));
 	public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
-	public static MinecraftServer staticServer = null;
-	public static HolderLookup.Provider staticRegistryAccess = RegistryAccess.EMPTY; // FIXME
-	public static ReloadableServerResources staticResources = null;
-	public static final ResourceLocation UNKNOWN_ID = new ResourceLocation("unknown", "unknown");
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
 
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();

@@ -1,0 +1,23 @@
+{
+	"providers": [
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/k.png",
+			"ascent": 9,
+			"height": 10,
+			"chars": ["K"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/i.png",
+			"ascent": 7,
+			"chars": ["I"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/w.png",
+			"ascent": 7,
+			"chars": ["W"]
+		}
+	]
+}

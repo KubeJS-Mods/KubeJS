@@ -7,8 +7,8 @@ import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -56,7 +56,7 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	}
 
 	@Override
-	default boolean hasInput(ReplacementMatch match) {
+	default boolean hasInput(HolderLookup.Provider registries, ReplacementMatch match) {
 		if (match instanceof ItemMatch m) {
 			for (var in : kjs$getRecipe().getIngredients()) {
 				if (m.contains(in)) {
@@ -74,9 +74,9 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	}
 
 	@Override
-	default boolean hasOutput(ReplacementMatch match) {
+	default boolean hasOutput(HolderLookup.Provider registries, ReplacementMatch match) {
 		if (match instanceof ItemMatch m) {
-			var result = kjs$getRecipe().getResultItem(UtilsJS.staticRegistryAccess);
+			var result = kjs$getRecipe().getResultItem(registries);
 			//noinspection ConstantValue
 			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.contains(result);
 		}

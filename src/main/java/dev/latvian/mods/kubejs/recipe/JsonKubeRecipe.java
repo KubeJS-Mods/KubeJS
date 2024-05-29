@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -15,7 +15,7 @@ public class JsonKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public boolean hasInput(ReplacementMatch match) {
+	public boolean hasInput(HolderLookup.Provider registries, ReplacementMatch match) {
 		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
 			var arr = getOriginalRecipe().getIngredients();
 
@@ -40,9 +40,9 @@ public class JsonKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public boolean hasOutput(ReplacementMatch match) {
+	public boolean hasOutput(HolderLookup.Provider registries, ReplacementMatch match) {
 		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
-			var result = getOriginalRecipe().getResultItem(UtilsJS.staticRegistryAccess);
+			var result = getOriginalRecipe().getResultItem(registries);
 			//noinspection ConstantValue
 			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.contains(result);
 		}

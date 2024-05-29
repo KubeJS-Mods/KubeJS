@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -11,6 +12,11 @@ public interface BlockStateKJS extends WithRegistryKeyKJS<Block> {
 	@Override
 	default RegistryInfo<Block> kjs$getKubeRegistry() {
 		return RegistryInfo.BLOCK;
+	}
+
+	@Override
+	default Holder<Block> kjs$asHolder() {
+		return ((BlockState) this).getBlock().kjs$asHolder();
 	}
 
 	@Override

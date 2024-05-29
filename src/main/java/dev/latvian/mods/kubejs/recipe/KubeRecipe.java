@@ -22,6 +22,7 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -31,6 +32,7 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -334,7 +336,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean hasInput(ReplacementMatch match) {
+	public boolean hasInput(HolderLookup.Provider registries, ReplacementMatch match) {
 		for (var v : inputValues()) {
 			if (v.isInput(this, match)) {
 				return true;
@@ -360,7 +362,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean hasOutput(ReplacementMatch match) {
+	public boolean hasOutput(HolderLookup.Provider registries, ReplacementMatch match) {
 		for (var v : outputValues()) {
 			if (v.isOutput(this, match)) {
 				return true;
@@ -549,13 +551,13 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		return originalRecipe.getValue();
 	}
 
-	public ItemStack getOriginalRecipeResult() {
+	public ItemStack getOriginalRecipeResult(Context cx) {
 		if (getOriginalRecipe() == null) {
 			ConsoleJS.SERVER.warn("Original recipe is null - could not get result");
 			return ItemStack.EMPTY;
 		}
 
-		var result = getOriginalRecipe().getResultItem(UtilsJS.staticRegistryAccess);
+		var result = getOriginalRecipe().getResultItem(((KubeJSContext) cx).getRegistries());
 		//noinspection ConstantValue
 		return result == null ? ItemStack.EMPTY : result;
 	}

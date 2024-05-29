@@ -7,9 +7,7 @@ import dev.latvian.mods.kubejs.command.CommandRegistryKubeEvent;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
 import dev.latvian.mods.kubejs.level.SimpleLevelKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
@@ -48,9 +46,6 @@ public class KubeJSServerEventHandler {
 	@SubscribeEvent
 	public static void serverBeforeStart(ServerAboutToStartEvent event) {
 		var server = event.getServer();
-
-		UtilsJS.staticServer = server;
-		UtilsJS.staticRegistryAccess = server.registryAccess();
 
 		var p = server.getWorldPath(PERSISTENT_DATA);
 
@@ -101,8 +96,6 @@ public class KubeJSServerEventHandler {
 
 	@SubscribeEvent
 	public static void serverStopped(ServerStoppedEvent event) {
-		UtilsJS.staticServer = null;
-		UtilsJS.staticRegistryAccess = RegistryAccess.EMPTY;
 	}
 
 	@SubscribeEvent

@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs;
 
+import dev.latvian.mods.kubejs.core.WithRegistryKeyKJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ID;
@@ -35,6 +36,8 @@ public interface KubeJSTypeWrappers {
 			return null;
 		} else if (from instanceof Holder<?> h) {
 			return h;
+		} else if (from instanceof WithRegistryKeyKJS<?> w) {
+			return w.kjs$asHolder();
 		}
 
 		var reg = RegistryInfo.ofClass(target.param(0).asClass());
@@ -51,6 +54,8 @@ public interface KubeJSTypeWrappers {
 			return null;
 		} else if (from instanceof ResourceKey<?> k) {
 			return k;
+		} else if (from instanceof WithRegistryKeyKJS<?> w) {
+			return w.kjs$getRegistryKey();
 		}
 
 		var cl = target.param(0).asClass();

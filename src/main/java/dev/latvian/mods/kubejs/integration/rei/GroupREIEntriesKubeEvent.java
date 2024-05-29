@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
+import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
 import dev.latvian.mods.kubejs.event.KubeEvent;
-import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.Tags;
 import me.shedaniel.rei.api.client.registry.entry.CollapsibleEntryRegistry;
@@ -34,7 +34,7 @@ public class GroupREIEntriesKubeEvent implements KubeEvent {
 	}
 
 	public void groupFluids(ResourceLocation groupId, Component description, FluidStack... entries) {
-		group(groupId, description, EntryIngredients.of(VanillaEntryTypes.FLUID, CollectionUtils.map(entries, FluidWrapper::toArch)));
+		group(groupId, description, EntryIngredients.of(VanillaEntryTypes.FLUID, CollectionUtils.map(entries, FluidStackHooksForge::fromForge)));
 	}
 
 	public void groupEntries(ResourceLocation groupId, Component description, ResourceLocation entryTypeId, Object entries) {
@@ -67,7 +67,7 @@ public class GroupREIEntriesKubeEvent implements KubeEvent {
 	}
 
 	public void groupFluidsIf(ResourceLocation groupId, Component description, Predicate<FluidStack> predicate) {
-		registry.group(groupId, description, VanillaEntryTypes.FLUID, (fluid) -> predicate.test(FluidWrapper.fromArch(fluid.getValue())));
+		registry.group(groupId, description, VanillaEntryTypes.FLUID, (fluid) -> predicate.test(FluidStackHooksForge.toForge(fluid.getValue())));
 	}
 
 	// the difference between these next two methods:

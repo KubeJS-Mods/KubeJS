@@ -4,21 +4,18 @@ import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -29,38 +26,14 @@ import java.util.function.Consumer;
 @Mixin(BlockBehaviour.class)
 @RemapPrefixForJS("kjs$")
 public abstract class BlockBehaviourMixin implements BlockKJS {
+	@Unique
 	private BlockBuilder kjs$blockBuilder;
+
+	@Unique
 	private CompoundTag kjs$typeData;
-	private ResourceKey<Block> kjs$registryKey;
-	private String kjs$idString;
+
+	@Unique
 	private Consumer<RandomTickCallbackJS> kjs$randomTickCallback;
-
-	@Override
-	public ResourceKey<Block> kjs$getRegistryKey() {
-		if (kjs$registryKey == null) {
-			if ((Object) this instanceof Block block) {
-				try {
-					kjs$registryKey = block.builtInRegistryHolder().key();
-				} catch (Exception ex) {
-					var id = RegistryInfo.BLOCK.getId(block);
-					kjs$registryKey = id == null ? RegistryInfo.BLOCK.unknownKey : ResourceKey.create(Registries.BLOCK, id);
-				}
-			} else {
-				kjs$registryKey = RegistryInfo.BLOCK.unknownKey;
-			}
-		}
-
-		return kjs$registryKey;
-	}
-
-	@Override
-	public String kjs$getId() {
-		if (kjs$idString == null) {
-			kjs$idString = kjs$getIdLocation().toString();
-		}
-
-		return kjs$idString;
-	}
 
 	@Override
 	@Nullable

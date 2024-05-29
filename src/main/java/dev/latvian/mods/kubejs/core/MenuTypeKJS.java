@@ -5,7 +5,7 @@ import net.minecraft.world.inventory.MenuType;
 
 public interface MenuTypeKJS extends WithRegistryKeyKJS<MenuType<?>> {
 	@Override
-	default RegistryInfo kjs$getKubeRegistry() {
+	default RegistryInfo<MenuType<?>> kjs$getKubeRegistry() {
 		return RegistryInfo.MENU;
 	}
 }

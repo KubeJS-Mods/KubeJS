@@ -17,7 +17,6 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
@@ -40,11 +39,6 @@ import java.util.regex.Pattern;
 @Info("A collection of utilities")
 public interface UtilsWrapper {
 	DustParticleOptions ERROR_PARTICLE = new DustParticleOptions(new Vector3f(0F, 0F, 0F), 1F);
-
-	@Info("Get the server. Null if there is no server (startup or client)")
-	static MinecraftServer getServer() {
-		return UtilsJS.staticServer;
-	}
 
 	@Info("Immediately run the passed runnable function in a try-catch block, and log the exception if it throws")
 	static void queueIO(Runnable runnable) {

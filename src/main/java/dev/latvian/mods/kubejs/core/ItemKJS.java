@@ -5,12 +5,12 @@ import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
 import dev.latvian.mods.kubejs.item.MutableToolTier;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.Util;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TieredItem;
 import org.jetbrains.annotations.Nullable;
@@ -19,13 +19,9 @@ import java.util.function.Consumer;
 
 @RemapPrefixForJS("kjs$")
 public interface ItemKJS extends IngredientSupplierKJS, WithRegistryKeyKJS<Item> {
-	@Nullable
-	default ItemBuilder kjs$getItemBuilder() {
-		throw new NoMixinException();
-	}
-
+	@RemapForJS("getItem")
 	default Item kjs$self() {
-		throw new NoMixinException();
+		return (Item) this;
 	}
 
 	@Override
@@ -33,16 +29,9 @@ public interface ItemKJS extends IngredientSupplierKJS, WithRegistryKeyKJS<Item>
 		return RegistryInfo.ITEM;
 	}
 
-	default ResourceLocation kjs$getIdLocation() {
-		return kjs$getRegistryKey().location();
-	}
-
-	default String kjs$getId() {
-		return kjs$getIdLocation().toString();
-	}
-
-	default String kjs$getMod() {
-		return kjs$getIdLocation().getNamespace();
+	@Nullable
+	default ItemBuilder kjs$getItemBuilder() {
+		throw new NoMixinException();
 	}
 
 	default void kjs$setItemBuilder(ItemBuilder b) {

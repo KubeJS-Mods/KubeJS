@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.bindings;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.JSObjectType;
@@ -30,9 +31,9 @@ import java.util.Map;
 import java.util.Optional;
 
 @Info("The hub for all things text components. Format text to your hearts content!")
-public class TextWrapper {
+public interface TextWrapper {
 	@Info("Returns a Component of the input")
-	public static MutableComponent of(@Nullable Object o) {
+	static MutableComponent of(@Nullable Object o) {
 		o = UtilsJS.wrap(o, JSObjectType.ANY);
 		if (o == null) {
 			return Component.literal("null");
@@ -119,17 +120,17 @@ public class TextWrapper {
 	}
 
 	@Info("Returns a plain component of the string, or empty if it is an empty string")
-	public static MutableComponent ofString(String s) {
+	static MutableComponent ofString(String s) {
 		return s.isEmpty() ? Component.empty() : Component.literal(s);
 	}
 
 	@Info("Checks if the passed in component, and all its children are empty")
-	public static boolean isEmpty(Component component) {
+	static boolean isEmpty(Component component) {
 		return component.getContents() == PlainTextContents.EMPTY && component.getSiblings().isEmpty();
 	}
 
 	@Info("Returns a ClickEvent of the input")
-	public static ClickEvent clickEventOf(Object o) {
+	static ClickEvent clickEventOf(Object o) {
 		if (o == null) {
 			return null;
 		} else if (o instanceof ClickEvent ce) {
@@ -165,12 +166,12 @@ public class TextWrapper {
 	}
 
 	@Info("Returns a colorful representation of the input nbt. Useful for displaying NBT to the player")
-	public static Component prettyPrintNbt(Tag tag) {
+	static Component prettyPrintNbt(Tag tag) {
 		return NbtUtils.toPrettyComponent(tag);
 	}
 
 	@Info("Joins all components in the list with the separator component")
-	public static MutableComponent join(MutableComponent separator, Iterable<? extends Component> texts) {
+	static MutableComponent join(MutableComponent separator, Iterable<? extends Component> texts) {
 		var joined = Component.empty();
 		var first = true;
 
@@ -188,142 +189,158 @@ public class TextWrapper {
 	}
 
 	@Info("Returns an empty component")
-	public static MutableComponent empty() {
+	static MutableComponent empty() {
 		return Component.empty();
 	}
 
 	@Info("Joins all components")
-	public static MutableComponent join(Component... texts) {
+	static MutableComponent join(Component... texts) {
 		return join(Component.empty(), Arrays.asList(texts));
 	}
 
 	@Info("Returns a plain component of the passed in string, even if empty")
-	public static MutableComponent string(String text) {
+	static MutableComponent string(String text) {
 		return Component.literal(text);
 	}
 
 	@Info("Returns a plain component of the input")
-	public static MutableComponent literal(String text) {
+	static MutableComponent literal(String text) {
 		return Component.literal(text);
 	}
 
 	@Info("Returns a translatable component of the input key")
-	public static MutableComponent translate(String key) {
+	static MutableComponent translate(String key) {
 		return Component.translatable(key);
 	}
 
 	@Info("Returns a translatable component of the input key, with args of the objects")
-	public static MutableComponent translate(String key, Object... objects) {
+	static MutableComponent translate(String key, Object... objects) {
 		return Component.translatable(key, objects);
 	}
 
 	@Info("Returns a translatable component of the input key")
-	public static MutableComponent translatable(String key) {
+	static MutableComponent translatable(String key) {
 		return Component.translatable(key);
 	}
 
 	@Info("Returns a translatable component of the input key, with args of the objects")
-	public static MutableComponent translatable(String key, Object... objects) {
+	static MutableComponent translatable(String key, Object... objects) {
 		return Component.translatable(key, objects);
 	}
 
 	@Info("Returns a keybinding component of the input keybinding descriptor")
-	public static MutableComponent keybind(String keybind) {
+	static MutableComponent keybind(String keybind) {
 		return Component.keybind(keybind);
 	}
 
 	@Info("Returns a score component of the input objective, for the provided selector")
-	public static MutableComponent score(String selector, String objective) {
+	static MutableComponent score(String selector, String objective) {
 		return MutableComponent.create(new ScoreContents(selector, objective));
 	}
 
 	@Info("Returns a component displaying all entities matching the input selector")
-	public static MutableComponent selector(String selector) {
+	static MutableComponent selector(String selector) {
 		return MutableComponent.create(new SelectorContents(selector, Optional.empty()));
 	}
 
 	@Info("Returns a component displaying all entities matching the input selector, with a custom separator")
-	public static MutableComponent selector(String selector, Component separator) {
+	static MutableComponent selector(String selector, Component separator) {
 		return MutableComponent.create(new SelectorContents(selector, Optional.of(separator)));
 	}
 
 	@Info("Returns a component of the input, colored black")
-	public static MutableComponent black(Object text) {
+	static MutableComponent black(Object text) {
 		return of(text).kjs$black();
 	}
 
 	@Info("Returns a component of the input, colored dark blue")
-	public static MutableComponent darkBlue(Object text) {
+	static MutableComponent darkBlue(Object text) {
 		return of(text).kjs$darkBlue();
 	}
 
 	@Info("Returns a component of the input, colored dark green")
-	public static MutableComponent darkGreen(Object text) {
+	static MutableComponent darkGreen(Object text) {
 		return of(text).kjs$darkGreen();
 	}
 
 	@Info("Returns a component of the input, colored dark aqua")
-	public static MutableComponent darkAqua(Object text) {
+	static MutableComponent darkAqua(Object text) {
 		return of(text).kjs$darkAqua();
 	}
 
 	@Info("Returns a component of the input, colored dark red")
-	public static MutableComponent darkRed(Object text) {
+	static MutableComponent darkRed(Object text) {
 		return of(text).kjs$darkRed();
 	}
 
 	@Info("Returns a component of the input, colored dark purple")
-	public static MutableComponent darkPurple(Object text) {
+	static MutableComponent darkPurple(Object text) {
 		return of(text).kjs$darkPurple();
 	}
 
 	@Info("Returns a component of the input, colored gold")
-	public static MutableComponent gold(Object text) {
+	static MutableComponent gold(Object text) {
 		return of(text).kjs$gold();
 	}
 
 	@Info("Returns a component of the input, colored gray")
-	public static MutableComponent gray(Object text) {
+	static MutableComponent gray(Object text) {
 		return of(text).kjs$gray();
 	}
 
 	@Info("Returns a component of the input, colored dark gray")
-	public static MutableComponent darkGray(Object text) {
+	static MutableComponent darkGray(Object text) {
 		return of(text).kjs$darkGray();
 	}
 
 	@Info("Returns a component of the input, colored blue")
-	public static MutableComponent blue(Object text) {
+	static MutableComponent blue(Object text) {
 		return of(text).kjs$blue();
 	}
 
 	@Info("Returns a component of the input, colored green")
-	public static MutableComponent green(Object text) {
+	static MutableComponent green(Object text) {
 		return of(text).kjs$green();
 	}
 
 	@Info("Returns a component of the input, colored aqua")
-	public static MutableComponent aqua(Object text) {
+	static MutableComponent aqua(Object text) {
 		return of(text).kjs$aqua();
 	}
 
 	@Info("Returns a component of the input, colored red")
-	public static MutableComponent red(Object text) {
+	static MutableComponent red(Object text) {
 		return of(text).kjs$red();
 	}
 
 	@Info("Returns a component of the input, colored light purple")
-	public static MutableComponent lightPurple(Object text) {
+	static MutableComponent lightPurple(Object text) {
 		return of(text).kjs$lightPurple();
 	}
 
 	@Info("Returns a component of the input, colored yellow")
-	public static MutableComponent yellow(Object text) {
+	static MutableComponent yellow(Object text) {
 		return of(text).kjs$yellow();
 	}
 
 	@Info("Returns a component of the input, colored white")
-	public static MutableComponent white(Object text) {
+	static MutableComponent white(Object text) {
 		return of(text).kjs$white();
+	}
+
+	private static MutableComponent icon(String character) {
+		return of(character).kjs$font(KubeJS.ICONS_FONT);
+	}
+
+	static MutableComponent logoIcon() {
+		return icon("K");
+	}
+
+	static MutableComponent infoIcon() {
+		return icon("I");
+	}
+
+	static MutableComponent warnIcon() {
+		return icon("W");
 	}
 }

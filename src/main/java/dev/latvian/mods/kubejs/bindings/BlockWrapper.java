@@ -105,7 +105,7 @@ public class BlockWrapper {
 		}
 
 		var states = new HashSet<BlockState>();
-		for (var block : RegistryInfo.BLOCK.getArchitecturyRegistrar()) {
+		for (var block : BuiltInRegistries.BLOCK) {
 			states.addAll(block.getStateDefinition().getPossibleStates());
 		}
 

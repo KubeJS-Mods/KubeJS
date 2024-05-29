@@ -24,6 +24,8 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
+import net.minecraft.world.damagesource.DamageSources;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -66,6 +68,12 @@ public class ServerScriptManager extends ScriptManager {
 	@Override
 	public HolderLookup.Provider getRegistries() {
 		return registries;
+	}
+
+	@Override
+	public DamageSources getDamageSources() {
+		// Probably no better way to get this
+		return ServerLifecycleHooks.getCurrentServer().kjs$getOverworld().damageSources();
 	}
 
 	public MultiPackResourceManager wrapResourceManager(HolderLookup.Provider registries, CloseableResourceManager original) {

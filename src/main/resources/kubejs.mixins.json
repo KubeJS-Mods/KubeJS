@@ -25,6 +25,7 @@
 		"EventHandlerBridgeMixin",
 		"EventHandlerInvoker",
 		"FireworkRocketEntityMixin",
+		"FluidMixin",
 		"GameRulesMixin",
 		"IItemHandlerMixin",
 		"IngredientMixin",

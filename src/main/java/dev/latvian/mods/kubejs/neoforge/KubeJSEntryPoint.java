@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.Cast;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -64,7 +65,7 @@ public class KubeJSEntryPoint {
 	}
 
 	private static void initRegistries(RegisterEvent event) {
-		var info = RegistryInfo.of(event.getRegistryKey());
+		var info = RegistryInfo.of((ResourceKey) event.getRegistryKey());
 		info.registerObjects((id, supplier) -> event.register(Cast.to(info.key), id, supplier));
 	}
 

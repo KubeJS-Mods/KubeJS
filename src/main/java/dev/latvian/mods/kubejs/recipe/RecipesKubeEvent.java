@@ -8,7 +8,6 @@ import com.google.gson.JsonParseException;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.KubeEvent;
@@ -114,7 +113,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 
 		try {
-			var result = recipe.getResultItem(UtilsJS.staticRegistryAccess);
+			var result = recipe.getResultItem(registries);
 			//noinspection ConstantValue
 			map.put("out", (result == null ? ItemStack.EMPTY : result).kjs$toItemString0(registries));
 		} catch (Exception ex) {
@@ -495,14 +494,14 @@ public class RecipesKubeEvent implements KubeEvent {
 		return r;
 	}
 
-	public RecipeFilter customFilter(Predicate<RecipeLikeKJS> filter) {
-		return filter::test;
+	public RecipeFilter customFilter(RecipeFilter filter) {
+		return filter;
 	}
 
-	private record RecipeStreamFilter(RecipeFilter filter) implements Predicate<KubeRecipe> {
+	private record RecipeStreamFilter(HolderLookup.Provider registries, RecipeFilter filter) implements Predicate<KubeRecipe> {
 		@Override
 		public boolean test(KubeRecipe r) {
-			return r != null && !r.removed && filter.test(r);
+			return r != null && !r.removed && filter.test(registries, r);
 		}
 	}
 
@@ -536,7 +535,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			return or.list.stream().map(idf -> originalRecipes.get(((IDFilter) idf).id)).filter(RECIPE_NOT_REMOVED);
 		}
 
-		return originalRecipes.values().stream().filter(new RecipeStreamFilter(filter));
+		return originalRecipes.values().stream().filter(new RecipeStreamFilter(registries, filter));
 	}
 
 	/**

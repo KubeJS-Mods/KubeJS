@@ -7,8 +7,10 @@ import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.ClassVisibilityContext;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.world.damagesource.DamageSources;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +54,21 @@ public class KubeJSContext extends Context {
 
 	public HolderLookup.Provider getRegistries() {
 		return kjsFactory.manager.getRegistries();
+	}
+
+	public DamageSources getDamageSources() {
+		return kjsFactory.manager.getDamageSources();
+	}
+
+	@Override
+	protected Object internalJsToJava(Object from, TypeInfo target) {
+		var w = super.internalJsToJava(from, target);
+
+		if (from == w && from != null && target != null) {
+			// registries
+		}
+
+		return w;
 	}
 
 	public NativeJavaClass loadJavaClass(String name, boolean error) {

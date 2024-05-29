@@ -5,8 +5,6 @@ import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,23 +21,6 @@ public interface BlockKJS extends BlockBuilderProvider, WithRegistryKeyKJS<Block
 	@Override
 	default RegistryInfo<Block> kjs$getKubeRegistry() {
 		return RegistryInfo.BLOCK;
-	}
-
-	@Override
-	default ResourceKey<Block> kjs$getRegistryKey() {
-		throw new NoMixinException();
-	}
-
-	default ResourceLocation kjs$getIdLocation() {
-		return kjs$getRegistryKey().location();
-	}
-
-	default String kjs$getId() {
-		return kjs$getIdLocation().toString();
-	}
-
-	default String kjs$getMod() {
-		return kjs$getIdLocation().getNamespace();
 	}
 
 	default CompoundTag kjs$getTypeData() {

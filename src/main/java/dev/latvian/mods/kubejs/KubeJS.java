@@ -22,7 +22,9 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -50,7 +52,8 @@ public class KubeJS {
 	public static final int MC_VERSION_NUMBER = 2006;
 	public static final String MC_VERSION_STRING = "1.20.6";
 	public static String QUERY;
-	public static final Component NAME_COMPONENT = Component.literal(MOD_NAME);
+	public static final ResourceLocation ICONS_FONT = id("icons");
+	public static final Component NAME_COMPONENT = Component.empty().append(Component.literal("K").withStyle(Style.EMPTY.withFont(ICONS_FONT))).append(" ").append(Component.literal(MOD_NAME));
 
 	public static ResourceLocation id(String path) {
 		return new ResourceLocation(MOD_ID, path);
@@ -207,7 +210,7 @@ public class KubeJS {
 
 		QUERY = "source=kubejs&mc=" + MC_VERSION_NUMBER + "&loader=" + PlatformWrapper.getName() + "&v=" + URLEncoder.encode(thisMod.getVersion(), StandardCharsets.UTF_8);
 
-		var updater = new Thread(() -> {
+		Util.nonCriticalIoPool().submit(() -> {
 			try {
 				var response = HttpClient.newBuilder()
 					.followRedirects(HttpClient.Redirect.ALWAYS)
@@ -224,8 +227,5 @@ public class KubeJS {
 			} catch (Exception ignored) {
 			}
 		});
-
-		updater.setDaemon(true);
-		updater.start();
 	}
 }

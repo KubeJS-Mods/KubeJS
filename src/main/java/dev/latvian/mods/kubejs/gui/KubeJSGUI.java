@@ -1,12 +1,13 @@
 package dev.latvian.mods.kubejs.gui;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.SimpleContainer;
 
 public class KubeJSGUI {
-	private static final Component DEFAULT_TITLE = Component.literal("KubeJS");
+	private static final Component DEFAULT_TITLE = KubeJS.NAME_COMPONENT;
 	public static final SimpleContainer EMPTY_CONTAINER = new SimpleContainer(0);
 
 	public int width = 176;

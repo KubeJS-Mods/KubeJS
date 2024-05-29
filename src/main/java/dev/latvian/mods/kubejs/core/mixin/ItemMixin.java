@@ -3,12 +3,10 @@ package dev.latvian.mods.kubejs.core.mixin;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -24,9 +22,11 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -41,12 +41,28 @@ import java.util.stream.Stream;
 public abstract class ItemMixin implements ItemKJS {
 	@Shadow
 	private DataComponentMap components;
+
+	@Shadow
+	@Final
+	private Holder.Reference<Item> builtInRegistryHolder;
+
+	@Unique
 	private ItemBuilder kjs$itemBuilder;
+
+	@Unique
 	private CompoundTag kjs$typeData;
+
+	@Unique
 	private Ingredient kjs$asIngredient;
+
+	@Unique
 	private ItemStackKey kjs$typeItemStackKey;
+
+	@Unique
 	private ResourceKey<Item> kjs$registryKey;
-	private String kjs$idString;
+
+	@Unique
+	private String kjs$id;
 
 	@Override
 	@Nullable
@@ -55,20 +71,14 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Override
-	@RemapForJS("getItem")
-	public Item kjs$self() {
-		return (Item) (Object) this;
+	public Holder.Reference<Item> kjs$asHolder() {
+		return builtInRegistryHolder;
 	}
 
 	@Override
 	public ResourceKey<Item> kjs$getRegistryKey() {
 		if (kjs$registryKey == null) {
-			try {
-				kjs$registryKey = kjs$self().builtInRegistryHolder().key();
-			} catch (Exception ex) {
-				var id = RegistryInfo.ITEM.getId(kjs$self());
-				kjs$registryKey = id == null ? RegistryInfo.ITEM.unknownKey : ResourceKey.create(Registries.ITEM, id);
-			}
+			kjs$registryKey = ItemKJS.super.kjs$getRegistryKey();
 		}
 
 		return kjs$registryKey;
@@ -76,11 +86,11 @@ public abstract class ItemMixin implements ItemKJS {
 
 	@Override
 	public String kjs$getId() {
-		if (kjs$idString == null) {
-			kjs$idString = kjs$getIdLocation().toString();
+		if (kjs$id == null) {
+			kjs$id = ItemKJS.super.kjs$getId();
 		}
 
-		return kjs$idString;
+		return kjs$id;
 	}
 
 	@Override

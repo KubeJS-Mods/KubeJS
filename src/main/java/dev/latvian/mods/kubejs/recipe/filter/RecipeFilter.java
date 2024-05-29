@@ -12,17 +12,16 @@ import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import net.minecraft.core.HolderLookup;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 @FunctionalInterface
-public interface RecipeFilter extends Predicate<RecipeLikeKJS> {
+public interface RecipeFilter {
 	Event<RecipeFilterParseEvent> PARSE = EventFactory.createLoop();
 
-	@Override
-	boolean test(RecipeLikeKJS r);
+	boolean test(HolderLookup.Provider registries, RecipeLikeKJS r);
 
 	static RecipeFilter of(Context cx, @Nullable Object o) {
 		if (o == null || o == ConstantFilter.TRUE) {

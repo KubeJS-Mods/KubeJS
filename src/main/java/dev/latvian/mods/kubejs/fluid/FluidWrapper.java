@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.fluid;
 
 import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -18,7 +18,7 @@ public interface FluidWrapper {
 	}
 
 	static dev.architectury.fluid.FluidStack wrapArch(Object o) {
-		return toArch(wrap(o));
+		return FluidStackHooksForge.fromForge(wrap(o));
 	}
 
 	static FluidStack of(FluidStack o) {
@@ -30,12 +30,12 @@ public interface FluidWrapper {
 		return o;
 	}
 
-	static FluidStack of(FluidStack o, DataComponentPatch components) {
+	static FluidStack of(FluidStack o, DataComponentMap components) {
 		o.applyComponents(components);
 		return o;
 	}
 
-	static FluidStack of(FluidStack o, int amount, DataComponentPatch components) {
+	static FluidStack of(FluidStack o, int amount, DataComponentMap components) {
 		o.setAmount(amount);
 		o.applyComponents(components);
 		return o;
@@ -81,13 +81,5 @@ public interface FluidWrapper {
 
 	static ResourceLocation getId(Fluid fluid) {
 		return RegistryInfo.FLUID.getId(fluid);
-	}
-
-	static FluidStack fromArch(dev.architectury.fluid.FluidStack stack) {
-		return FluidStackHooksForge.toForge(stack);
-	}
-
-	static dev.architectury.fluid.FluidStack toArch(FluidStack stack) {
-		return FluidStackHooksForge.fromForge(stack);
 	}
 }

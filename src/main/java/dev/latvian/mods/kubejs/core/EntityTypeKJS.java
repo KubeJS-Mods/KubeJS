@@ -5,7 +5,7 @@ import net.minecraft.world.entity.EntityType;
 
 public interface EntityTypeKJS extends WithRegistryKeyKJS<EntityType<?>> {
 	@Override
-	default RegistryInfo kjs$getKubeRegistry() {
+	default RegistryInfo<EntityType<?>> kjs$getKubeRegistry() {
 		return RegistryInfo.ENTITY_TYPE;
 	}
 }

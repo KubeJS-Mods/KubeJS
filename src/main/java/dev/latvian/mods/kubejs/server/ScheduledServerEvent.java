@@ -5,11 +5,9 @@ import net.minecraft.server.MinecraftServer;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public class ScheduledServerEvent extends ScheduledEvents.ScheduledEvent {
-	public static final ScheduledEvents EVENTS = new ScheduledEvents(() -> new ScheduledServerEvent(ServerLifecycleHooks.getCurrentServer()));
+	public static final ScheduledEvents EVENTS = new ScheduledEvents(ScheduledServerEvent::new);
 
-	public final MinecraftServer server;
-
-	public ScheduledServerEvent(MinecraftServer server) {
-		this.server = server;
+	public MinecraftServer getServer() {
+		return ServerLifecycleHooks.getCurrentServer();
 	}
 }

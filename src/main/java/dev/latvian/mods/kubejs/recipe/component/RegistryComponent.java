@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
 import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.ID;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +21,7 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 		if (registry instanceof RegistryInfo<?> registryInfo) {
 			regInfo = registryInfo;
 		} else if (registry instanceof ResourceKey<?> resourceKey) {
-			regInfo = RegistryInfo.of((ResourceKey<? extends Registry<?>>) resourceKey);
+			regInfo = RegistryInfo.of((ResourceKey) resourceKey);
 		} else {
 			regInfo = RegistryInfo.of(ResourceKey.createRegistryKey(new ResourceLocation(String.valueOf(registry))));
 		}

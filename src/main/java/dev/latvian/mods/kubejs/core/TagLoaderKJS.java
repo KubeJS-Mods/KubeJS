@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import com.google.gson.JsonArray;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.tag.TagEventFilter;
@@ -10,11 +11,13 @@ import dev.latvian.mods.kubejs.server.tag.TagKubeEvent;
 import dev.latvian.mods.kubejs.server.tag.TagWrapper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagLoader;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +30,7 @@ public interface TagLoaderKJS<T> {
 			return;
 		}
 
-		var regInfo = RegistryInfo.of(reg.key());
+		var regInfo = RegistryInfo.of((ResourceKey) reg.key());
 
 		if (regInfo.hasDefaultTags || ServerEvents.TAGS.hasListeners(regInfo.key)) {
 			var preEvent = kjs$getResources().kjs$getServerScriptManager().preTagEvents.get(reg.key());
@@ -43,7 +46,7 @@ public interface TagLoaderKJS<T> {
 				}
 			}
 
-			for (var builder : regInfo.objects.values()) {
+			for (var builder : (Collection<BuilderBase<?>>) regInfo.objects.values()) {
 				for (var s : builder.defaultTags) {
 					event.add(s, new TagEventFilter.ID(builder.id));
 				}

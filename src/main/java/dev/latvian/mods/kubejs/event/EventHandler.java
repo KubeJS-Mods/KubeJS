@@ -15,8 +15,6 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -44,6 +42,7 @@ public class EventHandler extends BaseFunction {
 		this.eventType = e;
 		this.hasResult = false;
 		this.extra = null;
+		this.extraRequired = false;
 		this.eventContainers = null;
 		this.exceptionHandler = null;
 	}
@@ -138,44 +137,30 @@ public class EventHandler extends BaseFunction {
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent)
+	 * @see EventHandler#post(ScriptTypeHolder, KubeEvent)
 	 */
 	public EventResult post(KubeEvent event) {
 		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
-			return post(type, null, event);
+			return postInternal(type, null, event);
 		} else {
 			throw new IllegalStateException("You must specify which script type to post event to");
 		}
 	}
 
 	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent)
+	 * @return EventResult that can contain an object. What previously returned true on {@link KubeEvent#cancel(Context)} ()} now returns {@link EventResult#interruptFalse()}
+	 * @see KubeEvent#cancel(Context)
+	 * @see KubeEvent#success(Context)
+	 * @see KubeEvent#exit(Context)
+	 * @see KubeEvent#cancel(Context, Object)
+	 * @see KubeEvent#success(Context, Object)
+	 * @see KubeEvent#exit(Context, Object)
 	 */
 	public EventResult post(ScriptTypeHolder scriptType, KubeEvent event) {
-		return post(scriptType, null, event);
+		return postInternal(scriptType, null, event);
 	}
 
-	/**
-	 * @see EventHandler#post(ScriptTypeHolder, Object, KubeEvent)
-	 */
-	public EventResult post(KubeEvent event, @Nullable Object extraId) {
-		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
-			return post(type, extraId, event);
-		} else {
-			throw new IllegalStateException("You must specify which script type to post event to");
-		}
-	}
-
-	/**
-	 * @return EventResult that can contain an object. What previously returned true on {@link KubeEvent#cancel()} now returns {@link EventResult#interruptFalse()}
-	 * @see KubeEvent#cancel()
-	 * @see KubeEvent#success()
-	 * @see KubeEvent#exit()
-	 * @see KubeEvent#cancel(Object)
-	 * @see KubeEvent#success(Object)
-	 * @see KubeEvent#exit(Object)
-	 */
-	public EventResult post(ScriptTypeHolder type, @Nullable Object extraId, KubeEvent event) {
+	protected EventResult postInternal(ScriptTypeHolder type, @Nullable Object extraId, KubeEvent event) {
 		if (!hasListeners()) {
 			return EventResult.PASS;
 		}
@@ -283,21 +268,5 @@ public class EventHandler extends BaseFunction {
 				c = c.child;
 			}
 		}
-	}
-
-	public Set<Object> findUniqueExtraIds(ScriptType type) {
-		if (!hasListeners()) {
-			return Set.of();
-		}
-
-		var set = new HashSet<>();
-
-		forEachListener(type, c -> {
-			if (c.extraId != null) {
-				set.add(c.extraId);
-			}
-		});
-
-		return set;
 	}
 }
