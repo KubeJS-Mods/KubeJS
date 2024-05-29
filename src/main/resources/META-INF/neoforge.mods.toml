@@ -7,7 +7,7 @@ license = "GNU LGPLv3"
 modId = "kubejs"
 version = "${version}"
 displayName = "KubeJS"
-authors = "LatvianModder"
+authors = "latvian.dev"
 description = '''
 Customize your modpack or server with JavaScript!
 '''
