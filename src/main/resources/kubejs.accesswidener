@@ -86,6 +86,7 @@ mutable field net/minecraft/world/level/Explosion radius F
 accessible class net/minecraft/client/gui/components/AbstractSelectionList$Entry
 accessible field net/minecraft/client/gui/components/ImageButton sprites Lnet/minecraft/client/gui/components/WidgetSprites;
 accessible class net/minecraft/client/Minecraft$GameLoadCookie
+accessible field net/minecraft/client/gui/screens/Screen narratables Ljava/util/List;
 
 # smithing table text components and icons
 accessible field net/minecraft/world/item/SmithingTemplateItem APPLIES_TO_TITLE Lnet/minecraft/network/chat/Component;

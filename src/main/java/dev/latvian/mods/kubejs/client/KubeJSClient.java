@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.client;
 
-import dev.architectury.hooks.PackRepositoryHooks;
+import dev.architectury.hooks.forge.PackRepositoryHooksImpl;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSPaths;
@@ -40,32 +40,31 @@ import java.util.concurrent.CompletableFuture;
 public class KubeJSClient extends KubeJSCommon {
 	@Override
 	public void init(IEventBus bus) {
+		var mc = Minecraft.getInstance();
 		// You'd think that this is impossible, but not when you use runData gradle task
-		if (Minecraft.getInstance() == null) {
+		if (mc == null) {
 			return;
 		}
 
-		reloadClientScripts();
+		reloadClientScripts(mc);
 
 		new KubeJSClientEventHandler().init(bus);
-		var list = Minecraft.getInstance().getResourcePackRepository();
-		PackRepositoryHooks.addSource(list, new KubeJSResourcePackFinder());
+		mc.getResourcePackRepository().addPackFinder(new KubeJSResourcePackFinder());
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clientInit);
 	}
 
 	@Override
 	public void reloadClientInternal() {
-		reloadClientScripts();
+		var mc = Minecraft.getInstance();
+		if (mc != null) {
+			reloadClientScripts(mc);
+		}
 	}
 
-	public static void reloadClientScripts() {
+	public static void reloadClientScripts(Minecraft mc) {
 		KubeJSClientEventHandler.staticItemTooltips = null;
-		var mc = Minecraft.getInstance();
-
-		if (mc != null) {
-			KubeJS.getClientScriptManager().reload(mc.getResourceManager());
-		}
+		KubeJS.getClientScriptManager().reload(mc.getResourceManager());
 	}
 
 	public static void copyDefaultOptionsFile(File optionsFile) {
@@ -147,8 +146,11 @@ public class KubeJSClient extends KubeJSCommon {
 
 	@Override
 	public void reloadLang() {
-		reloadClientScripts();
-		reload(Minecraft.getInstance().getLanguageManager());
+		var mc = Minecraft.getInstance();
+		if (mc != null) {
+			reloadClientScripts(mc);
+			reload(mc.getLanguageManager());
+		}
 	}
 
 	@Override

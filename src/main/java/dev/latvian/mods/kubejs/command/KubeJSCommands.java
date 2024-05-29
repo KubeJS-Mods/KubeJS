@@ -680,6 +680,7 @@ public class KubeJSCommands {
 		return 1;
 	}
 
+	// TODO: move these commands to client commands
 	private static int reloadClient(CommandSourceStack source) {
 		KubeJS.PROXY.reloadClientInternal();
 		source.sendSystemMessage(Component.literal("Done! To reload textures, models and other assets, press F3 + T"));

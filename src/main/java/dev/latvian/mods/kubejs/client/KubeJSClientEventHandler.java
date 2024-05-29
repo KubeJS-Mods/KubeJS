@@ -2,10 +2,10 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
-import dev.architectury.event.events.client.ClientTooltipEvent;
 import dev.architectury.hooks.client.screen.ScreenAccess;
 import dev.architectury.hooks.fluid.FluidBucketHooks;
 import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
@@ -20,62 +20,65 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.Paint;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+@EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSClientEventHandler {
 	private static final ResourceLocation RECIPE_BUTTON_TEXTURE = new ResourceLocation("textures/gui/recipe_button.png");
 	public static Map<Item, List<ItemTooltipKubeEvent.StaticTooltipHandler>> staticItemTooltips = null;
 	private final Map<ResourceLocation, TagInstance> tempTagNames = new LinkedHashMap<>();
 
 	public void init(IEventBus bus) {
-		ClientGuiEvent.DEBUG_TEXT_LEFT.register(this::debugInfoLeft);
-		ClientGuiEvent.DEBUG_TEXT_RIGHT.register(this::debugInfoRight);
-		ClientTooltipEvent.ITEM.register(this::itemTooltip);
-		ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(this::loggedIn);
-		ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(this::loggedOut);
-		ClientPlayerEvent.CLIENT_PLAYER_RESPAWN.register(this::respawn);
-		ClientGuiEvent.RENDER_HUD.register(Painter.INSTANCE::inGameScreenDraw);
-		ClientGuiEvent.RENDER_POST.register(Painter.INSTANCE::guiScreenDraw);
-		ClientGuiEvent.INIT_POST.register(this::guiPostInit);
 		bus.addListener(this::registerMenuScreens);
 
 		//ClientTextureStitchEvent.POST.register(this::postAtlasStitch);
 	}
 
-	private void debugInfoLeft(List<String> lines) {
-		if (Minecraft.getInstance().player != null && ClientEvents.DEBUG_LEFT.hasListeners()) {
-			ClientEvents.DEBUG_LEFT.post(ScriptType.CLIENT, new DebugInfoKubeEvent(lines));
+	@SubscribeEvent
+	private void debugInfo(CustomizeGuiOverlayEvent.DebugText event) {
+		var mc = Minecraft.getInstance();
+		if (mc.player != null) {
+			if (ClientEvents.DEBUG_LEFT.hasListeners()) {
+				ClientEvents.DEBUG_LEFT.post(new DebugInfoKubeEvent(event.getLeft()));
+			}
+			if (ClientEvents.DEBUG_RIGHT.hasListeners()) {
+				ClientEvents.DEBUG_RIGHT.post(new DebugInfoKubeEvent(event.getRight()));
+			}
 		}
 	}
 
-	private void debugInfoRight(List<String> lines) {
-		if (Minecraft.getInstance().player != null && ClientEvents.DEBUG_RIGHT.hasListeners()) {
-			ClientEvents.DEBUG_RIGHT.post(ScriptType.CLIENT, new DebugInfoKubeEvent(lines));
-		}
-	}
+	@SubscribeEvent
+	public void onItemTooltip(ItemTooltipEvent event) {
+		var stack = event.getItemStack();
+		var lines = event.getToolTip();
+		var tooltipContext = event.getContext();
+		var flag = event.getFlags();
 
-	private void itemTooltip(ItemStack stack, List<Component> lines, Item.TooltipContext tooltipContext, TooltipFlag flag) {
 		if (stack.isEmpty()) {
 			return;
 		}
@@ -133,17 +136,30 @@ public class KubeJSClientEventHandler {
 		}
 	}
 
-	private void loggedIn(LocalPlayer player) {
-		ClientEvents.LOGGED_IN.post(ScriptType.CLIENT, new ClientKubeEvent());
+	@SubscribeEvent
+	public void onClientPlayerNetwork(ClientPlayerNetworkEvent event) {
+		switch (event) {
+			case ClientPlayerNetworkEvent.LoggingIn loggingIn -> {
+				ClientEvents.LOGGED_IN.post(ScriptType.CLIENT, new ClientKubeEvent());
+			}
+			case ClientPlayerNetworkEvent.LoggingOut loggingOut -> {
+				ClientEvents.LOGGED_OUT.post(ScriptType.CLIENT, new ClientKubeEvent());
+				Painter.INSTANCE.clear();
+			}
+			default -> {
+				// clone does not have a handler currently
+			}
+		}
 	}
 
-	private void loggedOut(LocalPlayer player) {
-		ClientEvents.LOGGED_OUT.post(ScriptType.CLIENT, new ClientKubeEvent());
-		Painter.INSTANCE.clear();
+	@SubscribeEvent
+	public void onRenderGuiPost(RenderGuiEvent.Post event) {
+		Painter.INSTANCE.inGameScreenDraw(event.getGuiGraphics(), event.getPartialTick());
 	}
 
-	private void respawn(LocalPlayer oldPlayer, LocalPlayer newPlayer) {
-		// client respawn event
+	@SubscribeEvent
+	public void onRenderPost(ScreenEvent.Render.Post event) {
+		Painter.INSTANCE.guiScreenDraw(event.getScreen(), event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
 	}
 
 	@Nullable
@@ -155,14 +171,17 @@ public class KubeJSClientEventHandler {
 		return screen;
 	}
 
-	private void guiPostInit(Screen screen, ScreenAccess access) {
+	@SubscribeEvent
+	public void guiPostInit(ScreenEvent.Init.Post event) {
+		var screen = event.getScreen();
+
 		if (ClientProperties.get().getDisableRecipeBook() && screen instanceof RecipeUpdateListener) {
 			var iterator = screen.children().iterator();
 			while (iterator.hasNext()) {
 				var listener = iterator.next();
 				if (listener instanceof ImageButton button && button.sprites.enabled().equals(RECIPE_BUTTON_TEXTURE)) {
-					access.getRenderables().remove(listener);
-					access.getNarratables().remove(listener);
+					screen.renderables.remove(listener);
+					screen.narratables.remove(listener);
 					iterator.remove();
 					return;
 				}
