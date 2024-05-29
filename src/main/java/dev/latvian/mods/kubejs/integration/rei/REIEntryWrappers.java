@@ -1,23 +1,32 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
 import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import me.shedaniel.rei.api.common.entry.type.EntryType;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class REIEntryWrappers {
-	public static final Event<Consumer<REIEntryWrappers>> EVENT = EventFactory.createConsumerLoop();
+	public static class WrapperRegistryEvent extends Event {
+		private final REIEntryWrappers wrappers;
+
+		private WrapperRegistryEvent(REIEntryWrappers wrappers) {
+			this.wrappers = wrappers;
+		}
+
+		public <T, C> void add(EntryType<T> type, Function<Object, C> converter, Function<C, ? extends Predicate<T>> filter, Function<C, ? extends Iterable<T>> entries) {
+			wrappers.add(type, converter, filter, entries);
+		}
+	}
 
 	private final Map<EntryType<?>, EntryWrapper<?, ?>> entryWrappers;
 
@@ -25,7 +34,7 @@ public class REIEntryWrappers {
 		this.entryWrappers = new HashMap<>();
 		add(VanillaEntryTypes.ITEM, IngredientJS::of, Function.identity(), IngredientKJS::kjs$getDisplayStacks);
 		add(VanillaEntryTypes.FLUID, FluidWrapper::wrapArch, fs -> fs::isFluidEqual, List::of);
-		EVENT.invoker().accept(this);
+		NeoForge.EVENT_BUS.post(new WrapperRegistryEvent(this));
 	}
 
 	public <T, C> void add(EntryType<T> type, Function<Object, C> converter, Function<C, ? extends Predicate<T>> filter, Function<C, ? extends Iterable<T>> entries) {

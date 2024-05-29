@@ -80,7 +80,6 @@ import dev.latvian.mods.kubejs.misc.PotionBuilder;
 import dev.latvian.mods.kubejs.misc.SoundEventBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerProfessionBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerTypeBuilder;
-import dev.latvian.mods.kubejs.neoforge.KubeJSEntryPoint;
 import dev.latvian.mods.kubejs.neoforge.NativeEventWrapper;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
@@ -421,7 +420,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		if (event.type().isStartup()) {
 			event.add("NativeEvents", new NativeEventWrapper("NativeEvents", NeoForge.EVENT_BUS));
-			KubeJSEntryPoint.eventBus().ifPresent(bus -> event.add("NativeModEvents", new NativeEventWrapper("NativeModEvents", bus)));
+			KubeJS.eventBus().ifPresent(bus -> event.add("NativeModEvents", new NativeEventWrapper("NativeModEvents", bus)));
 		}
 	}
 

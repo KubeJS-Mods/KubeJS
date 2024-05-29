@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.client;
 
 import com.google.gson.JsonObject;
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
@@ -23,6 +22,7 @@ import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackSource;
+import net.neoforged.fml.ModList;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 	public static List<PackResources> inject(Minecraft client, List<PackResources> packs) {
 		// only add the resource pack if KubeJS has loaded
 		// to prevent crashes on mod loading errors
-		if (KubeJS.instance != null) {
+		if (KubeJS.thisMod != null) {
 			packs = new ArrayList<>(packs);
 
 			int i = packs.size();
@@ -86,7 +86,7 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 		var langEvents = new HashMap<String, LangKubeEvent>();
 		var enUsLangEvent = langEvents.computeIfAbsent("en_us", s -> new LangKubeEvent(s, langMap));
 
-		if (Platform.isModLoaded("jade")) {
+		if (ModList.get().isLoaded("jade")) {
 			for (var mod : PlatformWrapper.getMods().values()) {
 				if (!mod.getCustomName().isEmpty()) {
 					enUsLangEvent.add(KubeJS.MOD_ID, "jade.modName." + mod.getId(), mod.getCustomName());

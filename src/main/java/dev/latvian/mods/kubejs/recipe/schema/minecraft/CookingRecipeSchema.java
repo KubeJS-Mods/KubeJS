@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.schema.minecraft;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
@@ -23,11 +21,7 @@ public interface CookingRecipeSchema {
 
 		@Override
 		public JsonElement write(KubeRecipe recipe, OutputItem value) {
-			if (Platform.isNeoForge()) {
-				return ItemComponents.OUTPUT.write(recipe, value);
-			} else {
-				return new JsonPrimitive(value.item.kjs$getId());
-			}
+			return ItemComponents.OUTPUT.write(recipe, value);
 		}
 
 		@Override

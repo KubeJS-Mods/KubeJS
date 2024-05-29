@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.client;
 
 import dev.architectury.hooks.PackRepositoryHooks;
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSPaths;
@@ -86,10 +85,6 @@ public class KubeJSClient extends KubeJSCommon {
 
 	@Override
 	public void clientSetup() {
-		if (Platform.isDevelopmentEnvironment()) {
-			KubeJS.LOGGER.info("CLIENT SETUP");
-		}
-
 		ClientEvents.INIT.post(ScriptType.STARTUP, new ClientInitKubeEvent());
 		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesKubeEvent());
 

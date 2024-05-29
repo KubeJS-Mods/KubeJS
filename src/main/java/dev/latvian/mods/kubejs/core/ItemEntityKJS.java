@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.architectury.hooks.level.entity.ItemEntityHooks;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -21,11 +20,11 @@ public interface ItemEntityKJS extends EntityKJS {
 	}
 
 	default int kjs$getLifespan() {
-		return ItemEntityHooks.lifespan(kjs$self()).getAsInt();
+		return kjs$self().lifespan;
 	}
 
 	default void kjs$setLifespan(int lifespan) {
-		ItemEntityHooks.lifespan(kjs$self()).accept(lifespan);
+		kjs$self().lifespan = lifespan;
 	}
 
 	default void kjs$setDefaultPickUpDelay() {

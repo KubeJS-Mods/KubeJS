@@ -4,8 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import dev.architectury.platform.Platform;
-import dev.architectury.registry.registries.Registrar;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
@@ -18,6 +16,7 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import net.neoforged.fml.ModList;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -48,16 +47,6 @@ public class DataExport {
 
 			export = null;
 		}
-	}
-
-	private static <T> void addRegistry(JsonObject o, String name, Registrar<T> r) {
-		var a = new JsonArray();
-
-		for (var id : r.getIds()) {
-			a.add(id.toString());
-		}
-
-		o.add(name, a);
 	}
 
 	public void add(String path, Callable<byte[]> data) {
@@ -136,17 +125,18 @@ public class DataExport {
 
 		var modArr = new JsonArray();
 
-		for (var mod : Platform.getMods()) {
+		for (var mod : ModList.get().getMods()) {
 			var o = new JsonObject();
 			o.addProperty("id", mod.getModId().trim());
-			o.addProperty("name", mod.getName().trim());
-			o.addProperty("version", mod.getVersion().trim());
+			o.addProperty("name", mod.getDisplayName().trim());
+			o.addProperty("version", mod.getVersion().toString().trim());
 			o.addProperty("description", mod.getDescription().trim());
-			o.addProperty("authors", String.join(", ", mod.getAuthors()).trim());
-			o.addProperty("homepage", mod.getHomepage().orElse("").trim());
-			o.addProperty("sources", mod.getSources().orElse("").trim());
-			o.addProperty("issue_tracker", mod.getIssueTracker().orElse("").trim());
-			o.addProperty("license", mod.getLicense() == null ? "" : String.join(", ", mod.getLicense()).trim());
+			// FIXME
+			// o.addProperty("authors", String.join(", ", mod.getAuthors()).trim());
+			// o.addProperty("homepage", mod.getHomepage().orElse("").trim());
+			// o.addProperty("sources", mod.getSources().orElse("").trim());
+			// o.addProperty("issue_tracker", mod.getIssueTracker().orElse("").trim());
+			// o.addProperty("license", mod.getLicense() == null ? "" : String.join(", ", mod.getLicense()).trim());
 			o.entrySet().removeIf(e -> e.getValue() instanceof JsonPrimitive p && p.isString() && p.getAsString().isEmpty());
 			modArr.add(o);
 		}

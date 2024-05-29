@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs;
 
-import dev.architectury.platform.Platform;
 import net.minecraft.server.packs.PackType;
+import net.neoforged.fml.loading.FMLPaths;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import java.nio.file.Files;
@@ -30,7 +30,8 @@ public interface KubeJSPaths {
 		return dir(dir, false);
 	}
 
-	Path DIRECTORY = dir(Platform.getGameFolder().resolve("kubejs"), true);
+	Path GAMEDIR = FMLPaths.GAMEDIR.get().normalize().toAbsolutePath();
+	Path DIRECTORY = dir(GAMEDIR.resolve("kubejs"), true);
 	Path DATA = dir(DIRECTORY.resolve("data"));
 	Path ASSETS = dir(DIRECTORY.resolve("assets"));
 	Path STARTUP_SCRIPTS = DIRECTORY.resolve("startup_scripts");
@@ -42,7 +43,7 @@ public interface KubeJSPaths {
 	Path CONFIG_DEV_PROPERTIES = CONFIG.resolve("dev.properties");
 	Path PACKICON = CONFIG.resolve("packicon.png");
 	Path README = DIRECTORY.resolve("README.txt");
-	Path LOCAL = dir(Platform.getGameFolder().resolve("local").resolve("kubejs"));
+	Path LOCAL = dir(GAMEDIR.resolve("local").resolve("kubejs"));
 	Path LOCAL_CACHE = dir(LOCAL.resolve("cache"));
 	Path LOCAL_DEV_PROPERTIES = LOCAL.resolve("dev.properties");
 	Path EXPORT = dir(LOCAL.resolve("export"));

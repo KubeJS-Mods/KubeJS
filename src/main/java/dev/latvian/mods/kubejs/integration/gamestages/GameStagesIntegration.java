@@ -2,17 +2,19 @@ package dev.latvian.mods.kubejs.integration.gamestages;
 
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.stages.StageCreationEvent;
-import dev.latvian.mods.kubejs.stages.StageEvents;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 public class GameStagesIntegration implements KubeJSPlugin {
 	@Override
 	public void init() {
-		StageEvents.overrideCreation(GameStagesIntegration::override);
+		NeoForge.EVENT_BUS.register(GameStagesIntegration.class);
 		/*NeoForge.EVENT_BUS.addListener(GameStagesIntegration::stageAdded);
 		NeoForge.EVENT_BUS.addListener(GameStagesIntegration::stageRemoved);*/
 	}
 
-	private static void override(StageCreationEvent event) {
+	@SubscribeEvent
+	public static void override(StageCreationEvent event) {
 		//event.setPlayerStages(new GameStagesWrapper(event.getPlayer()));
 	}
 

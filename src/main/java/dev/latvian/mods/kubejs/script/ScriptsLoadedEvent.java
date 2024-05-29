@@ -1,9 +1,7 @@
 package dev.latvian.mods.kubejs.script;
 
 
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
+import net.neoforged.bus.api.Event;
 
-public class ScriptsLoadedEvent {
-	public static final Event<Runnable> EVENT = EventFactory.createLoop(Runnable.class);
+public class ScriptsLoadedEvent extends Event {
 }

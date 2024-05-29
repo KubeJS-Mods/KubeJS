@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.LogType;
-import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -57,7 +56,7 @@ public class ScriptManager {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clearCaches);
 
 		unload();
-		scriptType.console.writeToFile(LogType.INIT, "KubeJS " + KubeJS.thisMod.getVersion() + "; MC " + KubeJS.MC_VERSION_NUMBER + " NeoForge");
+		scriptType.console.writeToFile(LogType.INIT, "KubeJS " + KubeJS.VERSION + "; MC " + KubeJS.MC_VERSION_NUMBER + " NeoForge");
 		scriptType.console.writeToFile(LogType.INIT, "Loaded plugins:");
 
 		for (var plugin : KubeJSPlugins.getAll()) {

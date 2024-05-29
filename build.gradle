@@ -85,11 +85,11 @@ dependencies {
 	neoForge("net.neoforged:neoforge:${rootProject.neoforge_version}")
 
 	modApi("dev.architectury:architectury-neoforge:${rootProject.architectury_version}")
-	modApi("dev.latvian.mods:rhino-neoforge:${rootProject.rhino_version}") { transitive false }
+	modApi("dev.latvian.mods:rhino-neoforge:${rootProject.rhino_version}") { transitive(false) }
 
 	// todo: reevaluate if we want to depend on jei
 	modCompileOnly("mezz.jei:jei-1.20.4-neoforge:${rootProject.jei_version}") { transitive(false) }
-	modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:${rootProject.rei_version}")
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:${rootProject.rei_version}") { transitive(false) }
 }
 
 processResources {

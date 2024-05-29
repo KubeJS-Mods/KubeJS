@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.fluid;
 
-import dev.architectury.core.item.ArchitecturyBucketItem;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import net.minecraft.world.item.BucketItem;
@@ -16,7 +15,7 @@ public class FluidBucketItemBuilder extends ItemBuilder {
 
 	@Override
 	public BucketItem createObject() {
-		return new ArchitecturyBucketItem(fluidBuilder, createItemProperties());
+		return new BucketItem(fluidBuilder.get(), createItemProperties());
 	}
 
 	@Override

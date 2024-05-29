@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.item.creativetab;
 
-import dev.latvian.mods.kubejs.helpers.MiscHelper;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.network.chat.Component;
@@ -24,11 +23,11 @@ public class CreativeTabBuilder extends BuilderBase<CreativeModeTab> {
 
 	@Override
 	public CreativeModeTab createObject() {
-		return MiscHelper.get().creativeModeTab(
-			displayName == null ? Component.translatable(getBuilderTranslationKey()) : displayName,
-			new CreativeTabIconSupplier.Wrapper(icon),
-			new CreativeTabContentSupplier.Wrapper(content)
-		);
+		return CreativeModeTab.builder()
+			.title(displayName == null ? Component.translatable(getBuilderTranslationKey()) : displayName)
+			.icon(new CreativeTabIconSupplier.Wrapper(icon))
+			.displayItems(new CreativeTabContentSupplier.Wrapper(content))
+			.build();
 	}
 
 	public CreativeTabBuilder icon(CreativeTabIconSupplier icon) {

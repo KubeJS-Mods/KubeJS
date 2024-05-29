@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs;
 
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import net.neoforged.fml.loading.FMLLoader;
 
 import java.io.Reader;
 import java.io.Writer;
@@ -55,7 +55,7 @@ public class DevProperties {
 				writeProperties = true;
 			}
 
-			debugInfo = get("debugInfo", Platform.isDevelopmentEnvironment());
+			debugInfo = get("debugInfo", !FMLLoader.isProduction());
 			dataPackOutput = get("dataPackOutput", false);
 			logAddedRecipes = get("logAddedRecipes", false);
 			logRemovedRecipes = get("logRemovedRecipes", false);

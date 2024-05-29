@@ -1,7 +1,5 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
@@ -13,14 +11,13 @@ import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import net.minecraft.core.HolderLookup;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
 @FunctionalInterface
 public interface RecipeFilter {
-	Event<RecipeFilterParseEvent> PARSE = EventFactory.createLoop();
-
 	boolean test(HolderLookup.Provider registries, RecipeLikeKJS r);
 
 	static RecipeFilter of(Context cx, @Nullable Object o) {
@@ -115,7 +112,7 @@ public interface RecipeFilter {
 				predicate.list.add(new OutputFilter(ReplacementMatch.of(output)));
 			}
 
-			PARSE.invoker().parse(cx, predicate.list, map);
+			NeoForge.EVENT_BUS.post(new RecipeFilterParseEvent(cx, predicate.list, map));
 
 			return predicate.list.isEmpty() ? ConstantFilter.TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
 		} catch (RecipeExceptionJS rex) {

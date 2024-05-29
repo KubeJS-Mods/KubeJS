@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.client;
 
-import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
@@ -58,7 +57,6 @@ public class KubeJSClientEventHandler {
 		ClientPlayerEvent.CLIENT_PLAYER_RESPAWN.register(this::respawn);
 		ClientGuiEvent.RENDER_HUD.register(Painter.INSTANCE::inGameScreenDraw);
 		ClientGuiEvent.RENDER_POST.register(Painter.INSTANCE::guiScreenDraw);
-		ClientGuiEvent.INIT_PRE.register(this::guiPreInit);
 		ClientGuiEvent.INIT_POST.register(this::guiPostInit);
 		bus.addListener(this::registerMenuScreens);
 
@@ -155,10 +153,6 @@ public class KubeJSClientEventHandler {
 		}
 
 		return screen;
-	}
-
-	private EventResult guiPreInit(Screen screen, ScreenAccess screenAccess) {
-		return EventResult.pass();
 	}
 
 	private void guiPostInit(Screen screen, ScreenAccess access) {

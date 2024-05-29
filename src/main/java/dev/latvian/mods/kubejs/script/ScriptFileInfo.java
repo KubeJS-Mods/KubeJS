@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.ModList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,7 +94,7 @@ public class ScriptFileInfo {
 
 		if (!requiredMods.isEmpty()) {
 			for (String mod : requiredMods) {
-				if (!Platform.isModLoaded(mod)) {
+				if (!ModList.get().isLoaded(mod)) {
 					return "Mod " + mod + " is not loaded";
 				}
 			}

@@ -188,7 +188,7 @@ public interface KubeJSTypeWrappers {
 				return null;
 			}
 
-			return KubeJS.verifyFilePath(KubeJS.getGameDirectory().resolve(o.toString()));
+			return KubeJS.verifyFilePath(KubeJSPaths.GAMEDIR.resolve(o.toString()));
 		} catch (Exception ex) {
 			return null;
 		}
@@ -203,7 +203,7 @@ public interface KubeJSTypeWrappers {
 				return null;
 			}
 
-			return KubeJS.verifyFilePath(KubeJS.getGameDirectory().resolve(o.toString())).toFile();
+			return KubeJS.verifyFilePath(KubeJSPaths.GAMEDIR.resolve(o.toString())).toFile();
 		} catch (Exception ex) {
 			return null;
 		}

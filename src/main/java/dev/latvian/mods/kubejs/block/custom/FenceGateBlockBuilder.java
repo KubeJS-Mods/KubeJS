@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.block.custom;
 
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
@@ -16,11 +15,7 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 	public FenceGateBlockBuilder(ResourceLocation i) {
 		super(i, "_fence_gate");
 		tagBoth(BlockTags.FENCE_GATES.location());
-
-		if (Platform.isNeoForge()) {
-			tagBoth(new ResourceLocation("forge:fence_gates"));
-		}
-
+		tagBoth(new ResourceLocation("c:fence_gates"));
 		behaviour = WoodType.OAK;
 	}
 

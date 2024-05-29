@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonObject;
-import dev.architectury.registry.fuel.FuelRegistry;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
@@ -131,7 +130,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		obj.kjs$setItemBuilder(this);
 
 		if (burnTime > 0) {
-			FuelRegistry.register(burnTime, obj);
+			// FIXME: FuelRegistry.register(burnTime, obj);
 		}
 
 		return obj;

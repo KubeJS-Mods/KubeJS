@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.util;
 
-import dev.architectury.platform.Mod;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
+import net.neoforged.neoforgespi.locating.IModFile;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -47,27 +47,25 @@ public class ModResourceBindings {
 		}
 	}
 
-	public void readBindings(Mod mod) throws IOException {
+	public void readBindings(String modId, IModFile mod) throws IOException {
 		var resource = mod.findResource("kubejs.bindings.txt");
-		if (resource.isEmpty()) {
-			return;
-		}
-
-		try (var lines = Files.lines(resource.get())) {
-			List<BindingProvider> providers = lines.map(s -> s.split("#", 2)[0].trim())
-				.filter(line -> !line.isBlank())
-				.map(line -> createProvider(mod, line))
-				.filter(Objects::nonNull).toList();
-			bindings.put(mod.getModId(), providers);
+		if (Files.exists(resource)) {
+			try (var lines = Files.lines(resource)) {
+				List<BindingProvider> providers = lines.map(s -> s.split("#", 2)[0].trim())
+					.filter(line -> !line.isBlank())
+					.map(line -> createProvider(modId, line))
+					.filter(Objects::nonNull).toList();
+				bindings.put(modId, providers);
+			}
 		}
 	}
 
 	@Nullable
-	private BindingProvider createProvider(Mod mod, String line) {
+	private BindingProvider createProvider(String modId, String line) {
 		// SERVER name class field/method/<init>?
 		String[] split = line.split("\\s+");
 		if (split.length < 3) {
-			KubeJS.LOGGER.error("Invalid binding for '{}' in line: {}", mod.getModId(), line);
+			KubeJS.LOGGER.error("Invalid binding for '{}' in line: {}", modId, line);
 			return null;
 		}
 

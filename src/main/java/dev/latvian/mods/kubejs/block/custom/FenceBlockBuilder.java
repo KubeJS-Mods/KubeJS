@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.block.custom;
 
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
@@ -14,10 +13,7 @@ public class FenceBlockBuilder extends MultipartShapedBlockBuilder {
 		super(i, "_fence");
 
 		tagBoth(BlockTags.FENCES.location());
-
-		if (Platform.isNeoForge()) {
-			tagBoth(new ResourceLocation("forge:fences"));
-		}
+		tagBoth(new ResourceLocation("c:fences"));
 	}
 
 	@Override

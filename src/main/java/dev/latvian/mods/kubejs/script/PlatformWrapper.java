@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.architectury.platform.Platform;
-import dev.architectury.utils.Env;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.helpers.MiscHelper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
 
 import java.util.Arrays;
@@ -37,7 +37,18 @@ public class PlatformWrapper {
 		public void setName(String n) {
 			name = n;
 			customName = n;
-			MiscHelper.get().setModName(this, name);
+
+			try {
+				var mc = ModList.get().getModContainerById(id);
+
+				if (mc.isPresent() && mc.get().getModInfo() instanceof net.neoforged.fml.loading.moddiscovery.ModInfo i) {
+					var field = net.neoforged.fml.loading.moddiscovery.ModInfo.class.getDeclaredField("displayName");
+					field.setAccessible(true);
+					field.set(i, name);
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 
 		public String getVersion() {
@@ -78,7 +89,7 @@ public class PlatformWrapper {
 	}
 
 	public static String getModVersion() {
-		return KubeJS.thisMod.getVersion();
+		return KubeJS.VERSION;
 	}
 
 	public static boolean isLoaded(String modId) {
@@ -93,10 +104,10 @@ public class PlatformWrapper {
 		if (allMods == null) {
 			allMods = new LinkedHashMap<>();
 
-			for (var mod : Platform.getMods()) {
+			for (var mod : ModList.get().getMods()) {
 				var info = new ModInfo(mod.getModId());
-				info.name = mod.getName();
-				info.version = mod.getVersion();
+				info.name = mod.getDisplayName();
+				info.version = mod.getVersion().toString();
 				allMods.put(info.id, info);
 			}
 		}
@@ -105,11 +116,11 @@ public class PlatformWrapper {
 	}
 
 	public static boolean isDevelopmentEnvironment() {
-		return Platform.isDevelopmentEnvironment();
+		return !FMLLoader.isProduction();
 	}
 
 	public static boolean isClientEnvironment() {
-		return Platform.getEnvironment() == Env.CLIENT;
+		return FMLLoader.getDist() == Dist.CLIENT;
 	}
 
 	public static void setModName(String modId, String name) {

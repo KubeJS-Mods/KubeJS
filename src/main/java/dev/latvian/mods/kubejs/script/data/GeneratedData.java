@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.script.data;
 
 import com.google.gson.JsonObject;
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +27,7 @@ public record GeneratedData(ResourceLocation id, Supplier<byte[]> data) implemen
 
 	public static final GeneratedData PACK_ICON = new GeneratedData(KubeJS.id("textures/kubejs_logo.png"), () -> {
 		try {
-			return Files.readAllBytes(Platform.getMod(KubeJS.MOD_ID).findResource("assets", "kubejs", "textures", "kubejs_logo.png").get());
+			return Files.readAllBytes(KubeJS.thisMod.getModInfo().getOwningFile().getFile().findResource("assets", "kubejs", "textures", "kubejs_logo.png"));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return new byte[0];

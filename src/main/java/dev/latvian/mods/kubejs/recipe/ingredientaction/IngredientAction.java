@@ -8,7 +8,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
-import dev.architectury.hooks.item.ItemStackHooks;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import io.netty.buffer.ByteBuf;
@@ -137,8 +136,8 @@ public abstract class IngredientAction extends IngredientActionFilter {
 			}
 		}
 
-		if (ItemStackHooks.hasCraftingRemainingItem(stack)) {
-			return ItemStackHooks.getCraftingRemainingItem(stack);
+		if (stack.hasCraftingRemainingItem()) {
+			return stack.getCraftingRemainingItem();
 		}
 
 		return ItemStack.EMPTY;

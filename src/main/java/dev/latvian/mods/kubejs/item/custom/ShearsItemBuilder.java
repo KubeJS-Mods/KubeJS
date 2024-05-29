@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.item.custom;
 
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +16,7 @@ public class ShearsItemBuilder extends ItemBuilder {
 		return stack.getItem() instanceof ShearsItemKJS;
 	}
 
-	public static final ResourceLocation TAG = new ResourceLocation(Platform.isNeoForge() ? "forge:shears" : "c:shears");
+	public static final ResourceLocation TAG = new ResourceLocation("c:shears");
 
 	public transient float speedBaseline;
 

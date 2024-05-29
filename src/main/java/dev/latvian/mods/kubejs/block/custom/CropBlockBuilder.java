@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import com.mojang.datafixers.util.Pair;
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
@@ -96,9 +95,7 @@ public class CropBlockBuilder extends BlockBuilder {
 		}
 
 		tagBlock(BlockTags.CROPS.location());
-		if (Platform.isNeoForge()) {
-			tagItem(new ResourceLocation("forge", "seeds"));
-		}
+		tagItem(new ResourceLocation("c:seeds"));
 	}
 
 	@Info("Add a crop output with a 100% chance.")

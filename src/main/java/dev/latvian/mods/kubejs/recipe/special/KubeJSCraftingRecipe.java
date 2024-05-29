@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.recipe.special;
 
-import dev.architectury.utils.GameInstance;
 import dev.latvian.mods.kubejs.core.CraftingContainerKJS;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
@@ -14,6 +13,7 @@ import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -63,7 +63,8 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 		} else if (menu instanceof InventoryMenu inv) {
 			return inv.owner;
 		} else {
-			var server = GameInstance.getServer();
+			var server = ServerLifecycleHooks.getCurrentServer();
+
 			if (server != null) {
 				for (var player : server.getPlayerList().getPlayers()) {
 					// assume that a single menu instance can only be used by a single player

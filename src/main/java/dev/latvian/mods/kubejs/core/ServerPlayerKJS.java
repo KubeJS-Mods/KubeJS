@@ -1,7 +1,5 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.architectury.registry.menu.ExtendedMenuProvider;
-import dev.architectury.registry.menu.MenuRegistry;
 import dev.latvian.mods.kubejs.gui.KubeJSGUI;
 import dev.latvian.mods.kubejs.gui.KubeJSMenu;
 import dev.latvian.mods.kubejs.gui.chest.ChestMenuData;
@@ -14,7 +12,6 @@ import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -164,12 +161,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 		var data = new KubeJSGUI();
 		gui.accept(data);
 
-		MenuRegistry.openExtendedMenu(kjs$self(), new ExtendedMenuProvider() {
-			@Override
-			public void saveExtraData(FriendlyByteBuf buf) {
-				data.write(buf);
-			}
-
+		kjs$self().openMenu(new MenuProvider() {
 			@Override
 			public Component getDisplayName() {
 				return data.title;
@@ -179,7 +171,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 			public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
 				return new KubeJSMenu(i, inventory, data);
 			}
-		});
+		}, data::write);
 	}
 
 	default void kjs$openInventoryGUI(InventoryKJS inventory, Component title) {

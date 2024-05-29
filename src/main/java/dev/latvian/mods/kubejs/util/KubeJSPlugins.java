@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.util;
 
-import dev.architectury.platform.Mod;
-import dev.architectury.platform.Platform;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforgespi.locating.IModFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,30 +22,32 @@ public class KubeJSPlugins {
 	private static final List<String> GLOBAL_CLASS_FILTER = new ArrayList<>();
 	private static final ModResourceBindings BINDINGS = new ModResourceBindings();
 
-	public static void load(List<Mod> mods, boolean loadClientPlugins) {
+	public static void load(List<IModFile> modFiles, boolean loadClientPlugins) {
 		try {
-			for (var mod : mods) {
-				load(mod, loadClientPlugins);
+			for (var file : modFiles) {
+				if (!file.getModInfos().isEmpty()) {
+					loadMod(file.getModInfos().getFirst().getModId(), file, loadClientPlugins);
+				}
 			}
 		} catch (Exception ex) {
 			throw new RuntimeException("Failed to load KubeJS plugin", ex);
 		}
 	}
 
-	private static void load(Mod mod, boolean loadClientPlugins) throws IOException {
+	private static void loadMod(String modId, IModFile mod, boolean loadClientPlugins) throws IOException {
 		var pp = mod.findResource("kubejs.plugins.txt");
 
-		if (pp.isPresent()) {
-			loadFromFile(Files.lines(pp.get()), mod.getModId(), loadClientPlugins);
+		if (Files.exists(pp)) {
+			loadFromFile(Files.lines(pp), modId, loadClientPlugins);
 		}
 
 		var pc = mod.findResource("kubejs.classfilter.txt");
 
-		if (pc.isPresent()) {
-			GLOBAL_CLASS_FILTER.addAll(Files.readAllLines(pc.get()));
+		if (Files.exists(pc)) {
+			GLOBAL_CLASS_FILTER.addAll(Files.readAllLines(pc));
 		}
 
-		BINDINGS.readBindings(mod);
+		BINDINGS.readBindings(modId, mod);
 	}
 
 	private static void loadFromFile(Stream<String> contents, String source, boolean loadClientPlugins) {
@@ -65,7 +67,7 @@ public class KubeJSPlugins {
 
 							return Stream.empty();
 						}
-					} else if (!Platform.isModLoaded(line[i])) {
+					} else if (!ModList.get().isLoaded(line[i])) {
 						if (DevProperties.get().logSkippedPlugins) {
 							KubeJS.LOGGER.warn("Plugin " + line[0] + " does not have required mod " + line[i] + " loaded, skipping");
 						}

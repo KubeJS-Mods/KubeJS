@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.mojang.authlib.GameProfile;
-import dev.architectury.hooks.level.entity.PlayerHooks;
 import dev.latvian.mods.kubejs.item.ItemHandlerUtils;
 import dev.latvian.mods.kubejs.player.KubeJSInventoryListener;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
@@ -15,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import org.jetbrains.annotations.Nullable;
 
 @RemapPrefixForJS("kjs$")
@@ -46,7 +46,7 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 	}
 
 	default boolean kjs$isFake() {
-		return PlayerHooks.isFake(kjs$self());
+		return this instanceof FakePlayer;
 	}
 
 	@Override
