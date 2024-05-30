@@ -10,10 +10,8 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record SendDataFromServerPayload(String channel, CompoundTag data) implements CustomPacketPayload {
 	public static final StreamCodec<ByteBuf, SendDataFromServerPayload> STREAM_CODEC = StreamCodec.composite(
-		ByteBufCodecs.STRING_UTF8,
-		SendDataFromServerPayload::channel,
-		ByteBufCodecs.COMPOUND_TAG,
-		SendDataFromServerPayload::data,
+		ByteBufCodecs.STRING_UTF8, SendDataFromServerPayload::channel,
+		ByteBufCodecs.COMPOUND_TAG, SendDataFromServerPayload::data,
 		SendDataFromServerPayload::new
 	);
 

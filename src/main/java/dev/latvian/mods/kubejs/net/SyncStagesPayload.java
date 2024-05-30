@@ -11,8 +11,7 @@ import java.util.Collection;
 
 public record SyncStagesPayload(Collection<String> stages) implements CustomPacketPayload {
 	public static final StreamCodec<ByteBuf, SyncStagesPayload> STREAM_CODEC = StreamCodec.composite(
-		ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.STRING_UTF8),
-		SyncStagesPayload::stages,
+		ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.STRING_UTF8), SyncStagesPayload::stages,
 		SyncStagesPayload::new
 	);
 

@@ -14,12 +14,9 @@ import java.util.List;
 
 public record DisplayServerErrorsPayload(int scriptType, List<ConsoleLine> errors, List<ConsoleLine> warnings) implements CustomPacketPayload {
 	public static final StreamCodec<FriendlyByteBuf, DisplayServerErrorsPayload> STREAM_CODEC = StreamCodec.composite(
-		ByteBufCodecs.VAR_INT,
-		DisplayServerErrorsPayload::scriptType,
-		ByteBufCodecs.collection(ArrayList::new, ConsoleLine.STREAM_CODEC),
-		DisplayServerErrorsPayload::errors,
-		ByteBufCodecs.collection(ArrayList::new, ConsoleLine.STREAM_CODEC),
-		DisplayServerErrorsPayload::warnings,
+		ByteBufCodecs.VAR_INT, DisplayServerErrorsPayload::scriptType,
+		ByteBufCodecs.collection(ArrayList::new, ConsoleLine.STREAM_CODEC), DisplayServerErrorsPayload::errors,
+		ByteBufCodecs.collection(ArrayList::new, ConsoleLine.STREAM_CODEC), DisplayServerErrorsPayload::warnings,
 		DisplayServerErrorsPayload::new
 	);
 

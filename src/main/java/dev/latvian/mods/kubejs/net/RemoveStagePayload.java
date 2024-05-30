@@ -12,10 +12,8 @@ import java.util.UUID;
 
 public record RemoveStagePayload(UUID player, String stage) implements CustomPacketPayload {
 	public static final StreamCodec<ByteBuf, RemoveStagePayload> STREAM_CODEC = StreamCodec.composite(
-		UUIDUtil.STREAM_CODEC,
-		RemoveStagePayload::player,
-		ByteBufCodecs.STRING_UTF8,
-		RemoveStagePayload::stage,
+		UUIDUtil.STREAM_CODEC, RemoveStagePayload::player,
+		ByteBufCodecs.STRING_UTF8, RemoveStagePayload::stage,
 		RemoveStagePayload::new
 	);
 
