@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.fluid;
 
-import dev.architectury.core.block.ArchitecturyLiquidBlock;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockItemBuilder;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -24,7 +24,7 @@ public class FluidBlockBuilder extends BlockBuilder {
 
 	@Override
 	public Block createObject() {
-		return new ArchitecturyLiquidBlock(() -> Objects.requireNonNull(fluidBuilder.flowingFluid.get(), "Flowing Fluid is null!"), Block.Properties.ofFullCopy(Blocks.WATER).noCollission().strength(100.0F).noLootTable());
+		return new LiquidBlock(Objects.requireNonNull(fluidBuilder.flowingFluid.get(), "Flowing Fluid is null!"), Block.Properties.ofFullCopy(Blocks.WATER).noCollission().strength(100.0F).noLootTable());
 	}
 
 	@Override
