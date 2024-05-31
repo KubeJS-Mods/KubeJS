@@ -1,18 +1,12 @@
 package dev.latvian.mods.kubejs.client;
 
-import dev.architectury.hooks.forge.PackRepositoryHooksImpl;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
-import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
-import dev.latvian.mods.kubejs.fluid.FluidBuilder;
-import dev.latvian.mods.kubejs.item.ItemModelPropertiesKubeEvent;
 import dev.latvian.mods.kubejs.net.NetworkKubeEvent;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
@@ -20,7 +14,6 @@ import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -28,7 +21,6 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.neoforged.bus.api.IEventBus;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -39,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class KubeJSClient extends KubeJSCommon {
 	@Override
-	public void init(IEventBus bus) {
+	public void init() {
 		var mc = Minecraft.getInstance();
 		// You'd think that this is impossible, but not when you use runData gradle task
 		if (mc == null) {
@@ -48,7 +40,6 @@ public class KubeJSClient extends KubeJSCommon {
 
 		reloadClientScripts(mc);
 
-		new KubeJSClientEventHandler().init(bus);
 		mc.getResourcePackRepository().addPackFinder(new KubeJSResourcePackFinder());
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clientInit);
@@ -80,25 +71,6 @@ public class KubeJSClient extends KubeJSCommon {
 				}
 			}
 		}
-	}
-
-	@Override
-	public void clientSetup() {
-		ClientEvents.INIT.post(ScriptType.STARTUP, new ClientInitKubeEvent());
-		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesKubeEvent());
-
-		ClientEvents.ATLAS_SPRITE_REGISTRY.listenJava(ScriptType.CLIENT, TextureAtlas.LOCATION_BLOCKS, event -> {
-			var e = (AtlasSpriteRegistryKubeEvent) event;
-
-			for (var builder : RegistryInfo.FLUID) {
-				if (builder instanceof FluidBuilder b) {
-					e.register(b.stillTexture);
-					e.register(b.flowingTexture);
-				}
-			}
-
-			return null;
-		});
 	}
 
 	@Override

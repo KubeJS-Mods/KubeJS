@@ -68,7 +68,7 @@ public interface RecipeComponent<T> {
 	 * Defines the {@link ComponentRole role} of this component.
 	 * <p>
 	 * This is used during input / output replacement to determine which components are eligible for replacement,
-	 * as well as populating the {@link KubeRecipe#inputValues} and {@link KubeRecipe#outputValues} arrays.
+	 * as well as populating the {@link KubeRecipe#inputValues()} and {@link KubeRecipe#outputValues()} arrays.
 	 *
 	 * @return The role of this component
 	 */

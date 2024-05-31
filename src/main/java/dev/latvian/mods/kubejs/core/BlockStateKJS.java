@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 @RemapPrefixForJS("kjs$")
-public interface BlockStateKJS extends WithRegistryKeyKJS<Block> {
+public interface BlockStateKJS extends RegistryObjectKJS<Block> {
 	@Override
 	default RegistryInfo<Block> kjs$getKubeRegistry() {
 		return RegistryInfo.BLOCK;
@@ -22,6 +22,11 @@ public interface BlockStateKJS extends WithRegistryKeyKJS<Block> {
 	@Override
 	default ResourceKey<Block> kjs$getRegistryKey() {
 		return ((BlockState) this).getBlock().kjs$getRegistryKey();
+	}
+
+	@Override
+	default String kjs$getId() {
+		return ((BlockState) this).getBlock().kjs$getId();
 	}
 
 	default void kjs$setDestroySpeed(float v) {

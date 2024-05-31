@@ -2,8 +2,11 @@ package dev.latvian.mods.kubejs.net;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
+@EventBusSubscriber(modid = KubeJS.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public interface KubeJSNet {
 	private static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> type(String id) {
 		return new CustomPacketPayload.Type<>(KubeJS.id(id));
@@ -21,6 +24,7 @@ public interface KubeJSNet {
 	CustomPacketPayload.Type<DisplayServerErrorsPayload> DISPLAY_SERVER_ERRORS = type("display_server_errors");
 	CustomPacketPayload.Type<DisplayClientErrorsPayload> DISPLAY_CLIENT_ERRORS = type("display_client_errors");
 
+	@SubscribeEvent
 	static void register(RegisterPayloadHandlersEvent event) {
 		var reg = event.registrar("1");
 

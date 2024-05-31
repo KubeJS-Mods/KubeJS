@@ -69,7 +69,7 @@ public class KubeJSPlugins {
 						}
 					} else if (!ModList.get().isLoaded(line[i])) {
 						if (DevProperties.get().logSkippedPlugins) {
-							KubeJS.LOGGER.warn("Plugin " + line[0] + " does not have required mod " + line[i] + " loaded, skipping");
+							KubeJS.LOGGER.warn("Plugin " + line[0] + " does not have required mod '" + line[i] + "' loaded, skipping");
 						}
 
 						return Stream.empty();

@@ -23,8 +23,6 @@
 		"DyeColorMixin",
 		"EntityMixin",
 		"EntityTypeMixin",
-		"EventHandlerBridgeMixin",
-		"EventHandlerInvoker",
 		"FireworkRocketEntityMixin",
 		"FluidMixin",
 		"GameRulesMixin",

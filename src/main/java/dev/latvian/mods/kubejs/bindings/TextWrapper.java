@@ -332,6 +332,10 @@ public interface TextWrapper {
 		return of(character).kjs$font(KubeJS.ICONS_FONT);
 	}
 
+	static MutableComponent smallSpace() {
+		return icon(".");
+	}
+
 	static MutableComponent logoIcon() {
 		return icon("K");
 	}
@@ -340,7 +344,27 @@ public interface TextWrapper {
 		return icon("I");
 	}
 
+	static MutableComponent info(Component text) {
+		return Component.empty().append(infoIcon()).append(smallSpace()).append(text);
+	}
+
 	static MutableComponent warnIcon() {
 		return icon("W");
+	}
+
+	static MutableComponent warn(Component text) {
+		return Component.empty().append(warnIcon()).append(smallSpace()).append(text);
+	}
+
+	static MutableComponent yesIcon() {
+		return icon("Y");
+	}
+
+	static MutableComponent noIcon() {
+		return icon("N");
+	}
+
+	static MutableComponent yesIcon(boolean yes) {
+		return icon(yes ? "Y" : "N");
 	}
 }

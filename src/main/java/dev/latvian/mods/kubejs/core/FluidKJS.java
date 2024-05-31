@@ -5,7 +5,7 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.level.material.Fluid;
 
 @RemapPrefixForJS("kjs$")
-public interface FluidKJS extends WithRegistryKeyKJS<Fluid> {
+public interface FluidKJS extends RegistryObjectKJS<Fluid> {
 	default Fluid kjs$self() {
 		return (Fluid) this;
 	}

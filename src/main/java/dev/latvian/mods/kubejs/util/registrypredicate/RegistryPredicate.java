@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.util.registrypredicate;
 
 import com.google.gson.JsonPrimitive;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.rhino.BaseFunction;
@@ -10,6 +10,8 @@ import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.regex.Pattern;
 
 @FunctionalInterface
 public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	static RegistryPredicate<?> of(Context cx, Object from, TypeInfo target) {
 		if (from == null) {
 			return EntireRegistryPredicate.FALSE;
@@ -33,11 +36,11 @@ public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
 			} else if (s.equals("-")) {
 				return EntireRegistryPredicate.FALSE;
 			} else if (s.startsWith("#")) {
-				var reg = RegistryInfo.ofClass(target.param(0).asClass());
+				var reg = RegistryType.ofType(target.param(0));
 				var tag = ID.mc(s.substring(1));
 
 				if (reg != null) {
-					return new RegistryTagKeyPredicate<>(TagKey.create(reg.key, tag));
+					return new RegistryTagKeyPredicate<>(TagKey.create(reg.key(), tag));
 				} else {
 					return new RegistryTagIDPredicate<>(tag);
 				}
@@ -49,14 +52,22 @@ public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
 				if (pattern != null) {
 					return new RegistryRegExpPredicate<>(pattern);
 				} else {
-					var reg = RegistryInfo.ofClass(target.param(0).asClass());
+					var reg = RegistryType.ofType(target.param(0));
 					var id = ID.mc(s);
 
 					if (reg != null) {
-						return new RegistryHolderPredicate<>(reg.getHolder(id));
-					} else {
-						return new RegistryIDPredicate<>(id);
+						var registry = BuiltInRegistries.REGISTRY.get((ResourceKey) reg.key());
+
+						if (registry != null) {
+							var opt = registry.getHolder(id);
+
+							if (opt.isPresent()) {
+								return new RegistryHolderPredicate<>((Holder) opt.get());
+							}
+						}
 					}
+
+					return new RegistryIDPredicate<>(id);
 				}
 			}
 		} else if (from instanceof BaseFunction) {

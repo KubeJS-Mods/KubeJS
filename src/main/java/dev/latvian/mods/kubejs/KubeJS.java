@@ -9,11 +9,11 @@ import dev.latvian.mods.kubejs.ingredient.KubeJSIngredients;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallbackForge;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabKubeEvent;
 import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
-import dev.latvian.mods.kubejs.neoforge.KubeJSNeoForgeClient;
-import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.registry.BuilderTypeRegistryHandler;
+import dev.latvian.mods.kubejs.registry.RegistryKubeEvent;
+import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptFileInfo;
@@ -22,14 +22,12 @@ import dev.latvian.mods.kubejs.script.ScriptPack;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
-import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -39,6 +37,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
@@ -46,7 +45,6 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.slf4j.Logger;
@@ -65,9 +63,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Mod(KubeJS.MOD_ID)
+@EventBusSubscriber(modid = KubeJS.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class KubeJS {
 	public static final String MOD_ID = "kubejs";
 	public static final String MOD_NAME = "KubeJS";
@@ -76,13 +74,8 @@ public class KubeJS {
 	public static final String MC_VERSION_STRING = "1.20.6";
 	public static String QUERY;
 	public static final ResourceLocation ICONS_FONT = id("icons");
-	public static final Component NAME_COMPONENT = Component.empty().append(Component.literal("K").withStyle(Style.EMPTY.withFont(ICONS_FONT))).append(" ").append(Component.literal(MOD_NAME));
+	public static final Component NAME_COMPONENT = Component.empty().append(Component.literal("K.").kjs$font(ICONS_FONT).kjs$white()).append(Component.literal(MOD_NAME));
 	public static String VERSION = "0";
-	private static final ThreadLocal<IEventBus> BUS = new ThreadLocal<>();
-
-	public static Optional<IEventBus> eventBus() {
-		return Optional.ofNullable(BUS.get());
-	}
 
 	public static ResourceLocation id(String path) {
 		return new ResourceLocation(MOD_ID, path);
@@ -131,10 +124,6 @@ public class KubeJS {
 			}
 		}
 
-		bus.addListener(KubeJSNet::register);
-
-		BUS.set(bus);
-
 		//noinspection removal
 		PROXY = DistExecutor.safeRunForDist(() -> KubeJSClient::new, () -> KubeJSCommon::new);
 
@@ -143,6 +132,9 @@ public class KubeJS {
 			// Required to be called this way because ConsoleJS class hasn't been initialized yet
 			ScriptType.STARTUP.console.setCapturingErrors(true);
 		}
+
+		LOGGER.info("Loading vanilla registries...");
+		RegistryType.init();
 
 		var pluginTimer = Stopwatch.createStarted();
 		LOGGER.info("Looking for KubeJS plugins...");
@@ -153,6 +145,7 @@ public class KubeJS {
 		LOGGER.info("Done in " + pluginTimer.stop());
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);
+		KubeJSPlugins.forEachPlugin(new BuilderTypeRegistryHandler(), KubeJSPlugin::registerBuilderTypes);
 
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP);
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT);
@@ -161,12 +154,10 @@ public class KubeJS {
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::initStartup);
 
-		PROXY.init(bus);
+		PROXY.init();
 
-		for (var extraId : StartupEvents.REGISTRY.findUniqueExtraIds(ScriptType.STARTUP)) {
-			if (extraId instanceof ResourceKey<?> key) {
-				RegistryInfo.of((ResourceKey) key).fireRegistryEvent();
-			}
+		for (var key : StartupEvents.REGISTRY.findUniqueExtraIds(ScriptType.STARTUP)) {
+			StartupEvents.REGISTRY.post(new RegistryKubeEvent<>((ResourceKey) key), key);
 		}
 
 		GeneratedResourcePack.scanForInvalidFiles("kubejs/assets/", KubeJSPaths.ASSETS);
@@ -175,17 +166,15 @@ public class KubeJS {
 		if (CommonProperties.get().serverOnly) {
 			// FIXME ModLoadingContext.get().registerExtensionPoint(DisplayTest.class, () -> new DisplayTest(() -> DisplayTest.IGNORESERVERONLY, (a, b) -> true));
 		} else {
+			// See NeoForgeRegistriesSetup.VANILLA_SYNC_REGISTRIES
 			NeoForgeMod.enableMilkFluid();
 			KubeJSIngredients.REGISTRY.register(bus);
-			KubeJSCreativeTabs.REGISTRY.register(bus);
 			// KubeJSComponents.REGISTRY.register(bus);
 			KubeJSRecipeSerializers.REGISTRY.register(bus);
 			KubeJSMenus.REGISTRY.register(bus);
 		}
 
-		if (dist == Dist.CLIENT) {
-			new KubeJSNeoForgeClient(bus);
-		}
+		KubeJSCreativeTabs.REGISTRY.register(bus);
 
 		StartupEvents.INIT.post(ScriptType.STARTUP, KubeStartupEvent.BASIC);
 		// KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);
@@ -217,12 +206,6 @@ public class KubeJS {
 		}
 
 		return path;
-	}
-
-	@SubscribeEvent(priority = EventPriority.LOW)
-	public static void initRegistries(RegisterEvent event) {
-		var info = RegistryInfo.of((ResourceKey) event.getRegistryKey());
-		info.registerObjects((id, supplier) -> event.register(Cast.to(info.key), id, supplier));
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOW)

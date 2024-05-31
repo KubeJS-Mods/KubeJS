@@ -45,7 +45,7 @@ public class ServerScriptManager extends ScriptManager {
 	}
 
 	public final ReloadableServerResources resources;
-	public final HolderLookup.Provider registries;
+	public final RegistryAccess registries;
 	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
 
 	public ServerScriptManager(ReloadableServerResources resources, RegistryAccess registryAccess) {
@@ -66,7 +66,7 @@ public class ServerScriptManager extends ScriptManager {
 	}
 
 	@Override
-	public HolderLookup.Provider getRegistries() {
+	public RegistryAccess getRegistries() {
 		return registries;
 	}
 

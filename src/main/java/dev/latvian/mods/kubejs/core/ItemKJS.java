@@ -11,7 +11,7 @@ import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 
 @RemapPrefixForJS("kjs$")
-public interface ItemKJS extends IngredientSupplierKJS, WithRegistryKeyKJS<Item> {
+public interface ItemKJS extends IngredientSupplierKJS, RegistryObjectKJS<Item> {
 	@RemapForJS("getItem")
 	default Item kjs$self() {
 		return (Item) this;

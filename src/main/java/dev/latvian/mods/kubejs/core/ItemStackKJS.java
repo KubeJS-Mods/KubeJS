@@ -13,21 +13,22 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonSerializable;
 import dev.latvian.mods.kubejs.util.NBTSerializable;
-import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import dev.latvian.mods.rhino.util.ToStringJS;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -36,14 +37,18 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 @RemapPrefixForJS("kjs$")
-public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSerializable, IngredientSupplierKJS, ToStringJS {
+public interface ItemStackKJS extends
+	SpecialEquality,
+	NBTSerializable,
+	JsonSerializable,
+	IngredientSupplierKJS,
+	ToStringJS,
+	RegistryObjectKJS<Item> {
 	default ItemStack kjs$self() {
 		return (ItemStack) this;
 	}
@@ -71,20 +76,29 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		return ItemStack.isSameItemSameComponents(self, stack);
 	}
 
+	@Override
+	default RegistryInfo<Item> kjs$getKubeRegistry() {
+		return RegistryInfo.ITEM;
+	}
+
+	@Override
 	default ResourceLocation kjs$getIdLocation() {
 		return kjs$self().getItem().kjs$getIdLocation();
 	}
 
+	@Override
+	default Holder<Item> kjs$asHolder() {
+		return kjs$self().getItem().kjs$asHolder();
+	}
+
+	@Override
+	default ResourceKey<Item> kjs$getRegistryKey() {
+		return kjs$self().getItem().kjs$getRegistryKey();
+	}
+
+	@Override
 	default String kjs$getId() {
 		return kjs$self().getItem().kjs$getId();
-	}
-
-	default Collection<ResourceLocation> kjs$getTags(Context cx) {
-		return Tags.byItem(cx, kjs$self().getItem()).map(TagKey::location).collect(Collectors.toSet());
-	}
-
-	default boolean kjs$hasTag(ResourceLocation tag) {
-		return kjs$self().is(Tags.item(tag));
 	}
 
 	default boolean kjs$isBlock() {
@@ -164,6 +178,7 @@ public interface ItemStackKJS extends SpecialEquality, NBTSerializable, JsonSeri
 		return is;
 	}
 
+	@Override
 	default String kjs$getMod() {
 		return kjs$self().getItem().kjs$getMod();
 	}

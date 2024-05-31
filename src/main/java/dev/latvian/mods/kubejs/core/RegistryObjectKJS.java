@@ -2,13 +2,17 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+
+import java.util.Collection;
 
 @RemapPrefixForJS("kjs$")
-public interface WithRegistryKeyKJS<T> {
+public interface RegistryObjectKJS<T> {
 	default RegistryInfo<T> kjs$getKubeRegistry() {
 		throw new NoMixinException();
 	}
@@ -36,5 +40,13 @@ public interface WithRegistryKeyKJS<T> {
 
 	default String kjs$getMod() {
 		return kjs$getIdLocation().getNamespace();
+	}
+
+	default Collection<ResourceLocation> kjs$getTags(Context cx) {
+		return kjs$asHolder().tags().map(TagKey::location).toList();
+	}
+
+	default boolean kjs$hasTag(ResourceLocation tag) {
+		return kjs$asHolder().is(TagKey.create(kjs$getKubeRegistry().key, tag));
 	}
 }

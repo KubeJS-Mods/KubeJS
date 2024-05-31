@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 
 import java.util.List;
 
@@ -11,7 +12,8 @@ import java.util.List;
 public class DebugInfoKubeEvent extends ClientKubeEvent {
 	private final List<String> lines;
 
-	public DebugInfoKubeEvent(List<String> l) {
+	public DebugInfoKubeEvent(LocalPlayer player, List<String> l) {
+		super(player);
 		lines = l;
 	}
 

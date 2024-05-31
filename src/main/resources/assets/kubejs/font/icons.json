@@ -3,9 +3,14 @@
 		{
 			"type": "bitmap",
 			"file": "kubejs:font/icons/k.png",
-			"ascent": 9,
-			"height": 10,
+			"ascent": 7,
 			"chars": ["K"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/small_space.png",
+			"ascent": 7,
+			"chars": ["."]
 		},
 		{
 			"type": "bitmap",
@@ -18,6 +23,18 @@
 			"file": "kubejs:font/icons/w.png",
 			"ascent": 7,
 			"chars": ["W"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/y.png",
+			"ascent": 7,
+			"chars": ["Y"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/n.png",
+			"ascent": 7,
+			"chars": ["N"]
 		}
 	]
 }

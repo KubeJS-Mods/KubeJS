@@ -19,6 +19,7 @@ import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -148,13 +149,13 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Override
-	public void createAdditionalObjects() {
+	public void createAdditionalObjects(AdditionalObjectRegistry registry) {
 		if (itemBuilder != null) {
-			RegistryInfo.ITEM.addBuilder(itemBuilder);
+			registry.add(RegistryInfo.ITEM, itemBuilder);
 		}
 
 		if (blockEntityInfo != null) {
-			RegistryInfo.BLOCK_ENTITY_TYPE.addBuilder(new BlockEntityBuilder(id, blockEntityInfo));
+			registry.add(RegistryInfo.BLOCK_ENTITY_TYPE, new BlockEntityBuilder(id, blockEntityInfo));
 		}
 	}
 

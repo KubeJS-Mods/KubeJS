@@ -1,17 +1,11 @@
 package dev.latvian.mods.kubejs;
 
-import dev.latvian.mods.kubejs.core.WithRegistryKeyKJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.valueproviders.ClampedInt;
 import net.minecraft.util.valueproviders.ClampedNormalInt;
 import net.minecraft.util.valueproviders.ConstantInt;
@@ -31,48 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface KubeJSTypeWrappers {
-	static Holder<?> holderOf(Context cx, Object from, TypeInfo target) {
-		if (from == null) {
-			return null;
-		} else if (from instanceof Holder<?> h) {
-			return h;
-		} else if (from instanceof WithRegistryKeyKJS<?> w) {
-			return w.kjs$asHolder();
-		}
-
-		var reg = RegistryInfo.ofClass(target.param(0).asClass());
-
-		if (reg != null) {
-			return reg.getHolder(ID.mc(from));
-		}
-
-		return new Holder.Direct<>(from);
-	}
-
-	static ResourceKey<?> resourceKeyOf(Context cx, Object from, TypeInfo target) {
-		if (from == null) {
-			return null;
-		} else if (from instanceof ResourceKey<?> k) {
-			return k;
-		} else if (from instanceof WithRegistryKeyKJS<?> w) {
-			return w.kjs$getRegistryKey();
-		}
-
-		var cl = target.param(0).asClass();
-
-		if (cl == ResourceKey.class) {
-			return ResourceKey.createRegistryKey(ID.mc(from));
-		}
-
-		var reg = RegistryInfo.ofClass(cl);
-
-		if (reg != null) {
-			return ResourceKey.create(reg.key, ID.mc(from));
-		}
-
-		throw new IllegalArgumentException("Can't parse " + from + " as ResourceKey<?>!");
-	}
-
 	@SuppressWarnings("unchecked")
 	static IntProvider intProviderOf(Context cx, Object o) {
 		if (o instanceof Number n) {

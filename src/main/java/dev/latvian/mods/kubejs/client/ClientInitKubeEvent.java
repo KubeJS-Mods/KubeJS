@@ -12,6 +12,10 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ClientInitKubeEvent extends ClientKubeEvent {
+	public ClientInitKubeEvent() {
+		super(null);
+	}
+
 	public void registerBlockEntityRenderer(BlockEntityType<?> type, BlockEntityRendererProvider renderer) {
 		BlockEntityRendererRegistryImpl.register(type, renderer);
 	}

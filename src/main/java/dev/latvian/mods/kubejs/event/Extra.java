@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.event;
 
-import dev.latvian.mods.kubejs.core.WithRegistryKeyKJS;
+import dev.latvian.mods.kubejs.core.RegistryObjectKJS;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -57,7 +57,7 @@ public class Extra<T> {
 			return null;
 		} else if (object instanceof ResourceKey<?> rl) {
 			return rl;
-		} else if (object instanceof WithRegistryKeyKJS<?> wrk) {
+		} else if (object instanceof RegistryObjectKJS<?> wrk) {
 			return wrk.kjs$getRegistryKey();
 		} else if (object instanceof ResourceLocation rl) {
 			return ResourceKey.create(registry, rl);

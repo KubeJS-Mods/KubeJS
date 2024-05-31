@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.core.WithRegistryKeyKJS;
+import dev.latvian.mods.kubejs.core.RegistryObjectKJS;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
@@ -63,7 +63,7 @@ public interface ID {
 			return key.location();
 		} else if (o instanceof Holder<?> holder) {
 			return holder.unwrapKey().get().location();
-		} else if (o instanceof WithRegistryKeyKJS<?> key) {
+		} else if (o instanceof RegistryObjectKJS<?> key) {
 			return key.kjs$getIdLocation();
 		}
 

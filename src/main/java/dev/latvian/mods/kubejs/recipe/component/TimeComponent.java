@@ -15,14 +15,12 @@ public record TimeComponent(String name, long scale) implements RecipeComponent<
 	public static final TimeComponent SECONDS = new TimeComponent("seconds", 20L);
 	public static final TimeComponent MINUTES = new TimeComponent("minutes", 1200L);
 
-	public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(TypeDescJS.object()
-		.add("name", TypeDescJS.STRING, true)
-		.add("scale", TypeDescJS.NUMBER),
-		(cx, scope, args) -> {
-			var name = String.valueOf(Wrapper.unwrapped(args.getOrDefault("name", "unnamed")));
-			var scale = (long) ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("scale", 1L)));
-			return new TimeComponent(name, scale);
-		});
+	// public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(JSObjectTypeInfo.of("name", TypeInfo.STRING, "scale", TypeInfo.NUMBER), (cx, scope, args) -> {
+	public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(TypeDescJS.object().add("name", TypeDescJS.STRING, true).add("scale", TypeDescJS.NUMBER), (cx, scope, args) -> {
+		var name = String.valueOf(Wrapper.unwrapped(args.getOrDefault("name", "unnamed")));
+		var scale = (long) ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("scale", 1L)));
+		return new TimeComponent(name, scale);
+	});
 
 	@Override
 	public String componentType() {

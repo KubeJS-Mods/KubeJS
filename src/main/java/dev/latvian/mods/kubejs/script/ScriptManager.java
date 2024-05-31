@@ -2,14 +2,11 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.LogType;
-import net.minecraft.core.HolderLookup;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.damagesource.DamageSources;
@@ -39,8 +36,8 @@ public class ScriptManager {
 		classFilter = KubeJSPlugins.createClassFilter(scriptType);
 	}
 
-	public HolderLookup.Provider getRegistries() {
-		return RegistryAccess.EMPTY;
+	public RegistryAccess getRegistries() {
+		return UtilsJS.staticRegistries;
 	}
 
 	public DamageSources getDamageSources() {
@@ -166,18 +163,6 @@ public class ScriptManager {
 
 		for (var plugin : KubeJSPlugins.getAll()) {
 			plugin.registerTypeWrappers(typeWrappers);
-		}
-
-		for (var reg : BuiltInRegistries.REGISTRY.registryKeySet()) {
-			var info = RegistryInfo.of((ResourceKey) reg);
-
-			if (info.autoWrap && info.objectBaseClass != Object.class && info.objectBaseClass != null) {
-				try {
-					typeWrappers.register(info.objectBaseClass, info);
-				} catch (IllegalArgumentException ignored) {
-					scriptType.console.info("Skipped registry type wrapper for " + info.key.location());
-				}
-			}
 		}
 
 		var i = 0;

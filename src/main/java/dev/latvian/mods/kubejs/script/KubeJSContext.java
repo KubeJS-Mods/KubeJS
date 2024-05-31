@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.script;
 
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.rhino.Context;
@@ -60,15 +61,88 @@ public class KubeJSContext extends Context {
 		return kjsFactory.manager.getDamageSources();
 	}
 
-	@Override
-	protected Object internalJsToJava(Object from, TypeInfo target) {
-		var w = super.internalJsToJava(from, target);
-
-		if (from == w && from != null && target != null) {
-			// registries
+	/*
+	static Holder<?> holderOf(Context cx, Object from, TypeInfo target) {
+		if (from == null) {
+			return null;
+		} else if (from instanceof Holder<?> h) {
+			return h;
+		} else if (from instanceof RegistryObjectKJS<?> w) {
+			return w.kjs$asHolder();
 		}
 
-		return w;
+		var reg = RegistryInfo.ofClass(target.param(0).asClass());
+
+		if (reg != null) {
+			return reg.getHolder(ID.mc(from));
+		}
+
+		return new Holder.Direct<>(from);
+	}
+
+	static ResourceKey<?> resourceKeyOf(Context cx, Object from, TypeInfo target) {
+		if (from == null) {
+			return null;
+		} else if (from instanceof ResourceKey<?> k) {
+			return k;
+		} else if (from instanceof RegistryObjectKJS<?> w) {
+			return w.kjs$getRegistryKey();
+		}
+
+		var cl = target.param(0).asClass();
+
+		if (cl == ResourceKey.class) {
+			return ResourceKey.createRegistryKey(ID.mc(from));
+		}
+
+		var reg = RegistryInfo.ofClass(cl);
+
+		if (reg != null) {
+			return ResourceKey.create(reg.key, ID.mc(from));
+		}
+
+		throw new IllegalArgumentException("Can't parse " + from + " as ResourceKey<?>!");
+	}
+	 */
+
+	@Override
+	protected Object internalJsToJavaLast(Object from, TypeInfo target) {
+		// handle ResourceKey, Holder, TagKey, registry object
+
+		var reg = RegistryType.allOfClass(target.asClass());
+
+		if (!reg.isEmpty()) {
+			throw new RuntimeException("AAAAAAA");
+
+			/*
+			var id = ID.mc(o);
+			var value = getValue(id);
+
+			if (value == null) {
+				var npe = new NullPointerException("No such element with id %s in registry %s!".formatted(id, this));
+				ConsoleJS.getCurrent(cx).error("Error while wrapping registry element type!", npe);
+				throw npe;
+			}
+			 */
+
+			/*
+			@Override
+			@SuppressWarnings({"unchecked", "rawtypes"})
+			public T wrap(Context cx, Object from, TypeInfo target) {
+				if (from instanceof RegistryObjectKJS k && k.kjs$getKubeRegistry().key == key || baseClass.isInstance(from)) {
+					return (T) from;
+				}
+
+				if (from instanceof CharSequence || from instanceof ResourceLocation || from instanceof ResourceKey || from instanceof RegistryObjectKJS) {
+					return RegistryInfo.of(key).getValue(ID.mc(from));
+				}
+
+				return (T) from;
+			}
+			 */
+		}
+
+		return from;
 	}
 
 	public NativeJavaClass loadJavaClass(String name, boolean error) {

@@ -1,34 +1,55 @@
 package dev.latvian.mods.kubejs.neoforge;
 
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
+import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import dev.latvian.mods.kubejs.client.AtlasSpriteRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.BlockTintFunctionWrapper;
+import dev.latvian.mods.kubejs.client.ClientInitKubeEvent;
 import dev.latvian.mods.kubejs.client.ItemTintFunctionWrapper;
-import dev.latvian.mods.kubejs.client.KubeJSClientEventHandler;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
+import dev.latvian.mods.kubejs.gui.KubeJSMenus;
+import dev.latvian.mods.kubejs.gui.KubeJSScreen;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import dev.latvian.mods.kubejs.item.ItemModelPropertiesKubeEvent;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
+@EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class KubeJSNeoForgeClient {
-	public KubeJSNeoForgeClient(IEventBus bus) {
-		bus.addListener(EventPriority.LOW, this::setupClient);
-		bus.addListener(this::blockColors);
-		bus.addListener(this::itemColors);
-		//bus.addListener(this::textureStitch);
-		NeoForge.EVENT_BUS.addListener(EventPriority.LOW, this::openScreenEvent);
+	@SubscribeEvent(priority = EventPriority.LOW)
+	public static void setupClient(FMLClientSetupEvent event) {
+		event.enqueueWork(KubeJSNeoForgeClient::setupClient0);
 	}
 
-	private void setupClient(FMLClientSetupEvent event) {
-		KubeJS.PROXY.clientSetup();
+	private static void setupClient0() {
+		ClientEvents.INIT.post(ScriptType.STARTUP, new ClientInitKubeEvent());
+		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesKubeEvent());
+
+		ClientEvents.ATLAS_SPRITE_REGISTRY.listenJava(ScriptType.CLIENT, TextureAtlas.LOCATION_BLOCKS, event -> {
+			var e = (AtlasSpriteRegistryKubeEvent) event;
+
+			for (var builder : RegistryInfo.FLUID) {
+				if (builder instanceof FluidBuilder b) {
+					e.register(b.stillTexture);
+					e.register(b.flowingTexture);
+				}
+			}
+
+			return null;
+		});
 
 		for (var builder : RegistryInfo.BLOCK) {
 			if (builder instanceof BlockBuilder b) {
@@ -60,7 +81,8 @@ public class KubeJSNeoForgeClient {
 		}
 	}
 
-	private void blockColors(RegisterColorHandlersEvent.Block event) {
+	@SubscribeEvent
+	public static void blockColors(RegisterColorHandlersEvent.Block event) {
 		for (var builder : RegistryInfo.BLOCK) {
 			if (builder instanceof BlockBuilder b && b.tint != null) {
 				event.register(new BlockTintFunctionWrapper(b.tint), b.get());
@@ -68,7 +90,8 @@ public class KubeJSNeoForgeClient {
 		}
 	}
 
-	private void itemColors(RegisterColorHandlersEvent.Item event) {
+	@SubscribeEvent
+	public static void itemColors(RegisterColorHandlersEvent.Item event) {
 		for (var builder : RegistryInfo.ITEM) {
 			if (builder instanceof ItemBuilder b && b.tint != null) {
 				event.register(new ItemTintFunctionWrapper(b.tint), b.get());
@@ -80,16 +103,8 @@ public class KubeJSNeoForgeClient {
 		}
 	}
 
-	// FIXME: implement
-	/*private void textureStitch(TextureStitchEvent.Pre event) {
-		ClientEvents.ATLAS_SPRITE_REGISTRY.post(new AtlasSpriteRegistryEventJS(event::addSprite), event.getAtlas().location());
-	}*/
-
-	private void openScreenEvent(ScreenEvent.Opening event) {
-		var s = KubeJSClientEventHandler.setScreen(event.getScreen());
-
-		if (s != null && event.getScreen() != s) {
-			event.setNewScreen(s);
-		}
+	@SubscribeEvent
+	public static void registerMenuScreens(RegisterMenuScreensEvent event) {
+		event.register(KubeJSMenus.MENU.get(), KubeJSScreen::new);
 	}
 }

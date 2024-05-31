@@ -103,7 +103,7 @@ import dev.latvian.mods.kubejs.recipe.schema.minecraft.CookingRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingTransformRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingTrimRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.StonecuttingRecipeSchema;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -129,11 +129,11 @@ import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
 import dev.latvian.mods.unit.Unit;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -142,7 +142,6 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
@@ -192,55 +191,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	public static final HashMap<String, Object> GLOBAL = new HashMap<>();
 
 	@Override
-	public void init() {
-		RegistryInfo.SOUND_EVENT.addType("basic", SoundEventBuilder.class, SoundEventBuilder::new);
-
-		RegistryInfo.BLOCK.addType("basic", BasicBlockJS.Builder.class, BasicBlockJS.Builder::new);
-		RegistryInfo.BLOCK.addType("detector", DetectorBlock.Builder.class, DetectorBlock.Builder::new);
-		RegistryInfo.BLOCK.addType("slab", SlabBlockBuilder.class, SlabBlockBuilder::new);
-		RegistryInfo.BLOCK.addType("stairs", StairBlockBuilder.class, StairBlockBuilder::new);
-		RegistryInfo.BLOCK.addType("fence", FenceBlockBuilder.class, FenceBlockBuilder::new);
-		RegistryInfo.BLOCK.addType("wall", WallBlockBuilder.class, WallBlockBuilder::new);
-		RegistryInfo.BLOCK.addType("fence_gate", FenceGateBlockBuilder.class, FenceGateBlockBuilder::new);
-		RegistryInfo.BLOCK.addType("pressure_plate", PressurePlateBlockBuilder.class, PressurePlateBlockBuilder::new);
-		RegistryInfo.BLOCK.addType("button", ButtonBlockBuilder.class, ButtonBlockBuilder::new);
-		RegistryInfo.BLOCK.addType("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
-		RegistryInfo.BLOCK.addType("crop", CropBlockBuilder.class, CropBlockBuilder::new);
-		RegistryInfo.BLOCK.addType("cardinal", HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);
-		RegistryInfo.BLOCK.addType("carpet", CarpetBlockBuilder.class, CarpetBlockBuilder::new);
-
-		RegistryInfo.ITEM.addType("basic", BasicItemJS.Builder.class, BasicItemJS.Builder::new);
-		RegistryInfo.ITEM.addType("sword", SwordItemBuilder.class, SwordItemBuilder::new);
-		RegistryInfo.ITEM.addType("pickaxe", DiggerItemBuilder.Pickaxe.class, DiggerItemBuilder.Pickaxe::new);
-		RegistryInfo.ITEM.addType("axe", DiggerItemBuilder.Axe.class, DiggerItemBuilder.Axe::new);
-		RegistryInfo.ITEM.addType("shovel", DiggerItemBuilder.Shovel.class, DiggerItemBuilder.Shovel::new);
-		RegistryInfo.ITEM.addType("hoe", DiggerItemBuilder.Hoe.class, DiggerItemBuilder.Hoe::new);
-		RegistryInfo.ITEM.addType("shears", ShearsItemBuilder.class, ShearsItemBuilder::new);
-		RegistryInfo.ITEM.addType("helmet", ArmorItemBuilder.Helmet.class, ArmorItemBuilder.Helmet::new);
-		RegistryInfo.ITEM.addType("chestplate", ArmorItemBuilder.Chestplate.class, ArmorItemBuilder.Chestplate::new);
-		RegistryInfo.ITEM.addType("leggings", ArmorItemBuilder.Leggings.class, ArmorItemBuilder.Leggings::new);
-		RegistryInfo.ITEM.addType("boots", ArmorItemBuilder.Boots.class, ArmorItemBuilder.Boots::new);
-		RegistryInfo.ITEM.addType("animal_armor", ArmorItemBuilder.AnimalArmor.class, ArmorItemBuilder.AnimalArmor::new);
-		RegistryInfo.ITEM.addType("music_disc", RecordItemJS.Builder.class, RecordItemJS.Builder::new);
-		RegistryInfo.ITEM.addType("smithing_template", SmithingTemplateItemBuilder.class, SmithingTemplateItemBuilder::new);
-
-		RegistryInfo.FLUID.addType("basic", FluidBuilder.class, FluidBuilder::new);
-		RegistryInfo.ENCHANTMENT.addType("basic", EnchantmentBuilder.class, EnchantmentBuilder::new);
-		RegistryInfo.MOB_EFFECT.addType("basic", BasicMobEffect.Builder.class, BasicMobEffect.Builder::new);
-		// ENTITY_TYPE
-		// BLOCK_ENTITY_TYPE
-		RegistryInfo.POTION.addType("basic", PotionBuilder.class, PotionBuilder::new);
-		RegistryInfo.PARTICLE_TYPE.addType("basic", ParticleTypeBuilder.class, ParticleTypeBuilder::new);
-		RegistryInfo.PAINTING_VARIANT.addType("basic", PaintingVariantBuilder.class, PaintingVariantBuilder::new);
-		RegistryInfo.CUSTOM_STAT.addType("basic", CustomStatBuilder.class, CustomStatBuilder::new);
-		RegistryInfo.POINT_OF_INTEREST_TYPE.addType("basic", PoiTypeBuilder.class, PoiTypeBuilder::new);
-		RegistryInfo.VILLAGER_TYPE.addType("basic", VillagerTypeBuilder.class, VillagerTypeBuilder::new);
-		RegistryInfo.VILLAGER_PROFESSION.addType("basic", VillagerProfessionBuilder.class, VillagerProfessionBuilder::new);
-		RegistryInfo.CREATIVE_MODE_TAB.addType("basic", CreativeTabBuilder.class, CreativeTabBuilder::new);
-		RegistryInfo.ARMOR_MATERIAL.addType("basic", ArmorMaterialBuilder.class, ArmorMaterialBuilder::new);
-	}
-
-	@Override
 	public void initStartup() {
 		ItemEvents.TOOL_TIER_REGISTRY.post(ScriptType.STARTUP, new ItemToolTierRegistryKubeEvent(ItemBuilder.TOOL_TIERS));
 		KubeJSRuleTests.init();
@@ -250,6 +200,59 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 			// types.postEvent();
 		}
 		 */
+	}
+
+	@Override
+	public void registerBuilderTypes(BuilderTypeRegistry registry) {
+		registry.addDefault(Registries.SOUND_EVENT, SoundEventBuilder.class, SoundEventBuilder::new);
+
+		registry.addDefault(Registries.BLOCK, BasicBlockJS.Builder.class, BasicBlockJS.Builder::new);
+
+		registry.of(Registries.BLOCK, reg -> {
+			reg.add("detector", DetectorBlock.Builder.class, DetectorBlock.Builder::new);
+			reg.add("slab", SlabBlockBuilder.class, SlabBlockBuilder::new);
+			reg.add("stairs", StairBlockBuilder.class, StairBlockBuilder::new);
+			reg.add("fence", FenceBlockBuilder.class, FenceBlockBuilder::new);
+			reg.add("wall", WallBlockBuilder.class, WallBlockBuilder::new);
+			reg.add("fence_gate", FenceGateBlockBuilder.class, FenceGateBlockBuilder::new);
+			reg.add("pressure_plate", PressurePlateBlockBuilder.class, PressurePlateBlockBuilder::new);
+			reg.add("button", ButtonBlockBuilder.class, ButtonBlockBuilder::new);
+			reg.add("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
+			reg.add("crop", CropBlockBuilder.class, CropBlockBuilder::new);
+			reg.add("cardinal", HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);
+			reg.add("carpet", CarpetBlockBuilder.class, CarpetBlockBuilder::new);
+		});
+
+		registry.addDefault(Registries.ITEM, BasicItemJS.Builder.class, BasicItemJS.Builder::new);
+
+		registry.of(Registries.ITEM, reg -> {
+			reg.add("sword", SwordItemBuilder.class, SwordItemBuilder::new);
+			reg.add("pickaxe", DiggerItemBuilder.Pickaxe.class, DiggerItemBuilder.Pickaxe::new);
+			reg.add("axe", DiggerItemBuilder.Axe.class, DiggerItemBuilder.Axe::new);
+			reg.add("shovel", DiggerItemBuilder.Shovel.class, DiggerItemBuilder.Shovel::new);
+			reg.add("hoe", DiggerItemBuilder.Hoe.class, DiggerItemBuilder.Hoe::new);
+			reg.add("shears", ShearsItemBuilder.class, ShearsItemBuilder::new);
+			reg.add("helmet", ArmorItemBuilder.Helmet.class, ArmorItemBuilder.Helmet::new);
+			reg.add("chestplate", ArmorItemBuilder.Chestplate.class, ArmorItemBuilder.Chestplate::new);
+			reg.add("leggings", ArmorItemBuilder.Leggings.class, ArmorItemBuilder.Leggings::new);
+			reg.add("boots", ArmorItemBuilder.Boots.class, ArmorItemBuilder.Boots::new);
+			reg.add("animal_armor", ArmorItemBuilder.AnimalArmor.class, ArmorItemBuilder.AnimalArmor::new);
+			reg.add("music_disc", RecordItemJS.Builder.class, RecordItemJS.Builder::new);
+			reg.add("smithing_template", SmithingTemplateItemBuilder.class, SmithingTemplateItemBuilder::new);
+		});
+
+		registry.addDefault(Registries.FLUID, FluidBuilder.class, FluidBuilder::new);
+		registry.addDefault(Registries.ENCHANTMENT, EnchantmentBuilder.class, EnchantmentBuilder::new);
+		registry.addDefault(Registries.MOB_EFFECT, BasicMobEffect.Builder.class, BasicMobEffect.Builder::new);
+		registry.addDefault(Registries.POTION, PotionBuilder.class, PotionBuilder::new);
+		registry.addDefault(Registries.PARTICLE_TYPE, ParticleTypeBuilder.class, ParticleTypeBuilder::new);
+		registry.addDefault(Registries.PAINTING_VARIANT, PaintingVariantBuilder.class, PaintingVariantBuilder::new);
+		registry.addDefault(Registries.CUSTOM_STAT, CustomStatBuilder.class, CustomStatBuilder::new);
+		registry.addDefault(Registries.POINT_OF_INTEREST_TYPE, PoiTypeBuilder.class, PoiTypeBuilder::new);
+		registry.addDefault(Registries.VILLAGER_TYPE, VillagerTypeBuilder.class, VillagerTypeBuilder::new);
+		registry.addDefault(Registries.VILLAGER_PROFESSION, VillagerProfessionBuilder.class, VillagerProfessionBuilder::new);
+		registry.addDefault(Registries.CREATIVE_MODE_TAB, CreativeTabBuilder.class, CreativeTabBuilder::new);
+		registry.addDefault(Registries.ARMOR_MATERIAL, ArmorMaterialBuilder.class, ArmorMaterialBuilder::new);
 	}
 
 	@Override
@@ -420,14 +423,17 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		if (event.type().isStartup()) {
 			event.add("NativeEvents", new NativeEventWrapper("NativeEvents", NeoForge.EVENT_BUS));
-			KubeJS.eventBus().ifPresent(bus -> event.add("NativeModEvents", new NativeEventWrapper("NativeModEvents", bus)));
+
+			var modBus = KubeJS.thisMod.getEventBus();
+
+			if (modBus != null) {
+				event.add("NativeModEvents", new NativeEventWrapper("NativeModEvents", modBus));
+			}
 		}
 	}
 
 	@Override
 	public void registerTypeWrappers(WrapperRegistry registry) {
-		registry.register(Holder.class, KubeJSTypeWrappers::holderOf);
-		registry.register(ResourceKey.class, KubeJSTypeWrappers::resourceKeyOf);
 		registry.register(RegistryPredicate.class, RegistryPredicate::of);
 
 		// Java / Minecraft //

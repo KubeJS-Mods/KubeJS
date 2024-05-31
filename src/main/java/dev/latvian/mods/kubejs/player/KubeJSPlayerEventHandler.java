@@ -6,9 +6,11 @@ import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.core.MenuTypeKJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.inventory.MenuType;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -97,7 +99,13 @@ public class KubeJSPlayerEventHandler {
 				menu.addSlotListener(player.kjs$getInventoryChangeListener());
 			}
 
-			var key = ((MenuTypeKJS) menu.getType()).kjs$getRegistryKey();
+			ResourceKey<MenuType<?>> key;
+
+			try {
+				key = ((MenuTypeKJS) menu.getType()).kjs$getRegistryKey();
+			} catch (Exception ex) {
+				return;
+			}
 
 			if (key != null) {
 				if (PlayerEvents.INVENTORY_OPENED.hasListeners(key)) {
@@ -115,7 +123,14 @@ public class KubeJSPlayerEventHandler {
 	public static void inventoryClosed(PlayerContainerEvent.Close event) {
 		if (event.getEntity() instanceof ServerPlayer player) {
 			var menu = event.getContainer();
-			var key = ((MenuTypeKJS) menu.getType()).kjs$getRegistryKey();
+
+			ResourceKey<MenuType<?>> key;
+
+			try {
+				key = ((MenuTypeKJS) menu.getType()).kjs$getRegistryKey();
+			} catch (Exception ex) {
+				return;
+			}
 
 			if (key != null) {
 				if (PlayerEvents.INVENTORY_CLOSED.hasListeners(key)) {

@@ -11,19 +11,26 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.packs.PackResources;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Mixin(Minecraft.class)
 @RemapPrefixForJS("kjs$")
 public abstract class MinecraftClientMixin implements MinecraftClientKJS {
+	@Shadow
+	@Nullable
+	public LocalPlayer player;
+
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void kjs$init(CallbackInfo ci) {
 		CompletableFuture.runAsync(() -> kjs$afterResourcesLoaded(false), kjs$self());
@@ -63,7 +70,7 @@ public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 
 			if (ClientEvents.TICK.hasListeners()) {
 				try {
-					ClientEvents.TICK.post(ScriptType.CLIENT, new ClientKubeEvent());
+					ClientEvents.TICK.post(ScriptType.CLIENT, new ClientKubeEvent(player));
 				} catch (IllegalStateException ignored) {
 					// FIXME: Replace with rhino exception when it gets updated
 				}

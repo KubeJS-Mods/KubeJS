@@ -5,6 +5,7 @@ import dev.architectury.core.fluid.ArchitecturyFluidAttributes;
 import dev.architectury.core.fluid.SimpleArchitecturyFluidAttributes;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.Cast;
@@ -89,15 +90,15 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	}
 
 	@Override
-	public void createAdditionalObjects() {
-		RegistryInfo.FLUID.addBuilder(flowingFluid);
+	public void createAdditionalObjects(AdditionalObjectRegistry registry) {
+		registry.add(RegistryInfo.FLUID, flowingFluid);
 
 		if (block != null) {
-			RegistryInfo.BLOCK.addBuilder(block);
+			registry.add(RegistryInfo.BLOCK, block);
 		}
 
 		if (bucketItem != null) {
-			RegistryInfo.ITEM.addBuilder(bucketItem);
+			registry.add(RegistryInfo.ITEM, bucketItem);
 		}
 	}
 

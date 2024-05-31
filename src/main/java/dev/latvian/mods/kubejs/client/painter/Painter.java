@@ -127,26 +127,30 @@ public class Painter implements UnitVariables {
 	}
 
 	public void paint(CompoundTag root) {
-		Minecraft.getInstance().execute(() -> {
+		var mc = Minecraft.getInstance();
+
+		mc.execute(() -> {
 			synchronized (lock) {
 				storage.handle(root);
 				screenObjects = null;
 
 				if (ClientEvents.PAINTER_UPDATED.hasListeners()) {
-					ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientKubeEvent());
+					ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientKubeEvent(mc.player));
 				}
 			}
 		});
 	}
 
 	public void clear() {
-		Minecraft.getInstance().execute(() -> {
+		var mc = Minecraft.getInstance();
+
+		mc.execute(() -> {
 			synchronized (lock) {
 				storage.clear();
 				screenObjects = null;
 
 				if (ClientEvents.PAINTER_UPDATED.hasListeners()) {
-					ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientKubeEvent());
+					ClientEvents.PAINTER_UPDATED.post(ScriptType.CLIENT, new ClientKubeEvent(mc.player));
 				}
 			}
 		});

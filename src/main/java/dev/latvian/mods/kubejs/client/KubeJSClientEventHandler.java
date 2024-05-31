@@ -1,16 +1,11 @@
 package dev.latvian.mods.kubejs.client;
 
-import dev.architectury.event.events.client.ClientGuiEvent;
-import dev.architectury.event.events.client.ClientPlayerEvent;
-import dev.architectury.hooks.client.screen.ScreenAccess;
 import dev.architectury.hooks.fluid.FluidBucketHooks;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
-import dev.latvian.mods.kubejs.gui.KubeJSMenus;
-import dev.latvian.mods.kubejs.gui.KubeJSScreen;
 import dev.latvian.mods.kubejs.item.ItemTooltipKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -29,51 +24,45 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.bus.api.IEventBus;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.Paint;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-@EventBusSubscriber(modid = KubeJS.MOD_ID)
+@EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT)
 public class KubeJSClientEventHandler {
 	private static final ResourceLocation RECIPE_BUTTON_TEXTURE = new ResourceLocation("textures/gui/recipe_button.png");
 	public static Map<Item, List<ItemTooltipKubeEvent.StaticTooltipHandler>> staticItemTooltips = null;
-	private final Map<ResourceLocation, TagInstance> tempTagNames = new LinkedHashMap<>();
-
-	public void init(IEventBus bus) {
-		bus.addListener(this::registerMenuScreens);
-
-		//ClientTextureStitchEvent.POST.register(this::postAtlasStitch);
-	}
+	private static final Map<ResourceLocation, TagInstance> tempTagNames = new LinkedHashMap<>();
 
 	@SubscribeEvent
-	private void debugInfo(CustomizeGuiOverlayEvent.DebugText event) {
+	public static void debugInfo(CustomizeGuiOverlayEvent.DebugText event) {
 		var mc = Minecraft.getInstance();
+
 		if (mc.player != null) {
 			if (ClientEvents.DEBUG_LEFT.hasListeners()) {
-				ClientEvents.DEBUG_LEFT.post(new DebugInfoKubeEvent(event.getLeft()));
+				ClientEvents.DEBUG_LEFT.post(new DebugInfoKubeEvent(mc.player, event.getLeft()));
 			}
 			if (ClientEvents.DEBUG_RIGHT.hasListeners()) {
-				ClientEvents.DEBUG_RIGHT.post(new DebugInfoKubeEvent(event.getRight()));
+				ClientEvents.DEBUG_RIGHT.post(new DebugInfoKubeEvent(mc.player, event.getRight()));
 			}
 		}
 	}
 
 	@SubscribeEvent
-	public void onItemTooltip(ItemTooltipEvent event) {
+	public static void onItemTooltip(ItemTooltipEvent event) {
 		var stack = event.getItemStack();
 		var lines = event.getToolTip();
 		var tooltipContext = event.getContext();
@@ -137,28 +126,23 @@ public class KubeJSClientEventHandler {
 	}
 
 	@SubscribeEvent
-	public void onClientPlayerNetwork(ClientPlayerNetworkEvent event) {
-		switch (event) {
-			case ClientPlayerNetworkEvent.LoggingIn loggingIn -> {
-				ClientEvents.LOGGED_IN.post(ScriptType.CLIENT, new ClientKubeEvent());
-			}
-			case ClientPlayerNetworkEvent.LoggingOut loggingOut -> {
-				ClientEvents.LOGGED_OUT.post(ScriptType.CLIENT, new ClientKubeEvent());
-				Painter.INSTANCE.clear();
-			}
-			default -> {
-				// clone does not have a handler currently
-			}
-		}
+	public static void loggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
+		ClientEvents.LOGGED_IN.post(ScriptType.CLIENT, new ClientKubeEvent(event.getPlayer()));
 	}
 
 	@SubscribeEvent
-	public void onRenderGuiPost(RenderGuiEvent.Post event) {
+	public static void loggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
+		ClientEvents.LOGGED_OUT.post(ScriptType.CLIENT, new ClientKubeEvent(event.getPlayer()));
+		Painter.INSTANCE.clear();
+	}
+
+	@SubscribeEvent
+	public static void onRenderGuiPost(RenderGuiEvent.Post event) {
 		Painter.INSTANCE.inGameScreenDraw(event.getGuiGraphics(), event.getPartialTick());
 	}
 
 	@SubscribeEvent
-	public void onRenderPost(ScreenEvent.Render.Post event) {
+	public static void onRenderPost(ScreenEvent.Render.Post event) {
 		Painter.INSTANCE.guiScreenDraw(event.getScreen(), event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
 	}
 
@@ -172,7 +156,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	@SubscribeEvent
-	public void guiPostInit(ScreenEvent.Init.Post event) {
+	public static void guiPostInit(ScreenEvent.Init.Post event) {
 		var screen = event.getScreen();
 
 		if (ClientProperties.get().getDisableRecipeBook() && screen instanceof RecipeUpdateListener) {
@@ -238,7 +222,17 @@ public class KubeJSClientEventHandler {
 		}
 	}*/
 
-	private void registerMenuScreens(RegisterMenuScreensEvent event) {
-		event.register(KubeJSMenus.MENU.get(), KubeJSScreen::new);
+	// FIXME: implement
+	/*private void textureStitch(TextureStitchEvent.Pre event) {
+		ClientEvents.ATLAS_SPRITE_REGISTRY.post(new AtlasSpriteRegistryEventJS(event::addSprite), event.getAtlas().location());
+	}*/
+
+	@SubscribeEvent(priority = EventPriority.LOW)
+	public static void openScreenEvent(ScreenEvent.Opening event) {
+		var s = KubeJSClientEventHandler.setScreen(event.getScreen());
+
+		if (s != null && event.getScreen() != s) {
+			event.setNewScreen(s);
+		}
 	}
 }

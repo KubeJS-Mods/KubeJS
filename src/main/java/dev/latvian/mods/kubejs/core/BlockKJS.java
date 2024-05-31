@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @RemapPrefixForJS("kjs$")
-public interface BlockKJS extends BlockBuilderProvider, WithRegistryKeyKJS<Block> {
+public interface BlockKJS extends BlockBuilderProvider, RegistryObjectKJS<Block> {
 	default void kjs$setBlockBuilder(BlockBuilder b) {
 		throw new NoMixinException();
 	}

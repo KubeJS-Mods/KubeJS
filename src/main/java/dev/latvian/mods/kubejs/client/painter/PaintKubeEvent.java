@@ -31,6 +31,7 @@ public class PaintKubeEvent extends ClientKubeEvent {
 	public final Screen screen;
 
 	public PaintKubeEvent(Minecraft m, GuiGraphics g, float d, @Nullable Screen s) {
+		super(m.player);
 		mc = m;
 		font = mc.font;
 		graphics = g;

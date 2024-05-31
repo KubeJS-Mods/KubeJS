@@ -53,7 +53,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		}
 	}
 
-	public void createAdditionalObjects() {
+	public void createAdditionalObjects(AdditionalObjectRegistry registry) {
 	}
 
 	public String getTranslationKeyGroup() {
