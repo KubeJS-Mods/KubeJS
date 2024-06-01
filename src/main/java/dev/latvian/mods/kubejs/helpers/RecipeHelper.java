@@ -26,7 +26,7 @@ public enum RecipeHelper {
 	public RecipeHolder<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
 		try {
 			return new RecipeHolder<>(id,
-					serializer.codec().decode(JsonOps.INSTANCE, JsonOps.INSTANCE.getMap(json).result().get()).getOrThrow());
+				serializer.codec().decode(JsonOps.INSTANCE, JsonOps.INSTANCE.getMap(json).result().get()).getOrThrow());
 		} catch (Exception e) {
 			if (!FMLLoader.isProduction()) {
 				e.printStackTrace();
@@ -51,10 +51,10 @@ public enum RecipeHelper {
 		var codec = ConditionalOps.createConditionalCodec(Codec.unit(json));
 
 		return codec.parse(ops, json)
-				.mapError(str -> "error while parsing conditions: " + str)
-				.flatMap(optional -> optional
-						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error(() -> "conditions not met")));
+			.mapError(str -> "error while parsing conditions: " + str)
+			.flatMap(optional -> optional
+				.map(DataResult::success)
+				.orElseGet(() -> DataResult.error(() -> "conditions not met")));
 	}
 
 	public Ingredient getCustomIngredient(JsonObject object) {
