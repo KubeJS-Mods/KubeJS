@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -63,6 +64,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return ItemBuilder.TOOL_TIERS.getOrDefault(ID.kjsString(asString), Tiers.IRON);
 	}
 
+	public transient Map<DataComponentType<?>, Object> components;
 	public transient int maxStackSize;
 	public transient int maxDamage;
 	public transient int burnTime;
@@ -160,6 +162,15 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 			m.textures(textureJson);
 		});
+	}
+
+	public <T> ItemBuilder component(DataComponentType<T> type, T value) {
+		if (components == null) {
+			components = new HashMap<>();
+		}
+
+		components.put(type, value);
+		return this;
 	}
 
 	@Info("Sets the item's max stack size. Default is 64.")
@@ -318,6 +329,12 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	public Item.Properties createItemProperties() {
 		var properties = new KubeJSItemProperties(this);
+
+		if (components != null) {
+			for (var entry : components.entrySet()) {
+				properties.component((DataComponentType) entry.getKey(), entry.getValue());
+			}
+		}
 
 		if (maxDamage > 0) {
 			properties.durability(maxDamage);
