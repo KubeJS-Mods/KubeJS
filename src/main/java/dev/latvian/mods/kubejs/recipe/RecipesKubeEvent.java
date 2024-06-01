@@ -29,7 +29,6 @@ import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
-import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.WrappedException;
@@ -285,42 +284,22 @@ public class RecipesKubeEvent implements KubeEvent {
 		for (var entry : datapackRecipeMap.entrySet()) {
 			var recipeId = entry.getKey();
 
-			var recipeIdAndType = recipeId + "[unknown:type]";
-			JsonObject json;
+			if (recipeId == null || recipeId.getPath().startsWith("_")) {
+				continue; //Forge: filter anything beginning with "_" as it's used for metadata.
+			}
 
-			try {
-				if (recipeId == null || recipeId.getPath().startsWith("_")) {
-					continue; //Forge: filter anything beginning with "_" as it's used for metadata.
-				}
-
-				json = RecipeHelper.get().checkConditions(recipeManager.registries, GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
-
-				if (json == null) {
-					if (DevProperties.get().logSkippedRecipes) {
-						ConsoleJS.SERVER.info("Skipping recipe " + recipeId + ", conditions not met");
-					}
-
-					continue;
-				} else if (!json.has("type")) {
-					if (DevProperties.get().logSkippedRecipes) {
-						ConsoleJS.SERVER.info("Skipping recipe " + recipeId + ", missing type");
-					}
-
-					continue;
-				}
-
-				if (DataExport.export != null) {
-					exportedRecipes.add(recipeId.toString(), JsonUtils.copy(json));
-				}
-			} catch (Exception ex) {
+			var jsonResult = RecipeHelper.get().validate(recipeManager.registries, entry.getValue());
+			if (jsonResult.error().isPresent()) {
+				var error = jsonResult.error().get();
 				if (DevProperties.get().logSkippedRecipes) {
-					ConsoleJS.SERVER.warn("Skipping recipe %s, failed to load: ".formatted(recipeId), ex);
+					ConsoleJS.SERVER.info("Skipping recipe %s, %s".formatted(recipeId, error.message()));
 				}
 				continue;
 			}
 
+			var json = jsonResult.getOrThrow(JsonParseException::new);
 			var typeStr = GsonHelper.getAsString(json, "type");
-			recipeIdAndType = recipeId + "[" + typeStr + "]";
+			var recipeIdAndType = recipeId + "[" + typeStr + "]";
 			var type = getRecipeFunction(typeStr);
 
 			if (type == null) {
