@@ -4,19 +4,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
-import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
-import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.Wrapper;
+import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
+import dev.latvian.mods.rhino.type.TypeInfo;
 
 public record TimeComponent(String name, long scale) implements RecipeComponent<Long> {
 	public static final TimeComponent TICKS = new TimeComponent("ticks", 1L);
 	public static final TimeComponent SECONDS = new TimeComponent("seconds", 20L);
 	public static final TimeComponent MINUTES = new TimeComponent("minutes", 1200L);
 
-	// public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(JSObjectTypeInfo.of("name", TypeInfo.STRING, "scale", TypeInfo.NUMBER), (cx, scope, args) -> {
-	public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(TypeDescJS.object().add("name", TypeDescJS.STRING, true).add("scale", TypeDescJS.NUMBER), (cx, scope, args) -> {
+	public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(JSObjectTypeInfo.of(
+		new JSObjectTypeInfo.Field("name", TypeInfo.STRING, true),
+		new JSObjectTypeInfo.Field("scale", TypeInfo.LONG)
+	), (cx, scope, args) -> {
 		var name = String.valueOf(Wrapper.unwrapped(args.getOrDefault("name", "unnamed")));
 		var scale = (long) ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("scale", 1L)));
 		return new TimeComponent(name, scale);
@@ -28,13 +30,8 @@ public record TimeComponent(String name, long scale) implements RecipeComponent<
 	}
 
 	@Override
-	public Class<?> componentClass() {
-		return Long.class;
-	}
-
-	@Override
-	public TypeDescJS constructorDescription(DescriptionContext ctx) {
-		return TypeDescJS.NUMBER.or(TypeDescJS.STRING);
+	public TypeInfo typeInfo() {
+		return TypeInfo.NUMBER.or(TypeInfo.STRING);
 	}
 
 	@Override

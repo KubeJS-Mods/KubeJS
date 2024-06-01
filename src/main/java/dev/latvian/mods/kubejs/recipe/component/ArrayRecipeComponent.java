@@ -6,14 +6,18 @@ import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
-import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
+import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canWriteSelf, Class<?> arrayClass, T[] emptyArray) implements RecipeComponent<T[]> {
+public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canWriteSelf, TypeInfo componentTypeInfo, T[] emptyArray) implements RecipeComponent<T[]> {
+	@SuppressWarnings("unchecked")
+	public ArrayRecipeComponent(RecipeComponent<T> component, boolean canWriteSelf) {
+		this(component, canWriteSelf, component.typeInfo(), (T[]) component.typeInfo().newArray(0));
+	}
+
 	@Override
 	public ComponentRole role() {
 		return component.role();
@@ -25,24 +29,21 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	}
 
 	@Override
-	public TypeDescJS constructorDescription(DescriptionContext ctx) {
-		var d = component.constructorDescription(ctx);
-
+	public TypeInfo typeInfo() {
 		if (canWriteSelf) {
-			return d.or(d.asArray());
+			return componentTypeInfo.or(componentTypeInfo.asArray());
 		} else {
-			return d.asArray();
+			return componentTypeInfo.asArray();
 		}
-	}
-
-	@Override
-	public Class<?> componentClass() {
-		return arrayClass;
 	}
 
 	@SuppressWarnings("unchecked")
 	public T[] newArray(int length) {
-		return length == 0 ? emptyArray : (T[]) Array.newInstance(component.componentClass(), length);
+		if (length == 0) {
+			return emptyArray;
+		}
+
+		return (T[]) componentTypeInfo.newArray(length);
 	}
 
 	@Override
@@ -73,7 +74,7 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 	@Override
 	@SuppressWarnings("unchecked")
 	public T[] read(KubeRecipe recipe, Object from) {
-		if (from.getClass() == arrayClass) {
+		if (from.getClass() == emptyArray.getClass()) {
 			return (T[]) from;
 		} else if (from instanceof Iterable<?> iterable) {
 			int size;
@@ -109,9 +110,15 @@ public record ArrayRecipeComponent<T>(RecipeComponent<T> component, boolean canW
 				return list.toArray(newArray(list.size()));
 			}
 		} else if (from.getClass().isArray()) {
-			var arr = newArray(Array.getLength(from));
+			int length = Array.getLength(from);
 
-			for (int i = 0; i < arr.length; i++) {
+			if (length == 0) {
+				return emptyArray;
+			}
+
+			var arr = newArray(length);
+
+			for (int i = 0; i < length; i++) {
 				arr[i] = component.read(recipe, Array.get(from, i));
 			}
 

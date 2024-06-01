@@ -1,16 +1,16 @@
 package dev.latvian.mods.kubejs.block.entity;
 
 import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.typings.desc.ObjectDescJS;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.Lazy;
+import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public record BlockEntityAttachmentType(String type, ObjectDescJS input, Function<Map<String, Object>, BlockEntityAttachment.Factory> factory) {
+public record BlockEntityAttachmentType(String type, TypeInfo input, Function<Map<String, Object>, BlockEntityAttachment.Factory> factory) {
 	public static final Lazy<Map<String, BlockEntityAttachmentType>> ALL = Lazy.of(() -> {
 		var map = new HashMap<String, BlockEntityAttachmentType>();
 		var list = new ArrayList<BlockEntityAttachmentType>();

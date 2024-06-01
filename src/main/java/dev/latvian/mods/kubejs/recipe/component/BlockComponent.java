@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,8 +28,8 @@ public record BlockComponent(ComponentRole crole) implements RecipeComponent<Blo
 	}
 
 	@Override
-	public Class<?> componentClass() {
-		return Block.class;
+	public TypeInfo typeInfo() {
+		return TypeInfo.of(Block.class);
 	}
 
 	@Override
@@ -38,15 +39,12 @@ public record BlockComponent(ComponentRole crole) implements RecipeComponent<Blo
 
 	@Override
 	public Block read(KubeRecipe recipe, Object from) {
-		if (from instanceof Block b) {
-			return b;
-		} else if (from instanceof BlockState s) {
-			return s.getBlock();
-		} else if (from instanceof JsonPrimitive json) {
-			return BlockWrapper.parseBlockState(json.getAsString()).getBlock();
-		} else {
-			return BlockWrapper.parseBlockState(String.valueOf(from)).getBlock();
-		}
+		return switch (from) {
+			case Block b -> b;
+			case BlockState s -> s.getBlock();
+			case JsonPrimitive json -> BlockWrapper.parseBlockState(json.getAsString()).getBlock();
+			case null, default -> BlockWrapper.parseBlockState(String.valueOf(from)).getBlock();
+		};
 	}
 
 	@Override

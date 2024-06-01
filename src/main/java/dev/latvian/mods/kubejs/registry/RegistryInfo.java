@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.registry;
 
+import dev.latvian.mods.kubejs.core.RegistryObjectKJS;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
@@ -28,7 +29,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
@@ -49,6 +49,19 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 		synchronized (LOCK) {
 			return Cast.to(MAP.computeIfAbsent(key, RegistryInfo::new));
 		}
+	}
+
+	public static RegistryInfo<?> wrap(Object from) {
+		return switch (from) {
+			case RegistryInfo r -> r;
+			case ResourceKey k -> of(k);
+			case Registry r -> of(r.key());
+			case RegistryType t -> of(t.key());
+			case String ignore -> of(ResourceKey.createRegistryKey(ID.mc(from)));
+			case RegistryObjectKJS<?> r -> r.kjs$getKubeRegistry();
+			case Holder<?> h -> of(h.unwrapKey().orElseThrow().registryKey());
+			case null, default -> throw new IllegalArgumentException("Invalid registry: " + from);
+		};
 	}
 
 	public static final RegistryInfo<SoundEvent> SOUND_EVENT = of(Registries.SOUND_EVENT);
@@ -76,7 +89,6 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	public final ResourceKey<Registry<T>> key;
 	BuilderType<T> defaultType;
 	Map<String, BuilderType<T>> types;
-	DeferredRegister<T> deferredRegister;
 	public final Map<ResourceLocation, BuilderBase<? extends T>> objects;
 	public final ResourceKey<T> unknownKey;
 	public boolean hasDefaultTags = false;

@@ -3,10 +3,10 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
-import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
-import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.Wrapper;
+import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.util.Mth;
 
 public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
@@ -36,37 +36,37 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 	FloatRange ANY_FLOAT = floatRange(Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
 	DoubleRange ANY_DOUBLE = doubleRange(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
-	DynamicRecipeComponent DYNAMIC_INT = new DynamicRecipeComponent(TypeDescJS.object()
-		.add("min", TypeDescJS.NUMBER)
-		.add("max", TypeDescJS.NUMBER),
-		(cx, scope, args) -> {
+	DynamicRecipeComponent DYNAMIC_INT = new DynamicRecipeComponent(JSObjectTypeInfo.of(
+		new JSObjectTypeInfo.Field("min", TypeInfo.INT, true),
+		new JSObjectTypeInfo.Field("max", TypeInfo.INT, true)
+	), (cx, scope, args) -> {
 			var min = ScriptRuntime.toInt32(cx, Wrapper.unwrapped(args.getOrDefault("min", 0)));
 			var max = ScriptRuntime.toInt32(cx, Wrapper.unwrapped(args.getOrDefault("max", Integer.MAX_VALUE)));
 			return NumberComponent.intRange(min, max);
 		});
 
-	DynamicRecipeComponent DYNAMIC_LONG = new DynamicRecipeComponent(TypeDescJS.object()
-		.add("min", TypeDescJS.NUMBER)
-		.add("max", TypeDescJS.NUMBER),
-		(cx, scope, args) -> {
+	DynamicRecipeComponent DYNAMIC_LONG = new DynamicRecipeComponent(JSObjectTypeInfo.of(
+		new JSObjectTypeInfo.Field("min", TypeInfo.LONG, true),
+		new JSObjectTypeInfo.Field("max", TypeInfo.LONG, true)
+	), (cx, scope, args) -> {
 			var min = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("min", 0)));
 			var max = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("max", Long.MAX_VALUE)));
 			return NumberComponent.longRange((long) min, (long) max);
 		});
 
-	DynamicRecipeComponent DYNAMIC_FLOAT = new DynamicRecipeComponent(TypeDescJS.object()
-		.add("min", TypeDescJS.NUMBER)
-		.add("max", TypeDescJS.NUMBER),
-		(cx, scope, args) -> {
+	DynamicRecipeComponent DYNAMIC_FLOAT = new DynamicRecipeComponent(JSObjectTypeInfo.of(
+		new JSObjectTypeInfo.Field("min", TypeInfo.FLOAT, true),
+		new JSObjectTypeInfo.Field("max", TypeInfo.FLOAT, true)
+	), (cx, scope, args) -> {
 			var min = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("min", 0F)));
 			var max = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("max", Float.MAX_VALUE)));
 			return NumberComponent.floatRange((float) min, (float) max);
 		});
 
-	DynamicRecipeComponent DYNAMIC_DOUBLE = new DynamicRecipeComponent(TypeDescJS.object()
-		.add("min", TypeDescJS.NUMBER)
-		.add("max", TypeDescJS.NUMBER),
-		(cx, scope, args) -> {
+	DynamicRecipeComponent DYNAMIC_DOUBLE = new DynamicRecipeComponent(JSObjectTypeInfo.of(
+		new JSObjectTypeInfo.Field("min", TypeInfo.DOUBLE, true),
+		new JSObjectTypeInfo.Field("max", TypeInfo.DOUBLE, true)
+	), (cx, scope, args) -> {
 			var min = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("min", 0)));
 			var max = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("max", Double.MAX_VALUE)));
 			return NumberComponent.doubleRange(min, max);
@@ -90,13 +90,8 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default Class<?> componentClass() {
-		return Number.class;
-	}
-
-	@Override
-	default TypeDescJS constructorDescription(DescriptionContext ctx) {
-		return TypeDescJS.NUMBER;
+	default TypeInfo typeInfo() {
+		return TypeInfo.NUMBER;
 	}
 
 	@Override
@@ -106,8 +101,8 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 
 	record IntRange(int min, int max) implements NumberComponent<Integer> {
 		@Override
-		public Class<?> componentClass() {
-			return Integer.class;
+		public TypeInfo typeInfo() {
+			return TypeInfo.INT;
 		}
 
 		@Override
@@ -136,8 +131,8 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 
 	record LongRange(long min, long max) implements NumberComponent<Long> {
 		@Override
-		public Class<?> componentClass() {
-			return Long.class;
+		public TypeInfo typeInfo() {
+			return TypeInfo.LONG;
 		}
 
 		@Override
@@ -167,8 +162,8 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 
 	record FloatRange(float min, float max) implements NumberComponent<Float> {
 		@Override
-		public Class<?> componentClass() {
-			return Float.class;
+		public TypeInfo typeInfo() {
+			return TypeInfo.FLOAT;
 		}
 
 		@Override
@@ -197,8 +192,8 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 
 	record DoubleRange(double min, double max) implements NumberComponent<Double> {
 		@Override
-		public Class<?> componentClass() {
-			return Double.class;
+		public TypeInfo typeInfo() {
+			return TypeInfo.DOUBLE;
 		}
 
 		@Override

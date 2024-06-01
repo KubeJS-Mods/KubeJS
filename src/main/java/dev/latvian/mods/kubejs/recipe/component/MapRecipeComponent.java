@@ -7,9 +7,8 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
-import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.TinyMap;
+import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.util.Map;
 
@@ -26,18 +25,13 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public TypeDescJS constructorDescription(DescriptionContext ctx) {
-		return component.constructorDescription(ctx).asMap(key.constructorDescription(ctx));
+	public TypeInfo typeInfo() {
+		return TypeInfo.RAW_MAP.withParams(key.typeInfo(), component.typeInfo());
 	}
 
 	@Override
 	public ComponentRole role() {
 		return component.role();
-	}
-
-	@Override
-	public Class<?> componentClass() {
-		return TinyMap.class;
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.block.entity;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.typings.desc.PrimitiveDescJS;
-import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
+import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -18,11 +18,11 @@ import org.jetbrains.annotations.Nullable;
 public class InventoryAttachment extends SimpleContainer implements BlockEntityAttachment {
 	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType(
 		"inventory",
-		TypeDescJS.object()
-			.add("xsize", TypeDescJS.NUMBER, false)
-			.add("ysize", TypeDescJS.NUMBER, false)
-			.add("inputFilter", new PrimitiveDescJS("Ingredient"), true),
-		map -> {
+		JSObjectTypeInfo.of(
+			new JSObjectTypeInfo.Field("xsize", TypeInfo.INT),
+			new JSObjectTypeInfo.Field("ysize", TypeInfo.INT),
+			new JSObjectTypeInfo.Field("inputFilter", IngredientJS.TYPE_INFO)
+		), map -> {
 			var width = ((Number) map.get("width")).intValue();
 			var height = ((Number) map.get("height")).intValue();
 			var inputFilter = map.containsKey("inputFilter") ? IngredientJS.of(map.get("inputFilter")) : null;

@@ -187,4 +187,14 @@ public class KubeJSContext extends Context {
 			return null;
 		}
 	}
+
+	public Class<?> loadJavaClass(Object from) {
+		if (from instanceof Class<?> c) {
+			return c;
+		} else if (from instanceof NativeJavaClass c) {
+			return c.getClassObject();
+		} else {
+			return loadJavaClass(String.valueOf(from), true).getClassObject();
+		}
+	}
 }

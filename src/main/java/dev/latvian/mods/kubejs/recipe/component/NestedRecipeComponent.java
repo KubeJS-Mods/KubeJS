@@ -3,14 +3,15 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.rhino.type.TypeInfo;
 
 public class NestedRecipeComponent implements RecipeComponent<KubeRecipe> {
 	public static final RecipeComponent<KubeRecipe> RECIPE = new NestedRecipeComponent();
 	public static final RecipeComponent<KubeRecipe[]> RECIPE_ARRAY = RECIPE.asArray();
 
 	@Override
-	public Class<?> componentClass() {
-		return KubeRecipe.class;
+	public TypeInfo typeInfo() {
+		return TypeInfo.of(KubeRecipe.class);
 	}
 
 	@Override

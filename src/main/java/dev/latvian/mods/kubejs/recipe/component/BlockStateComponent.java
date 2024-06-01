@@ -11,6 +11,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.MapJS;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -39,8 +40,8 @@ public record BlockStateComponent(ComponentRole crole, boolean preferObjectForm)
 	}
 
 	@Override
-	public Class<?> componentClass() {
-		return BlockState.class;
+	public TypeInfo typeInfo() {
+		return TypeInfo.of(BlockState.class);
 	}
 
 	@Override

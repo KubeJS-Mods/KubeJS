@@ -103,8 +103,8 @@ dependencies {
 processResources {
 	def toReplace = [
 			"version"             : project.version,
-			"min_rhino_version"   : project.min_rhino_version,
-			"architectury_version": project.architectury_version
+			"rhino_version"       : project.rhino_version,
+			"architectury_version": project.architectury_version,
 	]
 
 	println("[Process Resources] Replacing properties in resources: " + toReplace)

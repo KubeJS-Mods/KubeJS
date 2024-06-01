@@ -7,11 +7,12 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
-import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
+import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,19 +67,14 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public Class<?> componentClass() {
-		return RecipeComponentBuilderMap.class;
-	}
-
-	@Override
-	public TypeDescJS constructorDescription(DescriptionContext ctx) {
-		var obj = TypeDescJS.object(keys.size());
+	public TypeInfo typeInfo() {
+		var map = new LinkedHashMap<String, JSObjectTypeInfo.Field>(keys.size());
 
 		for (var key : keys) {
-			obj.add(key.name, key.component.constructorDescription(ctx), key.optional());
+			map.put(key.name, new JSObjectTypeInfo.Field(key.name, key.component.typeInfo(), key.optional()));
 		}
 
-		return obj;
+		return new JSObjectTypeInfo(map);
 	}
 
 	@Override

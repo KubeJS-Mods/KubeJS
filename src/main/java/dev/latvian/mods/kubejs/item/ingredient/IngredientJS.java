@@ -17,6 +17,7 @@ import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -30,6 +31,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public interface IngredientJS {
+	TypeInfo TYPE_INFO = TypeInfo.of(Ingredient.class);
+
 	static Ingredient of(@Nullable Object o) {
 		while (o instanceof Wrapper w) {
 			o = w.unwrap();

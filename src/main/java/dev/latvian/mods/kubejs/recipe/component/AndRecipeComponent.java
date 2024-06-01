@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonArray;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
-import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
+import dev.latvian.mods.rhino.type.JSFixedArrayTypeInfo;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import org.apache.commons.lang3.tuple.Pair;
 
 public record AndRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> b) implements RecipeComponent<Pair<A, B>> {
@@ -13,8 +13,8 @@ public record AndRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> 
 	}
 
 	@Override
-	public TypeDescJS constructorDescription(DescriptionContext ctx) {
-		return TypeDescJS.fixedArray(a.constructorDescription(ctx), b.constructorDescription(ctx));
+	public TypeInfo typeInfo() {
+		return new JSFixedArrayTypeInfo(a.typeInfo(), b.typeInfo());
 	}
 
 	@Override
@@ -24,11 +24,6 @@ public record AndRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> 
 		}
 
 		return a.role();
-	}
-
-	@Override
-	public Class<?> componentClass() {
-		return Pair.class;
 	}
 
 	@Override

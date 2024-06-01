@@ -4,11 +4,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
-import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
-import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.ScriptableObject;
 import dev.latvian.mods.rhino.Wrapper;
+import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceLocation;
 
@@ -27,13 +26,8 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 		}
 
 		@Override
-		public Class<?> componentClass() {
-			return Character.class;
-		}
-
-		@Override
-		public TypeDescJS constructorDescription(DescriptionContext ctx) {
-			return TypeDescJS.STRING;
+		public TypeInfo typeInfo() {
+			return TypeInfo.CHARACTER;
 		}
 
 		@Override
@@ -52,10 +46,10 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 		}
 	};
 
-	public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(TypeDescJS.object()
-		.add("error", TypeDescJS.STRING, true)
-		.add("filter", TypeDescJS.ANY),
-		(cx, scope, args) -> {
+	public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(JSObjectTypeInfo.of(
+		new JSObjectTypeInfo.Field("error", TypeInfo.STRING, true),
+		new JSObjectTypeInfo.Field("filter", TypeInfo.NONE)
+	), (cx, scope, args) -> {
 			var error = String.valueOf(Wrapper.unwrapped(args.getOrDefault("error", "invalid string")));
 			var filter = args.get("filter") instanceof ScriptableObject obj ? cx.createInterfaceAdapter(TypeInfo.RAW_PREDICATE.withParams(TypeInfo.STRING), obj) : UtilsJS.ALWAYS_TRUE;
 			return new StringComponent(error, (Predicate) filter);
@@ -67,13 +61,8 @@ public record StringComponent(String error, Predicate<String> predicate) impleme
 	}
 
 	@Override
-	public Class<?> componentClass() {
-		return String.class;
-	}
-
-	@Override
-	public TypeDescJS constructorDescription(DescriptionContext ctx) {
-		return TypeDescJS.STRING;
+	public TypeInfo typeInfo() {
+		return TypeInfo.STRING;
 	}
 
 	@Override

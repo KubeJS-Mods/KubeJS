@@ -7,9 +7,8 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
-import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.type.TypeInfo;
 
 @SuppressWarnings("OptionalIsPresent")
 public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L> low) implements RecipeComponent<Either<H, L>> {
@@ -19,8 +18,8 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 	}
 
 	@Override
-	public TypeDescJS constructorDescription(DescriptionContext ctx) {
-		return high.constructorDescription(ctx).or(low.constructorDescription(ctx));
+	public TypeInfo typeInfo() {
+		return high.typeInfo().or(low.typeInfo());
 	}
 
 	@Override
@@ -30,11 +29,6 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 		}
 
 		return high.role();
-	}
-
-	@Override
-	public Class<?> componentClass() {
-		return Either.class;
 	}
 
 	@Override

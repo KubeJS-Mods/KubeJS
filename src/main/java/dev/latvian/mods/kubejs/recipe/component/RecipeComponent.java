@@ -9,18 +9,16 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
-import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
 import dev.latvian.mods.kubejs.util.TinyMap;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Array;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 
 /**
  * A <b>recipe component</b> is a reusable definition of a recipe element (such as an in/output item, a fluid, or even just a number value)
- * that has a {@link #role() role}, a {@link #constructorDescription(DescriptionContext) description} and a {@link #componentClass() value class}
+ * that has a {@link #role() role} and a {@link #typeInfo() description}
  * associated with it and defines logic on how to {@link #read(KubeRecipe, Object) read} and {@link #write(KubeRecipe, Object) write} the value
  * contained within the context of a recipe.
  * <p>
@@ -80,21 +78,14 @@ public interface RecipeComponent<T> {
 	 * Defines the string type of this component, mostly used for logging and debugging purposes.
 	 * <p>
 	 * For a description of how what the component is actually composed of, which may be used by addons like ProbeJS
-	 * to describe it, refer to {@link #constructorDescription(DescriptionContext) this method} instead.
+	 * to describe it, refer to {@link #typeInfo() this method} instead.
 	 *
 	 * @return The type of this component
-	 * @see #constructorDescription(DescriptionContext)
+	 * @see #typeInfo()
 	 */
 	default String componentType() {
 		return "unknown";
 	}
-
-	/**
-	 * Defines the class of the value contained within this component.
-	 *
-	 * @return This component's value class
-	 */
-	Class<?> componentClass();
 
 	/**
 	 * Defines a description for how this component may be constructed.
@@ -105,12 +96,9 @@ public interface RecipeComponent<T> {
 	 * <p>
 	 * Type descriptions are used by addons like ProbeJS to provide typing hints.
 	 *
-	 * @param ctx The description context
 	 * @return A description of how this component may be constructed
 	 */
-	default TypeDescJS constructorDescription(DescriptionContext ctx) {
-		return ctx.javaType(componentClass());
-	}
+	TypeInfo typeInfo();
 
 	/**
 	 * Method to write the value contained within this component to a JSON object.
@@ -268,16 +256,12 @@ public interface RecipeComponent<T> {
 		return oldValue != newValue;
 	}
 
-	@SuppressWarnings("unchecked")
 	default ArrayRecipeComponent<T> asArray() {
-		var arr = (T[]) Array.newInstance(componentClass(), 0);
-		return new ArrayRecipeComponent<>(this, false, arr.getClass(), arr);
+		return new ArrayRecipeComponent<>(this, false);
 	}
 
-	@SuppressWarnings("unchecked")
 	default ArrayRecipeComponent<T> asArrayOrSelf() {
-		var arr = (T[]) Array.newInstance(componentClass(), 0);
-		return new ArrayRecipeComponent<>(this, true, arr.getClass(), arr);
+		return new ArrayRecipeComponent<>(this, true);
 	}
 
 	default RecipeComponent<T> orSelf() {

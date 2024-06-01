@@ -6,8 +6,7 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.typings.desc.DescriptionContext;
-import dev.latvian.mods.kubejs.typings.desc.TypeDescJS;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -32,13 +31,8 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default Class<?> componentClass() {
-		return parentComponent().componentClass();
-	}
-
-	@Override
-	default TypeDescJS constructorDescription(DescriptionContext ctx) {
-		return parentComponent().constructorDescription(ctx);
+	default TypeInfo typeInfo() {
+		return parentComponent().typeInfo();
 	}
 
 	@Override

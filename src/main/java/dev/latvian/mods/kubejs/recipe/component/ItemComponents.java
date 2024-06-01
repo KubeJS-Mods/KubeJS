@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.TinyMap;
+import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.util.Map;
 
@@ -26,8 +27,8 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public Class<?> componentClass() {
-			return InputItem.class;
+		public TypeInfo typeInfo() {
+			return TypeInfo.of(InputItem.class);
 		}
 
 		@Override
@@ -109,8 +110,8 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public Class<?> componentClass() {
-			return OutputItem.class;
+		public TypeInfo typeInfo() {
+			return TypeInfo.of(OutputItem.class);
 		}
 
 		@Override

@@ -104,6 +104,7 @@ import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingTransformRecipeSc
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingTrimRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.StonecuttingRecipeSchema;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -503,6 +504,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ParticleOptions.class, UtilsWrapper::particleOptions);
 		registry.register(ItemTintFunction.class, ItemTintFunction::of);
 		registry.register(BlockTintFunction.class, BlockTintFunction::of);
+		registry.register(RegistryInfo.class, RegistryInfo::wrap);
 
 		// components //
 		registry.register(Component.class, TextWrapper::of);
