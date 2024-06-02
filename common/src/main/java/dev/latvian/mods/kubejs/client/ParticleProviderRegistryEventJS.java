@@ -18,7 +18,11 @@ public class ParticleProviderRegistryEventJS extends EventJS {
 	}
 
 	public <T extends ParticleOptions> void registerSimple(ParticleType<T> type, Consumer<KubeAnimatedParticle> particle) {
-		ParticleProviderRegistry.register(type, set -> (t, level, x, y, z, dx, dy, dz) -> Util.make(new KubeAnimatedParticle(level, set, x, y, z), particle));
+		ParticleProviderRegistry.register(type, set -> (t, level, x, y, z, dx, dy, dz) -> Util.make(Util.make(() -> {
+			var kube = new KubeAnimatedParticle(level, set, x, y, z);
+			kube.setParticleSpeed(dx, dy, dz);
+			return kube;
+		}), particle));
 	}
 
 	public <T extends ParticleOptions> void registerSimple(ParticleType<T> type) {
