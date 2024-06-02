@@ -1,12 +1,11 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.kubejs.registry.RegistryType;
-import dev.latvian.mods.kubejs.util.ID;
-import dev.latvian.mods.rhino.Wrapper;
-import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -28,17 +27,20 @@ public record TagKeyComponent<T>(ResourceKey<? extends Registry<T>> registry, Ty
 	public static final RecipeComponent<TagKey<Biome>> BIOME = new TagKeyComponent<>(Registries.BIOME, TypeInfo.of(Biome.class));
 	public static final RecipeComponent<TagKey<Fluid>> FLUID = new TagKeyComponent<>(Registries.FLUID, TypeInfo.of(Fluid.class));
 
-	public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(JSObjectTypeInfo.of(
-		new JSObjectTypeInfo.Field("registry", TypeInfo.STRING)
-	), (cx, scope, args) -> {
-		var registry = ResourceKey.createRegistryKey(ID.mc(Wrapper.unwrapped(args.get("registry"))));
+	public static final RecipeComponentFactory FACTORY = (storage, reader) -> {
+		reader.skipWhitespace();
+		reader.expect('<');
+		reader.skipWhitespace();
+		var registry = ResourceKey.createRegistryKey(ResourceLocation.read(reader));
+		reader.expect('>');
+
 		var r = RegistryType.ofKey(registry);
 		return new TagKeyComponent<>(registry, r != null ? r.type() : TypeInfo.NONE);
-	});
+	};
 
 	@Override
-	public String componentType() {
-		return "tag_key";
+	public Codec<TagKey<T>> codec() {
+		return TagKey.codec(registry);
 	}
 
 	@Override
@@ -47,12 +49,7 @@ public record TagKeyComponent<T>(ResourceKey<? extends Registry<T>> registry, Ty
 	}
 
 	@Override
-	public JsonPrimitive write(KubeRecipe recipe, TagKey<T> value) {
-		return new JsonPrimitive(value.location().toString());
-	}
-
-	@Override
-	public TagKey<T> read(KubeRecipe recipe, Object from) {
+	public TagKey<T> wrap(Context cx, KubeRecipe recipe, Object from) {
 		if (from instanceof TagKey<?> k) {
 			return (TagKey<T>) k;
 		}
@@ -67,12 +64,26 @@ public record TagKeyComponent<T>(ResourceKey<? extends Registry<T>> registry, Ty
 	}
 
 	@Override
-	public boolean hasPriority(KubeRecipe recipe, Object from) {
+	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
 		return from instanceof TagKey<?> || (from instanceof CharSequence && from.toString().startsWith("#")) || (from instanceof JsonPrimitive json && json.isString() && json.getAsString().startsWith("#"));
 	}
 
 	@Override
 	public String toString() {
-		return componentType();
+		var key = (ResourceKey) registry;
+
+		if (key == Registries.BLOCK) {
+			return "block_tag";
+		} else if (key == Registries.ITEM) {
+			return "item_tag";
+		} else if (key == Registries.ENTITY_TYPE) {
+			return "entity_type_tag";
+		} else if (key == Registries.BIOME) {
+			return "biome_tag";
+		} else if (key == Registries.FLUID) {
+			return "fluid_tag";
+		} else {
+			return "tag<" + key.location() + ">";
+		}
 	}
 }

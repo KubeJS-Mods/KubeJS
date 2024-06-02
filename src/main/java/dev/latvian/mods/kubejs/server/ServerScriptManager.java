@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -28,7 +29,6 @@ import net.minecraft.world.damagesource.DamageSources;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.nio.file.Files;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
@@ -47,12 +47,15 @@ public class ServerScriptManager extends ScriptManager {
 	public final ReloadableServerResources resources;
 	public final RegistryAccess registries;
 	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
+	public final RecipeSchemaStorage recipeSchemaStorage;
+	public RecipesKubeEvent recipesEvent;
 
 	public ServerScriptManager(ReloadableServerResources resources, RegistryAccess registryAccess) {
 		super(ScriptType.SERVER);
 		this.resources = resources;
 		this.registries = registryAccess;
 		this.preTagEvents = new ConcurrentHashMap<>();
+		this.recipeSchemaStorage = new RecipeSchemaStorage();
 
 		try {
 			if (Files.notExists(KubeJSPaths.DATA)) {
@@ -76,6 +79,7 @@ public class ServerScriptManager extends ScriptManager {
 		return ServerLifecycleHooks.getCurrentServer().kjs$getOverworld().damageSources();
 	}
 
+	// FIXME
 	public MultiPackResourceManager wrapResourceManager(HolderLookup.Provider registries, CloseableResourceManager original) {
 		var virtualDataPackLow = new VirtualKubeJSDataPack(false);
 		var virtualDataPackHigh = new VirtualKubeJSDataPack(true);
@@ -105,9 +109,6 @@ public class ServerScriptManager extends ScriptManager {
 
 		ConsoleJS.SERVER.info("Scripts loaded");
 
-		// note we only set this map on the logical server, it'll be null on the client!
-		RecipesKubeEvent.customIngredientMap = new HashMap<>();
-
 		CustomIngredientAction.MAP.clear();
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
@@ -117,7 +118,7 @@ public class ServerScriptManager extends ScriptManager {
 		PreTagKubeEvent.handle(preTagEvents);
 
 		if (ServerEvents.RECIPES.hasListeners()) {
-			RecipesKubeEvent.instance = new RecipesKubeEvent(registries);
+			recipesEvent = new RecipesKubeEvent(recipeSchemaStorage, registries);
 		}
 
 		return wrappedResourceManager;

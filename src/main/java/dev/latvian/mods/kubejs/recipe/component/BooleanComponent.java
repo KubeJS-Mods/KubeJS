@@ -1,16 +1,17 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 public class BooleanComponent implements RecipeComponent<Boolean> {
 	public static final RecipeComponent<Boolean> BOOLEAN = new BooleanComponent();
 
 	@Override
-	public String componentType() {
-		return "boolean";
+	public Codec<Boolean> codec() {
+		return Codec.BOOL;
 	}
 
 	@Override
@@ -19,12 +20,7 @@ public class BooleanComponent implements RecipeComponent<Boolean> {
 	}
 
 	@Override
-	public JsonElement write(KubeRecipe recipe, Boolean value) {
-		return new JsonPrimitive(value);
-	}
-
-	@Override
-	public Boolean read(KubeRecipe recipe, Object from) {
+	public Boolean wrap(Context cx, KubeRecipe recipe, Object from) {
 		if (from instanceof Boolean n) {
 			return n;
 		} else if (from instanceof JsonPrimitive json) {
@@ -37,12 +33,12 @@ public class BooleanComponent implements RecipeComponent<Boolean> {
 	}
 
 	@Override
-	public boolean hasPriority(KubeRecipe recipe, Object from) {
+	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
 		return from instanceof Boolean || from instanceof JsonPrimitive json && json.isBoolean();
 	}
 
 	@Override
 	public String toString() {
-		return componentType();
+		return "boolean";
 	}
 }

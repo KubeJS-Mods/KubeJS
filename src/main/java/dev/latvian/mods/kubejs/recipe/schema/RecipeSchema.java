@@ -3,8 +3,6 @@ package dev.latvian.mods.kubejs.recipe.schema;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
@@ -13,6 +11,8 @@ import dev.latvian.mods.rhino.util.RemapForJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -91,9 +91,9 @@ public class RecipeSchema {
 				throw new IllegalArgumentException("Duplicate key '" + keys[i].name + "' found!");
 			}
 
-			if (keys[i].component.role().isInput()) {
+			if (keys[i].role.isInput()) {
 				inputCount++;
-			} else if (keys[i].component.role().isOutput()) {
+			} else if (keys[i].role.isOutput()) {
 				outputCount++;
 			}
 
@@ -113,6 +113,18 @@ public class RecipeSchema {
 		return uuid;
 	}
 
+	public RecipeSchema constructor(RecipeConstructor constructor) {
+		if (constructors == null) {
+			constructors = new Int2ObjectArrayMap<>(keys.length - minRequiredArguments + 1);
+		}
+
+		if (constructors.put(constructor.keys().length, constructor) != null) {
+			throw new IllegalStateException("Constructor with " + constructor.keys().length + " arguments already exists!");
+		}
+
+		return this;
+	}
+
 	/**
 	 * Defines an additional constructor to be for this schema.
 	 *
@@ -123,17 +135,7 @@ public class RecipeSchema {
 	 */
 	@RemapForJS("addConstructor") // constructor is a reserved word in TypeScript, so remap this for scripters who use .d.ts files for typing hints
 	public RecipeSchema constructor(RecipeConstructor.Factory factory, RecipeKey<?>... keys) {
-		var c = new RecipeConstructor(this, keys, factory);
-
-		if (constructors == null) {
-			constructors = new Int2ObjectArrayMap<>(keys.length - minRequiredArguments + 1);
-		}
-
-		if (constructors.put(c.keys().length, c) != null) {
-			throw new IllegalStateException("Constructor with " + c.keys().length + " arguments already exists!");
-		}
-
-		return this;
+		return constructor(new RecipeConstructor(keys, factory));
 	}
 
 	@RemapForJS("addConstructor") // constructor is a reserved word in TypeScript, so remap this for scripters who use .d.ts files for typing hints
@@ -156,14 +158,14 @@ public class RecipeSchema {
 		}
 	}
 
-	public RecipeSchema uniqueOutputId(RecipeKey<OutputItem> resultItemKey) {
+	public RecipeSchema uniqueOutputId(RecipeKey<ItemStack> resultItemKey) {
 		return uniqueId(r -> {
 			var item = r.getValue(resultItemKey);
-			return item == null || item.isEmpty() ? null : normalizeId(item.item.kjs$getId()).replace('/', '_');
+			return item == null || item.isEmpty() ? null : normalizeId(item.kjs$getId()).replace('/', '_');
 		});
 	}
 
-	public RecipeSchema uniqueOutputArrayId(RecipeKey<OutputItem[]> resultItemKey) {
+	public RecipeSchema uniqueOutputArrayId(RecipeKey<ItemStack[]> resultItemKey) {
 		return uniqueId(r -> {
 			var array = r.getValue(resultItemKey);
 
@@ -179,7 +181,7 @@ public class RecipeSchema {
 						sb.append('_');
 					}
 
-					sb.append(normalizeId(item.item.kjs$getId()).replace('/', '_'));
+					sb.append(normalizeId(item.kjs$getId()).replace('/', '_'));
 				}
 			}
 
@@ -187,10 +189,10 @@ public class RecipeSchema {
 		});
 	}
 
-	public RecipeSchema uniqueInputId(RecipeKey<InputItem> resultItemKey) {
+	public RecipeSchema uniqueInputId(RecipeKey<Ingredient> resultItemKey) {
 		return uniqueId(r -> {
 			var ingredient = r.getValue(resultItemKey);
-			var item = ingredient == null ? null : ingredient.ingredient.kjs$getFirst();
+			var item = ingredient == null ? null : ingredient.kjs$getFirst();
 			return item == null || item.isEmpty() ? null : normalizeId(item.kjs$getId()).replace('/', '_');
 		});
 	}
@@ -203,13 +205,13 @@ public class RecipeSchema {
 			boolean dev = DevProperties.get().debugInfo;
 
 			if (dev) {
-				KubeJS.LOGGER.info("Generating constructors for " + new RecipeConstructor(this, keys1, RecipeConstructor.Factory.DEFAULT));
+				KubeJS.LOGGER.info("Generating constructors for " + new RecipeConstructor(keys1, RecipeConstructor.Factory.DEFAULT));
 			}
 
 			for (int a = minRequiredArguments; a <= keys1.length; a++) {
 				var k = new RecipeKey<?>[a];
 				System.arraycopy(keys1, 0, k, 0, a);
-				var c = new RecipeConstructor(this, k, RecipeConstructor.Factory.DEFAULT);
+				var c = new RecipeConstructor(k, RecipeConstructor.Factory.DEFAULT);
 				constructors.put(a, c);
 
 				if (dev) {

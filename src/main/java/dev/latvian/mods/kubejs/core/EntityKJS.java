@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
@@ -28,11 +29,15 @@ import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Team;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 @RemapPrefixForJS("kjs$")
 public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptTypeHolder {
@@ -321,6 +326,28 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 
 	default RayTraceResultJS kjs$rayTrace(double distance) {
 		return kjs$rayTrace(distance, true);
+	}
+
+	@Nullable
+	default Entity kjs$rayTraceEntity(double distance, Predicate<Entity> filter) {
+		double d0 = Double.MAX_VALUE;
+		Entity entity = null;
+
+		var start = kjs$self().getEyePosition();
+		var end = start.add(kjs$self().getLookAngle().scale(distance));
+
+		for (Entity entity1 : kjs$self().level().getEntities(kjs$self(), new AABB(start, end), filter == null ? UtilsJS.ALWAYS_TRUE : filter)) {
+			double d1;
+			AABB aabb = entity1.getBoundingBox();
+			Optional<Vec3> optional = aabb.clip(start, end);
+			if (!optional.isPresent() || !((d1 = start.distanceToSqr(optional.get())) < d0)) {
+				continue;
+			}
+			entity = entity1;
+			d0 = d1;
+		}
+
+		return entity;
 	}
 
 	@Nullable

@@ -1,88 +1,62 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import com.google.gson.JsonPrimitive;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
-import dev.latvian.mods.kubejs.util.Cast;
-import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
+import dev.latvian.mods.rhino.type.EnumTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import dev.latvian.mods.rhino.util.RemappedEnumConstant;
+import net.minecraft.util.StringRepresentable;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
-
-public record EnumComponent<T extends Enum<T>>(Class<T> enumType, Function<T, String> toStringFunc, BiFunction<Class<T>, String, T> toEnumFunc) implements RecipeComponent<T> {
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(JSObjectTypeInfo.of(
-		new JSObjectTypeInfo.Field("class", TypeInfo.CLASS)
-	), (ctx, scope, args) -> {
-		var cname = args.get("class");
+public record EnumComponent<T extends Enum<T> & StringRepresentable>(EnumTypeInfo enumTypeInfo, Codec<T> codec) implements RecipeComponent<T> {
+	public static final RecipeComponentFactory FACTORY = (storage, reader) -> {
+		reader.skipWhitespace();
+		reader.expect('<');
+		reader.skipWhitespace();
+		var cname = reader.readStringUntil('>').trim();
+		reader.expect('>');
 
 		try {
 			if (cname == null) {
 				throw new NullPointerException();
 			}
 
-			var clazz = ((KubeJSContext) ctx).loadJavaClass(cname);
+			var clazz = Class.forName(cname);
 
-			if (!clazz.isEnum()) {
+			var typeInfo = TypeInfo.of(clazz);
+
+			if (!(typeInfo instanceof EnumTypeInfo enumTypeInfo)) {
 				throw new RecipeExceptionJS("Class " + clazz.getTypeName() + " is not an enum!");
 			}
 
-			return new EnumComponent<>((Class) clazz);
+			return new EnumComponent(enumTypeInfo, Codec.STRING.xmap(s -> {
+				for (var c : enumTypeInfo.enumConstants()) {
+					if (c instanceof RemappedEnumConstant r && r.getRemappedEnumConstantName().equalsIgnoreCase(s)) {
+						return c;
+					} else if (c instanceof Enum e && e.name().equalsIgnoreCase(s)) {
+						return c;
+					}
+				}
+
+				throw new RecipeExceptionJS("Enum value '" + s + "' of " + clazz.getName() + " not found");
+			}, EnumTypeInfo::getName));
 		} catch (Exception ex) {
 			throw new RecipeExceptionJS("Error loading class " + cname + " for EnumComponent", ex);
 		}
-	});
-	private static final Function<Enum<?>, String> DEFAULT_TO_STRING = e -> e.name().toLowerCase();
-	private static final BiFunction<Class<? extends Enum<?>>, String, Enum<?>> DEFAULT_TO_ENUM = (c, s) -> {
-		for (var e : c.getEnumConstants()) {
-			if (e.name().equalsIgnoreCase(s)) {
-				return e;
-			}
-		}
-
-		return null;
 	};
 
-	public EnumComponent(Class<T> enumType) {
-		this(enumType, Cast.to(DEFAULT_TO_STRING), Cast.to(DEFAULT_TO_ENUM));
-	}
-
 	@Override
-	public String componentType() {
-		return "enum";
+	public Codec<T> codec() {
+		return codec;
 	}
 
 	@Override
 	public TypeInfo typeInfo() {
-		return TypeInfo.of(enumType);
-	}
-
-	@Override
-	public JsonPrimitive write(KubeRecipe recipe, T value) {
-		return new JsonPrimitive(toStringFunc.apply(value));
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public T read(KubeRecipe recipe, Object from) {
-		if (enumType.isInstance(from)) {
-			return (T) from;
-		} else {
-			var e = from == null ? null : toEnumFunc.apply(enumType, from instanceof JsonPrimitive j ? j.getAsString() : String.valueOf(from));
-
-			if (e == null) {
-				throw new RecipeExceptionJS("Enum value '" + from + "' of " + enumType.getName() + " not found");
-			}
-
-			return e;
-		}
+		return enumTypeInfo;
 	}
 
 	@Override
 	public String toString() {
-		return componentType();
+		return "enum<" + enumTypeInfo.asClass().getName() + ">";
 	}
 }

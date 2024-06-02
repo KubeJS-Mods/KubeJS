@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.WrappedJS;
+import dev.latvian.mods.rhino.Context;
 
 import java.util.Map;
 import java.util.Objects;
@@ -33,15 +34,15 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 	}
 
 	public boolean isInput(KubeRecipe recipe, ReplacementMatch match) {
-		return value != null && key.component.role().isInput() && key.component.isInput(recipe, value, match);
+		return value != null && key.role.isInput() && key.component.isInput(recipe, value, match);
 	}
 
-	public boolean replaceInput(KubeRecipe recipe, ReplacementMatch match, InputReplacement with) {
-		if (!key.component.role().isInput()) {
+	public boolean replaceInput(Context cx, KubeRecipe recipe, ReplacementMatch match, InputReplacement with) {
+		if (!key.role.isInput()) {
 			return false;
 		}
 
-		var newValue = value == null ? null : key.component.replaceInput(recipe, value, match, with);
+		var newValue = value == null ? null : key.component.replaceInput(cx, recipe, value, match, with);
 
 		if (key.component.checkValueHasChanged(value, newValue)) {
 			value = newValue;
@@ -53,15 +54,15 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 	}
 
 	public boolean isOutput(KubeRecipe recipe, ReplacementMatch match) {
-		return value != null && key.component.role().isOutput() && key.component.isOutput(recipe, value, match);
+		return value != null && key.role.isOutput() && key.component.isOutput(recipe, value, match);
 	}
 
-	public boolean replaceOutput(KubeRecipe recipe, ReplacementMatch match, OutputReplacement with) {
-		if (!key.component.role().isOutput()) {
+	public boolean replaceOutput(Context cx, KubeRecipe recipe, ReplacementMatch match, OutputReplacement with) {
+		if (!key.role.isOutput()) {
 			return false;
 		}
 
-		var newValue = value == null ? null : key.component.replaceOutput(recipe, value, match, with);
+		var newValue = value == null ? null : key.component.replaceOutput(cx, recipe, value, match, with);
 
 		if (key.component.checkValueHasChanged(value, newValue)) {
 			value = newValue;

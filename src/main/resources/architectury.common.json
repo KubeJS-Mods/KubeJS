@@ -62,6 +62,15 @@
 		],
 		"net/minecraft/class_8786": [
 			"dev/latvian/mods/kubejs/core/RecipeHolderKJS"
+		],
+		"net/minecraft/class_5350": [
+			"dev/latvian/mods/kubejs/core/ReloadableServerResourcesKJS"
+		],
+		"net/minecraft/class_1863": [
+			"dev/latvian/mods/kubejs/core/RecipeManagerKJS"
+		],
+		"net/minecraft/class_3505": [
+			"dev/latvian/mods/kubejs/core/TagManagerKJS"
 		]
 	}
 }

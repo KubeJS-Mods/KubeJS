@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.item.FoodEatenKubeEvent;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -16,9 +17,11 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 @RemapPrefixForJS("kjs$")
 public interface LivingEntityKJS extends EntityKJS {
@@ -221,6 +224,11 @@ public interface LivingEntityKJS extends EntityKJS {
 
 	default RayTraceResultJS kjs$rayTrace() {
 		return kjs$rayTrace(kjs$getReachDistance());
+	}
+
+	@Nullable
+	default Entity kjs$rayTraceEntity(Predicate<Entity> filter) {
+		return kjs$rayTraceEntity(kjs$getReachDistance(), filter);
 	}
 
 	default double kjs$getAttributeTotalValue(Holder<Attribute> attribute) {

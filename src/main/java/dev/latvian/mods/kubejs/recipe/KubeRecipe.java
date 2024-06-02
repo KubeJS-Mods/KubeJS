@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.JsonOps;
@@ -32,8 +31,6 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -142,7 +139,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		for (var h : valueMap.holders) {
 			for (var name : h.key.names) {
 				if (name.equals(key)) {
-					h.value = Cast.to(h.key.component.read(this, Wrapper.unwrapped(value)));
+					h.value = Cast.to(h.key.component.wrap(cx, this, Wrapper.unwrapped(value)));
 					h.write();
 					save();
 					return this;
@@ -165,7 +162,8 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				for (var v : valueMap.holders) {
 					if (v.key.alwaysWrite || !v.key.optional()) {
 						if (v.key.alwaysWrite) {
-							v.value = Cast.to(v.key.component.read(this, v.key.optional.getDefaultValue(type.schemaType)));
+							// FIXME? Not sure why read() was called here v.value = Cast.to(v.key.component.read(this, v.key.optional.getDefaultValue(type.schemaType)));
+							v.value = Cast.to(v.key.optional.getDefaultValue(type.schemaType));
 						}
 
 						v.write();
@@ -278,7 +276,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 
 	@Override
 	@Deprecated
-	public final RecipeSchema kjs$getSchema() {
+	public final RecipeSchema kjs$getSchema(Context cx) {
 		return type.schemaType.schema;
 	}
 
@@ -302,7 +300,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				var list = new ArrayList<>(type.schemaType.schema.inputCount());
 
 				for (var v : valueMap.holders) {
-					if (v.key.component.role().isInput()) {
+					if (v.key.role.isInput()) {
 						list.add(v);
 					}
 				}
@@ -323,7 +321,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				var list = new ArrayList<>(type.schemaType.schema.outputCount());
 
 				for (var v : valueMap.holders) {
-					if (v.key.component.role().isOutput()) {
+					if (v.key.role.isOutput()) {
 						list.add(v);
 					}
 				}
@@ -336,7 +334,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean hasInput(HolderLookup.Provider registries, ReplacementMatch match) {
+	public boolean hasInput(Context cx, ReplacementMatch match) {
 		for (var v : inputValues()) {
 			if (v.isInput(this, match)) {
 				return true;
@@ -347,11 +345,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean replaceInput(ReplacementMatch match, InputReplacement with) {
+	public boolean replaceInput(Context cx, ReplacementMatch match, InputReplacement with) {
 		boolean replaced = false;
 
 		for (var v : inputValues()) {
-			replaced = v.replaceInput(this, match, with) || replaced;
+			replaced = v.replaceInput(cx, this, match, with) || replaced;
 		}
 
 		if (replaced) {
@@ -362,7 +360,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean hasOutput(HolderLookup.Provider registries, ReplacementMatch match) {
+	public boolean hasOutput(Context cx, ReplacementMatch match) {
 		for (var v : outputValues()) {
 			if (v.isOutput(this, match)) {
 				return true;
@@ -373,11 +371,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {
+	public boolean replaceOutput(Context cx, ReplacementMatch match, OutputReplacement with) {
 		boolean replaced = false;
 
 		for (var v : outputValues()) {
-			replaced = v.replaceOutput(this, match, with) || replaced;
+			replaced = v.replaceOutput(cx, this, match, with) || replaced;
 		}
 
 		if (replaced) {
@@ -620,44 +618,12 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		return from instanceof InputItem || from instanceof ItemStack || from instanceof Ingredient || !InputItem.of(from).isEmpty();
 	}
 
-	public InputItem readInputItem(Object from) {
-		return InputItem.of(from);
-	}
-
-	public JsonElement writeInputItem(InputItem value) {
-		return value.ingredient.toJsonJS();
-	}
-
 	public boolean outputItemHasPriority(Object from) {
 		return from instanceof OutputItem || from instanceof ItemStack || !OutputItem.of(from).isEmpty();
 	}
 
 	public OutputItem readOutputItem(Object from) {
 		return OutputItem.of(from);
-	}
-
-	public JsonElement writeOutputItem(OutputItem value) {
-		var json = new JsonObject();
-		json.addProperty("item", value.item.kjs$getId());
-
-		if (value.item.getCount() > 1) {
-			json.addProperty("count", value.item.getCount());
-		}
-
-		if (!value.item.isComponentsPatchEmpty()) {
-			json.add("components", DataComponentPatch.CODEC.encodeStart(JsonOps.INSTANCE, value.item.getComponentsPatch()).result().get());
-		}
-
-		if (value.hasChance()) {
-			json.addProperty("chance", value.getChance());
-		}
-
-		if (value.rolls != null) {
-			json.addProperty("minRolls", value.rolls.getMinValue());
-			json.addProperty("maxRolls", value.rolls.getMaxValue());
-		}
-
-		return json;
 	}
 
 	// -- End -- //

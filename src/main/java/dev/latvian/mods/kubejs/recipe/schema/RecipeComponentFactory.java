@@ -1,59 +1,40 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
+import com.mojang.brigadier.StringReader;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
-import dev.latvian.mods.kubejs.util.MapJS;
-import dev.latvian.mods.rhino.BaseFunction;
-import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.Scriptable;
-import dev.latvian.mods.rhino.type.TypeInfo;
-import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @FunctionalInterface
-public interface RecipeComponentFactory extends CustomJavaToJsWrapper {
-	record Simple(RecipeComponent<?> component) implements RecipeComponentFactory {
-		@Override
-		public RecipeComponent<?> create(Context cx, Scriptable scope, Map<String, Object> args) {
-			return component;
-		}
+public interface RecipeComponentFactory {
+	RecipeComponent<?> readComponent(RecipeSchemaStorage storage, StringReader reader) throws Exception;
+
+	static RecipeComponentFactory readOneComponent(Function<RecipeComponent<?>, RecipeComponent<?>> factory) {
+		return (storage, reader) -> {
+			reader.skipWhitespace();
+			reader.expect('<');
+			reader.skipWhitespace();
+			var component = storage.readComponent(reader);
+			reader.skipWhitespace();
+			reader.expect('>');
+			return factory.apply(component);
+		};
 	}
 
-	record Dynamic(DynamicRecipeComponent component) implements RecipeComponentFactory {
-		@Override
-		@Nullable
-		public RecipeComponent<?> create(Context cx, Scriptable scope, Map<String, Object> args) {
-			return component.factory().create(cx, scope, args);
-		}
-	}
-
-	class RecipeComponentFactoryJS extends BaseFunction {
-		private final RecipeComponentFactory factory;
-
-		public RecipeComponentFactoryJS(RecipeComponentFactory factory) {
-			this.factory = factory;
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-			var map = args.length == 0 ? Map.of() : MapJS.of(args[0]);
-			var component = factory.create(cx, scope, (Map) map);
-
-			if (component == null) {
-				throw new RuntimeException("Invalid dynamic recipe component arguments: " + map);
-			}
-
-			return component;
-		}
-	}
-
-	@Nullable
-	RecipeComponent<?> create(Context cx, Scriptable scope, Map<String, Object> args);
-
-	@Override
-	default Scriptable convertJavaToJs(Context cx, Scriptable scope, TypeInfo staticType) {
-		return new RecipeComponentFactoryJS(this);
+	static RecipeComponentFactory readTwoComponents(BiFunction<RecipeComponent<?>, RecipeComponent<?>, RecipeComponent<?>> factory) {
+		return (storage, reader) -> {
+			reader.skipWhitespace();
+			reader.expect('<');
+			reader.skipWhitespace();
+			var key = storage.readComponent(reader);
+			reader.skipWhitespace();
+			reader.expect(',');
+			reader.skipWhitespace();
+			var component = storage.readComponent(reader);
+			reader.skipWhitespace();
+			reader.expect('>');
+			return factory.apply(key, component);
+		};
 	}
 }

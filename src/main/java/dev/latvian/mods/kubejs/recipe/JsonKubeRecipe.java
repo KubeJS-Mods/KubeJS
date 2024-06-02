@@ -1,7 +1,8 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.CommonProperties;
-import net.minecraft.core.HolderLookup;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.rhino.Context;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -15,7 +16,7 @@ public class JsonKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public boolean hasInput(HolderLookup.Provider registries, ReplacementMatch match) {
+	public boolean hasInput(Context cx, ReplacementMatch match) {
 		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
 			var arr = getOriginalRecipe().getIngredients();
 
@@ -35,14 +36,14 @@ public class JsonKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public boolean replaceInput(ReplacementMatch match, InputReplacement with) {
+	public boolean replaceInput(Context cx, ReplacementMatch match, InputReplacement with) {
 		return false;
 	}
 
 	@Override
-	public boolean hasOutput(HolderLookup.Provider registries, ReplacementMatch match) {
+	public boolean hasOutput(Context cx, ReplacementMatch match) {
 		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
-			var result = getOriginalRecipe().getResultItem(registries);
+			var result = getOriginalRecipe().getResultItem(((KubeJSContext) cx).getRegistries());
 			//noinspection ConstantValue
 			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.contains(result);
 		}
@@ -51,7 +52,7 @@ public class JsonKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {
+	public boolean replaceOutput(Context cx, ReplacementMatch match, OutputReplacement with) {
 		return false;
 	}
 }

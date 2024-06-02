@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
-import net.minecraft.core.HolderLookup;
+import dev.latvian.mods.rhino.Context;
 
 public class ModFilter implements RecipeFilter {
 	private final String mod;
@@ -11,7 +11,7 @@ public class ModFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(HolderLookup.Provider registries, RecipeLikeKJS r) {
+	public boolean test(Context cx, RecipeLikeKJS r) {
 		return r.kjs$getMod().equals(mod);
 	}
 

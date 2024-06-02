@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.util;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 public record TinyMap<K, V>(TinyMap.Entry<K, V>[] entries) {
@@ -28,5 +29,15 @@ public record TinyMap<K, V>(TinyMap.Entry<K, V>[] entries) {
 			entries[i++] = new Entry<>(entry.getKey(), entry.getValue());
 		}
 		return new TinyMap<K, V>(entries);
+	}
+
+	public Map<K, V> toMap() {
+		var map = new HashMap<K, V>(entries.length);
+
+		for (var entry : entries) {
+			map.put(entry.key(), entry.value());
+		}
+
+		return map;
 	}
 }

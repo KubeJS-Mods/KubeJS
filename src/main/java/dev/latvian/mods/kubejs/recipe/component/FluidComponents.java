@@ -4,11 +4,6 @@ public interface FluidComponents {
 	/* FIXME
 	RecipeComponent<InputFluid> INPUT = new RecipeComponent<>() {
 		@Override
-		public String componentType() {
-			return "input_fluid";
-		}
-
-		@Override
 		public ComponentRole role() {
 			return ComponentRole.INPUT;
 		}
@@ -49,7 +44,7 @@ public interface FluidComponents {
 
 		@Override
 		public String toString() {
-			return componentType();
+			return "input_fluid";
 		}
 	};
 
@@ -58,11 +53,6 @@ public interface FluidComponents {
 	RecipeComponent<Either<InputFluid, InputItem>[]> INPUT_OR_ITEM_ARRAY = INPUT_OR_ITEM.asArray();
 
 	RecipeComponent<OutputFluid> OUTPUT = new RecipeComponent<>() {
-		@Override
-		public String componentType() {
-			return "output_fluid";
-		}
-
 		@Override
 		public ComponentRole role() {
 			return ComponentRole.OUTPUT;
@@ -105,7 +95,7 @@ public interface FluidComponents {
 
 		@Override
 		public String toString() {
-			return componentType();
+			return "output_fluid";
 		}
 	};
 

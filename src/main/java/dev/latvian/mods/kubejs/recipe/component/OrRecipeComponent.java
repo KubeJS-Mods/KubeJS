@@ -1,20 +1,21 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 @SuppressWarnings("OptionalIsPresent")
 public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L> low) implements RecipeComponent<Either<H, L>> {
 	@Override
-	public String componentType() {
-		return "or";
+	public Codec<Either<H, L>> codec() {
+		return Codec.either(high.codec(), low.codec());
 	}
 
 	@Override
@@ -23,38 +24,20 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 	}
 
 	@Override
-	public ComponentRole role() {
-		if (high.role().isOther()) {
-			return low.role();
-		}
-
-		return high.role();
-	}
-
-	@Override
-	public JsonElement write(KubeRecipe recipe, Either<H, L> value) {
-		if (value.left().isPresent()) {
-			return high.write(recipe, value.left().get());
-		} else {
-			return low.write(recipe, value.right().orElseThrow());
-		}
-	}
-
-	@Override
-	public Either<H, L> read(KubeRecipe recipe, Object from) {
-		if (high.hasPriority(recipe, from)) {
+	public Either<H, L> wrap(Context cx, KubeRecipe recipe, Object from) {
+		if (high.hasPriority(cx, recipe, from)) {
 			// if high has priority, only try to read high
-			return Either.left(high.read(recipe, from));
-		} else if (low.hasPriority(recipe, from)) {
+			return Either.left(high.wrap(cx, recipe, from));
+		} else if (low.hasPriority(cx, recipe, from)) {
 			// if low has priority, only try to read low
-			return Either.right(low.read(recipe, from));
+			return Either.right(low.wrap(cx, recipe, from));
 		} else {
 			// If neither has priority, try to read high, if it fails, fallback to low
 			try {
-				return Either.left(high.read(recipe, from));
+				return Either.left(high.wrap(cx, recipe, from));
 			} catch (Exception ex1) {
 				try {
-					return Either.right(low.read(recipe, from));
+					return Either.right(low.wrap(cx, recipe, from));
 				} catch (Exception ex2) {
 					ConsoleJS.SERVER.error("Failed to read %s as high priority (%s)!".formatted(from, high), ex1);
 					ConsoleJS.SERVER.error("Failed to read %s as low priority (%s)!".formatted(from, low), ex2);
@@ -71,14 +54,14 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 	}
 
 	@Override
-	public Either<H, L> replaceInput(KubeRecipe recipe, Either<H, L> original, ReplacementMatch match, InputReplacement with) {
+	public Either<H, L> replaceInput(Context cx, KubeRecipe recipe, Either<H, L> original, ReplacementMatch match, InputReplacement with) {
 		var l = original.left();
 
 		if (l.isPresent()) {
-			var r = high.replaceInput(recipe, l.get(), match, with);
+			var r = high.replaceInput(cx, recipe, l.get(), match, with);
 			return r == l.get() ? original : Either.left(r);
 		} else {
-			var r = low.replaceInput(recipe, original.right().get(), match, with);
+			var r = low.replaceInput(cx, recipe, original.right().get(), match, with);
 			return r == original.right().get() ? original : Either.right(r);
 		}
 	}
@@ -90,14 +73,14 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 	}
 
 	@Override
-	public Either<H, L> replaceOutput(KubeRecipe recipe, Either<H, L> original, ReplacementMatch match, OutputReplacement with) {
+	public Either<H, L> replaceOutput(Context cx, KubeRecipe recipe, Either<H, L> original, ReplacementMatch match, OutputReplacement with) {
 		var l = original.left();
 
 		if (l.isPresent()) {
-			var r = high.replaceOutput(recipe, l.get(), match, with);
+			var r = high.replaceOutput(cx, recipe, l.get(), match, with);
 			return r == l.get() ? original : Either.left(r);
 		} else {
-			var r = low.replaceOutput(recipe, original.right().get(), match, with);
+			var r = low.replaceOutput(cx, recipe, original.right().get(), match, with);
 			return r == original.right().get() ? original : Either.right(r);
 		}
 	}
@@ -121,6 +104,6 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 
 	@Override
 	public String toString() {
-		return "{" + high + "|" + low + "}";
+		return "either<" + high + ", " + low + ">";
 	}
 }

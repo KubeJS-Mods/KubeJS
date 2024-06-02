@@ -1,23 +1,20 @@
 package dev.latvian.mods.kubejs.recipe.schema.minecraft;
 
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
-import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.component.MapRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.util.TinyMap;
-import org.apache.commons.lang3.StringUtils;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public interface ShapedRecipeSchema {
@@ -30,53 +27,13 @@ public interface ShapedRecipeSchema {
 			return setValue(KJS_SHRINK, false);
 		}
 
-		private void set2DValues(ComponentValueMap from) {
-			setValue(RESULT, from.getValue(this, RESULT));
-
-			var vertical = from.getValue(this, INGREDIENTS);
-
-			if (vertical.length == 0) {
-				throw new RecipeExceptionJS("Pattern is empty!");
-			}
-
-			var pattern = new ArrayList<String>();
-			var key = new HashMap<Character, InputItem>();
-			var horizontalPattern = new StringBuilder();
-			var id = 0;
-
-			for (var horizontal : vertical) {
-				for (var ingredient : horizontal) {
-					if (!ingredient.isEmpty()) {
-						char currentChar = (char) ('A' + (id++));
-						horizontalPattern.append(currentChar);
-						key.put(currentChar, ingredient);
-					} else {
-						horizontalPattern.append(' ');
-					}
-				}
-
-				pattern.add(horizontalPattern.toString());
-				horizontalPattern.setLength(0);
-			}
-
-			var maxLength = pattern.stream().mapToInt(String::length).max().getAsInt();
-			var iterator = pattern.listIterator();
-
-			while (iterator.hasNext()) {
-				iterator.set(StringUtils.rightPad(iterator.next(), maxLength));
-			}
-
-			setValue(PATTERN, pattern.toArray(new String[0]));
-			setValue(KEY, TinyMap.ofMap(key));
-		}
-
 		@Override
 		public void afterLoaded() {
 			super.afterLoaded();
-			var pattern = getValue(PATTERN);
+			var pattern = new ArrayList<>(getValue(PATTERN));
 			var key = getValue(KEY);
 
-			if (pattern.length == 0) {
+			if (pattern.isEmpty()) {
 				throw new RecipeExceptionJS("Pattern is empty!");
 			}
 
@@ -102,9 +59,9 @@ public interface ShapedRecipeSchema {
 			}
 
 			if (airs != null) {
-				for (int i = 0; i < pattern.length; i++) {
+				for (int i = 0; i < pattern.size(); i++) {
 					for (var a : airs) {
-						pattern[i] = pattern[i].replace(a, ' ');
+						pattern.set(i, pattern.get(i).replace(a, ' '));
 					}
 				}
 
@@ -131,17 +88,13 @@ public interface ShapedRecipeSchema {
 		}
 	}
 
-	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key("result");
-	RecipeKey<String[]> PATTERN = StringComponent.NON_EMPTY.asArray().key("pattern");
-	RecipeKey<TinyMap<Character, InputItem>> KEY = MapRecipeComponent.ITEM_PATTERN_KEY.key("key");
-	RecipeKey<Boolean> KJS_MIRROR = BooleanComponent.BOOLEAN.key("kubejs:mirror").preferred("kjsMirror").optional(true).exclude();
-	RecipeKey<Boolean> KJS_SHRINK = BooleanComponent.BOOLEAN.key("kubejs:shrink").preferred("kjsShrink").optional(true).exclude();
-
-	// Used for shaped recipes with 2D ingredient array
-	RecipeKey<InputItem[][]> INGREDIENTS = ItemComponents.INPUT_ARRAY.asArray().key("ingredients");
+	RecipeKey<ItemStack> RESULT = ItemComponents.OUTPUT.outputKey("result");
+	RecipeKey<List<String>> PATTERN = StringComponent.NON_EMPTY.asList().otherKey("pattern");
+	RecipeKey<TinyMap<Character, Ingredient>> KEY = MapRecipeComponent.INGREDIENT_PATTERN_KEY.inputKey("key");
+	RecipeKey<Boolean> KJS_MIRROR = BooleanComponent.BOOLEAN.otherKey("kubejs:mirror").preferred("kjsMirror").optional(true).exclude();
+	RecipeKey<Boolean> KJS_SHRINK = BooleanComponent.BOOLEAN.otherKey("kubejs:shrink").preferred("kjsShrink").optional(true).exclude();
 
 	RecipeSchema SCHEMA = new RecipeSchema(ShapedKubeRecipe.class, ShapedKubeRecipe::new, RESULT, PATTERN, KEY, KJS_MIRROR, KJS_SHRINK)
 		.constructor(RESULT, PATTERN, KEY)
-		.constructor((recipe, schemaType, keys, from) -> ((ShapedKubeRecipe) recipe).set2DValues(from), RESULT, INGREDIENTS)
 		.uniqueOutputId(RESULT);
 }

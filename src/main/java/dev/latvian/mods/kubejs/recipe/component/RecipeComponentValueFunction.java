@@ -18,6 +18,6 @@ public class RecipeComponentValueFunction extends BaseFunction {
 
 	@Override
 	public KubeRecipe call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-		return recipe.setValue(componentValue.key, Cast.to(componentValue.key.component.read(recipe, Wrapper.unwrapped(args[0]))));
+		return recipe.setValue(componentValue.key, Cast.to(componentValue.key.component.wrap(cx, recipe, Wrapper.unwrapped(args[0]))));
 	}
 }

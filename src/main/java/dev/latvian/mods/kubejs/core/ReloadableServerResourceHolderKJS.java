@@ -1,7 +1,11 @@
 package dev.latvian.mods.kubejs.core;
 
 public interface ReloadableServerResourceHolderKJS {
-	void kjs$setResources(ReloadableServerResourcesKJS resources);
+	default void kjs$setResources(ReloadableServerResourcesKJS resources) {
+		throw new NoMixinException();
+	}
 
-	ReloadableServerResourcesKJS kjs$getResources();
+	default ReloadableServerResourcesKJS kjs$getResources() {
+		throw new NoMixinException();
+	}
 }

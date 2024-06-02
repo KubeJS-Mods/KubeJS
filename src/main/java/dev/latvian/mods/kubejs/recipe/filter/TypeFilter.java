@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import net.minecraft.core.HolderLookup;
+import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.ResourceLocation;
 
 public class TypeFilter implements RecipeFilter {
@@ -19,7 +19,7 @@ public class TypeFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(HolderLookup.Provider registries, RecipeLikeKJS r) {
+	public boolean test(Context cx, RecipeLikeKJS r) {
 		return r.kjs$getType().equals(type);
 	}
 

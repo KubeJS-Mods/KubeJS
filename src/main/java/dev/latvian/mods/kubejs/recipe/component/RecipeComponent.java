@@ -1,26 +1,23 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.TinyMap;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.function.UnaryOperator;
-
 /**
  * A <b>recipe component</b> is a reusable definition of a recipe element (such as an in/output item, a fluid, or even just a number value)
- * that has a {@link #role() role} and a {@link #typeInfo() description}
- * associated with it and defines logic on how to {@link #read(KubeRecipe, Object) read} and {@link #write(KubeRecipe, Object) write} the value
- * contained within the context of a recipe.
+ * that has a {@link #typeInfo() description} associated with it and defines logic on how to serialize the value
+ * contained within the context of a recipe with a {@link #codec()}.
  * <p>
  * Recipe components are used in conjunction with {@link RecipeKey}s to define the structure of a recipe,
  * and are also referred to by bulk recipe operations such as {@link #replaceInput(KubeRecipe, Object, ReplacementMatch, InputReplacement) input} and
@@ -38,6 +35,8 @@ import java.util.function.UnaryOperator;
  */
 @Nullable
 public interface RecipeComponent<T> {
+	Codec<RecipeComponent<?>> CODEC = Codec.unit(null); // FIXME!!!
+
 	static RecipeComponentBuilder builder() {
 		return new RecipeComponentBuilder(4);
 	}
@@ -58,34 +57,23 @@ public interface RecipeComponent<T> {
 	 * @param name The name of the key
 	 * @return The created {@link RecipeKey}
 	 */
-	default RecipeKey<T> key(String name) {
-		return new RecipeKey<>(this, name);
+	default RecipeKey<T> key(String name, ComponentRole role) {
+		return new RecipeKey<>(this, name, role);
 	}
 
-	/**
-	 * Defines the {@link ComponentRole role} of this component.
-	 * <p>
-	 * This is used during input / output replacement to determine which components are eligible for replacement,
-	 * as well as populating the {@link KubeRecipe#inputValues()} and {@link KubeRecipe#outputValues()} arrays.
-	 *
-	 * @return The role of this component
-	 */
-	default ComponentRole role() {
-		return ComponentRole.OTHER;
+	default RecipeKey<T> inputKey(String name) {
+		return key(name, ComponentRole.INPUT);
 	}
 
-	/**
-	 * Defines the string type of this component, mostly used for logging and debugging purposes.
-	 * <p>
-	 * For a description of how what the component is actually composed of, which may be used by addons like ProbeJS
-	 * to describe it, refer to {@link #typeInfo() this method} instead.
-	 *
-	 * @return The type of this component
-	 * @see #typeInfo()
-	 */
-	default String componentType() {
-		return "unknown";
+	default RecipeKey<T> outputKey(String name) {
+		return key(name, ComponentRole.OUTPUT);
 	}
+
+	default RecipeKey<T> otherKey(String name) {
+		return key(name, ComponentRole.OTHER);
+	}
+
+	Codec<T> codec();
 
 	/**
 	 * Defines a description for how this component may be constructed.
@@ -101,25 +89,19 @@ public interface RecipeComponent<T> {
 	TypeInfo typeInfo();
 
 	/**
-	 * Method to write the value contained within this component to a JSON object.
-	 *
-	 * @param recipe The recipe object used for context
-	 * @param value  The value to write
-	 * @return The JSON representation of the written value
-	 */
-	JsonElement write(KubeRecipe recipe, T value);
-
-	/**
 	 * Method to read the value contained within this component from an input object;
-	 * this may be a JSON element (if reading from JSON) or some arbitrary value passed
-	 * into a {@link RecipeSchema schema's} constructor(s) or automatically generated
-	 * builder methods.
+	 * this may be some arbitrary value passed into a {@link RecipeSchema schema's}
+	 * constructor(s) or automatically generated builder methods. By default, it will
+	 * attempt to type wrap based on {@link #typeInfo()}
 	 *
+	 * @param cx     JavaScript context
 	 * @param recipe The recipe object used for context
 	 * @param from   An object to be converted to a value for this component
 	 * @return The value read from the input
 	 */
-	T read(KubeRecipe recipe, Object from);
+	default T wrap(Context cx, KubeRecipe recipe, Object from) {
+		return (T) cx.jsToJava(from, typeInfo());
+	}
 
 	/**
 	 * This method serves as a more specialized override for serializing to JSON,
@@ -138,7 +120,7 @@ public interface RecipeComponent<T> {
 			}
 		}
 
-		json.add(cv.key.name, write(recipe, cv.value));
+		json.add(cv.key.name, cv.key.codec.encodeStart(JsonOps.INSTANCE, cv.value).getOrThrow());
 	}
 
 	/**
@@ -155,38 +137,13 @@ public interface RecipeComponent<T> {
 		var v = json.get(cv.key.name);
 
 		if (v != null) {
-			cv.value = read(recipe, v);
+			cv.value = cv.key.codec.decode(JsonOps.INSTANCE, v).getOrThrow().getFirst();
 		} else if (cv.key.names.size() >= 2) {
 			for (var alt : cv.key.names) {
 				v = json.get(alt);
 
 				if (v != null) {
-					cv.value = read(recipe, v);
-					return;
-				}
-			}
-		}
-	}
-
-	/**
-	 * This method serves as a more specialized override for deserializing from a map,
-	 * providing the map itself as additional context.
-	 *
-	 * @param recipe The recipe object used for context
-	 * @param cv     The holder object to store the resulting value in
-	 * @param map    The map to read from (just like with JSON, this may be a nested map in the case of some components)
-	 */
-	default void readFromMap(KubeRecipe recipe, RecipeComponentValue<T> cv, Map<?, ?> map) {
-		var v = map.get(cv.key.name);
-
-		if (v != null) {
-			cv.value = read(recipe, v);
-		} else if (cv.key.names.size() >= 2) {
-			for (var alt : cv.key.names) {
-				v = map.get(alt);
-
-				if (v != null) {
-					cv.value = read(recipe, v);
+					cv.value = cv.key.codec.decode(JsonOps.INSTANCE, v).getOrThrow().getFirst();
 					return;
 				}
 			}
@@ -201,7 +158,7 @@ public interface RecipeComponent<T> {
 	 * @param from   The object to be deserialized from
 	 * @return Whether this component should take priority
 	 */
-	default boolean hasPriority(KubeRecipe recipe, Object from) {
+	default boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
 		return false;
 	}
 
@@ -218,8 +175,8 @@ public interface RecipeComponent<T> {
 		return false;
 	}
 
-	default T replaceInput(KubeRecipe recipe, T original, ReplacementMatch match, InputReplacement with) {
-		return original instanceof InputReplacement r && isInput(recipe, original, match) ? read(recipe, with.replaceInput(recipe, match, r)) : original;
+	default T replaceInput(Context cx, KubeRecipe recipe, T original, ReplacementMatch match, InputReplacement with) {
+		return original instanceof InputReplacement r && isInput(recipe, original, match) ? wrap(cx, recipe, with.replaceInput(recipe, match, r)) : original;
 	}
 
 	/**
@@ -235,8 +192,8 @@ public interface RecipeComponent<T> {
 		return false;
 	}
 
-	default T replaceOutput(KubeRecipe recipe, T original, ReplacementMatch match, OutputReplacement with) {
-		return original instanceof OutputReplacement r && isOutput(recipe, original, match) ? read(recipe, with.replaceOutput(recipe, match, r)) : original;
+	default T replaceOutput(Context cx, KubeRecipe recipe, T original, ReplacementMatch match, OutputReplacement with) {
+		return original instanceof OutputReplacement r && isOutput(recipe, original, match) ? wrap(cx, recipe, with.replaceOutput(recipe, match, r)) : original;
 	}
 
 	/**
@@ -256,12 +213,12 @@ public interface RecipeComponent<T> {
 		return oldValue != newValue;
 	}
 
-	default ArrayRecipeComponent<T> asArray() {
-		return new ArrayRecipeComponent<>(this, false);
+	default ListRecipeComponent<T> asList() {
+		return ListRecipeComponent.create(this, false);
 	}
 
-	default ArrayRecipeComponent<T> asArrayOrSelf() {
-		return new ArrayRecipeComponent<>(this, true);
+	default ListRecipeComponent<T> asListOrSelf() {
+		return ListRecipeComponent.create(this, true);
 	}
 
 	default RecipeComponent<T> orSelf() {
@@ -284,29 +241,7 @@ public interface RecipeComponent<T> {
 		return new AndRecipeComponent<>(this, other);
 	}
 
-	// The below helpers are mainly intended for scripters, if you are an addon developer just make your own component instead of reusing the existing ones.
-	@Info("Returns a new RecipeComponent that applies the mappingTo function to the input before it is passed to this component to be read")
-	default MappingRecipeComponent<T> mapIn(UnaryOperator<Object> mappingTo) {
-		return map(mappingTo, UnaryOperator.identity());
-	}
-
-	@Info("Returns a new RecipeComponent that applies the mappingFrom function after the component writes to json, before that json is saved")
-	default MappingRecipeComponent<T> mapOut(UnaryOperator<JsonElement> mappingFrom) {
-		return map(UnaryOperator.identity(), mappingFrom);
-	}
-
-	@Info("Returns a new RecipeComponent that applies the mappingTo function to the input before it is passed to this component to be read, and the mappingFrom function after the component writes to json, before that json is saved")
-	default MappingRecipeComponent<T> map(UnaryOperator<Object> mappingTo, UnaryOperator<JsonElement> mappingFrom) {
-		return new MappingRecipeComponent<>(this, mappingTo, mappingFrom);
-	}
-
-	@Info("""
-		Returns a new RecipeComponent that maps the keys in a JsonObject according to the provided map, both before the json gets passed to the component and after the component returns a written json object.
-		The mappings should be provided in the format `{recipe: "component"}` where recipe is the key as in the recipe, and component is the key as how the RecipeComponent expects it.
-		Any keys not included in the provided map will be ignored, and any keys in the provided map that are not in either the input object or output object will be ignored.
-		Note that if the input or output is not a JsonObject (ie its an ItemStack, or it is a JsonPrimitive) then that will pass through this without being modified.
-		If you wish to handle those situations use the actual map function""")
-	default SimpleMappingRecipeComponent<T> simpleMap(Object mappings) {
-		return new SimpleMappingRecipeComponent<>(this, mappings);
+	default RecipeComponent<T> withCodec(Codec<T> codec) {
+		return new RecipeComponentWithCodec<>(this, codec);
 	}
 }

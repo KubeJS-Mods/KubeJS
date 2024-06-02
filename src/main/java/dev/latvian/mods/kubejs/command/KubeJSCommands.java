@@ -14,7 +14,6 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.core.WithPersistentData;
 import dev.latvian.mods.kubejs.event.EventGroups;
 import dev.latvian.mods.kubejs.event.EventResult;
@@ -344,7 +343,7 @@ public class KubeJSCommands {
 					builder.append("\n\n");
 				}
 
-				var scriptManager = ((ReloadableServerResourcesKJS) source.getServer().getServerResources().managers()).kjs$getServerScriptManager();
+				var scriptManager = source.getServer().getServerResources().managers().kjs$getServerScriptManager();
 				var cx = (KubeJSContext) scriptManager.contextFactory.enter();
 
 				var members = JavaMembers.lookupClass(cx, cx.topLevelScope, eventType, null, false);
@@ -671,7 +670,7 @@ public class KubeJSCommands {
 
 	private static int reloadServer(CommandSourceStack source) {
 		var resources = source.getServer().getServerResources();
-		((ReloadableServerResourcesKJS) resources.managers()).kjs$getServerScriptManager().reload(resources.resourceManager());
+		resources.managers().kjs$getServerScriptManager().reload(resources.resourceManager());
 		source.sendSuccess(() -> Component.literal("Done! To reload recipes, tags, loot tables and other datapack things, run ")
 				.append(Component.literal("'/reload'")
 					.kjs$clickRunCommand("/reload")

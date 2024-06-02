@@ -1,0 +1,33 @@
+{
+	"keys": [
+		{
+			"name": "result",
+			"role": "output",
+			"type": "item_stack"
+		},
+		{
+			"name": "pattern",
+			"type": "non_empty_string[]"
+		},
+		{
+			"name": "key",
+			"role": "input",
+			"type": "map<character, ingredient>"
+		},
+		{
+			"name": "kubejs:mirror",
+			"type": "boolean",
+			"preferred": "kjsMirror",
+			"optional": true,
+			"excluded": true
+		},
+		{
+			"name": "kubejs:mirror",
+			"type": "boolean",
+			"preferred": "kjsShrink",
+			"optional": true,
+			"excluded": true
+		}
+	],
+	"unique": ["result"]
+}

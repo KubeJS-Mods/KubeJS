@@ -1,12 +1,17 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
+import dev.latvian.mods.kubejs.event.KubeEvent;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Map;
+public class RecipeSchemaRegistryKubeEvent implements KubeEvent {
+	private final RecipeSchemaStorage storage;
 
-public record RegisterRecipeSchemasEvent(Map<String, RecipeNamespace> namespaces, Map<String, ResourceLocation> mappedRecipes) {
+	public RecipeSchemaRegistryKubeEvent(RecipeSchemaStorage storage) {
+		this.storage = storage;
+	}
+
 	public RecipeNamespace namespace(String namespace) {
-		return namespaces.computeIfAbsent(namespace, RecipeNamespace::new);
+		return storage.namespaces.computeIfAbsent(namespace, RecipeNamespace::new);
 	}
 
 	public void register(ResourceLocation id, RecipeSchema schema) {
@@ -14,7 +19,7 @@ public record RegisterRecipeSchemasEvent(Map<String, RecipeNamespace> namespaces
 	}
 
 	public void mapRecipe(String name, ResourceLocation type) {
-		mappedRecipes.put(name, type);
+		storage.mappings.put(name, type);
 	}
 
 	public void mapRecipe(String name, String type) {

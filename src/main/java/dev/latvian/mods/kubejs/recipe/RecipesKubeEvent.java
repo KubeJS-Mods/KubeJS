@@ -12,15 +12,14 @@ import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.helpers.RecipeHelper;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientWithCustomPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.IDFilter;
 import dev.latvian.mods.kubejs.recipe.filter.OrFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.schema.JsonRecipeSchema;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -31,6 +30,7 @@ import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.WrappedException;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.ReportedException;
@@ -59,7 +59,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -159,12 +158,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			}
 		}, true);
 
-	@HideFromJS
-	public static Map<UUID, IngredientWithCustomPredicate> customIngredientMap = null;
-
-	@HideFromJS
-	public static RecipesKubeEvent instance;
-
+	public final RecipeSchemaStorage recipeSchemaStorage;
 	public final HolderLookup.Provider registries;
 	public final Map<ResourceLocation, KubeRecipe> originalRecipes;
 	public final Collection<KubeRecipe> addedRecipes;
@@ -189,8 +183,9 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	final RecipeSerializer<?> stageSerializer;
 
-	public RecipesKubeEvent(HolderLookup.Provider registries) {
+	public RecipesKubeEvent(RecipeSchemaStorage recipeSchemaStorage, HolderLookup.Provider registries) {
 		ConsoleJS.SERVER.info("Initializing recipe event...");
+		this.recipeSchemaStorage = recipeSchemaStorage;
 		this.registries = registries;
 		this.originalRecipes = new HashMap<>();
 		this.addedRecipes = new ConcurrentLinkedQueue<>();
@@ -209,9 +204,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 		this.failedCount = new AtomicInteger(0);
 
-		var allNamespaces = RecipeNamespace.getAll();
-
-		for (var namespace : allNamespaces.values()) {
+		for (var namespace : recipeSchemaStorage.namespaces.values()) {
 			var nsMap = new HashMap<String, RecipeTypeFunction>();
 			recipeFunctions.put(namespace.name, new NamespaceFunction(namespace, nsMap));
 
@@ -244,7 +237,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			}
 		}
 
-		for (var entry : RecipeNamespace.getMappedRecipes().entrySet()) {
+		for (var entry : recipeSchemaStorage.mappings.entrySet()) {
 			var type = recipeFunctions.get(entry.getValue().toString());
 
 			if (type instanceof RecipeTypeFunction) {
@@ -269,7 +262,7 @@ public class RecipesKubeEvent implements KubeEvent {
 	public void post(RecipeManager recipeManager, Map<ResourceLocation, JsonElement> datapackRecipeMap) {
 		ConsoleJS.SERVER.info("Processing recipes...");
 		KubeRecipe.itemErrors = false;
-		var resources = ((RecipeManagerKJS) recipeManager).kjs$getResources();
+		var resources = recipeManager.kjs$getResources();
 		var cx = resources.kjs$getServerScriptManager().contextFactory.enter();
 
 		TagContext.INSTANCE.setValue(TagContext.fromLoadResult(((ReloadableServerResources) resources).tagManager.getResult()));
@@ -477,10 +470,10 @@ public class RecipesKubeEvent implements KubeEvent {
 		return filter;
 	}
 
-	private record RecipeStreamFilter(HolderLookup.Provider registries, RecipeFilter filter) implements Predicate<KubeRecipe> {
+	private record RecipeStreamFilter(Context cx, RecipeFilter filter) implements Predicate<KubeRecipe> {
 		@Override
 		public boolean test(KubeRecipe r) {
-			return r != null && !r.removed && filter.test(registries, r);
+			return r != null && !r.removed && filter.test(cx, r);
 		}
 	}
 
@@ -491,7 +484,7 @@ public class RecipesKubeEvent implements KubeEvent {
 	 * that due to a bug in Forge (which will be resolved in Minecraft 1.20), you
 	 * will *have* to execute the Stream on a separate fork/join pool then!
 	 */
-	public Stream<KubeRecipe> recipeStream(RecipeFilter filter) {
+	public Stream<KubeRecipe> recipeStream(Context cx, RecipeFilter filter) {
 		if (filter == ConstantFilter.FALSE) {
 			return Stream.empty();
 		} else if (filter instanceof IDFilter id) {
@@ -514,7 +507,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			return or.list.stream().map(idf -> originalRecipes.get(((IDFilter) idf).id)).filter(RECIPE_NOT_REMOVED);
 		}
 
-		return originalRecipes.values().stream().filter(new RecipeStreamFilter(registries, filter));
+		return originalRecipes.values().stream().filter(new RecipeStreamFilter(cx, filter));
 	}
 
 	/**
@@ -522,43 +515,43 @@ public class RecipesKubeEvent implements KubeEvent {
 	 * Note that this should <b>only</b> be used with a terminal operation that is
 	 * executed on our own fork/join pool!
 	 * <p>
-	 * See {@link #recipeStream(RecipeFilter)} for more information on why this needs to exist.
+	 * See {@link #recipeStream(Context, RecipeFilter)} for more information on why this needs to exist.
 	 */
 	@ApiStatus.Internal
-	private Stream<KubeRecipe> recipeStreamAsync(RecipeFilter filter) {
-		var stream = recipeStream(filter);
+	private Stream<KubeRecipe> recipeStreamAsync(Context cx, RecipeFilter filter) {
+		var stream = recipeStream(cx, filter);
 		return CommonProperties.get().allowAsyncStreams ? stream.parallel() : stream;
 	}
 
-	private void forEachRecipeAsync(RecipeFilter filter, Consumer<KubeRecipe> consumer) {
-		runInParallel(() -> recipeStreamAsync(filter).forEach(consumer));
+	private void forEachRecipeAsync(Context cx, RecipeFilter filter, Consumer<KubeRecipe> consumer) {
+		runInParallel(() -> recipeStreamAsync(cx, filter).forEach(consumer));
 	}
 
-	private <T> T reduceRecipesAsync(RecipeFilter filter, Function<Stream<KubeRecipe>, T> function) {
-		return runInParallel(() -> function.apply(recipeStreamAsync(filter)));
+	private <T> T reduceRecipesAsync(Context cx, RecipeFilter filter, Function<Stream<KubeRecipe>, T> function) {
+		return runInParallel(() -> function.apply(recipeStreamAsync(cx, filter)));
 	}
 
-	public void forEachRecipe(RecipeFilter filter, Consumer<KubeRecipe> consumer) {
-		recipeStream(filter).forEach(consumer);
+	public void forEachRecipe(Context cx, RecipeFilter filter, Consumer<KubeRecipe> consumer) {
+		recipeStream(cx, filter).forEach(consumer);
 	}
 
-	public int countRecipes(RecipeFilter filter) {
-		return reduceRecipesAsync(filter, s -> (int) s.count());
+	public int countRecipes(Context cx, RecipeFilter filter) {
+		return reduceRecipesAsync(cx, filter, s -> (int) s.count());
 	}
 
-	public boolean containsRecipe(RecipeFilter filter) {
-		return reduceRecipesAsync(filter, s -> s.findAny().isPresent());
+	public boolean containsRecipe(Context cx, RecipeFilter filter) {
+		return reduceRecipesAsync(cx, filter, s -> s.findAny().isPresent());
 	}
 
-	public Collection<KubeRecipe> findRecipes(RecipeFilter filter) {
-		return reduceRecipesAsync(filter, Stream::toList);
+	public Collection<KubeRecipe> findRecipes(Context cx, RecipeFilter filter) {
+		return reduceRecipesAsync(cx, filter, Stream::toList);
 	}
 
-	public Collection<ResourceLocation> findRecipeIds(RecipeFilter filter) {
-		return reduceRecipesAsync(filter, s -> s.map(KubeRecipe::getOrCreateId).toList());
+	public Collection<ResourceLocation> findRecipeIds(Context cx, RecipeFilter filter) {
+		return reduceRecipesAsync(cx, filter, s -> s.map(KubeRecipe::getOrCreateId).toList());
 	}
 
-	public void remove(RecipeFilter filter) {
+	public void remove(Context cx, RecipeFilter filter) {
 		if (filter instanceof IDFilter id) {
 			var r = originalRecipes.get(id.id);
 
@@ -566,15 +559,15 @@ public class RecipesKubeEvent implements KubeEvent {
 				r.remove();
 			}
 		} else {
-			forEachRecipeAsync(filter, KubeRecipe::remove);
+			forEachRecipeAsync(cx, filter, KubeRecipe::remove);
 		}
 	}
 
-	public void replaceInput(RecipeFilter filter, ReplacementMatch match, InputReplacement with) {
+	public void replaceInput(Context cx, RecipeFilter filter, ReplacementMatch match, InputReplacement with) {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": IN " + match + " -> " + with) : "";
 
-		forEachRecipeAsync(filter, r -> {
-			if (r.replaceInput(match, with)) {
+		forEachRecipeAsync(cx, filter, r -> {
+			if (r.replaceInput(cx, match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -584,11 +577,11 @@ public class RecipesKubeEvent implements KubeEvent {
 		});
 	}
 
-	public void replaceOutput(RecipeFilter filter, ReplacementMatch match, OutputReplacement with) {
+	public void replaceOutput(Context cx, RecipeFilter filter, ReplacementMatch match, OutputReplacement with) {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": OUT " + match + " -> " + with) : "";
 
-		forEachRecipeAsync(filter, r -> {
-			if (r.replaceOutput(match, with)) {
+		forEachRecipeAsync(cx, filter, r -> {
+			if (r.replaceOutput(cx, match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -636,7 +629,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		int t = 0;
 		var map = new IdentityHashMap<RecipeSchema, Set<ResourceLocation>>();
 
-		for (var ns : RecipeNamespace.getAll().values()) {
+		for (var ns : recipeSchemaStorage.namespaces.values()) {
 			for (var type : ns.values()) {
 				if (predicate.test(type)) {
 					t++;
@@ -656,9 +649,9 @@ public class RecipesKubeEvent implements KubeEvent {
 		ConsoleJS.SERVER.info(t + " types");
 	}
 
-	public void printTypes() {
+	public void printTypes(Context cx) {
 		ConsoleJS.SERVER.info("== All recipe types [used] ==");
-		var set = reduceRecipesAsync(ConstantFilter.TRUE, s -> s.map(r -> r.type.id).collect(Collectors.toSet()));
+		var set = reduceRecipesAsync(cx, ConstantFilter.TRUE, s -> s.map(r -> r.type.id).collect(Collectors.toSet()));
 		printTypes(t -> set.contains(t.id));
 	}
 
@@ -696,8 +689,8 @@ public class RecipesKubeEvent implements KubeEvent {
 		KubeRecipe.itemErrors = b;
 	}
 
-	public void stage(RecipeFilter filter, String stage) {
-		forEachRecipeAsync(filter, r -> r.stage(stage));
+	public void stage(Context cx, RecipeFilter filter, String stage) {
+		forEachRecipeAsync(cx, filter, r -> r.stage(stage));
 	}
 
 	public static void runInParallel(final Runnable runnable) {

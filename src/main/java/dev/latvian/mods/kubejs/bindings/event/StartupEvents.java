@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.event.Extra;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.event.SpecializedEventHandler;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabKubeEvent;
-import dev.latvian.mods.kubejs.recipe.RecipeSchemaRegistryKubeEvent;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistryKubeEvent;
 import dev.latvian.mods.kubejs.registry.RegistryKubeEvent;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;

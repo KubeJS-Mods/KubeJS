@@ -1,58 +1,46 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
+import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.TinyMap;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public interface ItemComponents {
-	RecipeComponent<InputItem> INPUT = new RecipeComponent<>() {
+	RecipeComponent<Ingredient> INPUT = new RecipeComponent<>() {
 		@Override
-		public String componentType() {
-			return "input_item";
-		}
-
-		@Override
-		public ComponentRole role() {
-			return ComponentRole.INPUT;
+		public Codec<Ingredient> codec() {
+			return Ingredient.CODEC;
 		}
 
 		@Override
 		public TypeInfo typeInfo() {
-			return TypeInfo.of(InputItem.class);
+			return IngredientJS.TYPE_INFO;
 		}
 
 		@Override
-		public boolean hasPriority(KubeRecipe recipe, Object from) {
+		public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
 			return recipe.inputItemHasPriority(from);
 		}
 
 		@Override
-		public JsonElement write(KubeRecipe recipe, InputItem value) {
-			return recipe.writeInputItem(value);
+		public boolean isInput(KubeRecipe recipe, Ingredient value, ReplacementMatch match) {
+			return match instanceof ItemMatch m && m.contains(value);
 		}
 
 		@Override
-		public InputItem read(KubeRecipe recipe, Object from) {
-			return recipe.readInputItem(from);
-		}
-
-		@Override
-		public boolean isInput(KubeRecipe recipe, InputItem value, ReplacementMatch match) {
-			return match instanceof ItemMatch m && value.validForMatching() && m.contains(value.ingredient);
-		}
-
-		@Override
-		public String checkEmpty(RecipeKey<InputItem> key, InputItem value) {
+		public String checkEmpty(RecipeKey<Ingredient> key, Ingredient value) {
 			if (value.isEmpty()) {
 				return "Ingredient '" + key.name + "' can't be empty!";
 			}
@@ -61,81 +49,68 @@ public interface ItemComponents {
 		}
 
 		@Override
-		public RecipeComponent<TinyMap<Character, InputItem>> asPatternKey() {
-			return MapRecipeComponent.ITEM_PATTERN_KEY;
+		public RecipeComponent<TinyMap<Character, Ingredient>> asPatternKey() {
+			return MapRecipeComponent.INGREDIENT_PATTERN_KEY;
 		}
 
 		@Override
 		public String toString() {
-			return componentType();
+			return "ingredient";
 		}
 	};
 
-	RecipeComponent<InputItem[]> INPUT_ARRAY = INPUT.asArray();
+	RecipeComponent<List<Ingredient>> INPUT_LIST = INPUT.asList();
 
-	RecipeComponent<InputItem[]> UNWRAPPED_INPUT_ARRAY = new RecipeComponentWithParent<>() {
+	RecipeComponent<List<Ingredient>> UNWRAPPED_INPUT_LIST = new RecipeComponentWithParent<>() {
+		private static final TypeInfo WRAP_TYPE = TypeInfo.RAW_LIST.withParams(TypeInfo.of(SizedIngredient.class));
+
 		@Override
-		public RecipeComponent<InputItem[]> parentComponent() {
-			return ItemComponents.INPUT_ARRAY;
+		public RecipeComponent<List<Ingredient>> parentComponent() {
+			return ItemComponents.INPUT_LIST;
 		}
 
 		@Override
-		public JsonElement write(KubeRecipe recipe, InputItem[] value) {
-			var json = new JsonArray();
+		public List<Ingredient> wrap(Context cx, KubeRecipe recipe, Object from) {
+			var list = new ArrayList<Ingredient>();
 
-			for (var in : value) {
-				for (var in1 : in.unwrap()) {
-					json.add(ItemComponents.INPUT.write(recipe, in1));
+			for (var in : (Iterable<SizedIngredient>) cx.jsToJava(from, WRAP_TYPE)) {
+				for (int i = 0; i < in.count(); i++) {
+					list.add(in.ingredient());
 				}
 			}
 
-			return json;
+			return list;
 		}
 
 		@Override
 		public String toString() {
-			return parentComponent().toString();
+			return "unwrapped_ingredient_list";
 		}
 	};
 
-	RecipeComponent<OutputItem> OUTPUT = new RecipeComponent<>() {
+	RecipeComponent<ItemStack> OUTPUT = new RecipeComponent<>() {
 		@Override
-		public String componentType() {
-			return "output_item";
-		}
-
-		@Override
-		public ComponentRole role() {
-			return ComponentRole.OUTPUT;
+		public Codec<ItemStack> codec() {
+			return ItemStack.OPTIONAL_CODEC;
 		}
 
 		@Override
 		public TypeInfo typeInfo() {
-			return TypeInfo.of(OutputItem.class);
+			return ItemStackJS.TYPE_INFO;
 		}
 
 		@Override
-		public boolean hasPriority(KubeRecipe recipe, Object from) {
+		public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
 			return recipe.outputItemHasPriority(from);
 		}
 
 		@Override
-		public JsonElement write(KubeRecipe recipe, OutputItem value) {
-			return recipe.writeOutputItem(value);
+		public boolean isOutput(KubeRecipe recipe, ItemStack value, ReplacementMatch match) {
+			return match instanceof ItemMatch m && !value.isEmpty() && m.contains(value);
 		}
 
 		@Override
-		public OutputItem read(KubeRecipe recipe, Object from) {
-			return recipe.readOutputItem(from);
-		}
-
-		@Override
-		public boolean isOutput(KubeRecipe recipe, OutputItem value, ReplacementMatch match) {
-			return match instanceof ItemMatch m && !value.isEmpty() && m.contains(value.item);
-		}
-
-		@Override
-		public String checkEmpty(RecipeKey<OutputItem> key, OutputItem value) {
+		public String checkEmpty(RecipeKey<ItemStack> key, ItemStack value) {
 			if (value.isEmpty()) {
 				return "ItemStack '" + key.name + "' can't be empty!";
 			}
@@ -145,45 +120,9 @@ public interface ItemComponents {
 
 		@Override
 		public String toString() {
-			return componentType();
+			return "output_item";
 		}
 	};
 
-	RecipeComponent<OutputItem[]> OUTPUT_ARRAY = OUTPUT.asArray();
-
-	RecipeComponent<OutputItem> OUTPUT_ID_WITH_COUNT = new RecipeComponentWithParent<>() {
-		@Override
-		public RecipeComponent<OutputItem> parentComponent() {
-			return OUTPUT;
-		}
-
-		@Override
-		public void writeToJson(KubeRecipe recipe, RecipeComponentValue<OutputItem> cv, JsonObject json) {
-			json.addProperty(cv.key.name, cv.value.item.kjs$getId());
-			json.addProperty("count", cv.value.item.getCount());
-		}
-
-		@Override
-		public void readFromJson(KubeRecipe recipe, RecipeComponentValue<OutputItem> cv, JsonObject json) {
-			RecipeComponentWithParent.super.readFromJson(recipe, cv, json);
-
-			if (cv.value != null && json.has("count")) {
-				cv.value.item.setCount(json.get("count").getAsInt());
-			}
-		}
-
-		@Override
-		public void readFromMap(KubeRecipe recipe, RecipeComponentValue<OutputItem> cv, Map<?, ?> map) {
-			RecipeComponentWithParent.super.readFromMap(recipe, cv, map);
-
-			if (cv.value != null && map.containsKey("count")) {
-				cv.value.item.setCount(((Number) map.get("count")).intValue());
-			}
-		}
-
-		@Override
-		public String toString() {
-			return parentComponent().toString();
-		}
-	};
+	RecipeComponent<List<ItemStack>> OUTPUT_LIST = OUTPUT.asList();
 }

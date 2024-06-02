@@ -1,0 +1,29 @@
+{
+	"keys": [
+		{
+			"name": "result",
+			"role": "output",
+			"type": "item_stack"
+		},
+		{
+			"name": "ingredient",
+			"role": "input",
+			"type": "ingredient"
+		},
+		{
+			"name": "experience",
+			"role": "output",
+			"type": "float",
+			"preferred": "xp",
+			"optional": 0.0
+		},
+		{
+			"name": "cookingtime",
+			"role": "input",
+			"type": "ticks",
+			"preferred": "cookingTime",
+			"optional": 200
+		}
+	],
+	"unique": ["result"]
+}

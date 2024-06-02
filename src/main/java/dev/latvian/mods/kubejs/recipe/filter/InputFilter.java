@@ -2,18 +2,12 @@ package dev.latvian.mods.kubejs.recipe.filter;
 
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import net.minecraft.core.HolderLookup;
+import dev.latvian.mods.rhino.Context;
 
-public class InputFilter implements RecipeFilter {
-	private final ReplacementMatch match;
-
-	public InputFilter(ReplacementMatch match) {
-		this.match = match;
-	}
-
+public record InputFilter(ReplacementMatch match) implements RecipeFilter {
 	@Override
-	public boolean test(HolderLookup.Provider registries, RecipeLikeKJS r) {
-		return r.hasInput(registries, match);
+	public boolean test(Context cx, RecipeLikeKJS r) {
+		return r.hasInput(cx, match);
 	}
 
 	@Override

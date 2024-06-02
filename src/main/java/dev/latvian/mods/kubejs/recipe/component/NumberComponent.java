@@ -1,76 +1,96 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
+import com.mojang.brigadier.StringReader;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
-import dev.latvian.mods.rhino.ScriptRuntime;
-import dev.latvian.mods.rhino.Wrapper;
-import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
+import dev.latvian.mods.kubejs.util.StringReaderFunction;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.util.Mth;
 
-public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
+public interface NumberComponent<S, T extends Number> extends RecipeComponent<T> {
+	IntRange INT = new IntRange(Integer.MIN_VALUE, Integer.MAX_VALUE, Codec.INT);
+	LongRange LONG = new LongRange(Long.MIN_VALUE, Long.MAX_VALUE, Codec.LONG);
+	FloatRange FLOAT = new FloatRange(Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Codec.FLOAT);
+	DoubleRange DOUBLE = new DoubleRange(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Codec.DOUBLE);
+
 	static IntRange intRange(int min, int max) {
-		return new IntRange(min, max);
+		return INT.range(min, max);
 	}
 
 	static LongRange longRange(long min, long max) {
-		return new LongRange(min, max);
+		return LONG.range(min, max);
 	}
 
 	static FloatRange floatRange(float min, float max) {
-		return new FloatRange(min, max);
+		return FLOAT.range(min, max);
 	}
 
 	static DoubleRange doubleRange(double min, double max) {
-		return new DoubleRange(min, max);
+		return DOUBLE.range(min, max);
 	}
 
-	IntRange INT = intRange(0, Integer.MAX_VALUE);
-	LongRange LONG = longRange(0L, Long.MAX_VALUE);
-	FloatRange FLOAT = floatRange(0F, Float.POSITIVE_INFINITY);
-	DoubleRange DOUBLE = doubleRange(0D, Double.POSITIVE_INFINITY);
+	static <T extends Number> RecipeComponentFactory createFactory(T zero, NumberComponent<?, T> range, StringReaderFunction<T> numFunc) {
+		return (storage, reader) -> {
+			reader.skipWhitespace();
 
-	IntRange ANY_INT = intRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
-	LongRange ANY_LONG = longRange(Long.MIN_VALUE, Long.MAX_VALUE);
-	FloatRange ANY_FLOAT = floatRange(Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
-	DoubleRange ANY_DOUBLE = doubleRange(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+			if (reader.peek() != '<') {
+				return range;
+			}
 
-	DynamicRecipeComponent DYNAMIC_INT = new DynamicRecipeComponent(JSObjectTypeInfo.of(
-		new JSObjectTypeInfo.Field("min", TypeInfo.INT, true),
-		new JSObjectTypeInfo.Field("max", TypeInfo.INT, true)
-	), (cx, scope, args) -> {
-			var min = ScriptRuntime.toInt32(cx, Wrapper.unwrapped(args.getOrDefault("min", 0)));
-			var max = ScriptRuntime.toInt32(cx, Wrapper.unwrapped(args.getOrDefault("max", Integer.MAX_VALUE)));
-			return NumberComponent.intRange(min, max);
-		});
+			reader.skip();
+			reader.skipWhitespace();
 
-	DynamicRecipeComponent DYNAMIC_LONG = new DynamicRecipeComponent(JSObjectTypeInfo.of(
-		new JSObjectTypeInfo.Field("min", TypeInfo.LONG, true),
-		new JSObjectTypeInfo.Field("max", TypeInfo.LONG, true)
-	), (cx, scope, args) -> {
-			var min = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("min", 0)));
-			var max = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("max", Long.MAX_VALUE)));
-			return NumberComponent.longRange((long) min, (long) max);
-		});
+			T num1;
 
-	DynamicRecipeComponent DYNAMIC_FLOAT = new DynamicRecipeComponent(JSObjectTypeInfo.of(
-		new JSObjectTypeInfo.Field("min", TypeInfo.FLOAT, true),
-		new JSObjectTypeInfo.Field("max", TypeInfo.FLOAT, true)
-	), (cx, scope, args) -> {
-			var min = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("min", 0F)));
-			var max = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("max", Float.MAX_VALUE)));
-			return NumberComponent.floatRange((float) min, (float) max);
-		});
+			if (reader.peek() == 'm') {
+				if (!reader.readUnquotedString().equals("min")) {
+					throw new IllegalStateException("Expected 'min'!");
+				}
 
-	DynamicRecipeComponent DYNAMIC_DOUBLE = new DynamicRecipeComponent(JSObjectTypeInfo.of(
-		new JSObjectTypeInfo.Field("min", TypeInfo.DOUBLE, true),
-		new JSObjectTypeInfo.Field("max", TypeInfo.DOUBLE, true)
-	), (cx, scope, args) -> {
-			var min = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("min", 0)));
-			var max = ScriptRuntime.toNumber(cx, Wrapper.unwrapped(args.getOrDefault("max", Double.MAX_VALUE)));
-			return NumberComponent.doubleRange(min, max);
-		});
+				num1 = range.min();
+			} else {
+				num1 = numFunc.read(reader);
+			}
+
+			reader.skipWhitespace();
+			T num2 = null;
+
+			if (reader.peek() == ',') {
+				reader.skip();
+				reader.skipWhitespace();
+
+				if (reader.peek() == 'm') {
+					if (!reader.readUnquotedString().equals("max")) {
+						throw new IllegalStateException("Expected 'max'!");
+					}
+
+					num2 = range.max();
+				} else {
+					num2 = numFunc.read(reader);
+				}
+
+				reader.skipWhitespace();
+			}
+
+			reader.expect('>');
+
+			if (num2 == null) {
+				return range.range(zero, num1);
+			} else if (num1.equals(range.min()) && num2.equals(range.max())) {
+				return range;
+			} else {
+				return range.range(num1, num2);
+			}
+		};
+	}
+
+	RecipeComponentFactory INT_FACTORY = createFactory(0, INT, StringReader::readInt);
+	RecipeComponentFactory LONG_FACTORY = createFactory(0L, LONG, StringReader::readLong);
+	RecipeComponentFactory FLOAT_FACTORY = createFactory(0F, FLOAT, StringReader::readFloat);
+	RecipeComponentFactory DOUBLE_FACTORY = createFactory(0D, DOUBLE, StringReader::readDouble);
 
 	private static Number numberOf(Object from) {
 		if (from instanceof Number n) {
@@ -85,42 +105,48 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default String componentType() {
-		return "number";
-	}
-
-	@Override
 	default TypeInfo typeInfo() {
 		return TypeInfo.NUMBER;
 	}
 
 	@Override
-	default boolean hasPriority(KubeRecipe recipe, Object from) {
+	default boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
 		return from instanceof Number || from instanceof JsonPrimitive json && json.isNumber();
 	}
 
-	record IntRange(int min, int max) implements NumberComponent<Integer> {
+	T min();
+
+	T max();
+
+	NumberComponent<S, T> range(T min, T max);
+
+	default NumberComponent<S, T> min(T min) {
+		return range(min, max());
+	}
+
+	default NumberComponent<S, T> max(T max) {
+		return range(min(), max);
+	}
+
+	record IntRange(Integer min, Integer max, Codec<Integer> codec) implements NumberComponent<IntRange, Integer> {
+		@Override
+		public Codec<Integer> codec() {
+			return codec;
+		}
+
 		@Override
 		public TypeInfo typeInfo() {
 			return TypeInfo.INT;
 		}
 
 		@Override
-		public JsonPrimitive write(KubeRecipe recipe, Integer value) {
-			return new JsonPrimitive(value);
-		}
-
-		@Override
-		public Integer read(KubeRecipe recipe, Object from) {
+		public Integer wrap(Context cx, KubeRecipe recipe, Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).intValue(), min, max);
 		}
 
-		public IntRange min(int min) {
-			return new IntRange(min, max);
-		}
-
-		public IntRange max(int max) {
-			return new IntRange(min, max);
+		@Override
+		public IntRange range(Integer min, Integer max) {
+			return new IntRange(min, max, Codec.intRange(min, max));
 		}
 
 		@Override
@@ -129,29 +155,27 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		}
 	}
 
-	record LongRange(long min, long max) implements NumberComponent<Long> {
+	record LongRange(Long min, Long max, Codec<Long> codec) implements NumberComponent<LongRange, Long> {
+		@Override
+		public Codec<Long> codec() {
+			return codec;
+		}
+
 		@Override
 		public TypeInfo typeInfo() {
 			return TypeInfo.LONG;
 		}
 
 		@Override
-		public JsonPrimitive write(KubeRecipe recipe, Long value) {
-			return new JsonPrimitive(value);
-		}
-
-		@Override
-		public Long read(KubeRecipe recipe, Object from) {
+		public Long wrap(Context cx, KubeRecipe recipe, Object from) {
 			long val = NumberComponent.numberOf(from).longValue();
 			return (val < min) ? min : Math.min(val, max);
 		}
 
-		public LongRange min(long min) {
-			return new LongRange(min, max);
-		}
-
-		public LongRange max(long max) {
-			return new LongRange(min, max);
+		@Override
+		public LongRange range(Long min, Long max) {
+			var checker = Codec.checkRange(min, max);
+			return new LongRange(min, max, Codec.LONG.flatXmap(checker, checker));
 		}
 
 		@Override
@@ -160,28 +184,25 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		}
 	}
 
-	record FloatRange(float min, float max) implements NumberComponent<Float> {
+	record FloatRange(Float min, Float max, Codec<Float> codec) implements NumberComponent<FloatRange, Float> {
+		@Override
+		public Codec<Float> codec() {
+			return codec;
+		}
+
 		@Override
 		public TypeInfo typeInfo() {
 			return TypeInfo.FLOAT;
 		}
 
 		@Override
-		public JsonPrimitive write(KubeRecipe recipe, Float value) {
-			return new JsonPrimitive(value);
-		}
-
-		@Override
-		public Float read(KubeRecipe recipe, Object from) {
+		public Float wrap(Context cx, KubeRecipe recipe, Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).floatValue(), min, max);
 		}
 
-		public FloatRange min(float min) {
-			return new FloatRange(min, max);
-		}
-
-		public FloatRange max(float max) {
-			return new FloatRange(min, max);
+		@Override
+		public FloatRange range(Float min, Float max) {
+			return new FloatRange(min, max, Codec.floatRange(min, max));
 		}
 
 		@Override
@@ -190,28 +211,25 @@ public interface NumberComponent<T extends Number> extends RecipeComponent<T> {
 		}
 	}
 
-	record DoubleRange(double min, double max) implements NumberComponent<Double> {
+	record DoubleRange(Double min, Double max, Codec<Double> codec) implements NumberComponent<DoubleRange, Double> {
+		@Override
+		public Codec<Double> codec() {
+			return codec;
+		}
+
 		@Override
 		public TypeInfo typeInfo() {
 			return TypeInfo.DOUBLE;
 		}
 
 		@Override
-		public JsonPrimitive write(KubeRecipe recipe, Double value) {
-			return new JsonPrimitive(value);
-		}
-
-		@Override
-		public Double read(KubeRecipe recipe, Object from) {
+		public Double wrap(Context cx, KubeRecipe recipe, Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).doubleValue(), min, max);
 		}
 
-		public DoubleRange min(double min) {
-			return new DoubleRange(min, max);
-		}
-
-		public DoubleRange max(double max) {
-			return new DoubleRange(min, max);
+		@Override
+		public DoubleRange range(Double min, Double max) {
+			return new DoubleRange(min, max, Codec.doubleRange(min, max));
 		}
 
 		@Override

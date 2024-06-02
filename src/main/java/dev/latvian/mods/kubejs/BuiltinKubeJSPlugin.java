@@ -90,6 +90,8 @@ import dev.latvian.mods.kubejs.recipe.component.BlockStateComponent;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
 import dev.latvian.mods.kubejs.recipe.component.EnumComponent;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
+import dev.latvian.mods.kubejs.recipe.component.MapRecipeComponent;
+import dev.latvian.mods.kubejs.recipe.component.NestedRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
 import dev.latvian.mods.kubejs.recipe.component.RegistryComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringComponent;
@@ -98,7 +100,7 @@ import dev.latvian.mods.kubejs.recipe.component.TimeComponent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistryEvent;
-import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistryKubeEvent;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.CookingRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingTransformRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingTrimRecipeSchema;
@@ -518,7 +520,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	public void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
+	public void registerRecipeSchemas(RecipeSchemaRegistryKubeEvent event) {
 		event.namespace("kubejs")
 			.shaped("shaped")
 			.shapeless("shapeless")
@@ -534,68 +536,27 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 			.register("campfire_cooking", CookingRecipeSchema.SCHEMA)
 			.register("smithing_transform", SmithingTransformRecipeSchema.SCHEMA)
 			.register("smithing_trim", SmithingTrimRecipeSchema.SCHEMA)
-			.special("crafting_special_armordye")
-			.special("crafting_special_shulkerboxcoloring")
-			.special("crafting_special_bannerduplicate")
-			.special("crafting_special_suspiciousstew")
-			.special("crafting_special_bookcloning")
-			.special("crafting_special_mapextending")
-			.special("crafting_special_tippedarrow")
-			.special("crafting_special_firework_star")
-			.special("crafting_special_shielddecoration")
-			.special("crafting_special_firework_star_fade")
-			.special("crafting_special_firework_rocket")
-			.special("crafting_special_mapcloning")
-			.special("crafting_special_repairitem")
 		;
-
-		event.namespace("extendedcrafting")
-			.shaped("shaped_table")
-			.shapeless("shapeless_table")
-		;
-
-		event.mapRecipe("extendedCraftingShaped", "extendedcrafting:shaped_table");
-		event.mapRecipe("extendedCraftingShapeless", "extendedcrafting:shapeless_table");
-
-		event.namespace("dankstorage")
-			.shaped("upgrade")
-		;
-
-		event.mapRecipe("dankStorageUpgrade", "dankstorage:upgrade");
 	}
 
 	@Override
 	public void registerRecipeComponents(RecipeComponentFactoryRegistryEvent event) {
 		event.register("bool", BooleanComponent.BOOLEAN);
 
-		event.register("intNumber", NumberComponent.INT);
-		event.register("longNumber", NumberComponent.LONG);
-		event.register("floatNumber", NumberComponent.FLOAT);
-		event.register("doubleNumber", NumberComponent.DOUBLE);
+		event.register("int_range", NumberComponent.INT_FACTORY);
+		event.register("long_range", NumberComponent.LONG_FACTORY);
+		event.register("float_range", NumberComponent.FLOAT_FACTORY);
+		event.register("double_range", NumberComponent.DOUBLE_FACTORY);
 
-		event.register("anyIntNumber", NumberComponent.ANY_INT);
-		event.register("anyLongNumber", NumberComponent.ANY_LONG);
-		event.register("anyFloatNumber", NumberComponent.ANY_FLOAT);
-		event.register("anyDoubleNumber", NumberComponent.ANY_DOUBLE);
-
-		event.registerDynamic("intNumberRange", NumberComponent.DYNAMIC_INT);
-		event.registerDynamic("longNumberRange", NumberComponent.DYNAMIC_LONG);
-		event.registerDynamic("floatNumberRange", NumberComponent.DYNAMIC_FLOAT);
-		event.registerDynamic("doubleNumberRange", NumberComponent.DYNAMIC_DOUBLE);
-
-		event.register("anyString", StringComponent.ANY);
-		event.register("nonEmptyString", StringComponent.NON_EMPTY);
-		event.register("nonBlankString", StringComponent.NON_BLANK);
+		event.register("string", StringComponent.ANY);
+		event.register("non_empty_string", StringComponent.NON_EMPTY);
+		event.register("non_blank_string", StringComponent.NON_BLANK);
 		event.register("id", StringComponent.ID);
 		event.register("character", StringComponent.CHARACTER);
-		event.registerDynamic("filteredString", StringComponent.DYNAMIC);
 
-		event.register("inputItem", ItemComponents.INPUT);
-		event.register("inputItemArray", ItemComponents.INPUT_ARRAY);
-		event.register("unwrappedInputItemArray", ItemComponents.UNWRAPPED_INPUT_ARRAY);
-		event.register("outputItem", ItemComponents.OUTPUT);
-		event.register("outputItemArray", ItemComponents.OUTPUT_ARRAY);
-		event.register("outputItemIdWithCount", ItemComponents.OUTPUT_ID_WITH_COUNT);
+		event.register("ingredient", ItemComponents.INPUT);
+		event.register("unwrapped_ingredient_list", ItemComponents.UNWRAPPED_INPUT_LIST);
+		event.register("item_stack", ItemComponents.OUTPUT);
 
 		// event.register("inputFluid", FluidComponents.INPUT);
 		// event.register("inputFluidArray", FluidComponents.INPUT_ARRAY);
@@ -606,31 +567,27 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		// event.register("outputFluidOrItem", FluidComponents.OUTPUT_OR_ITEM);
 		// event.register("outputFluidOrItemArray", FluidComponents.OUTPUT_OR_ITEM_ARRAY);
 
-		event.register("inputBlock", BlockComponent.INPUT);
-		event.register("outputBlock", BlockComponent.OUTPUT);
-		event.register("otherBlock", BlockComponent.BLOCK);
+		event.register("block", BlockComponent.BLOCK);
 
-		event.register("inputBlockState", BlockStateComponent.INPUT);
-		event.register("outputBlockState", BlockStateComponent.OUTPUT);
-		event.register("otherBlockState", BlockStateComponent.BLOCK);
-		event.register("inputBlockStateString", BlockStateComponent.INPUT_STRING);
-		event.register("outputBlockStateString", BlockStateComponent.OUTPUT_STRING);
-		event.register("otherBlockStateString", BlockStateComponent.BLOCK_STRING);
+		event.register("block_state", BlockStateComponent.BLOCK);
+		event.register("block_state_string", BlockStateComponent.BLOCK_STRING);
 
 		event.register("ticks", TimeComponent.TICKS);
 		event.register("seconds", TimeComponent.SECONDS);
 		event.register("minutes", TimeComponent.MINUTES);
-		event.registerDynamic("time", TimeComponent.DYNAMIC);
+		event.register("hours", TimeComponent.HOURS);
 
-		event.register("blockTag", TagKeyComponent.BLOCK);
-		event.register("itemTag", TagKeyComponent.ITEM);
-		event.register("fluidTag", TagKeyComponent.FLUID);
-		event.register("entityTypeTag", TagKeyComponent.ENTITY_TYPE);
-		event.register("biomeTag", TagKeyComponent.BIOME);
-		event.registerDynamic("tag", TagKeyComponent.DYNAMIC);
+		event.register("block_tag", TagKeyComponent.BLOCK);
+		event.register("item_tag", TagKeyComponent.ITEM);
+		event.register("fluid_tag", TagKeyComponent.FLUID);
+		event.register("entity_type_tag", TagKeyComponent.ENTITY_TYPE);
+		event.register("biome_tag", TagKeyComponent.BIOME);
+		event.register("tag", TagKeyComponent.FACTORY);
 
-		event.registerDynamic("registryObject", RegistryComponent.DYNAMIC);
-		event.registerDynamic("enum", EnumComponent.DYNAMIC);
+		event.register("registry_element", RegistryComponent.FACTORY);
+		event.register("enum", EnumComponent.FACTORY);
+		event.register("nested_recipe", NestedRecipeComponent.RECIPE);
+		event.register("map", MapRecipeComponent.FACTORY);
 	}
 
 	@Override

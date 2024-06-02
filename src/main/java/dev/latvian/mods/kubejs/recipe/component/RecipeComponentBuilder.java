@@ -1,13 +1,16 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
@@ -22,7 +25,6 @@ import java.util.stream.Collectors;
 public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBuilderMap> {
 	public final List<RecipeKey<?>> keys;
 	public Predicate<Set<String>> hasPriority;
-	public ComponentRole role = ComponentRole.OTHER;
 
 	public RecipeComponentBuilder(int init) {
 		this.keys = new ArrayList<>(init);
@@ -38,32 +40,49 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 		return this;
 	}
 
-	public RecipeComponentBuilder inputRole() {
-		this.role = ComponentRole.INPUT;
-		return this;
-	}
-
-	public RecipeComponentBuilder outputRole() {
-		this.role = ComponentRole.OUTPUT;
-		return this;
-	}
-
 	public RecipeComponentBuilder createCopy() {
 		var copy = new RecipeComponentBuilder(keys.size());
 		copy.keys.addAll(keys);
 		copy.hasPriority = hasPriority;
-		copy.role = role;
 		return copy;
 	}
 
 	@Override
-	public ComponentRole role() {
-		return role;
-	}
+	public Codec<RecipeComponentBuilderMap> codec() {
+		return new Codec<>() {
+			@Override
+			public <T> DataResult<Pair<RecipeComponentBuilderMap, T>> decode(DynamicOps<T> ops, T input) {
+				/*
+				for (var holder : value.holders) {
+					holder.key.component.readFromJson(recipe, Cast.to(holder), json);
 
-	@Override
-	public String componentType() {
-		return "builder";
+					if (!holder.key.optional() && holder.value == null) {
+						throw new IllegalArgumentException("Missing required key '" + holder.key + "'!");
+					}
+				}
+				 */
+
+				// return ops.getMapEntries(input).flatMap(map -> {
+				return DataResult.error(() -> "I don't understand codecs well enough yet");
+			}
+
+			@Override
+			public <T> DataResult<T> encode(RecipeComponentBuilderMap input, DynamicOps<T> ops, T prefix) {
+				var builder = ops.mapBuilder();
+
+				/*
+				for (var val : value.holders) {
+					if (val.value != null) {
+						var vc = new RecipeComponentValue<>(val.key, val.getIndex());
+						vc.value = Cast.to(val.value);
+						val.key.component.writeToJson(recipe, Cast.to(vc), json);
+					}
+				}
+				 */
+
+				return builder.build(prefix);
+			}
+		};
 	}
 
 	@Override
@@ -78,49 +97,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public JsonElement write(KubeRecipe recipe, RecipeComponentBuilderMap value) {
-		var json = new JsonObject();
-
-		for (var val : value.holders) {
-			if (val.value != null) {
-				var vc = new RecipeComponentValue<>(val.key, val.getIndex());
-				vc.value = Cast.to(val.value);
-				val.key.component.writeToJson(recipe, Cast.to(vc), json);
-			}
-		}
-
-		return json;
-	}
-
-	@Override
-	public RecipeComponentBuilderMap read(KubeRecipe recipe, Object from) {
-		var value = new RecipeComponentBuilderMap(this);
-
-		if (from instanceof JsonObject json) {
-			for (var holder : value.holders) {
-				holder.key.component.readFromJson(recipe, Cast.to(holder), json);
-
-				if (!holder.key.optional() && holder.value == null) {
-					throw new IllegalArgumentException("Missing required key '" + holder.key + "'!");
-				}
-			}
-		} else if (from instanceof Map<?, ?> map) {
-			for (var holder : value.holders) {
-				holder.key.component.readFromMap(recipe, Cast.to(holder), map);
-
-				if (!holder.key.optional() && holder.value == null) {
-					throw new IllegalArgumentException("Missing required key '" + holder.key + "'!");
-				}
-			}
-		} else {
-			throw new IllegalArgumentException("Expected JSON object!");
-		}
-
-		return value;
-	}
-
-	@Override
-	public boolean hasPriority(KubeRecipe recipe, Object from) {
+	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
 		if (from instanceof Map m) {
 			if (hasPriority != null) {
 				return hasPriority.test(m.keySet());
@@ -162,9 +139,9 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public RecipeComponentBuilderMap replaceInput(KubeRecipe recipe, RecipeComponentBuilderMap original, ReplacementMatch match, InputReplacement with) {
+	public RecipeComponentBuilderMap replaceInput(Context cx, KubeRecipe recipe, RecipeComponentBuilderMap original, ReplacementMatch match, InputReplacement with) {
 		for (var e : original.holders) {
-			if (e.replaceInput(recipe, match, with)) {
+			if (e.replaceInput(cx, recipe, match, with)) {
 				original.hasChanged = true;
 			}
 		}
@@ -184,9 +161,9 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public RecipeComponentBuilderMap replaceOutput(KubeRecipe recipe, RecipeComponentBuilderMap original, ReplacementMatch match, OutputReplacement with) {
+	public RecipeComponentBuilderMap replaceOutput(Context cx, KubeRecipe recipe, RecipeComponentBuilderMap original, ReplacementMatch match, OutputReplacement with) {
 		for (var e : original.holders) {
-			if (e.replaceOutput(recipe, match, with)) {
+			if (e.replaceOutput(cx, recipe, match, with)) {
 				original.hasChanged = true;
 			}
 		}
@@ -196,7 +173,7 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 
 	@Override
 	public String toString() {
-		return keys.stream().map(RecipeKey::toString).collect(Collectors.joining(",", "builder{", "}"));
+		return keys.stream().map(RecipeKey::toString).collect(Collectors.joining(", ", "builder<", ">"));
 	}
 
 	@Override

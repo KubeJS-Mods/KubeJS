@@ -1,12 +1,14 @@
 package dev.latvian.mods.kubejs.recipe.schema.minecraft;
 
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+
+import java.util.List;
 
 public interface ShapelessRecipeSchema {
 	class ShapelessKubeRecipe extends KubeRecipe {
@@ -26,8 +28,8 @@ public interface ShapelessRecipeSchema {
 		}
 	}
 
-	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT.key("result");
-	RecipeKey<InputItem[]> INGREDIENTS = ItemComponents.UNWRAPPED_INPUT_ARRAY.key("ingredients");
+	RecipeKey<ItemStack> RESULT = ItemComponents.OUTPUT.outputKey("result");
+	RecipeKey<List<Ingredient>> INGREDIENTS = ItemComponents.UNWRAPPED_INPUT_LIST.inputKey("ingredients");
 
 	RecipeSchema SCHEMA = new RecipeSchema(ShapelessKubeRecipe.class, ShapelessKubeRecipe::new, RESULT, INGREDIENTS).uniqueOutputId(RESULT);
 }

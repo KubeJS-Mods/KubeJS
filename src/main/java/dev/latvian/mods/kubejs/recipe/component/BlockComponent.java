@@ -1,30 +1,25 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-public record BlockComponent(ComponentRole crole) implements RecipeComponent<Block> {
-	public static final RecipeComponent<Block> INPUT = new BlockComponent(ComponentRole.INPUT);
-	public static final RecipeComponent<Block> OUTPUT = new BlockComponent(ComponentRole.OUTPUT);
-	public static final RecipeComponent<Block> BLOCK = new BlockComponent(ComponentRole.OTHER);
+public record BlockComponent() implements RecipeComponent<Block> {
+	public static final RecipeComponent<Block> BLOCK = new BlockComponent();
 
 	@Override
-	public ComponentRole role() {
-		return crole;
-	}
-
-	@Override
-	public String componentType() {
-		return "block";
+	public Codec<Block> codec() {
+		return BuiltInRegistries.BLOCK.byNameCodec();
 	}
 
 	@Override
@@ -33,12 +28,7 @@ public record BlockComponent(ComponentRole crole) implements RecipeComponent<Blo
 	}
 
 	@Override
-	public JsonPrimitive write(KubeRecipe recipe, Block value) {
-		return new JsonPrimitive(String.valueOf(RegistryInfo.BLOCK.getId(value)));
-	}
-
-	@Override
-	public Block read(KubeRecipe recipe, Object from) {
+	public Block wrap(Context cx, KubeRecipe recipe, Object from) {
 		return switch (from) {
 			case Block b -> b;
 			case BlockState s -> s.getBlock();
@@ -49,12 +39,12 @@ public record BlockComponent(ComponentRole crole) implements RecipeComponent<Blo
 
 	@Override
 	public boolean isInput(KubeRecipe recipe, Block value, ReplacementMatch match) {
-		return crole.isInput() && match instanceof BlockStatePredicate m2 && m2.testBlock(value);
+		return match instanceof BlockStatePredicate m2 && m2.testBlock(value);
 	}
 
 	@Override
 	public boolean isOutput(KubeRecipe recipe, Block value, ReplacementMatch match) {
-		return crole.isOutput() && match instanceof BlockStatePredicate m2 && m2.testBlock(value);
+		return match instanceof BlockStatePredicate m2 && m2.testBlock(value);
 	}
 
 	@Override
@@ -68,6 +58,6 @@ public record BlockComponent(ComponentRole crole) implements RecipeComponent<Blo
 
 	@Override
 	public String toString() {
-		return componentType();
+		return "block";
 	}
 }

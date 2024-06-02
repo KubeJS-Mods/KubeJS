@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import net.minecraft.core.HolderLookup;
+import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
@@ -15,7 +15,7 @@ public interface RecipeLikeKJS {
 
 	ResourceLocation kjs$getOrCreateId();
 
-	RecipeSchema kjs$getSchema();
+	RecipeSchema kjs$getSchema(Context cx);
 
 	default String kjs$getMod() {
 		return kjs$getOrCreateId().getNamespace();
@@ -25,19 +25,19 @@ public interface RecipeLikeKJS {
 
 	RecipeSerializer<?> kjs$getSerializer();
 
-	default boolean hasInput(HolderLookup.Provider registries, ReplacementMatch match) {
+	default boolean hasInput(Context cx, ReplacementMatch match) {
 		return false;
 	}
 
-	default boolean replaceInput(ReplacementMatch match, InputReplacement with) {
+	default boolean replaceInput(Context cx, ReplacementMatch match, InputReplacement with) {
 		return false;
 	}
 
-	default boolean hasOutput(HolderLookup.Provider registries, ReplacementMatch match) {
+	default boolean hasOutput(Context cx, ReplacementMatch match) {
 		return false;
 	}
 
-	default boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {
+	default boolean replaceOutput(Context cx, ReplacementMatch match, OutputReplacement with) {
 		return false;
 	}
 }

@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.rhino.Context;
 
 import java.util.IdentityHashMap;
 
@@ -11,7 +12,7 @@ public class ComponentValueMap extends IdentityHashMap<RecipeKey<?>, Object> {
 		super(init);
 	}
 
-	public <T> T getValue(KubeRecipe recipe, RecipeKey<T> key) {
+	public <T> T getValue(Context cx, KubeRecipe recipe, RecipeKey<T> key) {
 		var o = get(key);
 
 		if (o == null) {
@@ -23,9 +24,9 @@ public class ComponentValueMap extends IdentityHashMap<RecipeKey<?>, Object> {
 		}
 
 		try {
-			return key.component.read(recipe, o);
+			return key.component.wrap(cx, recipe, o);
 		} catch (Throwable ex) {
-			throw new RecipeExceptionJS("Unable to cast '" + key + "' value '" + o + "' to '" + key.component.componentType() + "'!", ex);
+			throw new RecipeExceptionJS("Unable to cast '" + key + "' value '" + o + "' to '" + key.component + "'!", ex);
 		}
 	}
 }

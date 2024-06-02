@@ -10,7 +10,6 @@ import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallbackForge;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabKubeEvent;
 import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistryHandler;
 import dev.latvian.mods.kubejs.registry.RegistryKubeEvent;
 import dev.latvian.mods.kubejs.registry.RegistryType;
@@ -227,7 +226,6 @@ public class KubeJS {
 		NeoForge.EVENT_BUS.post(new ScriptsLoadedEvent());
 		StartupEvents.POST_INIT.post(ScriptType.STARTUP, KubeStartupEvent.BASIC);
 		UtilsJS.postModificationEvents();
-		RecipeNamespace.getAll();
 
 		if (!ConsoleJS.STARTUP.errors.isEmpty()) {
 			var list = new ArrayList<String>();

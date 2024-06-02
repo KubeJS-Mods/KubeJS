@@ -12,18 +12,18 @@ import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factory factory) {
+public record RecipeConstructor(RecipeKey<?>[] keys, Factory factory) {
 	@FunctionalInterface
 	public interface Factory {
-		Factory DEFAULT = (recipe, schemaType, keys, from) -> {
+		Factory DEFAULT = (cx, recipe, schemaType, keys, from) -> {
 			for (var key : keys) {
-				recipe.setValue(key, Cast.to(from.getValue(recipe, key)));
+				recipe.setValue(key, Cast.to(from.getValue(cx, recipe, key)));
 			}
 		};
 
 		static Factory defaultWith(BiFunction<KubeRecipe, RecipeKey<?>, Object> valueSupplier) {
-			return (recipe, schemaType, keys, from) -> {
-				DEFAULT.setValues(recipe, schemaType, keys, from);
+			return (cx, recipe, schemaType, keys, from) -> {
+				DEFAULT.setValues(cx, recipe, schemaType, keys, from);
 
 				for (var key : schemaType.schema.keys) {
 					var v = valueSupplier.apply(recipe, key);
@@ -42,11 +42,11 @@ public record RecipeConstructor(RecipeSchema schema, RecipeKey<?>[] keys, Factor
 			r.json.addProperty("type", "unknown");
 			r.newRecipe = true;
 			r.initValues(true);
-			setValues(r, schemaType, keys, from);
+			setValues(cx, r, schemaType, keys, from);
 			return r;
 		}
 
-		void setValues(KubeRecipe recipe, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from);
+		void setValues(Context cx, KubeRecipe recipe, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from);
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistryEvent;
-import dev.latvian.mods.kubejs.recipe.schema.RegisterRecipeSchemasEvent;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistryKubeEvent;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -61,7 +61,7 @@ public interface KubeJSPlugin {
 	default void registerTypeWrappers(WrapperRegistry registry) {
 	}
 
-	default void registerRecipeSchemas(RegisterRecipeSchemasEvent event) {
+	default void registerRecipeSchemas(RecipeSchemaRegistryKubeEvent event) {
 	}
 
 	default void registerRecipeComponents(RecipeComponentFactoryRegistryEvent event) {

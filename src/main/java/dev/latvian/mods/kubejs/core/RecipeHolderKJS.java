@@ -4,11 +4,12 @@ import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeNamespace;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.server.ServerScriptManager;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -45,9 +46,9 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	}
 
 	@Override
-	default RecipeSchema kjs$getSchema() {
+	default RecipeSchema kjs$getSchema(Context cx) {
 		var s = kjs$getType();
-		return RecipeNamespace.getAll().get(s.getNamespace()).get(s.getPath()).schema;
+		return ((ServerScriptManager) ((KubeJSContext) cx).kjsFactory.manager).recipeSchemaStorage.namespaces.get(s.getNamespace()).get(s.getPath()).schema;
 	}
 
 	@Override
@@ -56,7 +57,7 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	}
 
 	@Override
-	default boolean hasInput(HolderLookup.Provider registries, ReplacementMatch match) {
+	default boolean hasInput(Context cx, ReplacementMatch match) {
 		if (match instanceof ItemMatch m) {
 			for (var in : kjs$getRecipe().getIngredients()) {
 				if (m.contains(in)) {
@@ -69,14 +70,14 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	}
 
 	@Override
-	default boolean replaceInput(ReplacementMatch match, InputReplacement with) {
+	default boolean replaceInput(Context cx, ReplacementMatch match, InputReplacement with) {
 		return false;
 	}
 
 	@Override
-	default boolean hasOutput(HolderLookup.Provider registries, ReplacementMatch match) {
+	default boolean hasOutput(Context cx, ReplacementMatch match) {
 		if (match instanceof ItemMatch m) {
-			var result = kjs$getRecipe().getResultItem(registries);
+			var result = kjs$getRecipe().getResultItem(((KubeJSContext) cx).getRegistries());
 			//noinspection ConstantValue
 			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.contains(result);
 		}
@@ -85,7 +86,7 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	}
 
 	@Override
-	default boolean replaceOutput(ReplacementMatch match, OutputReplacement with) {
+	default boolean replaceOutput(Context cx, ReplacementMatch match, OutputReplacement with) {
 		return false;
 	}
 }

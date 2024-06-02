@@ -1,14 +1,14 @@
 package dev.latvian.mods.kubejs.recipe.schema.minecraft;
 
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public interface StonecuttingRecipeSchema {
-	RecipeKey<OutputItem> RESULT = ItemComponents.OUTPUT_ID_WITH_COUNT.key("result");
-	RecipeKey<InputItem> INGREDIENT = ItemComponents.INPUT.key("ingredient");
+	RecipeKey<ItemStack> RESULT = ItemComponents.OUTPUT.outputKey("result");
+	RecipeKey<Ingredient> INGREDIENT = ItemComponents.INPUT.inputKey("ingredient");
 
 	RecipeSchema SCHEMA = new RecipeSchema(RESULT, INGREDIENT).uniqueOutputId(RESULT);
 }

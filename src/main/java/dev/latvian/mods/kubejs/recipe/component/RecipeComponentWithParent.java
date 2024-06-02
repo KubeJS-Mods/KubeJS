@@ -1,13 +1,13 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A recipe component that may delegate most of its logic to a parent component.
@@ -21,13 +21,8 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	RecipeComponent<T> parentComponent();
 
 	@Override
-	default ComponentRole role() {
-		return parentComponent().role();
-	}
-
-	@Override
-	default String componentType() {
-		return parentComponent().componentType();
+	default Codec<T> codec() {
+		return parentComponent().codec();
 	}
 
 	@Override
@@ -36,19 +31,13 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	@Nullable
-	default JsonElement write(KubeRecipe recipe, T value) {
-		return parentComponent().write(recipe, value);
+	default T wrap(Context cx, KubeRecipe recipe, Object from) {
+		return parentComponent().wrap(cx, recipe, from);
 	}
 
 	@Override
-	default T read(KubeRecipe recipe, Object from) {
-		return parentComponent().read(recipe, from);
-	}
-
-	@Override
-	default boolean hasPriority(KubeRecipe recipe, Object from) {
-		return parentComponent().hasPriority(recipe, from);
+	default boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
+		return parentComponent().hasPriority(cx, recipe, from);
 	}
 
 	@Override
@@ -57,8 +46,8 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default T replaceInput(KubeRecipe recipe, T original, ReplacementMatch match, InputReplacement with) {
-		return parentComponent().replaceInput(recipe, original, match, with);
+	default T replaceInput(Context cx, KubeRecipe recipe, T original, ReplacementMatch match, InputReplacement with) {
+		return parentComponent().replaceInput(cx, recipe, original, match, with);
 	}
 
 	@Override
@@ -67,8 +56,8 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default T replaceOutput(KubeRecipe recipe, T original, ReplacementMatch match, OutputReplacement with) {
-		return parentComponent().replaceOutput(recipe, original, match, with);
+	default T replaceOutput(Context cx, KubeRecipe recipe, T original, ReplacementMatch match, OutputReplacement with) {
+		return parentComponent().replaceOutput(cx, recipe, original, match, with);
 	}
 
 	@Override

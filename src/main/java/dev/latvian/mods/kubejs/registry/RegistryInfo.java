@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.registry;
 
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.core.RegistryObjectKJS;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
@@ -44,6 +45,8 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	private static final Object LOCK = new Object();
 	private static final Map<ResourceKey<? extends Registry<?>>, RegistryInfo<?>> MAP = new IdentityHashMap<>();
 	public static final List<BuilderBase<?>> ALL_BUILDERS = new LinkedList<>();
+
+	public static final Codec<RegistryInfo<?>> CODEC = ResourceLocation.CODEC.xmap(rl -> RegistryInfo.of(ResourceKey.createRegistryKey(rl)), ri -> ri.key.location());
 
 	public static <T> RegistryInfo<T> of(ResourceKey<Registry<T>> key) {
 		synchronized (LOCK) {
@@ -95,6 +98,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	public boolean bypassServerOnly;
 	public String languageKeyPrefix;
 	private WeakReference<Registry<T>> vanillaRegistry;
+	private Codec<T> codec;
 
 	private RegistryInfo(ResourceKey key) {
 		this.key = key;
@@ -147,6 +151,14 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 		}
 
 		return reg;
+	}
+
+	public Codec<T> valueByNameCodec() {
+		if (codec == null) {
+			codec = getVanillaRegistry().byNameCodec();
+		}
+
+		return codec;
 	}
 
 	public Set<Map.Entry<ResourceKey<T>, T>> entrySet() {

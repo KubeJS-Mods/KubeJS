@@ -1,0 +1,20 @@
+{
+	"keys": [
+		{
+			"name": "template",
+			"role": "input",
+			"type": "ingredient"
+		},
+		{
+			"name": "base",
+			"role": "input",
+			"type": "ingredient"
+		},
+		{
+			"name": "addition",
+			"role": "input",
+			"type": "ingredient"
+		}
+	],
+	"unique": ["base"]
+}

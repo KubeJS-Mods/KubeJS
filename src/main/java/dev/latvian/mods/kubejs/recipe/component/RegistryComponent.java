@@ -1,15 +1,17 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.schema.DynamicRecipeComponent;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ID;
-import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
@@ -17,13 +19,18 @@ import net.neoforged.neoforge.fluids.FluidStack;
 
 public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeComponent<T> {
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public static final DynamicRecipeComponent DYNAMIC = new DynamicRecipeComponent(JSObjectTypeInfo.of(
-		new JSObjectTypeInfo.Field("registry", TypeInfo.of(RegistryInfo.class))
-	), (ctx, scope, args) -> new RegistryComponent<>((RegistryInfo) ctx.jsToJava(args.get("registry"), TypeInfo.of(RegistryInfo.class))));
+	public static final RecipeComponentFactory FACTORY = (storage, reader) -> {
+		reader.skipWhitespace();
+		reader.expect('<');
+		reader.skipWhitespace();
+		var regId = ResourceLocation.read(reader);
+		reader.expect('>');
+		return new RegistryComponent(RegistryInfo.of(ResourceKey.createRegistryKey(regId)));
+	};
 
 	@Override
-	public String componentType() {
-		return "registry_element";
+	public Codec<T> codec() {
+		return registry.valueByNameCodec();
 	}
 
 	@Override
@@ -32,15 +39,9 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 		return t == null || t.type() == TypeInfo.STRING ? TypeInfo.STRING : TypeInfo.STRING.or(t.type());
 	}
 
-	@Override
-	public JsonElement write(KubeRecipe recipe, T value) {
-		var reg = RegistryInfo.of(registry.key);
-		return new JsonPrimitive(reg.getId(value).toString());
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
-	public T read(KubeRecipe recipe, Object from) {
+	public T wrap(Context cx, KubeRecipe recipe, Object from) {
 		if (registry == RegistryInfo.ITEM) {
 			if (from instanceof ItemStack is) {
 				return (T) is.getItem();
@@ -69,13 +70,13 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 	}
 
 	@Override
-	public boolean hasPriority(KubeRecipe recipe, Object from) {
+	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
 		var regType = RegistryType.ofKey(registry.key);
 		return (regType != null && regType.baseClass().isInstance(from)) || (from instanceof CharSequence && ID.mc(from.toString()) != null) || (from instanceof JsonPrimitive json && json.isString() && ID.mc(json.getAsString()) != null);
 	}
 
 	@Override
 	public String toString() {
-		return "%s{%s}".formatted(componentType(), registry);
+		return "registry_element<" + registry + ">";
 	}
 }

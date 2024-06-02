@@ -15,10 +15,13 @@ import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
 public interface KubeJSCodecs {
+	Codec<Character> CHARACTER = Codec.STRING.xmap(str -> str.charAt(0), Object::toString);
+
 	StreamCodec<? super RegistryFriendlyByteBuf, IntProvider> INT_PROVIDER_STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(IntProvider.CODEC);
 
 	static <E> Codec<E> stringResolverCodec(Function<E, String> toStringFunction, Function<String, E> fromStringFunction) {
@@ -59,5 +62,10 @@ public interface KubeJSCodecs {
 
 	static JsonElement numberProviderJson(NumberProvider gen) {
 		return toJsonOrThrow(gen, NumberProviders.CODEC);
+	}
+
+	// TODO: Check if this is correct
+	static <T> Codec<List<T>> listOfOrSelf(Codec<T> codec) {
+		return Codec.withAlternative(codec.listOf(), codec.xmap(List::of, List::getFirst));
 	}
 }

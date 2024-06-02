@@ -1,0 +1,38 @@
+{
+	"keys": [
+		{
+			"name": "result",
+			"role": "output",
+			"type": "item_stack"
+		},
+		{
+			"name": "template",
+			"role": "input",
+			"type": "ingredient"
+		},
+		{
+			"name": "base",
+			"role": "input",
+			"type": "ingredient"
+		},
+		{
+			"name": "addition",
+			"role": "input",
+			"type": "ingredient"
+		}
+	],
+	"unique": ["result"],
+	"constructors": [
+		{
+			"keys": ["result", "template", "base", "addition"]
+		},
+		{
+			"keys": ["result", "base", "addition"],
+			"defaults": {
+				"template": {
+					"item": "minecraft:netherite_upgrade_smithing_template"
+				}
+			}
+		}
+	]
+}

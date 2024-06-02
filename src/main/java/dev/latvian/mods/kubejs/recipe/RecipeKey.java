@@ -1,9 +1,12 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.recipe.component.ComponentRole;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeOptional;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -34,7 +37,10 @@ import java.util.Set;
  */
 public final class RecipeKey<T> {
 	public final RecipeComponent<T> component;
+	public final TypeInfo typeInfo;
+	public final Codec<T> codec;
 	public final String name;
+	public final ComponentRole role;
 	public final Set<String> names;
 	public String preferred;
 	public RecipeOptional<T> optional;
@@ -43,9 +49,12 @@ public final class RecipeKey<T> {
 	public boolean allowEmpty;
 	public boolean alwaysWrite;
 
-	public RecipeKey(RecipeComponent<T> component, String name) {
+	public RecipeKey(RecipeComponent<T> component, String name, ComponentRole role) {
 		this.component = component;
+		this.typeInfo = component.typeInfo();
+		this.codec = component.codec();
 		this.name = name;
+		this.role = role;
 		this.names = new LinkedHashSet<>(1);
 		this.names.add(name);
 		this.preferred = name;

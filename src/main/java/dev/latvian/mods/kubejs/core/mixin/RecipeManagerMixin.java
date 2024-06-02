@@ -5,10 +5,8 @@ import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
-import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.Cast;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -32,14 +30,13 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 			ServerEvents.COMPOSTABLE_RECIPES.post(ScriptType.SERVER, new CompostableRecipesKubeEvent());
 		}
 
-		if (ServerEvents.RECIPES.hasListeners()) {
-			if (RecipesKubeEvent.instance != null) {
-				RecipesKubeEvent.instance.post(Cast.to(this), map);
-				RecipesKubeEvent.instance = null;
-				ci.cancel();
-			} else {
-				ConsoleJS.SERVER.warn("RecipeManagerMixin: RecipesEventJS.instance is null, falling back to vanilla!");
-			}
+		var manager = kjs$resources.kjs$getServerScriptManager();
+
+		if (manager.recipesEvent != null) {
+			manager.recipeSchemaStorage.fireEvents();
+			manager.recipesEvent.post(Cast.to(this), map);
+			manager.recipesEvent = null;
+			ci.cancel();
 		}
 	}
 

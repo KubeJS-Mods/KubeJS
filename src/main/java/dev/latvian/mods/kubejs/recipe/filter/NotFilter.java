@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
-import net.minecraft.core.HolderLookup;
+import dev.latvian.mods.rhino.Context;
 
 public record NotFilter(RecipeFilter original) implements RecipeFilter {
 	@Override
-	public boolean test(HolderLookup.Provider registries, RecipeLikeKJS r) {
-		return !original.test(registries, r);
+	public boolean test(Context cx, RecipeLikeKJS r) {
+		return !original.test(cx, r);
 	}
 
 	@Override

@@ -10,7 +10,6 @@ import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
-import net.minecraft.core.HolderLookup;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +17,7 @@ import java.util.regex.Pattern;
 
 @FunctionalInterface
 public interface RecipeFilter {
-	boolean test(HolderLookup.Provider registries, RecipeLikeKJS r);
+	boolean test(Context cx, RecipeLikeKJS r);
 
 	static RecipeFilter of(Context cx, @Nullable Object o) {
 		if (o == null || o == ConstantFilter.TRUE) {
