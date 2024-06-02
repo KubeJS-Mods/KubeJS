@@ -20,6 +20,21 @@ public class FluidBucketItemBuilder extends ItemBuilder {
 
 	@Override
 	public void generateAssetJsons(AssetJsonGenerator generator) {
-		generator.itemModel(id, m -> m.parent("kubejs:item/generated_bucket"));
+		if (modelJson != null) {
+			generator.json(AssetJsonGenerator.asItemModelLocation(id), modelJson);
+			return;
+		}
+
+		generator.itemModel(id, m -> {
+			if (!parentModel.isEmpty()) {
+				m.parent(parentModel);
+			} else {
+				m.parent("kubejs:item/generated_bucket");
+			}
+
+			if (textureJson.size() > 0) {
+				m.textures(textureJson);
+			}
+		});
 	}
 }

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.item.ingredient;
 
 import com.google.common.collect.Iterables;
 import dev.architectury.extensions.injected.InjectedRegistryEntryExtension;
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -35,6 +36,9 @@ public interface TagContext {
 		@Override
 		public <T> Iterable<Holder<T>> getTag(TagKey<T> tag) {
 			KubeJS.LOGGER.warn("Tried to get tag {} from an empty tag context!", tag.location());
+			if (DevProperties.get().debugInfo) {
+				KubeJS.LOGGER.warn("Stack trace for invalid early tag access:", new Throwable());
+			}
 			return List.of();
 		}
 	};
