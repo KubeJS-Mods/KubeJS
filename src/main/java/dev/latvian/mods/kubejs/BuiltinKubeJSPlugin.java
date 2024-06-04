@@ -88,8 +88,10 @@ import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.component.BlockComponent;
 import dev.latvian.mods.kubejs.recipe.component.BlockStateComponent;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
+import dev.latvian.mods.kubejs.recipe.component.CharacterComponent;
 import dev.latvian.mods.kubejs.recipe.component.EnumComponent;
-import dev.latvian.mods.kubejs.recipe.component.ItemComponents;
+import dev.latvian.mods.kubejs.recipe.component.IngredientComponent;
+import dev.latvian.mods.kubejs.recipe.component.ItemStackComponent;
 import dev.latvian.mods.kubejs.recipe.component.MapRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NestedRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
@@ -100,11 +102,12 @@ import dev.latvian.mods.kubejs.recipe.component.TimeComponent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistryEvent;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistryKubeEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistryKubeEvent;
-import dev.latvian.mods.kubejs.recipe.schema.minecraft.CookingRecipeSchema;
+import dev.latvian.mods.kubejs.recipe.schema.UnknownKubeRecipe;
+import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedKubeRecipe;
+import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingTransformRecipeSchema;
-import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingTrimRecipeSchema;
-import dev.latvian.mods.kubejs.recipe.schema.minecraft.StonecuttingRecipeSchema;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
@@ -520,43 +523,32 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	public void registerRecipeSchemas(RecipeSchemaRegistryKubeEvent event) {
-		event.namespace("kubejs")
-			.shaped("shaped")
-			.shapeless("shapeless")
-		;
-
-		event.namespace("minecraft")
-			.shaped("crafting_shaped")
-			.shapeless("crafting_shapeless")
-			.register("stonecutting", StonecuttingRecipeSchema.SCHEMA)
-			.register("smelting", CookingRecipeSchema.SCHEMA)
-			.register("blasting", CookingRecipeSchema.SCHEMA)
-			.register("smoking", CookingRecipeSchema.SCHEMA)
-			.register("campfire_cooking", CookingRecipeSchema.SCHEMA)
-			.register("smithing_transform", SmithingTransformRecipeSchema.SCHEMA)
-			.register("smithing_trim", SmithingTrimRecipeSchema.SCHEMA)
-		;
+	public void registerRecipeFactories(RecipeFactoryRegistryKubeEvent event) {
+		event.register(UnknownKubeRecipe.RECIPE_FACTORY);
+		event.register(ShapedKubeRecipe.RECIPE_FACTORY);
+		event.register(ShapelessKubeRecipe.RECIPE_FACTORY);
 	}
 
 	@Override
 	public void registerRecipeComponents(RecipeComponentFactoryRegistryEvent event) {
-		event.register("bool", BooleanComponent.BOOLEAN);
+		event.register("boolean", BooleanComponent.BOOLEAN);
 
-		event.register("int_range", NumberComponent.INT_FACTORY);
-		event.register("long_range", NumberComponent.LONG_FACTORY);
-		event.register("float_range", NumberComponent.FLOAT_FACTORY);
-		event.register("double_range", NumberComponent.DOUBLE_FACTORY);
+		event.register("int", NumberComponent.INT_FACTORY);
+		event.register("long", NumberComponent.LONG_FACTORY);
+		event.register("float", NumberComponent.FLOAT_FACTORY);
+		event.register("double", NumberComponent.DOUBLE_FACTORY);
 
 		event.register("string", StringComponent.ANY);
 		event.register("non_empty_string", StringComponent.NON_EMPTY);
 		event.register("non_blank_string", StringComponent.NON_BLANK);
 		event.register("id", StringComponent.ID);
-		event.register("character", StringComponent.CHARACTER);
+		event.register("character", CharacterComponent.CHARACTER);
 
-		event.register("ingredient", ItemComponents.INPUT);
-		event.register("unwrapped_ingredient_list", ItemComponents.UNWRAPPED_INPUT_LIST);
-		event.register("item_stack", ItemComponents.OUTPUT);
+		event.register("ingredient", IngredientComponent.INGREDIENT);
+		event.register("non_empty_ingredient", IngredientComponent.NON_EMPTY_INGREDIENT);
+		event.register("unwrapped_ingredient_list", IngredientComponent.UNWRAPPED_INGREDIENT_LIST);
+		event.register("item_stack", ItemStackComponent.ITEM_STACK);
+		event.register("strict_item_stack", ItemStackComponent.STRICT_ITEM_STACK);
 
 		// event.register("inputFluid", FluidComponents.INPUT);
 		// event.register("inputFluidArray", FluidComponents.INPUT_ARRAY);
@@ -588,6 +580,13 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		event.register("enum", EnumComponent.FACTORY);
 		event.register("nested_recipe", NestedRecipeComponent.RECIPE);
 		event.register("map", MapRecipeComponent.FACTORY);
+	}
+
+	@Override
+	public void registerRecipeSchemas(RecipeSchemaRegistryKubeEvent event) {
+		event.namespace("minecraft")
+			.register("smithing_transform", SmithingTransformRecipeSchema.SCHEMA)
+		;
 	}
 
 	@Override

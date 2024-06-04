@@ -8,8 +8,6 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.helpers.RecipeHelper;
-import dev.latvian.mods.kubejs.item.InputItem;
-import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.component.MissingComponentException;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentBuilderMap;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
@@ -41,9 +39,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public static boolean itemErrors = false;
@@ -57,7 +53,6 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	private RecipeComponentBuilderMap valueMap = RecipeComponentBuilderMap.EMPTY;
 	private RecipeComponentValue<?>[] inputValues;
 	private RecipeComponentValue<?>[] outputValues;
-	private Map<String, RecipeComponentValue<?>> allValueMap;
 
 	public JsonObject originalJson = null;
 	private MutableObject<Recipe<?>> originalRecipe = null;
@@ -173,18 +168,9 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		}
 	}
 
-	public Map<String, RecipeComponentValue<?>> getAllValueMap() {
-		if (allValueMap == null) {
-			allValueMap = new HashMap<>();
-
-			for (var v : valueMap.holders) {
-				for (var n : v.key.names) {
-					allValueMap.put(n, v);
-				}
-			}
-		}
-
-		return allValueMap;
+	@HideFromJS
+	public RecipeComponentValue<?>[] getRecipeComponentValues() {
+		return valueMap.holders;
 	}
 
 	/**
@@ -609,22 +595,4 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		save();
 		return this;
 	}
-
-	// Default component serialization methods for ItemComponents and FluidComponents //
-
-	// -- Items -- //
-
-	public boolean inputItemHasPriority(Object from) {
-		return from instanceof InputItem || from instanceof ItemStack || from instanceof Ingredient || !InputItem.of(from).isEmpty();
-	}
-
-	public boolean outputItemHasPriority(Object from) {
-		return from instanceof OutputItem || from instanceof ItemStack || !OutputItem.of(from).isEmpty();
-	}
-
-	public OutputItem readOutputItem(Object from) {
-		return OutputItem.of(from);
-	}
-
-	// -- End -- //
 }

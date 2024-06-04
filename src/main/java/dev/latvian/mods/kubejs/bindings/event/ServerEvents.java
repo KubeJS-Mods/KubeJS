@@ -8,6 +8,8 @@ import dev.latvian.mods.kubejs.event.SpecializedEventHandler;
 import dev.latvian.mods.kubejs.recipe.AfterRecipesLoadedKubeEvent;
 import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeMappingRegistryKubeEvent;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistryKubeEvent;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.data.DataPackKubeEvent;
 import dev.latvian.mods.kubejs.server.CommandKubeEvent;
@@ -29,6 +31,8 @@ public interface ServerEvents {
 	EventHandler COMMAND_REGISTRY = GROUP.server("commandRegistry", () -> CommandRegistryKubeEvent.class);
 	SpecializedEventHandler<String> COMMAND = GROUP.server("command", Extra.STRING, () -> CommandKubeEvent.class).hasResult();
 	SpecializedEventHandler<String> CUSTOM_COMMAND = GROUP.server("customCommand", Extra.STRING, () -> CustomCommandKubeEvent.class).hasResult();
+	EventHandler RECIPE_MAPPING_REGISTRY = GROUP.server("recipeMappingRegistry", () -> RecipeMappingRegistryKubeEvent.class);
+	EventHandler RECIPE_SCHEMA_REGISTRY = GROUP.server("recipeSchemaRegistry", () -> RecipeSchemaRegistryKubeEvent.class);
 	EventHandler RECIPES = GROUP.server("recipes", () -> RecipesKubeEvent.class);
 	EventHandler RECIPES_AFTER_LOADED = GROUP.server("afterRecipes", () -> AfterRecipesLoadedKubeEvent.class);
 	EventHandler SPECIAL_RECIPES = GROUP.server("specialRecipeSerializers", () -> SpecialRecipeSerializerManager.class);

@@ -1,12 +1,20 @@
-package dev.latvian.mods.kubejs.recipe;
+package dev.latvian.mods.kubejs.recipe.schema;
 
 import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.ItemMatch;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
-public class JsonKubeRecipe extends KubeRecipe {
+public class UnknownKubeRecipe extends KubeRecipe {
+	public static final KubeRecipeFactory RECIPE_FACTORY = new KubeRecipeFactory(KubeJS.id("unknown"), UnknownKubeRecipe.class, UnknownKubeRecipe::new);
+
 	@Override
 	public void deserialize(boolean merge) {
 	}

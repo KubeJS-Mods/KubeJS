@@ -14,14 +14,14 @@
 			"name": "experience",
 			"role": "output",
 			"type": "float",
-			"preferred": "xp",
+			"function_names": ["xp", "experience"],
 			"optional": 0.0
 		},
 		{
 			"name": "cookingtime",
 			"role": "input",
 			"type": "ticks",
-			"preferred": "cookingTime",
+			"function_names": ["cookingTime", "cookingtime"],
 			"optional": 200
 		}
 	],

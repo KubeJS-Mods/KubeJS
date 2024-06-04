@@ -8,7 +8,6 @@ import com.google.gson.JsonParseException;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.helpers.RecipeHelper;
@@ -17,10 +16,10 @@ import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.IDFilter;
 import dev.latvian.mods.kubejs.recipe.filter.OrFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
-import dev.latvian.mods.kubejs.recipe.schema.JsonRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
+import dev.latvian.mods.kubejs.recipe.schema.UnknownRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -322,7 +321,7 @@ public class RecipesKubeEvent implements KubeEvent {
 				}
 
 				try {
-					originalRecipes.put(recipeId, JsonRecipeSchema.SCHEMA.deserialize(type, recipeId, json));
+					originalRecipes.put(recipeId, UnknownRecipeSchema.SCHEMA.deserialize(type, recipeId, json));
 				} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
 					if (DevProperties.get().logErroringRecipes || DevProperties.get().debugInfo) {
 						ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2, SKIP_ERROR);

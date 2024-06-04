@@ -24,16 +24,16 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 	@Unique
 	private ReloadableServerResourcesKJS kjs$resources;
 
-	@Inject(method = "apply*", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V", at = @At("HEAD"), cancellable = true)
 	private void customRecipesHead(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
 		if (ServerEvents.COMPOSTABLE_RECIPES.hasListeners()) {
 			ServerEvents.COMPOSTABLE_RECIPES.post(ScriptType.SERVER, new CompostableRecipesKubeEvent());
 		}
 
 		var manager = kjs$resources.kjs$getServerScriptManager();
+		manager.recipeSchemaStorage.fireEvents(resourceManager);
 
 		if (manager.recipesEvent != null) {
-			manager.recipeSchemaStorage.fireEvents();
 			manager.recipesEvent.post(Cast.to(this), map);
 			manager.recipesEvent = null;
 			ci.cancel();

@@ -36,7 +36,7 @@ public record RecipeConstructor(RecipeKey<?>[] keys, Factory factory) {
 		}
 
 		default KubeRecipe create(Context cx, RecipeTypeFunction type, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from) {
-			var r = schemaType.schema.factory.get();
+			var r = schemaType.schema.recipeFactory.create();
 			r.type = type;
 			r.json = new JsonObject();
 			r.json.addProperty("type", "unknown");

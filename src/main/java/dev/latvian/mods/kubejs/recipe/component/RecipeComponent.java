@@ -213,6 +213,11 @@ public interface RecipeComponent<T> {
 		return oldValue != newValue;
 	}
 
+	@Nullable
+	default String createUniqueId(T value) {
+		return value == null ? null : value.toString().toLowerCase().replaceAll("\\W", "_").replaceAll("_{2,}", "_");
+	}
+
 	default ListRecipeComponent<T> asList() {
 		return ListRecipeComponent.create(this, false);
 	}
@@ -230,7 +235,7 @@ public interface RecipeComponent<T> {
 	}
 
 	default RecipeComponent<TinyMap<Character, T>> asPatternKey() {
-		return new MapRecipeComponent<>(StringComponent.CHARACTER, this, true);
+		return new MapRecipeComponent<>(CharacterComponent.CHARACTER, this, true);
 	}
 
 	default <O> OrRecipeComponent<T, O> or(RecipeComponent<O> other) {

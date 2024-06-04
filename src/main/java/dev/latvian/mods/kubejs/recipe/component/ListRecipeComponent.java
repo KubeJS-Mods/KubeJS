@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -159,6 +160,30 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 		}
 
 		return arr;
+	}
+
+	@Override
+	@Nullable
+	public String createUniqueId(List<T> value) {
+		if (value == null || value.isEmpty()) {
+			return null;
+		}
+
+		var sb = new StringBuilder();
+
+		for (var item : value) {
+			var u = component.createUniqueId(item);
+
+			if (u != null) {
+				if (!sb.isEmpty()) {
+					sb.append('_');
+				}
+
+				sb.append(u);
+			}
+		}
+
+		return sb.isEmpty() ? null : sb.toString();
 	}
 
 	@Override

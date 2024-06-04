@@ -5,9 +5,9 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import java.util.regex.Pattern;
 
 public class ErroredKubeRecipe extends KubeRecipe {
@@ -60,8 +60,9 @@ public class ErroredKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public Map<String, RecipeComponentValue<?>> getAllValueMap() {
-		return Map.of();
+	@HideFromJS
+	public RecipeComponentValue<?>[] getRecipeComponentValues() {
+		return RecipeComponentValue.EMPTY_ARRAY;
 	}
 
 	@Override

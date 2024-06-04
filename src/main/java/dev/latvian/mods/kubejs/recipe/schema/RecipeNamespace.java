@@ -1,17 +1,16 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedRecipeSchema;
-import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessRecipeSchema;
-import dev.latvian.mods.kubejs.recipe.schema.minecraft.SpecialRecipeSchema;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.LinkedHashMap;
 
 public class RecipeNamespace extends LinkedHashMap<String, RecipeSchemaType> {
+	public final RecipeSchemaStorage storage;
 	public final String name;
 
-	public RecipeNamespace(String name) {
+	public RecipeNamespace(RecipeSchemaStorage storage, String name) {
+		this.storage = storage;
 		this.name = name;
 	}
 
@@ -25,15 +24,15 @@ public class RecipeNamespace extends LinkedHashMap<String, RecipeSchemaType> {
 	}
 
 	public RecipeNamespace shaped(String id) {
-		return register(id, ShapedRecipeSchema.SCHEMA);
+		return register(id, storage.shapedSchema);
 	}
 
 	public RecipeNamespace shapeless(String id) {
-		return register(id, ShapelessRecipeSchema.SCHEMA);
+		return register(id, storage.shapelessSchema);
 	}
 
 	public RecipeNamespace special(String id) {
-		return register(id, SpecialRecipeSchema.SCHEMA);
+		return register(id, storage.specialSchema);
 	}
 
 	@Override

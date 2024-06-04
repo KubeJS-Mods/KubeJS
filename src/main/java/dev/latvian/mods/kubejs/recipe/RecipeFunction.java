@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValueFunction;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaFunction;
+import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaObject;
 import dev.latvian.mods.rhino.Scriptable;
@@ -11,19 +13,44 @@ import java.util.Map;
 
 public class RecipeFunction extends NativeJavaObject {
 	public final KubeRecipe recipe;
-	public final Map<String, RecipeComponentValueFunction> builderFunctions;
+	public final Map<String, BaseFunction> builderFunctions;
+
+	private static boolean isValidIdentifier(char[] name) {
+		if (name.length == 0 || !Character.isJavaIdentifierStart(name[0])) {
+			return false;
+		}
+
+		for (int i = 1; i < name.length; i++) {
+			if (!Character.isJavaIdentifierPart(name[i])) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 
 	public RecipeFunction(Context cx, Scriptable scope, TypeInfo staticType, KubeRecipe recipe) {
 		super(scope, recipe, staticType, cx);
 		this.recipe = recipe;
-		var map = recipe.getAllValueMap();
-		this.builderFunctions = new HashMap<>(map.size());
+		this.builderFunctions = new HashMap<>();
 
-		for (var entry : map.entrySet()) {
-			var key = entry.getKey();
-			var value = entry.getValue();
-			if (!value.key.noBuilders) {
-				builderFunctions.put(key, new RecipeComponentValueFunction(recipe, value));
+		for (var value : recipe.getRecipeComponentValues()) {
+			var names = value.key.functionNames == null ? value.key.names : value.key.functionNames;
+
+			if (!names.isEmpty()) {
+				var func = new RecipeComponentValueFunction(recipe, value);
+
+				for (var name : names) {
+					if (isValidIdentifier(name.toCharArray())) {
+						builderFunctions.put(name, func);
+					}
+				}
+			}
+		}
+
+		for (var entry : recipe.type.schemaType.schema.functions.entrySet()) {
+			if (isValidIdentifier(entry.getKey().toCharArray())) {
+				builderFunctions.put(entry.getKey(), new RecipeSchemaFunction.JSFunction(recipe, entry.getValue()));
 			}
 		}
 	}

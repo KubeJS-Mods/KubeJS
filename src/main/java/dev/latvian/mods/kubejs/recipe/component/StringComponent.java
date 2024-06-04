@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -35,13 +34,6 @@ public record StringComponent(String name, Codec<String> stringCodec) implements
 
 		return DataResult.success(s);
 	}));
-
-	public static final RecipeComponent<Character> CHARACTER = new SimpleRecipeComponent<>("character", KubeJSCodecs.CHARACTER, TypeInfo.CHARACTER) {
-		@Override
-		public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
-			return from instanceof Character || from instanceof CharSequence || from instanceof JsonPrimitive json && json.isString();
-		}
-	};
 
 	@Override
 	public Codec<String> codec() {

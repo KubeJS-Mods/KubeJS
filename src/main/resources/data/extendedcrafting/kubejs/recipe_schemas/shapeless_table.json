@@ -1,6 +1,3 @@
 {
-	"parent": "shapeless",
-	"mappings": [
-		"extendedCraftingShapeless"
-	]
+	"parent": "shapeless"
 }

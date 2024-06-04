@@ -16,7 +16,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import java.util.Map;
 
 public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V> component, boolean patternKey) implements RecipeComponent<TinyMap<K, V>> {
-	public static final MapRecipeComponent<Character, Ingredient> INGREDIENT_PATTERN_KEY = new MapRecipeComponent<>(StringComponent.CHARACTER, ItemComponents.INPUT, true);
+	public static final MapRecipeComponent<Character, Ingredient> INGREDIENT_PATTERN_KEY = new MapRecipeComponent<>(CharacterComponent.CHARACTER, IngredientComponent.INGREDIENT, true);
 
 	public static final RecipeComponentFactory FACTORY = RecipeComponentFactory.readTwoComponents((key, component) -> {
 		if (key == INGREDIENT_PATTERN_KEY.key && component == INGREDIENT_PATTERN_KEY.component) {

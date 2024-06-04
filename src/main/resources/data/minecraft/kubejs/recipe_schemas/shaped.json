@@ -1,9 +1,10 @@
 {
+	"factory": "kubejs:shaped",
 	"keys": [
 		{
 			"name": "result",
 			"role": "output",
-			"type": "item_stack"
+			"type": "strict_item_stack"
 		},
 		{
 			"name": "pattern",
@@ -17,17 +18,34 @@
 		{
 			"name": "kubejs:mirror",
 			"type": "boolean",
-			"preferred": "kjsMirror",
+			"builder_names": ["kjsMirror"],
 			"optional": true,
 			"excluded": true
 		},
 		{
-			"name": "kubejs:mirror",
+			"name": "kubejs:shrink",
 			"type": "boolean",
-			"preferred": "kjsShrink",
+			"builder_names": ["kjsShrink"],
 			"optional": true,
 			"excluded": true
 		}
 	],
-	"unique": ["result"]
+	"unique": ["result"],
+	"constructors": [
+		{
+			"keys": ["result", "pattern", "key"]
+		}
+	],
+	"functions": {
+		"noMirror": {
+			"set": {
+				"kubejs:mirror": false
+			}
+		},
+		"noShrink": {
+			"set": {
+				"kubejs:shrink": false
+			}
+		}
+	}
 }

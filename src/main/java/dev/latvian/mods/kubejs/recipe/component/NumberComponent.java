@@ -36,7 +36,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		return (storage, reader) -> {
 			reader.skipWhitespace();
 
-			if (reader.peek() != '<') {
+			if (!reader.canRead() || reader.peek() != '<') {
 				return range;
 			}
 
