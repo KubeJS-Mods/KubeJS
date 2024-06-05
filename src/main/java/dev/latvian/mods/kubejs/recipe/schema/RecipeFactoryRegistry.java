@@ -5,10 +5,10 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Supplier;
 
-public class RecipeFactoryRegistryKubeEvent {
+public class RecipeFactoryRegistry {
 	private final RecipeSchemaStorage storage;
 
-	public RecipeFactoryRegistryKubeEvent(RecipeSchemaStorage storage) {
+	public RecipeFactoryRegistry(RecipeSchemaStorage storage) {
 		this.storage = storage;
 	}
 

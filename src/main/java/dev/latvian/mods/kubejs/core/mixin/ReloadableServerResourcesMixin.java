@@ -25,7 +25,7 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 
 	@Shadow
 	@Final
-	public TagManager tagManager;
+	private TagManager tagManager;
 
 	@Shadow
 	@Final
@@ -37,6 +37,7 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 		kjs$serverScriptManager = new ServerScriptManager((ReloadableServerResources) (Object) this, registryAccess);
 		tagManager.kjs$setResources(this);
 		recipes.kjs$setResources(this);
+		kjs$serverScriptManager.reload();
 	}
 
 	@Inject(method = "updateRegistryTags(Lnet/minecraft/core/RegistryAccess;Lnet/minecraft/tags/TagManager$LoadResult;)V", at = @At("RETURN"))
@@ -63,5 +64,10 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 	@Override
 	public ServerScriptManager kjs$getServerScriptManager() {
 		return kjs$serverScriptManager;
+	}
+
+	@Override
+	public TagManager kjs$getTagManager() {
+		return tagManager;
 	}
 }

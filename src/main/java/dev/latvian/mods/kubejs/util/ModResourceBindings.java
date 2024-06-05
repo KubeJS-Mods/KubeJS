@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.util;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.script.BindingsEvent;
+import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import net.neoforged.neoforgespi.locating.IModFile;
@@ -25,7 +25,7 @@ public class ModResourceBindings {
 
 	private final Map<String, Collection<BindingProvider>> bindings = new HashMap<>();
 
-	public void addBindings(BindingsEvent event) {
+	public void addBindings(BindingRegistry event) {
 		for (var modBindings : bindings.entrySet()) {
 			var modName = modBindings.getKey();
 			var providers = modBindings.getValue();

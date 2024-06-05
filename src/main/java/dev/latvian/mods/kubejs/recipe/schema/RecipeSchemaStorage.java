@@ -1,11 +1,14 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -21,6 +24,7 @@ public class RecipeSchemaStorage {
 	public final Map<String, RecipeComponent<?>> simpleComponents;
 	public final Map<String, RecipeComponentFactory> dynamicComponents;
 	private final Map<String, RecipeComponent<?>> componentCache;
+	public final Map<String, RecipeSchemaType> schemaTypes;
 	public RecipeSchema shapedSchema;
 	public RecipeSchema shapelessSchema;
 	public RecipeSchema specialSchema;
@@ -32,6 +36,7 @@ public class RecipeSchemaStorage {
 		this.simpleComponents = new HashMap<>();
 		this.dynamicComponents = new HashMap<>();
 		this.componentCache = new HashMap<>();
+		this.schemaTypes = new HashMap<>();
 	}
 
 	public RecipeNamespace namespace(String namespace) {
@@ -45,33 +50,66 @@ public class RecipeSchemaStorage {
 		simpleComponents.clear();
 		dynamicComponents.clear();
 		componentCache.clear();
+		schemaTypes.clear();
 		shapedSchema = null;
 		shapelessSchema = null;
 		specialSchema = null;
 
-		var typeEvent = new RecipeFactoryRegistryKubeEvent(this);
+		var typeEvent = new RecipeFactoryRegistry(this);
 		KubeJSPlugins.forEachPlugin(typeEvent, KubeJSPlugin::registerRecipeFactories);
 
-		var mappingEvent = new RecipeMappingRegistryKubeEvent(this);
-		KubeJSPlugins.forEachPlugin(mappingEvent, KubeJSPlugin::registerRecipeMappings);
-		ServerEvents.RECIPE_MAPPING_REGISTRY.post(ScriptType.SERVER, mappingEvent);
+		for (var entry : resourceManager.listResources("kubejs", path -> path.getPath().endsWith("/recipe_mappings.json")).entrySet()) {
+			try (var reader = entry.getValue().openAsReader()) {
+				var json = JsonUtils.GSON.fromJson(reader, JsonObject.class);
 
-		KubeJSPlugins.forEachPlugin(new RecipeComponentFactoryRegistryEvent(this), KubeJSPlugin::registerRecipeComponents);
+				for (var entry1 : json.entrySet()) {
+					var id = new ResourceLocation(entry.getKey().getNamespace(), entry1.getKey());
+
+					if (entry1.getValue() instanceof JsonArray arr) {
+						for (var n : arr) {
+							mappings.put(n.getAsString(), id);
+						}
+					} else {
+						mappings.put(entry1.getValue().getAsString(), id);
+					}
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		var mappingRegistry = new RecipeMappingRegistry(this);
+		KubeJSPlugins.forEachPlugin(mappingRegistry, KubeJSPlugin::registerRecipeMappings);
+		ServerEvents.RECIPE_MAPPING_REGISTRY.post(ScriptType.SERVER, mappingRegistry);
+
+		KubeJSPlugins.forEachPlugin(new RecipeComponentFactoryRegistry(this), KubeJSPlugin::registerRecipeComponents);
+
+		for (var entry : resourceManager.listResources("kubejs", path -> path.getPath().endsWith("/recipe_components.json")).entrySet()) {
+			try (var reader = entry.getValue().openAsReader()) {
+				var json = JsonUtils.GSON.fromJson(reader, JsonObject.class);
+
+				for (var entry1 : json.entrySet()) {
+					simpleComponents.put(entry1.getKey(), getComponent(entry1.getValue().getAsString()));
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
 
 		for (var entry : RegistryInfo.RECIPE_SERIALIZER.entrySet()) {
 			var ns = namespace(entry.getKey().location().getNamespace());
 			ns.put(entry.getKey().location().getPath(), new UnknownRecipeSchemaType(ns, entry.getKey().location(), entry.getValue()));
 		}
 
-		var schemaRegistryEvent = new RecipeSchemaRegistryKubeEvent(this);
-		JsonRecipeSchemaLoader.load(this, schemaRegistryEvent, resourceManager);
+		var schemaRegistry = new RecipeSchemaRegistry(this);
+		JsonRecipeSchemaLoader.load(this, schemaRegistry, resourceManager);
 
 		shapedSchema = Objects.requireNonNull(namespace("minecraft").get("shaped").schema);
 		shapelessSchema = Objects.requireNonNull(namespace("minecraft").get("shapeless").schema);
 		specialSchema = Objects.requireNonNull(namespace("minecraft").get("special").schema);
 
-		KubeJSPlugins.forEachPlugin(schemaRegistryEvent, KubeJSPlugin::registerRecipeSchemas);
-		ServerEvents.RECIPE_SCHEMA_REGISTRY.post(ScriptType.SERVER, schemaRegistryEvent);
+		KubeJSPlugins.forEachPlugin(schemaRegistry, KubeJSPlugin::registerRecipeSchemas);
+		ServerEvents.RECIPE_SCHEMA_REGISTRY.post(ScriptType.SERVER, schemaRegistry);
 	}
 
 	public RecipeComponent<?> getComponent(String string) {

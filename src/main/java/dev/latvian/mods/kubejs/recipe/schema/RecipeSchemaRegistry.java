@@ -3,10 +3,10 @@ package dev.latvian.mods.kubejs.recipe.schema;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import net.minecraft.resources.ResourceLocation;
 
-public class RecipeSchemaRegistryKubeEvent implements KubeEvent {
+public class RecipeSchemaRegistry implements KubeEvent {
 	private final RecipeSchemaStorage storage;
 
-	public RecipeSchemaRegistryKubeEvent(RecipeSchemaStorage storage) {
+	public RecipeSchemaRegistry(RecipeSchemaStorage storage) {
 		this.storage = storage;
 	}
 

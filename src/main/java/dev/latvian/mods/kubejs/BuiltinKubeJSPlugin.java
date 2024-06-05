@@ -101,16 +101,14 @@ import dev.latvian.mods.kubejs.recipe.component.TagKeyComponent;
 import dev.latvian.mods.kubejs.recipe.component.TimeComponent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistryEvent;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistryKubeEvent;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistryKubeEvent;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistry;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.UnknownKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessKubeRecipe;
-import dev.latvian.mods.kubejs.recipe.schema.minecraft.SmithingTransformRecipeSchema;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.script.BindingsEvent;
+import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.WrapperRegistry;
@@ -355,85 +353,85 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	public void registerBindings(BindingsEvent event) {
-		event.add("global", GLOBAL);
-		event.add("Platform", PlatformWrapper.class);
-		event.add("console", event.type().console);
+	public void registerBindings(BindingRegistry bindings) {
+		bindings.add("global", GLOBAL);
+		bindings.add("Platform", PlatformWrapper.class);
+		bindings.add("console", bindings.type().console);
 
 		for (var group : EventGroups.ALL.get().map().values()) {
-			event.add(group.name, new EventGroupWrapper(event.type(), group));
+			bindings.add(group.name, new EventGroupWrapper(bindings.type(), group));
 		}
 
-		event.add("JavaMath", Math.class);
-		event.add("ResourceLocation", ResourceLocation.class);
-		event.add("Duration", Duration.class);
+		bindings.add("JavaMath", Math.class);
+		bindings.add("ResourceLocation", ResourceLocation.class);
+		bindings.add("Duration", Duration.class);
 
 		// event.add("onEvent", new LegacyCodeHandler("onEvent()"));
 
-		if (event.type().isServer() && event.context().kjsFactory.manager instanceof ServerScriptManager) {
+		if (bindings.type().isServer() && bindings.context().kjsFactory.manager instanceof ServerScriptManager) {
 			var se = ScheduledServerEvent.EVENTS;
 
-			event.add("setTimeout", new ScheduledEvents.TimeoutJSFunction(se, false, false));
-			event.add("clearTimeout", new ScheduledEvents.TimeoutJSFunction(se, true, false));
-			event.add("setInterval", new ScheduledEvents.TimeoutJSFunction(se, false, true));
-			event.add("clearInterval", new ScheduledEvents.TimeoutJSFunction(se, true, true));
+			bindings.add("setTimeout", new ScheduledEvents.TimeoutJSFunction(se, false, false));
+			bindings.add("clearTimeout", new ScheduledEvents.TimeoutJSFunction(se, true, false));
+			bindings.add("setInterval", new ScheduledEvents.TimeoutJSFunction(se, false, true));
+			bindings.add("clearInterval", new ScheduledEvents.TimeoutJSFunction(se, true, true));
 		}
 
-		event.add("KMath", KMath.class);
-		event.add("Utils", UtilsWrapper.class);
-		event.add("Java", JavaWrapper.class);
-		event.add("Text", TextWrapper.class);
-		event.add("Component", TextWrapper.class);
-		event.add("UUID", UUIDWrapper.class);
-		event.add("JsonIO", JsonIO.class);
-		event.add("Block", BlockWrapper.class);
-		event.add("Blocks", Blocks.class);
-		event.add("Item", ItemWrapper.class);
-		event.add("Items", Items.class);
-		event.add("Ingredient", IngredientWrapper.class);
-		event.add("IngredientHelper", IngredientHelper.get());
-		event.add("NBT", NBTUtils.class);
-		event.add("NBTIO", NBTIOWrapper.class);
-		event.add("Direction", DirectionWrapper.class);
-		event.add("Facing", DirectionWrapper.class);
-		event.add("AABB", AABBWrapper.class);
-		event.add("Stats", Stats.class);
-		event.add("FluidAmounts", FluidAmounts.class);
-		event.add("Notification", NotificationToastData.class);
-		event.add("InputItem", InputItem.class);
-		event.add("OutputItem", OutputItem.class);
+		bindings.add("KMath", KMath.class);
+		bindings.add("Utils", UtilsWrapper.class);
+		bindings.add("Java", JavaWrapper.class);
+		bindings.add("Text", TextWrapper.class);
+		bindings.add("Component", TextWrapper.class);
+		bindings.add("UUID", UUIDWrapper.class);
+		bindings.add("JsonIO", JsonIO.class);
+		bindings.add("Block", BlockWrapper.class);
+		bindings.add("Blocks", Blocks.class);
+		bindings.add("Item", ItemWrapper.class);
+		bindings.add("Items", Items.class);
+		bindings.add("Ingredient", IngredientWrapper.class);
+		bindings.add("IngredientHelper", IngredientHelper.get());
+		bindings.add("NBT", NBTUtils.class);
+		bindings.add("NBTIO", NBTIOWrapper.class);
+		bindings.add("Direction", DirectionWrapper.class);
+		bindings.add("Facing", DirectionWrapper.class);
+		bindings.add("AABB", AABBWrapper.class);
+		bindings.add("Stats", Stats.class);
+		bindings.add("FluidAmounts", FluidAmounts.class);
+		bindings.add("Notification", NotificationToastData.class);
+		bindings.add("InputItem", InputItem.class);
+		bindings.add("OutputItem", OutputItem.class);
 
-		event.add("Fluid", FluidWrapper.class);
+		bindings.add("Fluid", FluidWrapper.class);
 
-		event.add("SECOND", 1000L);
-		event.add("MINUTE", 60000L);
-		event.add("HOUR", 3600000L);
+		bindings.add("SECOND", 1000L);
+		bindings.add("MINUTE", 60000L);
+		bindings.add("HOUR", 3600000L);
 
-		event.add("Color", ColorWrapper.class);
-		event.add("BlockStatePredicate", BlockStatePredicate.class);
+		bindings.add("Color", ColorWrapper.class);
+		bindings.add("BlockStatePredicate", BlockStatePredicate.class);
 
-		event.add("Vec3d", Vec3.class);
-		event.add("Vec3i", Vec3i.class);
-		event.add("Vec3f", Vector3f.class);
-		event.add("Vec4f", Vector4f.class);
-		event.add("Matrix3f", Matrix3f.class);
-		event.add("Matrix4f", Matrix4f.class);
-		event.add("Matrix4f", Matrix4f.class);
-		event.add("Quaternionf", Quaternionf.class);
-		event.add("RotationAxis", RotationAxis.class);
-		event.add("BlockPos", BlockPos.class);
-		event.add("DamageSource", DamageSource.class);
-		event.add("SoundType", SoundType.class);
+		bindings.add("Vec3d", Vec3.class);
+		bindings.add("Vec3i", Vec3i.class);
+		bindings.add("Vec3f", Vector3f.class);
+		bindings.add("Vec4f", Vector4f.class);
+		bindings.add("Matrix3f", Matrix3f.class);
+		bindings.add("Matrix4f", Matrix4f.class);
+		bindings.add("Matrix4f", Matrix4f.class);
+		bindings.add("Quaternionf", Quaternionf.class);
+		bindings.add("RotationAxis", RotationAxis.class);
+		bindings.add("BlockPos", BlockPos.class);
+		bindings.add("DamageSource", DamageSource.class);
+		bindings.add("SoundType", SoundType.class);
 
-		event.add("BlockProperties", BlockStateProperties.class);
+		bindings.add("BlockProperties", BlockStateProperties.class);
 
-		if (event.type().isStartup()) {
-			event.add("NativeEvents", new NativeEventWrapper("NativeEvents", NeoForge.EVENT_BUS));
+		if (bindings.type().isStartup()) {
+			bindings.add("NativeEvents", new NativeEventWrapper("NativeEvents", NeoForge.EVENT_BUS));
 
 			var modBus = KubeJS.thisMod.getEventBus();
 
 			if (modBus != null) {
-				event.add("NativeModEvents", new NativeEventWrapper("NativeModEvents", modBus));
+				bindings.add("NativeModEvents", new NativeEventWrapper("NativeModEvents", modBus));
 			}
 		}
 	}
@@ -523,32 +521,32 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	public void registerRecipeFactories(RecipeFactoryRegistryKubeEvent event) {
-		event.register(UnknownKubeRecipe.RECIPE_FACTORY);
-		event.register(ShapedKubeRecipe.RECIPE_FACTORY);
-		event.register(ShapelessKubeRecipe.RECIPE_FACTORY);
+	public void registerRecipeFactories(RecipeFactoryRegistry registry) {
+		registry.register(UnknownKubeRecipe.RECIPE_FACTORY);
+		registry.register(ShapedKubeRecipe.RECIPE_FACTORY);
+		registry.register(ShapelessKubeRecipe.RECIPE_FACTORY);
 	}
 
 	@Override
-	public void registerRecipeComponents(RecipeComponentFactoryRegistryEvent event) {
-		event.register("boolean", BooleanComponent.BOOLEAN);
+	public void registerRecipeComponents(RecipeComponentFactoryRegistry registry) {
+		registry.register("boolean", BooleanComponent.BOOLEAN);
 
-		event.register("int", NumberComponent.INT_FACTORY);
-		event.register("long", NumberComponent.LONG_FACTORY);
-		event.register("float", NumberComponent.FLOAT_FACTORY);
-		event.register("double", NumberComponent.DOUBLE_FACTORY);
+		registry.register("int", NumberComponent.INT_FACTORY);
+		registry.register("long", NumberComponent.LONG_FACTORY);
+		registry.register("float", NumberComponent.FLOAT_FACTORY);
+		registry.register("double", NumberComponent.DOUBLE_FACTORY);
 
-		event.register("string", StringComponent.ANY);
-		event.register("non_empty_string", StringComponent.NON_EMPTY);
-		event.register("non_blank_string", StringComponent.NON_BLANK);
-		event.register("id", StringComponent.ID);
-		event.register("character", CharacterComponent.CHARACTER);
+		registry.register("string", StringComponent.ANY);
+		registry.register("non_empty_string", StringComponent.NON_EMPTY);
+		registry.register("non_blank_string", StringComponent.NON_BLANK);
+		registry.register("id", StringComponent.ID);
+		registry.register("character", CharacterComponent.CHARACTER);
 
-		event.register("ingredient", IngredientComponent.INGREDIENT);
-		event.register("non_empty_ingredient", IngredientComponent.NON_EMPTY_INGREDIENT);
-		event.register("unwrapped_ingredient_list", IngredientComponent.UNWRAPPED_INGREDIENT_LIST);
-		event.register("item_stack", ItemStackComponent.ITEM_STACK);
-		event.register("strict_item_stack", ItemStackComponent.STRICT_ITEM_STACK);
+		registry.register("ingredient", IngredientComponent.INGREDIENT);
+		registry.register("non_empty_ingredient", IngredientComponent.NON_EMPTY_INGREDIENT);
+		registry.register("unwrapped_ingredient_list", IngredientComponent.UNWRAPPED_INGREDIENT_LIST);
+		registry.register("item_stack", ItemStackComponent.ITEM_STACK);
+		registry.register("strict_item_stack", ItemStackComponent.STRICT_ITEM_STACK);
 
 		// event.register("inputFluid", FluidComponents.INPUT);
 		// event.register("inputFluidArray", FluidComponents.INPUT_ARRAY);
@@ -559,34 +557,27 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		// event.register("outputFluidOrItem", FluidComponents.OUTPUT_OR_ITEM);
 		// event.register("outputFluidOrItemArray", FluidComponents.OUTPUT_OR_ITEM_ARRAY);
 
-		event.register("block", BlockComponent.BLOCK);
+		registry.register("block", BlockComponent.BLOCK);
 
-		event.register("block_state", BlockStateComponent.BLOCK);
-		event.register("block_state_string", BlockStateComponent.BLOCK_STRING);
+		registry.register("block_state", BlockStateComponent.BLOCK);
+		registry.register("block_state_string", BlockStateComponent.BLOCK_STRING);
 
-		event.register("ticks", TimeComponent.TICKS);
-		event.register("seconds", TimeComponent.SECONDS);
-		event.register("minutes", TimeComponent.MINUTES);
-		event.register("hours", TimeComponent.HOURS);
+		registry.register("ticks", TimeComponent.TICKS);
+		registry.register("seconds", TimeComponent.SECONDS);
+		registry.register("minutes", TimeComponent.MINUTES);
+		registry.register("hours", TimeComponent.HOURS);
 
-		event.register("block_tag", TagKeyComponent.BLOCK);
-		event.register("item_tag", TagKeyComponent.ITEM);
-		event.register("fluid_tag", TagKeyComponent.FLUID);
-		event.register("entity_type_tag", TagKeyComponent.ENTITY_TYPE);
-		event.register("biome_tag", TagKeyComponent.BIOME);
-		event.register("tag", TagKeyComponent.FACTORY);
+		registry.register("block_tag", TagKeyComponent.BLOCK);
+		registry.register("item_tag", TagKeyComponent.ITEM);
+		registry.register("fluid_tag", TagKeyComponent.FLUID);
+		registry.register("entity_type_tag", TagKeyComponent.ENTITY_TYPE);
+		registry.register("biome_tag", TagKeyComponent.BIOME);
+		registry.register("tag", TagKeyComponent.FACTORY);
 
-		event.register("registry_element", RegistryComponent.FACTORY);
-		event.register("enum", EnumComponent.FACTORY);
-		event.register("nested_recipe", NestedRecipeComponent.RECIPE);
-		event.register("map", MapRecipeComponent.FACTORY);
-	}
-
-	@Override
-	public void registerRecipeSchemas(RecipeSchemaRegistryKubeEvent event) {
-		event.namespace("minecraft")
-			.register("smithing_transform", SmithingTransformRecipeSchema.SCHEMA)
-		;
+		registry.register("registry_element", RegistryComponent.FACTORY);
+		registry.register("enum", EnumComponent.FACTORY);
+		registry.register("nested_recipe", NestedRecipeComponent.RECIPE);
+		registry.register("map", MapRecipeComponent.FACTORY);
 	}
 
 	@Override

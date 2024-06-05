@@ -4,6 +4,7 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.util.TickDuration;
+import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
@@ -26,6 +27,15 @@ public record TimeComponent(String name, long scale, Codec<TickDuration> codec) 
 	@Override
 	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
 		return from instanceof Number || from instanceof JsonPrimitive json && json.isNumber();
+	}
+
+	@Override
+	public TickDuration wrap(Context cx, KubeRecipe recipe, Object from) {
+		if (from instanceof Number n) {
+			return new TickDuration((long) (n.doubleValue() * scale));
+		} else {
+			return new TickDuration(TimeJS.durationOf(from).toMillis() / 50L);
+		}
 	}
 
 	@Override

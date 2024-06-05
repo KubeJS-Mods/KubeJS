@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
@@ -11,11 +12,12 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class JsonRecipeSchemaLoader {
-	private record ConstructorBuilder(List<String> keys) {
+	private record ConstructorBuilder(List<String> keys, Map<String, JsonElement> overrides) {
 	}
 
 	private record FunctionBuilder(String name, JsonObject json) {
@@ -42,6 +44,16 @@ public class JsonRecipeSchemaLoader {
 				return keys;
 			} else if (parent != null) {
 				return parent.getKeys();
+			} else {
+				return List.of();
+			}
+		}
+
+		private List<ConstructorBuilder> getConstructors() {
+			if (constructors != null) {
+				return constructors;
+			} else if (parent != null) {
+				return parent.getConstructors();
 			} else {
 				return List.of();
 			}
@@ -96,6 +108,46 @@ public class JsonRecipeSchemaLoader {
 
 					if (rf != null) {
 						schema.recipeFactory = rf;
+					}
+
+					var constructors = getConstructors();
+
+					if (!constructors.isEmpty()) {
+						for (var c : constructors) {
+							var cKeys = new ArrayList<RecipeKey<?>>();
+
+							for (var keyName : c.keys) {
+								var key = keyMap.get(keyName);
+
+								if (key != null) {
+									cKeys.add(key);
+								} else {
+									throw new NullPointerException("Key '" + keyName + "' not found in constructor of recipe schema '" + id + "'");
+								}
+							}
+
+							var constructor = new RecipeConstructor(cKeys.toArray(new RecipeKey[0]));
+
+							if (!c.overrides.isEmpty()) {
+								constructor.overrides = new IdentityHashMap<>(c.overrides.size());
+
+								for (var entry : c.overrides.entrySet()) {
+									var key = keyMap.get(entry.getKey());
+
+									if (key != null) {
+										try {
+											constructor.overrides.put(key, new RecipeOptional.Constant(key.codec.decode(JsonOps.INSTANCE, entry.getValue()).getOrThrow().getFirst()));
+										} catch (Exception ex) {
+											throw new IllegalArgumentException("Failed to create optional value for key '" + key + "' of '" + id + "' from " + entry.getValue(), ex);
+										}
+									} else {
+										throw new NullPointerException("Key '" + entry.getKey() + "' not found in overrides of constructor of recipe schema '" + id + "'");
+									}
+								}
+							}
+
+							schema.constructor(constructor);
+						}
 					}
 
 					// schema.constructors(constructors.toArray(new RecipeConstructor[0]));
@@ -153,20 +205,14 @@ public class JsonRecipeSchemaLoader {
 		}
 	}
 
-	public static void load(RecipeSchemaStorage storage, RecipeSchemaRegistryKubeEvent event, ResourceManager resourceManager) {
+	public static void load(RecipeSchemaStorage storage, RecipeSchemaRegistry event, ResourceManager resourceManager) {
 		var map = new HashMap<ResourceLocation, RecipeSchemaBuilder>();
 
 		for (var entry : resourceManager.listResources("kubejs/recipe_schemas", path -> path.getPath().endsWith(".json")).entrySet()) {
 			try (var reader = entry.getValue().openAsReader()) {
 				var json = JsonUtils.GSON.fromJson(reader, JsonObject.class);
 				var holder = new RecipeSchemaBuilder(new ResourceLocation(entry.getKey().getNamespace(), entry.getKey().getPath().substring("kubejs/recipe_schemas/".length(), entry.getKey().getPath().length() - ".json".length())), json);
-
-				switch (holder.json.has("parent") ? holder.json.get("parent").getAsString() : "") {
-					case "shaped", "minecraft:shaped" -> event.namespace(holder.id.getNamespace()).shaped(holder.id.getPath());
-					case "shapeless", "minecraft:shapeless" -> event.namespace(holder.id.getNamespace()).shapeless(holder.id.getPath());
-					case "special", "minecraft:special" -> event.namespace(holder.id.getNamespace()).special(holder.id.getPath());
-					case null, default -> map.put(holder.id, holder);
-				}
+				map.put(holder.id, holder);
 
 				if (holder.json.has("mappings")) {
 					for (var m : holder.json.getAsJsonArray("mappings")) {
@@ -259,10 +305,16 @@ public class JsonRecipeSchemaLoader {
 			if (holder.json.has("constructors")) {
 				for (var entry : holder.json.getAsJsonArray("constructors")) {
 					var c = entry.getAsJsonObject();
-					var constructor = new ConstructorBuilder(new ArrayList<>());
+					var constructor = new ConstructorBuilder(new ArrayList<>(3), new HashMap<>(0));
 
 					for (var e : c.getAsJsonArray("keys")) {
 						constructor.keys.add(e.getAsString());
+					}
+
+					if (c.has("overrides")) {
+						for (var e : c.getAsJsonObject("overrides").entrySet()) {
+							constructor.overrides.put(e.getKey(), e.getValue());
+						}
 					}
 
 					if (holder.constructors == null) {

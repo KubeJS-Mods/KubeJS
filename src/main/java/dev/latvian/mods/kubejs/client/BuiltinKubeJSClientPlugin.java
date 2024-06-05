@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
-import dev.latvian.mods.kubejs.script.BindingsEvent;
+import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import net.minecraft.client.Minecraft;
 
@@ -20,17 +20,17 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	public void registerBindings(BindingsEvent event) {
-		event.add("Client", Minecraft.getInstance());
-		event.add("Painter", Painter.INSTANCE);
+	public void registerBindings(BindingRegistry bindings) {
+		bindings.add("Client", Minecraft.getInstance());
+		bindings.add("Painter", Painter.INSTANCE);
 
-		if (event.type().isClient()) {
+		if (bindings.type().isClient()) {
 			var se = Minecraft.getInstance().kjs$getScheduledEvents();
 
-			event.add("setTimeout", new ScheduledEvents.TimeoutJSFunction(se, false, false));
-			event.add("clearTimeout", new ScheduledEvents.TimeoutJSFunction(se, true, false));
-			event.add("setInterval", new ScheduledEvents.TimeoutJSFunction(se, false, true));
-			event.add("clearInterval", new ScheduledEvents.TimeoutJSFunction(se, true, true));
+			bindings.add("setTimeout", new ScheduledEvents.TimeoutJSFunction(se, false, false));
+			bindings.add("clearTimeout", new ScheduledEvents.TimeoutJSFunction(se, true, false));
+			bindings.add("setInterval", new ScheduledEvents.TimeoutJSFunction(se, false, true));
+			bindings.add("clearInterval", new ScheduledEvents.TimeoutJSFunction(se, true, true));
 		}
 	}
 }

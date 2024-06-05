@@ -2,10 +2,10 @@ package dev.latvian.mods.kubejs.recipe.schema;
 
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 
-public class RecipeComponentFactoryRegistryEvent {
+public class RecipeComponentFactoryRegistry {
 	private final RecipeSchemaStorage storage;
 
-	public RecipeComponentFactoryRegistryEvent(RecipeSchemaStorage storage) {
+	public RecipeComponentFactoryRegistry(RecipeSchemaStorage storage) {
 		this.storage = storage;
 	}
 

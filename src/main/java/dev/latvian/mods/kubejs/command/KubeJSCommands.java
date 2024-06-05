@@ -662,7 +662,7 @@ public class KubeJSCommands {
 	}
 
 	private static int reloadStartup(CommandSourceStack source) {
-		KubeJS.getStartupScriptManager().reload(null);
+		KubeJS.getStartupScriptManager().reload();
 		source.sendSystemMessage(Component.literal("Done!"));
 		PacketDistributor.sendToAllPlayers(new ReloadStartupScriptsPayload(source.getServer().isDedicatedServer()));
 		return 1;
@@ -670,7 +670,7 @@ public class KubeJSCommands {
 
 	private static int reloadServer(CommandSourceStack source) {
 		var resources = source.getServer().getServerResources();
-		resources.managers().kjs$getServerScriptManager().reload(resources.resourceManager());
+		resources.managers().kjs$getServerScriptManager().reload();
 		source.sendSuccess(() -> Component.literal("Done! To reload recipes, tags, loot tables and other datapack things, run ")
 				.append(Component.literal("'/reload'")
 					.kjs$clickRunCommand("/reload")

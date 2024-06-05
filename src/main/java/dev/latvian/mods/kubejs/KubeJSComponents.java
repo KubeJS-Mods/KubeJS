@@ -89,7 +89,8 @@ public interface KubeJSComponents {
 		try {
 			return readMap(((KubeJSContext) cx).getRegistries().createSerializationContext(NbtOps.INSTANCE), new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
-			throw new RuntimeException(ex);
+			((KubeJSContext) cx).getConsole().error("Error parsing DataComponentMap", ex);
+			return DataComponentMap.EMPTY;
 		}
 	}
 
@@ -97,7 +98,8 @@ public interface KubeJSComponents {
 		try {
 			return readPatch(((KubeJSContext) cx).getRegistries().createSerializationContext(NbtOps.INSTANCE), new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
-			throw new RuntimeException(ex);
+			((KubeJSContext) cx).getConsole().error("Error parsing DataComponentPatch", ex);
+			return DataComponentPatch.EMPTY;
 		}
 	}
 

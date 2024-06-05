@@ -1,8 +1,11 @@
 package dev.latvian.mods.kubejs.server;
 
+import com.google.gson.JsonElement;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
+import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
@@ -13,29 +16,36 @@ import dev.latvian.mods.kubejs.script.data.DataPackKubeEvent;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.server.tag.PreTagKubeEvent;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackLocationInfo;
-import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PackSelectionConfig;
+import net.minecraft.server.packs.repository.BuiltInPackSource;
+import net.minecraft.server.packs.repository.KnownPack;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackSource;
-import net.minecraft.server.packs.resources.CloseableResourceManager;
-import net.minecraft.server.packs.resources.MultiPackResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.nio.file.Files;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerScriptManager extends ScriptManager {
+	private static final Component GEN_PACK_NAME = Component.empty().append(KubeJS.NAME_COMPONENT).append(" (Generated)");
+
 	private static ServerScriptManager staticInstance;
 
 	public static ServerScriptManager getScriptManager() {
@@ -48,7 +58,6 @@ public class ServerScriptManager extends ScriptManager {
 	public final RegistryAccess registries;
 	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
 	public final RecipeSchemaStorage recipeSchemaStorage;
-	public RecipesKubeEvent recipesEvent;
 
 	public ServerScriptManager(ReloadableServerResources resources, RegistryAccess registryAccess) {
 		super(ScriptType.SERVER);
@@ -79,6 +88,73 @@ public class ServerScriptManager extends ScriptManager {
 		return ServerLifecycleHooks.getCurrentServer().kjs$getOverworld().damageSources();
 	}
 
+	public static void addPacksFirst(AddPackFindersEvent event) {
+		event.addRepositorySource(c -> c.accept(VirtualKubeJSDataPack.HIGH.pack));
+
+		var genPack = new Pack(
+			new PackLocationInfo("kubejs_generated", GEN_PACK_NAME, PackSource.BUILT_IN, Optional.of(new KnownPack(KubeJS.MOD_ID, "kubejs_generated", "1"))),
+			BuiltInPackSource.fixedResources(new GeneratedServerResourcePack()),
+			new Pack.Metadata(GEN_PACK_NAME, PackCompatibility.COMPATIBLE, FeatureFlagSet.of(), List.of(), true),
+			new PackSelectionConfig(true, Pack.Position.BOTTOM, true)
+		);
+
+		event.addRepositorySource(c -> c.accept(genPack));
+
+		for (var file : Objects.requireNonNull(KubeJSPaths.DATA.toFile().listFiles())) {
+			var fileName = file.getName();
+
+			if (file.isFile() && fileName.endsWith(".zip")) {
+				var zipPack = new Pack(
+					new PackLocationInfo(fileName, Component.literal(fileName), PackSource.BUILT_IN, Optional.of(new KnownPack(KubeJS.MOD_ID, "kubejs_generated", "1"))),
+					new FilePackResources.FileResourcesSupplier(file),
+					new Pack.Metadata(GEN_PACK_NAME, PackCompatibility.COMPATIBLE, FeatureFlagSet.of(), List.of(), true),
+					new PackSelectionConfig(true, Pack.Position.BOTTOM, true)
+				);
+
+				event.addRepositorySource(c -> c.accept(zipPack));
+			}
+		}
+
+		/*
+		list.addLast(new GeneratedServerResourcePack());
+
+		for (var file : Objects.requireNonNull(KubeJSPaths.DATA.toFile().listFiles())) {
+			if (file.isFile() && file.getName().endsWith(".zip")) {
+				var access = new FilePackResources.FileResourcesSupplier(file);
+				list.addLast(access.openPrimary(new PackLocationInfo(file.getName(), Component.literal(file.getName()), PackSource.BUILT_IN, Optional.empty())));
+			}
+		}
+		 */
+	}
+
+	public static void addPacksLast(AddPackFindersEvent event) {
+		event.addRepositorySource(c -> c.accept(VirtualKubeJSDataPack.LOW.pack));
+	}
+
+	@Override
+	public void reload() {
+		ConsoleJS.SERVER.setCapturingErrors(true);
+		super.reload();
+		ConsoleJS.SERVER.info("Scripts loaded");
+		CustomIngredientAction.MAP.clear();
+		SpecialRecipeSerializerManager.INSTANCE.reset();
+		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
+		PreTagKubeEvent.handle(preTagEvents);
+
+		VirtualKubeJSDataPack.HIGH.reset();
+
+		if (ServerEvents.HIGH_DATA.hasListeners()) {
+			ServerEvents.HIGH_DATA.post(ScriptType.SERVER, new DataPackKubeEvent(VirtualKubeJSDataPack.HIGH));
+		}
+
+		VirtualKubeJSDataPack.LOW.reset();
+
+		if (ServerEvents.LOW_DATA.hasListeners()) {
+			ServerEvents.LOW_DATA.post(ScriptType.SERVER, new DataPackKubeEvent(VirtualKubeJSDataPack.LOW));
+		}
+	}
+
+	/*
 	// FIXME
 	public MultiPackResourceManager wrapResourceManager(HolderLookup.Provider registries, CloseableResourceManager original) {
 		var virtualDataPackLow = new VirtualKubeJSDataPack(false);
@@ -104,23 +180,31 @@ public class ServerScriptManager extends ScriptManager {
 		ConsoleJS.SERVER.setCapturingErrors(true);
 		reload(wrappedResourceManager);
 
-		ServerEvents.LOW_DATA.post(ScriptType.SERVER, new DataPackKubeEvent(virtualDataPackLow, wrappedResourceManager));
-		ServerEvents.HIGH_DATA.post(ScriptType.SERVER, new DataPackKubeEvent(virtualDataPackHigh, wrappedResourceManager));
-
 		ConsoleJS.SERVER.info("Scripts loaded");
 
 		CustomIngredientAction.MAP.clear();
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
 		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
-		KubeJSPlugins.forEachPlugin(KubeJSPlugin::onServerReload);
 
 		PreTagKubeEvent.handle(preTagEvents);
 
-		if (ServerEvents.RECIPES.hasListeners()) {
-			recipesEvent = new RecipesKubeEvent(recipeSchemaStorage, registries);
+		return wrappedResourceManager;
+	}
+	 */
+
+	public boolean recipes(RecipeManagerKJS recipeManager, HolderLookup.Provider registries, ResourceManager resourceManager, Map<ResourceLocation, JsonElement> map) {
+		if (ServerEvents.COMPOSTABLE_RECIPES.hasListeners()) {
+			ServerEvents.COMPOSTABLE_RECIPES.post(ScriptType.SERVER, new CompostableRecipesKubeEvent());
 		}
 
-		return wrappedResourceManager;
+		recipeSchemaStorage.fireEvents(resourceManager);
+
+		if (ServerEvents.RECIPES.hasListeners()) {
+			new RecipesKubeEvent(recipeSchemaStorage, registries).post(recipeManager, map);
+			return true;
+		}
+
+		return false;
 	}
 }

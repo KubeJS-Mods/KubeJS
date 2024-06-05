@@ -7,18 +7,12 @@ import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.LogType;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.damagesource.DamageSources;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ScriptManager {
@@ -49,7 +43,7 @@ public class ScriptManager {
 		scriptType.unload();
 	}
 
-	public void reload(@Nullable ResourceManager resourceManager) {
+	public void reload() {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clearCaches);
 
 		unload();
@@ -61,11 +55,6 @@ public class ScriptManager {
 		}
 
 		loadFromDirectory();
-
-		if (resourceManager != null) {
-			loadFromResources(resourceManager);
-		}
-
 		load();
 	}
 
@@ -81,30 +70,6 @@ public class ScriptManager {
 			}
 		} catch (Throwable error) {
 			scriptType.console.error("Failed to pre-load script file '" + fileInfo.location + "'", error);
-		}
-	}
-
-	private void loadFromResources(ResourceManager resourceManager) {
-		Map<String, List<ResourceLocation>> packMap = new HashMap<>();
-
-		for (var resource : resourceManager.listResources("kubejs", s -> s.getPath().endsWith(".js") || s.getPath().endsWith(".ts") && !s.getPath().endsWith(".d.ts")).keySet()) {
-			packMap.computeIfAbsent(resource.getNamespace(), s -> new ArrayList<>()).add(resource);
-		}
-
-		for (var entry : packMap.entrySet()) {
-			var pack = new ScriptPack(this, new ScriptPackInfo(entry.getKey(), "kubejs/"));
-
-			for (var id : entry.getValue()) {
-				pack.info.scripts.add(new ScriptFileInfo(pack.info, id.getPath().substring(7)));
-			}
-
-			for (var fileInfo : pack.info.scripts) {
-				var scriptSource = (ScriptSource.FromResource) info -> resourceManager.getResourceOrThrow(info.id);
-				loadFile(pack, fileInfo, scriptSource);
-			}
-
-			pack.scripts.sort(null);
-			packs.put(pack.info.namespace, pack);
 		}
 	}
 

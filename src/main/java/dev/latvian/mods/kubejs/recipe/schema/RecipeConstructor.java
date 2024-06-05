@@ -9,48 +9,62 @@ import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.Context;
 
 import java.util.Arrays;
-import java.util.function.BiFunction;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-public record RecipeConstructor(RecipeKey<?>[] keys, Factory factory) {
-	@FunctionalInterface
-	public interface Factory {
-		Factory DEFAULT = (cx, recipe, schemaType, keys, from) -> {
-			for (var key : keys) {
-				recipe.setValue(key, Cast.to(from.getValue(cx, recipe, key)));
-			}
-		};
+public class RecipeConstructor {
+	public final RecipeKey<?>[] keys;
+	public Map<RecipeKey<?>, RecipeOptional<?>> overrides;
 
-		static Factory defaultWith(BiFunction<KubeRecipe, RecipeKey<?>, Object> valueSupplier) {
-			return (cx, recipe, schemaType, keys, from) -> {
-				DEFAULT.setValues(cx, recipe, schemaType, keys, from);
+	public RecipeConstructor(RecipeKey<?>... keys) {
+		this.keys = keys;
+		this.overrides = Map.of();
+	}
 
-				for (var key : schemaType.schema.keys) {
-					var v = valueSupplier.apply(recipe, key);
-
-					if (v != null) {
-						recipe.setValue(key, Cast.to(v));
-					}
-				}
-			};
+	public <T> RecipeConstructor override(RecipeKey<T> key, RecipeOptional<T> value) {
+		if (overrides.isEmpty()) {
+			overrides = new IdentityHashMap<>(1);
 		}
 
-		default KubeRecipe create(Context cx, RecipeTypeFunction type, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from) {
-			var r = schemaType.schema.recipeFactory.create();
-			r.type = type;
-			r.json = new JsonObject();
-			r.json.addProperty("type", "unknown");
-			r.newRecipe = true;
-			r.initValues(true);
-			setValues(cx, r, schemaType, keys, from);
-			return r;
-		}
+		overrides.put(key, value);
+		return this;
+	}
 
-		void setValues(Context cx, KubeRecipe recipe, RecipeSchemaType schemaType, RecipeKey<?>[] keys, ComponentValueMap from);
+	public <T> RecipeConstructor overrideValue(RecipeKey<T> key, T value) {
+		return override(key, new RecipeOptional.Constant<>(value));
+	}
+
+	public RecipeConstructor overrides(Map<RecipeKey<?>, RecipeOptional<?>> map) {
+		overrides = map;
+		return this;
 	}
 
 	@Override
 	public String toString() {
 		return Arrays.stream(keys).map(RecipeKey::toString).collect(Collectors.joining(", ", "(", ")"));
+	}
+
+	public KubeRecipe create(Context cx, RecipeTypeFunction type, RecipeSchemaType schemaType, ComponentValueMap from) {
+		var r = schemaType.schema.recipeFactory.create();
+		r.type = type;
+		r.json = new JsonObject();
+		r.json.addProperty("type", "unknown");
+		r.newRecipe = true;
+		r.initValues(true);
+		setValues(cx, r, schemaType, from);
+		return r;
+	}
+
+	public void setValues(Context cx, KubeRecipe recipe, RecipeSchemaType schemaType, ComponentValueMap from) {
+		for (var key : keys) {
+			var o = overrides.get(key);
+
+			if (o != null) {
+				recipe.setValue(key, Cast.to(o.getDefaultValue(schemaType)));
+			} else {
+				recipe.setValue(key, Cast.to(from.getValue(cx, recipe, key)));
+			}
+		}
 	}
 }

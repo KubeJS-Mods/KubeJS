@@ -27,7 +27,7 @@ public class KubeJSContext extends Context {
 		setApplicationClassLoader(KubeJS.class.getClassLoader());
 		this.topLevelScope = initSafeStandardObjects();
 
-		var bindingsEvent = new BindingsEvent(this, topLevelScope);
+		var bindingsEvent = new BindingRegistry(this, topLevelScope);
 
 		for (var plugin : KubeJSPlugins.getAll()) {
 			plugin.registerBindings(bindingsEvent);

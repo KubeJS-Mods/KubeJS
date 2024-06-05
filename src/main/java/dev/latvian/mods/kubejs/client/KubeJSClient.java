@@ -55,7 +55,7 @@ public class KubeJSClient extends KubeJSCommon {
 
 	public static void reloadClientScripts(Minecraft mc) {
 		KubeJSClientEventHandler.staticItemTooltips = null;
-		KubeJS.getClientScriptManager().reload(mc.getResourceManager());
+		KubeJS.getClientScriptManager().reload();
 	}
 
 	public static void copyDefaultOptionsFile(File optionsFile) {

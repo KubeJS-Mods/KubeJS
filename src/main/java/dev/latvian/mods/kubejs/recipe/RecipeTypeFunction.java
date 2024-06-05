@@ -59,7 +59,6 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 					var recipe = schemaType.schema.deserialize(this, null, MapJS.json(args[0]));
 					recipe.afterLoaded();
 					return event.addRecipe(recipe, true);
-
 					// throw new RecipeExceptionJS("Use event.custom(json) for json recipes!");
 				}
 
@@ -77,11 +76,11 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			var argMap = new ComponentValueMap(args.length);
 			int index = 0;
 
-			for (var key : constructor.keys()) {
+			for (var key : constructor.keys) {
 				argMap.put(key, Wrapper.unwrapped(args[index++]));
 			}
 
-			var recipe = constructor.factory().create(cx, this, schemaType, constructor.keys(), argMap);
+			var recipe = constructor.create(cx, this, schemaType, argMap);
 			recipe.afterLoaded();
 			return event.addRecipe(recipe, false);
 		} catch (RecipeExceptionJS rex) {

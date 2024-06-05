@@ -104,8 +104,8 @@ public class RecipeSchema {
 			constructors = new Int2ObjectArrayMap<>(keys.length - minRequiredArguments + 1);
 		}
 
-		if (constructors.put(constructor.keys().length, constructor) != null) {
-			throw new IllegalStateException("Constructor with " + constructor.keys().length + " arguments already exists!");
+		if (constructors.put(constructor.keys.length, constructor) != null) {
+			throw new IllegalStateException("Constructor with " + constructor.keys.length + " arguments already exists!");
 		}
 
 		return this;
@@ -114,19 +114,13 @@ public class RecipeSchema {
 	/**
 	 * Defines an additional constructor to be for this schema.
 	 *
-	 * @param factory The factory that is used to populate the recipe object with data after it is created.
-	 * @param keys    The arguments that this constructor takes in.
+	 * @param keys The arguments that this constructor takes in.
 	 * @return This schema.
 	 * @implNote If a constructor is manually defined using this method, constructors will not be automatically generated.
 	 */
 	@RemapForJS("addConstructor") // constructor is a reserved word in TypeScript, so remap this for scripters who use .d.ts files for typing hints
-	public RecipeSchema constructor(RecipeConstructor.Factory factory, RecipeKey<?>... keys) {
-		return constructor(new RecipeConstructor(keys, factory));
-	}
-
-	@RemapForJS("addConstructor") // constructor is a reserved word in TypeScript, so remap this for scripters who use .d.ts files for typing hints
 	public RecipeSchema constructor(RecipeKey<?>... keys) {
-		return constructor(RecipeConstructor.Factory.DEFAULT, keys);
+		return constructor(new RecipeConstructor(keys));
 	}
 
 	public RecipeSchema uniqueId(Function<KubeRecipe, String> uniqueIdFunction) {
@@ -180,13 +174,13 @@ public class RecipeSchema {
 			boolean dev = DevProperties.get().debugInfo;
 
 			if (dev) {
-				KubeJS.LOGGER.info("Generating constructors for " + new RecipeConstructor(keys1, RecipeConstructor.Factory.DEFAULT));
+				KubeJS.LOGGER.info("Generating constructors for " + new RecipeConstructor(keys1));
 			}
 
 			for (int a = minRequiredArguments; a <= keys1.length; a++) {
 				var k = new RecipeKey<?>[a];
 				System.arraycopy(keys1, 0, k, 0, a);
-				var c = new RecipeConstructor(k, RecipeConstructor.Factory.DEFAULT);
+				var c = new RecipeConstructor(k);
 				constructors.put(a, c);
 
 				if (dev) {

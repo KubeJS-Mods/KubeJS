@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.rhino.Scriptable;
 
-public record BindingsEvent(KubeJSContext context, Scriptable scope) {
+public record BindingRegistry(KubeJSContext context, Scriptable scope) {
 	public ScriptType type() {
 		return context.getType();
 	}

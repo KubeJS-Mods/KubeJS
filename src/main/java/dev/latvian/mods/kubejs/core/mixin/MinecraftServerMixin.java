@@ -12,8 +12,11 @@ import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.LayeredRegistryAccess;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.RegistryLayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -58,18 +61,11 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 		CompletableFuture.runAsync(() -> kjs$afterResourcesLoaded(false), kjs$self());
 	}
 
-	/*
 	@Shadow
 	public abstract RegistryAccess.Frozen registryAccess();
 
 	@Shadow
 	public abstract LayeredRegistryAccess<RegistryLayer> registries();
-
-	@ModifyVariable(method = {"*"}, at = @At("STORE"), remap = false)
-	public CloseableResourceManager wrapResourceManager(CloseableResourceManager original) {
-		return (ServerScriptManager.instance = new ServerScriptManager(registryAccess())).wrapResourceManager(registryAccess(), original);
-	}
-	 */
 
 	@Override
 	public CompoundTag kjs$getPersistentData() {
@@ -137,6 +133,9 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	@Shadow
 	@RemapForJS("stop")
 	public abstract void stopServer();
+
+	@Shadow
+	private MinecraftServer.ReloadableResources resources;
 
 	@Inject(method = "reloadResources", at = @At("TAIL"))
 	private void kjs$endResourceReload(Collection<String> collection, CallbackInfoReturnable<CompletableFuture<Void>> cir) {

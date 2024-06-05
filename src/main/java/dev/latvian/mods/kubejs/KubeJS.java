@@ -21,6 +21,7 @@ import dev.latvian.mods.kubejs.script.ScriptPack;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
+import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
@@ -29,6 +30,7 @@ import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -43,6 +45,7 @@ import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 import net.neoforged.neoforgespi.language.IModInfo;
@@ -149,7 +152,7 @@ public class KubeJS {
 		startupScriptManager = new ScriptManager(ScriptType.STARTUP);
 		clientScriptManager = new ScriptManager(ScriptType.CLIENT);
 
-		startupScriptManager.reload(null);
+		startupScriptManager.reload();
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::initStartup);
 
@@ -267,5 +270,19 @@ public class KubeJS {
 			} catch (Exception ignored) {
 			}
 		});
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public static void addPacksFirst(AddPackFindersEvent event) {
+		if (event.getPackType() == PackType.SERVER_DATA) {
+			ServerScriptManager.addPacksFirst(event);
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOW)
+	public static void addPacksLast(AddPackFindersEvent event) {
+		if (event.getPackType() == PackType.SERVER_DATA) {
+			ServerScriptManager.addPacksLast(event);
+		}
 	}
 }

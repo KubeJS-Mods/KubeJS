@@ -1,8 +1,9 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import com.google.common.collect.Multimap;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
+import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
+import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
@@ -10,27 +11,26 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class AfterRecipesLoadedKubeEvent implements KubeEvent {
-	private final Multimap<RecipeType<?>, RecipeHolder<?>> recipeTypeMap;
-	private final Map<ResourceLocation, RecipeHolder<?>> recipeIdMap;
-
+	private final RecipeManagerKJS recipeManager;
 	private List<RecipeLikeKJS> originalRecipes;
+	private boolean changed;
 
-	public AfterRecipesLoadedKubeEvent(Multimap<RecipeType<?>, RecipeHolder<?>> recipeTypeMap, Map<ResourceLocation, RecipeHolder<?>> recipeIdMap) {
-		this.recipeTypeMap = recipeTypeMap;
-		this.recipeIdMap = recipeIdMap;
+	public AfterRecipesLoadedKubeEvent(RecipeManagerKJS recipeManager) {
+		this.recipeManager = recipeManager;
+		this.originalRecipes = null;
+		this.changed = false;
 	}
 
 	private List<RecipeLikeKJS> getOriginalRecipes() {
 		if (originalRecipes == null) {
-			originalRecipes = new ArrayList<>(recipeIdMap.values());
+			originalRecipes = new ArrayList<>(recipeManager.kjs$getRecipeIdMap().values());
 		}
 
 		return originalRecipes;
@@ -62,11 +62,9 @@ public class AfterRecipesLoadedKubeEvent implements KubeEvent {
 			var r = itr.next();
 
 			if (filter.test(cx, r)) {
-				var holder = recipeIdMap.remove(r.kjs$getOrCreateId());
-				recipeTypeMap.values().remove(holder);
-
 				itr.remove();
 				count++;
+				changed = true;
 
 				if (DevProperties.get().logRemovedRecipes) {
 					ConsoleJS.SERVER.info("- " + r);
@@ -77,5 +75,18 @@ public class AfterRecipesLoadedKubeEvent implements KubeEvent {
 		}
 
 		return count;
+	}
+
+	@Override
+	public void afterPosted(EventResult result) {
+		if (changed) {
+			var map = new HashMap<ResourceLocation, RecipeHolder<?>>();
+
+			for (var r : getOriginalRecipes()) {
+				map.put(r.kjs$getOrCreateId(), (RecipeHolder) r);
+			}
+
+			recipeManager.kjs$replaceRecipes(map);
+		}
 	}
 }

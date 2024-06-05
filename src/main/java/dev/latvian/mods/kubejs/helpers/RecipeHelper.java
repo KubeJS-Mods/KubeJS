@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -25,11 +27,10 @@ public enum RecipeHelper {
 	@Nullable
 	public RecipeHolder<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
 		try {
-			return new RecipeHolder<>(id,
-				serializer.codec().decode(JsonOps.INSTANCE, JsonOps.INSTANCE.getMap(json).result().get()).getOrThrow());
+			return new RecipeHolder<>(id, serializer.codec().decode(JsonOps.INSTANCE, JsonOps.INSTANCE.getMap(json).result().get()).getOrThrow());
 		} catch (Exception e) {
 			if (!FMLLoader.isProduction()) {
-				e.printStackTrace();
+				ConsoleJS.SERVER.error("Error parsing recipe " + id, e, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
 			}
 
 			return null;

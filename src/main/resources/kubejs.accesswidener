@@ -16,10 +16,6 @@ accessible field net/minecraft/tags/TagEntry id Lnet/minecraft/resources/Resourc
 accessible field net/minecraft/tags/TagEntry required Z
 accessible field net/minecraft/tags/TagEntry tag Z
 
-accessible field net/minecraft/world/item/crafting/RecipeManager byName Ljava/util/Map;
-accessible field net/minecraft/world/item/crafting/RecipeManager byType Lcom/google/common/collect/Multimap;
-accessible field net/minecraft/world/item/crafting/RecipeManager registries Lnet/minecraft/core/HolderLookup$Provider;
-accessible field net/minecraft/server/ReloadableServerResources tagManager Lnet/minecraft/tags/TagManager;
 accessible field net/minecraft/world/item/crafting/ShapelessRecipe$Serializer CODEC Lcom/mojang/serialization/MapCodec;
 # accessible field net/minecraft/world/item/crafting/ShapedRecipe$Serializer CODEC Lcom/mojang/serialization/MapCodec;
 

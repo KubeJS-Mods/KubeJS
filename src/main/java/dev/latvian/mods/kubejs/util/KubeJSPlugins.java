@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.util;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.script.BindingsEvent;
+import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforgespi.locating.IModFile;
@@ -128,7 +128,7 @@ public class KubeJSPlugins {
 		return Collections.unmodifiableList(LIST);
 	}
 
-	public static void addSidedBindings(BindingsEvent event) {
+	public static void addSidedBindings(BindingRegistry event) {
 		BINDINGS.addBindings(event);
 	}
 }

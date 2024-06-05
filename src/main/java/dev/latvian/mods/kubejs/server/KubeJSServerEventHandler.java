@@ -20,6 +20,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.CommandEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -158,5 +159,10 @@ public class KubeJSServerEventHandler {
 				ServerEvents.COMMAND.post(e, e.getCommandName()).applyCancel(event);
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public static void addReloadListeners(AddReloadListenerEvent event) {
+		event.addListener(new KubeJSReloadListener(event.getServerResources()));
 	}
 }
