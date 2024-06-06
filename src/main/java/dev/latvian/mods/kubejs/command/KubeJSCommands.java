@@ -61,6 +61,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.io.FileUtils;
@@ -90,7 +91,7 @@ public class KubeJSCommands {
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		Predicate<CommandSourceStack> spOrOP = (source) -> source.getServer().isSingleplayer() || source.hasPermission(2);
-		var cmd = dispatcher.register(Commands.literal("kubejs")
+		var cmd = Commands.literal("kubejs")
 			.then(Commands.literal("help")
 				.executes(context -> help(context.getSource()))
 			)
@@ -264,10 +265,19 @@ public class KubeJSCommands {
 				)
 				.then(Commands.literal("entity")
 					.then(addPersistentDataCommands(Commands.argument("entity", EntityArgument.entities()), ctx -> EntityArgument.getEntities(ctx, "entity"))))
-			)
-		);
+			);
 
-		dispatcher.register(Commands.literal("kjs").redirect(cmd));
+		if (!FMLLoader.isProduction()) {
+			cmd.then(Commands.literal("eval")
+				.requires(spOrOP)
+				.then(Commands.argument("code", StringArgumentType.greedyString())
+					.executes(ctx -> eval(ctx.getSource(), StringArgumentType.getString(ctx, "code")))
+				)
+			);
+		}
+
+		var cmd1 = dispatcher.register(cmd);
+		dispatcher.register(Commands.literal("kjs").redirect(cmd1));
 	}
 
 	private static int dumpEvents(CommandSourceStack source) {
@@ -1084,5 +1094,11 @@ public class KubeJSCommands {
 		);
 
 		return cmd;
+	}
+
+	private static int eval(CommandSourceStack source, String code) {
+		var cx = (KubeJSContext) source.getServer().getServerResources().managers().kjs$getServerScriptManager().contextFactory.enter();
+		cx.evaluateString(cx.topLevelScope, code, "eval", 1, null);
+		return 1;
 	}
 }
