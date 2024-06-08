@@ -105,7 +105,7 @@ public class UtilsJS {
 	public static MinecraftServer staticServer = null;
 	public static final ResourceLocation UNKNOWN_ID = new ResourceLocation("unknown", "unknown");
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
-	public static final Pattern TEMPORAL_AMOUNT_PATTERN = Pattern.compile("(\\d+)\\s*(y|M|d|w|h|m|s|ms|ns|t)\\b");
+	public static final Pattern TEMPORAL_AMOUNT_PATTERN = Pattern.compile("(\\d+)\\s*(y|M|d|w|h|m|s|ms|ns|t)\\b?");
 
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
@@ -909,13 +909,13 @@ public class UtilsJS {
 
 					case "ns" -> nanos += (long) amount;
 					case "ms" -> millis += (long) amount;
-					case "s" -> millis = (long) (amount * 1000D);
-					case "m" -> millis = (long) (amount * 60000D);
-					case "h" -> millis = (long) (amount * 60000D) * 60L;
-					case "d" -> millis = (long) (amount * 86400L) * 1000L;
-					case "w" -> millis = (long) (amount * 86400L) * 7000L;
-					case "M" -> millis = (long) (amount * 31556952D / 12D) * 1000L;
-					case "y" -> millis = (long) (amount * 31556952D) * 1000L;
+					case "s" -> millis += (long) (amount * 1000D);
+					case "m" -> millis += (long) (amount * 60000D);
+					case "h" -> millis += (long) (amount * 60000D) * 60L;
+					case "d" -> millis += (long) (amount * 86400L) * 1000L;
+					case "w" -> millis += (long) (amount * 86400L) * 7000L;
+					case "M" -> millis += (long) (amount * 31556952D / 12D) * 1000L;
+					case "y" -> millis += (long) (amount * 31556952D) * 1000L;
 					default -> throw new IllegalArgumentException("Invalid temporal unit: " + matcher.group(2));
 				}
 			}
