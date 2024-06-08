@@ -122,7 +122,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			return new AndMatch(predicates);
 		}
 
-		return ofSingle(o);
+		return ofSingle(list.get(0));
 	}
 
 	static RuleTest ruleTestOf(Object o) {
