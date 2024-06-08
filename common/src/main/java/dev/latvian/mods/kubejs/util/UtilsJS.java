@@ -904,7 +904,7 @@ public class UtilsJS {
 							ticks = 0L;
 						}
 
-						ticks += amount;
+						ticks += (long) amount;
 					}
 
 					case "ns" -> nanos += (long) amount;
@@ -912,8 +912,8 @@ public class UtilsJS {
 					case "s" -> millis = (long) (amount * 1000D);
 					case "m" -> millis = (long) (amount * 60000D);
 					case "h" -> millis = (long) (amount * 60000D) * 60L;
-					case "d" -> millis = (long) (amount * 24D * 86400L) * 1000L;
-					case "w" -> millis = (long) (amount * 24D * 86400L) * 7000L;
+					case "d" -> millis = (long) (amount * 86400L) * 1000L;
+					case "w" -> millis = (long) (amount * 86400L) * 7000L;
 					case "M" -> millis = (long) (amount * 31556952D / 12D) * 1000L;
 					case "y" -> millis = (long) (amount * 31556952D) * 1000L;
 					default -> throw new IllegalArgumentException("Invalid temporal unit: " + matcher.group(2));
