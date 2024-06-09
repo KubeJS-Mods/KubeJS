@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.bindings.event.WorldgenEvents;
 import dev.latvian.mods.kubejs.entity.forge.LivingEntityDropsEventJS;
+import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallback;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabEvent;
 import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
@@ -17,6 +18,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.MinecraftForge;
@@ -32,6 +34,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkConstants;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegisterEvent;
 
 import java.util.AbstractMap;
@@ -68,6 +71,14 @@ public class KubeJSForge {
 	private static void initRegistries(RegisterEvent event) {
 		var info = RegistryInfo.of(event.getRegistryKey());
 		info.registerObjects((id, supplier) -> event.register(UtilsJS.cast(info.key), id, supplier));
+		if (event.getRegistryKey() == ForgeRegistries.Keys.FLUID_TYPES) {
+			for (var builder : RegistryInfo.FLUID) {
+				if (builder instanceof FluidBuilder b) {
+					Fluid f = ForgeRegistries.FLUIDS.getValue(b.id);
+					event.register(ForgeRegistries.Keys.FLUID_TYPES, b.id, () -> f.getFluidType());
+				}
+			}
+		}
 	}
 
 	private static void commonSetup(FMLCommonSetupEvent event) {
