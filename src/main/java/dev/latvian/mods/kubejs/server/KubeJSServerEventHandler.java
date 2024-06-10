@@ -9,8 +9,6 @@ import dev.latvian.mods.kubejs.level.SimpleLevelKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
@@ -100,7 +98,7 @@ public class KubeJSServerEventHandler {
 
 	@SubscribeEvent
 	public static void serverStopped(ServerStoppedEvent event) {
-		UtilsJS.staticRegistries = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+		UtilsJS.staticRegistries = UtilsJS.BUILTIN_REGISTRIES;
 	}
 
 	@SubscribeEvent

@@ -37,7 +37,7 @@ public class MultipartBlockStateGenerator {
 			}
 
 			if (apply.size() == 1) {
-				json.add("apply", apply.get(0).toJson());
+				json.add("apply", apply.getFirst().toJson());
 			} else {
 				var a = new JsonArray();
 

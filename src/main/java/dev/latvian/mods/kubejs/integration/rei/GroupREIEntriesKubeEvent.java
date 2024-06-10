@@ -4,6 +4,7 @@ import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.Tags;
+import dev.latvian.mods.rhino.Context;
 import me.shedaniel.rei.api.client.registry.entry.CollapsibleEntryRegistry;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
@@ -37,10 +38,10 @@ public class GroupREIEntriesKubeEvent implements KubeEvent {
 		group(groupId, description, EntryIngredients.of(VanillaEntryTypes.FLUID, CollectionUtils.map(entries, FluidStackHooksForge::fromForge)));
 	}
 
-	public void groupEntries(ResourceLocation groupId, Component description, ResourceLocation entryTypeId, Object entries) {
+	public void groupEntries(Context cx, ResourceLocation groupId, Component description, ResourceLocation entryTypeId, Object entries) {
 		var entryType = KubeJSREIPlugin.getTypeOrThrow(entryTypeId);
 		var wrapper = entryWrappers.getWrapper(entryType);
-		var list = wrapper.entryList(entries);
+		var list = wrapper.entryList(cx, entries);
 		group(groupId, description, Cast.to(list));
 	}
 

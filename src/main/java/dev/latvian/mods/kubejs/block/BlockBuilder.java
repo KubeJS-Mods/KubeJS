@@ -531,7 +531,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 			return Shapes.block();
 		}
 
-		var shape = Shapes.create(boxes.get(0));
+		var shape = Shapes.create(boxes.getFirst());
 
 		for (var i = 1; i < boxes.size(); i++) {
 			shape = Shapes.or(shape, Shapes.create(boxes.get(i)));

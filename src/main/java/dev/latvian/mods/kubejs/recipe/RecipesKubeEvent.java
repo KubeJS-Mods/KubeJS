@@ -282,7 +282,7 @@ public class RecipesKubeEvent implements KubeEvent {
 				continue; //Forge: filter anything beginning with "_" as it's used for metadata.
 			}
 
-			var jsonResult = RecipeHelper.get().validate(registries, entry.getValue());
+			var jsonResult = RecipeHelper.get().validate(jsonRegistryOps, entry.getValue());
 			if (jsonResult.error().isPresent()) {
 				var error = jsonResult.error().get();
 				if (DevProperties.get().logSkippedRecipes) {

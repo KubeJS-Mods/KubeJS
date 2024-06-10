@@ -8,9 +8,8 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
-public record BlockEntityAttachmentType(String type, TypeInfo input, Function<Map<String, Object>, BlockEntityAttachment.Factory> factory) {
+public record BlockEntityAttachmentType(String type, TypeInfo input, BlockEntityAttachment.FactoryProvider factory) {
 	public static final Lazy<Map<String, BlockEntityAttachmentType>> ALL = Lazy.of(() -> {
 		var map = new HashMap<String, BlockEntityAttachmentType>();
 		var list = new ArrayList<BlockEntityAttachmentType>();

@@ -102,7 +102,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 				}
 			}
 
-			return predicates.isEmpty() ? Simple.NONE : predicates.size() == 1 ? predicates.get(0) : new OrMatch(predicates);
+			return predicates.isEmpty() ? Simple.NONE : predicates.size() == 1 ? predicates.getFirst() : new OrMatch(predicates);
 		}
 
 		var map = MapJS.of(o);
@@ -153,7 +153,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			return new TagMatch((TagKey<Block>) tag);
 		}
 
-		var pattern = RegExpJS.of(o);
+		var pattern = RegExpJS.wrap(o);
 		return pattern == null ? BlockStatePredicate.fromString(o.toString()) : new RegexMatch(pattern);
 	}
 

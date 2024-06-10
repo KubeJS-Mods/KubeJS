@@ -5,7 +5,7 @@ import dev.latvian.mods.rhino.Context;
 
 public interface OutputReplacement {
 	static OutputReplacement of(Context cx, Object o) {
-		return o instanceof OutputReplacement r ? r : ItemStackJS.of(o);
+		return o instanceof OutputReplacement r ? r : ItemStackJS.wrap(cx, o);
 	}
 
 	default OutputReplacementTransformer.Replacement transform(OutputReplacementTransformer transformer) {

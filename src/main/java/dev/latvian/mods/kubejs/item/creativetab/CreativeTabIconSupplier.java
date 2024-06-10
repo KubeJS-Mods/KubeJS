@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.item.creativetab;
 
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -14,7 +13,7 @@ public interface CreativeTabIconSupplier {
 		@Override
 		public ItemStack get() {
 			try {
-				var i = ItemStackJS.of(supplier.getIcon());
+				var i = supplier.getIcon();
 				return i.isEmpty() ? Items.PURPLE_DYE.getDefaultInstance() : i;
 			} catch (Exception ex) {
 				ex.printStackTrace();

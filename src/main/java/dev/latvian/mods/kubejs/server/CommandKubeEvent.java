@@ -11,7 +11,7 @@ public class CommandKubeEvent extends ServerKubeEvent {
 	public CommandKubeEvent(CommandEvent event) {
 		super(event.getParseResults().getContext().getSource().getServer());
 		this.event = event;
-		this.commandName = event.getParseResults().getContext().getNodes().isEmpty() ? "" : event.getParseResults().getContext().getNodes().get(0).getNode().getName();
+		this.commandName = event.getParseResults().getContext().getNodes().isEmpty() ? "" : event.getParseResults().getContext().getNodes().getFirst().getNode().getName();
 	}
 
 	public String getCommandName() {

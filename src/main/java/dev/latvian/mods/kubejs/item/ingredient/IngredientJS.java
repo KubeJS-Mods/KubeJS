@@ -15,6 +15,7 @@ import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -34,7 +35,7 @@ import java.util.regex.Pattern;
 public interface IngredientJS {
 	TypeInfo TYPE_INFO = TypeInfo.of(Ingredient.class);
 
-	static Ingredient of(@Nullable Object o) {
+	static Ingredient wrap(Context cx, @Nullable Object o) {
 		while (o instanceof Wrapper w) {
 			o = w.unwrap();
 		}
@@ -46,7 +47,7 @@ public interface IngredientJS {
 		} else if (o instanceof TagKey<?> tag) {
 			return Ingredient.of(TagKey.create(Registries.ITEM, tag.location()));
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
-			var reg = RegExpJS.of(o);
+			var reg = RegExpJS.wrap(o);
 
 			if (reg != null) {
 				return IngredientHelper.get().regex(reg);
@@ -54,7 +55,7 @@ public interface IngredientJS {
 
 			return Ingredient.EMPTY;
 		} else if (o instanceof JsonElement json) {
-			return ofJson(json);
+			return ofJson(cx, json);
 		} else if (o instanceof CharSequence) {
 			return parse(o.toString());
 		}
@@ -65,7 +66,7 @@ public interface IngredientJS {
 			var inList = new ArrayList<Ingredient>(list.size());
 
 			for (var o1 : list) {
-				var ingredient = of(o1);
+				var ingredient = wrap(cx, o1);
 
 				if (ingredient != Ingredient.EMPTY) {
 					inList.add(ingredient);
@@ -75,7 +76,7 @@ public interface IngredientJS {
 			if (inList.isEmpty()) {
 				return Ingredient.EMPTY;
 			} else if (inList.size() == 1) {
-				return inList.get(0);
+				return inList.getFirst();
 			} else {
 				return IngredientHelper.get().or(inList.toArray(new Ingredient[0]));
 			}
@@ -87,7 +88,7 @@ public interface IngredientJS {
 			return Ingredient.CODEC.decode(JavaOps.INSTANCE, map).result().map(Pair::getFirst).orElse(Ingredient.EMPTY);
 		}
 
-		return ItemStackJS.of(o).kjs$asIngredient();
+		return ItemStackJS.wrap(cx, o).kjs$asIngredient();
 	}
 
 	static Ingredient parse(String s) {
@@ -113,7 +114,7 @@ public interface IngredientJS {
 			return IngredientHelper.get().creativeTab(group);
 		}
 
-		var reg = RegExpJS.of(s);
+		var reg = RegExpJS.wrap(s);
 
 		if (reg != null) {
 			return IngredientHelper.get().regex(reg);
@@ -142,11 +143,11 @@ public interface IngredientJS {
 		return item.kjs$asIngredient();
 	}
 
-	static Ingredient ofJson(JsonElement json) {
+	static Ingredient ofJson(Context cx, JsonElement json) {
 		if (json == null || json.isJsonNull() || json.isJsonArray() && json.getAsJsonArray().isEmpty()) {
 			return Ingredient.EMPTY;
 		} else if (json.isJsonPrimitive()) {
-			return of(json.getAsString());
+			return wrap(cx, json.getAsString());
 		} else {
 			return Ingredient.CODEC.decode(JsonOps.INSTANCE, json).result().map(Pair::getFirst).orElseThrow();
 		}

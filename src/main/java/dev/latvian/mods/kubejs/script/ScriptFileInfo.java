@@ -76,7 +76,7 @@ public class ScriptFileInfo {
 
 	public String getProperty(String s, String def) {
 		var l = getProperties(s);
-		return l.isEmpty() ? def : l.get(l.size() - 1);
+		return l.isEmpty() ? def : l.getLast();
 	}
 
 	public int getPriority() {

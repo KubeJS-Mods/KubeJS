@@ -40,8 +40,8 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 		return t == null || t.type() == TypeInfo.STRING ? TypeInfo.STRING : TypeInfo.STRING.or(t.type());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public T wrap(Context cx, KubeRecipe recipe, Object from) {
 		if (registry == RegistryInfo.ITEM) {
 			if (from instanceof ItemStack is) {
@@ -49,7 +49,7 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 			} else if (from instanceof Item) {
 				return (T) from;
 			} else {
-				return (T) ItemStackJS.of(from).getItem();
+				return (T) ItemStackJS.wrap(cx, from).getItem();
 			}
 		} else if (registry == RegistryInfo.FLUID) {
 			if (from instanceof FluidStack fs) {
@@ -57,7 +57,7 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 			} else if (from instanceof Fluid) {
 				return (T) from;
 			} else {
-				return (T) FluidWrapper.wrap(from).getFluid();
+				return (T) FluidWrapper.wrap(cx, from).getFluid();
 			}
 		} else {
 			var regType = RegistryType.ofKey(registry.key);

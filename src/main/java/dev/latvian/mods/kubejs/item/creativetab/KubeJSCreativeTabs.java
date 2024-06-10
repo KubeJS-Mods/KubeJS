@@ -17,7 +17,7 @@ public interface KubeJSCreativeTabs {
 	Supplier<CreativeModeTab> TAB = REGISTRY.register("tab", () -> CreativeModeTab.builder()
 		.title(KubeJS.NAME_COMPONENT)
 		.icon(() -> {
-			var is = ItemStackJS.of(CommonProperties.get().creativeModeTabIcon);
+			var is = ItemStackJS.ofString(CommonProperties.get().creativeModeTabIcon);
 			return is.isEmpty() ? Items.PURPLE_DYE.getDefaultInstance() : is;
 		})
 		.displayItems((params, output) -> {

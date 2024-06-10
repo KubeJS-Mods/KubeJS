@@ -189,7 +189,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 		var pattern = data.pattern();
 		// we can assume that the pattern is rectangular
 		// because the codec has already validated that
-		var width = pattern.get(0).length();
+		var width = pattern.getFirst().length();
 		var height = pattern.size();
 		NonNullList<Ingredient> nonNullList = NonNullList.withSize(width * height, Ingredient.EMPTY);
 		CharSet charSet = new CharArraySet(data.key().keySet());

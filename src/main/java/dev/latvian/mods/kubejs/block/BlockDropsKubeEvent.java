@@ -4,7 +4,9 @@ import dev.latvian.mods.kubejs.entity.KubeEntityEvent;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -73,7 +75,10 @@ public class BlockDropsKubeEvent implements KubeEntityEvent {
 	}
 
 	public ItemEntity addItem(ItemStack item) {
-		var entity = new ItemEntity(event.getLevel(), event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), item);
+		double x = event.getPos().getX() + 0.5 + Mth.nextDouble(event.getLevel().random, -0.25, 0.25);
+		double y = event.getPos().getY() + 0.5 + Mth.nextDouble(event.getLevel().random, -0.25, 0.25) - EntityType.ITEM.getHeight() / 2.0;
+		double z = event.getPos().getZ() + 0.5 + Mth.nextDouble(event.getLevel().random, -0.25, 0.25);
+		var entity = new ItemEntity(event.getLevel(), x, y, z, item);
 		event.getDrops().add(entity);
 		return entity;
 	}

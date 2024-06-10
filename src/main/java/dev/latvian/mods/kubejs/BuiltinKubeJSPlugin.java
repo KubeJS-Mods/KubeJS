@@ -455,7 +455,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(String.class, String::valueOf);
 		registry.register(CharSequence.class, String::valueOf);
 		registry.register(UUID.class, UUIDWrapper::fromString);
-		registry.register(Pattern.class, RegExpJS::of);
+		registry.register(Pattern.class, RegExpJS::wrap);
 		registry.register(JsonObject.class, MapJS::json);
 		registry.register(JsonArray.class, ListJS::json);
 		registry.register(JsonElement.class, JsonUtils::of);
@@ -495,15 +495,14 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(Iterable.class, ListJS::of);
 		registry.register(Collection.class, ListJS::of);
 		registry.register(Set.class, ListJS::ofSet);
-		registry.register(ItemStack.class, ItemStackJS::of);
-		registry.register(Ingredient.class, IngredientJS::of);
+		registry.register(ItemStack.class, ItemStackJS::wrap);
+		registry.register(Ingredient.class, IngredientJS::wrap);
 		registry.register(InputReplacement.class, InputReplacement::of);
 		registry.register(OutputReplacement.class, OutputReplacement::of);
 		registry.register(SizedIngredient.class, SizedIngredientWrapper::wrap);
 		registry.register(BlockStatePredicate.class, BlockStatePredicate::of);
 		registry.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
 		registry.register(FluidStack.class, FluidWrapper::wrap);
-		registry.register(dev.architectury.fluid.FluidStack.class, FluidWrapper::wrapArch);
 		registry.register(RecipeFilter.class, RecipeFilter::of);
 		registry.register(SlotFilter.class, SlotFilter::wrap);
 		registry.register(Tier.class, ItemBuilder::toolTierOf);
@@ -608,8 +607,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void clearCaches() {
+		ItemStackJS.CACHED_ITEM_MAP.forget();
 		ItemStackJS.CACHED_ITEM_LIST.forget();
 		ItemStackJS.CACHED_ITEM_TYPE_LIST.forget();
-		ItemStackJS.PARSE_CACHE.clear();
 	}
 }

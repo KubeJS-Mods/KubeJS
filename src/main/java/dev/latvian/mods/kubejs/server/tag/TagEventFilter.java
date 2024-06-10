@@ -25,9 +25,9 @@ public interface TagEventFilter {
 				.filter(f -> f != Empty.INSTANCE)
 				.toList();
 
-			return filters.isEmpty() ? Empty.INSTANCE : filters.size() == 1 ? filters.get(0) : new Or(filters);
+			return filters.isEmpty() ? Empty.INSTANCE : filters.size() == 1 ? filters.getFirst() : new Or(filters);
 		} else {
-			var regex = RegExpJS.of(o);
+			var regex = RegExpJS.wrap(o);
 
 			if (regex != null) {
 				return new RegEx(regex);

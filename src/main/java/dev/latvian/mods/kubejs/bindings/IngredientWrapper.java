@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientActionCallback;
 import dev.latvian.mods.kubejs.typings.Info;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.Nullable;
@@ -36,5 +37,9 @@ public interface IngredientWrapper {
 		""")
 	static boolean isIngredient(@Nullable Object o) {
 		return o instanceof Ingredient;
+	}
+
+	static ItemStack first(Ingredient ingredient) {
+		return ingredient.kjs$getFirst();
 	}
 }

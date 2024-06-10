@@ -56,7 +56,9 @@ public class UtilsJS {
 	public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
-	public static RegistryAccess staticRegistries = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY); // Still necessary because STARTUP and CLIENT scripts need to know about registries
+	public static final RegistryAccess.Frozen BUILTIN_REGISTRIES = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+
+	public static RegistryAccess staticRegistries = BUILTIN_REGISTRIES; // Still necessary because STARTUP and CLIENT scripts need to know about registries
 
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
 	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, e -> true, MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_RANDOM, false, null, null, null, true);

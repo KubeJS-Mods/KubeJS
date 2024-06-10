@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.entry.type.EntryType;
@@ -20,22 +21,22 @@ public class InformationREIKubeEvent implements KubeEvent {
 		this.entryWrappers = entryWrappers;
 	}
 
-	public void addItem(Ingredient stacks, Component title, Component[] description) {
-		add(VanillaEntryTypes.ITEM, stacks, title, description);
+	public void addItem(Context cx, Ingredient stacks, Component title, Component[] description) {
+		add(cx, VanillaEntryTypes.ITEM, stacks, title, description);
 	}
 
-	public void addFluid(FluidStack[] stacks, Component title, Component[] description) {
-		add(VanillaEntryTypes.FLUID, stacks, title, description);
+	public void addFluid(Context cx, FluidStack[] stacks, Component title, Component[] description) {
+		add(cx, VanillaEntryTypes.FLUID, stacks, title, description);
 	}
 
-	public void add(ResourceLocation typeId, Object stacks, Component title, Component[] description) {
-		add(KubeJSREIPlugin.getTypeOrThrow(typeId), stacks, title, description);
+	public void add(Context cx, ResourceLocation typeId, Object stacks, Component title, Component[] description) {
+		add(cx, KubeJSREIPlugin.getTypeOrThrow(typeId), stacks, title, description);
 	}
 
 	@HideFromJS
-	public <T> void add(EntryType<T> type, Object stacks, Component title, Component[] description) {
+	public <T> void add(Context cx, EntryType<T> type, Object stacks, Component title, Component[] description) {
 		var w = entryWrappers.getWrapper(type);
-		var list = w.entryList(stacks);
+		var list = w.entryList(cx, stacks);
 
 		BuiltinClientPlugin.getInstance().registerInformation(
 			EntryIngredient.of(list),

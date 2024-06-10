@@ -4,13 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.fml.loading.FMLLoader;
@@ -25,9 +23,9 @@ public enum RecipeHelper {
 	}
 
 	@Nullable
-	public RecipeHolder<?> fromJson(RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
+	public RecipeHolder<?> fromJson(RegistryOps<JsonElement> ops, RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
 		try {
-			return new RecipeHolder<>(id, serializer.codec().decode(JsonOps.INSTANCE, JsonOps.INSTANCE.getMap(json).result().get()).getOrThrow());
+			return new RecipeHolder<>(id, serializer.codec().decode(ops, ops.getMap(json).result().get()).getOrThrow());
 		} catch (Exception e) {
 			if (!FMLLoader.isProduction()) {
 				ConsoleJS.SERVER.error("Error parsing recipe " + id, e, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
@@ -37,7 +35,7 @@ public enum RecipeHelper {
 		}
 	}
 
-	public DataResult<JsonObject> validate(HolderLookup.Provider registry, JsonElement jsonElement) {
+	public DataResult<JsonObject> validate(RegistryOps<JsonElement> ops, JsonElement jsonElement) {
 		if (!jsonElement.isJsonObject()) {
 			return DataResult.error(() -> "not a json object: " + jsonElement);
 		}
@@ -48,7 +46,6 @@ public enum RecipeHelper {
 			return DataResult.error(() -> "missing type");
 		}
 
-		var ops = ConditionalOps.create(JsonOps.INSTANCE, registry);
 		var codec = ConditionalOps.createConditionalCodec(Codec.unit(json));
 
 		return codec.parse(ops, json)
@@ -56,9 +53,5 @@ public enum RecipeHelper {
 			.flatMap(optional -> optional
 				.map(DataResult::success)
 				.orElseGet(() -> DataResult.error(() -> "conditions not met")));
-	}
-
-	public Ingredient getCustomIngredient(JsonObject object) {
-		return Ingredient.CODEC.decode(JsonOps.INSTANCE, object).getOrThrow().getFirst();
 	}
 }

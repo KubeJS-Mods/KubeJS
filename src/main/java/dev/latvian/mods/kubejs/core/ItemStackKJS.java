@@ -63,7 +63,7 @@ public interface ItemStackKJS extends
 			return kjs$equalsIgnoringCount(s);
 		}
 
-		return kjs$equalsIgnoringCount(ItemStackJS.of(o));
+		return kjs$equalsIgnoringCount(ItemStackJS.wrap(cx, o));
 	}
 
 	default boolean kjs$equalsIgnoringCount(ItemStack stack) {
@@ -118,14 +118,18 @@ public interface ItemStackKJS extends
 		return is;
 	}
 
-	default void kjs$removeTag() {
-		ItemStackJS.setTag(kjs$self(), null);
+	@ReturnsSelf
+	default ItemStack kjs$resetComponents() {
+		var is = kjs$self();
+		is.applyComponents(is.getPrototype());
+		return is;
 	}
 
 	default String kjs$getComponentString(KubeJSContext cx) {
 		return DataComponentWrapper.patchToString(new StringBuilder(), cx.getRegistries(), kjs$self().getComponentsPatch()).toString();
 	}
 
+	@ReturnsSelf
 	default ItemStack kjs$set(DataComponentType<?> component, Object value) {
 		var is = kjs$self();
 
@@ -138,18 +142,21 @@ public interface ItemStackKJS extends
 		return is;
 	}
 
+	@ReturnsSelf
 	default ItemStack kjs$remove(DataComponentType<?> component) {
 		var is = kjs$self();
 		is.remove(component);
 		return is;
 	}
 
+	@ReturnsSelf
 	default ItemStack kjs$set(DataComponentMap components) {
 		var is = kjs$self();
 		is.applyComponents(components);
 		return is;
 	}
 
+	@ReturnsSelf
 	default ItemStack kjs$applyPatch(DataComponentPatch components) {
 		var is = kjs$self();
 		is.applyComponents(components);

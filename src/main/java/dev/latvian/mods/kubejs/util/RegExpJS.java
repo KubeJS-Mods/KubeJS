@@ -12,11 +12,11 @@ import java.util.regex.Pattern;
 
 public interface RegExpJS {
 	Pattern REGEX_PATTERN = Pattern.compile("/(.*)/([a-z]*)");
-	Codec<Pattern> CODEC = KubeJSCodecs.stringResolverCodec(RegExpJS::toRegExpString, RegExpJS::of);
-	StreamCodec<ByteBuf, Pattern> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(RegExpJS::of, RegExpJS::toRegExpString);
+	Codec<Pattern> CODEC = KubeJSCodecs.stringResolverCodec(RegExpJS::toRegExpString, RegExpJS::wrap);
+	StreamCodec<ByteBuf, Pattern> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(RegExpJS::wrap, RegExpJS::toRegExpString);
 
 	@Nullable
-	static Pattern of(Object o) {
+	static Pattern wrap(Object o) {
 		if (o instanceof CharSequence || o instanceof NativeRegExp) {
 			return ofString(o.toString());
 		} else if (o instanceof Pattern pattern) {

@@ -32,7 +32,7 @@ public interface RecipeFilter {
 			} else if (s.equals("-")) {
 				return ConstantFilter.FALSE;
 			} else {
-				var r = RegExpJS.of(s);
+				var r = RegExpJS.wrap(s);
 				return r == null ? new IDFilter(ID.mc(s)) : RegexIDFilter.of(r);
 			}
 		}
@@ -54,10 +54,10 @@ public interface RecipeFilter {
 				}
 			}
 
-			return predicate.list.isEmpty() ? ConstantFilter.FALSE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
+			return predicate.list.isEmpty() ? ConstantFilter.FALSE : predicate.list.size() == 1 ? predicate.list.getFirst() : predicate;
 		}
 
-		var map = MapJS.of(list.get(0));
+		var map = MapJS.of(list.getFirst());
 
 		if (map == null || map.isEmpty()) {
 			return ConstantFilter.TRUE;
@@ -77,7 +77,7 @@ public interface RecipeFilter {
 			var id = map.get("id");
 
 			if (id != null) {
-				var pattern = RegExpJS.of(id);
+				var pattern = RegExpJS.wrap(id);
 				predicate.list.add(pattern == null ? new IDFilter(ID.mc(id)) : RegexIDFilter.of(pattern));
 			}
 
@@ -102,18 +102,18 @@ public interface RecipeFilter {
 			var input = map.get("input");
 
 			if (input != null) {
-				predicate.list.add(new InputFilter(ReplacementMatch.of(input)));
+				predicate.list.add(new InputFilter(ReplacementMatch.of(cx, input)));
 			}
 
 			var output = map.get("output");
 
 			if (output != null) {
-				predicate.list.add(new OutputFilter(ReplacementMatch.of(output)));
+				predicate.list.add(new OutputFilter(ReplacementMatch.of(cx, output)));
 			}
 
 			NeoForge.EVENT_BUS.post(new RecipeFilterParseEvent(cx, predicate.list, map));
 
-			return predicate.list.isEmpty() ? ConstantFilter.TRUE : predicate.list.size() == 1 ? predicate.list.get(0) : predicate;
+			return predicate.list.isEmpty() ? ConstantFilter.TRUE : predicate.list.size() == 1 ? predicate.list.getFirst() : predicate;
 		} catch (RecipeExceptionJS rex) {
 			if (rex.error) {
 				ConsoleJS.getCurrent(cx).error(rex.getMessage());

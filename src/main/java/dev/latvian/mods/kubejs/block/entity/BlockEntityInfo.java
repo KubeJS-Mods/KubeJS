@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.block.entity;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.core.ServerPlayerKJS;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -71,12 +72,12 @@ public class BlockEntityInfo {
 		sync = true;
 	}
 
-	public void attach(String type, Map<String, Object> args) {
+	public void attach(Context cx, String type, Map<String, Object> args) {
 		var att = BlockEntityAttachmentType.ALL.get().get(type);
 
 		if (att != null) {
 			try {
-				attachments.add(new BlockEntityAttachmentHolder(attachments.size(), att.factory().apply(args)));
+				attachments.add(new BlockEntityAttachmentHolder(attachments.size(), att.factory().createFactory(cx, args)));
 			} catch (Exception ex) {
 				ConsoleJS.STARTUP.error("Error while creating BlockEntity attachment '" + type + "'", ex);
 			}
@@ -85,12 +86,12 @@ public class BlockEntityInfo {
 		}
 	}
 
-	public void inventory(int width, int height) {
-		attach("inventory", Map.of("width", width, "height", height));
+	public void inventory(Context cx, int width, int height) {
+		attach(cx, "inventory", Map.of("width", width, "height", height));
 	}
 
-	public void inventory(int width, int height, Ingredient inputFilter) {
-		attach("inventory", Map.of("width", width, "height", height, "inputFilter", inputFilter));
+	public void inventory(Context cx, int width, int height, Ingredient inputFilter) {
+		attach(cx, "inventory", Map.of("width", width, "height", height, "inputFilter", inputFilter));
 	}
 
 	public void eventHandler(int eventId, BlockEntityEventCallback callback) {

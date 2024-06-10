@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.block.entity;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
 import dev.latvian.mods.rhino.type.JSOptionalParam;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -23,13 +24,21 @@ public class InventoryAttachment extends SimpleContainer implements BlockEntityA
 			new JSOptionalParam("xsize", TypeInfo.INT),
 			new JSOptionalParam("ysize", TypeInfo.INT),
 			new JSOptionalParam("inputFilter", IngredientJS.TYPE_INFO)
-		), map -> {
-		var width = ((Number) map.get("width")).intValue();
-		var height = ((Number) map.get("height")).intValue();
-		var inputFilter = map.containsKey("inputFilter") ? IngredientJS.of(map.get("inputFilter")) : null;
-		return entity -> new InventoryAttachment(entity, width, height, inputFilter);
-	}
+		),
+		(cx, map) -> {
+			var width = ScriptRuntime.toInt32(cx, map.get("width"));
+			var height = ScriptRuntime.toInt32(cx, map.get("height"));
+			var inputFilter = map.containsKey("inputFilter") ? IngredientJS.wrap(cx, map.get("inputFilter")) : null;
+			return new InventoryAttachmentFactory(width, height, inputFilter);
+		}
 	);
+
+	private record InventoryAttachmentFactory(int width, int height, @Nullable Ingredient inputFilter) implements Factory {
+		@Override
+		public BlockEntityAttachment create(BlockEntityJS entity) {
+			return new InventoryAttachment(entity, width, height, inputFilter);
+		}
+	}
 
 	public final int width, height;
 	public final BlockEntityJS blockEntity;

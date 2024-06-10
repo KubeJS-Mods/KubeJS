@@ -37,7 +37,7 @@ public class HideCustomJEIKubeEvent implements KubeEvent {
 			List<Predicate> predicates = new ArrayList<>();
 
 			for (Object o1 : ListJS.orSelf(o)) {
-				var regex = RegExpJS.of(o1);
+				var regex = RegExpJS.wrap(o1);
 				if (regex != null) {
 					predicates.add(it -> regex.asPredicate().test(idFn.apply(it)));
 				} else if (o1 instanceof Predicate p) {

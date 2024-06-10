@@ -27,7 +27,7 @@ public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
 		} else if (from instanceof RegistryPredicate<?> p) {
 			return p;
 		} else if (from instanceof Pattern || from instanceof NativeRegExp) {
-			return new RegistryRegExpPredicate<>(RegExpJS.of(from));
+			return new RegistryRegExpPredicate<>(RegExpJS.wrap(from));
 		} else if (from instanceof CharSequence || from instanceof JsonPrimitive) {
 			var s = from instanceof JsonPrimitive p ? p.getAsString() : from.toString();
 
@@ -47,7 +47,7 @@ public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
 			} else if (s.startsWith("@")) {
 				return new RegistryNamespacePredicate<>(s.substring(1));
 			} else {
-				var pattern = RegExpJS.of(s);
+				var pattern = RegExpJS.wrap(s);
 
 				if (pattern != null) {
 					return new RegistryRegExpPredicate<>(pattern);

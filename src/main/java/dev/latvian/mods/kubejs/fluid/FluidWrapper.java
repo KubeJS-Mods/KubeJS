@@ -1,7 +1,8 @@
 package dev.latvian.mods.kubejs.fluid;
 
-import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
@@ -13,12 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface FluidWrapper {
-	static FluidStack wrap(Object o) {
-		return FluidStack.EMPTY; // FIXME
-	}
+	TypeInfo TYPE_INFO = TypeInfo.of(FluidStack.class);
 
-	static dev.architectury.fluid.FluidStack wrapArch(Object o) {
-		return FluidStackHooksForge.fromForge(wrap(o));
+	static FluidStack wrap(Context cx, Object o) {
+		return FluidStack.EMPTY; // FIXME
 	}
 
 	static FluidStack of(FluidStack o) {

@@ -10,19 +10,16 @@ import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.MapJS;
-import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -44,7 +41,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public interface ItemStackJS {
-	Map<String, ItemStack> PARSE_CACHE = new HashMap<>();
 	ItemStack[] EMPTY_ARRAY = new ItemStack[0];
 	TypeInfo TYPE_INFO = TypeInfo.of(ItemStack.class);
 
@@ -83,7 +79,7 @@ public interface ItemStackJS {
 
 	Lazy<List<ItemStack>> CACHED_ITEM_LIST = Lazy.of(() -> CACHED_ITEM_MAP.get().values().stream().flatMap(Collection::stream).toList());
 
-	static ItemStack of(@Nullable Object o) {
+	static ItemStack wrap(Context cx, @Nullable Object o) {
 		if (o instanceof Wrapper w) {
 			o = w.unwrap();
 		}
@@ -111,9 +107,9 @@ public interface ItemStackJS {
 		} else if (o instanceof JsonElement json) {
 			return resultFromRecipeJson(json);
 		} else if (o instanceof StringTag tag) {
-			return of(tag.getAsString());
+			return wrap(cx, tag.getAsString());
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
-			var reg = RegExpJS.of(o);
+			var reg = RegExpJS.wrap(o);
 
 			if (reg != null) {
 				return IngredientHelper.get().regex(reg).kjs$getFirst();
@@ -124,7 +120,7 @@ public interface ItemStackJS {
 			var os = o.toString().trim();
 			var s = os;
 
-			var cached = PARSE_CACHE.get(os);
+			var cached = ((KubeJSContext) cx).itemStackParseCache.get(os);
 
 			if (cached != null) {
 				return cached.copy();
@@ -140,7 +136,7 @@ public interface ItemStackJS {
 
 			cached = ofString(s);
 			cached.setCount(count);
-			PARSE_CACHE.put(os, cached);
+			((KubeJSContext) cx).itemStackParseCache.put(os, cached);
 			return cached.copy();
 		}
 
@@ -165,10 +161,6 @@ public interface ItemStackJS {
 					stack.setCount(number.intValue());
 				}
 
-				if (map.containsKey("nbt")) {
-					setTag(stack, NBTUtils.toTagCompound(null, map.get("nbt"))); // FIXME null
-				}
-
 				return stack;
 			} else if (map.get("tag") instanceof CharSequence s) {
 				var stack = IngredientHelper.get().tag(s.toString()).kjs$getFirst();
@@ -185,59 +177,25 @@ public interface ItemStackJS {
 	}
 
 	static ItemStack ofString(String s) {
+		var reader = new StringReader(s);
+		reader.skipWhitespace();
+
+		if (!reader.canRead()) {
+			return ItemStack.EMPTY;
+		}
+
 		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
 			return ItemStack.EMPTY;
-		} else if (s.startsWith("#")) {
-			return IngredientHelper.get().tag(s.substring(1)).kjs$getFirst();
-		} else if (s.startsWith("@")) {
-			return IngredientHelper.get().mod(s.substring(1)).kjs$getFirst();
-		} else if (s.startsWith("%")) {
-			var group = UtilsJS.findCreativeTab(new ResourceLocation(s.substring(1)));
-
-			if (group == null) {
-				if (KubeRecipe.itemErrors) {
-					throw new RecipeExceptionJS("Item group '" + s.substring(1) + "' not found!").error();
-				}
-
-				return ItemStack.EMPTY;
-			}
-
-			return IngredientHelper.get().creativeTab(group).kjs$getFirst();
-		}
-
-		var reg = RegExpJS.of(s);
-
-		if (reg != null) {
-			return IngredientHelper.get().regex(reg).kjs$getFirst();
-		}
-
-		var spaceIndex = s.indexOf(' ');
-		var id = spaceIndex == -1 ? s : s.substring(0, spaceIndex);
-
-		var item = RegistryInfo.ITEM.getValue(new ResourceLocation(id));
-
-		if (item == Items.AIR) {
-			if (KubeRecipe.itemErrors) {
-				throw new RecipeExceptionJS("Item '" + id + "' not found!").error();
-			}
-
-			return ItemStack.EMPTY;
-		}
-
-		var stack = new ItemStack(item);
-
-		if (spaceIndex != -1) {
-			var tagStr = s.substring(spaceIndex + 1);
-
-			if (tagStr.length() >= 2 && tagStr.charAt(0) == '{') {
-				setTag(stack, NBTUtils.toTagCompound(null, tagStr)); // FIXME null
+		} else {
+			try {
+				return read(new StringReader(s));
+			} catch (CommandSyntaxException ex) {
+				throw new RuntimeException(ex);
 			}
 		}
-
-		return stack;
 	}
 
-	static Item getRawItem(@Nullable Object o) {
+	static Item getRawItem(Context cx, @Nullable Object o) {
 		if (o == null) {
 			return Items.AIR;
 		} else if (o instanceof ItemLike item) {
@@ -251,7 +209,7 @@ public interface ItemStackJS {
 			}
 		}
 
-		return of(o).getItem();
+		return wrap(cx, o).getItem();
 	}
 
 	// Use ItemStackJS.of(object)
@@ -259,16 +217,12 @@ public interface ItemStackJS {
 		if (json == null || json.isJsonNull()) {
 			return ItemStack.EMPTY;
 		} else if (json.isJsonPrimitive()) {
-			return of(json.getAsString());
+			return ofString(json.getAsString());
 		} else if (json instanceof JsonObject) {
 			return ItemStack.OPTIONAL_CODEC.decode(JsonOps.INSTANCE, json).getOrThrow().getFirst();
 		}
 
 		return ItemStack.EMPTY;
-	}
-
-	static String toItemString(HolderLookup.Provider registries, Object object) {
-		return ItemStackJS.of(object).kjs$toItemString0(registries);
 	}
 
 	static List<ItemStack> getList() {
@@ -281,10 +235,6 @@ public interface ItemStackJS {
 
 	static Map<ResourceLocation, Collection<ItemStack>> getTypeToStacks() {
 		return CACHED_ITEM_MAP.get();
-	}
-
-	static void setTag(ItemStack stack, CompoundTag tag) {
-		stack.applyComponentsAndValidate(DataComponentPatch.CODEC.parse(NbtOps.INSTANCE, tag).result().get());
 	}
 
 	static boolean isItemStackLike(Object from) {

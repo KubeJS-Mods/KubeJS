@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.item.creativetab;
 
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +16,7 @@ public interface CreativeTabContentSupplier {
 			List<ItemStack> items = List.of();
 
 			try {
-				items = Arrays.stream(supplier.getContent(itemDisplayParameters.hasPermissions())).map(ItemStackJS::of).filter(is -> !is.isEmpty()).toList();
+				items = Arrays.stream(supplier.getContent(itemDisplayParameters.hasPermissions())).filter(is -> !is.isEmpty()).toList();
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

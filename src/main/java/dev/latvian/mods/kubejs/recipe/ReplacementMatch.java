@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.rhino.Context;
 
 public interface ReplacementMatch {
 	ReplacementMatch NONE = new ReplacementMatch() {
@@ -10,14 +11,14 @@ public interface ReplacementMatch {
 		}
 	};
 
-	static ReplacementMatch of(Object o) {
+	static ReplacementMatch of(Context cx, Object o) {
 		if (o == null) {
 			return NONE;
 		} else if (o instanceof ReplacementMatch m) {
 			return m;
 		}
 
-		var in = IngredientJS.of(o);
+		var in = IngredientJS.wrap(cx, o);
 
 		if (in.isEmpty()) {
 			return NONE;

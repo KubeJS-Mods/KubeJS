@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Context;
 import me.shedaniel.rei.api.client.entry.filtering.base.BasicFilteringRule;
 import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
 import me.shedaniel.rei.api.common.entry.EntryStack;
@@ -49,32 +50,32 @@ public class HideREIKubeEvent<T, C> implements KubeEvent {
 		return allValues;
 	}
 
-	public void hide(Object entries, @Nullable Object except) {
+	public void hide(Context cx, Object entries, @Nullable Object except) {
 		if (hide != UtilsJS.ALWAYS_TRUE) {
-			var filter = entryWrapper.filter(entries);
+			var filter = entryWrapper.filter(cx, entries);
 
 			if (except != null) {
-				filter = filter.and(entryWrapper.filter(except).negate());
+				filter = filter.and(entryWrapper.filter(cx, except).negate());
 			}
 
 			hide.add(filter);
 		}
 	}
 
-	public void hide(Object entries) {
-		hide(entries, null);
+	public void hide(Context cx, Object entries) {
+		hide(cx, entries, null);
 	}
 
-	public void hideNoFilter(Object o) {
-		hiddenNoFilter.addAll(entryWrapper.entryList(o));
+	public void hideNoFilter(Context cx, Object o) {
+		hiddenNoFilter.addAll(entryWrapper.entryList(cx, o));
 	}
 
-	public void hideAll(@Nullable Object except) {
-		hide(IngredientHelper.get().wildcard(), except);
+	public void hideAll(Context cx, @Nullable Object except) {
+		hide(cx, IngredientHelper.get().wildcard(), except);
 	}
 
-	public void hideAll() {
-		hideAll(null);
+	public void hideAll(Context cx) {
+		hideAll(cx, null);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.event.KubeEvent;
+import dev.latvian.mods.rhino.Context;
 import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 
@@ -19,8 +20,8 @@ public class AddREIKubeEvent<T, C> implements KubeEvent {
 		this.added = new ArrayList<>();
 	}
 
-	public void add(Object o) {
-		added.addAll(entryWrapper.entryList(o));
+	public void add(Context cx, Object o) {
+		added.addAll(entryWrapper.entryList(cx, o));
 	}
 
 	@Override

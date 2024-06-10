@@ -142,7 +142,7 @@ public class KubeJS {
 		LOGGER.info("Looking for KubeJS plugins...");
 		var allMods = new ArrayList<>(ModList.get().getMods().stream().map(IModInfo::getOwningFile).map(IModFileInfo::getFile).toList());
 		allMods.remove(thisMod.getModInfo().getOwningFile().getFile());
-		allMods.add(0, thisMod.getModInfo().getOwningFile().getFile());
+		allMods.addFirst(thisMod.getModInfo().getOwningFile().getFile());
 		KubeJSPlugins.load(allMods, dist == Dist.CLIENT);
 		LOGGER.info("Done in " + pluginTimer.stop());
 
@@ -251,7 +251,7 @@ public class KubeJS {
 
 		ConsoleJS.STARTUP.setCapturingErrors(false);
 
-		QUERY = "source=kubejs&mc=" + MC_VERSION_NUMBER + "&loader=" + PlatformWrapper.getName() + "&v=" + URLEncoder.encode(thisMod.getModInfo().getVersion().toString(), StandardCharsets.UTF_8);
+		QUERY = "source=kubejs&mc=" + MC_VERSION_NUMBER + "&loader=neoforge&v=" + URLEncoder.encode(thisMod.getModInfo().getVersion().toString(), StandardCharsets.UTF_8);
 
 		Util.nonCriticalIoPool().submit(() -> {
 			try {

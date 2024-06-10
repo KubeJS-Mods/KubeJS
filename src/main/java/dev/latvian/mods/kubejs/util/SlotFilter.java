@@ -3,6 +3,9 @@ package dev.latvian.mods.kubejs.util;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.type.RecordTypeInfo;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -27,27 +30,13 @@ public record SlotFilter(Ingredient item, int index) {
 		SlotFilter::new
 	);
 
-	public static SlotFilter wrap(Object o) {
+	public static SlotFilter wrap(Context cx, Object o, TypeInfo target) {
 		if (o instanceof Number num) {
 			return of(Ingredient.EMPTY, num.intValue());
 		} else if (o instanceof String || o instanceof Ingredient) {
-			return of(IngredientJS.of(o), -1);
+			return of(IngredientJS.wrap(cx, o), -1);
 		} else {
-			var map = MapJS.of(o);
-			var ingredient = Ingredient.EMPTY;
-			int index = -1;
-
-			if (map != null && !map.isEmpty()) {
-				if (map.containsKey("item")) {
-					ingredient = IngredientJS.of(map.get("item"));
-				}
-
-				if (map.containsKey("index")) {
-					index = ((Number) map.get("index")).intValue();
-				}
-			}
-
-			return of(ingredient, index);
+			return (SlotFilter) ((RecordTypeInfo) target).wrap(cx, o, target);
 		}
 	}
 

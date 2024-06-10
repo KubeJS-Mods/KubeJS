@@ -18,7 +18,6 @@ import dev.latvian.mods.kubejs.core.WithPersistentData;
 import dev.latvian.mods.kubejs.event.EventGroups;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.net.DisplayClientErrorsPayload;
 import dev.latvian.mods.kubejs.net.DisplayServerErrorsPayload;
 import dev.latvian.mods.kubejs.net.PaintPayload;
@@ -544,7 +543,7 @@ public class KubeJSCommands {
 
 		// item info
 		// id
-		player.sendSystemMessage(copy(ItemStackJS.toItemString(player.server.registryAccess(), stack), ChatFormatting.GREEN, "Item ID"));
+		player.sendSystemMessage(copy(stack.kjs$toItemString0(player.server.registryAccess()), ChatFormatting.GREEN, "Item ID"));
 		// item tags
 		var itemTags = holder.tags().toList();
 		for (var tag : itemTags) {
@@ -606,7 +605,7 @@ public class KubeJSCommands {
 
 	private static int dump(List<ItemStack> stacks, ServerPlayer player, String name) {
 		var registries = player.server.registryAccess();
-		var dump = stacks.stream().filter(is -> !is.isEmpty()).map(is -> ItemStackJS.toItemString(registries, is)).toList();
+		var dump = stacks.stream().filter(is -> !is.isEmpty()).map(is -> is.kjs$toItemString0(registries)).toList();
 		player.sendSystemMessage(copy(dump.toString(), ChatFormatting.WHITE, name + " Item List"));
 		return 1;
 	}

@@ -93,7 +93,7 @@ public interface UtilsWrapper {
 
 	@Info("Returns a regex pattern of the input")
 	static Pattern regex(Object s) {
-		var pattern = RegExpJS.of(s);
+		var pattern = RegExpJS.wrap(s);
 		return pattern == null ? Pattern.compile(s.toString()) : pattern;
 	}
 

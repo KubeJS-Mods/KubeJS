@@ -2,16 +2,19 @@ package dev.latvian.mods.kubejs.script;
 
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.ClassVisibilityContext;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +23,7 @@ public class KubeJSContext extends Context {
 	public final KubeJSContextFactory kjsFactory;
 	public final Scriptable topLevelScope;
 	private Map<String, Either<NativeJavaClass, Boolean>> javaClassCache;
+	public Map<String, ItemStack> itemStackParseCache = new HashMap<>();
 
 	public KubeJSContext(KubeJSContextFactory factory) {
 		super(factory);
@@ -53,7 +57,7 @@ public class KubeJSContext extends Context {
 		return kjsFactory.manager.scriptType.console;
 	}
 
-	public HolderLookup.Provider getRegistries() {
+	public RegistryAccess getRegistries() {
 		return kjsFactory.manager.getRegistries();
 	}
 
@@ -131,44 +135,39 @@ public class KubeJSContext extends Context {
 
 		var reg = RegistryType.allOfClass(target.asClass());
 
-		if (!reg.isEmpty()) {
-			throw new RuntimeException("AAAAAAA");
+		if (reg.size() == 1) {
+			var regInfo = RegistryInfo.of(reg.getFirst().key());
+			var value = regInfo.getValue(ID.mc(from));
 
-			/*
-			var id = ID.mc(o);
-			var value = getValue(id);
-
-			if (value == null) {
-				var npe = new NullPointerException("No such element with id %s in registry %s!".formatted(id, this));
-				ConsoleJS.getCurrent(cx).error("Error while wrapping registry element type!", npe);
-				throw npe;
+			if (value != null) {
+				return value;
+			} else {
+				throw reportRuntimeError("Can't interpret '" + from + "' as '" + regInfo + "' registry object", this);
 			}
-			 */
+		} else if (!reg.isEmpty()) {
+			for (var regType : reg) {
+				if (regType.type().equals(target)) {
+					var regInfo = RegistryInfo.of(reg.getFirst().key());
+					var value = regInfo.getValue(ID.mc(from));
 
-			/*
-			@Override
-			@SuppressWarnings({"unchecked", "rawtypes"})
-			public T wrap(Context cx, Object from, TypeInfo target) {
-				if (from instanceof RegistryObjectKJS k && k.kjs$getKubeRegistry().key == key || baseClass.isInstance(from)) {
-					return (T) from;
+					if (value != null) {
+						return value;
+					} else {
+						throw reportRuntimeError("Can't interpret '" + from + "' as '" + regInfo + "' registry object", this);
+					}
 				}
 
-				if (from instanceof CharSequence || from instanceof ResourceLocation || from instanceof ResourceKey || from instanceof RegistryObjectKJS) {
-					return RegistryInfo.of(key).getValue(ID.mc(from));
-				}
-
-				return (T) from;
+				throw reportRuntimeError("Can't find matching registry type '" + target + "' from registries " + reg, this);
 			}
-			 */
 		}
 
-		return from;
+		return super.internalJsToJavaLast(from, target);
 	}
 
 	public NativeJavaClass loadJavaClass(String name, boolean error) {
 		if (name == null || name.equals("null") || name.isEmpty()) {
 			if (error) {
-				throw Context.reportRuntimeError("Class name can't be empty!", this);
+				throw reportRuntimeError("Class name can't be empty!", this);
 			} else {
 				return null;
 			}
@@ -202,7 +201,7 @@ public class KubeJSContext extends Context {
 			return l;
 		} else if (error) {
 			var found = either.right().orElse(false);
-			throw Context.reportRuntimeError((found ? "Failed to load Java class '%s': Class is not allowed by class filter!" : "Failed to load Java class '%s': Class could not be found!").formatted(name), this);
+			throw reportRuntimeError((found ? "Failed to load Java class '%s': Class is not allowed by class filter!" : "Failed to load Java class '%s': Class could not be found!").formatted(name), this);
 		} else {
 			return null;
 		}

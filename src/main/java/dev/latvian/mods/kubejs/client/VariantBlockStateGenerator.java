@@ -23,7 +23,7 @@ public class VariantBlockStateGenerator {
 
 		public JsonElement toJson() {
 			if (models.size() == 1) {
-				return models.get(0).toJson();
+				return models.getFirst().toJson();
 			}
 
 			var a = new JsonArray();

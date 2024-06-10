@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
@@ -120,7 +119,7 @@ public interface RecipeComponent<T> {
 			}
 		}
 
-		json.add(cv.key.name, cv.key.codec.encodeStart(JsonOps.INSTANCE, cv.value).getOrThrow());
+		json.add(cv.key.name, cv.key.codec.encodeStart(recipe.type.event.jsonRegistryOps, cv.value).getOrThrow());
 	}
 
 	/**
@@ -137,13 +136,13 @@ public interface RecipeComponent<T> {
 		var v = json.get(cv.key.name);
 
 		if (v != null) {
-			cv.value = cv.key.codec.decode(JsonOps.INSTANCE, v).getOrThrow().getFirst();
+			cv.value = cv.key.codec.decode(recipe.type.event.jsonRegistryOps, v).getOrThrow().getFirst();
 		} else if (cv.key.names.size() >= 2) {
 			for (var alt : cv.key.names) {
 				v = json.get(alt);
 
 				if (v != null) {
-					cv.value = cv.key.codec.decode(JsonOps.INSTANCE, v).getOrThrow().getFirst();
+					cv.value = cv.key.codec.decode(recipe.type.event.jsonRegistryOps, v).getOrThrow().getFirst();
 					return;
 				}
 			}
