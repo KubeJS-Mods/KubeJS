@@ -1,28 +1,21 @@
 package dev.latvian.mods.kubejs.recipe.ingredientaction;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 
-public class ReplaceAction extends IngredientAction {
-	public final ItemStack item;
+public record ReplaceAction(ItemStack item) implements IngredientAction {
+	public static final IngredientActionType TYPE = new IngredientActionType("replace", RecordCodecBuilder.<ReplaceAction>mapCodec(instance -> instance.group(
+		ItemStack.CODEC.fieldOf("item").forGetter(ReplaceAction::item)
+	).apply(instance, ReplaceAction::new)));
 
-	public ReplaceAction(ItemStack a) {
-		item = a;
+	@Override
+	public IngredientActionType getType() {
+		return TYPE;
 	}
 
 	@Override
 	public ItemStack transform(ItemStack old, int index, CraftingContainer container) {
 		return item.copy();
-	}
-
-	@Override
-	public String getType() {
-		return "replace";
-	}
-
-	@Override
-	public void toJson(JsonObject json) {
-		json.add("item", item.toJsonJS());
 	}
 }

@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -17,8 +18,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Map;
-
-import static dev.latvian.mods.kubejs.util.JsonIO.GSON;
 
 public record BlockStateComponent(boolean preferObjectForm) implements RecipeComponent<BlockState> {
 	public static final RecipeComponent<BlockState> BLOCK = new BlockStateComponent(true);
@@ -47,7 +46,7 @@ public record BlockStateComponent(boolean preferObjectForm) implements RecipeCom
 				} else {
 					// this is formatted like so:
 					// { Name: "blockid", Properties: {Property: "value"}}
-					yield BlockState.CODEC.parse(JsonOps.INSTANCE, GSON.toJsonTree(from)).getPartialOrThrow(message -> {
+					yield BlockState.CODEC.parse(JsonOps.INSTANCE, JsonUtils.GSON.toJsonTree(from)).getPartialOrThrow(message -> {
 						throw new RecipeExceptionJS("Failed to parse blockstate: " + message);
 					});
 				}

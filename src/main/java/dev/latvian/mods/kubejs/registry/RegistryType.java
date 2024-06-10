@@ -72,4 +72,9 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 	public static synchronized List<RegistryType<?>> allOfClass(Class<?> type) {
 		return CLASS_MAP.getOrDefault(type, List.of());
 	}
+
+	@Override
+	public String toString() {
+		return key.location() + "=" + type;
+	}
 }

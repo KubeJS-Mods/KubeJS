@@ -1,14 +1,13 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.google.common.collect.Iterators;
-import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.color.Color;
-import dev.latvian.mods.kubejs.util.JsonSerializable;
+import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.kubejs.util.WrappedJS;
-import dev.latvian.mods.rhino.util.RemapForJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
@@ -30,7 +29,7 @@ import java.util.function.Consumer;
  * {@link MutableComponent} at runtime.
  */
 @RemapPrefixForJS("kjs$")
-public interface ComponentKJS extends Component, JsonSerializable, WrappedJS {
+public interface ComponentKJS extends Component, WithCodec, WrappedJS {
 
 	default Iterable<Component> kjs$asIterable() {
 		return new Iterable<>() {
@@ -62,9 +61,8 @@ public interface ComponentKJS extends Component, JsonSerializable, WrappedJS {
 	}
 
 	@Override
-	@RemapForJS("toJson")
-	default JsonElement toJsonJS() {
-		return ComponentSerialization.CODEC.encodeStart(JsonOps.INSTANCE, kjs$self()).getOrThrow();
+	default Codec<?> getCodec(Context cx) {
+		return ComponentSerialization.CODEC;
 	}
 
 	default boolean kjs$hasStyle() {

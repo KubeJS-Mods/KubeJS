@@ -1,9 +1,10 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
+import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.core.TagLoaderKJS;
 import dev.latvian.mods.kubejs.core.TagManagerKJS;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess.RegistryEntry;
@@ -43,7 +44,7 @@ public abstract class TagManagerMixin implements TagManagerKJS {
 
 	@Inject(method = "reload", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/RegistryAccess;registries()Ljava/util/stream/Stream;"))
 	private void kjs$reload(PreparableReloadListener.PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller profilerFiller, ProfilerFiller profilerFiller2, Executor executor, Executor executor2, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
-		ItemStackJS.clearAllCaches();
+		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clearCaches);
 	}
 
 	@Override

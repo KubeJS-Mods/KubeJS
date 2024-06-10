@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.unit.FixedColorUnit;
 import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.Unit;
+import net.minecraft.core.HolderLookup;
 
 public class LineObject extends ScreenPainterObject {
 	public Unit color = FixedColorUnit.WHITE;
@@ -19,8 +20,8 @@ public class LineObject extends ScreenPainterObject {
 	}
 
 	@Override
-	protected void load(PainterObjectProperties properties) {
-		super.load(properties);
+	protected void load(HolderLookup.Provider registries, PainterObjectProperties properties) {
+		super.load(registries, properties);
 
 		color = properties.getColor("color", color);
 		x2 = properties.getUnit("x2", x2);

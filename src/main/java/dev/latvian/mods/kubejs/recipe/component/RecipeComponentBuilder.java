@@ -12,10 +12,10 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
+import dev.latvian.mods.rhino.type.JSOptionalParam;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -87,13 +87,13 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 
 	@Override
 	public TypeInfo typeInfo() {
-		var map = new LinkedHashMap<String, JSObjectTypeInfo.Field>(keys.size());
+		var list = new ArrayList<JSOptionalParam>(keys.size());
 
 		for (var key : keys) {
-			map.put(key.name, new JSObjectTypeInfo.Field(key.name, key.component.typeInfo(), key.optional()));
+			list.add(new JSOptionalParam(key.name, key.component.typeInfo(), key.optional()));
 		}
 
-		return new JSObjectTypeInfo(map);
+		return new JSObjectTypeInfo(list);
 	}
 
 	@Override

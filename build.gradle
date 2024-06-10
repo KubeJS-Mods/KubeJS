@@ -93,7 +93,7 @@ dependencies {
 	neoForge("net.neoforged:neoforge:$neoforge_version")
 
 	modApi("dev.architectury:architectury-neoforge:$architectury_version")
-	modApi("dev.latvian.mods:rhino-neoforge:$rhino_version") { transitive(false) }
+	modApi("dev.latvian.mods:rhino:$rhino_version") { transitive(false) }
 
 	// todo: reevaluate if we want to depend on jei
 	modCompileOnly("mezz.jei:jei-1.20.4-neoforge:$jei_version") { transitive(false) }

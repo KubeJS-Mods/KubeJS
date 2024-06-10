@@ -1,12 +1,8 @@
 package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonElement;
-import dev.latvian.mods.rhino.util.RemapForJS;
+import dev.latvian.mods.rhino.Context;
 
-/**
- * @author LatvianModder
- */
 public interface JsonSerializable {
-	@RemapForJS("toJson")
-	JsonElement toJsonJS();
+	JsonElement toJson(Context cx);
 }

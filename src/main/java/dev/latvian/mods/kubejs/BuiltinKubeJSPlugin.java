@@ -8,11 +8,13 @@ import dev.latvian.mods.kubejs.bindings.AABBWrapper;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.ColorWrapper;
 import dev.latvian.mods.kubejs.bindings.DamageSourceWrapper;
+import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.bindings.DirectionWrapper;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.bindings.JavaWrapper;
 import dev.latvian.mods.kubejs.bindings.KMath;
+import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UUIDWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
@@ -54,11 +56,11 @@ import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.integration.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
-import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.item.ChancedIngredient;
+import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemTintFunction;
-import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabBuilder;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
@@ -100,7 +102,12 @@ import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.component.TagKeyComponent;
 import dev.latvian.mods.kubejs.recipe.component.TimeComponent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.ConsumeAction;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionTypeRegistry;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.UnknownKubeRecipe;
@@ -118,6 +125,7 @@ import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.FluidAmounts;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
+import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -127,6 +135,7 @@ import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.RotationAxis;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
+import dev.latvian.mods.kubejs.util.SlotFilter;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
@@ -172,6 +181,7 @@ import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -383,6 +393,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		bindings.add("Text", TextWrapper.class);
 		bindings.add("Component", TextWrapper.class);
 		bindings.add("UUID", UUIDWrapper.class);
+		bindings.add("JsonUtils", JsonUtils.class);
 		bindings.add("JsonIO", JsonIO.class);
 		bindings.add("Block", BlockWrapper.class);
 		bindings.add("Blocks", Blocks.class);
@@ -398,8 +409,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		bindings.add("Stats", Stats.class);
 		bindings.add("FluidAmounts", FluidAmounts.class);
 		bindings.add("Notification", NotificationToastData.class);
-		bindings.add("InputItem", InputItem.class);
-		bindings.add("OutputItem", OutputItem.class);
+		bindings.add("SizedIngredient", SizedIngredientWrapper.class);
+		bindings.add("ChancedItem", ChancedItem.class);
 
 		bindings.add("Fluid", FluidWrapper.class);
 
@@ -447,8 +458,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(Pattern.class, RegExpJS::of);
 		registry.register(JsonObject.class, MapJS::json);
 		registry.register(JsonArray.class, ListJS::json);
-		registry.register(JsonElement.class, JsonIO::of);
-		registry.register(JsonPrimitive.class, JsonIO::primitiveOf);
+		registry.register(JsonElement.class, JsonUtils::of);
+		registry.register(JsonPrimitive.class, JsonUtils::primitiveOf);
 		registry.register(Path.class, KubeJSTypeWrappers::pathOf);
 		registry.register(File.class, KubeJSTypeWrappers::fileOf);
 		registry.register(Unit.class, Painter.INSTANCE::unitOf);
@@ -460,8 +471,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(CollectionTag.class, (from, target) -> NBTUtils.isTagCollection(from), NBTUtils::toTagCollection);
 		registry.register(ListTag.class, (from, target) -> NBTUtils.isTagCollection(from), NBTUtils::toTagList);
 		registry.register(Tag.class, NBTUtils::toTag);
-		registry.register(DataComponentMap.class, KubeJSComponents::mapOf);
-		registry.register(DataComponentPatch.class, KubeJSComponents::patchOf);
+		registry.register(DataComponentMap.class, DataComponentWrapper::mapOf);
+		registry.register(DataComponentPatch.class, DataComponentWrapper::patchOf);
 
 		registry.register(BlockPos.class, KubeJSTypeWrappers::blockPosOf);
 		registry.register(Vec3.class, KubeJSTypeWrappers::vec3Of);
@@ -488,14 +499,13 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(Ingredient.class, IngredientJS::of);
 		registry.register(InputReplacement.class, InputReplacement::of);
 		registry.register(OutputReplacement.class, OutputReplacement::of);
-		registry.register(InputItem.class, InputItem::of);
-		registry.register(OutputItem.class, OutputItem::of);
+		registry.register(SizedIngredient.class, SizedIngredientWrapper::wrap);
 		registry.register(BlockStatePredicate.class, BlockStatePredicate::of);
 		registry.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
 		registry.register(FluidStack.class, FluidWrapper::wrap);
 		registry.register(dev.architectury.fluid.FluidStack.class, FluidWrapper::wrapArch);
 		registry.register(RecipeFilter.class, RecipeFilter::of);
-		registry.register(IngredientActionFilter.class, IngredientActionFilter::filterOf);
+		registry.register(SlotFilter.class, SlotFilter::wrap);
 		registry.register(Tier.class, ItemBuilder::toolTierOf);
 		registry.register(PlayerSelector.class, PlayerSelector::of);
 		registry.register(DamageSource.class, DamageSourceWrapper::of);
@@ -518,6 +528,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		// codecs
 		registry.registerCodec(Fireworks.class, Fireworks.CODEC);
+		registry.registerMapCodec(ChancedItem.class, ChancedItem.CODEC);
+		registry.registerMapCodec(ChancedIngredient.class, ChancedIngredient.CODEC);
 	}
 
 	@Override
@@ -586,7 +598,18 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
+	public void registerIngredientActionTypes(IngredientActionTypeRegistry registry) {
+		registry.register(ConsumeAction.TYPE);
+		registry.register(CustomIngredientAction.TYPE);
+		registry.register(DamageAction.TYPE);
+		registry.register(KeepAction.TYPE);
+		registry.register(ReplaceAction.TYPE);
+	}
+
+	@Override
 	public void clearCaches() {
-		ItemStackJS.clearAllCaches();
+		ItemStackJS.CACHED_ITEM_LIST.forget();
+		ItemStackJS.CACHED_ITEM_TYPE_LIST.forget();
+		ItemStackJS.PARSE_CACHE.clear();
 	}
 }

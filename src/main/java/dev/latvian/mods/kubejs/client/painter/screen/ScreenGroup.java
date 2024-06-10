@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectStorage;
 import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.Unit;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.ArrayList;
@@ -22,13 +23,13 @@ public class ScreenGroup extends BoxObject {
 	}
 
 	@Override
-	protected void load(PainterObjectProperties properties) {
-		super.load(properties);
+	protected void load(HolderLookup.Provider registries, PainterObjectProperties properties) {
+		super.load(registries, properties);
 
 		var c = properties.tag.get("children");
 
 		if (c instanceof CompoundTag tag) {
-			storage.handle(tag);
+			storage.handle(registries, tag);
 		}
 
 		paddingW = properties.getUnit("paddingW", paddingW);

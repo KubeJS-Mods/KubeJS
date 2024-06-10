@@ -132,7 +132,7 @@ public class EventHandler extends BaseFunction {
 	public void listenJava(ScriptType type, @Nullable Object extraId, IEventHandler handler) {
 		var b = type.manager.get().canListenEvents;
 		type.manager.get().canListenEvents = true;
-		listen(type.manager.get().contextFactory.enter(), type, extraId, handler);
+		listen(null, type, extraId, handler);
 		type.manager.get().canListenEvents = b;
 	}
 

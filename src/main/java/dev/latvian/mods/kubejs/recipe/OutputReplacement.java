@@ -1,17 +1,18 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.item.OutputItem;
+import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.rhino.Context;
 
 public interface OutputReplacement {
-	static OutputReplacement of(Object o) {
-		return o instanceof OutputReplacement r ? r : OutputItem.of(o);
+	static OutputReplacement of(Context cx, Object o) {
+		return o instanceof OutputReplacement r ? r : ItemStackJS.of(o);
 	}
 
 	default OutputReplacementTransformer.Replacement transform(OutputReplacementTransformer transformer) {
 		return new OutputReplacementTransformer.Replacement(this, transformer);
 	}
 
-	default Object replaceOutput(KubeRecipe recipe, ReplacementMatch match, OutputReplacement original) {
+	default Object replaceOutput(Context cx, KubeRecipe recipe, ReplacementMatch match, OutputReplacement original) {
 		return this;
 	}
 }

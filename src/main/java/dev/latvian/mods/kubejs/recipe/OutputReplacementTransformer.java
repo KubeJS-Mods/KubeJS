@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
+import dev.latvian.mods.rhino.Context;
 
 @FunctionalInterface
 public interface OutputReplacementTransformer {
@@ -13,7 +14,7 @@ public interface OutputReplacementTransformer {
 		}
 
 		@Override
-		public Object replaceOutput(KubeRecipe recipe, ReplacementMatch match, OutputReplacement original) {
+		public Object replaceOutput(Context cx, KubeRecipe recipe, ReplacementMatch match, OutputReplacement original) {
 			return transformer.transform(recipe, match, original, with);
 		}
 	}

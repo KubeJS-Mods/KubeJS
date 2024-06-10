@@ -65,7 +65,7 @@ public interface NBTUtils {
 		} else if (v instanceof Tag tag) {
 			return tag;
 		} else if (v instanceof NBTSerializable s) {
-			return s.toNBTJS(cx);
+			return s.toNBT(cx);
 		} else if (v instanceof CharSequence || v instanceof Character) {
 			return StringTag.valueOf(v.toString());
 		} else if (v instanceof Boolean b) {

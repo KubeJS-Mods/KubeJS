@@ -24,6 +24,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -149,5 +150,9 @@ public interface IngredientJS {
 		} else {
 			return Ingredient.CODEC.decode(JsonOps.INSTANCE, json).result().map(Pair::getFirst).orElseThrow();
 		}
+	}
+
+	static boolean isIngredientLike(Object from) {
+		return from instanceof Ingredient || from instanceof SizedIngredient || from instanceof ItemStack;
 	}
 }

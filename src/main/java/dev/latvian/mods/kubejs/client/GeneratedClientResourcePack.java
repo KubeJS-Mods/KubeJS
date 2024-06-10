@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
@@ -22,7 +21,6 @@ import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.PackSource;
-import net.neoforged.fml.ModList;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -85,14 +83,6 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 		var langMap = new HashMap<LangKubeEvent.Key, String>();
 		var langEvents = new HashMap<String, LangKubeEvent>();
 		var enUsLangEvent = langEvents.computeIfAbsent("en_us", s -> new LangKubeEvent(s, langMap));
-
-		if (ModList.get().isLoaded("jade")) {
-			for (var mod : PlatformWrapper.getMods().values()) {
-				if (!mod.getCustomName().isEmpty()) {
-					enUsLangEvent.add(KubeJS.MOD_ID, "jade.modName." + mod.getId(), mod.getCustomName());
-				}
-			}
-		}
 
 		for (var builder : RegistryInfo.ALL_BUILDERS) {
 			builder.generateLang(enUsLangEvent);

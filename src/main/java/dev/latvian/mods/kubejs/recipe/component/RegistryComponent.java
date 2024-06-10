@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
-import dev.latvian.mods.kubejs.item.OutputItem;
+import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -49,7 +49,7 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 			} else if (from instanceof Item) {
 				return (T) from;
 			} else {
-				return (T) OutputItem.of(from).item.getItem();
+				return (T) ItemStackJS.of(from).getItem();
 			}
 		} else if (registry == RegistryInfo.FLUID) {
 			if (from instanceof FluidStack fs) {

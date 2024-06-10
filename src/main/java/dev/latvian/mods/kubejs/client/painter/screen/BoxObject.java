@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.Unit;
+import net.minecraft.core.HolderLookup;
 
 public abstract class BoxObject extends ScreenPainterObject {
 	private static final Unit DEFAULT_SIZE = FixedNumberUnit.SIXTEEN;
@@ -17,8 +18,8 @@ public abstract class BoxObject extends ScreenPainterObject {
 	}
 
 	@Override
-	protected void load(PainterObjectProperties properties) {
-		super.load(properties);
+	protected void load(HolderLookup.Provider registries, PainterObjectProperties properties) {
+		super.load(registries, properties);
 
 		w = properties.getUnit("w", w).add(properties.getUnit("expandW", FixedNumberUnit.ZERO));
 		h = properties.getUnit("h", h).add(properties.getUnit("expandH", FixedNumberUnit.ZERO));

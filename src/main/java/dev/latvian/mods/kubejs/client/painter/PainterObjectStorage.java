@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.client.painter;
 import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.unit.FixedNumberUnit;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.Nullable;
@@ -31,12 +32,12 @@ public class PainterObjectStorage {
 		return objects.isEmpty() ? List.of() : objects.values();
 	}
 
-	public void handle(CompoundTag root) {
+	public void handle(HolderLookup.Provider registries, CompoundTag root) {
 		if (root.contains("bulk")) {
 			var bulk = root.getList("bulk", Tag.TAG_COMPOUND);
 
 			for (int i = 0; i < bulk.size(); i++) {
-				handle(bulk.getCompound(i));
+				handle(registries, bulk.getCompound(i));
 			}
 
 			return;
@@ -47,7 +48,7 @@ public class PainterObjectStorage {
 				objects.clear();
 			} else {
 				for (var o : objects.values()) {
-					o.update(tag);
+					o.update(registries, tag);
 				}
 			}
 		}
@@ -71,7 +72,7 @@ public class PainterObjectStorage {
 			var o = objects.get(key);
 
 			if (o != null) {
-				o.update(tag);
+				o.update(registries, tag);
 			} else if (key.indexOf(' ') != -1) {
 				ConsoleJS.CLIENT.error("Painter id can't contain spaces!");
 			} else {
@@ -81,7 +82,7 @@ public class PainterObjectStorage {
 				if (o1 != null) {
 					o1.id = key;
 					o1.parent = this;
-					o1.update(tag);
+					o1.update(registries, tag);
 					objects.put(key, o1);
 				} else {
 					ConsoleJS.CLIENT.error("Unknown Painter type: " + type);

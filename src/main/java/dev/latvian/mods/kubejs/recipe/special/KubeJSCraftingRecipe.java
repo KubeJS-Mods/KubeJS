@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.core.CraftingContainerKJS;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionHolder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public interface KubeJSCraftingRecipe extends CraftingRecipe {
-	List<IngredientAction> kjs$getIngredientActions();
+	List<IngredientActionHolder> kjs$getIngredientActions();
 
 	@Nullable
 	ModifyRecipeResultCallback kjs$getModifyResult();

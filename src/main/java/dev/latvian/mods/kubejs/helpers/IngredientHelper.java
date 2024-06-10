@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.ingredient.CreativeTabIngredient;
 import dev.latvian.mods.kubejs.ingredient.ModIngredient;
 import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
-import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.core.HolderSet;
@@ -16,6 +15,7 @@ import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import java.util.regex.Pattern;
 
@@ -26,8 +26,8 @@ public enum IngredientHelper {
 		return INSTANCE;
 	}
 
-	public InputItem stack(Ingredient ingredient, int count) {
-		return InputItem.create(ingredient, count);
+	public SizedIngredient stack(Ingredient ingredient, int count) {
+		return new SizedIngredient(ingredient, count);
 	}
 
 	public Ingredient wildcard() {

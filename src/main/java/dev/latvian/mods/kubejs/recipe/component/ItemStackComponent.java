@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.recipe.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
@@ -37,7 +36,7 @@ public class ItemStackComponent implements RecipeComponent<ItemStack> {
 
 	@Override
 	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
-		return from instanceof OutputItem || from instanceof ItemStack || !OutputItem.of(from).isEmpty();
+		return ItemStackJS.isItemStackLike(from);
 	}
 
 	@Override

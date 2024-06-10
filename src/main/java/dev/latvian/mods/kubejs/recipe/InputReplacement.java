@@ -1,17 +1,18 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.item.InputItem;
+import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
+import dev.latvian.mods.rhino.Context;
 
 public interface InputReplacement {
-	static InputReplacement of(Object o) {
-		return o instanceof InputReplacement r ? r : InputItem.of(o);
+	static InputReplacement of(Context cx, Object o) {
+		return o instanceof InputReplacement r ? r : (InputReplacement) (Object) SizedIngredientWrapper.wrap(cx, o);
 	}
 
 	default InputReplacementTransformer.Replacement transform(InputReplacementTransformer transformer) {
 		return new InputReplacementTransformer.Replacement(this, transformer);
 	}
 
-	default Object replaceInput(KubeRecipe recipe, ReplacementMatch match, InputReplacement original) {
+	default Object replaceInput(Context cx, KubeRecipe recipe, ReplacementMatch match, InputReplacement original) {
 		return this;
 	}
 }

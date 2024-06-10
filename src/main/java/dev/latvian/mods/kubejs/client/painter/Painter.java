@@ -131,7 +131,7 @@ public class Painter implements UnitVariables {
 
 		mc.execute(() -> {
 			synchronized (lock) {
-				storage.handle(root);
+				storage.handle(mc.level.registryAccess(), root);
 				screenObjects = null;
 
 				if (ClientEvents.PAINTER_UPDATED.hasListeners()) {

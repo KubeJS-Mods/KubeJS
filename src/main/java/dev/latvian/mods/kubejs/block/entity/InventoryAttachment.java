@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.block.entity;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
+import dev.latvian.mods.rhino.type.JSOptionalParam;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -19,15 +20,15 @@ public class InventoryAttachment extends SimpleContainer implements BlockEntityA
 	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType(
 		"inventory",
 		JSObjectTypeInfo.of(
-			new JSObjectTypeInfo.Field("xsize", TypeInfo.INT),
-			new JSObjectTypeInfo.Field("ysize", TypeInfo.INT),
-			new JSObjectTypeInfo.Field("inputFilter", IngredientJS.TYPE_INFO)
+			new JSOptionalParam("xsize", TypeInfo.INT),
+			new JSOptionalParam("ysize", TypeInfo.INT),
+			new JSOptionalParam("inputFilter", IngredientJS.TYPE_INFO)
 		), map -> {
-			var width = ((Number) map.get("width")).intValue();
-			var height = ((Number) map.get("height")).intValue();
-			var inputFilter = map.containsKey("inputFilter") ? IngredientJS.of(map.get("inputFilter")) : null;
-			return entity -> new InventoryAttachment(entity, width, height, inputFilter);
-		}
+		var width = ((Number) map.get("width")).intValue();
+		var height = ((Number) map.get("height")).intValue();
+		var inputFilter = map.containsKey("inputFilter") ? IngredientJS.of(map.get("inputFilter")) : null;
+		return entity -> new InventoryAttachment(entity, width, height, inputFilter);
+	}
 	);
 
 	public final int width, height;

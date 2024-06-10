@@ -1,22 +1,23 @@
 package dev.latvian.mods.kubejs.core;
 
-import com.google.gson.JsonElement;
-import dev.latvian.mods.kubejs.KubeJSCodecs;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
-import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
-import dev.latvian.mods.kubejs.util.JsonSerializable;
+import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.util.WithCodec;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 @RemapPrefixForJS("kjs$")
-public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
+public interface IngredientKJS extends IngredientSupplierKJS, InputReplacement, WithCodec {
 	default Ingredient kjs$self() {
 		throw new NoMixinException();
 	}
@@ -99,12 +100,12 @@ public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
 		return IngredientHelper.get().subtract(kjs$self(), subtracted);
 	}
 
-	default InputItem kjs$asStack() {
-		return InputItem.create(kjs$self(), 1);
+	default SizedIngredient kjs$asStack() {
+		return new SizedIngredient(kjs$self(), 1);
 	}
 
-	default InputItem kjs$withCount(int count) {
-		return InputItem.create(kjs$self(), count);
+	default SizedIngredient kjs$withCount(int count) {
+		return new SizedIngredient(kjs$self(), count);
 	}
 
 	default boolean kjs$isWildcard() {
@@ -125,7 +126,7 @@ public interface IngredientKJS extends IngredientSupplierKJS, JsonSerializable {
 	}
 
 	@Override
-	default JsonElement toJsonJS() {
-		return KubeJSCodecs.toJsonOrThrow(kjs$self(), Ingredient.CODEC);
+	default Codec<?> getCodec(Context cx) {
+		return Ingredient.CODEC;
 	}
 }

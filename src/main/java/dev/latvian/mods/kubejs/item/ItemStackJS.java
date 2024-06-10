@@ -2,7 +2,10 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
@@ -13,7 +16,6 @@ import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -23,6 +25,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -89,8 +92,6 @@ public interface ItemStackJS {
 			return ItemStack.EMPTY;
 		} else if (o instanceof ItemStack stack) {
 			return stack.isEmpty() ? ItemStack.EMPTY : stack;
-		} else if (o instanceof OutputItem out) {
-			return out.item;
 		} else if (o instanceof Ingredient ingr) {
 			return ingr.kjs$getFirst();
 		} else if (o instanceof ResourceLocation id) {
@@ -126,7 +127,7 @@ public interface ItemStackJS {
 			var cached = PARSE_CACHE.get(os);
 
 			if (cached != null) {
-				return cached.isEmpty() ? ItemStack.EMPTY : cached.copy();
+				return cached.copy();
 			}
 
 			var count = 1;
@@ -236,7 +237,7 @@ public interface ItemStackJS {
 		return stack;
 	}
 
-	static Item getRawItem(Context cx, @Nullable Object o) {
+	static Item getRawItem(@Nullable Object o) {
 		if (o == null) {
 			return Items.AIR;
 		} else if (o instanceof ItemLike item) {
@@ -282,14 +283,40 @@ public interface ItemStackJS {
 		return CACHED_ITEM_MAP.get();
 	}
 
-	static void clearAllCaches() {
-		CACHED_ITEM_LIST.forget();
-		CACHED_ITEM_TYPE_LIST.forget();
-		PARSE_CACHE.clear();
-		InputItem.PARSE_CACHE.clear();
-	}
-
 	static void setTag(ItemStack stack, CompoundTag tag) {
 		stack.applyComponentsAndValidate(DataComponentPatch.CODEC.parse(NbtOps.INSTANCE, tag).result().get());
+	}
+
+	static boolean isItemStackLike(Object from) {
+		return from instanceof ItemStack;
+	}
+
+	static ItemStack read(StringReader reader) throws CommandSyntaxException {
+		if (!reader.canRead()) {
+			return ItemStack.EMPTY;
+		}
+
+		int count = 1;
+
+		if (reader.canRead() && StringReader.isAllowedNumber(reader.peek())) {
+			count = Mth.ceil(reader.readDouble());
+			reader.expect('x');
+			reader.skipWhitespace();
+
+			if (count < 1) {
+				throw new IllegalArgumentException("Item count smaller than 1 is not allowed!");
+			}
+		}
+
+		var itemId = ResourceLocation.read(reader);
+		var itemStack = new ItemStack(RegistryInfo.ITEM.getValue(itemId), count);
+
+		var next = reader.canRead() ? reader.peek() : 0;
+
+		if (next == '[' || next == '{') {
+			itemStack.applyComponents(DataComponentWrapper.readPatch(null, reader));
+		}
+
+		return itemStack;
 	}
 }

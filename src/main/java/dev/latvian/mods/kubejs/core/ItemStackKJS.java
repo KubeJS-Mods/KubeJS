@@ -1,20 +1,19 @@
 package dev.latvian.mods.kubejs.core;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.mojang.serialization.JsonOps;
-import dev.latvian.mods.kubejs.KubeJSComponents;
+import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
+import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.item.OutputItem;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.OutputReplacement;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
-import dev.latvian.mods.kubejs.util.JsonSerializable;
-import dev.latvian.mods.kubejs.util.NBTSerializable;
+import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.util.RemapForJS;
+import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import dev.latvian.mods.rhino.util.ToStringJS;
@@ -22,11 +21,12 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -34,6 +34,7 @@ import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,10 +45,10 @@ import java.util.Map;
 @RemapPrefixForJS("kjs$")
 public interface ItemStackKJS extends
 	SpecialEquality,
-	NBTSerializable,
-	JsonSerializable,
+	WithCodec,
 	IngredientSupplierKJS,
 	ToStringJS,
+	OutputReplacement,
 	RegistryObjectKJS<Item> {
 	default ItemStack kjs$self() {
 		return (ItemStack) this;
@@ -101,8 +102,9 @@ public interface ItemStackKJS extends
 		return kjs$self().getItem().kjs$getId();
 	}
 
-	default boolean kjs$isBlock() {
-		return kjs$self().getItem() instanceof BlockItem;
+	@Nullable
+	default Block kjs$getBlock() {
+		return kjs$self().getItem() instanceof BlockItem bi ? bi.getBlock() : null;
 	}
 
 	default ItemStack kjs$withCount(int c) {
@@ -120,23 +122,41 @@ public interface ItemStackKJS extends
 	}
 
 	default String kjs$getComponentString(KubeJSContext cx) {
-		return KubeJSComponents.patchToString(new StringBuilder(), cx.getRegistries(), kjs$self().getComponentsPatch()).toString();
+		return DataComponentWrapper.patchToString(new StringBuilder(), cx.getRegistries(), kjs$self().getComponentsPatch()).toString();
 	}
 
-	default ItemStack kjs$withComponents(DataComponentMap components) {
-		var is = kjs$self().copy();
+	default ItemStack kjs$set(DataComponentType<?> component, Object value) {
+		var is = kjs$self();
+
+		if (value == null || Undefined.isUndefined(value)) {
+			is.remove(component);
+		} else {
+			is.set((DataComponentType) component, value);
+		}
+
+		return is;
+	}
+
+	default ItemStack kjs$remove(DataComponentType<?> component) {
+		var is = kjs$self();
+		is.remove(component);
+		return is;
+	}
+
+	default ItemStack kjs$set(DataComponentMap components) {
+		var is = kjs$self();
 		is.applyComponents(components);
 		return is;
 	}
 
-	default ItemStack kjs$withComponentPatch(DataComponentPatch components) {
-		var is = kjs$self().copy();
+	default ItemStack kjs$applyPatch(DataComponentPatch components) {
+		var is = kjs$self();
 		is.applyComponents(components);
 		return is;
 	}
 
-	default ItemStack kjs$withName(@Nullable Component displayName) {
-		var is = kjs$self().copy();
+	default ItemStack kjs$setCustomName(@Nullable Component displayName) {
+		var is = kjs$self();
 
 		if (displayName != null) {
 			is.set(DataComponents.CUSTOM_NAME, displayName);
@@ -145,6 +165,11 @@ public interface ItemStackKJS extends
 		}
 
 		return is;
+	}
+
+	@Nullable
+	default Component kjs$getCustomName() {
+		return kjs$self().get(DataComponents.CUSTOM_NAME);
 	}
 
 	default ItemEnchantments kjs$getEnchantments() {
@@ -156,25 +181,19 @@ public interface ItemStackKJS extends
 		return e != null && e.getLevel(enchantment) >= level;
 	}
 
-	@RemapForJS("enchant")
-	default ItemStack kjs$enchantCopy(Map<?, ?> enchantments) {
+	default ItemStack kjs$enchant(Enchantment enchantment, int level) {
 		var is = kjs$self();
-
-		for (var entry : enchantments.entrySet()) {
-			var enchantment = RegistryInfo.ENCHANTMENT.getValue(ID.mc(entry.getKey()));
-
-			if (enchantment != null && entry.getValue() instanceof Number number) {
-				is = is.kjs$enchantCopy(enchantment, number.intValue());
-			}
-		}
-
+		is.enchant(enchantment, level);
 		return is;
 	}
 
-	@RemapForJS("enchant")
-	default ItemStack kjs$enchantCopy(Enchantment enchantment, int level) {
+	default ItemStack kjs$enchant(Map<Enchantment, Integer> enchantments) {
 		var is = kjs$self().copy();
-		is.enchant(enchantment, level);
+
+		for (var entry : enchantments.entrySet()) {
+			is.enchant(entry.getKey(), entry.getValue());
+		}
+
 		return is;
 	}
 
@@ -183,18 +202,11 @@ public interface ItemStackKJS extends
 		return kjs$self().getItem().kjs$getMod();
 	}
 
-	@Deprecated
-	default Ingredient kjs$ignoreNBT(Context cx) {
-		var console = ConsoleJS.getCurrent(cx);
-		console.warn("You don't need to call .ignoreNBT() anymore, all item ingredients ignore NBT by default!");
-		return kjs$self().getItem().kjs$asIngredient();
-	}
-
 	default boolean kjs$areItemsEqual(ItemStack other) {
 		return kjs$self().getItem() == other.getItem();
 	}
 
-	default boolean kjs$isNBTEqual(ItemStack other) {
+	default boolean kjs$areComponentsEqual(ItemStack other) {
 		return ItemStack.isSameItemSameComponents(kjs$self(), other);
 	}
 
@@ -206,18 +218,7 @@ public interface ItemStackKJS extends
 		return kjs$getHarvestSpeed(null);
 	}
 
-	@Override
-	@RemapForJS("toNBT")
-	default CompoundTag toNBTJS(Context cx) {
-		return (CompoundTag) kjs$self().save(((KubeJSContext) cx).getRegistries(), new CompoundTag());
-	}
-
-	/* default String kjs$getCreativeTab() {
-		var cat = kjs$self().getItem().getItemCategory();
-		return cat == null ? "" : cat.getRecipeFolderName();
-	}*/
-
-	default CompoundTag kjs$getTypeData() {
+	default Map<String, Object> kjs$getTypeData() {
 		return kjs$self().getItem().kjs$getTypeData();
 	}
 
@@ -249,7 +250,7 @@ public interface ItemStackKJS extends
 		builder.append(kjs$getId());
 
 		if (!is.isComponentsPatchEmpty()) {
-			KubeJSComponents.patchToString(builder, registries, is.getComponentsPatch());
+			DataComponentWrapper.patchToString(builder, registries, is.getComponentsPatch());
 		}
 
 		builder.append('\'');
@@ -262,12 +263,12 @@ public interface ItemStackKJS extends
 	}
 
 	@Override
-	default JsonElement toJsonJS() {
-		return ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, kjs$self()).result().orElse(JsonNull.INSTANCE);
+	default Codec<ItemStack> getCodec(Context cx) {
+		return ItemStack.CODEC;
 	}
 
-	default OutputItem kjs$withChance(double chance) {
-		return OutputItem.create(kjs$self(), chance);
+	default ChancedItem kjs$withChance(FloatProvider chance) {
+		return new ChancedItem(kjs$self(), chance);
 	}
 
 	default ItemStack kjs$withLore(Component[] lines) {
@@ -280,5 +281,16 @@ public interface ItemStackKJS extends
 		var is = kjs$self().copy();
 		is.set(DataComponents.LORE, new ItemLore(List.of(lines), List.of(styledLines)));
 		return is;
+	}
+
+	@Override
+	default Object replaceOutput(Context cx, KubeRecipe recipe, ReplacementMatch match, OutputReplacement original) {
+		if (original instanceof ItemStack o) {
+			var replacement = kjs$self().copy();
+			replacement.setCount(o.getCount());
+			return replacement;
+		}
+
+		return kjs$self().copy(); // return this?
 	}
 }

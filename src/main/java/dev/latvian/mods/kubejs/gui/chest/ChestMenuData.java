@@ -55,7 +55,7 @@ public class ChestMenuData {
 
 	public void button(int x, int y, ItemStack stack, Component displayName, ChestMenuClickEvent.Callback leftClicked) {
 		var slot = getSlot(x, y);
-		slot.setItem(stack.kjs$withName(displayName));
+		slot.setItem(stack.copy().kjs$setCustomName(displayName));
 		slot.setLeftClicked(leftClicked);
 	}
 

@@ -28,7 +28,7 @@ public record CodecTypeWrapper<T>(Class<T> target, Codec<T> codec, T defaultValu
 		} else if (o instanceof Map<?, ?> map) {
 			return codec.decode(JavaOps.INSTANCE, map).result().get().getFirst();
 		} else {
-			return codec.decode(JsonOps.INSTANCE, MapJS.json(o)).result().get().getFirst();
+			return codec.decode(JsonOps.INSTANCE, MapJS.json(cx, o)).result().get().getFirst();
 		}
 	}
 }

@@ -7,10 +7,12 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.JSObjectType;
-import dev.latvian.mods.kubejs.util.JsonIO;
+import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.Context;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
@@ -33,7 +35,7 @@ import java.util.Optional;
 @Info("The hub for all things text components. Format text to your hearts content!")
 public interface TextWrapper {
 	@Info("Returns a Component of the input")
-	static MutableComponent of(@Nullable Object o) {
+	static MutableComponent of(Context cx, @Nullable Object o) {
 		o = UtilsJS.wrap(o, JSObjectType.ANY);
 		if (o == null) {
 			return Component.literal("null");
@@ -49,7 +51,7 @@ public interface TextWrapper {
 			var s = tag.getAsString();
 			if (s.startsWith("{") && s.endsWith("}")) {
 				try {
-					return (MutableComponent) ComponentSerialization.CODEC.decode(JsonOps.INSTANCE, JsonIO.GSON.fromJson(s, JsonObject.class)).getOrThrow().getFirst();
+					return (MutableComponent) ComponentSerialization.CODEC.decode(JsonOps.INSTANCE, JsonUtils.GSON.fromJson(s, JsonObject.class)).getOrThrow().getFirst();
 				} catch (JsonParseException ex) {
 					return Component.literal("Error: " + ex);
 				}
@@ -72,7 +74,7 @@ public interface TextWrapper {
 						with[i] = e1;
 
 						if (with[i] instanceof MapJS || with[i] instanceof ListJS) {
-							with[i] = of(e1);
+							with[i] = of(cx, e1);
 						}
 
 						i++;
@@ -96,12 +98,12 @@ public interface TextWrapper {
 
 			text.kjs$insertion((String) map.getOrDefault("insertion", null));
 			text.kjs$font(map.containsKey("font") ? new ResourceLocation(map.get("font").toString()) : null);
-			text.kjs$click(map.containsKey("click") ? clickEventOf(map.get("click")) : null);
-			text.kjs$hover(map.containsKey("hover") ? of(map.get("hover")) : null);
+			text.kjs$click(map.containsKey("click") ? clickEventOf(cx, map.get("click")) : null);
+			text.kjs$hover(map.containsKey("hover") ? of(cx, map.get("hover")) : null);
 
 			if (map.get("extra") instanceof Iterable<?> itr) {
 				for (var e : itr) {
-					text.append(of(e));
+					text.append(of(cx, e));
 				}
 			}
 
@@ -110,13 +112,21 @@ public interface TextWrapper {
 			var text = Component.empty();
 
 			for (var e1 : list) {
-				text.append(of(e1));
+				text.append(of(cx, e1));
 			}
 
 			return text;
 		}
 
 		return ofString(o.toString());
+	}
+
+	static Component ofTag(Tag tag) {
+		try {
+			return ComponentSerialization.CODEC.decode(NbtOps.INSTANCE, tag).getOrThrow().getFirst();
+		} catch (JsonParseException ex) {
+			return Component.literal("Error: " + ex);
+		}
 	}
 
 	@Info("Returns a plain component of the string, or empty if it is an empty string")
@@ -130,14 +140,14 @@ public interface TextWrapper {
 	}
 
 	@Info("Returns a ClickEvent of the input")
-	static ClickEvent clickEventOf(Object o) {
+	static ClickEvent clickEventOf(Context cx, Object o) {
 		if (o == null) {
 			return null;
 		} else if (o instanceof ClickEvent ce) {
 			return ce;
 		}
 
-		var json = MapJS.json(o);
+		var json = MapJS.json(cx, o);
 		if (json != null) {
 			var action = GsonHelper.getAsString(json, "action");
 			var value = GsonHelper.getAsString(json, "value");
@@ -249,99 +259,99 @@ public interface TextWrapper {
 	}
 
 	@Info("Returns a component of the input, colored black")
-	static MutableComponent black(Object text) {
-		return of(text).kjs$black();
+	static MutableComponent black(MutableComponent text) {
+		return text.kjs$black();
 	}
 
 	@Info("Returns a component of the input, colored dark blue")
-	static MutableComponent darkBlue(Object text) {
-		return of(text).kjs$darkBlue();
+	static MutableComponent darkBlue(MutableComponent text) {
+		return text.kjs$darkBlue();
 	}
 
 	@Info("Returns a component of the input, colored dark green")
-	static MutableComponent darkGreen(Object text) {
-		return of(text).kjs$darkGreen();
+	static MutableComponent darkGreen(MutableComponent text) {
+		return text.kjs$darkGreen();
 	}
 
 	@Info("Returns a component of the input, colored dark aqua")
-	static MutableComponent darkAqua(Object text) {
-		return of(text).kjs$darkAqua();
+	static MutableComponent darkAqua(MutableComponent text) {
+		return text.kjs$darkAqua();
 	}
 
 	@Info("Returns a component of the input, colored dark red")
-	static MutableComponent darkRed(Object text) {
-		return of(text).kjs$darkRed();
+	static MutableComponent darkRed(MutableComponent text) {
+		return text.kjs$darkRed();
 	}
 
 	@Info("Returns a component of the input, colored dark purple")
-	static MutableComponent darkPurple(Object text) {
-		return of(text).kjs$darkPurple();
+	static MutableComponent darkPurple(MutableComponent text) {
+		return text.kjs$darkPurple();
 	}
 
 	@Info("Returns a component of the input, colored gold")
-	static MutableComponent gold(Object text) {
-		return of(text).kjs$gold();
+	static MutableComponent gold(MutableComponent text) {
+		return text.kjs$gold();
 	}
 
 	@Info("Returns a component of the input, colored gray")
-	static MutableComponent gray(Object text) {
-		return of(text).kjs$gray();
+	static MutableComponent gray(MutableComponent text) {
+		return text.kjs$gray();
 	}
 
 	@Info("Returns a component of the input, colored dark gray")
-	static MutableComponent darkGray(Object text) {
-		return of(text).kjs$darkGray();
+	static MutableComponent darkGray(MutableComponent text) {
+		return text.kjs$darkGray();
 	}
 
 	@Info("Returns a component of the input, colored blue")
-	static MutableComponent blue(Object text) {
-		return of(text).kjs$blue();
+	static MutableComponent blue(MutableComponent text) {
+		return text.kjs$blue();
 	}
 
 	@Info("Returns a component of the input, colored green")
-	static MutableComponent green(Object text) {
-		return of(text).kjs$green();
+	static MutableComponent green(MutableComponent text) {
+		return text.kjs$green();
 	}
 
 	@Info("Returns a component of the input, colored aqua")
-	static MutableComponent aqua(Object text) {
-		return of(text).kjs$aqua();
+	static MutableComponent aqua(MutableComponent text) {
+		return text.kjs$aqua();
 	}
 
 	@Info("Returns a component of the input, colored red")
-	static MutableComponent red(Object text) {
-		return of(text).kjs$red();
+	static MutableComponent red(MutableComponent text) {
+		return text.kjs$red();
 	}
 
 	@Info("Returns a component of the input, colored light purple")
-	static MutableComponent lightPurple(Object text) {
-		return of(text).kjs$lightPurple();
+	static MutableComponent lightPurple(MutableComponent text) {
+		return text.kjs$lightPurple();
 	}
 
 	@Info("Returns a component of the input, colored yellow")
-	static MutableComponent yellow(Object text) {
-		return of(text).kjs$yellow();
+	static MutableComponent yellow(MutableComponent text) {
+		return text.kjs$yellow();
 	}
 
 	@Info("Returns a component of the input, colored white")
-	static MutableComponent white(Object text) {
-		return of(text).kjs$white();
+	static MutableComponent white(MutableComponent text) {
+		return text.kjs$white();
 	}
 
-	private static MutableComponent icon(String character) {
-		return of(character).kjs$font(KubeJS.ICONS_FONT);
+	private static MutableComponent icon(MutableComponent character) {
+		return character.kjs$font(KubeJS.ICONS_FONT);
 	}
 
 	static MutableComponent smallSpace() {
-		return icon(".");
+		return icon(Component.literal("."));
 	}
 
 	static MutableComponent logoIcon() {
-		return icon("K");
+		return icon(Component.literal("K"));
 	}
 
 	static MutableComponent infoIcon() {
-		return icon("I");
+		return icon(Component.literal("I"));
 	}
 
 	static MutableComponent info(Component text) {
@@ -349,7 +359,7 @@ public interface TextWrapper {
 	}
 
 	static MutableComponent warnIcon() {
-		return icon("W");
+		return icon(Component.literal("W"));
 	}
 
 	static MutableComponent warn(Component text) {
@@ -357,14 +367,14 @@ public interface TextWrapper {
 	}
 
 	static MutableComponent yesIcon() {
-		return icon("Y");
+		return icon(Component.literal("Y"));
 	}
 
 	static MutableComponent noIcon() {
-		return icon("N");
+		return icon(Component.literal("N"));
 	}
 
 	static MutableComponent yesIcon(boolean yes) {
-		return icon(yes ? "Y" : "N");
+		return icon(yes ? Component.literal("Y") : Component.literal("N"));
 	}
 }

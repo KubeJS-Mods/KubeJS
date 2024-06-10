@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeMappingRegistry;
@@ -73,6 +74,9 @@ public interface KubeJSPlugin {
 	}
 
 	default void registerBlockEntityAttachments(List<BlockEntityAttachmentType> types) {
+	}
+
+	default void registerIngredientActionTypes(IngredientActionTypeRegistry registry) {
 	}
 
 	default void attachServerData(AttachedData<MinecraftServer> event) {

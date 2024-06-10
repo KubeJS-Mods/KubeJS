@@ -7,7 +7,6 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
@@ -33,7 +32,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @Mixin(value = Item.class, priority = 1001)
@@ -50,7 +51,7 @@ public abstract class ItemMixin implements ItemKJS {
 	private ItemBuilder kjs$itemBuilder;
 
 	@Unique
-	private CompoundTag kjs$typeData;
+	private Map<String, Object> kjs$typeData;
 
 	@Unique
 	private Ingredient kjs$asIngredient;
@@ -99,9 +100,9 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Override
-	public CompoundTag kjs$getTypeData() {
+	public Map<String, Object> kjs$getTypeData() {
 		if (kjs$typeData == null) {
-			kjs$typeData = new CompoundTag();
+			kjs$typeData = new HashMap<>();
 		}
 
 		return kjs$typeData;

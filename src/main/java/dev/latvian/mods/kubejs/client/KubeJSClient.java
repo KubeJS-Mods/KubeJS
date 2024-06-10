@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.Util;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
@@ -30,6 +31,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class KubeJSClient extends KubeJSCommon {
+	public static KeyMapping guiKey;
+	public static KeyMapping inGameKey;
+
 	@Override
 	public void init() {
 		var mc = Minecraft.getInstance();

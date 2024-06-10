@@ -7,6 +7,7 @@ import dev.latvian.mods.unit.FixedBooleanUnit;
 import dev.latvian.mods.unit.FixedColorUnit;
 import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.Unit;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -25,18 +26,18 @@ public class TextObject extends BoxObject {
 	}
 
 	@Override
-	protected void load(PainterObjectProperties properties) {
-		super.load(properties);
+	protected void load(HolderLookup.Provider registries, PainterObjectProperties properties) {
+		super.load(registries, properties);
 
 		if (properties.tag.get("textLines") instanceof ListTag list) {
 			text = new FormattedCharSequence[list.size()];
 
 			for (int i = 0; i < list.size(); i++) {
-				text[i] = TextWrapper.of(list.get(i)).getVisualOrderText();
+				text[i] = TextWrapper.ofTag(list.get(i)).getVisualOrderText();
 			}
 		} else {
 			text = new FormattedCharSequence[]{
-				TextWrapper.of(properties.tag.get("text")).getVisualOrderText()
+				TextWrapper.ofTag(properties.tag.get("text")).getVisualOrderText()
 			};
 		}
 

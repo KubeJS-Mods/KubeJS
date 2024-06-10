@@ -1,17 +1,12 @@
 package dev.latvian.mods.kubejs.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonWriter;
-import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
@@ -22,37 +17,11 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
-import java.util.Collection;
 import java.util.HexFormat;
 import java.util.Map;
 import java.util.Objects;
 
 public class JsonIO {
-	@HideFromJS
-	public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().create();
-
-	public static JsonElement copy(@Nullable JsonElement element) {
-		return JsonUtils.copy(element);
-	}
-
-	@Nullable
-	public static JsonElement of(@Nullable Object o) {
-		if (o instanceof JsonElement) {
-			return (JsonElement) o;
-		} else if (o instanceof Map || o instanceof CompoundTag) {
-			return MapJS.json(o);
-		} else if (o instanceof Collection) {
-			return ListJS.json(o);
-		}
-
-		JsonElement e = JsonUtils.of(o);
-		return e == JsonNull.INSTANCE ? null : e;
-	}
-
-	public static JsonPrimitive primitiveOf(@Nullable Object o) {
-		return of(o) instanceof JsonPrimitive p ? p : null;
-	}
-
 	@Nullable
 	public static Object toObject(@Nullable JsonElement json) {
 		return JsonUtils.toObject(json);

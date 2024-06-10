@@ -11,6 +11,6 @@ public class KubeJSContextFactory extends ContextFactory {
 
 	@Override
 	protected KubeJSContext createContext() {
-		return new KubeJSContext(this);
+		return manager.scriptType.isServer() ? new KubeJSServerContext(this) : new KubeJSContext(this);
 	}
 }

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.block.callbacks;
 
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -56,7 +55,7 @@ public class CanBeReplacedCallbackJS {
 	}
 
 	public ItemStack getItem() {
-		return ItemStackJS.of(context.getItemInHand());
+		return context.getItemInHand();
 	}
 
 	@Nullable

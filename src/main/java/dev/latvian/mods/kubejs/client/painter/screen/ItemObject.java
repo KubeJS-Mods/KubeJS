@@ -9,7 +9,6 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.unit.FixedBooleanUnit;
 import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.Unit;
@@ -18,6 +17,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -36,11 +36,11 @@ public class ItemObject extends BoxObject {
 	}
 
 	@Override
-	protected void load(PainterObjectProperties properties) {
-		super.load(properties);
+	protected void load(HolderLookup.Provider registries, PainterObjectProperties properties) {
+		super.load(registries, properties);
 
 		if (properties.hasAny("item")) {
-			itemStack = ItemStackJS.of(properties.tag.get("item"));
+			itemStack = ItemStack.parse(registries, properties.tag.get("item")).orElseThrow();
 		}
 
 		overlay = properties.getUnit("overlay", overlay);

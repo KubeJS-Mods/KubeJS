@@ -2,10 +2,12 @@ package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID)
@@ -32,6 +34,13 @@ public class KubeJSBlockEventHandler {
 	public static void blockBreak(BlockEvent.BreakEvent event) {
 		if (event.getLevel() instanceof Level level && BlockEvents.BROKEN.hasListeners(event.getState().kjs$getRegistryKey())) {
 			BlockEvents.BROKEN.post(level, event.getState().kjs$getRegistryKey(), new BlockBrokenKubeEvent(event)).applyCancel(event);
+		}
+	}
+
+	@SubscribeEvent
+	public static void drops(BlockDropsEvent event) {
+		if (event.getLevel() instanceof ServerLevel level && BlockEvents.DROPS.hasListeners(event.getState().kjs$getRegistryKey())) {
+			BlockEvents.DROPS.post(level, event.getState().kjs$getRegistryKey(), new BlockDropsKubeEvent(event)).applyCancel(event);
 		}
 	}
 

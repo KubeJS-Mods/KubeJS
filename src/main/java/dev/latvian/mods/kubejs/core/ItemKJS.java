@@ -6,9 +6,10 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 @RemapPrefixForJS("kjs$")
 public interface ItemKJS extends IngredientSupplierKJS, RegistryObjectKJS<Item> {
@@ -31,7 +32,7 @@ public interface ItemKJS extends IngredientSupplierKJS, RegistryObjectKJS<Item> 
 		throw new NoMixinException();
 	}
 
-	default CompoundTag kjs$getTypeData() {
+	default Map<String, Object> kjs$getTypeData() {
 		throw new NoMixinException();
 	}
 

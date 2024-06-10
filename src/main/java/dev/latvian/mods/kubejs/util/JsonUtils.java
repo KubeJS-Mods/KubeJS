@@ -12,12 +12,16 @@ import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +30,7 @@ import java.util.Map;
  * @author LatvianModder
  */
 public interface JsonUtils {
+	@HideFromJS
 	Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().create();
 
 	static JsonElement copy(@Nullable JsonElement element) {
@@ -52,24 +57,23 @@ public interface JsonUtils {
 		return element;
 	}
 
-	static JsonElement of(@Nullable Object o) {
-		if (o == null) {
-			return JsonNull.INSTANCE;
-		} else if (o instanceof JsonSerializable) {
-			return ((JsonSerializable) o).toJsonJS();
-		} else if (o instanceof JsonElement) {
-			return (JsonElement) o;
-		} else if (o instanceof CharSequence) {
-			return new JsonPrimitive(o.toString());
-		} else if (o instanceof Boolean) {
-			return new JsonPrimitive((Boolean) o);
-		} else if (o instanceof Number) {
-			return new JsonPrimitive((Number) o);
-		} else if (o instanceof Character) {
-			return new JsonPrimitive((Character) o);
-		}
+	static JsonElement of(Context cx, @Nullable Object o) {
+		return switch (o) {
+			case JsonElement e -> e;
+			case JsonSerializable s -> s.toJson(cx);
+			case CharSequence ignore -> new JsonPrimitive(o.toString());
+			case Boolean b -> new JsonPrimitive(b);
+			case Number n -> new JsonPrimitive(n);
+			case Character c -> new JsonPrimitive(c);
+			case Map<?, ?> map -> MapJS.json(cx, map);
+			case CompoundTag tag -> MapJS.json(cx, tag);
+			case Collection<?> c -> ListJS.json(cx, c);
+			case null, default -> JsonNull.INSTANCE;
+		};
+	}
 
-		return JsonNull.INSTANCE;
+	static JsonPrimitive primitiveOf(Context cx, @Nullable Object o) {
+		return of(cx, o) instanceof JsonPrimitive p ? p : null;
 	}
 
 	@Nullable

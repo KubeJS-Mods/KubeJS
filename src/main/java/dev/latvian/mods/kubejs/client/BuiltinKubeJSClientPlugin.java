@@ -1,12 +1,15 @@
 package dev.latvian.mods.kubejs.client;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
+import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import net.minecraft.client.Minecraft;
+import net.neoforged.fml.ModList;
 
 public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 	@Override
@@ -31,6 +34,20 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 			bindings.add("clearTimeout", new ScheduledEvents.TimeoutJSFunction(se, true, false));
 			bindings.add("setInterval", new ScheduledEvents.TimeoutJSFunction(se, false, true));
 			bindings.add("clearInterval", new ScheduledEvents.TimeoutJSFunction(se, true, true));
+		}
+	}
+
+	@Override
+	public void generateLang(LangKubeEvent event) {
+		event.add(KubeJS.MOD_ID, "key.kubejs.gui", "KubeJS (GUI)");
+		event.add(KubeJS.MOD_ID, "key.kubejs.in_game", "KubeJS (In-Game)");
+
+		if (ModList.get().isLoaded("jade")) {
+			for (var mod : PlatformWrapper.getMods().values()) {
+				if (!mod.getCustomName().isEmpty()) {
+					event.add(KubeJS.MOD_ID, "jade.modName." + mod.getId(), mod.getCustomName());
+				}
+			}
 		}
 	}
 }

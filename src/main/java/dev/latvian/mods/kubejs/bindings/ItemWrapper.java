@@ -9,8 +9,6 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import net.minecraft.Util;
-import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -42,28 +40,6 @@ public interface ItemWrapper {
 	@Info("Returns an ItemStack of the input, with the specified count")
 	static ItemStack of(ItemStack in, int count) {
 		return in.kjs$withCount(count);
-	}
-
-	@Info("Returns an ItemStack of the input, with the specified NBT data")
-	static ItemStack of(ItemStack in, DataComponentMap components) {
-		return in.kjs$withComponents(components);
-	}
-
-	@Info("Returns an ItemStack of the input, with the specified count and NBT data")
-	static ItemStack of(ItemStack in, int count, DataComponentMap components) {
-		var is = in.kjs$withComponents(components);
-		is.setCount(count);
-		return is;
-	}
-
-	@Info("Returns an ItemStack of the input, with the specified components")
-	static ItemStack withComponents(ItemStack in, DataComponentMap components) {
-		return in.kjs$withComponents(components);
-	}
-
-	@Info("Returns an ItemStack of the input, with the specified components")
-	static ItemStack withComponentPatch(ItemStack in, DataComponentPatch components) {
-		return in.kjs$withComponentPatch(components);
 	}
 
 	@Info("Get a list of most items in the game. Items not in a creative tab are ignored")

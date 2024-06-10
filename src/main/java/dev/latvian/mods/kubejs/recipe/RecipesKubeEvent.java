@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
@@ -34,6 +35,7 @@ import dev.latvian.mods.rhino.WrappedException;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.ReportedException;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.util.GsonHelper;
@@ -157,6 +159,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	public final RecipeSchemaStorage recipeSchemaStorage;
 	public final HolderLookup.Provider registries;
+	public final RegistryOps<JsonElement> jsonRegistryOps;
 	public final Map<ResourceLocation, KubeRecipe> originalRecipes;
 	public final Collection<KubeRecipe> addedRecipes;
 	private final BinaryOperator<RecipeHolder<?>> mergeOriginal, mergeAdded;
@@ -184,6 +187,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		ConsoleJS.SERVER.info("Initializing recipe event...");
 		this.recipeSchemaStorage = recipeSchemaStorage;
 		this.registries = registries;
+		this.jsonRegistryOps = registries.createSerializationContext(JsonOps.INSTANCE);
 		this.originalRecipes = new HashMap<>();
 		this.addedRecipes = new ConcurrentLinkedQueue<>();
 		this.recipeFunctions = new HashMap<>();

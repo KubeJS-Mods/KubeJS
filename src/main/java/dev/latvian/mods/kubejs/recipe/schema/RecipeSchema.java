@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.util.Cast;
-import dev.latvian.mods.kubejs.util.JsonIO;
+import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -213,7 +213,7 @@ public class RecipeSchema {
 		r.initValues(id == null);
 
 		if (id != null && DevProperties.get().debugInfo) {
-			r.originalJson = (JsonObject) JsonIO.copy(json);
+			r.originalJson = (JsonObject) JsonUtils.copy(json);
 		}
 
 		r.deserialize(false);

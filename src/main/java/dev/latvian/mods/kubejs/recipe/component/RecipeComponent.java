@@ -176,7 +176,7 @@ public interface RecipeComponent<T> {
 	}
 
 	default T replaceInput(Context cx, KubeRecipe recipe, T original, ReplacementMatch match, InputReplacement with) {
-		return original instanceof InputReplacement r && isInput(recipe, original, match) ? wrap(cx, recipe, with.replaceInput(recipe, match, r)) : original;
+		return original instanceof InputReplacement r && isInput(recipe, original, match) ? wrap(cx, recipe, with.replaceInput(cx, recipe, match, r)) : original;
 	}
 
 	/**
@@ -193,7 +193,7 @@ public interface RecipeComponent<T> {
 	}
 
 	default T replaceOutput(Context cx, KubeRecipe recipe, T original, ReplacementMatch match, OutputReplacement with) {
-		return original instanceof OutputReplacement r && isOutput(recipe, original, match) ? wrap(cx, recipe, with.replaceOutput(recipe, match, r)) : original;
+		return original instanceof OutputReplacement r && isOutput(recipe, original, match) ? wrap(cx, recipe, with.replaceOutput(cx, recipe, match, r)) : original;
 	}
 
 	/**

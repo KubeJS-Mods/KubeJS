@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.JsonOps;
@@ -15,13 +14,14 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.ConsumeAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionFilter;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionHolder;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.SlotFilter;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
@@ -59,7 +59,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public JsonObject json = null;
 	public boolean changed = false;
 
-	protected List<IngredientAction> recipeIngredientActions;
+	protected List<IngredientActionHolder> recipeIngredientActions;
 
 	@Override
 	public final Scriptable convertJavaToJs(Context cx, Scriptable scope, TypeInfo staticType) {
@@ -477,13 +477,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			}
 
 			if (recipeIngredientActions != null && !recipeIngredientActions.isEmpty()) {
-				var arr = new JsonArray(recipeIngredientActions.size());
-
-				for (var action : recipeIngredientActions) {
-					arr.add(action.toJson());
-				}
-
-				json.add("kubejs:actions", arr);
+				json.add("kubejs:actions", IngredientActionHolder.LIST_CODEC.encodeStart(type.event.jsonRegistryOps, recipeIngredientActions).getOrThrow());
 			}
 
 			if (newRecipe) {
@@ -555,38 +549,37 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		return List.copyOf(getOriginalRecipe().getIngredients());
 	}
 
-	public KubeRecipe ingredientAction(IngredientActionFilter filter, IngredientAction action) {
+	public KubeRecipe ingredientAction(SlotFilter filter, IngredientAction action) {
 		if (recipeIngredientActions == null) {
 			recipeIngredientActions = new ArrayList<>(2);
 		}
 
-		action.copyFrom(filter);
-		recipeIngredientActions.add(action);
+		recipeIngredientActions.add(new IngredientActionHolder(action, filter));
 		save();
 		return this;
 	}
 
-	public final KubeRecipe damageIngredient(IngredientActionFilter filter, int damage) {
+	public final KubeRecipe damageIngredient(SlotFilter filter, int damage) {
 		return ingredientAction(filter, new DamageAction(damage));
 	}
 
-	public final KubeRecipe damageIngredient(IngredientActionFilter filter) {
+	public final KubeRecipe damageIngredient(SlotFilter filter) {
 		return damageIngredient(filter, 1);
 	}
 
-	public final KubeRecipe replaceIngredient(IngredientActionFilter filter, ItemStack item) {
+	public final KubeRecipe replaceIngredient(SlotFilter filter, ItemStack item) {
 		return ingredientAction(filter, new ReplaceAction(item));
 	}
 
-	public final KubeRecipe customIngredientAction(IngredientActionFilter filter, String id) {
+	public final KubeRecipe customIngredientAction(SlotFilter filter, String id) {
 		return ingredientAction(filter, new CustomIngredientAction(id));
 	}
 
-	public final KubeRecipe keepIngredient(IngredientActionFilter filter) {
+	public final KubeRecipe keepIngredient(SlotFilter filter) {
 		return ingredientAction(filter, new KeepAction());
 	}
 
-	public final KubeRecipe consumeIngredient(IngredientActionFilter filter) {
+	public final KubeRecipe consumeIngredient(SlotFilter filter) {
 		return ingredientAction(filter, new ConsumeAction());
 	}
 

@@ -9,7 +9,7 @@ import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
+import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionHolder;
 import it.unimi.dsi.fastutil.chars.CharArraySet;
 import it.unimi.dsi.fastutil.chars.CharSet;
 import net.minecraft.core.HolderLookup;
@@ -64,11 +64,11 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	};
 
 	private final boolean mirror;
-	private final List<IngredientAction> ingredientActions;
+	private final List<IngredientActionHolder> ingredientActions;
 	private final ModifyRecipeResultCallback modifyResult;
 	private final String stage;
 
-	public ShapedKubeJSRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, ItemStack result, boolean showNotification, boolean mirror, List<IngredientAction> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
+	public ShapedKubeJSRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, ItemStack result, boolean showNotification, boolean mirror, List<IngredientActionHolder> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
 		super(group, category, pattern, result, showNotification);
 		this.mirror = mirror;
 		this.ingredientActions = ingredientActions;
@@ -82,7 +82,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	}
 
 	@Override
-	public List<IngredientAction> kjs$getIngredientActions() {
+	public List<IngredientActionHolder> kjs$getIngredientActions() {
 		return ingredientActions;
 	}
 
@@ -142,7 +142,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			Codec.BOOL.optionalFieldOf("show_notification", true).forGetter(ShapedRecipe::showNotification),
 			// KubeJS additions
 			Codec.BOOL.optionalFieldOf(MIRROR_KEY, true).forGetter(ShapedKubeJSRecipe::kjs$getMirror),
-			IngredientAction.CODEC.listOf().optionalFieldOf("kubejs:actions", List.of()).forGetter(ShapedKubeJSRecipe::kjs$getIngredientActions),
+			IngredientActionHolder.LIST_CODEC.optionalFieldOf("kubejs:actions", List.of()).forGetter(ShapedKubeJSRecipe::kjs$getIngredientActions),
 			ModifyRecipeResultCallback.CODEC.optionalFieldOf("kubejs:modify_result", null).forGetter(ShapedKubeJSRecipe::kjs$getModifyResult),
 			Codec.STRING.optionalFieldOf("kubejs:stage", "").forGetter(ShapedKubeJSRecipe::kjs$getStage)
 		).apply(instance, ShapedKubeJSRecipe::new));
@@ -157,7 +157,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 				var showNotification = buf.readBoolean();
 
 				var mirror = buf.readBoolean();
-				var ingredientActions = buf.readList(IngredientAction.STREAM_CODEC);
+				var ingredientActions = IngredientActionHolder.LIST_STREAM_CODEC.decode(buf);
 				var modifyResult = ModifyRecipeResultCallback.STREAM_CODEC.decode(buf);
 				var stage = buf.readUtf();
 

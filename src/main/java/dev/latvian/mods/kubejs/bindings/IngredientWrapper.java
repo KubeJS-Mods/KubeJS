@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.bindings;
 
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
-import dev.latvian.mods.kubejs.item.InputItem;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientActionCallback;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.Nullable;
 
 @Info("Various Ingredient related helper methods")
@@ -21,7 +21,7 @@ public interface IngredientWrapper {
 	}
 
 	@Info("Returns an ingredient of the input, with the specified count")
-	static InputItem of(Ingredient ingredient, int count) {
+	static SizedIngredient of(Ingredient ingredient, int count) {
 		return ingredient.kjs$withCount(count);
 	}
 

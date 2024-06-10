@@ -29,14 +29,4 @@ public class BlockBrokenKubeEvent implements KubePlayerEvent {
 		block.cachedState = event.getState();
 		return block;
 	}
-
-	@Info("The experience dropped by the block. Always `0` on Fabric.")
-	public int getXp() {
-		return event.getExpToDrop();
-	}
-
-	@Info("Sets the experience dropped by the block. Only works on Forge.")
-	public void setXp(int xp) {
-		event.setExpToDrop(xp);
-	}
 }

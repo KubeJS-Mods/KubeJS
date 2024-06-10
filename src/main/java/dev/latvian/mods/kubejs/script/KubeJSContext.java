@@ -106,6 +106,26 @@ public class KubeJSContext extends Context {
 	 */
 
 	@Override
+	public int internalConversionWeight(Object fromObj, TypeInfo target) {
+		var s = super.internalConversionWeight(fromObj, target);
+
+		if (s == CONVERSION_NONE && target.shouldConvert()) {
+			var reg = RegistryType.allOfClass(target.asClass());
+
+			if (!reg.isEmpty()) {
+				return CONVERSION_TRIVIAL;
+			}
+		}
+
+		return s;
+	}
+
+	@Override
+	protected Object internalJsToJava(Object from, TypeInfo target) {
+		return super.internalJsToJava(from, target);
+	}
+
+	@Override
 	protected Object internalJsToJavaLast(Object from, TypeInfo target) {
 		// handle ResourceKey, Holder, TagKey, registry object
 

@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.unit.FixedColorUnit;
 import dev.latvian.mods.unit.FixedNumberUnit;
 import dev.latvian.mods.unit.Unit;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 
 public class GradientObject extends BoxObject {
@@ -23,8 +24,8 @@ public class GradientObject extends BoxObject {
 	}
 
 	@Override
-	protected void load(PainterObjectProperties properties) {
-		super.load(properties);
+	protected void load(HolderLookup.Provider registries, PainterObjectProperties properties) {
+		super.load(registries, properties);
 		colorTL = properties.getColor("colorTL", colorTL);
 		colorTR = properties.getColor("colorTR", colorTR);
 		colorBL = properties.getColor("colorBL", colorBL);

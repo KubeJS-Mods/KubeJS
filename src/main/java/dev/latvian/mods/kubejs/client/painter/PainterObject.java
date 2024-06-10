@@ -5,6 +5,7 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import dev.latvian.mods.unit.FixedBooleanUnit;
 import dev.latvian.mods.unit.Unit;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
 public abstract class PainterObject implements SpecialEquality {
@@ -17,18 +18,18 @@ public abstract class PainterObject implements SpecialEquality {
 		return this;
 	}
 
-	protected void load(PainterObjectProperties properties) {
+	protected void load(HolderLookup.Provider registries, PainterObjectProperties properties) {
 		visible = properties.getUnit("visible", visible);
 	}
 
-	public final void update(CompoundTag tag) {
+	public final void update(HolderLookup.Provider registries, CompoundTag tag) {
 		if (tag.getBoolean("remove")) {
 			if (parent != null) {
 				parent.remove(id);
 			}
 		} else {
 			try {
-				load(new PainterObjectProperties(tag));
+				load(registries, new PainterObjectProperties(tag));
 			} catch (Exception ex) {
 				ConsoleJS.CLIENT.error("Failed to update Painter object " + id + "/" + getClass().getSimpleName() + ": " + ex);
 			}

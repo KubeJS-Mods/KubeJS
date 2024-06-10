@@ -48,12 +48,12 @@ public interface MapJS {
 	}
 
 	@Nullable
-	static JsonObject json(@Nullable Object map) {
+	static JsonObject json(Context cx, @Nullable Object map) {
 		if (map instanceof JsonObject json) {
 			return json;
 		} else if (map instanceof CharSequence) {
 			try {
-				return JsonIO.GSON.fromJson(map.toString(), JsonObject.class);
+				return JsonUtils.GSON.fromJson(map.toString(), JsonObject.class);
 			} catch (Exception ex) {
 				return null;
 			}
@@ -65,7 +65,7 @@ public interface MapJS {
 			var json = new JsonObject();
 
 			for (var entry : m.entrySet()) {
-				var e = JsonIO.of(entry.getValue());
+				var e = JsonUtils.of(cx, entry.getValue());
 
 				if (e instanceof JsonPrimitive p && p.isNumber() && p.getAsNumber() instanceof Double d && d <= Long.MAX_VALUE && d >= Long.MIN_VALUE && d == d.longValue()) {
 					json.add(String.valueOf(entry.getKey()), new JsonPrimitive(d.longValue()));

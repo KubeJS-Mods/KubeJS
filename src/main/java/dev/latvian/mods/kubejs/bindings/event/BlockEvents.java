@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.bindings.event;
 
 import dev.latvian.mods.kubejs.block.BlockBrokenKubeEvent;
+import dev.latvian.mods.kubejs.block.BlockDropsKubeEvent;
 import dev.latvian.mods.kubejs.block.BlockLeftClickedKubeEvent;
 import dev.latvian.mods.kubejs.block.BlockModificationKubeEvent;
 import dev.latvian.mods.kubejs.block.BlockPlacedKubeEvent;
@@ -24,6 +25,7 @@ public interface BlockEvents {
 	SpecializedEventHandler<ResourceKey<Block>> LEFT_CLICKED = GROUP.common("leftClicked", SUPPORTS_BLOCK, () -> BlockLeftClickedKubeEvent.class).hasResult();
 	SpecializedEventHandler<ResourceKey<Block>> PLACED = GROUP.common("placed", SUPPORTS_BLOCK, () -> BlockPlacedKubeEvent.class).hasResult();
 	SpecializedEventHandler<ResourceKey<Block>> BROKEN = GROUP.common("broken", SUPPORTS_BLOCK, () -> BlockBrokenKubeEvent.class).hasResult();
+	SpecializedEventHandler<ResourceKey<Block>> DROPS = GROUP.server("drops", SUPPORTS_BLOCK, () -> BlockDropsKubeEvent.class).hasResult();
 	SpecializedEventHandler<String> DETECTOR_CHANGED = GROUP.common("detectorChanged", Extra.STRING, () -> DetectorBlockKubeEvent.class);
 	SpecializedEventHandler<String> DETECTOR_POWERED = GROUP.common("detectorPowered", Extra.STRING, () -> DetectorBlockKubeEvent.class);
 	SpecializedEventHandler<String> DETECTOR_UNPOWERED = GROUP.common("detectorUnpowered", Extra.STRING, () -> DetectorBlockKubeEvent.class);

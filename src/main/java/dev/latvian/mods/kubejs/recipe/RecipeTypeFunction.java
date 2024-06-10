@@ -56,7 +56,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 
 			if (constructor == null) {
 				if (args.length == 1 && (args[0] instanceof Map<?, ?> || args[0] instanceof JsonObject)) {
-					var recipe = schemaType.schema.deserialize(this, null, MapJS.json(args[0]));
+					var recipe = schemaType.schema.deserialize(this, null, MapJS.json(cx, args[0]));
 					recipe.afterLoaded();
 					return event.addRecipe(recipe, true);
 					// throw new RecipeExceptionJS("Use event.custom(json) for json recipes!");

@@ -1,10 +1,8 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.ListJS;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -29,7 +27,7 @@ public class ItemTooltipKubeEvent implements KubeEvent {
 
 	@FunctionalInterface
 	public interface StaticTooltipHandlerFromJS {
-		void accept(ItemStack stack, boolean advanced, List<Object> text);
+		void accept(ItemStack stack, boolean advanced, List<Component> text);
 	}
 
 	public static class StaticTooltipHandlerFromLines implements StaticTooltipHandler {
@@ -37,14 +35,6 @@ public class ItemTooltipKubeEvent implements KubeEvent {
 
 		public StaticTooltipHandlerFromLines(List<Component> l) {
 			lines = l;
-		}
-
-		public StaticTooltipHandlerFromLines(Object o) {
-			lines = new ArrayList<>();
-
-			for (var o1 : ListJS.orSelf(o)) {
-				lines.add(TextWrapper.of(o1));
-			}
 		}
 
 		@Override
@@ -68,7 +58,7 @@ public class ItemTooltipKubeEvent implements KubeEvent {
 				return;
 			}
 
-			List<Object> text = new ArrayList<>(components);
+			List<Component> text = new ArrayList<>(components);
 
 			try {
 				handler.accept(stack, advanced, text);
@@ -77,10 +67,7 @@ public class ItemTooltipKubeEvent implements KubeEvent {
 			}
 
 			components.clear();
-
-			for (var o : text) {
-				components.add(TextWrapper.of(o));
-			}
+			components.addAll(text);
 		}
 	}
 
@@ -91,7 +78,7 @@ public class ItemTooltipKubeEvent implements KubeEvent {
 	}
 
 	@Info("Adds text to all items matching the ingredient.")
-	public void add(Ingredient item, Object text) {
+	public void add(Ingredient item, List<Component> text) {
 		if (item.kjs$isWildcard()) {
 			addToAll(text);
 			return;
@@ -109,7 +96,7 @@ public class ItemTooltipKubeEvent implements KubeEvent {
 	}
 
 	@Info("Adds text to all items.")
-	public void addToAll(Object text) {
+	public void addToAll(List<Component> text) {
 		var l = new StaticTooltipHandlerFromLines(text);
 
 		if (!l.lines.isEmpty()) {

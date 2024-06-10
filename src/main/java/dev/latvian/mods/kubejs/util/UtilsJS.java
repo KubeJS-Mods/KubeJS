@@ -15,10 +15,12 @@ import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import dev.latvian.mods.rhino.type.TypeUtils;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
@@ -28,7 +30,6 @@ import net.minecraft.world.item.CreativeModeTab;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -55,7 +56,7 @@ public class UtilsJS {
 	public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
-	public static RegistryAccess staticRegistries = RegistryAccess.EMPTY;
+	public static RegistryAccess staticRegistries = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY); // Still necessary because STARTUP and CLIENT scripts need to know about registries
 
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
 	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, e -> true, MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_RANDOM, false, null, null, null, true);
@@ -86,7 +87,7 @@ public class UtilsJS {
 		if (o instanceof Copyable copyable) {
 			return copyable.copyJS();
 		} else if (o instanceof JsonElement json) {
-			return JsonIO.copy(json);
+			return JsonUtils.copy(json);
 		} else if (o instanceof Tag tag) {
 			return tag.copy();
 		}
@@ -236,28 +237,6 @@ public class UtilsJS {
 		ItemEvents.MODIFICATION.post(ScriptType.STARTUP, new ItemModificationKubeEvent());
 	}
 
-	public static Class<?> getRawType(Type type) {
-		if (type instanceof Class<?> clz) {
-			return clz;
-		} else if (type instanceof ParameterizedType paramType) {
-			var rawType = paramType.getRawType();
-
-			if (rawType instanceof Class<?> clz) {
-				return clz;
-			}
-		} else if (type instanceof GenericArrayType arrType) {
-			var componentType = arrType.getGenericComponentType();
-			return Array.newInstance(getRawType(componentType), 0).getClass();
-		} else if (type instanceof TypeVariable) {
-			return Object.class;
-		} else if (type instanceof WildcardType wildcard) {
-			return getRawType(wildcard.getUpperBounds()[0]);
-		}
-
-		var className = type == null ? "null" : type.getClass().getName();
-		throw new IllegalArgumentException("Expected a Class, ParameterizedType, GenericArrayType, TypeVariable or WildcardType, but <" + type + "> is of type " + className);
-	}
-
 	public static String toMappedTypeString(Type type) {
 		if (type instanceof Class<?> clz) {
 			var mapped = clz.getName();
@@ -272,7 +251,7 @@ public class UtilsJS {
 				sb.append('.');
 			}
 
-			sb.append(toMappedTypeString(getRawType(paramType)));
+			sb.append(toMappedTypeString(TypeUtils.getRawType(paramType)));
 
 			var args = paramType.getActualTypeArguments();
 			if (args.length > 0) {
