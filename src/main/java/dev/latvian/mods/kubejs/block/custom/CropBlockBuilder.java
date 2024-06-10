@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +34,7 @@ import java.util.function.Consumer;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 
+@ReturnsSelf
 public class CropBlockBuilder extends BlockBuilder {
 	@FunctionalInterface
 	public interface SurviveCallback {

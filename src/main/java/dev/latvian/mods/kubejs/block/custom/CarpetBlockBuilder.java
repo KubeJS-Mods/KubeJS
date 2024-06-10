@@ -2,11 +2,13 @@ package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CarpetBlock;
 
+@ReturnsSelf
 public class CarpetBlockBuilder extends ShapedBlockBuilder {
 	public CarpetBlockBuilder(ResourceLocation i) {
 		super(i, "_carpet");

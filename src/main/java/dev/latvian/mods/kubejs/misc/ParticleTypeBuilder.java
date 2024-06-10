@@ -3,12 +3,14 @@ package dev.latvian.mods.kubejs.misc;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
+@ReturnsSelf
 public class ParticleTypeBuilder extends BuilderBase<ParticleType<?>> {
 	public transient boolean overrideLimiter;
 	public transient MapCodec<ParticleOptions> codec;

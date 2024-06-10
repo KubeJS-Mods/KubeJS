@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.item.custom;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -18,6 +19,7 @@ import java.util.Objects;
 import static net.minecraft.world.item.SmithingTemplateItem.*;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
+@ReturnsSelf
 public class SmithingTemplateItemBuilder extends ItemBuilder {
 
 	private static final List<ResourceLocation> ARMOR_ICONS = SmithingTemplateItem.createTrimmableArmorIconList();

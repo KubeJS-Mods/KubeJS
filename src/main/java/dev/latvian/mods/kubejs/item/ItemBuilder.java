@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.core.component.DataComponentType;
@@ -40,6 +41,7 @@ import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
+@ReturnsSelf
 public abstract class ItemBuilder extends BuilderBase<Item> {
 	public static final Map<String, Tier> TOOL_TIERS = new HashMap<>();
 

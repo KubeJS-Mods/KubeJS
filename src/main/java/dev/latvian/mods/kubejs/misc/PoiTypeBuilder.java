@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.level.block.Block;
@@ -9,6 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Set;
 
+@ReturnsSelf
 public class PoiTypeBuilder extends BuilderBase<PoiType> {
 	public transient Set<BlockState> blockStates;
 	public transient int maxTickets;

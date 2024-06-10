@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
+@ReturnsSelf
 public class VillagerProfessionBuilder extends BuilderBase<VillagerProfession> {
 	public transient Either<ResourceKey<PoiType>, TagKey<PoiType>> poiType;
 

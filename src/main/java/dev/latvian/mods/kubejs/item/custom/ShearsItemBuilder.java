@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.item.custom;
 
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
+@ReturnsSelf
 public class ShearsItemBuilder extends ItemBuilder {
 	public static boolean isCustomShears(ItemStack stack) {
 		return stack.getItem() instanceof ShearsItemKJS;

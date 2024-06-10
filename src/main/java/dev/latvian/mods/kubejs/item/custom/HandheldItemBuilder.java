@@ -3,12 +3,14 @@ package dev.latvian.mods.kubejs.item.custom;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.MutableToolTier;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 
 import java.util.function.Consumer;
 
+@ReturnsSelf
 public abstract class HandheldItemBuilder extends ItemBuilder {
 	public transient MutableToolTier toolTier;
 	public transient float attackDamageBaseline;

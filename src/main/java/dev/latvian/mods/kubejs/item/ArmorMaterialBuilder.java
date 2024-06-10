@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+@ReturnsSelf
 public class ArmorMaterialBuilder extends BuilderBase<ArmorMaterial> {
 	public transient Map<ArmorItem.Type, Integer> defense;
 	public transient int enchantmentValue;

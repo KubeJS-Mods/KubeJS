@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -12,6 +13,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.RecordItem;
 
 public class RecordItemJS extends RecordItem {
+	@ReturnsSelf
 	public static class Builder extends ItemBuilder {
 		public transient ResourceLocation song;
 		public transient SoundEvent songSoundEvent;

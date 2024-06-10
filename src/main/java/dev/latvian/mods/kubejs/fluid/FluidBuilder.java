@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.material.FlowingFluid;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@ReturnsSelf
 public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public transient ResourceLocation stillTexture;
 	public transient ResourceLocation flowingTexture;

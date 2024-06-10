@@ -2,9 +2,11 @@ package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 
+@ReturnsSelf
 public class PaintingVariantBuilder extends BuilderBase<PaintingVariant> {
 	public transient int width;
 	public transient int height;

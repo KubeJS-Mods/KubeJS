@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+@ReturnsSelf
 public abstract class BuilderBase<T> implements Supplier<T> {
 	public final ResourceLocation id;
 	protected T object;

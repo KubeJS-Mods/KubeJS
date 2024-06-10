@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.item.custom;
 
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.AnimalArmorItem;
@@ -10,6 +11,7 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
 
+@ReturnsSelf
 public class ArmorItemBuilder extends ItemBuilder {
 	public static class Helmet extends ArmorItemBuilder {
 		public Helmet(ResourceLocation i) {
@@ -36,6 +38,7 @@ public class ArmorItemBuilder extends ItemBuilder {
 		}
 	}
 
+	@ReturnsSelf
 	public static class AnimalArmor extends ArmorItemBuilder {
 		public AnimalArmorItem.BodyType bodyType;
 		public boolean overlay;

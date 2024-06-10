@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.misc;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import dev.latvian.mods.rhino.Wrapper;
 import it.unimi.dsi.fastutil.objects.Object2BooleanFunction;
 import net.minecraft.resources.ResourceLocation;
@@ -23,6 +24,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+@ReturnsSelf
 public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 	public static Enchantment.Cost costOf(Object o) {
 		o = Wrapper.unwrapped(o);

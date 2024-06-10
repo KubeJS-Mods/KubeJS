@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.misc;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -17,6 +18,7 @@ import java.util.UUID;
 /**
  * @author Prunoideae
  */
+@ReturnsSelf
 public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 
 	@FunctionalInterface
