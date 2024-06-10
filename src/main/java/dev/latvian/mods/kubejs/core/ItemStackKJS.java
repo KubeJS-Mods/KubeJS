@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
@@ -155,11 +156,12 @@ public interface ItemStackKJS extends
 		return is;
 	}
 
-	default ItemStack kjs$setCustomName(@Nullable Component displayName) {
+	@ReturnsSelf
+	default ItemStack kjs$setCustomName(@Nullable Component name) {
 		var is = kjs$self();
 
-		if (displayName != null) {
-			is.set(DataComponents.CUSTOM_NAME, displayName);
+		if (name != null) {
+			is.set(DataComponents.CUSTOM_NAME, name);
 		} else {
 			is.remove(DataComponents.CUSTOM_NAME);
 		}
@@ -172,6 +174,10 @@ public interface ItemStackKJS extends
 		return kjs$self().get(DataComponents.CUSTOM_NAME);
 	}
 
+	default ItemStack kjs$withCustomName(@Nullable Component name) {
+		return kjs$self().copy().kjs$setCustomName(name);
+	}
+
 	default ItemEnchantments kjs$getEnchantments() {
 		return kjs$self().get(DataComponents.ENCHANTMENTS);
 	}
@@ -181,6 +187,7 @@ public interface ItemStackKJS extends
 		return e != null && e.getLevel(enchantment) >= level;
 	}
 
+	@ReturnsSelf
 	default ItemStack kjs$enchant(Enchantment enchantment, int level) {
 		var is = kjs$self();
 		is.enchant(enchantment, level);
