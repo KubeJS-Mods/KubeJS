@@ -120,7 +120,7 @@ public interface RecipeComponent<T> {
 			}
 		}
 
-		var encoded = cv.key.codec.encodeStart(recipe.type.event.jsonRegistryOps, cv.value);
+		var encoded = cv.key.codec.encodeStart(recipe.type.event.registries.json(), cv.value);
 
 		if (encoded.error().isPresent()) {
 			ConsoleJS.SERVER.error("Failed to encode " + cv.key.name + " for " + recipe.id + " from " + cv.value + ": " + encoded.error().get().message());
@@ -144,13 +144,13 @@ public interface RecipeComponent<T> {
 		var v = json.get(cv.key.name);
 
 		if (v != null) {
-			cv.value = cv.key.codec.decode(recipe.type.event.jsonRegistryOps, v).getOrThrow().getFirst();
+			cv.value = recipe.type.event.registries.decodeJson(cv.key.codec, v);
 		} else if (cv.key.names.size() >= 2) {
 			for (var alt : cv.key.names) {
 				v = json.get(alt);
 
 				if (v != null) {
-					cv.value = cv.key.codec.decode(recipe.type.event.jsonRegistryOps, v).getOrThrow().getFirst();
+					cv.value = recipe.type.event.registries.decodeJson(cv.key.codec, v);
 					return;
 				}
 			}

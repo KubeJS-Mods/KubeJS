@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public interface IngredientAction {
-	Codec<IngredientAction> CODEC = IngredientActionType.CODEC.dispatch("action", IngredientAction::getType, IngredientActionType::codec);
+	Codec<IngredientAction> CODEC = IngredientActionType.CODEC.dispatch("type", IngredientAction::getType, IngredientActionType::codec);
 	StreamCodec<RegistryFriendlyByteBuf, IngredientAction> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
 
 	static ItemStack getRemaining(CraftingContainer container, int index, List<IngredientActionHolder> ingredientActions) {

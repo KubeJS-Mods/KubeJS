@@ -13,9 +13,9 @@ public class DamageSourceWrapper {
 	public static DamageSource of(Context cx, Object from) {
 		return switch (from) {
 			case DamageSource source -> source;
-			case Player player -> ((KubeJSContext) cx).getDamageSources().playerAttack(player);
-			case LivingEntity livingEntity -> ((KubeJSContext) cx).getDamageSources().mobAttack(livingEntity);
-			case null, default -> ((KubeJSContext) cx).getDamageSources().source(ResourceKey.create(Registries.DAMAGE_TYPE, ID.mc(from)));
+			case Player player -> ((KubeJSContext) cx).getRegistries().damageSources().get().playerAttack(player);
+			case LivingEntity livingEntity -> ((KubeJSContext) cx).getRegistries().damageSources().get().mobAttack(livingEntity);
+			case null, default -> ((KubeJSContext) cx).getRegistries().damageSources().get().source(ResourceKey.create(Registries.DAMAGE_TYPE, ID.mc(from)));
 		};
 	}
 }

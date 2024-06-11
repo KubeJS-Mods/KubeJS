@@ -4,8 +4,6 @@ import com.google.common.base.Stopwatch;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
@@ -30,14 +28,12 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.mods.kubejs.util.StaticRegistries;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.WrappedException;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.ReportedException;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.util.GsonHelper;
@@ -100,7 +96,7 @@ public class RecipesKubeEvent implements KubeEvent {
 				var list = new ArrayList<String>();
 
 				for (var item : ingredient.getItems()) {
-					list.add(item.kjs$toItemString0(nbtRegistryOps));
+					list.add(item.kjs$toItemString0(registries.nbt()));
 				}
 
 				in.add(list);
@@ -112,9 +108,9 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 
 		try {
-			var result = recipe.getResultItem(registries);
+			var result = recipe.getResultItem(registries.access());
 			//noinspection ConstantValue
-			map.put("out", (result == null ? ItemStack.EMPTY : result).kjs$toItemString0(nbtRegistryOps));
+			map.put("out", (result == null ? ItemStack.EMPTY : result).kjs$toItemString0(registries.nbt()));
 		} catch (Exception ex) {
 			map.put("out_error", ex.toString());
 		}
@@ -157,9 +153,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		}, true);
 
 	public final RecipeSchemaStorage recipeSchemaStorage;
-	public final HolderLookup.Provider registries;
-	public final DynamicOps<JsonElement> jsonRegistryOps;
-	public final DynamicOps<Tag> nbtRegistryOps;
+	public final StaticRegistries registries;
 	public final Map<ResourceLocation, KubeRecipe> originalRecipes;
 	public final Collection<KubeRecipe> addedRecipes;
 	private final BinaryOperator<RecipeHolder<?>> mergeOriginal, mergeAdded;
@@ -183,12 +177,10 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	final RecipeSerializer<?> stageSerializer;
 
-	public RecipesKubeEvent(RecipeSchemaStorage recipeSchemaStorage, HolderLookup.Provider registries) {
+	public RecipesKubeEvent(RecipeSchemaStorage recipeSchemaStorage, StaticRegistries registries) {
 		ConsoleJS.SERVER.info("Initializing recipe event...");
 		this.recipeSchemaStorage = recipeSchemaStorage;
 		this.registries = registries;
-		this.jsonRegistryOps = registries.createSerializationContext(JsonOps.INSTANCE);
-		this.nbtRegistryOps = registries.createSerializationContext(NbtOps.INSTANCE);
 		this.originalRecipes = new HashMap<>();
 		this.addedRecipes = new ConcurrentLinkedQueue<>();
 		this.recipeFunctions = new HashMap<>();
@@ -281,7 +273,7 @@ public class RecipesKubeEvent implements KubeEvent {
 				continue; //Forge: filter anything beginning with "_" as it's used for metadata.
 			}
 
-			var jsonResult = RecipeHelper.get().validate(jsonRegistryOps, entry.getValue());
+			var jsonResult = RecipeHelper.get().validate(registries.json(), entry.getValue());
 			if (jsonResult.error().isPresent()) {
 				var error = jsonResult.error().get();
 				if (DevProperties.get().logSkippedRecipes) {

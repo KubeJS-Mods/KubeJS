@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.core.mixin;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.StaticRegistries;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.ReloadableServerResources;
@@ -33,10 +33,9 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void init(RegistryAccess.Frozen registryAccess, FeatureFlagSet featureFlagSet, Commands.CommandSelection commandSelection, int functionCompilationLevel, CallbackInfo ci) {
-		kjs$serverScriptManager = new ServerScriptManager((ReloadableServerResources) (Object) this, registryAccess);
-		UtilsJS.staticRegistries = kjs$serverScriptManager.registries;
-		UtilsJS.staticNbtRegistryOps = kjs$serverScriptManager.nbtRegistryOps;
-		UtilsJS.staticJsonRegistryOps = kjs$serverScriptManager.jsonRegistryOps;
+		var registries = new StaticRegistries(registryAccess);
+		StaticRegistries.current = registries;
+		kjs$serverScriptManager = new ServerScriptManager((ReloadableServerResources) (Object) this, registries);
 		tagManager.kjs$setResources(this);
 		recipes.kjs$setResources(this);
 		kjs$serverScriptManager.reload();

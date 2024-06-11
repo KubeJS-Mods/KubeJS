@@ -107,7 +107,7 @@ public interface ItemStackJS {
 		} else if (o instanceof ItemLike itemLike) {
 			return itemLike.asItem().getDefaultInstance();
 		} else if (o instanceof JsonElement json) {
-			return resultFromRecipeJson(((KubeJSContext) cx).getNbtRegistryOps(), json);
+			return resultFromRecipeJson(((KubeJSContext) cx).getNbtOps(), json);
 		} else if (o instanceof StringTag tag) {
 			return wrap(cx, tag.getAsString());
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
@@ -136,7 +136,7 @@ public interface ItemStackJS {
 				s = s.substring(spaceIndex + 1);
 			}
 
-			cached = ofString(((KubeJSContext) cx).getNbtRegistryOps(), s);
+			cached = ofString(((KubeJSContext) cx).getNbtOps(), s);
 			cached.setCount(count);
 			((KubeJSContext) cx).itemStackParseCache.put(os, cached);
 			return cached.copy();

@@ -24,27 +24,27 @@ public enum RecipeHelper {
 
 	@Nullable
 	public RecipeHolder<?> fromJson(DynamicOps<JsonElement> ops, RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json) {
+		var codec = serializer.codec();
+
+		if (codec == null) {
+			if (!FMLLoader.isProduction()) {
+				ConsoleJS.SERVER.error("Error parsing recipe " + id + ": Codec not found in " + serializer.getClass().getName());
+			}
+
+			return null;
+		}
+
+		var map = ops.getMap(json).result();
+
+		if (map.isEmpty()) {
+			if (!FMLLoader.isProduction()) {
+				ConsoleJS.SERVER.error("Error parsing recipe " + id + ": Couldn't convert " + json + " to a map");
+			}
+
+			return null;
+		}
+
 		try {
-			var map = ops.getMap(json).result();
-
-			if (map.isEmpty()) {
-				if (!FMLLoader.isProduction()) {
-					ConsoleJS.SERVER.error("Error parsing recipe " + id + ": Couldn't convert " + json + " to a map");
-				}
-
-				return null;
-			}
-
-			var codec = serializer.codec();
-
-			if (codec == null) {
-				if (!FMLLoader.isProduction()) {
-					ConsoleJS.SERVER.error("Error parsing recipe " + id + ": Codec not found in " + serializer.getClass().getName());
-				}
-
-				return null;
-			}
-
 			var recipe = codec.decode(ops, map.get());
 
 			if (recipe.error().isPresent()) {

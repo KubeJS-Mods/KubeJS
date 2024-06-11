@@ -17,7 +17,7 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionHolder;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.recipe.special.KubeJSCraftingRecipe;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.SlotFilter;
@@ -68,7 +68,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 
 	public void deserialize(boolean merge) {
 		for (var v : valueMap.holders) {
-			v.key.component.readFromJson(this, Cast.to(v), json);
+			try {
+				v.key.component.readFromJson(this, Cast.to(v), json);
+			} catch (Exception ex) {
+				ConsoleJS.SERVER.error("Failed to read " + v.key + " from recipe " + this, ex, RecipesKubeEvent.POST_SKIP_ERROR);
+			}
 
 			if (v.value != null) {
 				if (merge) {
@@ -451,7 +455,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	public KubeRecipe stage(String s) {
-		json.addProperty("kubejs:stage", s);
+		json.addProperty(KubeJSCraftingRecipe.STAGE_KEY, s);
 		save();
 		return this;
 	}
@@ -473,14 +477,14 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			serialize();
 
 			if (modifyResult != null) {
-				json.addProperty("kubejs:modify_result", modifyResult.id().toString());
+				json.addProperty(KubeJSCraftingRecipe.MODIFY_RESULT_KEY, modifyResult.id().toString());
 			}
 
 			if (recipeIngredientActions != null && !recipeIngredientActions.isEmpty()) {
 				try {
-					json.add("kubejs:actions", IngredientActionHolder.LIST_CODEC.encodeStart(type.event.jsonRegistryOps, recipeIngredientActions).getOrThrow());
+					json.add(KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, IngredientActionHolder.LIST_CODEC.encodeStart(type.event.registries.json(), recipeIngredientActions).getOrThrow());
 				} catch (Exception ex) {
-					ConsoleJS.SERVER.error("Failed to encode kubejs:actions", ex, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
+					ConsoleJS.SERVER.error("Failed to encode " + KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, ex, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
 				}
 			}
 
@@ -494,18 +498,18 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				ModifyRecipeResultCallback.Holder.SERVER.put(modifyResult.id(), modifyResult);
 			}
 
-			if (type.event.stageSerializer != null && json.has("kubejs:stage") && !type.idString.equals("recipestages:stage")) {
+			if (type.event.stageSerializer != null && json.has(KubeJSCraftingRecipe.STAGE_KEY) && !type.idString.equals("recipestages:stage")) {
 				var o = new JsonObject();
-				o.addProperty("stage", json.get("kubejs:stage").getAsString());
+				o.addProperty("stage", json.get(KubeJSCraftingRecipe.STAGE_KEY).getAsString());
 				o.add("recipe", json);
-				var recipe = type.event.stageSerializer.codec().decode(type.event.jsonRegistryOps, type.event.jsonRegistryOps.getMap(o).getOrThrow()).result().get();
+				var recipe = type.event.registries.decodeJson(type.event.stageSerializer.codec(), o);
 				return new RecipeHolder<>(id, recipe);
 			}
 		} else if (originalRecipe != null) {
 			return new RecipeHolder<>(getOrCreateId(), originalRecipe.getValue());
 		}
 
-		return RecipeHelper.get().fromJson(type.event.jsonRegistryOps, getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json);
+		return RecipeHelper.get().fromJson(type.event.registries.json(), getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json);
 	}
 
 	@Nullable
@@ -516,7 +520,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			originalRecipe = new MutableObject<>();
 			try {
 				// todo: this sucks
-				originalRecipe.setValue(RecipeHelper.get().fromJson(type.event.jsonRegistryOps, type.schemaType.getSerializer(), getOrCreateId(), json).value());
+				originalRecipe.setValue(RecipeHelper.get().fromJson(type.event.registries.json(), type.schemaType.getSerializer(), getOrCreateId(), json).value());
 			} catch (Throwable e) {
 				error = e;
 			}
@@ -533,13 +537,13 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		return originalRecipe.getValue();
 	}
 
-	public ItemStack getOriginalRecipeResult(Context cx) {
+	public ItemStack getOriginalRecipeResult() {
 		if (getOriginalRecipe() == null) {
 			ConsoleJS.SERVER.warn("Original recipe is null - could not get result");
 			return ItemStack.EMPTY;
 		}
 
-		var result = getOriginalRecipe().getResultItem(((KubeJSContext) cx).getRegistries());
+		var result = getOriginalRecipe().getResultItem(type.event.registries.access());
 		//noinspection ConstantValue
 		return result == null ? ItemStack.EMPTY : result;
 	}

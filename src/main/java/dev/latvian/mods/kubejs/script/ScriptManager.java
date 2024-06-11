@@ -1,16 +1,11 @@
 package dev.latvian.mods.kubejs.script;
 
-import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.LogType;
-import dev.latvian.mods.kubejs.util.UtilsJS;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.RegistryOps;
-import net.minecraft.world.damagesource.DamageSources;
+import dev.latvian.mods.kubejs.util.StaticRegistries;
 
 import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
@@ -33,20 +28,8 @@ public class ScriptManager {
 		classFilter = KubeJSPlugins.createClassFilter(scriptType);
 	}
 
-	public RegistryAccess getRegistries() {
-		return UtilsJS.staticRegistries;
-	}
-
-	public RegistryOps<Tag> getNbtRegistryOps() {
-		return UtilsJS.staticNbtRegistryOps;
-	}
-
-	public RegistryOps<JsonElement> getJsonRegistryOps() {
-		return UtilsJS.staticJsonRegistryOps;
-	}
-
-	public DamageSources getDamageSources() {
-		throw new NullPointerException();
+	public StaticRegistries getRegistries() {
+		return StaticRegistries.current;
 	}
 
 	public void unload() {

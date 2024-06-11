@@ -65,9 +65,9 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 	public static class SerializerKJS implements RecipeSerializer<ShapelessKubeJSRecipe> {
 		public static final MapCodec<ShapelessKubeJSRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			Serializer.CODEC.forGetter(r -> r),
-			IngredientActionHolder.LIST_CODEC.optionalFieldOf("kubejs:actions", List.of()).forGetter(r -> r.ingredientActions),
-			ModifyRecipeResultCallback.Holder.CODEC.optionalFieldOf("kubejs:modify_result", null).forGetter(r -> r.modifyResult),
-			Codec.STRING.optionalFieldOf("kubejs:stage", "").forGetter(r -> r.stage)
+			IngredientActionHolder.LIST_CODEC.optionalFieldOf(INGREDIENT_ACTIONS_KEY, List.of()).forGetter(r -> r.ingredientActions),
+			ModifyRecipeResultCallback.Holder.CODEC.optionalFieldOf(MODIFY_RESULT_KEY, null).forGetter(r -> r.modifyResult),
+			Codec.STRING.optionalFieldOf(STAGE_KEY, "").forGetter(r -> r.stage)
 		).apply(instance, ShapelessKubeJSRecipe::new));
 
 		public static final StreamCodec<RegistryFriendlyByteBuf, ShapelessKubeJSRecipe> STREAM_CODEC = StreamCodec.composite(

@@ -58,13 +58,11 @@ public class RecipeConstructor {
 
 	public void setValues(Context cx, KubeRecipe recipe, RecipeSchemaType schemaType, ComponentValueMap from) {
 		for (var key : keys) {
-			var o = overrides.get(key);
+			recipe.setValue(key, Cast.to(from.getValue(cx, recipe, key)));
+		}
 
-			if (o != null) {
-				recipe.setValue(key, Cast.to(o.getDefaultValue(schemaType)));
-			} else {
-				recipe.setValue(key, Cast.to(from.getValue(cx, recipe, key)));
-			}
+		for (var entry : overrides.entrySet()) {
+			recipe.setValue(entry.getKey(), Cast.to(entry.getValue().getDefaultValue(schemaType)));
 		}
 	}
 }

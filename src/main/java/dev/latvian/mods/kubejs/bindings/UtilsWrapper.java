@@ -144,12 +144,6 @@ public interface UtilsWrapper {
 		return System.currentTimeMillis();
 	}
 
-	@Nullable
-	@Info("Returns a copy the object if possible, or the object itself if not")
-	static Object copy(@Nullable Object o) {
-		return UtilsJS.copy(o);
-	}
-
 	@Info("Checks if the passed in object is an instance of WrappedJS")
 	static boolean isWrapped(@Nullable Object o) {
 		return o instanceof WrappedJS;
@@ -224,7 +218,7 @@ public interface UtilsWrapper {
 		} else if (o != null) {
 			try {
 				var reader = new StringReader(o instanceof JsonElement j ? j.getAsString() : o.toString());
-				return ParticleArgument.readParticle(reader, ((KubeJSContext) cx).getRegistries());
+				return ParticleArgument.readParticle(reader, ((KubeJSContext) cx).getRegistries().access());
 			} catch (Exception ex) {
 				((KubeJSContext) cx).getConsole().warn("Failed to parse ParticleOptions from " + o + ": " + ex);
 			}

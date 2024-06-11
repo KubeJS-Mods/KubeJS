@@ -77,7 +77,7 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	@Override
 	default boolean hasOutput(Context cx, ReplacementMatch match) {
 		if (match instanceof ItemMatch m) {
-			var result = kjs$getRecipe().getResultItem(((KubeJSContext) cx).getRegistries());
+			var result = kjs$getRecipe().getResultItem(((KubeJSContext) cx).getRegistries().access());
 			//noinspection ConstantValue
 			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.contains(result);
 		}

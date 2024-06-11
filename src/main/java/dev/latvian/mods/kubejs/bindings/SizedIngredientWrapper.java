@@ -36,20 +36,20 @@ public interface SizedIngredientWrapper {
 		if (from instanceof SizedIngredient s) {
 			return s;
 		} else if (from instanceof Ingredient ingredient) {
-			return new SizedIngredient(ingredient, 1);
+			return ingredient.kjs$asStack();
 		} else if (from instanceof ItemStack stack) {
-			return new SizedIngredient(Ingredient.of(stack.kjs$withCount(1)), stack.getCount());
+			return Ingredient.of(stack.kjs$withCount(1)).kjs$withCount(stack.getCount());
 		} else if (from instanceof ItemLike item) {
-			return new SizedIngredient(Ingredient.of(item), 1);
+			return Ingredient.of(item).kjs$asStack();
 		} else if (from instanceof CharSequence) {
 			try {
-				return read(((KubeJSContext) cx).getNbtRegistryOps(), new StringReader(from.toString()));
+				return read(((KubeJSContext) cx).getNbtOps(), new StringReader(from.toString()));
 			} catch (Exception ex) {
 				return empty;
 			}
 		}
 
-		return empty;
+		return IngredientJS.wrap(cx, from).kjs$asStack();
 	}
 
 	static SizedIngredient read(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
@@ -65,6 +65,6 @@ public interface SizedIngredientWrapper {
 			}
 		}
 
-		return new SizedIngredient(IngredientJS.read(registryOps, reader), count);
+		return IngredientJS.read(registryOps, reader).kjs$withCount(count);
 	}
 }

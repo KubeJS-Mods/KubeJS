@@ -3,12 +3,7 @@ package dev.latvian.mods.kubejs;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.neoforged.fml.loading.FMLLoader;
 
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.util.Properties;
-
-public class DevProperties {
+public class DevProperties extends BaseProperties {
 	private static DevProperties instance;
 
 	public static DevProperties get() {
@@ -22,9 +17,6 @@ public class DevProperties {
 	public static void reload() {
 		instance = new DevProperties();
 	}
-
-	private final Properties properties;
-	private boolean writeProperties;
 
 	public boolean debugInfo;
 	public boolean dataPackOutput = false;
@@ -41,76 +33,25 @@ public class DevProperties {
 	public boolean alwaysCaptureErrors = false;
 
 	private DevProperties() {
-		properties = new Properties();
-
-		try {
-			var propertiesFile = KubeJSPaths.getLocalDevProperties();
-			writeProperties = false;
-
-			if (Files.exists(propertiesFile)) {
-				try (Reader reader = Files.newBufferedReader(propertiesFile)) {
-					properties.load(reader);
-				}
-			} else {
-				writeProperties = true;
-			}
-
-			debugInfo = get("debugInfo", !FMLLoader.isProduction());
-			dataPackOutput = get("dataPackOutput", false);
-			logAddedRecipes = get("logAddedRecipes", false);
-			logRemovedRecipes = get("logRemovedRecipes", false);
-			logModifiedRecipes = get("logModifiedRecipes", false);
-			logSkippedRecipes = get("logSkippedRecipes", false);
-			logSkippedTags = get("logSkippedTags", false);
-			logErroringRecipes = get("logErroringRecipes", true);
-			logInvalidRecipeHandlers = get("logInvalidRecipeHandlers", true);
-			logSkippedPlugins = get("logSkippedPlugins", true);
-			logGeneratedData = get("logGeneratedData", false);
-			strictTags = get("strictTags", false);
-			alwaysCaptureErrors = get("alwaysCaptureErrors", false);
-
-			KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::loadDevProperties);
-
-			if (writeProperties) {
-				save();
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		KubeJS.LOGGER.info("Loaded dev.properties");
+		super(KubeJSPaths.getLocalDevProperties(), "KubeJS Dev Properties");
 	}
 
-	public void remove(String key) {
-		var s = properties.getProperty(key);
+	@Override
+	protected void load() {
+		debugInfo = get("debugInfo", !FMLLoader.isProduction());
+		dataPackOutput = get("dataPackOutput", false);
+		logAddedRecipes = get("logAddedRecipes", false);
+		logRemovedRecipes = get("logRemovedRecipes", false);
+		logModifiedRecipes = get("logModifiedRecipes", false);
+		logSkippedRecipes = get("logSkippedRecipes", false);
+		logSkippedTags = get("logSkippedTags", false);
+		logErroringRecipes = get("logErroringRecipes", true);
+		logInvalidRecipeHandlers = get("logInvalidRecipeHandlers", true);
+		logSkippedPlugins = get("logSkippedPlugins", true);
+		logGeneratedData = get("logGeneratedData", false);
+		strictTags = get("strictTags", false);
+		alwaysCaptureErrors = get("alwaysCaptureErrors", false);
 
-		if (s != null) {
-			properties.remove(key);
-			writeProperties = true;
-		}
-	}
-
-	public String get(String key, String def) {
-		var s = properties.getProperty(key);
-
-		if (s == null) {
-			properties.setProperty(key, def);
-			writeProperties = true;
-			return def;
-		}
-
-		return s;
-	}
-
-	public boolean get(String key, boolean def) {
-		return get(key, def ? "true" : "false").equals("true");
-	}
-
-	public void save() {
-		try (Writer writer = Files.newBufferedWriter(KubeJSPaths.getLocalDevProperties())) {
-			properties.store(writer, "KubeJS Dev Properties");
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::loadDevProperties);
 	}
 }

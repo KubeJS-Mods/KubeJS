@@ -151,7 +151,7 @@ public interface DataComponentWrapper {
 
 	static DataComponentMap mapOf(Context cx, Object o) {
 		try {
-			return readMap(((KubeJSContext) cx).getNbtRegistryOps(), new StringReader(o.toString()));
+			return readMap(((KubeJSContext) cx).getNbtOps(), new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
 			((KubeJSContext) cx).getConsole().error("Error parsing DataComponentMap", ex);
 			return DataComponentMap.EMPTY;
@@ -160,7 +160,7 @@ public interface DataComponentWrapper {
 
 	static DataComponentPatch patchOf(Context cx, Object o) {
 		try {
-			return readPatch(((KubeJSContext) cx).getNbtRegistryOps(), new StringReader(o.toString()));
+			return readPatch(((KubeJSContext) cx).getNbtOps(), new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
 			((KubeJSContext) cx).getConsole().error("Error parsing DataComponentPatch", ex);
 			return DataComponentPatch.EMPTY;

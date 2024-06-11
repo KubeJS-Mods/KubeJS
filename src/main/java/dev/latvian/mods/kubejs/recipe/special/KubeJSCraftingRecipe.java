@@ -20,6 +20,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public interface KubeJSCraftingRecipe extends CraftingRecipe {
+	String SHRINK_KEY = "kubejs:shrink";
+	String MIRROR_KEY = "kubejs:mirror";
+	String INGREDIENT_ACTIONS_KEY = "kubejs:ingredient_actions";
+	String STAGE_KEY = "kubejs:stage";
+	String MODIFY_RESULT_KEY = "kubejs:modify_result";
+
 	List<IngredientActionHolder> kjs$getIngredientActions();
 
 	@Nullable

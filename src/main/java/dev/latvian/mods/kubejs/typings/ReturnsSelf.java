@@ -19,4 +19,6 @@ import java.lang.annotation.Target;
 @Repeatable(ReturnsSelfContainer.class)
 public @interface ReturnsSelf {
 	Class<?> value() default Object.class;
+
+	boolean copy() default false;
 }

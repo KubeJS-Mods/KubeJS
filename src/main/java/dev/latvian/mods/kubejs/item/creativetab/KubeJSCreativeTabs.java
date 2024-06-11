@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.StaticRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Items;
@@ -18,7 +18,7 @@ public interface KubeJSCreativeTabs {
 	Supplier<CreativeModeTab> TAB = REGISTRY.register("tab", () -> CreativeModeTab.builder()
 		.title(KubeJS.NAME_COMPONENT)
 		.icon(() -> {
-			var is = ItemStackJS.ofString(UtilsJS.BUILTIN_NBT_REGISTRY_OPS, CommonProperties.get().creativeModeTabIcon);
+			var is = ItemStackJS.ofString(StaticRegistries.BUILTIN.nbt(), CommonProperties.get().creativeModeTabIcon);
 			return is.isEmpty() ? Items.PURPLE_DYE.getDefaultInstance() : is;
 		})
 		.displayItems((params, output) -> {

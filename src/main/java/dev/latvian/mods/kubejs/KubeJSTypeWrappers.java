@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.valueproviders.ClampedInt;
 import net.minecraft.util.valueproviders.ClampedNormalInt;
 import net.minecraft.util.valueproviders.ConstantInt;
@@ -54,7 +54,7 @@ public interface KubeJSTypeWrappers {
 				}
 			}
 
-			var decoded = IntProvider.CODEC.parse(NbtOps.INSTANCE, NBTUtils.toTagCompound(cx, m)).result();
+			var decoded = IntProvider.CODEC.parse(((KubeJSContext) cx).getNbtOps(), NBTUtils.toTagCompound(cx, m)).result();
 			if (decoded.isPresent()) {
 				return decoded.get();
 			}

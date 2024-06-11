@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
@@ -103,6 +104,10 @@ public interface IngredientKJS extends IngredientSupplierKJS, InputReplacement, 
 	}
 
 	default SizedIngredient kjs$asStack() {
+		if (kjs$self().isEmpty()) {
+			return SizedIngredientWrapper.empty;
+		}
+
 		return new SizedIngredient(kjs$self(), 1);
 	}
 

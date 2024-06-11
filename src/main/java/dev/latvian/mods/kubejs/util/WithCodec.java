@@ -11,11 +11,11 @@ public interface WithCodec extends NBTSerializable, JsonSerializable {
 
 	@Override
 	default Tag toNBT(Context cx) {
-		return getCodec(cx).encodeStart(((KubeJSContext) cx).getNbtRegistryOps(), Cast.to(this)).getOrThrow();
+		return getCodec(cx).encodeStart(((KubeJSContext) cx).getNbtOps(), Cast.to(this)).getOrThrow();
 	}
 
 	@Override
 	default JsonElement toJson(Context cx) {
-		return getCodec(cx).encodeStart(((KubeJSContext) cx).getJsonRegistryOps(), Cast.to(this)).getOrThrow();
+		return getCodec(cx).encodeStart(((KubeJSContext) cx).getJsonOps(), Cast.to(this)).getOrThrow();
 	}
 }

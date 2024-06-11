@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.mods.kubejs.util.StaticRegistries;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.Scriptable;
@@ -16,7 +17,6 @@ import dev.latvian.mods.rhino.util.ClassVisibilityContext;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
@@ -60,20 +60,24 @@ public class KubeJSContext extends Context {
 		return kjsFactory.manager.scriptType.console;
 	}
 
-	public RegistryAccess getRegistries() {
+	public StaticRegistries getRegistries() {
 		return kjsFactory.manager.getRegistries();
 	}
 
-	public RegistryOps<Tag> getNbtRegistryOps() {
-		return kjsFactory.manager.getNbtRegistryOps();
+	public RegistryAccess.Frozen getRegistryAccess() {
+		return getRegistries().access();
 	}
 
-	public RegistryOps<JsonElement> getJsonRegistryOps() {
-		return kjsFactory.manager.getJsonRegistryOps();
+	public RegistryOps<Tag> getNbtOps() {
+		return getRegistries().nbt();
 	}
 
-	public DamageSources getDamageSources() {
-		return kjsFactory.manager.getDamageSources();
+	public RegistryOps<JsonElement> getJsonOps() {
+		return getRegistries().json();
+	}
+
+	public RegistryOps<Object> getJavaOps() {
+		return getRegistries().java();
 	}
 
 	/*

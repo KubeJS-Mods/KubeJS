@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.recipe.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -51,7 +50,7 @@ public class UnknownKubeRecipe extends KubeRecipe {
 	@Override
 	public boolean hasOutput(Context cx, ReplacementMatch match) {
 		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
-			var result = getOriginalRecipe().getResultItem(((KubeJSContext) cx).getRegistries());
+			var result = getOriginalRecipe().getResultItem(type.event.registries.access());
 			//noinspection ConstantValue
 			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.contains(result);
 		}

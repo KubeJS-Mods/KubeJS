@@ -31,10 +31,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRecipe {
-
-	public static final String SHRINK_KEY = "kubejs:shrink";
-	public static final String MIRROR_KEY = "kubejs:mirror";
-
 	public static final MapCodec<ShapedRecipePattern> PATTERN_NO_SHRINK_CODEC = ShapedRecipePattern.Data.MAP_CODEC
 		.flatXmap(ShapedKubeJSRecipe::unpackNoShrink,
 			pattern -> pattern.data().map(DataResult::success)
@@ -48,8 +44,14 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 		@Override
 		public <T> DataResult<ShapedRecipePattern> decode(DynamicOps<T> ops, MapLike<T> input) {
-			return ops.getBooleanValue(input.get(SHRINK_KEY)).flatMap(shrink -> {
-				if (shrink) {
+			var shrink = input.get(SHRINK_KEY);
+
+			if (shrink == null) {
+				return ShapedRecipePattern.MAP_CODEC.decode(ops, input);
+			}
+
+			return ops.getBooleanValue(shrink).flatMap(shrinkVal -> {
+				if (shrinkVal) {
 					return ShapedRecipePattern.MAP_CODEC.decode(ops, input);
 				} else {
 					return PATTERN_NO_SHRINK_CODEC.decode(ops, input);
@@ -142,9 +144,9 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			Codec.BOOL.optionalFieldOf("show_notification", true).forGetter(ShapedRecipe::showNotification),
 			// KubeJS additions
 			Codec.BOOL.optionalFieldOf(MIRROR_KEY, true).forGetter(ShapedKubeJSRecipe::kjs$getMirror),
-			IngredientActionHolder.LIST_CODEC.optionalFieldOf("kubejs:actions", List.of()).forGetter(ShapedKubeJSRecipe::kjs$getIngredientActions),
-			ModifyRecipeResultCallback.Holder.CODEC.optionalFieldOf("kubejs:modify_result", null).forGetter(ShapedKubeJSRecipe::kjs$getModifyResult),
-			Codec.STRING.optionalFieldOf("kubejs:stage", "").forGetter(ShapedKubeJSRecipe::kjs$getStage)
+			IngredientActionHolder.LIST_CODEC.optionalFieldOf(INGREDIENT_ACTIONS_KEY, List.of()).forGetter(ShapedKubeJSRecipe::kjs$getIngredientActions),
+			ModifyRecipeResultCallback.Holder.CODEC.optionalFieldOf(MODIFY_RESULT_KEY, null).forGetter(ShapedKubeJSRecipe::kjs$getModifyResult),
+			Codec.STRING.optionalFieldOf(STAGE_KEY, "").forGetter(ShapedKubeJSRecipe::kjs$getStage)
 		).apply(instance, ShapedKubeJSRecipe::new));
 
 		public static final StreamCodec<RegistryFriendlyByteBuf, ShapedKubeJSRecipe> STREAM_CODEC = new StreamCodec<>() {

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JavaOps;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -109,6 +110,7 @@ public interface ItemStackKJS extends
 		return kjs$self().getItem() instanceof BlockItem bi ? bi.getBlock() : null;
 	}
 
+	@ReturnsSelf(copy = true)
 	default ItemStack kjs$withCount(int c) {
 		if (c <= 0 || kjs$self().isEmpty()) {
 			return ItemStack.EMPTY;
@@ -127,7 +129,7 @@ public interface ItemStackKJS extends
 	}
 
 	default String kjs$getComponentString(KubeJSContext cx) {
-		return DataComponentWrapper.patchToString(new StringBuilder(), cx.getNbtRegistryOps(), kjs$self().getComponentsPatch()).toString();
+		return DataComponentWrapper.patchToString(new StringBuilder(), cx.getNbtOps(), kjs$self().getComponentsPatch()).toString();
 	}
 
 	@ReturnsSelf
@@ -137,7 +139,13 @@ public interface ItemStackKJS extends
 		if (value == null || Undefined.isUndefined(value)) {
 			is.remove(component);
 		} else {
-			is.set((DataComponentType) component, value);
+			var c = component.codec();
+
+			if (c != null) {
+				is.set((DataComponentType) component, component.codec().parse(JavaOps.INSTANCE, value).getOrThrow());
+			} else {
+				is.set((DataComponentType) component, value);
+			}
 		}
 
 		return is;
@@ -182,8 +190,16 @@ public interface ItemStackKJS extends
 		return kjs$self().get(DataComponents.CUSTOM_NAME);
 	}
 
+	@ReturnsSelf(copy = true)
 	default ItemStack kjs$withCustomName(@Nullable Component name) {
 		return kjs$self().copy().kjs$setCustomName(name);
+	}
+
+	@ReturnsSelf
+	default ItemStack kjs$setRepairCost(int repairCost) {
+		var is = kjs$self();
+		is.set(DataComponents.REPAIR_COST, repairCost);
+		return is;
 	}
 
 	default ItemEnchantments kjs$getEnchantments() {
@@ -202,6 +218,7 @@ public interface ItemStackKJS extends
 		return is;
 	}
 
+	@ReturnsSelf(copy = true)
 	default ItemStack kjs$enchant(Map<Enchantment, Integer> enchantments) {
 		var is = kjs$self().copy();
 
@@ -239,11 +256,11 @@ public interface ItemStackKJS extends
 
 	@Override
 	default String toStringJS(Context cx) {
-		return kjs$toItemString0(((KubeJSContext) cx).getNbtRegistryOps());
+		return kjs$toItemString0(((KubeJSContext) cx).getNbtOps());
 	}
 
 	default String kjs$toItemString(KubeJSContext cx) {
-		return kjs$toItemString0(cx.getNbtRegistryOps());
+		return kjs$toItemString0(cx.getNbtOps());
 	}
 
 	default String kjs$toItemString0(DynamicOps<Tag> dynamicOps) {
@@ -286,12 +303,14 @@ public interface ItemStackKJS extends
 		return new ChancedItem(kjs$self(), chance);
 	}
 
+	@ReturnsSelf(copy = true)
 	default ItemStack kjs$withLore(Component[] lines) {
 		var is = kjs$self().copy();
 		is.set(DataComponents.LORE, new ItemLore(List.of(lines)));
 		return is;
 	}
 
+	@ReturnsSelf(copy = true)
 	default ItemStack kjs$withLore(Component[] lines, Component[] styledLines) {
 		var is = kjs$self().copy();
 		is.set(DataComponents.LORE, new ItemLore(List.of(lines), List.of(styledLines)));

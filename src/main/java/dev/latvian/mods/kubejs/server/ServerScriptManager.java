@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
 import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
@@ -17,12 +16,8 @@ import dev.latvian.mods.kubejs.script.data.DataPackKubeEvent;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.server.tag.PreTagKubeEvent;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
+import dev.latvian.mods.kubejs.util.StaticRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
@@ -35,10 +30,8 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.nio.file.Files;
 import java.util.List;
@@ -59,18 +52,14 @@ public class ServerScriptManager extends ScriptManager {
 	}
 
 	public final ReloadableServerResources resources;
-	public final RegistryAccess registries;
-	public final RegistryOps<Tag> nbtRegistryOps;
-	public final RegistryOps<JsonElement> jsonRegistryOps;
+	public final StaticRegistries registries;
 	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
 	public final RecipeSchemaStorage recipeSchemaStorage;
 
-	public ServerScriptManager(ReloadableServerResources resources, RegistryAccess registryAccess) {
+	public ServerScriptManager(ReloadableServerResources resources, StaticRegistries registries) {
 		super(ScriptType.SERVER);
 		this.resources = resources;
-		this.registries = registryAccess;
-		this.nbtRegistryOps = registryAccess.createSerializationContext(NbtOps.INSTANCE);
-		this.jsonRegistryOps = registryAccess.createSerializationContext(JsonOps.INSTANCE);
+		this.registries = registries;
 		this.preTagEvents = new ConcurrentHashMap<>();
 		this.recipeSchemaStorage = new RecipeSchemaStorage();
 
@@ -86,24 +75,8 @@ public class ServerScriptManager extends ScriptManager {
 	}
 
 	@Override
-	public RegistryAccess getRegistries() {
+	public StaticRegistries getRegistries() {
 		return registries;
-	}
-
-	@Override
-	public RegistryOps<Tag> getNbtRegistryOps() {
-		return nbtRegistryOps;
-	}
-
-	@Override
-	public RegistryOps<JsonElement> getJsonRegistryOps() {
-		return jsonRegistryOps;
-	}
-
-	@Override
-	public DamageSources getDamageSources() {
-		// Probably no better way to get this
-		return ServerLifecycleHooks.getCurrentServer().kjs$getOverworld().damageSources();
 	}
 
 	public static void addPacksFirst(AddPackFindersEvent event) {
@@ -211,7 +184,7 @@ public class ServerScriptManager extends ScriptManager {
 	}
 	 */
 
-	public boolean recipes(RecipeManagerKJS recipeManager, HolderLookup.Provider registries, ResourceManager resourceManager, Map<ResourceLocation, JsonElement> map) {
+	public boolean recipes(RecipeManagerKJS recipeManager, ResourceManager resourceManager, Map<ResourceLocation, JsonElement> map) {
 		if (ServerEvents.COMPOSTABLE_RECIPES.hasListeners()) {
 			ServerEvents.COMPOSTABLE_RECIPES.post(ScriptType.SERVER, new CompostableRecipesKubeEvent());
 		}
