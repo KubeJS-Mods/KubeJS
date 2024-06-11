@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.server;
 
 import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
@@ -18,7 +19,10 @@ import dev.latvian.mods.kubejs.server.tag.PreTagKubeEvent;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ReloadableServerResources;
@@ -56,6 +60,8 @@ public class ServerScriptManager extends ScriptManager {
 
 	public final ReloadableServerResources resources;
 	public final RegistryAccess registries;
+	public final RegistryOps<Tag> nbtRegistryOps;
+	public final RegistryOps<JsonElement> jsonRegistryOps;
 	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
 	public final RecipeSchemaStorage recipeSchemaStorage;
 
@@ -63,6 +69,8 @@ public class ServerScriptManager extends ScriptManager {
 		super(ScriptType.SERVER);
 		this.resources = resources;
 		this.registries = registryAccess;
+		this.nbtRegistryOps = registryAccess.createSerializationContext(NbtOps.INSTANCE);
+		this.jsonRegistryOps = registryAccess.createSerializationContext(JsonOps.INSTANCE);
 		this.preTagEvents = new ConcurrentHashMap<>();
 		this.recipeSchemaStorage = new RecipeSchemaStorage();
 
@@ -80,6 +88,16 @@ public class ServerScriptManager extends ScriptManager {
 	@Override
 	public RegistryAccess getRegistries() {
 		return registries;
+	}
+
+	@Override
+	public RegistryOps<Tag> getNbtRegistryOps() {
+		return nbtRegistryOps;
+	}
+
+	@Override
+	public RegistryOps<JsonElement> getJsonRegistryOps() {
+		return jsonRegistryOps;
 	}
 
 	@Override

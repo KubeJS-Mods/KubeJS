@@ -23,7 +23,7 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 	List<IngredientActionHolder> kjs$getIngredientActions();
 
 	@Nullable
-	ModifyRecipeResultCallback kjs$getModifyResult();
+	ModifyRecipeResultCallback.Holder kjs$getModifyResult();
 
 	String kjs$getStage();
 
@@ -50,8 +50,8 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 		var result = getResultItem(registryAccess);
 		//noinspection ConstantValue
 		result = (result == null || result.isEmpty()) ? ItemStack.EMPTY : result.copy();
-		if (modifyResult != null) {
-			return modifyResult.modify(new ModifyRecipeCraftingGrid(container), result);
+		if (modifyResult != null && modifyResult.callback() != null) {
+			return modifyResult.callback().modify(new ModifyRecipeCraftingGrid(container), result);
 		}
 
 		return result;

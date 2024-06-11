@@ -5,6 +5,8 @@ import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
+import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -128,5 +130,14 @@ public interface IngredientKJS extends IngredientSupplierKJS, InputReplacement, 
 	@Override
 	default Codec<?> getCodec(Context cx) {
 		return Ingredient.CODEC;
+	}
+
+	@Override
+	default Object replaceInput(Context cx, KubeRecipe recipe, ReplacementMatch match, InputReplacement original) {
+		if (original instanceof SizedIngredientKJS s) {
+			return new SizedIngredient(kjs$self(), s.kjs$self().count());
+		}
+
+		return this;
 	}
 }

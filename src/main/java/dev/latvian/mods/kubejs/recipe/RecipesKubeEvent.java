@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
@@ -35,7 +36,8 @@ import dev.latvian.mods.rhino.WrappedException;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.ReportedException;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.RegistryOps;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.util.GsonHelper;
@@ -98,7 +100,7 @@ public class RecipesKubeEvent implements KubeEvent {
 				var list = new ArrayList<String>();
 
 				for (var item : ingredient.getItems()) {
-					list.add(item.kjs$toItemString0(registries));
+					list.add(item.kjs$toItemString0(nbtRegistryOps));
 				}
 
 				in.add(list);
@@ -112,7 +114,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		try {
 			var result = recipe.getResultItem(registries);
 			//noinspection ConstantValue
-			map.put("out", (result == null ? ItemStack.EMPTY : result).kjs$toItemString0(registries));
+			map.put("out", (result == null ? ItemStack.EMPTY : result).kjs$toItemString0(nbtRegistryOps));
 		} catch (Exception ex) {
 			map.put("out_error", ex.toString());
 		}
@@ -123,9 +125,6 @@ public class RecipesKubeEvent implements KubeEvent {
 	private static final Function<RecipeHolder<?>, ResourceLocation> RECIPE_ID = RecipeHolder::id;
 	private static final Predicate<RecipeHolder<?>> RECIPE_NON_NULL = Objects::nonNull;
 	private static final Function<RecipeHolder<?>, RecipeHolder<?>> RECIPE_IDENTITY = Function.identity();
-
-	@HideFromJS
-	public static final Map<ResourceLocation, ModifyRecipeResultCallback> MODIFY_RESULT_CALLBACKS = new ConcurrentHashMap<>();
 
 	// hacky workaround for parallel streams, which are executed on the common fork/join pool by default
 	// and forge / event bus REALLY does not like that (plus it's generally just safer to use our own pool)
@@ -159,7 +158,8 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	public final RecipeSchemaStorage recipeSchemaStorage;
 	public final HolderLookup.Provider registries;
-	public final RegistryOps<JsonElement> jsonRegistryOps;
+	public final DynamicOps<JsonElement> jsonRegistryOps;
+	public final DynamicOps<Tag> nbtRegistryOps;
 	public final Map<ResourceLocation, KubeRecipe> originalRecipes;
 	public final Collection<KubeRecipe> addedRecipes;
 	private final BinaryOperator<RecipeHolder<?>> mergeOriginal, mergeAdded;
@@ -188,6 +188,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		this.recipeSchemaStorage = recipeSchemaStorage;
 		this.registries = registries;
 		this.jsonRegistryOps = registries.createSerializationContext(JsonOps.INSTANCE);
+		this.nbtRegistryOps = registries.createSerializationContext(NbtOps.INSTANCE);
 		this.originalRecipes = new HashMap<>();
 		this.addedRecipes = new ConcurrentLinkedQueue<>();
 		this.recipeFunctions = new HashMap<>();
@@ -269,11 +270,9 @@ public class RecipesKubeEvent implements KubeEvent {
 		TagContext.INSTANCE.setValue(TagContext.fromLoadResult(resources.kjs$getTagManager().getResult()));
 
 		// clear recipe event specific maps
-		RecipesKubeEvent.MODIFY_RESULT_CALLBACKS.clear();
+		ModifyRecipeResultCallback.Holder.SERVER.clear();
 
 		var timer = Stopwatch.createStarted();
-
-		var exportedRecipes = new JsonObject();
 
 		for (var entry : datapackRecipeMap.entrySet()) {
 			var recipeId = entry.getKey();

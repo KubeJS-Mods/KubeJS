@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
@@ -21,6 +22,7 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -105,7 +107,7 @@ public interface ItemStackJS {
 		} else if (o instanceof ItemLike itemLike) {
 			return itemLike.asItem().getDefaultInstance();
 		} else if (o instanceof JsonElement json) {
-			return resultFromRecipeJson(json);
+			return resultFromRecipeJson(((KubeJSContext) cx).getNbtRegistryOps(), json);
 		} else if (o instanceof StringTag tag) {
 			return wrap(cx, tag.getAsString());
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
@@ -134,7 +136,7 @@ public interface ItemStackJS {
 				s = s.substring(spaceIndex + 1);
 			}
 
-			cached = ofString(s);
+			cached = ofString(((KubeJSContext) cx).getNbtRegistryOps(), s);
 			cached.setCount(count);
 			((KubeJSContext) cx).itemStackParseCache.put(os, cached);
 			return cached.copy();
@@ -162,8 +164,8 @@ public interface ItemStackJS {
 				}
 
 				return stack;
-			} else if (map.get("tag") instanceof CharSequence s) {
-				var stack = IngredientHelper.get().tag(s.toString()).kjs$getFirst();
+			} else if (map.containsKey("tag")) {
+				var stack = IngredientHelper.get().tag(ID.mc(map.get("tag"))).kjs$getFirst();
 
 				if (map.containsKey("count")) {
 					stack.setCount(UtilsJS.parseInt(map.get("count"), 1));
@@ -176,19 +178,19 @@ public interface ItemStackJS {
 		return ItemStack.EMPTY;
 	}
 
-	static ItemStack ofString(String s) {
-		var reader = new StringReader(s);
-		reader.skipWhitespace();
-
-		if (!reader.canRead()) {
-			return ItemStack.EMPTY;
-		}
-
+	static ItemStack ofString(DynamicOps<Tag> registryOps, String s) {
 		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
 			return ItemStack.EMPTY;
 		} else {
 			try {
-				return read(new StringReader(s));
+				var reader = new StringReader(s);
+				reader.skipWhitespace();
+
+				if (!reader.canRead()) {
+					return ItemStack.EMPTY;
+				}
+
+				return read(registryOps, new StringReader(s));
 			} catch (CommandSyntaxException ex) {
 				throw new RuntimeException(ex);
 			}
@@ -213,11 +215,11 @@ public interface ItemStackJS {
 	}
 
 	// Use ItemStackJS.of(object)
-	static ItemStack resultFromRecipeJson(@Nullable JsonElement json) {
+	static ItemStack resultFromRecipeJson(DynamicOps<Tag> registryOps, @Nullable JsonElement json) {
 		if (json == null || json.isJsonNull()) {
 			return ItemStack.EMPTY;
 		} else if (json.isJsonPrimitive()) {
-			return ofString(json.getAsString());
+			return ofString(registryOps, json.getAsString());
 		} else if (json instanceof JsonObject) {
 			return ItemStack.OPTIONAL_CODEC.decode(JsonOps.INSTANCE, json).getOrThrow().getFirst();
 		}
@@ -241,8 +243,12 @@ public interface ItemStackJS {
 		return from instanceof ItemStack;
 	}
 
-	static ItemStack read(StringReader reader) throws CommandSyntaxException {
+	static ItemStack read(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
 		if (!reader.canRead()) {
+			return ItemStack.EMPTY;
+		}
+
+		if (reader.peek() == '-') {
 			return ItemStack.EMPTY;
 		}
 
@@ -264,7 +270,7 @@ public interface ItemStackJS {
 		var next = reader.canRead() ? reader.peek() : 0;
 
 		if (next == '[' || next == '{') {
-			itemStack.applyComponents(DataComponentWrapper.readPatch(null, reader));
+			itemStack.applyComponents(DataComponentWrapper.readPatch(registryOps, reader));
 		}
 
 		return itemStack;

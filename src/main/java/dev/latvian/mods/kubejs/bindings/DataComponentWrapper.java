@@ -5,20 +5,18 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.Context;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.CustomData;
 
@@ -27,7 +25,7 @@ public interface DataComponentWrapper {
 	Dynamic2CommandExceptionType ERROR_MALFORMED_COMPONENT = new Dynamic2CommandExceptionType((object, object2) -> Component.translatableEscape("arguments.item.component.malformed", object, object2));
 	SimpleCommandExceptionType ERROR_EXPECTED_COMPONENT = new SimpleCommandExceptionType(Component.translatable("arguments.item.component.expected"));
 
-	static DataComponentMap readMap(RegistryOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+	static DataComponentMap readMap(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
 		reader.skipWhitespace();
 		DataComponentMap.Builder builder = null;
 
@@ -81,7 +79,7 @@ public interface DataComponentWrapper {
 		return builder == null ? DataComponentMap.EMPTY : builder.build();
 	}
 
-	static DataComponentPatch readPatch(RegistryOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+	static DataComponentPatch readPatch(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
 		reader.skipWhitespace();
 		DataComponentPatch.Builder builder = null;
 
@@ -153,7 +151,7 @@ public interface DataComponentWrapper {
 
 	static DataComponentMap mapOf(Context cx, Object o) {
 		try {
-			return readMap(((KubeJSContext) cx).getRegistries().createSerializationContext(NbtOps.INSTANCE), new StringReader(o.toString()));
+			return readMap(((KubeJSContext) cx).getNbtRegistryOps(), new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
 			((KubeJSContext) cx).getConsole().error("Error parsing DataComponentMap", ex);
 			return DataComponentMap.EMPTY;
@@ -162,15 +160,14 @@ public interface DataComponentWrapper {
 
 	static DataComponentPatch patchOf(Context cx, Object o) {
 		try {
-			return readPatch(((KubeJSContext) cx).getRegistries().createSerializationContext(NbtOps.INSTANCE), new StringReader(o.toString()));
+			return readPatch(((KubeJSContext) cx).getNbtRegistryOps(), new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
 			((KubeJSContext) cx).getConsole().error("Error parsing DataComponentPatch", ex);
 			return DataComponentPatch.EMPTY;
 		}
 	}
 
-	static StringBuilder mapToString(StringBuilder builder, HolderLookup.Provider registries, DataComponentMap map) {
-		var dynamicOps = registries.createSerializationContext(NbtOps.INSTANCE);
+	static StringBuilder mapToString(StringBuilder builder, DynamicOps<Tag> dynamicOps, DataComponentMap map) {
 		builder.append('[');
 
 		boolean first = true;
@@ -194,8 +191,7 @@ public interface DataComponentWrapper {
 		return builder;
 	}
 
-	static StringBuilder patchToString(StringBuilder builder, HolderLookup.Provider registries, DataComponentPatch patch) {
-		var dynamicOps = registries.createSerializationContext(NbtOps.INSTANCE);
+	static StringBuilder patchToString(StringBuilder builder, DynamicOps<Tag> dynamicOps, DataComponentPatch patch) {
 		builder.append('[');
 
 		boolean first = true;

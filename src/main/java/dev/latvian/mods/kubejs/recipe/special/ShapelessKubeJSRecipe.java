@@ -21,10 +21,10 @@ import java.util.List;
 
 public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraftingRecipe {
 	private final List<IngredientActionHolder> ingredientActions;
-	private final ModifyRecipeResultCallback modifyResult;
+	private final ModifyRecipeResultCallback.Holder modifyResult;
 	private final String stage;
 
-	public ShapelessKubeJSRecipe(ShapelessRecipe original, List<IngredientActionHolder> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
+	public ShapelessKubeJSRecipe(ShapelessRecipe original, List<IngredientActionHolder> ingredientActions, @Nullable ModifyRecipeResultCallback.Holder modifyResult, String stage) {
 		super(original.getGroup(), original.category(), original.result, original.getIngredients());
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
@@ -43,7 +43,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 
 	@Override
 	@Nullable
-	public ModifyRecipeResultCallback kjs$getModifyResult() {
+	public ModifyRecipeResultCallback.Holder kjs$getModifyResult() {
 		return modifyResult;
 	}
 
@@ -66,14 +66,14 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 		public static final MapCodec<ShapelessKubeJSRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			Serializer.CODEC.forGetter(r -> r),
 			IngredientActionHolder.LIST_CODEC.optionalFieldOf("kubejs:actions", List.of()).forGetter(r -> r.ingredientActions),
-			ModifyRecipeResultCallback.CODEC.optionalFieldOf("kubejs:modify_result", null).forGetter(r -> r.modifyResult),
+			ModifyRecipeResultCallback.Holder.CODEC.optionalFieldOf("kubejs:modify_result", null).forGetter(r -> r.modifyResult),
 			Codec.STRING.optionalFieldOf("kubejs:stage", "").forGetter(r -> r.stage)
 		).apply(instance, ShapelessKubeJSRecipe::new));
 
 		public static final StreamCodec<RegistryFriendlyByteBuf, ShapelessKubeJSRecipe> STREAM_CODEC = StreamCodec.composite(
 			Serializer.STREAM_CODEC, r -> r,
 			IngredientActionHolder.LIST_STREAM_CODEC, ShapelessKubeJSRecipe::kjs$getIngredientActions,
-			ModifyRecipeResultCallback.STREAM_CODEC, ShapelessKubeJSRecipe::kjs$getModifyResult,
+			ModifyRecipeResultCallback.Holder.STREAM_CODEC, ShapelessKubeJSRecipe::kjs$getModifyResult,
 			ByteBufCodecs.STRING_UTF8, ShapelessKubeJSRecipe::kjs$getStage,
 			ShapelessKubeJSRecipe::new
 		);

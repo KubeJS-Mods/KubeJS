@@ -99,6 +99,8 @@ public class KubeJSServerEventHandler {
 	@SubscribeEvent
 	public static void serverStopped(ServerStoppedEvent event) {
 		UtilsJS.staticRegistries = UtilsJS.BUILTIN_REGISTRIES;
+		UtilsJS.staticNbtRegistryOps = UtilsJS.BUILTIN_NBT_REGISTRY_OPS;
+		UtilsJS.staticJsonRegistryOps = UtilsJS.BUILTIN_JSON_REGISTRY_OPS;
 	}
 
 	@SubscribeEvent

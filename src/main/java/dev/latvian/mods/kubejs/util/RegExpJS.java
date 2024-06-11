@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs.util;
 
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
@@ -26,6 +28,28 @@ public interface RegExpJS {
 		return null;
 	}
 
+	static int getFlags(String f) {
+		int flags = 0;
+
+		for (var i = 0; i < f.length(); i++) {
+			switch (f.charAt(i)) {
+				case 'd' -> flags |= Pattern.UNIX_LINES;
+				case 'i' -> flags |= Pattern.CASE_INSENSITIVE;
+				case 'x' -> flags |= Pattern.COMMENTS;
+				case 'm' -> flags |= Pattern.MULTILINE;
+				case 's' -> flags |= Pattern.DOTALL;
+				case 'u' -> flags |= Pattern.UNICODE_CASE;
+				case 'U' -> flags |= Pattern.UNICODE_CHARACTER_CLASS;
+			}
+		}
+
+		return flags;
+	}
+
+	static boolean isValidFlag(char c) {
+		return c == 'd' || c == 'i' || c == 'x' || c == 'm' || c == 's' || c == 'u' || c == 'U';
+	}
+
 	@Nullable
 	static Pattern ofString(String string) {
 		if (string.length() < 3) {
@@ -35,21 +59,7 @@ public interface RegExpJS {
 		var matcher = REGEX_PATTERN.matcher(string);
 
 		if (matcher.matches()) {
-			var flags = 0;
-			var f = matcher.group(2);
-
-			for (var i = 0; i < f.length(); i++) {
-				switch (f.charAt(i)) {
-					case 'd' -> flags |= Pattern.UNIX_LINES;
-					case 'i' -> flags |= Pattern.CASE_INSENSITIVE;
-					case 'x' -> flags |= Pattern.COMMENTS;
-					case 'm' -> flags |= Pattern.MULTILINE;
-					case 's' -> flags |= Pattern.DOTALL;
-					case 'u' -> flags |= Pattern.UNICODE_CASE;
-					case 'U' -> flags |= Pattern.UNICODE_CHARACTER_CLASS;
-				}
-			}
-
+			var flags = getFlags(matcher.group(2));
 			return Pattern.compile(matcher.group(1), flags);
 		}
 
@@ -92,5 +102,17 @@ public interface RegExpJS {
 		}
 
 		return sb.toString();
+	}
+
+	static Pattern read(StringReader reader) throws CommandSyntaxException {
+		reader.expect('/');
+		var pattern = reader.readStringUntil('/');
+		var flags = new StringBuilder(0);
+
+		while (reader.canRead() && isValidFlag(reader.peek())) {
+			flags.append(reader.read());
+		}
+
+		return Pattern.compile(pattern, getFlags(flags.toString()));
 	}
 }

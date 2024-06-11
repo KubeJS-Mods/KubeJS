@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.script;
 
+import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -13,6 +14,8 @@ import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.ClassVisibilityContext;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.item.ItemStack;
 
@@ -59,6 +62,14 @@ public class KubeJSContext extends Context {
 
 	public RegistryAccess getRegistries() {
 		return kjsFactory.manager.getRegistries();
+	}
+
+	public RegistryOps<Tag> getNbtRegistryOps() {
+		return kjsFactory.manager.getNbtRegistryOps();
+	}
+
+	public RegistryOps<JsonElement> getJsonRegistryOps() {
+		return kjsFactory.manager.getJsonRegistryOps();
 	}
 
 	public DamageSources getDamageSources() {
@@ -125,13 +136,8 @@ public class KubeJSContext extends Context {
 	}
 
 	@Override
-	protected Object internalJsToJava(Object from, TypeInfo target) {
-		return super.internalJsToJava(from, target);
-	}
-
-	@Override
 	protected Object internalJsToJavaLast(Object from, TypeInfo target) {
-		// handle ResourceKey, Holder, TagKey, registry object
+		// handle ResourceKey, Holder, HolderSet, TagKey
 
 		var reg = RegistryType.allOfClass(target.asClass());
 

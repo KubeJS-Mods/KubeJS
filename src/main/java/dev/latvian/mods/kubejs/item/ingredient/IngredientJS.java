@@ -1,16 +1,21 @@
 package dev.latvian.mods.kubejs.item.ingredient;
 
 import com.google.gson.JsonElement;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegExpJS;
@@ -20,11 +25,13 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,7 +64,7 @@ public interface IngredientJS {
 		} else if (o instanceof JsonElement json) {
 			return ofJson(cx, json);
 		} else if (o instanceof CharSequence) {
-			return parse(o.toString());
+			return ofString(o.toString());
 		}
 
 		List<?> list = ListJS.of(o);
@@ -91,13 +98,13 @@ public interface IngredientJS {
 		return ItemStackJS.wrap(cx, o).kjs$asIngredient();
 	}
 
-	static Ingredient parse(String s) {
+	static Ingredient ofString(String s) {
 		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
 			return Ingredient.EMPTY;
 		} else if (s.equals("*")) {
 			return IngredientHelper.get().wildcard();
 		} else if (s.startsWith("#")) {
-			return IngredientHelper.get().tag(s.substring(1));
+			return IngredientHelper.get().tag(ID.mc(s.substring(1)));
 		} else if (s.startsWith("@")) {
 			return IngredientHelper.get().mod(s.substring(1));
 		} else if (s.startsWith("%")) {
@@ -155,5 +162,88 @@ public interface IngredientJS {
 
 	static boolean isIngredientLike(Object from) {
 		return from instanceof Ingredient || from instanceof SizedIngredient || from instanceof ItemStack;
+	}
+
+	static Ingredient read(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+		if (!reader.canRead()) {
+			return Ingredient.EMPTY;
+		}
+
+		return switch (reader.peek()) {
+			case '-' -> {
+				reader.skip();
+				yield Ingredient.EMPTY;
+			}
+			case '*' -> {
+				reader.skip();
+				yield IngredientHelper.get().wildcard();
+			}
+			case '#' -> {
+				reader.skip();
+				yield IngredientHelper.get().tag(ResourceLocation.read(reader));
+			}
+			case '@' -> {
+				reader.skip();
+				yield IngredientHelper.get().mod(reader.readUnquotedString());
+			}
+			case '%' -> {
+				reader.skip();
+				var id = ResourceLocation.read(reader);
+				var group = UtilsJS.findCreativeTab(id);
+
+				if (group == null) {
+					if (KubeRecipe.itemErrors) {
+						throw new RecipeExceptionJS("Item group '" + id + "' not found!").error();
+					}
+
+					yield Ingredient.EMPTY;
+				}
+
+				yield IngredientHelper.get().creativeTab(group);
+			}
+			case '/' -> {
+				var regex = RegExpJS.read(reader);
+				yield IngredientHelper.get().regex(regex);
+			}
+			case '[' -> {
+				reader.skip();
+				reader.skipWhitespace();
+
+				if (!reader.canRead() || reader.peek() == ']') {
+					yield Ingredient.EMPTY;
+				}
+
+				var ingredients = new ArrayList<Ingredient>(2);
+
+				while (true) {
+					ingredients.add(read(registryOps, reader));
+					reader.skipWhitespace();
+
+					if (reader.canRead() && reader.peek() == ',') {
+						reader.skip();
+						reader.skipWhitespace();
+					} else if (!reader.canRead() || reader.peek() == ']') {
+						break;
+					}
+				}
+
+				reader.expect(']');
+				reader.skipWhitespace();
+				yield CompoundIngredient.of(ingredients.toArray(new Ingredient[0]));
+			}
+			default -> {
+				var itemId = ResourceLocation.read(reader);
+				var item = RegistryInfo.ITEM.getValue(itemId);
+
+				var next = reader.canRead() ? reader.peek() : 0;
+
+				if (next == '[' || next == '{') {
+					var map = DataComponentWrapper.readMap(registryOps, reader);
+					yield IngredientHelper.get().weakComponents(item, map);
+				}
+
+				yield Ingredient.of(item);
+			}
+		};
 	}
 }

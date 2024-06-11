@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -119,7 +120,14 @@ public interface RecipeComponent<T> {
 			}
 		}
 
-		json.add(cv.key.name, cv.key.codec.encodeStart(recipe.type.event.jsonRegistryOps, cv.value).getOrThrow());
+		var encoded = cv.key.codec.encodeStart(recipe.type.event.jsonRegistryOps, cv.value);
+
+		if (encoded.error().isPresent()) {
+			ConsoleJS.SERVER.error("Failed to encode " + cv.key.name + " for " + recipe.id + " from " + cv.value + ": " + encoded.error().get().message());
+		} else if (encoded.isSuccess()) {
+			var e = encoded.getOrThrow();
+			json.add(cv.key.name, e);
+		}
 	}
 
 	/**

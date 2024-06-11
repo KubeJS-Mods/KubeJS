@@ -4,12 +4,13 @@ import dev.latvian.mods.kubejs.ingredient.CreativeTabIngredient;
 import dev.latvian.mods.kubejs.ingredient.ModIngredient;
 import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
-import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
@@ -34,8 +35,8 @@ public enum IngredientHelper {
 		return WildcardIngredient.INSTANCE.toVanilla();
 	}
 
-	public Ingredient tag(String tag) {
-		return Ingredient.of(Tags.item(ID.mc(tag)));
+	public Ingredient tag(ResourceLocation tag) {
+		return Ingredient.of(Tags.item(tag));
 	}
 
 	public Ingredient mod(String mod) {
@@ -62,16 +63,16 @@ public enum IngredientHelper {
 		return ingredients.length == 0 ? Ingredient.EMPTY : ingredients.length == 1 ? ingredients[0] : IntersectionIngredient.of(ingredients);
 	}
 
-	public Ingredient matchComponents(ItemStack item, boolean strong) {
-		return new DataComponentIngredient(HolderSet.direct(item.getItemHolder()), DataComponentPredicate.allOf(item.getComponents()), strong).toVanilla();
+	public Ingredient matchComponents(Item item, DataComponentMap map, boolean strong) {
+		return new DataComponentIngredient(HolderSet.direct(item.builtInRegistryHolder()), DataComponentPredicate.allOf(map), strong).toVanilla();
 	}
 
-	public Ingredient strongComponents(ItemStack item) {
-		return matchComponents(item, true);
+	public Ingredient strongComponents(Item item, DataComponentMap map) {
+		return matchComponents(item, map, true);
 	}
 
-	public Ingredient weakComponents(ItemStack item) {
-		return matchComponents(item, false);
+	public Ingredient weakComponents(Item item, DataComponentMap map) {
+		return matchComponents(item, map, false);
 	}
 
 	public boolean isWildcard(Ingredient ingredient) {

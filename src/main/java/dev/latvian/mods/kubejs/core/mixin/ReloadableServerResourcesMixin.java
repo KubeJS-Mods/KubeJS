@@ -33,8 +33,10 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void init(RegistryAccess.Frozen registryAccess, FeatureFlagSet featureFlagSet, Commands.CommandSelection commandSelection, int functionCompilationLevel, CallbackInfo ci) {
-		UtilsJS.staticRegistries = registryAccess;
 		kjs$serverScriptManager = new ServerScriptManager((ReloadableServerResources) (Object) this, registryAccess);
+		UtilsJS.staticRegistries = kjs$serverScriptManager.registries;
+		UtilsJS.staticNbtRegistryOps = kjs$serverScriptManager.nbtRegistryOps;
+		UtilsJS.staticJsonRegistryOps = kjs$serverScriptManager.jsonRegistryOps;
 		tagManager.kjs$setResources(this);
 		recipes.kjs$setResources(this);
 		kjs$serverScriptManager.reload();

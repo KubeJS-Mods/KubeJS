@@ -5,6 +5,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.brigadier.StringReader;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockModificationKubeEvent;
@@ -22,9 +23,11 @@ import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.EndTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import org.jetbrains.annotations.Nullable;
@@ -57,8 +60,13 @@ public class UtilsJS {
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
 	public static final RegistryAccess.Frozen BUILTIN_REGISTRIES = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+	public static final RegistryOps<Tag> BUILTIN_NBT_REGISTRY_OPS = BUILTIN_REGISTRIES.createSerializationContext(NbtOps.INSTANCE);
+	public static final RegistryOps<JsonElement> BUILTIN_JSON_REGISTRY_OPS = BUILTIN_REGISTRIES.createSerializationContext(JsonOps.INSTANCE);
 
-	public static RegistryAccess staticRegistries = BUILTIN_REGISTRIES; // Still necessary because STARTUP and CLIENT scripts need to know about registries
+	// Still necessary because STARTUP and CLIENT scripts need to know about registries
+	public static RegistryAccess staticRegistries = BUILTIN_REGISTRIES;
+	public static RegistryOps<Tag> staticNbtRegistryOps = BUILTIN_NBT_REGISTRY_OPS;
+	public static RegistryOps<JsonElement> staticJsonRegistryOps = BUILTIN_JSON_REGISTRY_OPS;
 
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
 	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, e -> true, MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_RANDOM, false, null, null, null, true);

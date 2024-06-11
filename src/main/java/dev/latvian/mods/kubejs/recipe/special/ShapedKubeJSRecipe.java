@@ -65,10 +65,10 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 	private final boolean mirror;
 	private final List<IngredientActionHolder> ingredientActions;
-	private final ModifyRecipeResultCallback modifyResult;
+	private final ModifyRecipeResultCallback.Holder modifyResult;
 	private final String stage;
 
-	public ShapedKubeJSRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, ItemStack result, boolean showNotification, boolean mirror, List<IngredientActionHolder> ingredientActions, @Nullable ModifyRecipeResultCallback modifyResult, String stage) {
+	public ShapedKubeJSRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, ItemStack result, boolean showNotification, boolean mirror, List<IngredientActionHolder> ingredientActions, @Nullable ModifyRecipeResultCallback.Holder modifyResult, String stage) {
 		super(group, category, pattern, result, showNotification);
 		this.mirror = mirror;
 		this.ingredientActions = ingredientActions;
@@ -88,7 +88,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 	@Override
 	@Nullable
-	public ModifyRecipeResultCallback kjs$getModifyResult() {
+	public ModifyRecipeResultCallback.Holder kjs$getModifyResult() {
 		return modifyResult;
 	}
 
@@ -143,7 +143,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			// KubeJS additions
 			Codec.BOOL.optionalFieldOf(MIRROR_KEY, true).forGetter(ShapedKubeJSRecipe::kjs$getMirror),
 			IngredientActionHolder.LIST_CODEC.optionalFieldOf("kubejs:actions", List.of()).forGetter(ShapedKubeJSRecipe::kjs$getIngredientActions),
-			ModifyRecipeResultCallback.CODEC.optionalFieldOf("kubejs:modify_result", null).forGetter(ShapedKubeJSRecipe::kjs$getModifyResult),
+			ModifyRecipeResultCallback.Holder.CODEC.optionalFieldOf("kubejs:modify_result", null).forGetter(ShapedKubeJSRecipe::kjs$getModifyResult),
 			Codec.STRING.optionalFieldOf("kubejs:stage", "").forGetter(ShapedKubeJSRecipe::kjs$getStage)
 		).apply(instance, ShapedKubeJSRecipe::new));
 
@@ -158,7 +158,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 				var mirror = buf.readBoolean();
 				var ingredientActions = IngredientActionHolder.LIST_STREAM_CODEC.decode(buf);
-				var modifyResult = ModifyRecipeResultCallback.STREAM_CODEC.decode(buf);
+				var modifyResult = ModifyRecipeResultCallback.Holder.STREAM_CODEC.decode(buf);
 				var stage = buf.readUtf();
 
 				return new ShapedKubeJSRecipe(group, category, shapedrecipepattern, result, showNotification, mirror, ingredientActions, modifyResult, stage);

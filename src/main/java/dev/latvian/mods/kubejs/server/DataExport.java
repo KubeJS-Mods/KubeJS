@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
@@ -18,12 +19,12 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModList;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -154,12 +155,35 @@ public class DataExport {
 
 		addJson("index.json", index);
 
+		var exportedFilePaths = new HashSet<String>();
+
+		for (var file : exportedFiles.keySet()) {
+			exportedFilePaths.add(file.replace(':', '/'));
+		}
+
 		Files.walk(KubeJSPaths.EXPORT)
 			.sorted(Comparator.reverseOrder())
-			.map(Path::toFile)
-			.forEach(File::delete);
+			.filter(path -> {
+				if (Files.isDirectory(path)) {
+					return true;
+				}
 
-		Files.createDirectory(KubeJSPaths.EXPORT);
+				return !exportedFilePaths.contains(KubeJSPaths.EXPORT.relativize(path).toString().replace('\\', '/'));
+			})
+			.map(Path::toFile)
+			.forEach(file -> {
+				if (file.isFile()) {
+					file.delete();
+					KubeJS.LOGGER.info("Deleted old file " + file.getPath());
+				} else if (file.isDirectory() && file.list().length == 0) {
+					file.delete();
+					KubeJS.LOGGER.info("Deleted empty directory " + file.getPath());
+				}
+			});
+
+		if (Files.notExists(KubeJSPaths.EXPORT)) {
+			Files.createDirectory(KubeJSPaths.EXPORT);
+		}
 
 		var arr = new CompletableFuture[exportedFiles.size()];
 		int i = 0;

@@ -46,6 +46,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -543,7 +544,7 @@ public class KubeJSCommands {
 
 		// item info
 		// id
-		player.sendSystemMessage(copy(stack.kjs$toItemString0(player.server.registryAccess()), ChatFormatting.GREEN, "Item ID"));
+		player.sendSystemMessage(copy(stack.kjs$toItemString0(player.server.registryAccess().createSerializationContext(NbtOps.INSTANCE)), ChatFormatting.GREEN, "Item ID"));
 		// item tags
 		var itemTags = holder.tags().toList();
 		for (var tag : itemTags) {
@@ -604,8 +605,8 @@ public class KubeJSCommands {
 	}
 
 	private static int dump(List<ItemStack> stacks, ServerPlayer player, String name) {
-		var registries = player.server.registryAccess();
-		var dump = stacks.stream().filter(is -> !is.isEmpty()).map(is -> is.kjs$toItemString0(registries)).toList();
+		var ops = player.server.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+		var dump = stacks.stream().filter(is -> !is.isEmpty()).map(is -> is.kjs$toItemString0(ops)).toList();
 		player.sendSystemMessage(copy(dump.toString(), ChatFormatting.WHITE, name + " Item List"));
 		return 1;
 	}

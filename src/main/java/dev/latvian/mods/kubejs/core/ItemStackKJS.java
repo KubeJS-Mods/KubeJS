@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -19,11 +20,11 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import dev.latvian.mods.rhino.util.ToStringJS;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -126,7 +127,7 @@ public interface ItemStackKJS extends
 	}
 
 	default String kjs$getComponentString(KubeJSContext cx) {
-		return DataComponentWrapper.patchToString(new StringBuilder(), cx.getRegistries(), kjs$self().getComponentsPatch()).toString();
+		return DataComponentWrapper.patchToString(new StringBuilder(), cx.getNbtRegistryOps(), kjs$self().getComponentsPatch()).toString();
 	}
 
 	@ReturnsSelf
@@ -238,14 +239,14 @@ public interface ItemStackKJS extends
 
 	@Override
 	default String toStringJS(Context cx) {
-		return kjs$toItemString0(((KubeJSContext) cx).getRegistries());
+		return kjs$toItemString0(((KubeJSContext) cx).getNbtRegistryOps());
 	}
 
 	default String kjs$toItemString(KubeJSContext cx) {
-		return kjs$toItemString0(cx.getRegistries());
+		return kjs$toItemString0(cx.getNbtRegistryOps());
 	}
 
-	default String kjs$toItemString0(HolderLookup.Provider registries) {
+	default String kjs$toItemString0(DynamicOps<Tag> dynamicOps) {
 		var is = kjs$self();
 		var count = is.getCount();
 
@@ -264,7 +265,7 @@ public interface ItemStackKJS extends
 		builder.append(kjs$getId());
 
 		if (!is.isComponentsPatchEmpty()) {
-			DataComponentWrapper.patchToString(builder, registries, is.getComponentsPatch());
+			DataComponentWrapper.patchToString(builder, dynamicOps, is.getComponentsPatch());
 		}
 
 		builder.append('\'');
