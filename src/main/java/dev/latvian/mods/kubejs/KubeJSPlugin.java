@@ -17,7 +17,8 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.script.WrapperRegistry;
+import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
+import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.ClassFilter;
@@ -58,7 +59,10 @@ public interface KubeJSPlugin {
 	default void registerBindings(BindingRegistry bindings) {
 	}
 
-	default void registerTypeWrappers(WrapperRegistry registry) {
+	default void registerTypeWrappers(TypeWrapperRegistry registry) {
+	}
+
+	default void registerTypeDescriptions(TypeDescriptionRegistry registry) {
 	}
 
 	default void registerRecipeFactories(RecipeFactoryRegistry registry) {

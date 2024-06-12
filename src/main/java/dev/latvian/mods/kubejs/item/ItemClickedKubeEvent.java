@@ -4,6 +4,8 @@ import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.player.KubePlayerEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.type.TypeInfo;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -54,13 +56,13 @@ public class ItemClickedKubeEvent implements KubePlayerEvent {
 
 	@Override
 	@Nullable
-	public Object defaultExitValue(Context cx) {
+	public ItemStack defaultExitValue(Context cx) {
 		return item;
 	}
 
 	@Override
-	@Nullable
-	public Object mapExitValue(Context cx, @Nullable Object from) {
-		return cx.jsToJava(from, ItemStackJS.TYPE_INFO);
+	@HideFromJS
+	public TypeInfo getExitValueType() {
+		return ItemStackJS.TYPE_INFO;
 	}
 }

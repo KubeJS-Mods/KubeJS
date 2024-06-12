@@ -117,7 +117,7 @@ public class ScriptManager {
 
 		canListenEvents = true;
 
-		var typeWrappers = new WrapperRegistry(scriptType, contextFactory.getTypeWrappers());
+		var typeWrappers = new TypeWrapperRegistry(scriptType, contextFactory.getTypeWrappers());
 		// typeWrappers.removeAll();
 
 		for (var plugin : KubeJSPlugins.getAll()) {

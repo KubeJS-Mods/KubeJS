@@ -1,10 +1,12 @@
 package dev.latvian.mods.kubejs.recipe.special;
 
+import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.CraftingContainerKJS;
-import dev.latvian.mods.kubejs.recipe.ModifyRecipeCraftingGrid;
-import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
+import dev.latvian.mods.kubejs.recipe.ContainerModifyRecipeCraftingGrid;
+import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultKubeEvent;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionHolder;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
@@ -20,16 +22,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public interface KubeJSCraftingRecipe extends CraftingRecipe {
+	String STAGE_KEY = "kubejs:stage";
 	String SHRINK_KEY = "kubejs:shrink";
 	String MIRROR_KEY = "kubejs:mirror";
 	String INGREDIENT_ACTIONS_KEY = "kubejs:ingredient_actions";
-	String STAGE_KEY = "kubejs:stage";
 	String MODIFY_RESULT_KEY = "kubejs:modify_result";
 
 	List<IngredientActionHolder> kjs$getIngredientActions();
 
-	@Nullable
-	ModifyRecipeResultCallback.Holder kjs$getModifyResult();
+	String kjs$getModifyResult();
 
 	String kjs$getStage();
 
@@ -44,9 +45,9 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 	}
 
 	default ItemStack kjs$assemble(CraftingContainer container, HolderLookup.Provider registryAccess) {
-		if (!kjs$getStage().isEmpty()) {
-			var player = getPlayer(((CraftingContainerKJS) container).kjs$getMenu());
+		var player = getPlayer(((CraftingContainerKJS) container).kjs$getMenu());
 
+		if (!kjs$getStage().isEmpty()) {
 			if (player == null || !player.kjs$getStages().has(kjs$getStage())) {
 				return ItemStack.EMPTY;
 			}
@@ -56,8 +57,10 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 		var result = getResultItem(registryAccess);
 		//noinspection ConstantValue
 		result = (result == null || result.isEmpty()) ? ItemStack.EMPTY : result.copy();
-		if (modifyResult != null && modifyResult.callback() != null) {
-			return modifyResult.callback().modify(new ModifyRecipeCraftingGrid(container), result);
+
+		if (!modifyResult.isEmpty()) {
+			var event = new ModifyRecipeResultKubeEvent(player, new ContainerModifyRecipeCraftingGrid(container), result);
+			return (ItemStack) ServerEvents.MODIFY_RECIPE_RESULT.post(ScriptType.SERVER, modifyResult, event).value();
 		}
 
 		return result;

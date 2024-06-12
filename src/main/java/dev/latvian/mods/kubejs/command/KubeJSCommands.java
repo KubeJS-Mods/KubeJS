@@ -327,7 +327,7 @@ public class KubeJSCommands {
 
 				builder.append("- Valid script types: ").append(handler.scriptTypePredicate.getValidTypes()).append("\n\n");
 
-				builder.append("- Has result? ").append(handler.getHasResult() ? UNICODE_TICK : UNICODE_CROSS).append("\n\n");
+				builder.append("- Has result? ").append(handler.getResult() != null ? UNICODE_TICK : UNICODE_CROSS).append("\n\n");
 
 				builder.append("- Event class: ");
 

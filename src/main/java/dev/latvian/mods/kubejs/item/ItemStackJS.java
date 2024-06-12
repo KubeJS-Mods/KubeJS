@@ -256,6 +256,7 @@ public interface ItemStackJS {
 
 		if (reader.canRead() && StringReader.isAllowedNumber(reader.peek())) {
 			count = Mth.ceil(reader.readDouble());
+			reader.skipWhitespace();
 			reader.expect('x');
 			reader.skipWhitespace();
 

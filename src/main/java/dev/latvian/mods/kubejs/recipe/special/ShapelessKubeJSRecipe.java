@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
-import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultCallback;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionHolder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -15,16 +14,15 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraftingRecipe {
 	private final List<IngredientActionHolder> ingredientActions;
-	private final ModifyRecipeResultCallback.Holder modifyResult;
+	private final String modifyResult;
 	private final String stage;
 
-	public ShapelessKubeJSRecipe(ShapelessRecipe original, List<IngredientActionHolder> ingredientActions, @Nullable ModifyRecipeResultCallback.Holder modifyResult, String stage) {
+	public ShapelessKubeJSRecipe(ShapelessRecipe original, List<IngredientActionHolder> ingredientActions, String modifyResult, String stage) {
 		super(original.getGroup(), original.category(), original.result, original.getIngredients());
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
@@ -42,8 +40,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 	}
 
 	@Override
-	@Nullable
-	public ModifyRecipeResultCallback.Holder kjs$getModifyResult() {
+	public String kjs$getModifyResult() {
 		return modifyResult;
 	}
 
@@ -65,15 +62,15 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 	public static class SerializerKJS implements RecipeSerializer<ShapelessKubeJSRecipe> {
 		public static final MapCodec<ShapelessKubeJSRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			Serializer.CODEC.forGetter(r -> r),
-			IngredientActionHolder.LIST_CODEC.optionalFieldOf(INGREDIENT_ACTIONS_KEY, List.of()).forGetter(r -> r.ingredientActions),
-			ModifyRecipeResultCallback.Holder.CODEC.optionalFieldOf(MODIFY_RESULT_KEY, null).forGetter(r -> r.modifyResult),
-			Codec.STRING.optionalFieldOf(STAGE_KEY, "").forGetter(r -> r.stage)
+			IngredientActionHolder.LIST_CODEC.optionalFieldOf(INGREDIENT_ACTIONS_KEY, List.of()).forGetter(ShapelessKubeJSRecipe::kjs$getIngredientActions),
+			Codec.STRING.optionalFieldOf(MODIFY_RESULT_KEY, "").forGetter(ShapelessKubeJSRecipe::kjs$getModifyResult),
+			Codec.STRING.optionalFieldOf(STAGE_KEY, "").forGetter(ShapelessKubeJSRecipe::kjs$getStage)
 		).apply(instance, ShapelessKubeJSRecipe::new));
 
 		public static final StreamCodec<RegistryFriendlyByteBuf, ShapelessKubeJSRecipe> STREAM_CODEC = StreamCodec.composite(
 			Serializer.STREAM_CODEC, r -> r,
 			IngredientActionHolder.LIST_STREAM_CODEC, ShapelessKubeJSRecipe::kjs$getIngredientActions,
-			ModifyRecipeResultCallback.Holder.STREAM_CODEC, ShapelessKubeJSRecipe::kjs$getModifyResult,
+			ByteBufCodecs.STRING_UTF8, ShapelessKubeJSRecipe::kjs$getModifyResult,
 			ByteBufCodecs.STRING_UTF8, ShapelessKubeJSRecipe::kjs$getStage,
 			ShapelessKubeJSRecipe::new
 		);

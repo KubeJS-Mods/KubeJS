@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.item.ItemModelPropertiesKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemPickedUpKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemSmeltedKubeEvent;
+import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemTooltipKubeEvent;
 import dev.latvian.mods.kubejs.item.custom.ItemToolTierRegistryKubeEvent;
 import net.minecraft.core.registries.Registries;
@@ -26,7 +27,7 @@ public interface ItemEvents {
 
 	EventHandler MODIFICATION = GROUP.startup("modification", () -> ItemModificationKubeEvent.class);
 	EventHandler TOOL_TIER_REGISTRY = GROUP.startup("toolTierRegistry", () -> ItemToolTierRegistryKubeEvent.class);
-	SpecializedEventHandler<ResourceKey<Item>> RIGHT_CLICKED = GROUP.common("rightClicked", SUPPORTS_ITEM, () -> ItemClickedKubeEvent.class).hasResult();
+	SpecializedEventHandler<ResourceKey<Item>> RIGHT_CLICKED = GROUP.common("rightClicked", SUPPORTS_ITEM, () -> ItemClickedKubeEvent.class).hasResult(ItemStackJS.TYPE_INFO);
 	SpecializedEventHandler<ResourceKey<Item>> CAN_PICK_UP = GROUP.common("canPickUp", SUPPORTS_ITEM, () -> ItemPickedUpKubeEvent.class).hasResult();
 	SpecializedEventHandler<ResourceKey<Item>> PICKED_UP = GROUP.common("pickedUp", SUPPORTS_ITEM, () -> ItemPickedUpKubeEvent.class);
 	SpecializedEventHandler<ResourceKey<Item>> DROPPED = GROUP.common("dropped", SUPPORTS_ITEM, () -> ItemDroppedKubeEvent.class).hasResult();

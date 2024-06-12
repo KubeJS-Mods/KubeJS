@@ -5,8 +5,10 @@ import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.Extra;
 import dev.latvian.mods.kubejs.event.SpecializedEventHandler;
+import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.AfterRecipesLoadedKubeEvent;
 import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
+import dev.latvian.mods.kubejs.recipe.ModifyRecipeResultKubeEvent;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeMappingRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
@@ -37,4 +39,5 @@ public interface ServerEvents {
 	EventHandler RECIPES_AFTER_LOADED = GROUP.server("afterRecipes", () -> AfterRecipesLoadedKubeEvent.class);
 	EventHandler SPECIAL_RECIPES = GROUP.server("specialRecipeSerializers", () -> SpecialRecipeSerializerManager.class);
 	EventHandler COMPOSTABLE_RECIPES = GROUP.server("compostableRecipes", () -> CompostableRecipesKubeEvent.class);
+	SpecializedEventHandler<String> MODIFY_RECIPE_RESULT = GROUP.server("modifyRecipeResult", Extra.STRING, () -> ModifyRecipeResultKubeEvent.class).required().hasResult(ItemStackJS.TYPE_INFO);
 }

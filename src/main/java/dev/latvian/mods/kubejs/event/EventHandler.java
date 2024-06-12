@@ -29,7 +29,7 @@ public class EventHandler extends BaseFunction {
 	public final String name;
 	public final ScriptTypePredicate scriptTypePredicate;
 	public final Supplier<Class<? extends KubeEvent>> eventType;
-	private boolean hasResult;
+	private TypeInfo result;
 	public transient Extra<?> extra;
 	public transient boolean extraRequired;
 	protected EventHandlerContainer[] eventContainers;
@@ -40,7 +40,7 @@ public class EventHandler extends BaseFunction {
 		this.name = n;
 		this.scriptTypePredicate = st;
 		this.eventType = e;
-		this.hasResult = false;
+		this.result = null;
 		this.extra = null;
 		this.extraRequired = false;
 		this.eventContainers = null;
@@ -51,13 +51,19 @@ public class EventHandler extends BaseFunction {
 	 * Allow event.cancel() to be called
 	 */
 	@HideFromJS
-	public EventHandler hasResult() {
-		hasResult = true;
+	public EventHandler hasResult(TypeInfo result) {
+		this.result = result;
 		return this;
 	}
 
-	public boolean getHasResult() {
-		return hasResult;
+	public EventHandler hasResult() {
+		return hasResult(TypeInfo.NONE);
+	}
+
+	@HideFromJS
+	@Nullable
+	public TypeInfo getResult() {
+		return result;
 	}
 
 	@HideFromJS
@@ -221,7 +227,7 @@ public class EventHandler extends BaseFunction {
 			} else {
 				eventResult = exit.result;
 
-				if (!getHasResult()) {
+				if (getResult() == null) {
 					scriptType.console.error("Error in '" + this + "'", new IllegalStateException("Event returned result when it's not cancellable"));
 				}
 			}

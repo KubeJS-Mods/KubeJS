@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
 import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +35,12 @@ public class SpecializedEventHandler<E> extends EventHandler {
 
 	@Override
 	@HideFromJS
+	public SpecializedEventHandler<E> hasResult(TypeInfo result) {
+		super.hasResult(result);
+		return this;
+	}
+
+	@Override
 	public SpecializedEventHandler<E> hasResult() {
 		super.hasResult();
 		return this;

@@ -14,13 +14,17 @@ import net.minecraft.util.StringRepresentable;
 
 import java.util.function.BiFunction;
 
-public class WrapperRegistry {
-	public final ScriptType type;
-	public final TypeWrappers typeWrappers;
+public class TypeWrapperRegistry {
+	private final ScriptType type;
+	private final TypeWrappers typeWrappers;
 
-	public WrapperRegistry(ScriptType type, TypeWrappers typeWrappers) {
+	public TypeWrapperRegistry(ScriptType type, TypeWrappers typeWrappers) {
 		this.type = type;
 		this.typeWrappers = typeWrappers;
+	}
+
+	public ScriptType scriptType() {
+		return type;
 	}
 
 	public <T> void register(Class<T> target, TypeWrapperValidator validator, TypeWrapperFactory<T> factory) {

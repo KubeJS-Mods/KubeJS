@@ -59,6 +59,7 @@ import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
 import dev.latvian.mods.kubejs.item.ChancedIngredient;
 import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemTintFunction;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabBuilder;
@@ -118,7 +119,8 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.script.WrapperRegistry;
+import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
+import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ClassFilter;
@@ -139,6 +141,8 @@ import dev.latvian.mods.kubejs.util.SlotFilter;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
+import dev.latvian.mods.rhino.type.RecordTypeInfo;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.unit.Unit;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
@@ -169,6 +173,7 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -448,7 +453,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	public void registerTypeWrappers(WrapperRegistry registry) {
+	public void registerTypeWrappers(TypeWrapperRegistry registry) {
 		registry.register(RegistryPredicate.class, RegistryPredicate::of);
 
 		// Java / Minecraft //
@@ -480,6 +485,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(Item.class, ItemStackJS::getRawItem);
 		registry.register(ItemLike.class, ItemStackJS::getRawItem);
 		registry.registerEnumFromStringCodec(MobCategory.class, MobCategory.CODEC);
+		registry.register(ItemEnchantments.class, ItemEnchantmentsWrapper::from);
 
 		registry.register(AABB.class, AABBWrapper::wrap);
 		registry.register(IntProvider.class, KubeJSTypeWrappers::intProviderOf);
@@ -529,6 +535,11 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.registerCodec(Fireworks.class, Fireworks.CODEC);
 		registry.registerMapCodec(ChancedItem.class, ChancedItem.CODEC);
 		registry.registerMapCodec(ChancedIngredient.class, ChancedIngredient.CODEC);
+	}
+
+	@Override
+	public void registerTypeDescriptions(TypeDescriptionRegistry registry) {
+		registry.register(SlotFilter.class, ((RecordTypeInfo) TypeInfo.of(SlotFilter.class)).createCombinedType(TypeInfo.INT, IngredientJS.TYPE_INFO));
 	}
 
 	@Override

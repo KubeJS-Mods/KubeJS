@@ -257,12 +257,8 @@ public class RecipesKubeEvent implements KubeEvent {
 		ConsoleJS.SERVER.info("Processing recipes...");
 		KubeRecipe.itemErrors = false;
 		var resources = recipeManager.kjs$getResources();
-		var cx = resources.kjs$getServerScriptManager().contextFactory.enter();
 
 		TagContext.INSTANCE.setValue(TagContext.fromLoadResult(resources.kjs$getTagManager().getResult()));
-
-		// clear recipe event specific maps
-		ModifyRecipeResultCallback.Holder.SERVER.clear();
 
 		var timer = Stopwatch.createStarted();
 

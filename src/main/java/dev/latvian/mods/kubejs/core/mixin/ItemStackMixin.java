@@ -5,6 +5,7 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -14,4 +15,8 @@ public abstract class ItemStackMixin implements ItemStackKJS {
 	@Shadow
 	@HideFromJS
 	public abstract void enchant(Enchantment enchantment, int level);
+
+	@Shadow
+	@HideFromJS
+	public abstract ItemEnchantments getEnchantments();
 }

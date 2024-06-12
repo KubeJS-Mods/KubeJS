@@ -34,12 +34,12 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.neoforged.fml.loading.FMLLoader;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public static boolean itemErrors = false;
@@ -48,7 +48,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public RecipeTypeFunction type;
 	public boolean newRecipe;
 	public boolean removed;
-	public ModifyRecipeResultCallback.Holder modifyResult = null;
+	public String modifyResult = "";
 
 	private RecipeComponentBuilderMap valueMap = RecipeComponentBuilderMap.EMPTY;
 	private RecipeComponentValue<?>[] inputValues;
@@ -476,8 +476,8 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		if (newRecipe || hasChanged()) {
 			serialize();
 
-			if (modifyResult != null) {
-				json.addProperty(KubeJSCraftingRecipe.MODIFY_RESULT_KEY, modifyResult.id().toString());
+			if (!modifyResult.isEmpty()) {
+				json.addProperty(KubeJSCraftingRecipe.MODIFY_RESULT_KEY, modifyResult);
 			}
 
 			if (recipeIngredientActions != null && !recipeIngredientActions.isEmpty()) {
@@ -494,10 +494,6 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 
 			var id = getOrCreateId();
 
-			if (modifyResult != null) {
-				ModifyRecipeResultCallback.Holder.SERVER.put(modifyResult.id(), modifyResult);
-			}
-
 			if (type.event.stageSerializer != null && json.has(KubeJSCraftingRecipe.STAGE_KEY) && !type.idString.equals("recipestages:stage")) {
 				var o = new JsonObject();
 				o.addProperty("stage", json.get(KubeJSCraftingRecipe.STAGE_KEY).getAsString());
@@ -509,7 +505,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			return new RecipeHolder<>(getOrCreateId(), originalRecipe.getValue());
 		}
 
-		return RecipeHelper.get().fromJson(type.event.registries.json(), getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json);
+		return RecipeHelper.get().fromJson(type.event.registries.json(), getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json, !FMLLoader.isProduction());
 	}
 
 	@Nullable
@@ -520,7 +516,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			originalRecipe = new MutableObject<>();
 			try {
 				// todo: this sucks
-				originalRecipe.setValue(RecipeHelper.get().fromJson(type.event.registries.json(), type.schemaType.getSerializer(), getOrCreateId(), json).value());
+				originalRecipe.setValue(RecipeHelper.get().fromJson(type.event.registries.json(), type.schemaType.getSerializer(), getOrCreateId(), json, !FMLLoader.isProduction()).value());
 			} catch (Throwable e) {
 				error = e;
 			}
@@ -591,8 +587,8 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		return ingredientAction(filter, new ConsumeAction());
 	}
 
-	public final KubeRecipe modifyResult(ModifyRecipeResultCallback callback) {
-		modifyResult = new ModifyRecipeResultCallback.Holder(UUID.randomUUID(), callback);
+	public final KubeRecipe modifyResult(String id) {
+		modifyResult = id;
 		save();
 		return this;
 	}

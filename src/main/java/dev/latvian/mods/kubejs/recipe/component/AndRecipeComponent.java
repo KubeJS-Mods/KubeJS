@@ -3,7 +3,10 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.rhino.type.JSFixedArrayTypeInfo;
+import dev.latvian.mods.rhino.type.JSOptionalParam;
 import dev.latvian.mods.rhino.type.TypeInfo;
+
+import java.util.List;
 
 public record AndRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> b, Codec<Pair<A, B>> codec) implements RecipeComponent<Pair<A, B>> {
 	public AndRecipeComponent(RecipeComponent<A> a, RecipeComponent<B> b) {
@@ -17,7 +20,7 @@ public record AndRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> 
 
 	@Override
 	public TypeInfo typeInfo() {
-		return new JSFixedArrayTypeInfo(a.typeInfo(), b.typeInfo());
+		return new JSFixedArrayTypeInfo(List.of(new JSOptionalParam("", a.typeInfo()), new JSOptionalParam("", b.typeInfo())));
 	}
 
 	@Override

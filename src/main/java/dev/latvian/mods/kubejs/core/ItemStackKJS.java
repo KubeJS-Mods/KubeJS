@@ -12,12 +12,12 @@ import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
-import dev.latvian.mods.kubejs.typings.ReturnsSelf;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import dev.latvian.mods.rhino.util.ReturnsSelf;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import dev.latvian.mods.rhino.util.ToStringJS;
 import net.minecraft.core.Holder;
@@ -36,6 +36,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -203,7 +204,7 @@ public interface ItemStackKJS extends
 	}
 
 	default ItemEnchantments kjs$getEnchantments() {
-		return kjs$self().get(DataComponents.ENCHANTMENTS);
+		return EnchantmentHelper.getEnchantmentsForCrafting(kjs$self());
 	}
 
 	default boolean kjs$hasEnchantment(Enchantment enchantment, int level) {
@@ -219,12 +220,14 @@ public interface ItemStackKJS extends
 	}
 
 	@ReturnsSelf(copy = true)
-	default ItemStack kjs$enchant(Map<Enchantment, Integer> enchantments) {
+	default ItemStack kjs$enchant(ItemEnchantments enchantments) {
 		var is = kjs$self().copy();
 
-		for (var entry : enchantments.entrySet()) {
-			is.enchant(entry.getKey(), entry.getValue());
-		}
+		EnchantmentHelper.updateEnchantments(is, mutable -> {
+			for (var entry : enchantments.entrySet()) {
+				mutable.upgrade(entry.getKey().value(), entry.getValue());
+			}
+		});
 
 		return is;
 	}

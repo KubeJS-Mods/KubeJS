@@ -21,6 +21,7 @@
 		"DifferenceIngredientMixin",
 		"DirectionMixin",
 		"DyeColorMixin",
+		"EnchantmentMixin",
 		"EntityMixin",
 		"EntityTypeMixin",
 		"FireworkRocketEntityMixin",

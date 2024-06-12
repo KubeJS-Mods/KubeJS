@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +16,14 @@ public interface KubeEvent {
 	@Nullable
 	@HideFromJS
 	default Object mapExitValue(Context cx, @Nullable Object value) {
-		return value;
+		var t = getExitValueType();
+		return t == null ? value : cx.jsToJava(value, t);
+	}
+
+	@Nullable
+	@HideFromJS
+	default TypeInfo getExitValueType() {
+		return null;
 	}
 
 	@Info("""

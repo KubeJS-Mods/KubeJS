@@ -57,6 +57,7 @@ public interface SizedIngredientWrapper {
 
 		if (StringReader.isAllowedNumber(reader.peek())) {
 			count = Mth.ceil(reader.readDouble());
+			reader.skipWhitespace();
 			reader.expect('x');
 			reader.skipWhitespace();
 
