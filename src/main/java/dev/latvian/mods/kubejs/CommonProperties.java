@@ -1,6 +1,13 @@
 package dev.latvian.mods.kubejs;
 
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.mojang.datafixers.util.Pair;
+import dev.latvian.mods.kubejs.util.StaticRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 
 public class CommonProperties extends BaseProperties {
 	private static CommonProperties instance;
@@ -27,7 +34,8 @@ public class CommonProperties extends BaseProperties {
 	public boolean ignoreCustomUniqueRecipeIds;
 	public boolean startupErrorGUI;
 	public String startupErrorReportUrl;
-	public String creativeModeTabIcon;
+	public JsonElement creativeModeTabIcon;
+	public JsonElement creativeModeTabName;
 
 	private CommonProperties() {
 		super(KubeJSPaths.COMMON_PROPERTIES, "KubeJS Common Properties");
@@ -35,24 +43,32 @@ public class CommonProperties extends BaseProperties {
 
 	@Override
 	protected void load() {
-		hideServerScriptErrors = get("hideServerScriptErrors", false);
-		serverOnly = get("serverOnly", false);
-		announceReload = get("announceReload", true);
+		hideServerScriptErrors = get("hide_server_script_errors", false);
+		serverOnly = get("server_only", false);
+		announceReload = get("announce_reload", true);
 		packMode = get("packmode", "");
-		saveDevPropertiesInConfig = get("saveDevPropertiesInConfig", false);
-		allowAsyncStreams = get("allowAsyncStreams", true);
-		matchJsonRecipes = get("matchJsonRecipes", true);
-		ignoreCustomUniqueRecipeIds = get("ignoreCustomUniqueRecipeIds", false);
-		startupErrorGUI = get("startupErrorGUI", true);
-		startupErrorReportUrl = get("startupErrorReportUrl", "");
-		creativeModeTabIcon = get("creativeModeTabIcon", "minecraft:purple_dye");
+		saveDevPropertiesInConfig = get("save_dev_properties_in_config", false);
+		allowAsyncStreams = get("allow_async_streams", true);
+		matchJsonRecipes = get("match_json_recipes", true);
+		ignoreCustomUniqueRecipeIds = get("ignore_custom_unique_recipe_ids", false);
+		startupErrorGUI = get("startup_error_gui", true);
+		startupErrorReportUrl = get("startup_error_report_url", "");
 
-		KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::loadCommonProperties);
+		creativeModeTabIcon = get("creative_mode_tab_icon", new JsonObject());
+		creativeModeTabName = get("creative_mode_tab_name", JsonNull.INSTANCE);
 	}
 
 	public void setPackMode(String s) {
 		packMode = s;
-		properties.setProperty("packmode", s);
+		set("packmode", new JsonPrimitive(s));
 		save();
+	}
+
+	public Component getCreativeModeTabName() {
+		if (!creativeModeTabName.isJsonNull()) {
+			return ComponentSerialization.CODEC.decode(StaticRegistries.BUILTIN.json(), creativeModeTabName).result().map(Pair::getFirst).orElse(KubeJS.NAME_COMPONENT);
+		}
+
+		return KubeJS.NAME_COMPONENT;
 	}
 }

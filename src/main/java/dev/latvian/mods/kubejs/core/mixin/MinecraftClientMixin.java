@@ -38,7 +38,7 @@ public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 
 	@Inject(method = "createTitle", at = @At("HEAD"), cancellable = true)
 	private void kjs$createTitle(CallbackInfoReturnable<String> ci) {
-		var s = ClientProperties.get().title;
+		var s = ClientProperties.get().windowTitle;
 
 		if (!s.isEmpty()) {
 			ci.setReturnValue(s);

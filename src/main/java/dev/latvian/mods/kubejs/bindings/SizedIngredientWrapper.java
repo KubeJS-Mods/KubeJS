@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
@@ -18,6 +19,8 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 @Info("Various SizedIngredient related helper methods")
 public interface SizedIngredientWrapper {
+	TypeInfo TYPE_INFO = TypeInfo.of(SizedIngredient.class);
+
 	@Info("A completely empty ingredient that will only match air")
 	SizedIngredient empty = new SizedIngredient(Ingredient.EMPTY, 1);
 	@Info("An ingredient that matches everything")

@@ -1,9 +1,11 @@
 package dev.latvian.mods.kubejs.core;
 
+import dev.latvian.mods.kubejs.item.ChancedIngredient;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.rhino.Context;
+import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
@@ -21,5 +23,9 @@ public interface SizedIngredientKJS extends InputReplacement {
 		}
 
 		return this;
+	}
+
+	default ChancedIngredient kjs$withChance(FloatProvider chance) {
+		return new ChancedIngredient(kjs$self().ingredient(), kjs$self().count(), chance);
 	}
 }

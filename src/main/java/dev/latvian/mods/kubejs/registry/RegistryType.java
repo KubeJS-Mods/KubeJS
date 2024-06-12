@@ -73,6 +73,23 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 		return CLASS_MAP.getOrDefault(type, List.of());
 	}
 
+	@Nullable
+	public static synchronized RegistryType<?> lookup(TypeInfo target) {
+		var reg = allOfClass(target.asClass());
+
+		if (reg.size() == 1) {
+			return reg.getFirst();
+		} else if (!reg.isEmpty()) {
+			for (var regType : reg) {
+				if (regType.type().equals(target)) {
+					return regType;
+				}
+			}
+		}
+
+		return null;
+	}
+
 	@Override
 	public String toString() {
 		return key.location() + "=" + type;

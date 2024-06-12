@@ -19,11 +19,19 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	public static final MapRecipeComponent<Character, Ingredient> INGREDIENT_PATTERN_KEY = new MapRecipeComponent<>(CharacterComponent.CHARACTER, IngredientComponent.INGREDIENT, true);
 
 	public static final RecipeComponentFactory FACTORY = RecipeComponentFactory.readTwoComponents((key, component) -> {
-		if (key == INGREDIENT_PATTERN_KEY.key && component == INGREDIENT_PATTERN_KEY.component) {
+		if (key == CharacterComponent.CHARACTER && component == INGREDIENT_PATTERN_KEY.component) {
 			return INGREDIENT_PATTERN_KEY;
 		}
 
 		return new MapRecipeComponent<>(key, component, false);
+	});
+
+	public static final RecipeComponentFactory PATTERN_FACTORY = RecipeComponentFactory.readOneComponent(component -> {
+		if (component == INGREDIENT_PATTERN_KEY.component) {
+			return INGREDIENT_PATTERN_KEY;
+		}
+
+		return new MapRecipeComponent<>(CharacterComponent.CHARACTER, component, true);
 	});
 
 	@Override
@@ -139,6 +147,10 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 
 	@Override
 	public String toString() {
+		if (patternKey) {
+			return "pattern<" + component + ">";
+		}
+
 		return "map<" + key + ", " + component + ">";
 	}
 }

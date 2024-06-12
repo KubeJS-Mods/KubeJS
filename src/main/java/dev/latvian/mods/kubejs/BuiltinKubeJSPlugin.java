@@ -56,7 +56,6 @@ import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.integration.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
-import dev.latvian.mods.kubejs.item.ChancedIngredient;
 import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
@@ -99,6 +98,7 @@ import dev.latvian.mods.kubejs.recipe.component.MapRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NestedRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
 import dev.latvian.mods.kubejs.recipe.component.RegistryComponent;
+import dev.latvian.mods.kubejs.recipe.component.SizedIngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.component.TagKeyComponent;
 import dev.latvian.mods.kubejs.recipe.component.TimeComponent;
@@ -162,6 +162,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.MobCategory;
@@ -489,6 +490,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		registry.register(AABB.class, AABBWrapper::wrap);
 		registry.register(IntProvider.class, KubeJSTypeWrappers::intProviderOf);
+		registry.register(FloatProvider.class, KubeJSTypeWrappers::floatProviderOf);
 		registry.register(NumberProvider.class, KubeJSTypeWrappers::numberProviderOf);
 		registry.registerEnumFromStringCodec(LootContext.EntityTarget.class, LootContext.EntityTarget.CODEC);
 		registry.registerEnumFromStringCodec(CopyNameFunction.NameSource.class, CopyNameFunction.NameSource.CODEC);
@@ -533,8 +535,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		// codecs
 		registry.registerCodec(Fireworks.class, Fireworks.CODEC);
-		registry.registerMapCodec(ChancedItem.class, ChancedItem.CODEC);
-		registry.registerMapCodec(ChancedIngredient.class, ChancedIngredient.CODEC);
 	}
 
 	@Override
@@ -567,6 +567,10 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register("ingredient", IngredientComponent.INGREDIENT);
 		registry.register("non_empty_ingredient", IngredientComponent.NON_EMPTY_INGREDIENT);
 		registry.register("unwrapped_ingredient_list", IngredientComponent.UNWRAPPED_INGREDIENT_LIST);
+
+		registry.register("flat_sized_ingredient", SizedIngredientComponent.FLAT);
+		registry.register("nested_sized_ingredient", SizedIngredientComponent.NESTED);
+
 		registry.register("item_stack", ItemStackComponent.ITEM_STACK);
 		registry.register("strict_item_stack", ItemStackComponent.STRICT_ITEM_STACK);
 
@@ -600,6 +604,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register("enum", EnumComponent.FACTORY);
 		registry.register("nested_recipe", NestedRecipeComponent.RECIPE);
 		registry.register("map", MapRecipeComponent.FACTORY);
+		registry.register("pattern", MapRecipeComponent.PATTERN_FACTORY);
 	}
 
 	@Override

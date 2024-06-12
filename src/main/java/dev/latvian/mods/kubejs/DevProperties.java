@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs;
 
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.neoforged.fml.loading.FMLLoader;
 
 public class DevProperties extends BaseProperties {
@@ -38,20 +37,18 @@ public class DevProperties extends BaseProperties {
 
 	@Override
 	protected void load() {
-		debugInfo = get("debugInfo", !FMLLoader.isProduction());
-		dataPackOutput = get("dataPackOutput", false);
-		logAddedRecipes = get("logAddedRecipes", false);
-		logRemovedRecipes = get("logRemovedRecipes", false);
-		logModifiedRecipes = get("logModifiedRecipes", false);
-		logSkippedRecipes = get("logSkippedRecipes", false);
-		logSkippedTags = get("logSkippedTags", false);
-		logErroringRecipes = get("logErroringRecipes", true);
-		logInvalidRecipeHandlers = get("logInvalidRecipeHandlers", true);
-		logSkippedPlugins = get("logSkippedPlugins", true);
-		logGeneratedData = get("logGeneratedData", false);
-		strictTags = get("strictTags", false);
-		alwaysCaptureErrors = get("alwaysCaptureErrors", false);
-
-		KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::loadDevProperties);
+		debugInfo = get("debug_info", !FMLLoader.isProduction());
+		dataPackOutput = get("data_pack_output", false);
+		logAddedRecipes = get("log_added_recipes", false);
+		logRemovedRecipes = get("log_removed_recipes", false);
+		logModifiedRecipes = get("log_modified_recipes", false);
+		logSkippedRecipes = get("log_skipped_recipes", false);
+		logSkippedTags = get("log_skipped_tags", false);
+		logErroringRecipes = get("log_erroring_recipes", true);
+		logInvalidRecipeHandlers = get("log_invalid_recipe_handlers", true);
+		logSkippedPlugins = get("log_skipped_plugins", true);
+		logGeneratedData = get("log_generated_data", false);
+		strictTags = get("strict_tags", false);
+		alwaysCaptureErrors = get("always_capture_errors", false);
 	}
 }

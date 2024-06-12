@@ -1,26 +1,34 @@
 package dev.latvian.mods.kubejs;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Properties;
 
 public class BaseProperties {
+	private static final Gson GSON = new GsonBuilder().setLenient().setPrettyPrinting().disableHtmlEscaping().serializeNulls().create();
+
 	private final Path path;
 	private final String name;
-	protected final Properties properties;
+	protected JsonObject properties;
 	private boolean writeProperties;
 
-	protected BaseProperties(Path path, String name) {
+	public BaseProperties(Path path, String name) {
 		this.path = path;
 		this.name = name;
-		this.properties = new Properties();
+		this.properties = new JsonObject();
 
 		try {
 			writeProperties = false;
 
 			if (Files.exists(path)) {
 				try (var reader = Files.newBufferedReader(path)) {
-					properties.load(reader);
+					properties = GSON.fromJson(reader, JsonObject.class);
 				}
 			} else {
 				writeProperties = true;
@@ -34,27 +42,39 @@ public class BaseProperties {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-
-		KubeJS.LOGGER.info("Loaded " + path.getFileName());
 	}
 
 	protected void load() {
 	}
 
 	public void remove(String key) {
-		var s = properties.getProperty(key);
-
-		if (s != null) {
-			properties.remove(key);
+		if (properties.remove(key) != null) {
 			writeProperties = true;
 		}
 	}
 
-	public String get(String key, String def) {
-		var s = properties.getProperty(key);
+	public JsonElement get(String key) {
+		var e = properties.get(key);
+		return e == null ? JsonNull.INSTANCE : e;
+	}
 
-		if (s == null) {
-			properties.setProperty(key, def);
+	public String get(String key, String def) {
+		var s = get(key);
+
+		if (s.isJsonNull()) {
+			properties.addProperty(key, def);
+			writeProperties = true;
+			return def;
+		}
+
+		return s.getAsString();
+	}
+
+	public JsonElement get(String key, JsonElement def) {
+		var s = get(key);
+
+		if (s.isJsonNull()) {
+			properties.add(key, def);
 			writeProperties = true;
 			return def;
 		}
@@ -63,45 +83,32 @@ public class BaseProperties {
 	}
 
 	public boolean get(String key, boolean def) {
-		return get(key, def ? "true" : "false").equals("true");
+		return get(key, new JsonPrimitive(def)).getAsBoolean();
 	}
 
 	public int get(String key, int def) {
-		return Integer.parseInt(get(key, Integer.toString(def)));
+		return get(key, new JsonPrimitive(def)).getAsInt();
 	}
 
 	public double get(String key, double def) {
-		return Double.parseDouble(get(key, Double.toString(def)));
+		return get(key, new JsonPrimitive(def)).getAsDouble();
 	}
 
-	public int getColor(String key, int def) {
-		var s = get(key, String.format("%06X", def & 0xFFFFFF));
-
-		if (s.isEmpty() || s.equals("default")) {
-			return def;
-		}
-
-		try {
-			return 0xFFFFFF & Integer.decode(s.startsWith("#") ? s : ("#" + s));
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			return def;
-		}
-	}
-
-	public float[] getColor3f(int color) {
-		var c = new float[3];
-		c[0] = ((color >> 16) & 0xFF) / 255F;
-		c[1] = ((color >> 8) & 0xFF) / 255F;
-		c[2] = ((color >> 0) & 0xFF) / 255F;
-		return c;
+	public void set(String key, JsonElement json) {
+		properties.add(key, json);
+		writeProperties = true;
 	}
 
 	public void save() {
 		try (var writer = Files.newBufferedWriter(path)) {
-			properties.store(writer, name);
+			GSON.toJson(properties, writer);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }

@@ -38,15 +38,14 @@ public interface KubeJSPaths {
 	Path SERVER_SCRIPTS = DIRECTORY.resolve("server_scripts");
 	Path CLIENT_SCRIPTS = DIRECTORY.resolve("client_scripts");
 	Path CONFIG = dir(DIRECTORY.resolve("config"));
-	Path COMMON_PROPERTIES = CONFIG.resolve("common.properties");
-	Path CLIENT_PROPERTIES = CONFIG.resolve("client.properties");
-	Path CONFIG_DEV_PROPERTIES = CONFIG.resolve("dev.properties");
-	Path LOGGING_PROPERTIES = CONFIG.resolve("logging.properties");
+	Path COMMON_PROPERTIES = CONFIG.resolve("common.json");
+	Path CLIENT_PROPERTIES = CONFIG.resolve("client.json");
+	Path CONFIG_DEV_PROPERTIES = CONFIG.resolve("dev.json");
 	Path PACKICON = CONFIG.resolve("packicon.png");
 	Path README = DIRECTORY.resolve("README.txt");
 	Path LOCAL = dir(GAMEDIR.resolve("local").resolve("kubejs"));
 	Path LOCAL_CACHE = dir(LOCAL.resolve("cache"));
-	Path LOCAL_DEV_PROPERTIES = LOCAL.resolve("dev.properties");
+	Path LOCAL_DEV_PROPERTIES = LOCAL.resolve("dev.json");
 	Path EXPORT = dir(LOCAL.resolve("export"));
 	Path EXPORTED_PACKS = dir(LOCAL.resolve("exported_packs"));
 

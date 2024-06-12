@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
+import dev.latvian.mods.kubejs.item.ChancedIngredient;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
@@ -11,6 +12,7 @@ import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -113,6 +115,10 @@ public interface IngredientKJS extends IngredientSupplierKJS, InputReplacement, 
 
 	default SizedIngredient kjs$withCount(int count) {
 		return new SizedIngredient(kjs$self(), count);
+	}
+
+	default ChancedIngredient kjs$withChance(FloatProvider chance) {
+		return new ChancedIngredient(kjs$self(), 1, chance);
 	}
 
 	default boolean kjs$isWildcard() {

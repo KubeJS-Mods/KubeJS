@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
-import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
@@ -99,15 +98,6 @@ public interface KubeJSPlugin {
 	}
 
 	default void generateLang(LangKubeEvent event) {
-	}
-
-	default void loadCommonProperties(CommonProperties properties) {
-	}
-
-	default void loadClientProperties(ClientProperties properties) {
-	}
-
-	default void loadDevProperties(DevProperties properties) {
 	}
 
 	default void clearCaches() {

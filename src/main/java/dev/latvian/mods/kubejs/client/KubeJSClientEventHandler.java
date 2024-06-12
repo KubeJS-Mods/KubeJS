@@ -74,7 +74,7 @@ public class KubeJSClientEventHandler {
 
 		var advanced = flag.isAdvanced();
 
-		if (advanced && ClientProperties.get().getShowTagNames() && Screen.hasShiftDown()) {
+		if (advanced && ClientProperties.get().showTagNames && Screen.hasShiftDown()) {
 			var addToTempTags = (Consumer<TagKey<?>>) tag -> tempTagNames.computeIfAbsent(tag.location(), TagInstance::new).registries.add(tag.registry());
 			var cx = ScriptType.CLIENT.manager.get().contextFactory.enter();
 
@@ -159,7 +159,7 @@ public class KubeJSClientEventHandler {
 	public static void guiPostInit(ScreenEvent.Init.Post event) {
 		var screen = event.getScreen();
 
-		if (ClientProperties.get().getDisableRecipeBook() && screen instanceof RecipeUpdateListener) {
+		if (ClientProperties.get().disableRecipeBook && screen instanceof RecipeUpdateListener) {
 			var iterator = screen.children().iterator();
 			while (iterator.hasNext()) {
 				var listener = iterator.next();

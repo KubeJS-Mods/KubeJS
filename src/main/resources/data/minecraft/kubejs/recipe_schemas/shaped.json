@@ -13,7 +13,7 @@
 		{
 			"name": "key",
 			"role": "input",
-			"type": "map<character, ingredient>"
+			"type": "pattern<ingredient>"
 		},
 		{
 			"name": "kubejs:mirror",

@@ -58,7 +58,7 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 	}
 
 	default void kjs$setTitle(String t) {
-		ClientProperties.get().title = t.trim();
+		ClientProperties.get().windowTitle = t.trim();
 		kjs$self().updateTitle();
 	}
 

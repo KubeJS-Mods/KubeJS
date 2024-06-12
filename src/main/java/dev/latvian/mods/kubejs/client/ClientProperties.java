@@ -2,11 +2,6 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.BaseProperties;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import net.minecraft.util.Mth;
-
-import java.util.OptionalInt;
 
 public class ClientProperties extends BaseProperties {
 	private static ClientProperties instance;
@@ -23,20 +18,18 @@ public class ClientProperties extends BaseProperties {
 		instance = new ClientProperties();
 	}
 
-	public String title;
-	private boolean showTagNames;
-	private boolean disableRecipeBook;
-	private boolean exportAtlases;
-	private boolean overrideColors;
-	private int backgroundColor;
-	private int barColor;
-	private int barBorderColor;
-	private float[] backgroundColor3f;
-	private float[] fmlMemoryColor3f;
-	private float[] fmlLogColor3f;
-	private int menuBackgroundBrightness;
-	private int menuInnerBackgroundBrightness;
-	private float menuBackgroundScale;
+	// private static final ColourScheme.Colour DEFAULT_BACKGROUND_COLOR = new ColourScheme.Colour(46, 52, 64); // #2E3440
+	// private static final ColourScheme.Colour DEFAULT_FOREGROUND_COLOR = new ColourScheme.Colour(236, 239, 244); // #ECEFF4
+
+	public String windowTitle;
+	public boolean showTagNames;
+	public boolean disableRecipeBook;
+	public boolean exportAtlases;
+	// public ColourScheme.Colour launchBackgroundColor;
+	// public ColourScheme.Colour launchForegroundColor;
+	// public int menuBackgroundBrightness;
+	// public int menuInnerBackgroundBrightness;
+	// public float menuBackgroundScale;
 	public boolean blurScaledPackIcon;
 
 	private ClientProperties() {
@@ -45,67 +38,36 @@ public class ClientProperties extends BaseProperties {
 
 	@Override
 	protected void load() {
-		title = get("title", "");
-		showTagNames = get("showTagNames", false);
-		disableRecipeBook = get("disableRecipeBook", false);
-		exportAtlases = get("exportAtlases", false);
-		overrideColors = get("overrideColors", false);
-		backgroundColor = getColor("backgroundColor", 0x2E3440);
-		barColor = getColor("barColor", 0xECEFF4);
-		barBorderColor = getColor("barBorderColor", 0xECEFF4);
-		backgroundColor3f = getColor3f(backgroundColor);
-		fmlMemoryColor3f = getColor3f(getColor("fmlMemoryColor", 0xECEFF4));
-		fmlLogColor3f = getColor3f(getColor("fmlLogColor", 0xECEFF4));
-
-		menuBackgroundBrightness = Mth.clamp(get("menuBackgroundBrightness", 64), 0, 255);
-		menuInnerBackgroundBrightness = Mth.clamp(get("menuInnerBackgroundBrightness", 32), 0, 255);
-		menuBackgroundScale = (float) Mth.clamp(get("menuBackgroundScale", 32D), 0.0625D, 1024D);
-		blurScaledPackIcon = get("blurScaledPackIcon", true);
-
-		KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::loadClientProperties);
+		windowTitle = get("window_title", "");
+		showTagNames = get("show_tag_names", false);
+		disableRecipeBook = get("disable_recipe_book", false);
+		exportAtlases = get("export_atlases", false);
+		// launchBackgroundColor = getColor("launch_background_color", DEFAULT_BACKGROUND_COLOR);
+		// launchForegroundColor = getColor("launch_foreground_color", DEFAULT_FOREGROUND_COLOR);
+		// menuBackgroundBrightness = Mth.clamp(get("menuBackgroundBrightness", 64), 0, 255);
+		// menuInnerBackgroundBrightness = Mth.clamp(get("menuInnerBackgroundBrightness", 32), 0, 255);
+		// menuBackgroundScale = (float) Mth.clamp(get("menuBackgroundScale", 32D), 0.0625D, 1024D);
+		blurScaledPackIcon = get("blur_scaled_pack_icon", true);
 	}
 
-	public boolean getShowTagNames() {
-		return showTagNames;
+	/*
+	public ColourScheme.Colour getColor(String key, ColourScheme.Colour def) {
+		var s = get(key, String.format("#%06X", (def.red() << 16) | (def.green() << 8) | def.blue()));
+
+		if (s.isEmpty() || s.equals("default")) {
+			return def;
+		}
+
+		try {
+			int rgb = 0xFFFFFF & Integer.decode(s.charAt(0) == '#' ? s : ("#" + s));
+			return new ColourScheme.Colour((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+		} catch (Exception ex) {
+			return def;
+		}
 	}
 
-	public boolean getDisableRecipeBook() {
-		return disableRecipeBook;
+	public ColourScheme override(ColourScheme original) throws Exception {
+		return original;
 	}
-
-	public boolean getExportAtlases() {
-		return exportAtlases;
-	}
-
-	public float[] getMemoryColor(float[] color) {
-		return overrideColors ? fmlMemoryColor3f : color;
-	}
-
-	public float[] getLogColor(float[] color) {
-		return overrideColors ? fmlLogColor3f : color;
-	}
-
-	public OptionalInt getBackgroundColor() {
-		return overrideColors ? OptionalInt.of(0xFF000000 | backgroundColor) : OptionalInt.empty();
-	}
-
-	public int getBarColor(int color) {
-		return overrideColors ? ((color & 0xFF000000) | barColor) : color;
-	}
-
-	public int getBarBorderColor(int color) {
-		return overrideColors ? ((color & 0xFF000000) | barBorderColor) : color;
-	}
-
-	public int getMenuBackgroundBrightness() {
-		return menuBackgroundBrightness;
-	}
-
-	public int getMenuInnerBackgroundBrightness() {
-		return menuInnerBackgroundBrightness;
-	}
-
-	public float getMenuBackgroundScale() {
-		return menuBackgroundScale;
-	}
+	 */
 }

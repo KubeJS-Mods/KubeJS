@@ -14,9 +14,13 @@ import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.ClassVisibilityContext;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
@@ -141,33 +145,50 @@ public class KubeJSContext extends Context {
 
 	@Override
 	protected Object internalJsToJavaLast(Object from, TypeInfo target) {
-		// handle ResourceKey, Holder, HolderSet, TagKey
+		if (target.asClass() == ResourceKey.class) {
+			var reg = RegistryType.lookup(target.param(0));
 
-		var reg = RegistryType.allOfClass(target.asClass());
-
-		if (reg.size() == 1) {
-			var regInfo = RegistryInfo.of(reg.getFirst().key());
-			var value = regInfo.getValue(ID.mc(from));
-
-			if (value != null) {
-				return value;
-			} else {
-				throw reportRuntimeError("Can't interpret '" + from + "' as '" + regInfo + "' registry object", this);
+			if (reg == null) {
+				throw reportRuntimeError("Can't find matching '" + target + "' registry type", this);
 			}
-		} else if (!reg.isEmpty()) {
-			for (var regType : reg) {
-				if (regType.type().equals(target)) {
-					var regInfo = RegistryInfo.of(reg.getFirst().key());
-					var value = regInfo.getValue(ID.mc(from));
 
-					if (value != null) {
-						return value;
-					} else {
-						throw reportRuntimeError("Can't interpret '" + from + "' as '" + regInfo + "' registry object", this);
-					}
+			throw reportRuntimeError("Can't interpret '" + from + "' as ResourceKey: not supported yet", this);
+		} else if (target.asClass() == Holder.class) {
+			var reg = RegistryType.lookup(target.param(0));
+
+			if (reg == null) {
+				throw reportRuntimeError("Can't find matching '" + target + "' registry type", this);
+			}
+
+			throw reportRuntimeError("Can't interpret '" + from + "' as Holder: not supported yet", this);
+		} else if (target.asClass() == HolderSet.class) {
+			var reg = RegistryType.lookup(target.param(0));
+
+			if (reg == null) {
+				throw reportRuntimeError("Can't find matching '" + target + "' registry type", this);
+			}
+
+			throw reportRuntimeError("Can't interpret '" + from + "' as TagKey: not supported yet", this);
+		} else if (target.asClass() == TagKey.class) {
+			var reg = RegistryType.lookup(target.param(0));
+
+			if (reg == null) {
+				throw reportRuntimeError("Can't find matching '" + target + "' registry type", this);
+			}
+
+			throw reportRuntimeError("Can't interpret '" + from + "' as TagKey: not supported yet", this);
+		} else {
+			var reg = RegistryType.lookup(target);
+
+			if (reg != null) {
+				var regInfo = RegistryInfo.of(reg.key());
+				var value = regInfo.getValue(ID.mc(from));
+
+				if (value != null) {
+					return value;
+				} else {
+					throw reportRuntimeError("Can't interpret '" + from + "' as '" + regInfo + "' registry object", this);
 				}
-
-				throw reportRuntimeError("Can't find matching registry type '" + target + "' from registries " + reg, this);
 			}
 		}
 

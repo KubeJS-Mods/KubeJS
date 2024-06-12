@@ -7,9 +7,13 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.valueproviders.ClampedInt;
+import net.minecraft.util.valueproviders.ClampedNormalFloat;
 import net.minecraft.util.valueproviders.ClampedNormalInt;
+import net.minecraft.util.valueproviders.ConstantFloat;
 import net.minecraft.util.valueproviders.ConstantInt;
+import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.util.valueproviders.UniformFloat;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
@@ -61,6 +65,38 @@ public interface KubeJSTypeWrappers {
 		}
 
 		return ConstantInt.of(0);
+	}
+
+	@SuppressWarnings("unchecked")
+	static FloatProvider floatProviderOf(Context cx, Object o) {
+		if (o instanceof Number n) {
+			return ConstantFloat.of(n.floatValue());
+		} else if (o instanceof List l && !l.isEmpty()) {
+			var min = (Number) l.get(0);
+			var max = l.size() >= 2 ? (Number) l.get(1) : min;
+			return UniformFloat.of(min.floatValue(), max.floatValue());
+		} else if (o instanceof Map) {
+			var m = (Map<String, Object>) o;
+
+			var floatBounds = parseFloatBounds(m);
+			if (floatBounds != null) {
+				return floatBounds;
+			} else if (m.containsKey("clamped_normal")) {
+				var clampTo = parseFloatBounds(m);
+				var mean = ((Number) m.get("mean")).intValue();
+				var deviation = ((Number) m.get("deviation")).intValue();
+				if (clampTo != null) {
+					return ClampedNormalFloat.of(mean, deviation, clampTo.getMinValue(), clampTo.getMaxValue());
+				}
+			}
+
+			var decoded = FloatProvider.CODEC.parse(((KubeJSContext) cx).getNbtOps(), NBTUtils.toTagCompound(cx, m)).result();
+			if (decoded.isPresent()) {
+				return decoded.get();
+			}
+		}
+
+		return ConstantFloat.of(0F);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -127,6 +163,20 @@ public interface KubeJSTypeWrappers {
 		} else if (m.containsKey("value")) {
 			var f = ((Number) m.get("value")).intValue();
 			return UniformInt.of(f, f);
+		}
+		return null;
+	}
+
+	private static UniformFloat parseFloatBounds(Map<String, Object> m) {
+		if (m.get("bounds") instanceof List bounds) {
+			return UniformFloat.of((float) UtilsJS.parseDouble(bounds.get(0), 0), (float) UtilsJS.parseDouble(bounds.get(1), 0));
+		} else if (m.containsKey("min") && m.containsKey("max")) {
+			return UniformFloat.of(((Number) m.get("min")).floatValue(), ((Number) m.get("max")).floatValue());
+		} else if (m.containsKey("min_inclusive") && m.containsKey("max_inclusive")) {
+			return UniformFloat.of(((Number) m.get("min_inclusive")).floatValue(), ((Number) m.get("max_inclusive")).floatValue());
+		} else if (m.containsKey("value")) {
+			var f = ((Number) m.get("value")).floatValue();
+			return UniformFloat.of(f, f);
 		}
 		return null;
 	}
