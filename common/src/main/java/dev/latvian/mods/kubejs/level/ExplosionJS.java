@@ -12,11 +12,11 @@ public class ExplosionJS {
 	public boolean causesFire;
 	public Level.ExplosionInteraction explosionMode;
 
-	public ExplosionJS(LevelAccessor l, double _x, double _y, double _z) {
+	public ExplosionJS(LevelAccessor l, double x, double y, double z) {
 		level = l;
-		x = _x;
-		y = _y;
-		z = _z;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 		exploder = null;
 		strength = 3F;
 		causesFire = false;

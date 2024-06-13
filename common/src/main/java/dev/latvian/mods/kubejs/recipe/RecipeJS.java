@@ -204,8 +204,8 @@ public class RecipeJS implements RecipeKJS, CustomJavaToJsWrapper {
 		changed = true;
 	}
 
-	public RecipeJS id(ResourceLocation _id) {
-		id = _id;
+	public RecipeJS id(ResourceLocation id) {
+		this.id = id;
 		save();
 		return this;
 	}
