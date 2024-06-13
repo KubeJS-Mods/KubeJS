@@ -43,7 +43,11 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
+import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -190,7 +194,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 			return null;
 		}
 
-		var blockDrops = drops == null ? BlockDrops.createDefault(get().asItem()) : drops.get();
+		var blockDrops = drops == null ? BlockDrops.createDefault(get().asItem().getDefaultInstance()) : drops.get();
 
 		if (blockDrops.items().length == 0) {
 			return null;
@@ -205,7 +209,17 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		pool.when(ExplosionCondition.survivesExplosion());
 
 		for (var drop : blockDrops.items()) {
-			pool.add(LootItem.lootTableItem(drop.item()));
+			var item = LootItem.lootTableItem(drop.getItem());
+
+			if (drop.getCount() > 1) {
+				item.apply(SetItemCountFunction.setCount(ConstantValue.exactly(drop.getCount())));
+			}
+
+			if (!drop.isComponentsPatchEmpty()) {
+				item.apply(LootItemConditionalFunction.simpleBuilder(c -> new SetComponentsFunction(c, drop.getComponentsPatch())));
+			}
+
+			pool.add(item);
 		}
 
 		return new LootTable.Builder().withPool(pool).build();

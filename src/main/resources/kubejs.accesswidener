@@ -71,6 +71,8 @@ accessible method net/minecraft/server/commands/TeleportCommand performTeleport 
 accessible field net/minecraft/commands/arguments/selector/EntitySelector predicate Ljava/util/function/Predicate;
 accessible field net/minecraft/world/level/storage/loot/LootContext$EntityTarget name Ljava/lang/String;
 accessible field net/minecraft/world/level/storage/loot/LootDataType codec Lcom/mojang/serialization/Codec;
+accessible method net/minecraft/world/level/storage/loot/functions/SetComponentsFunction <init> (Ljava/util/List;Lnet/minecraft/core/component/DataComponentPatch;)V
+accessible method net/minecraft/world/level/storage/loot/functions/LootItemConditionalFunction simpleBuilder (Ljava/util/function/Function;)Lnet/minecraft/world/level/storage/loot/functions/LootItemConditionalFunction$Builder;
 
 accessible method net/minecraft/world/entity/npc/VillagerType <init> (Ljava/lang/String;)V
 accessible field net/minecraft/world/entity/item/ItemEntity LIFETIME I
