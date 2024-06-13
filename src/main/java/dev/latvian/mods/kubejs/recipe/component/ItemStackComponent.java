@@ -40,7 +40,7 @@ public class ItemStackComponent implements RecipeComponent<ItemStack> {
 	}
 
 	@Override
-	public boolean isOutput(KubeRecipe recipe, ItemStack value, ReplacementMatch match) {
+	public boolean matches(KubeRecipe recipe, ItemStack value, ReplacementMatch match) {
 		return match instanceof ItemMatch m && !value.isEmpty() && m.contains(value);
 	}
 
@@ -61,6 +61,6 @@ public class ItemStackComponent implements RecipeComponent<ItemStack> {
 
 	@Override
 	public String toString() {
-		return "item_stack";
+		return name;
 	}
 }

@@ -178,25 +178,6 @@ public interface ItemStackJS {
 		return ItemStack.EMPTY;
 	}
 
-	static ItemStack ofString(DynamicOps<Tag> registryOps, String s) {
-		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
-			return ItemStack.EMPTY;
-		} else {
-			try {
-				var reader = new StringReader(s);
-				reader.skipWhitespace();
-
-				if (!reader.canRead()) {
-					return ItemStack.EMPTY;
-				}
-
-				return read(registryOps, new StringReader(s));
-			} catch (CommandSyntaxException ex) {
-				throw new RuntimeException(ex);
-			}
-		}
-	}
-
 	static Item getRawItem(Context cx, @Nullable Object o) {
 		if (o == null) {
 			return Items.AIR;
@@ -215,6 +196,7 @@ public interface ItemStackJS {
 	}
 
 	// Use ItemStackJS.of(object)
+
 	static ItemStack resultFromRecipeJson(DynamicOps<Tag> registryOps, @Nullable JsonElement json) {
 		if (json == null || json.isJsonNull()) {
 			return ItemStack.EMPTY;
@@ -241,6 +223,25 @@ public interface ItemStackJS {
 
 	static boolean isItemStackLike(Object from) {
 		return from instanceof ItemStack;
+	}
+
+	static ItemStack ofString(DynamicOps<Tag> registryOps, String s) {
+		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
+			return ItemStack.EMPTY;
+		} else {
+			try {
+				var reader = new StringReader(s);
+				reader.skipWhitespace();
+
+				if (!reader.canRead()) {
+					return ItemStack.EMPTY;
+				}
+
+				return read(registryOps, new StringReader(s));
+			} catch (CommandSyntaxException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
 	}
 
 	static ItemStack read(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {

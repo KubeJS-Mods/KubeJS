@@ -55,12 +55,7 @@ public record BlockStateComponent(boolean preferObjectForm) implements RecipeCom
 	}
 
 	@Override
-	public boolean isInput(KubeRecipe recipe, BlockState value, ReplacementMatch match) {
-		return match instanceof BlockStatePredicate m2 && m2.test(value);
-	}
-
-	@Override
-	public boolean isOutput(KubeRecipe recipe, BlockState value, ReplacementMatch match) {
+	public boolean matches(KubeRecipe recipe, BlockState value, ReplacementMatch match) {
 		return match instanceof BlockStatePredicate m2 && m2.test(value);
 	}
 

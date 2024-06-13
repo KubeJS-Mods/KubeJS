@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
@@ -66,7 +67,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return ItemBuilder.TOOL_TIERS.getOrDefault(ID.kjsString(asString), Tiers.IRON);
 	}
 
-	public transient Map<DataComponentType<?>, Object> components;
+	public transient Map<Object, Object> components;
 	public transient int maxStackSize;
 	public transient int maxDamage;
 	public transient int burnTime;
@@ -100,12 +101,12 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 	public ItemBuilder(ResourceLocation i) {
 		super(i);
-		maxStackSize = 64;
+		maxStackSize = -1;
 		maxDamage = 0;
 		burnTime = 0;
 		containerItem = null;
 		subtypes = null;
-		rarity = Rarity.COMMON;
+		rarity = null;
 		glow = false;
 		tooltip = new ArrayList<>();
 		textureJson = new JsonObject();
@@ -323,7 +324,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-
 	@Info("Makes the item fire resistant like netherite tools.")
 	public ItemBuilder fireResistant() {
 		return fireResistant(true);
@@ -332,19 +332,27 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public Item.Properties createItemProperties() {
 		var properties = new KubeJSItemProperties(this);
 
-		if (components != null) {
+		if (components != null && !components.isEmpty()) {
 			for (var entry : components.entrySet()) {
-				properties.component((DataComponentType) entry.getKey(), entry.getValue());
+				var type = DataComponentWrapper.wrapType(entry.getKey());
+
+				if (type != null) {
+					properties.component((DataComponentType) type, entry.getValue());
+				} else {
+					ConsoleJS.STARTUP.error("Component '" + entry.getKey() + "' not found for item " + id);
+				}
 			}
 		}
 
 		if (maxDamage > 0) {
 			properties.durability(maxDamage);
-		} else {
+		} else if (maxStackSize != -1) {
 			properties.stacksTo(maxStackSize);
 		}
 
-		properties.rarity(rarity);
+		if (rarity != null) {
+			properties.rarity(rarity);
+		}
 
 		var item = containerItem == null ? Items.AIR : ItemWrapper.getItem(containerItem);
 

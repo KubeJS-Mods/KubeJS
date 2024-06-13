@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -24,6 +25,14 @@ public interface DataComponentWrapper {
 	DynamicCommandExceptionType ERROR_UNKNOWN_COMPONENT = new DynamicCommandExceptionType((object) -> Component.translatableEscape("arguments.item.component.unknown", object));
 	Dynamic2CommandExceptionType ERROR_MALFORMED_COMPONENT = new Dynamic2CommandExceptionType((object, object2) -> Component.translatableEscape("arguments.item.component.malformed", object, object2));
 	SimpleCommandExceptionType ERROR_EXPECTED_COMPONENT = new SimpleCommandExceptionType(Component.translatable("arguments.item.component.expected"));
+
+	static DataComponentType<?> wrapType(Object object) {
+		if (object instanceof DataComponentType) {
+			return (DataComponentType<?>) object;
+		}
+
+		return BuiltInRegistries.DATA_COMPONENT_TYPE.get(ID.mc(object));
+	}
 
 	static DataComponentMap readMap(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
 		reader.skipWhitespace();

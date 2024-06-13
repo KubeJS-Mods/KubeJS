@@ -41,7 +41,7 @@ public class SizedIngredientComponent implements RecipeComponent<SizedIngredient
 	}
 
 	@Override
-	public boolean isInput(KubeRecipe recipe, SizedIngredient value, ReplacementMatch match) {
+	public boolean matches(KubeRecipe recipe, SizedIngredient value, ReplacementMatch match) {
 		return match instanceof ItemMatch m && m.contains(value.ingredient());
 	}
 

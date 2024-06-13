@@ -170,37 +170,21 @@ public interface RecipeComponent<T> {
 	}
 
 	/**
-	 * Returns true if the given value is considered a valid input for this component
-	 * that matches the given replacement match.
-	 *
 	 * @param recipe The recipe object used for context
 	 * @param value  The value to check
 	 * @param match  The replacement match to check against
-	 * @return Whether the given value is a matched input for this component
+	 * @return true if the given value matches the given replacement match.
 	 */
-	default boolean isInput(KubeRecipe recipe, T value, ReplacementMatch match) {
+	default boolean matches(KubeRecipe recipe, T value, ReplacementMatch match) {
 		return false;
 	}
 
 	default T replaceInput(Context cx, KubeRecipe recipe, T original, ReplacementMatch match, InputReplacement with) {
-		return original instanceof InputReplacement r && isInput(recipe, original, match) ? wrap(cx, recipe, with.replaceInput(cx, recipe, match, r)) : original;
-	}
-
-	/**
-	 * Returns true if the given value is considered a valid output for this component
-	 * that matches the given replacement match.
-	 *
-	 * @param recipe The recipe object used for context
-	 * @param value  The value to check
-	 * @param match  The replacement match to check against
-	 * @return Whether the given value is a matched output for this component
-	 */
-	default boolean isOutput(KubeRecipe recipe, T value, ReplacementMatch match) {
-		return false;
+		return original instanceof InputReplacement r && matches(recipe, original, match) ? wrap(cx, recipe, with.replaceInput(cx, recipe, match, r)) : original;
 	}
 
 	default T replaceOutput(Context cx, KubeRecipe recipe, T original, ReplacementMatch match, OutputReplacement with) {
-		return original instanceof OutputReplacement r && isOutput(recipe, original, match) ? wrap(cx, recipe, with.replaceOutput(cx, recipe, match, r)) : original;
+		return original instanceof OutputReplacement r && matches(recipe, original, match) ? wrap(cx, recipe, with.replaceOutput(cx, recipe, match, r)) : original;
 	}
 
 	/**

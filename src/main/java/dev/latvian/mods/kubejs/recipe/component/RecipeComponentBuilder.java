@@ -128,9 +128,9 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public boolean isInput(KubeRecipe recipe, RecipeComponentBuilderMap value, ReplacementMatch match) {
+	public boolean matches(KubeRecipe recipe, RecipeComponentBuilderMap value, ReplacementMatch match) {
 		for (var e : value.holders) {
-			if (e.isInput(recipe, match)) {
+			if (e.matches(recipe, match)) {
 				return true;
 			}
 		}
@@ -147,17 +147,6 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 		}
 
 		return original;
-	}
-
-	@Override
-	public boolean isOutput(KubeRecipe recipe, RecipeComponentBuilderMap value, ReplacementMatch match) {
-		for (var e : value.holders) {
-			if (e.isOutput(recipe, match)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	@Override

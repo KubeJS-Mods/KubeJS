@@ -86,9 +86,9 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public boolean isInput(KubeRecipe recipe, TinyMap<K, V> value, ReplacementMatch match) {
+	public boolean matches(KubeRecipe recipe, TinyMap<K, V> value, ReplacementMatch match) {
 		for (var entry : value.entries()) {
-			if (component.isInput(recipe, entry.value(), match)) {
+			if (component.matches(recipe, entry.value(), match)) {
 				return true;
 			}
 		}
@@ -113,17 +113,6 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 		}
 
 		return map;
-	}
-
-	@Override
-	public boolean isOutput(KubeRecipe recipe, TinyMap<K, V> value, ReplacementMatch match) {
-		for (var entry : value.entries()) {
-			if (component.isOutput(recipe, entry.value(), match)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	@Override

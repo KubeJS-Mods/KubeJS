@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
 import dev.latvian.mods.rhino.Context;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public interface FluidStackKJS extends OutputReplacement, FluidLike {
@@ -13,7 +14,7 @@ public interface FluidStackKJS extends OutputReplacement, FluidLike {
 	}
 
 	@Override
-	default long kjs$getAmount() {
+	default int kjs$getAmount() {
 		return kjs$self().getAmount();
 	}
 
@@ -23,8 +24,13 @@ public interface FluidStackKJS extends OutputReplacement, FluidLike {
 	}
 
 	@Override
-	default FluidLike kjs$copy(long amount) {
-		return (FluidLike) (Object) kjs$self().copyWithAmount((int) amount);
+	default Fluid kjs$getFluid() {
+		return kjs$self().getFluid();
+	}
+
+	@Override
+	default FluidLike kjs$copy(int amount) {
+		return (FluidLike) (Object) kjs$self().copyWithAmount(amount);
 	}
 
 	@Override

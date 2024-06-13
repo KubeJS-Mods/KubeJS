@@ -92,6 +92,8 @@ import dev.latvian.mods.kubejs.recipe.component.BlockStateComponent;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
 import dev.latvian.mods.kubejs.recipe.component.CharacterComponent;
 import dev.latvian.mods.kubejs.recipe.component.EnumComponent;
+import dev.latvian.mods.kubejs.recipe.component.FluidIngredientComponent;
+import dev.latvian.mods.kubejs.recipe.component.FluidStackComponent;
 import dev.latvian.mods.kubejs.recipe.component.IngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.ItemStackComponent;
 import dev.latvian.mods.kubejs.recipe.component.MapRecipeComponent;
@@ -149,6 +151,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CollectionTag;
@@ -189,6 +192,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -477,6 +481,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(CollectionTag.class, (from, target) -> NBTUtils.isTagCollection(from), NBTUtils::toTagCollection);
 		registry.register(ListTag.class, (from, target) -> NBTUtils.isTagCollection(from), NBTUtils::toTagList);
 		registry.register(Tag.class, NBTUtils::toTag);
+		registry.register(DataComponentType.class, DataComponentWrapper::wrapType);
 		registry.register(DataComponentMap.class, DataComponentWrapper::mapOf);
 		registry.register(DataComponentPatch.class, DataComponentWrapper::patchOf);
 
@@ -511,6 +516,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(BlockStatePredicate.class, BlockStatePredicate::of);
 		registry.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
 		registry.register(FluidStack.class, FluidWrapper::wrap);
+		registry.register(FluidIngredient.class, FluidWrapper::wrapIngredient);
 		registry.register(RecipeFilter.class, RecipeFilter::of);
 		registry.register(SlotFilter.class, SlotFilter::wrap);
 		registry.register(Tier.class, ItemBuilder::toolTierOf);
@@ -574,14 +580,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register("item_stack", ItemStackComponent.ITEM_STACK);
 		registry.register("strict_item_stack", ItemStackComponent.STRICT_ITEM_STACK);
 
-		// event.register("inputFluid", FluidComponents.INPUT);
-		// event.register("inputFluidArray", FluidComponents.INPUT_ARRAY);
-		// event.register("inputFluidOrItem", FluidComponents.INPUT_OR_ITEM);
-		// event.register("inputFluidOrItemArray", FluidComponents.INPUT_OR_ITEM_ARRAY);
-		// event.register("outputFluid", FluidComponents.OUTPUT);
-		// event.register("outputFluidArray", FluidComponents.OUTPUT_ARRAY);
-		// event.register("outputFluidOrItem", FluidComponents.OUTPUT_OR_ITEM);
-		// event.register("outputFluidOrItemArray", FluidComponents.OUTPUT_OR_ITEM_ARRAY);
+		registry.register("fluid_stack", FluidStackComponent.FLUID_STACK);
+		registry.register("fluid_ingredient", FluidIngredientComponent.FLUID_INGREDIENT);
 
 		registry.register("block", BlockComponent.BLOCK);
 

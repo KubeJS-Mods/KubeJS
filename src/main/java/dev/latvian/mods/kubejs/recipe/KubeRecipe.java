@@ -326,7 +326,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	@Override
 	public boolean hasInput(Context cx, ReplacementMatch match) {
 		for (var v : inputValues()) {
-			if (v.isInput(this, match)) {
+			if (v.matches(this, match)) {
 				return true;
 			}
 		}
@@ -352,7 +352,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	@Override
 	public boolean hasOutput(Context cx, ReplacementMatch match) {
 		for (var v : outputValues()) {
-			if (v.isOutput(this, match)) {
+			if (v.matches(this, match)) {
 				return true;
 			}
 		}

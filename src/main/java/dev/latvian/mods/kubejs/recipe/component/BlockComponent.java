@@ -38,12 +38,7 @@ public record BlockComponent() implements RecipeComponent<Block> {
 	}
 
 	@Override
-	public boolean isInput(KubeRecipe recipe, Block value, ReplacementMatch match) {
-		return match instanceof BlockStatePredicate m2 && m2.testBlock(value);
-	}
-
-	@Override
-	public boolean isOutput(KubeRecipe recipe, Block value, ReplacementMatch match) {
+	public boolean matches(KubeRecipe recipe, Block value, ReplacementMatch match) {
 		return match instanceof BlockStatePredicate m2 && m2.testBlock(value);
 	}
 

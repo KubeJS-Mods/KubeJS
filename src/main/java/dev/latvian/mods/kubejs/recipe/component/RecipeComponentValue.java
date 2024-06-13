@@ -33,8 +33,8 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 		return copy;
 	}
 
-	public boolean isInput(KubeRecipe recipe, ReplacementMatch match) {
-		return value != null && key.role.isInput() && key.component.isInput(recipe, value, match);
+	public boolean matches(KubeRecipe recipe, ReplacementMatch match) {
+		return value != null && key.role.isInput() && key.component.matches(recipe, value, match);
 	}
 
 	public boolean replaceInput(Context cx, KubeRecipe recipe, ReplacementMatch match, InputReplacement with) {
@@ -51,10 +51,6 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 		}
 
 		return false;
-	}
-
-	public boolean isOutput(KubeRecipe recipe, ReplacementMatch match) {
-		return value != null && key.role.isOutput() && key.component.isOutput(recipe, value, match);
 	}
 
 	public boolean replaceOutput(Context cx, KubeRecipe recipe, ReplacementMatch match, OutputReplacement with) {

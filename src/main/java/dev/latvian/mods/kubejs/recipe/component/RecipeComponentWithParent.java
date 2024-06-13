@@ -41,18 +41,13 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default boolean isInput(KubeRecipe recipe, T value, ReplacementMatch match) {
-		return parentComponent().isInput(recipe, value, match);
+	default boolean matches(KubeRecipe recipe, T value, ReplacementMatch match) {
+		return parentComponent().matches(recipe, value, match);
 	}
 
 	@Override
 	default T replaceInput(Context cx, KubeRecipe recipe, T original, ReplacementMatch match, InputReplacement with) {
 		return parentComponent().replaceInput(cx, recipe, original, match, with);
-	}
-
-	@Override
-	default boolean isOutput(KubeRecipe recipe, T value, ReplacementMatch match) {
-		return parentComponent().isOutput(recipe, value, match);
 	}
 
 	@Override

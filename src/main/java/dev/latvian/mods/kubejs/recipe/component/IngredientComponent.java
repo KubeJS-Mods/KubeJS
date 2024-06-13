@@ -72,7 +72,7 @@ public class IngredientComponent implements RecipeComponent<Ingredient> {
 	}
 
 	@Override
-	public boolean isInput(KubeRecipe recipe, Ingredient value, ReplacementMatch match) {
+	public boolean matches(KubeRecipe recipe, Ingredient value, ReplacementMatch match) {
 		return match instanceof ItemMatch m && m.contains(value);
 	}
 

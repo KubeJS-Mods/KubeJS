@@ -48,9 +48,9 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 	}
 
 	@Override
-	public boolean isInput(KubeRecipe recipe, Either<H, L> value, ReplacementMatch match) {
+	public boolean matches(KubeRecipe recipe, Either<H, L> value, ReplacementMatch match) {
 		var l = value.left();
-		return l.isPresent() ? high.isInput(recipe, l.get(), match) : low.isInput(recipe, value.right().get(), match);
+		return l.isPresent() ? high.matches(recipe, l.get(), match) : low.matches(recipe, value.right().get(), match);
 	}
 
 	@Override
@@ -64,12 +64,6 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 			var r = low.replaceInput(cx, recipe, original.right().get(), match, with);
 			return r == original.right().get() ? original : Either.right(r);
 		}
-	}
-
-	@Override
-	public boolean isOutput(KubeRecipe recipe, Either<H, L> value, ReplacementMatch match) {
-		var l = value.left();
-		return l.isPresent() ? high.isOutput(recipe, l.get(), match) : low.isOutput(recipe, value.right().get(), match);
 	}
 
 	@Override

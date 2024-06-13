@@ -71,6 +71,18 @@
 		],
 		"net/minecraft/class_3505": [
 			"dev/latvian/mods/kubejs/core/TagManagerKJS"
+		],
+		"net/minecraft/class_3611": [
+			"dev/latvian/mods/kubejs/core/FluidKJS"
+		],
+		"net/minecraft/class_3917": [
+			"dev/latvian/mods/kubejs/core/MenuTypeKJS"
+		],
+		"net/minecraft/class_1299": [
+			"dev/latvian/mods/kubejs/core/EntityTypeKJS"
+		],
+		"net/minecraft/class_1887": [
+			"dev/latvian/mods/kubejs/core/EnchantmentKJS"
 		]
 	}
 }

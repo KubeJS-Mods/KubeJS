@@ -99,9 +99,9 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 	}
 
 	@Override
-	public boolean isInput(KubeRecipe recipe, List<T> value, ReplacementMatch match) {
+	public boolean matches(KubeRecipe recipe, List<T> value, ReplacementMatch match) {
 		for (var v : value) {
-			if (component.isInput(recipe, v, match)) {
+			if (component.matches(recipe, v, match)) {
 				return true;
 			}
 		}
@@ -128,17 +128,6 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 		}
 
 		return arr;
-	}
-
-	@Override
-	public boolean isOutput(KubeRecipe recipe, List<T> value, ReplacementMatch match) {
-		for (var v : value) {
-			if (component.isOutput(recipe, v, match)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	@Override
