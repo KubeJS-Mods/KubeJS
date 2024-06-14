@@ -41,8 +41,7 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 
 	@Override
 	public void generateLang(LangKubeEvent event) {
-		event.add(KubeJS.MOD_ID, "key.kubejs.gui", "KubeJS (GUI)");
-		event.add(KubeJS.MOD_ID, "key.kubejs.in_game", "KubeJS (In-Game)");
+		event.add(KubeJS.MOD_ID, "key.kubejs", "KubeJS Info");
 
 		if (ModList.get().isLoaded("jade")) {
 			for (var mod : PlatformWrapper.getMods().values()) {

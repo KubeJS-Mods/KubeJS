@@ -9,12 +9,14 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 @SuppressWarnings("resource")
 @RemapPrefixForJS("kjs$")
@@ -69,6 +71,18 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 
 	default boolean kjs$isKeyDown(int key) {
 		return InputConstants.isKeyDown(kjs$self().getWindow().getWindow(), key);
+	}
+
+	default boolean kjs$isKeyMappingDown(KeyMapping key) {
+		if (!key.isUnbound() && key.isConflictContextAndModifierActive()) {
+			if (key.getKey().getType() == InputConstants.Type.KEYSYM) {
+				return kjs$isKeyDown(key.getKey().getValue());
+			} else if (key.getKey().getType() == InputConstants.Type.MOUSE) {
+				return GLFW.glfwGetMouseButton(kjs$self().getWindow().getWindow(), key.getKey().getValue()) == GLFW.GLFW_TRUE;
+			}
+		}
+
+		return false;
 	}
 
 	default boolean kjs$isShiftDown() {

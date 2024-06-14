@@ -64,7 +64,7 @@ transitive-extendable class net/minecraft/world/item/crafting/Ingredient$Value
 accessible field net/minecraft/world/item/crafting/ShapedRecipe pattern Lnet/minecraft/world/item/crafting/ShapedRecipePattern;
 accessible field net/minecraft/world/item/crafting/ShapedRecipe result Lnet/minecraft/world/item/ItemStack;
 accessible field net/minecraft/world/item/crafting/ShapedRecipe showNotification Z
-accessible method net/minecraft/world/item/crafting/ShapedRecipePattern matches (Lnet/minecraft/world/inventory/CraftingContainer;IIZ)Z
+# accessible method net/minecraft/world/item/crafting/ShapedRecipePattern matches (Lnet/minecraft/world/inventory/CraftingContainer;IIZ)Z
 
 accessible field net/minecraft/server/level/ServerPlayerGameMode isDestroyingBlock Z
 accessible method net/minecraft/server/commands/TeleportCommand performTeleport (Lnet/minecraft/commands/CommandSourceStack;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FFLnet/minecraft/server/commands/TeleportCommand$LookAt;)V

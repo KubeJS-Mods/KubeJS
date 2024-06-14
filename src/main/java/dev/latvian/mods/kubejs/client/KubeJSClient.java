@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class KubeJSClient extends KubeJSCommon {
-	public static KeyMapping guiKey;
-	public static KeyMapping inGameKey;
+	public static KeyMapping key;
+	public static boolean keyDown = false;
 
 	@Override
 	public void reloadClientInternal() {

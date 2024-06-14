@@ -128,7 +128,6 @@ public class KubeJSNeoForgeClient {
 
 	@SubscribeEvent
 	public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
-		event.register(KubeJSClient.guiKey = new KeyMapping("key.kubejs.gui", KeyConflictContext.GUI, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, KeyMapping.CATEGORY_MISC));
-		event.register(KubeJSClient.inGameKey = new KeyMapping("key.kubejs.in_game", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, KeyMapping.CATEGORY_MISC));
+		event.register(KubeJSClient.key = new KeyMapping("key.kubejs", KeyConflictContext.UNIVERSAL, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, KeyMapping.CATEGORY_MISC));
 	}
 }

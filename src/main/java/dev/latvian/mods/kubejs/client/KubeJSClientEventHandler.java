@@ -26,8 +26,10 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.Nullable;
@@ -131,13 +133,32 @@ public class KubeJSClientEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void onRenderGuiPost(RenderGuiEvent.Post event) {
+	public static void hudPostDraw(RenderGuiEvent.Post event) {
 		Painter.getGlobal().inGameScreenDraw(event.getGuiGraphics(), event.getPartialTick());
 	}
 
 	@SubscribeEvent
-	public static void onRenderPost(ScreenEvent.Render.Post event) {
+	public static void screenPostDraw(ScreenEvent.Render.Post event) {
 		Painter.getGlobal().guiScreenDraw(event.getScreen(), event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
+	}
+
+	@SubscribeEvent
+	public static void clientTick(ClientTickEvent.Post event) {
+		var mc = Minecraft.getInstance();
+		boolean prevKeyDown = KubeJSClient.keyDown;
+
+		KubeJSClient.keyDown = mc.level != null && mc.player != null && KubeJSClient.key != null && !mc.isPaused() && mc.kjs$isKeyMappingDown(KubeJSClient.key);
+
+		if (prevKeyDown != KubeJSClient.keyDown) {
+			// KubeJS.LOGGER.info("AAAA");
+		}
+	}
+
+	@SubscribeEvent
+	public static void worldRender(RenderLevelStageEvent event) {
+		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+			// noop
+		}
 	}
 
 	@Nullable
