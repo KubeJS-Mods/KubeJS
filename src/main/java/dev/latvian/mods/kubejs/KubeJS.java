@@ -35,7 +35,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.DistExecutor;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -80,12 +79,12 @@ public class KubeJS {
 	public static String VERSION = "0";
 
 	public static ResourceLocation id(String path) {
-		return new ResourceLocation(MOD_ID, path);
+		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 	}
 
 	public static ModContainer thisMod;
 
-	public static KubeJSCommon PROXY;
+	public static KubeJSCommon PROXY = new KubeJSCommon();
 
 	private static ScriptManager startupScriptManager, clientScriptManager;
 
@@ -126,8 +125,7 @@ public class KubeJS {
 			}
 		}
 
-		//noinspection removal
-		PROXY = DistExecutor.safeRunForDist(() -> KubeJSClient::new, () -> KubeJSCommon::new);
+		PROXY = new KubeJSClient();
 
 		if (!PlatformWrapper.isGeneratingData()) {
 			new KubeJSBackgroundThread().start();
@@ -155,8 +153,6 @@ public class KubeJS {
 		startupScriptManager.reload();
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::initStartup);
-
-		PROXY.init();
 
 		for (var key : StartupEvents.REGISTRY.findUniqueExtraIds(ScriptType.STARTUP)) {
 			StartupEvents.REGISTRY.post(new RegistryKubeEvent<>((ResourceKey) key), key);

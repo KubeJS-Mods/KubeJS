@@ -105,7 +105,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	}
 
 	@Override
-	public BuilderBase<FlowingFluid> tag(ResourceLocation tag) {
+	public BuilderBase<FlowingFluid> tag(ResourceLocation[] tag) {
 		flowingFluid.tag(tag);
 		return super.tag(tag);
 	}

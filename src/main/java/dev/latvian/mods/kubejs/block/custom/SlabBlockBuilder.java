@@ -9,9 +9,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 
 public class SlabBlockBuilder extends ShapedBlockBuilder {
+	public static final ResourceLocation[] SLAB_TAGS = {
+		BlockTags.SLABS.location(),
+	};
+
 	public SlabBlockBuilder(ResourceLocation i) {
 		super(i, "_slab");
-		tagBoth(BlockTags.SLABS.location());
+		tagBoth(SLAB_TAGS);
 	}
 
 	@Override

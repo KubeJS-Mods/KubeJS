@@ -25,7 +25,7 @@ public class PlayerStatsJS {
 		} else if (o instanceof ResourceLocation rl) {
 			return Stats.CUSTOM.get(rl);
 		} else if (o instanceof CharSequence cs) {
-			return Stats.CUSTOM.get(new ResourceLocation(cs.toString()));
+			return Stats.CUSTOM.get(ResourceLocation.parse(cs.toString()));
 		}
 		return null;
 	}

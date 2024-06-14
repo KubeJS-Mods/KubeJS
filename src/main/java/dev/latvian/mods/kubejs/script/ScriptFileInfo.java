@@ -32,7 +32,7 @@ public class ScriptFileInfo {
 	public ScriptFileInfo(ScriptPackInfo p, String f) {
 		pack = p;
 		file = f;
-		id = new ResourceLocation(pack.namespace, FILE_FIXER.matcher(pack.pathStart + file).replaceAll("_").toLowerCase());
+		id = ResourceLocation.fromNamespaceAndPath(pack.namespace, FILE_FIXER.matcher(pack.pathStart + file).replaceAll("_").toLowerCase());
 		location = ID.string(pack.namespace + ":" + pack.pathStart + file);
 		properties = new HashMap<>();
 		priority = 0;

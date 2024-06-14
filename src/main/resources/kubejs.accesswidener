@@ -22,7 +22,7 @@ accessible field net/minecraft/world/item/crafting/ShapelessRecipe$Serializer CO
 # attributes
 accessible class net/minecraft/world/effect/MobEffect$AttributeTemplate
 accessible field net/minecraft/world/effect/MobEffect attributeModifiers Ljava/util/Map;
-accessible method net/minecraft/world/effect/MobEffect$AttributeTemplate <init> (Ljava/util/UUID;DLnet/minecraft/world/entity/ai/attributes/AttributeModifier$Operation;)V
+accessible method net/minecraft/world/effect/MobEffect$AttributeTemplate <init> (Lnet/minecraft/resources/ResourceLocation;DLnet/minecraft/world/entity/ai/attributes/AttributeModifier$Operation;)V
 accessible field net/minecraft/world/item/ArmorItem defaultModifiers Ljava/util/function/Supplier;
 mutable field net/minecraft/world/item/ArmorItem defaultModifiers Ljava/util/function/Supplier;
 
@@ -68,7 +68,7 @@ accessible method net/minecraft/world/item/crafting/ShapedRecipePattern matches 
 
 accessible field net/minecraft/server/level/ServerPlayerGameMode isDestroyingBlock Z
 accessible method net/minecraft/server/commands/TeleportCommand performTeleport (Lnet/minecraft/commands/CommandSourceStack;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FFLnet/minecraft/server/commands/TeleportCommand$LookAt;)V
-accessible field net/minecraft/commands/arguments/selector/EntitySelector predicate Ljava/util/function/Predicate;
+accessible field net/minecraft/commands/arguments/selector/EntitySelector contextFreePredicates Ljava/util/List;
 accessible field net/minecraft/world/level/storage/loot/LootContext$EntityTarget name Ljava/lang/String;
 accessible field net/minecraft/world/level/storage/loot/LootDataType codec Lcom/mojang/serialization/Codec;
 accessible method net/minecraft/world/level/storage/loot/functions/SetComponentsFunction <init> (Ljava/util/List;Lnet/minecraft/core/component/DataComponentPatch;)V

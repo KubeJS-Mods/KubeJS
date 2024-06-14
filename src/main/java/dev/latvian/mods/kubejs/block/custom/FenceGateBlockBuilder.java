@@ -9,15 +9,20 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.properties.WoodType;
+import net.neoforged.neoforge.common.Tags;
 
 @ReturnsSelf
 public class FenceGateBlockBuilder extends ShapedBlockBuilder {
+	public static final ResourceLocation[] FENCE_GATE_TAGS = {
+		BlockTags.FENCE_GATES.location(),
+		Tags.Blocks.FENCE_GATES.location()
+	};
+
 	public transient WoodType behaviour;
 
 	public FenceGateBlockBuilder(ResourceLocation i) {
 		super(i, "_fence_gate");
-		tagBoth(BlockTags.FENCE_GATES.location());
-		tagBoth(new ResourceLocation("c:fence_gates"));
+		tagBoth(FENCE_GATE_TAGS);
 		behaviour = WoodType.OAK;
 	}
 

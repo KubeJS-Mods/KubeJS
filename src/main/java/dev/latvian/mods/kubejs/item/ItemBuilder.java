@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -19,9 +20,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.EitherHolder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.JukeboxPlayable;
+import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
@@ -39,6 +43,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.ToIntBiFunction;
 import java.util.function.ToIntFunction;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
@@ -67,6 +72,9 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return ItemBuilder.TOOL_TIERS.getOrDefault(ID.kjsString(asString), Tiers.IRON);
 	}
 
+	public record HurtEnemyContext(ItemStack getItem, LivingEntity getTarget, LivingEntity getAttacker) {
+	}
+
 	public transient Map<Object, Object> components;
 	public transient int maxStackSize;
 	public transient int maxDamage;
@@ -85,11 +93,12 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	public transient NameCallback nameGetter;
 
 	public transient UseAnim anim;
-	public transient ToIntFunction<ItemStack> useDuration;
+	public transient ToIntBiFunction<ItemStack, LivingEntity> useDuration;
 	public transient UseCallback use;
 	public transient FinishUsingCallback finishUsing;
 	public transient ReleaseUsingCallback releaseUsing;
 	public transient Predicate<HurtEnemyContext> hurtEnemy;
+	public transient JukeboxPlayable jukeboxPlayable;
 
 	public String texture;
 	public String parentModel;
@@ -329,56 +338,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return fireResistant(true);
 	}
 
-	public Item.Properties createItemProperties() {
-		var properties = new KubeJSItemProperties(this);
-
-		if (components != null && !components.isEmpty()) {
-			for (var entry : components.entrySet()) {
-				var type = DataComponentWrapper.wrapType(entry.getKey());
-
-				if (type != null) {
-					properties.component((DataComponentType) type, entry.getValue());
-				} else {
-					ConsoleJS.STARTUP.error("Component '" + entry.getKey() + "' not found for item " + id);
-				}
-			}
-		}
-
-		if (maxDamage > 0) {
-			properties.durability(maxDamage);
-		} else if (maxStackSize != -1) {
-			properties.stacksTo(maxStackSize);
-		}
-
-		if (rarity != null) {
-			properties.rarity(rarity);
-		}
-
-		var item = containerItem == null ? Items.AIR : ItemWrapper.getItem(containerItem);
-
-		if (item != Items.AIR) {
-			properties.craftRemainder(item);
-		}
-
-		if (foodBuilder != null) {
-			properties.food(foodBuilder.build());
-		}
-
-		if (fireResistant) {
-			properties.fireResistant();
-		}
-
-		if (tool != null) {
-			properties.component(DataComponents.TOOL, tool);
-		}
-
-		if (itemAttributeModifiers != null) {
-			properties.attributes(itemAttributeModifiers);
-		}
-
-		return properties;
-	}
-
 	@Info("Determines the animation of the item when used, e.g. eating food.")
 	public ItemBuilder useAnimation(UseAnim animation) {
 		this.anim = animation;
@@ -391,7 +350,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		For example, when eating food, this is the time it takes to eat the food.
 		This can change the eating speed, or be used for other things (like making a custom bow).
 		""")
-	public ItemBuilder useDuration(ToIntFunction<ItemStack> useDuration) {
+	public ItemBuilder useDuration(ToIntBiFunction<ItemStack, LivingEntity> useDuration) {
 		this.useDuration = useDuration;
 		return this;
 	}
@@ -440,6 +399,15 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
+	public ItemBuilder jukeboxPlayable(Holder<JukeboxSong> song, boolean showInTooltip) {
+		this.jukeboxPlayable = new JukeboxPlayable(new EitherHolder<>(song), showInTooltip);
+		return this;
+	}
+
+	public ItemBuilder jukeboxPlayable(Holder<JukeboxSong> song) {
+		return jukeboxPlayable(song, true);
+	}
+
 	@FunctionalInterface
 	public interface UseCallback {
 		boolean use(Level level, Player player, InteractionHand interactionHand);
@@ -460,6 +428,57 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		Component apply(ItemStack itemStack);
 	}
 
-	public record HurtEnemyContext(ItemStack getItem, LivingEntity getTarget, LivingEntity getAttacker) {
+	public Item.Properties createItemProperties() {
+		var properties = new KubeJSItemProperties(this);
+
+		if (components != null && !components.isEmpty()) {
+			for (var entry : components.entrySet()) {
+				var type = DataComponentWrapper.wrapType(entry.getKey());
+
+				if (type != null) {
+					properties.component((DataComponentType) type, entry.getValue());
+				} else {
+					ConsoleJS.STARTUP.error("Component '" + entry.getKey() + "' not found for item " + id);
+				}
+			}
+		}
+
+		if (maxDamage > 0) {
+			properties.durability(maxDamage);
+		} else if (maxStackSize != -1) {
+			properties.stacksTo(maxStackSize);
+		}
+
+		if (rarity != null) {
+			properties.rarity(rarity);
+		}
+
+		var item = containerItem == null ? Items.AIR : ItemWrapper.getItem(containerItem);
+
+		if (item != Items.AIR) {
+			properties.craftRemainder(item);
+		}
+
+		if (foodBuilder != null) {
+			properties.food(foodBuilder.build());
+		}
+
+		if (fireResistant) {
+			properties.fireResistant();
+		}
+
+		if (tool != null) {
+			properties.component(DataComponents.TOOL, tool);
+		}
+
+		if (itemAttributeModifiers != null) {
+			properties.attributes(itemAttributeModifiers);
+		}
+
+		if (jukeboxPlayable != null) {
+			properties.component(DataComponents.JUKEBOX_PLAYABLE, jukeboxPlayable);
+		}
+
+		return properties;
 	}
 }

@@ -54,9 +54,9 @@ public class BasicMobEffect extends MobEffect {
 	}
 
 	@Override
-	public MobEffect addAttributeModifier(Holder<Attribute> attribute, String string, double d, AttributeModifier.Operation operation) {
+	public MobEffect addAttributeModifier(Holder<Attribute> attribute, ResourceLocation id, double d, AttributeModifier.Operation operation) {
 		applyAttributeModifications();
-		return super.addAttributeModifier(attribute, string, d, operation);
+		return super.addAttributeModifier(attribute, id, d, operation);
 	}
 
 	@Override

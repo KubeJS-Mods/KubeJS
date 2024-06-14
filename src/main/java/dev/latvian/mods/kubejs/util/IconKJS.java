@@ -72,13 +72,12 @@ public interface IconKJS {
 			int p0 = -size / 2;
 			int p1 = p0 + size;
 
-			var buf = Tesselator.getInstance().getBuilder();
-			buf.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-			buf.vertex(m, x + p0, y + p1, 0F).uv(0F, 1F).color(255, 255, 255, 255).endVertex();
-			buf.vertex(m, x + p1, y + p1, 0F).uv(1F, 1F).color(255, 255, 255, 255).endVertex();
-			buf.vertex(m, x + p1, y + p0, 0F).uv(1F, 0F).color(255, 255, 255, 255).endVertex();
-			buf.vertex(m, x + p0, y + p0, 0F).uv(0F, 0F).color(255, 255, 255, 255).endVertex();
-			BufferUploader.drawWithShader(buf.end());
+			var buf = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+			buf.addVertex(m, x + p0, y + p1, 0F).setUv(0F, 1F).setColor(255, 255, 255, 255);
+			buf.addVertex(m, x + p1, y + p1, 0F).setUv(1F, 1F).setColor(255, 255, 255, 255);
+			buf.addVertex(m, x + p1, y + p0, 0F).setUv(1F, 0F).setColor(255, 255, 255, 255);
+			buf.addVertex(m, x + p0, y + p0, 0F).setUv(0F, 0F).setColor(255, 255, 255, 255);
+			BufferUploader.drawWithShader(buf.buildOrThrow());
 		}
 	}
 
@@ -117,13 +116,12 @@ public interface IconKJS {
 			float u1 = sprite.getU1();
 			float v1 = sprite.getV1();
 
-			var buf = Tesselator.getInstance().getBuilder();
-			buf.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-			buf.vertex(m, x + p0, y + p1, 0F).uv(u0, v1).color(255, 255, 255, 255).endVertex();
-			buf.vertex(m, x + p1, y + p1, 0F).uv(u1, v1).color(255, 255, 255, 255).endVertex();
-			buf.vertex(m, x + p1, y + p0, 0F).uv(u1, v0).color(255, 255, 255, 255).endVertex();
-			buf.vertex(m, x + p0, y + p0, 0F).uv(u0, v0).color(255, 255, 255, 255).endVertex();
-			BufferUploader.drawWithShader(buf.end());
+			var buf = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+			buf.addVertex(m, x + p0, y + p1, 0F).setUv(u0, v1).setColor(255, 255, 255, 255);
+			buf.addVertex(m, x + p1, y + p1, 0F).setUv(u1, v1).setColor(255, 255, 255, 255);
+			buf.addVertex(m, x + p1, y + p0, 0F).setUv(u1, v0).setColor(255, 255, 255, 255);
+			buf.addVertex(m, x + p0, y + p0, 0F).setUv(u0, v0).setColor(255, 255, 255, 255);
+			BufferUploader.drawWithShader(buf.buildOrThrow());
 		}
 	}
 

@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(LoadingOverlay.class)
 public abstract class LoadingOverlayMixin {
+	// FIXME
 /*
 	@SuppressWarnings("UnresolvedMixinReference")
 	@Inject(method = {"lambda$static$0", "m_169327_", "method_35733"}, at = @At("HEAD"), remap = false, cancellable = true)

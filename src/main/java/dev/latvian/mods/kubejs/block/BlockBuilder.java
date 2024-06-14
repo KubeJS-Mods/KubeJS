@@ -686,25 +686,25 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	@Info("Tags both the block and the item with the given tag.")
-	public BlockBuilder tag(ResourceLocation tag) {
+	public BlockBuilder tag(ResourceLocation[] tag) {
 		return tagBoth(tag);
 	}
 
 	@Info("Tags both the block and the item with the given tag.")
-	public BlockBuilder tagBoth(ResourceLocation tag) {
+	public BlockBuilder tagBoth(ResourceLocation[] tag) {
 		tagBlock(tag);
 		tagItem(tag);
 		return this;
 	}
 
 	@Info("Tags the block with the given tag.")
-	public BlockBuilder tagBlock(ResourceLocation tag) {
+	public BlockBuilder tagBlock(ResourceLocation[] tag) {
 		super.tag(tag);
 		return this;
 	}
 
 	@Info("Tags the item with the given tag.")
-	public BlockBuilder tagItem(ResourceLocation tag) {
+	public BlockBuilder tagItem(ResourceLocation[] tag) {
 		itemBuilder.tag(tag);
 		return this;
 	}

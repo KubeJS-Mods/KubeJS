@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.recipe.ingredientaction;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 
 public class KeepAction implements IngredientAction {
 	public static final IngredientActionType TYPE = new IngredientActionType("keep", MapCodec.unit(new KeepAction()));
@@ -13,7 +13,7 @@ public class KeepAction implements IngredientAction {
 	}
 
 	@Override
-	public ItemStack transform(ItemStack old, int index, CraftingContainer container) {
+	public ItemStack transform(ItemStack old, int index, CraftingInput input) {
 		old.setCount(1);
 		return old;
 	}

@@ -10,10 +10,8 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author Prunoideae
@@ -45,9 +43,8 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 		return RegistryInfo.MOB_EFFECT;
 	}
 
-	public MobEffectBuilder modifyAttribute(ResourceLocation attribute, String id, double d, AttributeModifier.Operation operation) {
-		var uuid = UUID.nameUUIDFromBytes(id.getBytes(StandardCharsets.UTF_8));
-		attributeModifiers.put(attribute, new MobEffect.AttributeTemplate(uuid, d, operation));
+	public MobEffectBuilder modifyAttribute(ResourceLocation attribute, ResourceLocation id, double d, AttributeModifier.Operation operation) {
+		attributeModifiers.put(attribute, new MobEffect.AttributeTemplate(id, d, operation));
 		return this;
 	}
 

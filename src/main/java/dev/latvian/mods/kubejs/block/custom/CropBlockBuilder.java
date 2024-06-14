@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -36,6 +37,14 @@ import java.util.function.ToIntFunction;
 
 @ReturnsSelf
 public class CropBlockBuilder extends BlockBuilder {
+	public static final ResourceLocation[] CROP_BLOCK_TAGS = {
+		BlockTags.CROPS.location(),
+	};
+
+	public static final ResourceLocation[] CROP_ITEM_TAGS = {
+		Tags.Items.SEEDS.location(),
+	};
+
 	@FunctionalInterface
 	public interface SurviveCallback {
 		boolean survive(BlockState state, LevelReader reader, BlockPos pos);
@@ -96,8 +105,8 @@ public class CropBlockBuilder extends BlockBuilder {
 			texture(String.valueOf(a), id.getNamespace() + ":block/" + id.getPath() + a);
 		}
 
-		tagBlock(BlockTags.CROPS.location());
-		tagItem(new ResourceLocation("c:seeds"));
+		tagBlock(CROP_BLOCK_TAGS);
+		tagItem(CROP_ITEM_TAGS);
 	}
 
 	@Info("Add a crop output with a 100% chance.")

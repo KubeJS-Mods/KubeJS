@@ -37,9 +37,9 @@ public interface TagEventFilter {
 
 			if (!s.isEmpty()) {
 				return switch (s.charAt(0)) {
-					case '#' -> new Tag(event.get(new ResourceLocation(s.substring(1))));
+					case '#' -> new Tag(event.get(ResourceLocation.parse(s.substring(1))));
 					case '@' -> new Namespace(s.substring(1));
-					default -> new ID(new ResourceLocation(s));
+					default -> new ID(ResourceLocation.parse(s));
 				};
 			}
 

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
+import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
@@ -26,6 +27,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 import java.util.Map;
@@ -35,9 +38,6 @@ public interface KubeJSPlugin {
 	}
 
 	default void initStartup() {
-	}
-
-	default void clientInit() {
 	}
 
 	default void afterInit() {
@@ -80,6 +80,10 @@ public interface KubeJSPlugin {
 	}
 
 	default void registerIngredientActionTypes(IngredientActionTypeRegistry registry) {
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	default void painterRegistry(Painter painter) {
 	}
 
 	default void attachServerData(AttachedData<MinecraftServer> event) {

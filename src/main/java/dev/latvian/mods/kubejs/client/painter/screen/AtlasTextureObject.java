@@ -56,11 +56,9 @@ public class AtlasTextureObject extends BoxObject {
 		var u1 = sprite.getU1();
 		var v1 = sprite.getV1();
 		event.resetShaderColor();
-		event.setPositionColorTextureShader();
+		event.setPositionTextureColorShader();
 		event.setShaderTexture(atlas);
 		event.blend(true);
-		event.beginQuads(true);
 		event.rectangle(ax, ay, az, aw, ah, color.getInt(event), u0, v0, u1, v1);
-		event.end();
 	}
 }

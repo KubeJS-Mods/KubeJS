@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.client.painter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.client.ClientKubeEvent;
 import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
@@ -14,6 +15,7 @@ import dev.latvian.mods.kubejs.client.painter.screen.ScreenPainterObject;
 import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.unit.FixedNumberUnit;
@@ -22,6 +24,7 @@ import dev.latvian.mods.unit.Unit;
 import dev.latvian.mods.unit.UnitContext;
 import dev.latvian.mods.unit.UnitVariables;
 import dev.latvian.mods.unit.VariableSet;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -33,7 +36,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Painter implements UnitVariables {
-	public static final Painter INSTANCE = new Painter("global");
+	public static Painter global;
+
+	public static synchronized Painter getGlobal() {
+		if (global == null) {
+			global = new Painter("global");
+		}
+
+		return global;
+	}
 
 	public final String id;
 	private final Object lock;
@@ -72,6 +83,8 @@ public class Painter implements UnitVariables {
 		variables.set("$screenH", screenHeightUnit);
 		variables.set("$mouseX", mouseXUnit);
 		variables.set("$mouseY", mouseYUnit);
+
+		KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::painterRegistry);
 	}
 
 	public Unit unitOf(Context cx, Object o) {
@@ -176,7 +189,7 @@ public class Painter implements UnitVariables {
 		return variables;
 	}
 
-	public void inGameScreenDraw(GuiGraphics graphics, float delta) {
+	public void inGameScreenDraw(GuiGraphics graphics, DeltaTracker delta) {
 		var mc = Minecraft.getInstance();
 
 		if (mc.player == null || mc.getDebugOverlay().showDebugScreen() || mc.screen != null) {
@@ -189,8 +202,8 @@ public class Painter implements UnitVariables {
 
 		RenderSystem.enableDepthTest();
 
-		var event = new PaintScreenKubeEvent(mc, graphics, this, delta);
-		deltaUnit.set(delta);
+		var event = new PaintScreenKubeEvent(mc, graphics, this, delta.getGameTimeDeltaTicks());
+		deltaUnit.set(delta.getGameTimeDeltaTicks());
 		screenWidthUnit.set(event.width);
 		screenHeightUnit.set(event.height);
 		mouseXUnit.set(event.width / 2D);

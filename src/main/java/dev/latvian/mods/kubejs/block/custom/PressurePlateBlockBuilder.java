@@ -12,12 +12,16 @@ import net.minecraft.world.level.block.state.properties.BlockSetType;
 
 @ReturnsSelf
 public class PressurePlateBlockBuilder extends ShapedBlockBuilder {
+	public static final ResourceLocation[] PRESSURE_PLATE_TAGS = {
+		BlockTags.PRESSURE_PLATES.location(),
+	};
+
 	public transient BlockSetType behaviour;
 
 	public PressurePlateBlockBuilder(ResourceLocation i) {
 		super(i, "_pressure_plate");
 		noCollision();
-		tagBoth(BlockTags.PRESSURE_PLATES.location());
+		tagBoth(PRESSURE_PLATE_TAGS);
 		// tagBoth(BlockTags.WOODEN_PRESSURE_PLATES.location());
 		behaviour = BlockSetType.OAK;
 	}

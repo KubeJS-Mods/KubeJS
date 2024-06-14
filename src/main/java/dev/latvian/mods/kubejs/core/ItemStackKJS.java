@@ -207,13 +207,13 @@ public interface ItemStackKJS extends
 		return EnchantmentHelper.getEnchantmentsForCrafting(kjs$self());
 	}
 
-	default boolean kjs$hasEnchantment(Enchantment enchantment, int level) {
+	default boolean kjs$hasEnchantment(Holder<Enchantment> enchantment, int level) {
 		var e = kjs$getEnchantments();
 		return e != null && e.getLevel(enchantment) >= level;
 	}
 
 	@ReturnsSelf
-	default ItemStack kjs$enchant(Enchantment enchantment, int level) {
+	default ItemStack kjs$enchant(Holder<Enchantment> enchantment, int level) {
 		var is = kjs$self();
 		is.enchant(enchantment, level);
 		return is;
@@ -225,7 +225,7 @@ public interface ItemStackKJS extends
 
 		EnchantmentHelper.updateEnchantments(is, mutable -> {
 			for (var entry : enchantments.entrySet()) {
-				mutable.upgrade(entry.getKey().value(), entry.getValue());
+				mutable.upgrade(entry.getKey(), entry.getValue());
 			}
 		});
 

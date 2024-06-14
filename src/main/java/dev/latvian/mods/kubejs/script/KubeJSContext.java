@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.script;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
@@ -16,6 +15,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.ClassVisibilityContext;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
@@ -25,6 +25,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class KubeJSContext extends Context {
 	public final KubeJSContextFactory kjsFactory;
@@ -84,55 +85,13 @@ public class KubeJSContext extends Context {
 		return getRegistries().java();
 	}
 
-	/*
-	static Holder<?> holderOf(Context cx, Object from, TypeInfo target) {
-		if (from == null) {
-			return null;
-		} else if (from instanceof Holder<?> h) {
-			return h;
-		} else if (from instanceof RegistryObjectKJS<?> w) {
-			return w.kjs$asHolder();
-		}
-
-		var reg = RegistryInfo.ofClass(target.param(0).asClass());
-
-		if (reg != null) {
-			return reg.getHolder(ID.mc(from));
-		}
-
-		return new Holder.Direct<>(from);
-	}
-
-	static ResourceKey<?> resourceKeyOf(Context cx, Object from, TypeInfo target) {
-		if (from == null) {
-			return null;
-		} else if (from instanceof ResourceKey<?> k) {
-			return k;
-		} else if (from instanceof RegistryObjectKJS<?> w) {
-			return w.kjs$getRegistryKey();
-		}
-
-		var cl = target.param(0).asClass();
-
-		if (cl == ResourceKey.class) {
-			return ResourceKey.createRegistryKey(ID.mc(from));
-		}
-
-		var reg = RegistryInfo.ofClass(cl);
-
-		if (reg != null) {
-			return ResourceKey.create(reg.key, ID.mc(from));
-		}
-
-		throw new IllegalArgumentException("Can't parse " + from + " as ResourceKey<?>!");
-	}
-	 */
-
 	@Override
-	public int internalConversionWeight(Object fromObj, TypeInfo target) {
-		var s = super.internalConversionWeight(fromObj, target);
+	public int internalConversionWeightLast(Object fromObj, TypeInfo target) {
+		var c = target.asClass();
 
-		if (s == CONVERSION_NONE && target.shouldConvert()) {
+		if (c == Optional.class || c == ResourceKey.class || c == Holder.class || c == HolderSet.class || c == TagKey.class) {
+			return CONVERSION_TRIVIAL;
+		} else if (c != Object.class) {
 			var reg = RegistryType.allOfClass(target.asClass());
 
 			if (!reg.isEmpty()) {
@@ -140,54 +99,99 @@ public class KubeJSContext extends Context {
 			}
 		}
 
-		return s;
+		return super.internalConversionWeightLast(fromObj, target);
+	}
+
+	private RegistryType<?> lookupRegistryType(TypeInfo type, Object from) {
+		var registryType = RegistryType.lookup(type);
+
+		if (registryType == null) {
+			throw reportRuntimeError("Can't interpret '" + from + "': no registries for type '" + type + "' found", this);
+		}
+
+		return registryType;
+	}
+
+	private Registry<?> lookupRegistry(TypeInfo type, Object from) {
+		var registryType = lookupRegistryType(type, from);
+
+		var registry = getRegistries().access().registry(registryType.key()).orElse(null);
+
+		if (registry == null) {
+			throw reportRuntimeError("Can't interpret '" + from + "' as '" + registryType.key().location() + "': registry not found", this);
+		}
+
+		return registry;
 	}
 
 	@Override
 	protected Object internalJsToJavaLast(Object from, TypeInfo target) {
-		if (target.asClass() == ResourceKey.class) {
-			var reg = RegistryType.lookup(target.param(0));
+		var c = target.asClass();
 
-			if (reg == null) {
-				throw reportRuntimeError("Can't find matching '" + target + "' registry type", this);
+		if (c == Optional.class) {
+			if (from instanceof Optional<?> o) {
+				return o;
 			}
 
-			throw reportRuntimeError("Can't interpret '" + from + "' as ResourceKey: not supported yet", this);
-		} else if (target.asClass() == Holder.class) {
-			var reg = RegistryType.lookup(target.param(0));
-
-			if (reg == null) {
-				throw reportRuntimeError("Can't find matching '" + target + "' registry type", this);
+			return Optional.ofNullable(jsToJava(from, target.param(0)));
+		} else if (c == ResourceKey.class) {
+			if (from instanceof ResourceKey<?> k) {
+				return k;
 			}
 
-			throw reportRuntimeError("Can't interpret '" + from + "' as Holder: not supported yet", this);
-		} else if (target.asClass() == HolderSet.class) {
-			var reg = RegistryType.lookup(target.param(0));
+			var registry = lookupRegistry(target.param(0), from);
+			var id = ID.mc(from);
 
-			if (reg == null) {
-				throw reportRuntimeError("Can't find matching '" + target + "' registry type", this);
+			return ResourceKey.create(registry.key(), id);
+		} else if (c == Holder.class) {
+			if (from instanceof Holder<?> h) {
+				return h;
 			}
 
-			throw reportRuntimeError("Can't interpret '" + from + "' as TagKey: not supported yet", this);
-		} else if (target.asClass() == TagKey.class) {
-			var reg = RegistryType.lookup(target.param(0));
+			var registry = lookupRegistry(target.param(0), from);
+			var id = ID.mc(from);
 
-			if (reg == null) {
-				throw reportRuntimeError("Can't find matching '" + target + "' registry type", this);
+			var holder = registry.getHolder(id);
+
+			if (holder.isEmpty()) {
+				throw reportRuntimeError("Can't interpret '" + from + "' as Holder: entry not found", this);
 			}
 
-			throw reportRuntimeError("Can't interpret '" + from + "' as TagKey: not supported yet", this);
+			return holder.get();
+		} else if (c == HolderSet.class) {
+			if (from instanceof HolderSet<?> h) {
+				return h;
+			}
+
+			var registry = lookupRegistry(target.param(0), from);
+
+			throw reportRuntimeError("Can't interpret '" + from + "' as HolderSet: not supported yet", this);
+		} else if (c == TagKey.class) {
+			if (from instanceof TagKey<?> k) {
+				return k;
+			}
+
+			var registryType = lookupRegistryType(target.param(0), from);
+			var id = ID.mc(from);
+			return TagKey.create(registryType.key(), id);
+		} else if (from instanceof Holder<?> holder && c.isInstance(holder.value())) {
+			return holder.value();
 		} else {
 			var reg = RegistryType.lookup(target);
 
 			if (reg != null) {
-				var regInfo = RegistryInfo.of(reg.key());
-				var value = regInfo.getValue(ID.mc(from));
+				var registry = getRegistries().access().registry(reg.key()).orElse(null);
+
+				if (registry == null) {
+					throw reportRuntimeError("Can't interpret '" + from + "' as '" + reg.key().location() + "': registry not found", this);
+				}
+
+				var value = registry.get(ID.mc(from));
 
 				if (value != null) {
 					return value;
 				} else {
-					throw reportRuntimeError("Can't interpret '" + from + "' as '" + regInfo + "' registry object", this);
+					throw reportRuntimeError("Can't interpret '" + from + "' as '" + reg.key().location() + "': entry not found", this);
 				}
 			}
 		}

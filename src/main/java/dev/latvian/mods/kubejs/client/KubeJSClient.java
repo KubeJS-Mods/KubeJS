@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.client;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.net.NetworkKubeEvent;
@@ -11,7 +10,6 @@ import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -35,29 +33,11 @@ public class KubeJSClient extends KubeJSCommon {
 	public static KeyMapping inGameKey;
 
 	@Override
-	public void init() {
-		var mc = Minecraft.getInstance();
-		// You'd think that this is impossible, but not when you use runData gradle task
-		if (mc == null) {
-			return;
-		}
-
-		reloadClientScripts(mc);
-
-		mc.getResourcePackRepository().addPackFinder(new KubeJSResourcePackFinder());
-
-		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clientInit);
-	}
-
-	@Override
 	public void reloadClientInternal() {
-		var mc = Minecraft.getInstance();
-		if (mc != null) {
-			reloadClientScripts(mc);
-		}
+		reloadClientScripts();
 	}
 
-	public static void reloadClientScripts(Minecraft mc) {
+	public static void reloadClientScripts() {
 		KubeJSClientEventHandler.staticItemTooltips = null;
 		KubeJS.getClientScriptManager().reload();
 	}
@@ -92,7 +72,7 @@ public class KubeJSClient extends KubeJSCommon {
 
 	@Override
 	public void paint(CompoundTag tag) {
-		Painter.INSTANCE.paint(tag);
+		Painter.getGlobal().paint(tag);
 	}
 
 	private void reload(PreparableReloadListener listener) {
@@ -122,11 +102,8 @@ public class KubeJSClient extends KubeJSCommon {
 
 	@Override
 	public void reloadLang() {
-		var mc = Minecraft.getInstance();
-		if (mc != null) {
-			reloadClientScripts(mc);
-			reload(mc.getLanguageManager());
-		}
+		reloadClientScripts();
+		reload(Minecraft.getInstance().getLanguageManager());
 	}
 
 	@Override

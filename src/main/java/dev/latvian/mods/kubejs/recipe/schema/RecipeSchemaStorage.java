@@ -63,7 +63,7 @@ public class RecipeSchemaStorage {
 				var json = JsonUtils.GSON.fromJson(reader, JsonObject.class);
 
 				for (var entry1 : json.entrySet()) {
-					var id = new ResourceLocation(entry.getKey().getNamespace(), entry1.getKey());
+					var id = ResourceLocation.fromNamespaceAndPath(entry.getKey().getNamespace(), entry1.getKey());
 
 					if (entry1.getValue() instanceof JsonArray arr) {
 						for (var n : arr) {

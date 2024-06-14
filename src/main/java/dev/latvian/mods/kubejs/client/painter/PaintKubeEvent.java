@@ -1,11 +1,8 @@
 package dev.latvian.mods.kubejs.client.painter;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.latvian.mods.kubejs.client.ClientKubeEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -26,7 +23,6 @@ public class PaintKubeEvent extends ClientKubeEvent {
 	public final GuiGraphics graphics;
 	public final PoseStack matrices;
 	public final Tesselator tesselator;
-	public final BufferBuilder buffer;
 	public final float delta;
 	public final Screen screen;
 
@@ -37,7 +33,6 @@ public class PaintKubeEvent extends ClientKubeEvent {
 		graphics = g;
 		matrices = g.pose();
 		tesselator = Tesselator.getInstance();
-		buffer = tesselator.getBuilder();
 		delta = d;
 		screen = s;
 	}
@@ -86,30 +81,6 @@ public class PaintKubeEvent extends ClientKubeEvent {
 		RenderSystem.setShaderTexture(0, tex);
 	}
 
-	public void begin(VertexFormat.Mode type, VertexFormat format) {
-		buffer.begin(type, format);
-	}
-
-	public void beginQuads(VertexFormat format) {
-		begin(VertexFormat.Mode.QUADS, format);
-	}
-
-	public void beginQuads(boolean texture) {
-		beginQuads(texture ? DefaultVertexFormat.POSITION_COLOR_TEX : DefaultVertexFormat.POSITION_COLOR);
-	}
-
-	public void vertex(Matrix4f m, float x, float y, float z, int col) {
-		buffer.vertex(m, x, y, z).color((col >> 16) & 0xFF, (col >> 8) & 0xFF, col & 0xFF, (col >> 24) & 0xFF).endVertex();
-	}
-
-	public void vertex(Matrix4f m, float x, float y, float z, int col, float u, float v) {
-		buffer.vertex(m, x, y, z).color((col >> 16) & 0xFF, (col >> 8) & 0xFF, col & 0xFF, (col >> 24) & 0xFF).uv(u, v).endVertex();
-	}
-
-	public void end() {
-		tesselator.end();
-	}
-
 	public void setShaderInstance(Supplier<ShaderInstance> shader) {
 		RenderSystem.setShader(shader);
 	}
@@ -118,8 +89,8 @@ public class PaintKubeEvent extends ClientKubeEvent {
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 	}
 
-	public void setPositionColorTextureShader() {
-		RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+	public void setPositionTextureColorShader() {
+		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 	}
 
 	public void blend(boolean enabled) {

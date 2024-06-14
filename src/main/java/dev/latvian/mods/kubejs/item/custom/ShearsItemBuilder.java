@@ -11,14 +11,17 @@ import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.common.Tags;
 
 @ReturnsSelf
 public class ShearsItemBuilder extends ItemBuilder {
+	public static final ResourceLocation[] SHEAR_TAGS = {
+		Tags.Items.TOOLS_SHEARS.location(),
+	};
+
 	public static boolean isCustomShears(ItemStack stack) {
 		return stack.getItem() instanceof ShearsItemKJS;
 	}
-
-	public static final ResourceLocation TAG = new ResourceLocation("c:shears");
 
 	public transient float speedBaseline;
 
@@ -27,7 +30,7 @@ public class ShearsItemBuilder extends ItemBuilder {
 		speedBaseline(5f);
 		parentModel("minecraft:item/handheld");
 		unstackable();
-		tag(TAG);
+		tag(SHEAR_TAGS);
 		tool = ShearsItem.createToolProperties();
 	}
 

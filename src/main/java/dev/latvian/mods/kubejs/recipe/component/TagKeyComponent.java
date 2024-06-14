@@ -60,7 +60,7 @@ public record TagKeyComponent<T>(ResourceKey<? extends Registry<T>> registry, Ty
 			s = s.substring(1);
 		}
 
-		return TagKey.create(registry, new ResourceLocation(s));
+		return TagKey.create(registry, ResourceLocation.parse(s));
 	}
 
 	@Override

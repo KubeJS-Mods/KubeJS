@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.client;
 
-import dev.architectury.hooks.fluid.FluidBucketHooks;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
@@ -9,14 +8,12 @@ import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.item.ItemTooltipKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.Tags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
@@ -35,17 +32,15 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT)
 public class KubeJSClientEventHandler {
-	private static final ResourceLocation RECIPE_BUTTON_TEXTURE = new ResourceLocation("textures/gui/recipe_button.png");
+	private static final ResourceLocation RECIPE_BUTTON_TEXTURE = ResourceLocation.parse("textures/gui/recipe_button.png");
 	public static Map<Item, List<ItemTooltipKubeEvent.StaticTooltipHandler>> staticItemTooltips = null;
-	private static final Map<ResourceLocation, TagInstance> tempTagNames = new LinkedHashMap<>();
 
 	@SubscribeEvent
 	public static void debugInfo(CustomizeGuiOverlayEvent.DebugText event) {
@@ -65,7 +60,6 @@ public class KubeJSClientEventHandler {
 	public static void onItemTooltip(ItemTooltipEvent event) {
 		var stack = event.getItemStack();
 		var lines = event.getToolTip();
-		var tooltipContext = event.getContext();
 		var flag = event.getFlags();
 
 		if (stack.isEmpty()) {
@@ -75,36 +69,36 @@ public class KubeJSClientEventHandler {
 		var advanced = flag.isAdvanced();
 
 		if (advanced && ClientProperties.get().showTagNames && Screen.hasShiftDown()) {
-			var addToTempTags = (Consumer<TagKey<?>>) tag -> tempTagNames.computeIfAbsent(tag.location(), TagInstance::new).registries.add(tag.registry());
-			var cx = ScriptType.CLIENT.manager.get().contextFactory.enter();
-
-			Tags.byItemStack(cx, stack).forEach(addToTempTags);
+			var tempTagNames = new LinkedHashMap<ResourceLocation, TagInstance>();
+			TagInstance.Type.ITEM.append(tempTagNames, stack.getItem().builtInRegistryHolder().tags());
 
 			if (stack.getItem() instanceof BlockItem item) {
-				Tags.byBlock(cx, item.getBlock()).forEach(addToTempTags);
+				TagInstance.Type.BLOCK.append(tempTagNames, item.getBlock().builtInRegistryHolder().tags());
 			}
 
 			if (stack.getItem() instanceof BucketItem bucket) {
-				Fluid fluid = FluidBucketHooks.getFluid(bucket);
+				Fluid fluid = bucket.content;
 
 				if (fluid != Fluids.EMPTY) {
-					Tags.byFluid(cx, fluid).forEach(addToTempTags);
+					TagInstance.Type.FLUID.append(tempTagNames, fluid.builtInRegistryHolder().tags());
 				}
 			}
 
 			if (stack.getItem() instanceof SpawnEggItem item) {
-				Tags.byEntityType(cx, item.getType(stack)).forEach(addToTempTags);
+				var entityType = item.getType(stack);
+
+				if (entityType != null) {
+					TagInstance.Type.ENTITY.append(tempTagNames, entityType.builtInRegistryHolder().tags());
+				}
 			}
 
 			for (var instance : tempTagNames.values()) {
 				lines.add(instance.toText());
 			}
-
-			tempTagNames.clear();
 		}
 
 		if (staticItemTooltips == null) {
-			staticItemTooltips = new HashMap<>();
+			staticItemTooltips = new IdentityHashMap<>();
 			ItemEvents.TOOLTIP.post(ScriptType.CLIENT, new ItemTooltipKubeEvent(staticItemTooltips));
 		}
 
@@ -133,17 +127,17 @@ public class KubeJSClientEventHandler {
 	@SubscribeEvent
 	public static void loggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
 		ClientEvents.LOGGED_OUT.post(ScriptType.CLIENT, new ClientKubeEvent(event.getPlayer()));
-		Painter.INSTANCE.clear();
+		Painter.getGlobal().clear();
 	}
 
 	@SubscribeEvent
 	public static void onRenderGuiPost(RenderGuiEvent.Post event) {
-		Painter.INSTANCE.inGameScreenDraw(event.getGuiGraphics(), event.getPartialTick());
+		Painter.getGlobal().inGameScreenDraw(event.getGuiGraphics(), event.getPartialTick());
 	}
 
 	@SubscribeEvent
 	public static void onRenderPost(ScreenEvent.Render.Post event) {
-		Painter.INSTANCE.guiScreenDraw(event.getScreen(), event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
+		Painter.getGlobal().guiScreenDraw(event.getScreen(), event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
 	}
 
 	@Nullable

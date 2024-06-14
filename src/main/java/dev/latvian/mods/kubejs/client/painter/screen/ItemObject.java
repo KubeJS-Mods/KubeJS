@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.client.painter.screen;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -69,11 +70,11 @@ public class ItemObject extends BoxObject {
 
 		event.scale(aw / 16F, ah / 16F, 1F);
 		event.blend(true);
-		drawItem(event.matrices, itemStack, 0, overlay.getBoolean(event), customText.isEmpty() ? null : customText);
+		drawItem(event.matrices, event.delta, itemStack, 0, overlay.getBoolean(event), customText.isEmpty() ? null : customText);
 		event.pop();
 	}
 
-	public static void drawItem(PoseStack poseStack, ItemStack stack, int hash, boolean renderOverlay, @Nullable String text) {
+	public static void drawItem(PoseStack poseStack, float delta, ItemStack stack, int hash, boolean renderOverlay, @Nullable String text) {
 		if (stack.isEmpty()) {
 			return;
 		}
@@ -136,7 +137,7 @@ public class ItemObject extends BoxObject {
 				RenderSystem.enableDepthTest();
 			}
 
-			var cooldown = mc.player == null ? 0F : mc.player.getCooldowns().getCooldownPercent(stack.getItem(), mc.getFrameTime());
+			var cooldown = mc.player == null ? 0F : mc.player.getCooldowns().getCooldownPercent(stack.getItem(), delta);
 
 			if (cooldown > 0F) {
 				RenderSystem.disableDepthTest();
@@ -155,12 +156,11 @@ public class ItemObject extends BoxObject {
 
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 		var m = matrixStack.last().pose();
-		var renderer = t.getBuilder();
-		renderer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-		renderer.vertex(m, x, y, 0).color(red, green, blue, alpha).endVertex();
-		renderer.vertex(m, x, y + height, 0).color(red, green, blue, alpha).endVertex();
-		renderer.vertex(m, x + width, y + height, 0).color(red, green, blue, alpha).endVertex();
-		renderer.vertex(m, x + width, y, 0).color(red, green, blue, alpha).endVertex();
-		t.end();
+		var buf = t.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+		buf.addVertex(m, x, y, 0).setColor(red, green, blue, alpha);
+		buf.addVertex(m, x, y + height, 0).setColor(red, green, blue, alpha);
+		buf.addVertex(m, x + width, y + height, 0).setColor(red, green, blue, alpha);
+		buf.addVertex(m, x + width, y, 0).setColor(red, green, blue, alpha);
+		BufferUploader.drawWithShader(buf.buildOrThrow());
 	}
 }

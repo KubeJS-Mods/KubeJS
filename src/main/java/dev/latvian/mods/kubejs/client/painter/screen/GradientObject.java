@@ -1,5 +1,8 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.client.painter.PainterObjectProperties;
 import dev.latvian.mods.unit.FixedColorUnit;
@@ -79,28 +82,27 @@ public class GradientObject extends BoxObject {
 		if (texture == null) {
 			event.setPositionColorShader();
 			event.blend(true);
-			event.beginQuads(false);
-			event.vertex(m, ax + aw, ay, az, colTR);
-			event.vertex(m, ax, ay, az, colTL);
-			event.vertex(m, ax, ay + ah, az, colBL);
-			event.vertex(m, ax + aw, ay + ah, az, colBR);
-			event.end();
+			var buf = event.tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+			buf.addVertex(m, ax + aw, ay, az).setColor(colTR);
+			buf.addVertex(m, ax, ay, az).setColor(colTL);
+			buf.addVertex(m, ax, ay + ah, az).setColor(colBL);
+			buf.addVertex(m, ax + aw, ay + ah, az).setColor(colBR);
+			BufferUploader.drawWithShader(buf.buildOrThrow());
 		} else {
 			float u0f = u0.getFloat(event);
 			float v0f = v0.getFloat(event);
 			float u1f = u1.getFloat(event);
 			float v1f = v1.getFloat(event);
 
-			event.setPositionColorTextureShader();
+			event.setPositionTextureColorShader();
 			event.setShaderTexture(texture);
 			event.blend(true);
-			event.beginQuads(true);
-			event.vertex(m, ax + aw, ay, az, colTR, u1f, v0f);
-			event.vertex(m, ax, ay, az, colTL, u0f, v0f);
-			event.vertex(m, ax, ay + ah, az, colBL, u0f, v1f);
-			event.vertex(m, ax + aw, ay + ah, az, colBR, u1f, v1f);
-			event.end();
+			var buf = event.tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+			buf.addVertex(m, ax + aw, ay, az).setUv(u1f, v0f).setColor(colTR);
+			buf.addVertex(m, ax, ay, az).setUv(u0f, v0f).setColor(colTL);
+			buf.addVertex(m, ax, ay + ah, az).setUv(u0f, v1f).setColor(colBL);
+			buf.addVertex(m, ax + aw, ay + ah, az).setUv(u1f, v1f).setColor(colBR);
+			BufferUploader.drawWithShader(buf.buildOrThrow());
 		}
-
 	}
 }

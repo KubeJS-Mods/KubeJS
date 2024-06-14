@@ -46,6 +46,13 @@ import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
 import dev.latvian.mods.kubejs.block.entity.InventoryAttachment;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.client.painter.Painter;
+import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
+import dev.latvian.mods.kubejs.client.painter.screen.GradientObject;
+import dev.latvian.mods.kubejs.client.painter.screen.ItemObject;
+import dev.latvian.mods.kubejs.client.painter.screen.LineObject;
+import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
+import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
+import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
@@ -61,12 +68,12 @@ import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemTintFunction;
+import dev.latvian.mods.kubejs.item.JukeboxSongBuilder;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabBuilder;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
 import dev.latvian.mods.kubejs.item.custom.DiggerItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.ItemToolTierRegistryKubeEvent;
-import dev.latvian.mods.kubejs.item.custom.RecordItemJS;
 import dev.latvian.mods.kubejs.item.custom.ShearsItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SmithingTemplateItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
@@ -74,7 +81,6 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.level.ruletest.KubeJSRuleTests;
 import dev.latvian.mods.kubejs.misc.BasicMobEffect;
 import dev.latvian.mods.kubejs.misc.CustomStatBuilder;
-import dev.latvian.mods.kubejs.misc.EnchantmentBuilder;
 import dev.latvian.mods.kubejs.misc.PaintingVariantBuilder;
 import dev.latvian.mods.kubejs.misc.ParticleTypeBuilder;
 import dev.latvian.mods.kubejs.misc.PoiTypeBuilder;
@@ -145,7 +151,6 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
 import dev.latvian.mods.rhino.type.RecordTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import dev.latvian.mods.unit.Unit;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -176,11 +181,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.material.MapColor;
@@ -189,7 +194,10 @@ import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
@@ -261,12 +269,11 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 			reg.add("leggings", ArmorItemBuilder.Leggings.class, ArmorItemBuilder.Leggings::new);
 			reg.add("boots", ArmorItemBuilder.Boots.class, ArmorItemBuilder.Boots::new);
 			reg.add("animal_armor", ArmorItemBuilder.AnimalArmor.class, ArmorItemBuilder.AnimalArmor::new);
-			reg.add("music_disc", RecordItemJS.Builder.class, RecordItemJS.Builder::new);
 			reg.add("smithing_template", SmithingTemplateItemBuilder.class, SmithingTemplateItemBuilder::new);
 		});
 
 		registry.addDefault(Registries.FLUID, FluidBuilder.class, FluidBuilder::new);
-		registry.addDefault(Registries.ENCHANTMENT, EnchantmentBuilder.class, EnchantmentBuilder::new);
+		// FIXME registry.addDefault(Registries.ENCHANTMENT, EnchantmentBuilder.class, EnchantmentBuilder::new);
 		registry.addDefault(Registries.MOB_EFFECT, BasicMobEffect.Builder.class, BasicMobEffect.Builder::new);
 		registry.addDefault(Registries.POTION, PotionBuilder.class, PotionBuilder::new);
 		registry.addDefault(Registries.PARTICLE_TYPE, ParticleTypeBuilder.class, ParticleTypeBuilder::new);
@@ -277,6 +284,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.addDefault(Registries.VILLAGER_PROFESSION, VillagerProfessionBuilder.class, VillagerProfessionBuilder::new);
 		registry.addDefault(Registries.CREATIVE_MODE_TAB, CreativeTabBuilder.class, CreativeTabBuilder::new);
 		registry.addDefault(Registries.ARMOR_MATERIAL, ArmorMaterialBuilder.class, ArmorMaterialBuilder::new);
+		registry.addDefault(Registries.JUKEBOX_SONG, JukeboxSongBuilder.class, JukeboxSongBuilder::new);
 	}
 
 	@Override
@@ -383,7 +391,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		}
 
 		bindings.add("JavaMath", Math.class);
-		bindings.add("ResourceLocation", ResourceLocation.class);
+		bindings.add("ID", ID.class);
+
 		bindings.add("Duration", Duration.class);
 
 		// event.add("onEvent", new LegacyCodeHandler("onEvent()"));
@@ -472,7 +481,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(JsonPrimitive.class, JsonUtils::primitiveOf);
 		registry.register(Path.class, KubeJSTypeWrappers::pathOf);
 		registry.register(File.class, KubeJSTypeWrappers::fileOf);
-		registry.register(Unit.class, Painter.INSTANCE::unitOf);
 		registry.register(TemporalAmount.class, TimeJS::temporalAmountOf);
 		registry.register(Duration.class, TimeJS::durationOf);
 
@@ -499,8 +507,10 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(NumberProvider.class, KubeJSTypeWrappers::numberProviderOf);
 		registry.registerEnumFromStringCodec(LootContext.EntityTarget.class, LootContext.EntityTarget.CODEC);
 		registry.registerEnumFromStringCodec(CopyNameFunction.NameSource.class, CopyNameFunction.NameSource.CODEC);
-		registry.register(Enchantment.Cost.class, EnchantmentBuilder::costOf);
+		// FIXME registry.register(Enchantment.Cost.class, EnchantmentBuilder::costOf);
 		registry.registerEnumFromStringCodec(ArmorItem.Type.class, ArmorItem.Type.CODEC);
+		registry.register(BlockSetType.class, BlockWrapper::setTypeOf);
+		registry.register(ToolAction.class, ItemWrapper::toolActionOf);
 
 		// KubeJS //
 		registry.register(Map.class, MapJS::of);
@@ -619,6 +629,18 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(DamageAction.TYPE);
 		registry.register(KeepAction.TYPE);
 		registry.register(ReplaceAction.TYPE);
+	}
+
+	@Override
+	@OnlyIn(Dist.CLIENT)
+	public void painterRegistry(Painter painter) {
+		painter.registerObject("screen_group", ScreenGroup::new);
+		painter.registerObject("rectangle", RectangleObject::new);
+		painter.registerObject("text", TextObject::new);
+		painter.registerObject("atlas_texture", AtlasTextureObject::new);
+		painter.registerObject("gradient", GradientObject::new);
+		painter.registerObject("item", ItemObject::new);
+		painter.registerObject("line", LineObject::new);
 	}
 
 	@Override

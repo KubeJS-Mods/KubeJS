@@ -9,9 +9,11 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodConstants;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -21,6 +23,7 @@ public class FoodBuilder {
 	private float saturation;
 	private boolean alwaysEdible;
 	private float eatSeconds;
+	private Optional<ItemStack> usingConvertsTo;
 	private final List<FoodProperties.PossibleEffect> effects;
 	public Consumer<FoodEatenKubeEvent> eaten;
 
@@ -29,6 +32,7 @@ public class FoodBuilder {
 		this.saturation = 0;
 		this.alwaysEdible = false;
 		this.eatSeconds = 0.6F;
+		this.usingConvertsTo = Optional.empty();
 		this.effects = new ArrayList<>();
 	}
 
@@ -75,6 +79,11 @@ public class FoodBuilder {
 		return eatSeconds(0.8F);
 	}
 
+	public FoodBuilder usingConvertsTo(ItemStack stack) {
+		usingConvertsTo = Optional.of(stack);
+		return this;
+	}
+
 	@Info(value = """
 		Adds an effect to the food. Note that the effect duration is in ticks (20 ticks = 1 second).
 		""",
@@ -111,7 +120,7 @@ public class FoodBuilder {
 	}
 
 	public FoodProperties build() {
-		return new FoodProperties(nutrition, FoodConstants.saturationByModifier(nutrition, saturation), alwaysEdible, eatSeconds, effects);
+		return new FoodProperties(nutrition, FoodConstants.saturationByModifier(nutrition, saturation), alwaysEdible, eatSeconds, usingConvertsTo, effects);
 	}
 
 	private static class EffectSupplier implements Supplier<MobEffectInstance> {

@@ -1,5 +1,8 @@
 package dev.latvian.mods.kubejs.client.painter.screen;
 
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 import dev.latvian.mods.kubejs.client.painter.PaintKubeEvent;
 import dev.latvian.mods.kubejs.client.painter.Painter;
@@ -82,18 +85,22 @@ public class PaintScreenKubeEvent extends PaintKubeEvent implements UnitVariable
 
 	public void rectangle(float x, float y, float z, float w, float h, int color) {
 		var m = getMatrix();
-		vertex(m, x + w, y, z, color);
-		vertex(m, x, y, z, color);
-		vertex(m, x, y + h, z, color);
-		vertex(m, x + w, y + h, z, color);
+		var buf = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+		buf.addVertex(m, x + w, y, z).setColor(color);
+		buf.addVertex(m, x, y, z).setColor(color);
+		buf.addVertex(m, x, y + h, z).setColor(color);
+		buf.addVertex(m, x + w, y + h, z).setColor(color);
+		BufferUploader.drawWithShader(buf.buildOrThrow());
 	}
 
 	public void rectangle(float x, float y, float z, float w, float h, int color, float u0, float v0, float u1, float v1) {
 		var m = getMatrix();
-		vertex(m, x + w, y, z, color, u1, v0);
-		vertex(m, x, y, z, color, u0, v0);
-		vertex(m, x, y + h, z, color, u0, v1);
-		vertex(m, x + w, y + h, z, color, u1, v1);
+		var buf = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+		buf.addVertex(m, x + w, y, z).setUv(u1, v0).setColor(color);
+		buf.addVertex(m, x, y, z).setUv(u0, v0).setColor(color);
+		buf.addVertex(m, x, y + h, z).setUv(u0, v1).setColor(color);
+		buf.addVertex(m, x + w, y + h, z).setUv(u1, v1).setColor(color);
+		BufferUploader.drawWithShader(buf.buildOrThrow());
 	}
 
 	public void text(Component text, int x, int y, int color, boolean shadow) {

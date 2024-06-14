@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -48,7 +49,7 @@ import java.util.regex.Pattern;
 
 public class UtilsJS {
 	public static final Random RANDOM = new Random();
-	public static final ResourceLocation AIR_LOCATION = new ResourceLocation("minecraft:air");
+	public static final ResourceLocation AIR_LOCATION = ResourceLocation.parse("minecraft:air");
 	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[:_/]");
 	public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in", "and", "or", "but", "for"));
 	public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -56,7 +57,7 @@ public class UtilsJS {
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
 
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
-	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, e -> true, MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_RANDOM, false, null, null, null, true);
+	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, List.of(), MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_RANDOM, false, null, null, null, true);
 
 	@FunctionalInterface
 	public interface TryIO {

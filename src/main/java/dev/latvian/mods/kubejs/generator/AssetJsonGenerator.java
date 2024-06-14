@@ -29,17 +29,17 @@ public class AssetJsonGenerator extends ResourceGenerator {
 
 	public void blockState(ResourceLocation id, Consumer<VariantBlockStateGenerator> consumer) {
 		var gen = Util.make(new VariantBlockStateGenerator(), consumer);
-		json(new ResourceLocation(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
+		json(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
 	}
 
 	public void multipartState(ResourceLocation id, Consumer<MultipartBlockStateGenerator> consumer) {
 		var gen = Util.make(new MultipartBlockStateGenerator(), consumer);
-		json(new ResourceLocation(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
+		json(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
 	}
 
 	public void blockModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
 		var gen = Util.make(new ModelGenerator(), consumer);
-		json(new ResourceLocation(id.getNamespace(), "models/block/" + id.getPath()), gen.toJson());
+		json(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "models/block/" + id.getPath()), gen.toJson());
 	}
 
 	public void itemModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
@@ -48,7 +48,7 @@ public class AssetJsonGenerator extends ResourceGenerator {
 	}
 
 	public static ResourceLocation asItemModelLocation(ResourceLocation id) {
-		return new ResourceLocation(id.getNamespace(), "models/item/" + id.getPath());
+		return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "models/item/" + id.getPath());
 	}
 
 	public void stencil(ResourceLocation target, String stencil, JsonObject colors) throws IOException {
@@ -75,10 +75,10 @@ public class AssetJsonGenerator extends ResourceGenerator {
 		}
 
 		var st1 = st;
-		add(new ResourceLocation(target.getNamespace(), "textures/" + target.getPath() + ".png"), () -> st1.create(colors));
+		add(ResourceLocation.fromNamespaceAndPath(target.getNamespace(), "textures/" + target.getPath() + ".png"), () -> st1.create(colors));
 
 		if (st.mcmeta != null) {
-			add(new ResourceLocation(target.getNamespace(), "textures/" + target.getPath() + ".png.mcmeta"), () -> st1.mcmeta);
+			add(ResourceLocation.fromNamespaceAndPath(target.getNamespace(), "textures/" + target.getPath() + ".png.mcmeta"), () -> st1.mcmeta);
 		}
 	}
 }

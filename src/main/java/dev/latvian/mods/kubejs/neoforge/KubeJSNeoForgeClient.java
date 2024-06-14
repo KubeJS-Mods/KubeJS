@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.client.BlockTintFunctionWrapper;
 import dev.latvian.mods.kubejs.client.ClientInitKubeEvent;
 import dev.latvian.mods.kubejs.client.ItemTintFunctionWrapper;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
+import dev.latvian.mods.kubejs.client.KubeJSResourcePackFinder;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.gui.KubeJSMenus;
@@ -22,6 +23,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.server.packs.PackType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -32,13 +34,22 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class KubeJSNeoForgeClient {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void setupClient(FMLClientSetupEvent event) {
+		KubeJS.PROXY = new KubeJSClient();
 		event.enqueueWork(KubeJSNeoForgeClient::setupClient0);
+	}
+
+	@SubscribeEvent
+	public static void addClientPacks(AddPackFindersEvent event) {
+		if (event.getPackType() == PackType.CLIENT_RESOURCES) {
+			event.addRepositorySource(new KubeJSResourcePackFinder());
+		}
 	}
 
 	private static void setupClient0() {

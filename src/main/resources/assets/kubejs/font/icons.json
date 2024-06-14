@@ -2,39 +2,69 @@
 	"providers": [
 		{
 			"type": "bitmap",
-			"file": "kubejs:font/icons/k.png",
-			"ascent": 7,
-			"chars": ["K"]
-		},
-		{
-			"type": "bitmap",
 			"file": "kubejs:font/icons/small_space.png",
 			"ascent": 7,
 			"chars": ["."]
 		},
 		{
 			"type": "bitmap",
-			"file": "kubejs:font/icons/i.png",
+			"file": "kubejs:font/icons/kube.png",
+			"ascent": 7,
+			"chars": ["K"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/info.png",
 			"ascent": 7,
 			"chars": ["I"]
 		},
 		{
 			"type": "bitmap",
-			"file": "kubejs:font/icons/w.png",
+			"file": "kubejs:font/icons/warn.png",
 			"ascent": 7,
 			"chars": ["W"]
 		},
 		{
 			"type": "bitmap",
-			"file": "kubejs:font/icons/y.png",
+			"file": "kubejs:font/icons/yes.png",
 			"ascent": 7,
 			"chars": ["Y"]
 		},
 		{
 			"type": "bitmap",
-			"file": "kubejs:font/icons/n.png",
+			"file": "kubejs:font/icons/no.png",
 			"ascent": 7,
 			"chars": ["N"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/tag.png",
+			"ascent": 7,
+			"chars": ["T"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/item_tag.png",
+			"ascent": 7,
+			"chars": ["J"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/block_tag.png",
+			"ascent": 7,
+			"chars": ["B"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/fluid_tag.png",
+			"ascent": 7,
+			"chars": ["F"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/entity_type_tag.png",
+			"ascent": 7,
+			"chars": ["E"]
 		}
 	]
 }

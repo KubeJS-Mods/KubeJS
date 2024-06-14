@@ -10,9 +10,6 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(ClickEvent.class)
 public abstract class ClickEventMixin implements WithCodec {
 	@Shadow
-	public abstract ClickEvent.Action getAction();
-
-	@Shadow
 	public abstract String getValue();
 
 	@Override

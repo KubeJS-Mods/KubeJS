@@ -211,7 +211,7 @@ public class JsonRecipeSchemaLoader {
 		for (var entry : resourceManager.listResources("kubejs/recipe_schemas", path -> path.getPath().endsWith(".json")).entrySet()) {
 			try (var reader = entry.getValue().openAsReader()) {
 				var json = JsonUtils.GSON.fromJson(reader, JsonObject.class);
-				var holder = new RecipeSchemaBuilder(new ResourceLocation(entry.getKey().getNamespace(), entry.getKey().getPath().substring("kubejs/recipe_schemas/".length(), entry.getKey().getPath().length() - ".json".length())), json);
+				var holder = new RecipeSchemaBuilder(ResourceLocation.fromNamespaceAndPath(entry.getKey().getNamespace(), entry.getKey().getPath().substring("kubejs/recipe_schemas/".length(), entry.getKey().getPath().length() - ".json".length())), json);
 				map.put(holder.id, holder);
 
 				if (holder.json.has("mappings")) {
@@ -225,10 +225,10 @@ public class JsonRecipeSchemaLoader {
 		}
 
 		for (var holder : map.values()) {
-			holder.parent = holder.json.has("parent") ? map.get(new ResourceLocation(holder.json.get("parent").getAsString())) : null;
+			holder.parent = holder.json.has("parent") ? map.get(ResourceLocation.parse(holder.json.get("parent").getAsString())) : null;
 
 			if (holder.json.has("factory")) {
-				var fname = new ResourceLocation(holder.json.get("factory").getAsString());
+				var fname = ResourceLocation.parse(holder.json.get("factory").getAsString());
 				holder.recipeFactory = storage.recipeTypes.get(fname);
 
 				if (holder.recipeFactory == null) {

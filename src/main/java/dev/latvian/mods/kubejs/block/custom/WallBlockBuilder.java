@@ -9,9 +9,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WallBlock;
 
 public class WallBlockBuilder extends MultipartShapedBlockBuilder {
+	public static final ResourceLocation[] WALL_TAGS = {
+		BlockTags.WALLS.location(),
+	};
+
 	public WallBlockBuilder(ResourceLocation i) {
 		super(i, "_wall");
-		tagBoth(BlockTags.WALLS.location());
+		tagBoth(WALL_TAGS);
 	}
 
 	@Override

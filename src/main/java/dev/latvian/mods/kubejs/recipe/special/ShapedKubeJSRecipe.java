@@ -2,10 +2,7 @@ package dev.latvian.mods.kubejs.recipe.special;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.MapLike;
-import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionHolder;
@@ -15,9 +12,9 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
@@ -26,43 +23,8 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRecipe {
-	public static final MapCodec<ShapedRecipePattern> PATTERN_NO_SHRINK_CODEC = ShapedRecipePattern.Data.MAP_CODEC
-		.flatXmap(ShapedKubeJSRecipe::unpackNoShrink,
-			pattern -> pattern.data().map(DataResult::success)
-				.orElseGet(() -> DataResult.error(() -> "Cannot encode unpacked recipe")));
-
-	public static final MapCodec<ShapedRecipePattern> PATTERN_CODEC = new MapCodec<>() {
-		@Override
-		public <T> Stream<T> keys(DynamicOps<T> ops) {
-			return Stream.concat(ShapedRecipePattern.MAP_CODEC.keys(ops), Stream.of(ops.createString(SHRINK_KEY)));
-		}
-
-		@Override
-		public <T> DataResult<ShapedRecipePattern> decode(DynamicOps<T> ops, MapLike<T> input) {
-			var shrink = input.get(SHRINK_KEY);
-
-			if (shrink == null) {
-				return ShapedRecipePattern.MAP_CODEC.decode(ops, input);
-			}
-
-			return ops.getBooleanValue(shrink).flatMap(shrinkVal -> {
-				if (shrinkVal) {
-					return ShapedRecipePattern.MAP_CODEC.decode(ops, input);
-				} else {
-					return PATTERN_NO_SHRINK_CODEC.decode(ops, input);
-				}
-			});
-		}
-
-		@Override
-		public <T> RecordBuilder<T> encode(ShapedRecipePattern input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
-			return PATTERN_NO_SHRINK_CODEC.encode(input, ops, prefix).add(SHRINK_KEY, ops.createBoolean(false));
-		}
-	};
-
 	private final boolean mirror;
 	private final List<IngredientActionHolder> ingredientActions;
 	private final String modifyResult;
@@ -101,30 +63,19 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	}
 
 	@Override
-	public NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
-		return kjs$getRemainingItems(container);
+	public NonNullList<ItemStack> getRemainingItems(CraftingInput input) {
+		return kjs$getRemainingItems(input);
 	}
 
 	@Override
-	public ItemStack assemble(CraftingContainer container, HolderLookup.Provider registryAccess) {
-		return kjs$assemble(container, registryAccess);
+	public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
+		return kjs$assemble(input, registryAccess);
 	}
 
 	@Override
-	public boolean matches(CraftingContainer craftingContainer, Level level) {
-		for (var i = 0; i <= craftingContainer.getWidth() - pattern.width(); ++i) {
-			for (var j = 0; j <= craftingContainer.getHeight() - pattern.height(); ++j) {
-				if (mirror && pattern.matches(craftingContainer, i, j, true)) {
-					return true;
-				}
-
-				if (pattern.matches(craftingContainer, i, j, false)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
+	public boolean matches(CraftingInput input, Level level) {
+		// FIXME: mirror
+		return pattern.matches(input);
 	}
 
 	public static class SerializerKJS implements RecipeSerializer<ShapedKubeJSRecipe> {
@@ -136,7 +87,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			Codec.STRING.optionalFieldOf("group", "").forGetter(ShapedRecipe::getGroup),
 			CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(ShapedRecipe::category),
 			// kubejs modified keys
-			PATTERN_CODEC.forGetter(recipe -> recipe.pattern),
+			ShapedRecipePattern.MAP_CODEC.forGetter(recipe -> recipe.pattern),
 			ItemStack.STRICT_CODEC.fieldOf("result").forGetter(r -> r.result),
 			Codec.BOOL.optionalFieldOf("show_notification", true).forGetter(ShapedRecipe::showNotification),
 			// KubeJS additions

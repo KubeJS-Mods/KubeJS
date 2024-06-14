@@ -5,9 +5,12 @@ import dev.latvian.mods.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.Tags;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.type.RecordTypeInfo;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.Util;
+import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -15,6 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -25,7 +29,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Info("Various block related helper functions")
 public class BlockWrapper {
@@ -118,28 +121,29 @@ public class BlockWrapper {
 			return Blocks.AIR.defaultBlockState();
 		}
 
-		var i = string.indexOf('[');
-		var hasProperties = i >= 0 && string.indexOf(']') == string.length() - 1;
-		var state = RegistryInfo.BLOCK.getValue(new ResourceLocation(hasProperties ? string.substring(0, i) : string)).defaultBlockState();
+		try {
+			return BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), string, false).blockState();
+		} catch (Exception ex) {
+			return Blocks.AIR.defaultBlockState();
+		}
+	}
 
-		if (hasProperties) {
-			for (var s : string.substring(i + 1, string.length() - 1).split(",")) {
-				var s1 = s.split("=", 2);
+	public static BlockSetType setTypeOf(Context cx, Object from, TypeInfo target) {
+		return switch (from) {
+			case null -> null;
+			case BlockSetType type -> type;
+			case CharSequence charSequence -> {
+				var str = charSequence.toString();
 
-				if (s1.length == 2 && !s1[0].isEmpty() && !s1[1].isEmpty()) {
-					var p = state.getBlock().getStateDefinition().getProperty(s1[0]);
-
-					if (p != null) {
-						Optional<?> o = p.getValue(s1[1]);
-
-						if (o.isPresent()) {
-							state = state.setValue(p, Cast.to(o.get()));
-						}
+				for (var type : BlockSetType.values().toList()) {
+					if (type.name().equalsIgnoreCase(str)) {
+						yield type;
 					}
 				}
-			}
-		}
 
-		return state;
+				yield null;
+			}
+			default -> (BlockSetType) ((RecordTypeInfo) target).wrap(cx, from, target);
+		};
 	}
 }

@@ -9,9 +9,13 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.StairBlock;
 
 public class StairBlockBuilder extends ShapedBlockBuilder {
+	public static final ResourceLocation[] STAIR_TAGS = {
+		BlockTags.STAIRS.location(),
+	};
+
 	public StairBlockBuilder(ResourceLocation i) {
 		super(i, "_stairs");
-		tagBoth(BlockTags.STAIRS.location());
+		tagBoth(STAIR_TAGS);
 	}
 
 	@Override

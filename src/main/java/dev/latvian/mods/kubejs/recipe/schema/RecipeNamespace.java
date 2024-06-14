@@ -15,7 +15,7 @@ public class RecipeNamespace extends LinkedHashMap<String, RecipeSchemaType> {
 	}
 
 	public RecipeNamespace register(String id, RecipeSchema type) {
-		put(id, new RecipeSchemaType(this, new ResourceLocation(name, id), type));
+		put(id, new RecipeSchemaType(this, ResourceLocation.fromNamespaceAndPath(name, id), type));
 		return this;
 	}
 

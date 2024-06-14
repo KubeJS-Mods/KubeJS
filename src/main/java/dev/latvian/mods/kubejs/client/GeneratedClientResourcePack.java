@@ -141,7 +141,7 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 
 		for (var e1 : finalMap.entrySet()) { // namespaces
 			for (var e2 : e1.getValue().entrySet()) { // languages
-				generator.json(new ResourceLocation(e1.getKey() + ":lang/" + e2.getKey()), e2.getValue());
+				generator.json(ResourceLocation.parse(e1.getKey() + ":lang/" + e2.getKey()), e2.getValue());
 			}
 		}
 	}

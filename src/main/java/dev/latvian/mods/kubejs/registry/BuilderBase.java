@@ -10,6 +10,7 @@ import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -98,8 +99,8 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	@Info("""
 		Adds a tag to this object, e.g. `minecraft:stone`.
 		""")
-	public BuilderBase<T> tag(ResourceLocation tag) {
-		defaultTags.add(tag);
+	public BuilderBase<T> tag(ResourceLocation[] tag) {
+		defaultTags.addAll(Arrays.asList(tag));
 		getRegistryType().hasDefaultTags = true;
 		return this;
 	}
@@ -109,7 +110,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 			return id;
 		}
 
-		return new ResourceLocation(id.getNamespace() + ':' + pre + id.getPath() + post);
+		return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), pre + id.getPath() + post);
 	}
 
 	public void generateDataJsons(DataJsonGenerator generator) {

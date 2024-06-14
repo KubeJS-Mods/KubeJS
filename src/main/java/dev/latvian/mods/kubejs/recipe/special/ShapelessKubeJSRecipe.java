@@ -10,8 +10,8 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 
@@ -50,13 +50,13 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 	}
 
 	@Override
-	public NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
-		return kjs$getRemainingItems(container);
+	public NonNullList<ItemStack> getRemainingItems(CraftingInput input) {
+		return kjs$getRemainingItems(input);
 	}
 
 	@Override
-	public ItemStack assemble(CraftingContainer container, HolderLookup.Provider registryAccess) {
-		return kjs$assemble(container, registryAccess);
+	public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
+		return kjs$assemble(input, registryAccess);
 	}
 
 	public static class SerializerKJS implements RecipeSerializer<ShapelessKubeJSRecipe> {

@@ -72,7 +72,6 @@ public class ShapedKubeRecipe extends KubeRecipe {
 			&& !json.has(KubeJSCraftingRecipe.MODIFY_RESULT_KEY)
 			&& !json.has(KubeJSCraftingRecipe.STAGE_KEY)
 			&& !json.has(KubeJSCraftingRecipe.MIRROR_KEY)
-			&& !json.has(KubeJSCraftingRecipe.SHRINK_KEY)
 		) {
 			return type.event.vanillaShaped;
 		}

@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 public interface ID {
-	ResourceLocation UNKNOWN = new ResourceLocation("unknown", "unknown");
+	ResourceLocation UNKNOWN = ResourceLocation.fromNamespaceAndPath("unknown", "unknown");
 
 	static String string(@Nullable String id) {
 		if (id == null || id.isEmpty()) {
@@ -74,7 +74,7 @@ public interface ID {
 		}
 
 		try {
-			return new ResourceLocation(s);
+			return ResourceLocation.parse(s);
 		} catch (ResourceLocationException ex) {
 			throw new IllegalArgumentException("Could not create ID from '%s'!".formatted(s));
 		}

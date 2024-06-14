@@ -10,9 +10,13 @@ import net.minecraft.world.level.block.CarpetBlock;
 
 @ReturnsSelf
 public class CarpetBlockBuilder extends ShapedBlockBuilder {
+	public static final ResourceLocation[] CARPET_TAGS = {
+		BlockTags.WOOL_CARPETS.location(),
+	};
+
 	public CarpetBlockBuilder(ResourceLocation i) {
 		super(i, "_carpet");
-		tagBoth(BlockTags.WOOL_CARPETS.location());
+		tagBoth(CARPET_TAGS);
 	}
 
 	@Override

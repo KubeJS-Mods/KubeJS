@@ -28,17 +28,17 @@ public class GenerateClientAssetsKubeEvent implements KubeEvent {
 
 	public void addModel(String type, ResourceLocation id, Consumer<ModelGenerator> consumer) {
 		var gen = Util.make(new ModelGenerator(), consumer);
-		add(new ResourceLocation(id.getNamespace(), "models/%s/%s".formatted(type, id.getPath())), gen.toJson());
+		add(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "models/%s/%s".formatted(type, id.getPath())), gen.toJson());
 	}
 
 	public void addBlockState(ResourceLocation id, Consumer<VariantBlockStateGenerator> consumer) {
 		var gen = Util.make(new VariantBlockStateGenerator(), consumer);
-		add(new ResourceLocation(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
+		add(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
 	}
 
 	public void addMultipartBlockState(ResourceLocation id, Consumer<MultipartBlockStateGenerator> consumer) {
 		var gen = Util.make(new MultipartBlockStateGenerator(), consumer);
-		add(new ResourceLocation(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
+		add(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
 	}
 
 	public void stencil(ResourceLocation target, String stencil, JsonObject colors) throws IOException {

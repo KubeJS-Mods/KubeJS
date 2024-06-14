@@ -7,16 +7,13 @@ import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
+import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
+import dev.latvian.mods.unit.Unit;
 import net.minecraft.client.Minecraft;
 import net.neoforged.fml.ModList;
 
 public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
-	@Override
-	public void clientInit() {
-		Painter.INSTANCE.registerBuiltinObjects();
-	}
-
 	@Override
 	public void registerEvents(EventGroupRegistry registry) {
 		registry.register(ClientEvents.GROUP);
@@ -25,7 +22,7 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 	@Override
 	public void registerBindings(BindingRegistry bindings) {
 		bindings.add("Client", Minecraft.getInstance());
-		bindings.add("Painter", Painter.INSTANCE);
+		bindings.add("Painter", Painter.getGlobal());
 
 		if (bindings.type().isClient()) {
 			var se = Minecraft.getInstance().kjs$getScheduledEvents();
@@ -35,6 +32,11 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 			bindings.add("setInterval", new ScheduledEvents.TimeoutJSFunction(se, false, true));
 			bindings.add("clearInterval", new ScheduledEvents.TimeoutJSFunction(se, true, true));
 		}
+	}
+
+	@Override
+	public void registerTypeWrappers(TypeWrapperRegistry registry) {
+		registry.register(Unit.class, (ctx, from) -> Painter.getGlobal().unitOf(ctx, from));
 	}
 
 	@Override

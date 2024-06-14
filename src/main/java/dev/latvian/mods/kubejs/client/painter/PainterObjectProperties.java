@@ -40,7 +40,7 @@ public class PainterObjectProperties {
 	@Nullable
 	public ResourceLocation getResourceLocation(String key, @Nullable ResourceLocation def) {
 		var s = getString(key, "").trim();
-		return s.isEmpty() ? def : new ResourceLocation(s);
+		return s.isEmpty() ? def : ResourceLocation.parse(s);
 	}
 
 	public Unit getUnit(String key, Unit def) {

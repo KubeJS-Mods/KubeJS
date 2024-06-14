@@ -72,7 +72,7 @@ public interface ItemStackJS {
 		}
 
 		for (var itemId : CACHED_ITEM_TYPE_LIST.get()) {
-			var itemRl = new ResourceLocation(itemId);
+			var itemRl = ResourceLocation.parse(itemId);
 			map.computeIfAbsent(itemRl, id -> Set.of(RegistryInfo.ITEM.getValue(id).getDefaultInstance()));
 		}
 

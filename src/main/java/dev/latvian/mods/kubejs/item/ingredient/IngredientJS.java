@@ -108,7 +108,7 @@ public interface IngredientJS {
 		} else if (s.startsWith("@")) {
 			return IngredientHelper.get().mod(s.substring(1));
 		} else if (s.startsWith("%")) {
-			var group = UtilsJS.findCreativeTab(new ResourceLocation(s.substring(1)));
+			var group = UtilsJS.findCreativeTab(ResourceLocation.parse(s.substring(1)));
 
 			if (group == null) {
 				if (KubeRecipe.itemErrors) {
@@ -141,7 +141,7 @@ public interface IngredientJS {
 			s = s.substring(0, i);
 		}
 
-		var item = RegistryInfo.ITEM.getValue(new ResourceLocation(s));
+		var item = RegistryInfo.ITEM.getValue(ResourceLocation.parse(s));
 
 		if (item == null || item == Items.AIR) {
 			return Ingredient.EMPTY;

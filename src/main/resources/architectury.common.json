@@ -57,9 +57,6 @@
 		"net/minecraft/class_1263": [
 			"dev/latvian/mods/kubejs/core/ContainerKJS"
 		],
-		"net/minecraft/class_1715": [
-			"dev/latvian/mods/kubejs/core/CraftingContainerKJS"
-		],
 		"net/minecraft/class_8786": [
 			"dev/latvian/mods/kubejs/core/RecipeHolderKJS"
 		],
@@ -80,9 +77,6 @@
 		],
 		"net/minecraft/class_1299": [
 			"dev/latvian/mods/kubejs/core/EntityTypeKJS"
-		],
-		"net/minecraft/class_1887": [
-			"dev/latvian/mods/kubejs/core/EnchantmentKJS"
 		]
 	}
 }

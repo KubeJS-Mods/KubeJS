@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
-	public static final ResourceLocation ID = new ResourceLocation(KubeJS.MOD_ID, "jei");
+	public static final ResourceLocation ID = KubeJS.id("jei");
 	public IJeiRuntime runtime;
 
 	@Override

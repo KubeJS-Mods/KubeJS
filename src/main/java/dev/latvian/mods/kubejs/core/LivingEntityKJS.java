@@ -1,11 +1,14 @@
 package dev.latvian.mods.kubejs.core;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.entity.EntityPotionEffectsJS;
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.item.FoodEatenKubeEvent;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -15,25 +18,24 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @RemapPrefixForJS("kjs$")
 public interface LivingEntityKJS extends EntityKJS {
-	UUID KJS_PLAYER_CUSTOM_SPEED = UUID.fromString("6715D9C6-1DA0-4B78-971A-5C32F5709F66");
-	String KJS_PLAYER_CUSTOM_SPEED_NAME = "kubejs.player.speed.modifier";
+	ResourceLocation KJS_PLAYER_CUSTOM_SPEED = KubeJS.id("player.speed.modifier");
 
 	@Override
 	default LivingEntity kjs$self() {
 		return (LivingEntity) this;
 	}
 
-	default void kjs$foodEaten(ItemStack is) {
+	default void kjs$foodEaten(ItemStack is, FoodProperties food) {
 		if (this instanceof LivingEntity entity) {
 			var event = new FoodEatenKubeEvent(entity, is);
 			var i = is.getItem();
@@ -144,7 +146,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		var stack = kjs$self().getItemBySlot(slot);
 
 		if (!stack.isEmpty()) {
-			stack.hurtAndBreak(amount, kjs$self().getRandom(), kjs$self(), () -> onBroken.accept(stack));
+			stack.hurtAndBreak(amount, (ServerLevel) kjs$self().level(), kjs$self(), item -> onBroken.accept(stack));
 
 			if (stack.isEmpty()) {
 				kjs$self().setItemSlot(slot, ItemStack.EMPTY);
@@ -254,26 +256,24 @@ public interface LivingEntityKJS extends EntityKJS {
 		}
 	}
 
-	default void kjs$modifyAttribute(Holder<Attribute> attribute, String identifier, double d, AttributeModifier.Operation operation) {
+	default void kjs$modifyAttribute(Holder<Attribute> attribute, ResourceLocation identifier, double d, AttributeModifier.Operation operation) {
 		AttributeInstance instance = kjs$self().getAttribute(attribute);
 		if (instance != null) {
-			UUID uuid = new UUID(identifier.hashCode(), identifier.hashCode());
-			instance.removeModifier(uuid);
-			instance.addTransientModifier(new AttributeModifier(uuid, identifier, d, operation));
+			instance.removeModifier(identifier);
+			instance.addTransientModifier(new AttributeModifier(identifier, d, operation));
 		}
 	}
 
-	default void kjs$removeAttribute(Holder<Attribute> attribute, String identifier) {
+	default void kjs$removeAttribute(Holder<Attribute> attribute, ResourceLocation identifier) {
 		AttributeInstance instance = kjs$self().getAttribute(attribute);
 		if (instance != null) {
-			instance.removeModifier(new UUID(identifier.hashCode(), identifier.hashCode()));
+			instance.removeModifier(identifier);
 		}
 	}
 
 	private AttributeModifier kjs$createSpeedModifier(double speed, AttributeModifier.Operation operation) {
 		return new AttributeModifier(
 			KJS_PLAYER_CUSTOM_SPEED,
-			KJS_PLAYER_CUSTOM_SPEED_NAME,
 			speed,
 			operation);
 	}

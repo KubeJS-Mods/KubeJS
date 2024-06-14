@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Predicate;
 
 @RemapPrefixForJS("kjs$")
@@ -94,16 +95,18 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 		playSound(id, 1F, 1F);
 	}
 
-	public EntityArrayList filter(Predicate<Entity> filter) {
-		if (isEmpty()) {
+	public EntityArrayList filter(List<Predicate<Entity>> filterList) {
+		if (isEmpty() || filterList.isEmpty()) {
 			return this;
 		}
 
 		var list = new EntityArrayList(level, size());
 
 		for (var entity : this) {
-			if (filter.test(entity)) {
-				list.add(entity);
+			for (var filter : filterList) {
+				if (filter.test(entity)) {
+					list.add(entity);
+				}
 			}
 		}
 
@@ -111,7 +114,7 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 	}
 
 	public EntityArrayList filterSelector(EntitySelector selector) {
-		return filter(selector.predicate);
+		return filter(selector.contextFreePredicates);
 	}
 
 	@Override

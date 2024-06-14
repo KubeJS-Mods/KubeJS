@@ -29,7 +29,7 @@ public class ResourceGenerator {
 	}
 
 	public void json(ResourceLocation id, JsonElement json) {
-		add(new ResourceLocation(id.getNamespace(), id.getPath() + ".json"), () -> json.toString().getBytes(StandardCharsets.UTF_8));
+		add(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath() + ".json"), () -> json.toString().getBytes(StandardCharsets.UTF_8));
 
 		if (console.getDebugEnabled() || console == ConsoleJS.SERVER && DevProperties.get().dataPackOutput) {
 			console.info("Generated " + id + ": " + json);

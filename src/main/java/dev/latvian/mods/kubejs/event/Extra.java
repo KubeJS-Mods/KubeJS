@@ -63,7 +63,7 @@ public class Extra<T> {
 			return ResourceKey.create(registry, rl);
 		} else {
 			var s = object.toString();
-			return s.isBlank() ? null : ResourceKey.create(registry, new ResourceLocation(s));
+			return s.isBlank() ? null : ResourceKey.create(registry, ResourceLocation.parse(s));
 		}
 	}
 
@@ -77,7 +77,7 @@ public class Extra<T> {
 		}
 
 		var s = object.toString();
-		return s.isBlank() ? null : ResourceKey.createRegistryKey(new ResourceLocation(s));
+		return s.isBlank() ? null : ResourceKey.createRegistryKey(ResourceLocation.parse(s));
 	}
 
 	public final Class<T> type;

@@ -58,9 +58,7 @@ public class LineObject extends ScreenPainterObject {
 		event.rotateDeg(aangle);
 		event.setPositionColorShader();
 		event.blend(true);
-		event.beginQuads(false);
 		event.rectangle(offset.getFloat(event), -as / 2F, az, alength, as, color.getInt(event));
-		event.end();
 		event.pop();
 	}
 }

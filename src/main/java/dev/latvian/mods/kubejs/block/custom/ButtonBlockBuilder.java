@@ -12,6 +12,10 @@ import net.minecraft.world.level.block.state.properties.BlockSetType;
 
 @ReturnsSelf
 public class ButtonBlockBuilder extends ShapedBlockBuilder {
+	public static final ResourceLocation[] BUTTON_TAGS = {
+		BlockTags.BUTTONS.location(),
+	};
+
 	public transient BlockSetType behaviour;
 	public transient int ticksToStayPressed;
 	public transient boolean arrowsCanPress;
@@ -19,7 +23,7 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 	public ButtonBlockBuilder(ResourceLocation i) {
 		super(i, "_button");
 		noCollision();
-		tagBoth(BlockTags.BUTTONS.location());
+		tagBoth(BUTTON_TAGS);
 		// tagBoth(BlockTags.WOODEN_BUTTONS.location());
 		behaviour = BlockSetType.OAK;
 		ticksToStayPressed = 30;
@@ -28,17 +32,6 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 
 	public ButtonBlockBuilder behaviour(BlockSetType wt) {
 		behaviour = wt;
-		return this;
-	}
-
-	public ButtonBlockBuilder behaviour(String wt) {
-		for (var type : BlockSetType.values().toList()) {
-			if (type.name().equals(wt)) {
-				behaviour = type;
-				return this;
-			}
-		}
-
 		return this;
 	}
 
@@ -55,11 +48,7 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	public Block createObject() {
-		// TODO: (maybe) Custom BlockSetTypes?
-		//  instead of all of these methods above, we could just have a single method
-		//  that can take either a string and return an already registered BlockSetType
-		//  or create a BlockSetType using a function like (typeBuilder) => {}
-		return new ButtonBlock(BlockSetType.OAK, ticksToStayPressed, createProperties());
+		return new ButtonBlock(behaviour, ticksToStayPressed, createProperties());
 	}
 
 	@Override

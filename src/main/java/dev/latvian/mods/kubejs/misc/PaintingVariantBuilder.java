@@ -6,10 +6,11 @@ import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 
+import java.util.Objects;
+
 @ReturnsSelf
 public class PaintingVariantBuilder extends BuilderBase<PaintingVariant> {
-	public transient int width;
-	public transient int height;
+	public transient PaintingVariant paintingVariant;
 
 	public PaintingVariantBuilder(ResourceLocation i) {
 		super(i);
@@ -22,16 +23,11 @@ public class PaintingVariantBuilder extends BuilderBase<PaintingVariant> {
 
 	@Override
 	public PaintingVariant createObject() {
-		return new PaintingVariant(width, height);
+		return Objects.requireNonNull(paintingVariant);
 	}
 
-	public PaintingVariantBuilder width(int width) {
-		this.width = width;
-		return this;
-	}
-
-	public PaintingVariantBuilder height(int height) {
-		this.height = height;
+	public PaintingVariantBuilder painting(int width, int height, ResourceLocation texture) {
+		this.paintingVariant = new PaintingVariant(width, height, texture);
 		return this;
 	}
 }

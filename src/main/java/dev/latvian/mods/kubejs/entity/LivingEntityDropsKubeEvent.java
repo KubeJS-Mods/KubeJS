@@ -27,10 +27,6 @@ public class LivingEntityDropsKubeEvent implements KubeLivingEntityEvent {
 		return event.getSource();
 	}
 
-	public int getLootingLevel() {
-		return event.getLootingLevel();
-	}
-
 	public boolean isRecentlyHit() {
 		return event.isRecentlyHit();
 	}

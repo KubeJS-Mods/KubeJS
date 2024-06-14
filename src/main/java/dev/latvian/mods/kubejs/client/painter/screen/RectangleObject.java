@@ -43,21 +43,17 @@ public class RectangleObject extends BoxObject {
 		if (texture == null) {
 			event.setPositionColorShader();
 			event.blend(true);
-			event.beginQuads(false);
 			event.rectangle(ax, ay, az, aw, ah, color.getInt(event));
-			event.end();
 		} else {
 			float u0f = u0.getFloat(event);
 			float v0f = v0.getFloat(event);
 			float u1f = u1.getFloat(event);
 			float v1f = v1.getFloat(event);
 
-			event.setPositionColorTextureShader();
+			event.setPositionTextureColorShader();
 			event.setShaderTexture(texture);
 			event.blend(true);
-			event.beginQuads(true);
 			event.rectangle(ax, ay, az, aw, ah, color.getInt(event), u0f, v0f, u1f, v1f);
-			event.end();
 		}
 	}
 }

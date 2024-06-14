@@ -1,5 +1,5 @@
 package dev.latvian.mods.kubejs.misc;
-
+/*
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -91,3 +91,4 @@ public class BasicEnchantment extends Enchantment {
 		return enchantmentBuilder.discoverable;
 	}
 }
+*/

@@ -97,7 +97,7 @@ public interface TextWrapper {
 			text.kjs$obfuscated((Boolean) map.getOrDefault("obfuscated", null));
 
 			text.kjs$insertion((String) map.getOrDefault("insertion", null));
-			text.kjs$font(map.containsKey("font") ? new ResourceLocation(map.get("font").toString()) : null);
+			text.kjs$font(map.containsKey("font") ? ResourceLocation.parse(map.get("font").toString()) : null);
 			text.kjs$click(map.containsKey("click") ? clickEventOf(cx, map.get("click")) : null);
 			text.kjs$hover(map.containsKey("hover") ? of(cx, map.get("hover")) : null);
 
@@ -338,7 +338,7 @@ public interface TextWrapper {
 		return text.kjs$white();
 	}
 
-	private static MutableComponent icon(MutableComponent character) {
+	static MutableComponent icon(MutableComponent character) {
 		return character.kjs$font(KubeJS.ICONS_FONT);
 	}
 
@@ -376,5 +376,25 @@ public interface TextWrapper {
 
 	static MutableComponent yesIcon(boolean yes) {
 		return icon(yes ? Component.literal("Y") : Component.literal("N"));
+	}
+
+	static MutableComponent tagIcon() {
+		return icon(Component.literal("T"));
+	}
+
+	static MutableComponent blockTagIcon() {
+		return icon(Component.literal("B"));
+	}
+
+	static MutableComponent itemTagIcon() {
+		return icon(Component.literal("J"));
+	}
+
+	static MutableComponent fluidTagIcon() {
+		return icon(Component.literal("F"));
+	}
+
+	static MutableComponent entityTypeTagIcon() {
+		return icon(Component.literal("E"));
 	}
 }

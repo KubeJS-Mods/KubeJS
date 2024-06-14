@@ -80,11 +80,6 @@ public interface UtilsWrapper {
 		return new CountingMap();
 	}
 
-	@Info("Returns a ResourceLocation with the specified namepsace and path")
-	static ResourceLocation id(String namespace, String path) {
-		return new ResourceLocation(namespace, path);
-	}
-
 	@Info("Typewraps the input string to a ResourceLocation. Format should be namespace:path")
 	static ResourceLocation id(ResourceLocation id) {
 		// TypeWrapper will convert any object into RL

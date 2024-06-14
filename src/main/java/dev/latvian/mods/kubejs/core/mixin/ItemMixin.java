@@ -156,9 +156,9 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Inject(method = "getUseDuration", at = @At("HEAD"), cancellable = true)
-	private void getUseDuration(ItemStack itemStack, CallbackInfoReturnable<Integer> ci) {
+	private void getUseDuration(ItemStack itemStack, LivingEntity entity, CallbackInfoReturnable<Integer> cir) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.useDuration != null) {
-			ci.setReturnValue(kjs$itemBuilder.useDuration.applyAsInt(itemStack));
+			cir.setReturnValue(kjs$itemBuilder.useDuration.applyAsInt(itemStack, entity));
 		}
 	}
 

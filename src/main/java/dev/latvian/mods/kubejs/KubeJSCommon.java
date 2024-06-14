@@ -11,9 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class KubeJSCommon {
-	public void init() {
-	}
-
 	public void reloadClientInternal() {
 	}
 

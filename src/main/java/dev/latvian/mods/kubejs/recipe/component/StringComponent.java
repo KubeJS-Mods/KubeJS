@@ -27,13 +27,7 @@ public record StringComponent(String name, Codec<String> stringCodec) implements
 		return DataResult.success(s);
 	}));
 
-	public static final RecipeComponent<String> ID = new StringComponent("id", Codec.STRING.validate(s -> {
-		if (!ResourceLocation.isValidResourceLocation(s)) {
-			return DataResult.error(() -> "invalid ID");
-		}
-
-		return DataResult.success(s);
-	}));
+	public static final RecipeComponent<String> ID = new StringComponent("id", Codec.STRING.validate(s -> ResourceLocation.read(s).map(ResourceLocation::toString)));
 
 	@Override
 	public Codec<String> codec() {

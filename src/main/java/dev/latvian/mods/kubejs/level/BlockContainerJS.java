@@ -40,8 +40,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class BlockContainerJS implements SpecialEquality {
-	private static final ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
-
 	public final Level minecraftLevel;
 	private final BlockPos pos;
 

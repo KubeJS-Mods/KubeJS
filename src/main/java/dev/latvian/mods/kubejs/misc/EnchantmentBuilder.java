@@ -1,5 +1,5 @@
 package dev.latvian.mods.kubejs.misc;
-
+/*
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -235,3 +235,4 @@ public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 		return this;
 	}
 }
+*/

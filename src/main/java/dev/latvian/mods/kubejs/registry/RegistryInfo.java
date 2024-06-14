@@ -24,9 +24,9 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
@@ -71,7 +71,6 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	public static final RegistryInfo<Fluid> FLUID = of(Registries.FLUID);
 	public static final RegistryInfo<MobEffect> MOB_EFFECT = of(Registries.MOB_EFFECT).languageKeyPrefix("effect");
 	public static final RegistryInfo<Block> BLOCK = of(Registries.BLOCK);
-	public static final RegistryInfo<Enchantment> ENCHANTMENT = of(Registries.ENCHANTMENT);
 	public static final RegistryInfo<EntityType<?>> ENTITY_TYPE = of(Registries.ENTITY_TYPE);
 	public static final RegistryInfo<Item> ITEM = of(Registries.ITEM);
 	public static final RegistryInfo<Potion> POTION = of(Registries.POTION);
@@ -88,6 +87,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	public static final RegistryInfo<PoiType> POINT_OF_INTEREST_TYPE = of(Registries.POINT_OF_INTEREST_TYPE);
 	public static final RegistryInfo<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPE = of(Registries.COMMAND_ARGUMENT_TYPE);
 	public static final RegistryInfo<CreativeModeTab> CREATIVE_MODE_TAB = of(Registries.CREATIVE_MODE_TAB);
+	public static final RegistryInfo<JukeboxSong> JUKEBOX_SONG = of(Registries.JUKEBOX_SONG);
 
 	public final ResourceKey<Registry<T>> key;
 	BuilderType<T> defaultType;

@@ -17,6 +17,6 @@ public class RecipeMappingRegistry implements KubeEvent {
 
 	@HideFromJS
 	public void register(String name, String type) {
-		register(name, new ResourceLocation(type));
+		register(name, ResourceLocation.parse(type));
 	}
 }

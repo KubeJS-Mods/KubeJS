@@ -42,8 +42,6 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public sealed interface BlockStatePredicate extends Predicate<BlockState>, ReplacementMatch {
-	ResourceLocation AIR_ID = new ResourceLocation("minecraft:air");
-
 	@Override
 	boolean test(BlockState state);
 
@@ -62,7 +60,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		} else if (s.equals("-")) {
 			return Simple.NONE;
 		} else if (s.startsWith("#")) {
-			return new TagMatch(Tags.block(new ResourceLocation(s.substring(1))));
+			return new TagMatch(Tags.block(ResourceLocation.parse(s.substring(1))));
 		} else if (s.indexOf('[') != -1) {
 			var state = BlockWrapper.parseBlockState(s);
 
@@ -70,7 +68,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 				return new StateMatch(state);
 			}
 		} else {
-			var block = RegistryInfo.BLOCK.getValue(new ResourceLocation(s));
+			var block = RegistryInfo.BLOCK.getValue(ResourceLocation.parse(s));
 
 			if (block != Blocks.AIR) {
 				return new BlockMatch(block);

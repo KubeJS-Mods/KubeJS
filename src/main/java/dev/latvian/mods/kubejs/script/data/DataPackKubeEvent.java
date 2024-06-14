@@ -19,7 +19,7 @@ public class DataPackKubeEvent implements KubeEvent {
 	public void addJson(ResourceLocation id, JsonElement json) {
 		if (json != null) {
 			// append .json to the filename if it doesn't have it already
-			id = id.getPath().endsWith(".json") ? id : new ResourceLocation(id.getNamespace(), id.getPath() + ".json");
+			id = id.getPath().endsWith(".json") ? id : ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath() + ".json");
 			add(id, JsonIO.toString(json));
 		}
 	}

@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Undefined;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.handler.codec.EncoderException;
 import net.minecraft.nbt.ByteArrayTag;
@@ -45,6 +46,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface NBTUtils {
+	TypeInfo STRING_TAG_MAP_TYPE = TypeInfo.RAW_MAP.withParams(TypeInfo.STRING, TypeInfo.of(Tag.class));
+
 	@Nullable
 	static Object fromTag(@Nullable Tag t) {
 		if (t == null || t instanceof EndTag) {

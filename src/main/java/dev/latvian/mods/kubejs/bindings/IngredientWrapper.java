@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.bindings;
 
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
-import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientActionCallback;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -24,11 +22,6 @@ public interface IngredientWrapper {
 	@Info("Returns an ingredient of the input, with the specified count")
 	static SizedIngredient of(Ingredient ingredient, int count) {
 		return ingredient.kjs$withCount(count);
-	}
-
-	@Info("Register a custom ingredient action for use in recipes with Recipe#customIngredientAction")
-	static void registerCustomIngredientAction(String id, CustomIngredientActionCallback callback) {
-		CustomIngredientAction.MAP.put(id, callback);
 	}
 
 	@Info("""

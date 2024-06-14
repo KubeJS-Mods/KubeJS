@@ -33,6 +33,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.WrappedException;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.ReportType;
 import net.minecraft.ReportedException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.Bootstrap;
@@ -139,7 +140,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 			if (ex instanceof ReportedException crashed) {
 				// crash the same way Minecraft would
-				Bootstrap.realStdoutPrintln(crashed.getReport().getFriendlyReport());
+				Bootstrap.realStdoutPrintln(crashed.getReport().getFriendlyReport(ReportType.CRASH));
 				System.exit(-1);
 			}
 
@@ -249,7 +250,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		recipeFunctions.put("smithing", smithing);
 		recipeFunctions.put("smithingTrim", smithingTrim);
 
-		stageSerializer = RegistryInfo.RECIPE_SERIALIZER.getValue(new ResourceLocation("recipestages:stage"));
+		stageSerializer = RegistryInfo.RECIPE_SERIALIZER.getValue(ResourceLocation.parse("recipestages:stage"));
 	}
 
 	@HideFromJS
@@ -655,10 +656,10 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	public synchronized ResourceLocation takeId(KubeRecipe recipe, String prefix, String ids) {
 		int i = 2;
-		var id = new ResourceLocation(prefix + ids);
+		var id = ResourceLocation.parse(prefix + ids);
 
 		while (takenIds.containsKey(id)) {
-			id = new ResourceLocation(prefix + ids + '_' + i);
+			id = ResourceLocation.parse(prefix + ids + '_' + i);
 			i++;
 		}
 

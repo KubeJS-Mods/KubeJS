@@ -1,23 +1,17 @@
 package dev.latvian.mods.kubejs.command;
 
 import com.google.common.base.Predicate;
-import com.google.common.base.Strings;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.core.WithPersistentData;
-import dev.latvian.mods.kubejs.event.EventGroups;
 import dev.latvian.mods.kubejs.event.EventResult;
-import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.net.DisplayClientErrorsPayload;
 import dev.latvian.mods.kubejs.net.DisplayServerErrorsPayload;
 import dev.latvian.mods.kubejs.net.PaintPayload;
@@ -27,10 +21,6 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.server.CustomCommandKubeEvent;
 import dev.latvian.mods.kubejs.server.DataExport;
-import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.JavaMembers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -38,16 +28,10 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ObjectiveArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.commands.arguments.ScoreHolderArgument;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -59,35 +43,23 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Modifier;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
 public class KubeJSCommands {
-
-	private static final char UNICODE_TICK = '✔';
-	private static final char UNICODE_CROSS = '✘';
-
-	public static final DynamicCommandExceptionType NO_REGISTRY = new DynamicCommandExceptionType((id) ->
-		Component.literal("No builtin or static registry found for " + id)
-	);
+	public static final DynamicCommandExceptionType NO_REGISTRY = new DynamicCommandExceptionType(id -> Component.literal("No builtin or static registry found for " + id));
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		Predicate<CommandSourceStack> spOrOP = (source) -> source.getServer().isSingleplayer() || source.hasPermission(2);
@@ -95,23 +67,17 @@ public class KubeJSCommands {
 			.then(Commands.literal("help")
 				.executes(context -> help(context.getSource()))
 			)
-			.then(Commands.literal("custom_command")
-				.then(Commands.argument("id", StringArgumentType.word())
-					.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(ServerEvents.CUSTOM_COMMAND.findUniqueExtraIds(ScriptType.SERVER).stream().map(String::valueOf), builder))
-					.executes(context -> customCommand(context.getSource(), StringArgumentType.getString(context, "id")))
-				)
-			)
 			.then(Commands.literal("hand")
-				.executes(context -> hand(context.getSource().getPlayerOrException(), InteractionHand.MAIN_HAND))
+				.executes(context -> InformationCommands.hand(context.getSource().getPlayerOrException(), InteractionHand.MAIN_HAND))
 			)
 			.then(Commands.literal("offhand")
-				.executes(context -> hand(context.getSource().getPlayerOrException(), InteractionHand.OFF_HAND))
+				.executes(context -> InformationCommands.hand(context.getSource().getPlayerOrException(), InteractionHand.OFF_HAND))
 			)
 			.then(Commands.literal("inventory")
-				.executes(context -> inventory(context.getSource().getPlayerOrException()))
+				.executes(context -> InformationCommands.inventory(context.getSource().getPlayerOrException()))
 			)
 			.then(Commands.literal("hotbar")
-				.executes(context -> hotbar(context.getSource().getPlayerOrException()))
+				.executes(context -> InformationCommands.hotbar(context.getSource().getPlayerOrException()))
 			)
 			.then(Commands.literal("errors")
 				.then(Commands.literal("startup")
@@ -132,15 +98,15 @@ public class KubeJSCommands {
 					.requires(spOrOP)
 					.executes(context -> reloadConfig(context.getSource()))
 				)
-				.then(Commands.literal("startup_scripts")
+				.then(Commands.literal("startup-scripts")
 					.requires(spOrOP)
 					.executes(context -> reloadStartup(context.getSource()))
 				)
-				.then(Commands.literal("server_scripts")
+				.then(Commands.literal("server-scripts")
 					.requires(spOrOP)
 					.executes(context -> reloadServer(context.getSource()))
 				)
-				.then(Commands.literal("client_scripts")
+				.then(Commands.literal("client-scripts")
 					.requires(source -> true)
 					.executes(context -> reloadClient(context.getSource()))
 				)
@@ -156,10 +122,10 @@ public class KubeJSCommands {
 			.then(Commands.literal("export")
 				.requires(spOrOP)
 				.executes(context -> export(context.getSource()))
-				.then(Commands.literal("pack_zips")
+				.then(Commands.literal("pack-zips")
 					.executes(context -> exportPacks(context.getSource(), true))
 				)
-				.then(Commands.literal("pack_folders")
+				.then(Commands.literal("pack-folders")
 					.executes(context -> exportPacks(context.getSource(), false))
 				)
 			)
@@ -174,7 +140,7 @@ public class KubeJSCommands {
 					.executes(context -> checkRecipeConflicts(context.getSource().getPlayerOrException()))
 			)
 			 */
-			.then(Commands.literal("list_tag")
+			.then(Commands.literal("list-tag")
 				.then(Commands.argument("registry", ResourceLocationArgument.id())
 					.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
 						ctx.getSource().registryAccess()
@@ -194,14 +160,20 @@ public class KubeJSCommands {
 					)
 				)
 			)
-			.then(Commands.literal("dump_registry")
-				.then(Commands.argument("registry", ResourceLocationArgument.id())
-					.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
-						ctx.getSource().registryAccess()
-							.registries()
-							.map(entry -> entry.key().location().toString()), builder)
+			.then(Commands.literal("dump")
+				.then(Commands.literal("registry")
+					.then(Commands.argument("registry", ResourceLocationArgument.id())
+						.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+							ctx.getSource().registryAccess()
+								.registries()
+								.map(entry -> entry.key().location().toString()), builder)
+						)
+						.executes(ctx -> DumpCommands.registry(ctx.getSource(), registry(ctx, "registry")))
 					)
-					.executes(ctx -> dumpRegistry(ctx.getSource(), registry(ctx, "registry")))
+				)
+				.then(Commands.literal("events")
+					.requires(spOrOP)
+					.executes(context -> DumpCommands.events(context.getSource()))
 				)
 			)
 			.then(Commands.literal("stages")
@@ -209,25 +181,25 @@ public class KubeJSCommands {
 				.then(Commands.literal("add")
 					.then(Commands.argument("player", EntityArgument.players())
 						.then(Commands.argument("stage", StringArgumentType.string())
-							.executes(context -> addStage(context.getSource(), EntityArgument.getPlayers(context, "player"), StringArgumentType.getString(context, "stage")))
+							.executes(context -> StageCommands.addStage(context.getSource(), EntityArgument.getPlayers(context, "player"), StringArgumentType.getString(context, "stage")))
 						)
 					)
 				)
 				.then(Commands.literal("remove")
 					.then(Commands.argument("player", EntityArgument.players())
 						.then(Commands.argument("stage", StringArgumentType.string())
-							.executes(context -> removeStage(context.getSource(), EntityArgument.getPlayers(context, "player"), StringArgumentType.getString(context, "stage")))
+							.executes(context -> StageCommands.removeStage(context.getSource(), EntityArgument.getPlayers(context, "player"), StringArgumentType.getString(context, "stage")))
 						)
 					)
 				)
 				.then(Commands.literal("clear")
 					.then(Commands.argument("player", EntityArgument.players())
-						.executes(context -> clearStages(context.getSource(), EntityArgument.getPlayers(context, "player")))
+						.executes(context -> StageCommands.clearStages(context.getSource(), EntityArgument.getPlayers(context, "player")))
 					)
 				)
 				.then(Commands.literal("list")
 					.then(Commands.argument("player", EntityArgument.players())
-						.executes(context -> listStages(context.getSource(), EntityArgument.getPlayers(context, "player")))
+						.executes(context -> StageCommands.listStages(context.getSource(), EntityArgument.getPlayers(context, "player")))
 					)
 				)
 			)
@@ -239,7 +211,7 @@ public class KubeJSCommands {
 					)
 				)
 			)
-			.then(Commands.literal("generate_typings")
+			.then(Commands.literal("generate-typings")
 				.requires(spOrOP)
 				.executes(context -> generateTypings(context.getSource()))
 			)
@@ -250,21 +222,15 @@ public class KubeJSCommands {
 					.executes(context -> packmode(context.getSource(), StringArgumentType.getString(context, "name")))
 				)
 			)
-			.then(Commands.literal("dump_internals")
-				.then(Commands.literal("events")
-					.requires(spOrOP)
-					.executes(context -> dumpEvents(context.getSource()))
-				)
-			)
-			.then(Commands.literal("persistent_data")
+			.then(Commands.literal("persistent-data")
 				.requires(spOrOP)
-				.then(addPersistentDataCommands(Commands.literal("server"), ctx -> Set.of(ctx.getSource().getServer())))
+				.then(PersistentDataCommands.addPersistentDataCommands(Commands.literal("server"), ctx -> Set.of(ctx.getSource().getServer())))
 				.then(Commands.literal("dimension")
-					.then(addPersistentDataCommands(Commands.literal("*"), ctx -> (Collection<ServerLevel>) ctx.getSource().getServer().getAllLevels()))
-					.then(addPersistentDataCommands(Commands.argument("dimension", DimensionArgument.dimension()), ctx -> Set.of(DimensionArgument.getDimension(ctx, "dimension"))))
+					.then(PersistentDataCommands.addPersistentDataCommands(Commands.literal("*"), ctx -> (Collection<ServerLevel>) ctx.getSource().getServer().getAllLevels()))
+					.then(PersistentDataCommands.addPersistentDataCommands(Commands.argument("dimension", DimensionArgument.dimension()), ctx -> Set.of(DimensionArgument.getDimension(ctx, "dimension"))))
 				)
 				.then(Commands.literal("entity")
-					.then(addPersistentDataCommands(Commands.argument("entity", EntityArgument.entities()), ctx -> EntityArgument.getEntities(ctx, "entity"))))
+					.then(PersistentDataCommands.addPersistentDataCommands(Commands.argument("entity", EntityArgument.entities()), ctx -> EntityArgument.getEntities(ctx, "entity"))))
 			);
 
 		if (!FMLLoader.isProduction()) {
@@ -278,215 +244,13 @@ public class KubeJSCommands {
 
 		var cmd1 = dispatcher.register(cmd);
 		dispatcher.register(Commands.literal("kjs").redirect(cmd1));
-	}
 
-	private static int dumpEvents(CommandSourceStack source) {
-		var groups = EventGroups.ALL.get().map();
-
-		var output = KubeJSPaths.LOCAL.resolve("event_groups");
-
-		// create a folder for each event group,
-		// and a markdown file for each event handler in that group
-		// the markdown file should contain:
-		// - the event handler name (i.e. ServerEvents.recipes)
-		// - the valid script types for that event
-		// - a link to the event class on GitHub
-		//   (base link is https://github.com/KubeJS-Mods/KubeJS/tree/1902/common/src/main/java/{package}/{class_name}.java,
-		//   but we need to replace the package dots with slashes)
-		// - a table of all (public, non-transient) fields and (public) methods in the event and their parameters
-		// - a space for an example script
-		for (var entry : groups.entrySet()) {
-			var groupName = entry.getKey();
-			var group = entry.getValue();
-
-			var groupFolder = output.resolve(groupName);
-			try {
-				Files.createDirectories(groupFolder);
-				FileUtils.cleanDirectory(groupFolder.toFile());
-			} catch (IOException e) {
-				ConsoleJS.SERVER.error("Failed to create folder for event group " + groupName, e);
-				source.sendFailure(Component.literal("Failed to create folder for event group " + groupName));
-				return 0;
-			}
-
-			for (var handlerEntry : group.getHandlers().entrySet()) {
-				var handlerName = handlerEntry.getKey();
-				var handler = handlerEntry.getValue();
-
-				var handlerFile = groupFolder.resolve(handlerName + ".md");
-
-				var fullName = "%s.%s".formatted(groupName, handlerName);
-
-				var eventType = handler.eventType.get();
-
-				var builder = new StringBuilder();
-
-				builder.append("# ").append(fullName).append("\n\n");
-
-				builder.append("## Basic info\n\n");
-
-				builder.append("- Valid script types: ").append(handler.scriptTypePredicate.getValidTypes()).append("\n\n");
-
-				builder.append("- Has result? ").append(handler.getResult() != null ? UNICODE_TICK : UNICODE_CROSS).append("\n\n");
-
-				builder.append("- Event class: ");
-
-				if (eventType.getPackageName().startsWith("dev.latvian.mods.kubejs")) {
-					builder.append('[').append(UtilsJS.toMappedTypeString(eventType)).append(']')
-						.append('(').append("https://github.com/KubeJS-Mods/KubeJS/tree/")
-						.append(KubeJS.MC_VERSION_NUMBER)
-						.append("/common/src/main/java/")
-						.append(eventType.getPackageName().replace('.', '/'))
-						.append('/').append(eventType.getSimpleName()).append(".java")
-						.append(')');
-				} else {
-					builder.append(UtilsJS.toMappedTypeString(eventType)).append(" (third-party)");
-				}
-
-				builder.append("\n\n");
-
-				var classInfo = eventType.getAnnotation(Info.class);
-				if (classInfo != null) {
-					builder.append("```\n")
-						.append(classInfo.value())
-						.append("```");
-					builder.append("\n\n");
-				}
-
-				var scriptManager = source.getServer().getServerResources().managers().kjs$getServerScriptManager();
-				var cx = (KubeJSContext) scriptManager.contextFactory.enter();
-
-				var members = JavaMembers.lookupClass(cx, cx.topLevelScope, eventType, null, false);
-
-				var hasDocumentedMembers = false;
-				var documentedMembers = new StringBuilder("### Documented members:\n\n");
-
-				builder.append("### Available fields:\n\n");
-				builder.append("| Name | Type | Static? |\n");
-				builder.append("| ---- | ---- | ------- |\n");
-				for (var field : members.getAccessibleFields(cx, false)) {
-					if (field.field.getDeclaringClass() == Object.class) {
-						continue;
-					}
-
-					var typeName = UtilsJS.toMappedTypeString(field.field.getGenericType());
-					builder.append("| ").append(field.name).append(" | ").append(typeName).append(" | ");
-					builder.append(Modifier.isStatic(field.field.getModifiers()) ? UNICODE_TICK : UNICODE_CROSS).append(" |\n");
-
-					var info = field.field.getAnnotation(Info.class);
-					if (info != null) {
-						hasDocumentedMembers = true;
-						documentedMembers.append("- `").append(typeName).append(' ').append(field.name).append("`\n");
-						documentedMembers.append("```\n");
-						var desc = info.value();
-						documentedMembers.append(desc);
-						if (!desc.endsWith("\n")) {
-							documentedMembers.append("\n");
-						}
-						documentedMembers.append("```\n\n");
-					}
-				}
-
-				builder.append("\n").append("Note: Even if no fields are listed above, some methods are still available as fields through *beans*.\n\n");
-
-				builder.append("### Available methods:\n\n");
-				builder.append("| Name | Parameters | Return type | Static? |\n");
-				builder.append("| ---- | ---------- | ----------- | ------- |\n");
-				for (var method : members.getAccessibleMethods(cx, false)) {
-					if (method.hidden || method.method.getDeclaringClass() == Object.class) {
-						continue;
-					}
-					builder.append("| ").append(method.name).append(" | ");
-					var params = method.method.getGenericParameterTypes();
-
-					var paramTypes = new String[params.length];
-					for (var i = 0; i < params.length; i++) {
-						paramTypes[i] = UtilsJS.toMappedTypeString(params[i]);
-					}
-					builder.append(String.join(", ", paramTypes)).append(" | ");
-
-					var returnType = UtilsJS.toMappedTypeString(method.method.getGenericReturnType());
-					builder.append(" | ").append(returnType).append(" | ");
-					builder.append(Modifier.isStatic(method.method.getModifiers()) ? UNICODE_TICK : UNICODE_CROSS).append(" |\n");
-
-					var info = method.method.getAnnotation(Info.class);
-					if (info != null) {
-						hasDocumentedMembers = true;
-						documentedMembers.append("- ").append('`');
-						if (Modifier.isStatic(method.method.getModifiers())) {
-							documentedMembers.append("static ");
-						}
-						documentedMembers.append(returnType).append(' ').append(method.name).append('(');
-
-						var namedParams = info.params();
-						var paramNames = new String[params.length];
-						var signature = new String[params.length];
-						for (var i = 0; i < params.length; i++) {
-							var name = "var" + i;
-							if (namedParams.length > i) {
-								var name1 = namedParams[i].name();
-								if (!Strings.isNullOrEmpty(name1)) {
-									name = name1;
-								}
-							}
-							paramNames[i] = name;
-							signature[i] = paramTypes[i] + ' ' + name;
-						}
-
-						documentedMembers.append(String.join(", ", signature)).append(')').append('`').append("\n");
-
-						if (params.length > 0) {
-							documentedMembers.append("\n  Parameters:\n");
-							for (var i = 0; i < params.length; i++) {
-								documentedMembers.append("  - ")
-									.append(paramNames[i])
-									.append(": ")
-									.append(paramTypes[i])
-									.append(namedParams.length > i ? "- " + namedParams[i].value() : "")
-									.append("\n");
-							}
-							documentedMembers.append("\n");
-						}
-
-						documentedMembers.append("```\n");
-						var desc = info.value();
-						documentedMembers.append(desc);
-						if (!desc.endsWith("\n")) {
-							documentedMembers.append("\n");
-						}
-						documentedMembers.append("```\n\n");
-					}
-				}
-
-				builder.append("\n\n");
-
-				if (hasDocumentedMembers) {
-					builder.append(documentedMembers).append("\n\n");
-				}
-
-				builder.append("### Example script:\n\n");
-				builder.append("```js\n");
-				builder.append(fullName).append('(');
-				if (handler.extra != null) {
-					builder.append(handler.extraRequired ? "extra_id, " : "/* extra_id (optional), */ ");
-				}
-				builder.append("(event) => {\n");
-				builder.append("\t// This space (un)intentionally left blank\n");
-				builder.append("});\n");
-				builder.append("```\n\n");
-
-				try {
-					Files.writeString(handlerFile, builder.toString());
-				} catch (IOException e) {
-					ConsoleJS.SERVER.error("Failed to write file for event handler " + fullName, e);
-					source.sendFailure(Component.literal("Failed to write file for event handler " + fullName));
-					return 0;
-				}
-			}
+		for (var id : ServerEvents.CUSTOM_COMMAND.findUniqueExtraIds(ScriptType.SERVER)) {
+			dispatcher.register(Commands.literal(id)
+				.requires(spOrOP)
+				.executes(context -> customCommand(context.getSource(), id))
+			);
 		}
-
-		source.sendSystemMessage(Component.literal("Successfully dumped event groups to " + output));
-		return 1;
 	}
 
 	private static <T> ResourceKey<Registry<T>> registry(CommandContext<CommandSourceStack> ctx, String arg) {
@@ -497,18 +261,6 @@ public class KubeJSCommands {
 		return source.registryAccess().registry(registry)
 			.orElseThrow(() -> NO_REGISTRY.create(registry.location()))
 			.getTagNames();
-	}
-
-	private static Component copy(String s, ChatFormatting col, String info) {
-		return copy(Component.literal(s).withStyle(col), info);
-	}
-
-	private static Component copy(Component c, String info) {
-		return Component.literal("- ")
-			.withStyle(ChatFormatting.GRAY)
-			.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, c.getString())))
-			.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(info + " (Click to copy)"))))
-			.append(c);
 	}
 
 	private static void link(CommandSourceStack source, ChatFormatting color, String name, String url) {
@@ -537,80 +289,6 @@ public class KubeJSCommands {
 		return 0;
 	}
 
-	private static int hand(ServerPlayer player, InteractionHand hand) {
-		player.sendSystemMessage(Component.literal("Item in hand:"));
-		var stack = player.getItemInHand(hand);
-		var holder = stack.getItemHolder();
-
-		// item info
-		// id
-		player.sendSystemMessage(copy(stack.kjs$toItemString0(player.server.registryAccess().createSerializationContext(NbtOps.INSTANCE)), ChatFormatting.GREEN, "Item ID"));
-		// item tags
-		var itemTags = holder.tags().toList();
-		for (var tag : itemTags) {
-			var id = "'#%s'".formatted(tag.location());
-			var size = BuiltInRegistries.ITEM.getTag(tag).map(HolderSet::size).orElse(0);
-			player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Item Tag [" + size + " items]"));
-		}
-		// mod
-		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + IngredientHelper.get().mod(stack.kjs$getMod()).kjs$getStacks().size() + " items]"));
-		// TODO: creative tabs (neo has made them client only in 1.20.1, this is fixed in 1.20.4)
-		/*var cat = stack.getItem().getItemCategory();
-		if (cat != null) {
-			player.sendSystemMessage(copy("'%" + cat.getRecipeFolderName() + "'", ChatFormatting.LIGHT_PURPLE, "Item Group [" + IngredientPlatformHelper.get().creativeTab(cat).kjs$getStacks().size() + " items]"));
-		}*/
-
-		// block info
-		if (stack.getItem() instanceof BlockItem blockItem) {
-			player.sendSystemMessage(Component.literal("Held block:"));
-			var block = blockItem.getBlock();
-			var blockHolder = block.builtInRegistryHolder();
-			// id
-			player.sendSystemMessage(copy(block.kjs$getId(), ChatFormatting.GREEN, "Block ID"));
-			// block tags
-			var blockTags = blockHolder.tags().toList();
-			for (var tag : blockTags) {
-				var id = "'#%s'".formatted(tag.location());
-				var size = BuiltInRegistries.BLOCK.getTag(tag).map(HolderSet::size).orElse(0);
-				player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Block Tag [" + size + " items]"));
-			}
-		}
-
-		// fluid info
-		var containedFluid = FluidUtil.getFluidContained(stack);
-		if (containedFluid.isPresent()) {
-			player.sendSystemMessage(Component.literal("Held fluid:"));
-			var fluid = containedFluid.orElseThrow();
-			var fluidHolder = fluid.getFluid().builtInRegistryHolder();
-			// id
-			player.sendSystemMessage(copy(fluidHolder.key().location().toString(), ChatFormatting.GREEN, "Fluid ID"));
-			// fluid tags
-			var fluidTags = fluidHolder.tags().toList();
-			for (var tag : fluidTags) {
-				var id = "'#%s'".formatted(tag.location());
-				var size = BuiltInRegistries.FLUID.getTag(tag).map(HolderSet::size).orElse(0);
-				player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Fluid Tag [" + size + " items]"));
-			}
-		}
-
-		return 1;
-	}
-
-	private static int inventory(ServerPlayer player) {
-		return dump(player.getInventory().items, player, "Inventory");
-	}
-
-	private static int hotbar(ServerPlayer player) {
-		return dump(player.getInventory().items.subList(0, 9), player, "Hotbar");
-	}
-
-	private static int dump(List<ItemStack> stacks, ServerPlayer player, String name) {
-		var ops = player.server.registryAccess().createSerializationContext(NbtOps.INSTANCE);
-		var dump = stacks.stream().filter(is -> !is.isEmpty()).map(is -> is.kjs$toItemString0(ops)).toList();
-		player.sendSystemMessage(copy(dump.toString(), ChatFormatting.WHITE, name + " Item List"));
-		return 1;
-	}
-
 	private static int errors(CommandSourceStack source, ScriptType type) throws CommandSyntaxException {
 		if (type == ScriptType.CLIENT) {
 			var player = source.getPlayerOrException();
@@ -634,6 +312,7 @@ public class KubeJSCommands {
 		player.sendSystemMessage(Component.literal("You need KubeJS on client side!").withStyle(ChatFormatting.RED), true);
 		PacketDistributor.sendToPlayer(player, new DisplayServerErrorsPayload(type.ordinal(), errors, warnings));
 
+		// FIXME
 		/*
 		var lines = ConsoleJS.SERVER.errors.toArray(ConsoleLine.EMPTY_ARRAY);
 
@@ -779,21 +458,6 @@ public class KubeJSCommands {
 		return success;
 	}
 
-	private static int outputRecipes(ServerPlayer player) {
-		player.sendSystemMessage(Component.literal("WIP!"));
-		return Command.SINGLE_SUCCESS;
-	}
-
-	private static int inputRecipes(ServerPlayer player) {
-		player.sendSystemMessage(Component.literal("WIP!"));
-		return Command.SINGLE_SUCCESS;
-	}
-
-	private static int checkRecipeConflicts(ServerPlayer player) {
-		player.sendSystemMessage(Component.literal("WIP!"));
-		return Command.SINGLE_SUCCESS;
-	}
-
 	private static <T> int listTagsFor(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
 		var tags = allTags(source, registry);
 
@@ -845,72 +509,6 @@ public class KubeJSCommands {
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static <T> int dumpRegistry(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
-		var ids = source.registryAccess().registry(registry)
-			.orElseThrow(() -> NO_REGISTRY.create(registry.location()))
-			.holders();
-
-		source.sendSystemMessage(Component.empty());
-		source.sendSystemMessage(Component.literal("List of all entries for registry " + registry.location() + ":"));
-		source.sendSystemMessage(Component.empty());
-
-		var size = ids.map(holder -> {
-			var id = holder.key().location();
-			return Component.literal("- %s".formatted(id)).withStyle(Style.EMPTY
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("%s [%s]".formatted(holder.value(), holder.value().getClass().getName()))))
-			);
-		}).mapToLong(msg -> {
-			source.sendSystemMessage(msg);
-			return 1;
-		}).sum();
-
-		source.sendSystemMessage(Component.empty());
-		source.sendSystemMessage(Component.literal("Total: %d entries".formatted(size)));
-		source.sendSystemMessage(Component.empty());
-
-
-		return 1;
-	}
-
-	private static int addStage(CommandSourceStack source, Collection<ServerPlayer> players, String stage) {
-		for (var p : players) {
-			if (p.kjs$getStages().add(stage)) {
-				source.sendSuccess(() -> Component.literal("Added '" + stage + "' stage for " + p.getScoreboardName()), true);
-			}
-		}
-
-		return 1;
-	}
-
-	private static int removeStage(CommandSourceStack source, Collection<ServerPlayer> players, String stage) {
-		for (var p : players) {
-			if (p.kjs$getStages().remove(stage)) {
-				source.sendSuccess(() -> Component.literal("Removed '" + stage + "' stage for " + p.getScoreboardName()), true);
-			}
-		}
-
-		return 1;
-	}
-
-	private static int clearStages(CommandSourceStack source, Collection<ServerPlayer> players) {
-		for (var p : players) {
-			if (p.kjs$getStages().clear()) {
-				source.sendSuccess(() -> Component.literal("Cleared stages for " + p.getScoreboardName()), true);
-			}
-		}
-
-		return 1;
-	}
-
-	private static int listStages(CommandSourceStack source, Collection<ServerPlayer> players) {
-		for (var p : players) {
-			source.sendSystemMessage(Component.literal(p.getScoreboardName() + " stages:"));
-			p.kjs$getStages().getAll().stream().sorted().forEach(s -> source.sendSystemMessage(Component.literal("- " + s)));
-		}
-
-		return 1;
-	}
-
 	private static int painter(CommandSourceStack source, Collection<ServerPlayer> players, CompoundTag object) {
 		var payload = new ClientboundCustomPayloadPacket(new PaintPayload(object));
 
@@ -940,160 +538,6 @@ public class KubeJSCommands {
 		}
 
 		return 1;
-	}
-
-	@FunctionalInterface
-	private interface PersistentDataFactory {
-		SimpleCommandExceptionType EMPTY_LIST = new SimpleCommandExceptionType(Component.literal("Expected at least one target"));
-
-		Collection<? extends WithPersistentData> apply(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException;
-
-		default Collection<? extends WithPersistentData> getAll(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-			var list = apply(ctx);
-
-			if (list.isEmpty()) {
-				throw EMPTY_LIST.create();
-			}
-
-			return list;
-		}
-
-		default WithPersistentData getOne(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-			var list = apply(ctx);
-
-			if (list.isEmpty()) {
-				throw EMPTY_LIST.create();
-			}
-
-			return list.iterator().next();
-		}
-	}
-
-	private static ArgumentBuilder<CommandSourceStack, ?> addPersistentDataCommands(ArgumentBuilder<CommandSourceStack, ?> cmd, PersistentDataFactory factory) {
-		cmd.then(Commands.literal("get")
-			.then(Commands.literal("*")
-				.executes(ctx -> {
-					var objects = factory.getAll(ctx);
-
-					for (var o : objects) {
-						var dataStr = NbtUtils.toPrettyComponent(o.kjs$getPersistentData());
-						ctx.getSource().sendSuccess(() -> Component.literal("").append(Component.literal("").withStyle(ChatFormatting.YELLOW).append(o.kjs$getDisplayName())).append(": ").append(dataStr), false);
-					}
-
-					return objects.size();
-				})
-			)
-			.then(Commands.argument("key", StringArgumentType.string())
-				.executes(ctx -> {
-					var objects = factory.getAll(ctx);
-					var key = StringArgumentType.getString(ctx, "key");
-
-					for (var o : objects) {
-						var data = key.equals("*") ? o.kjs$getPersistentData() : o.kjs$getPersistentData().get(key);
-						var dataStr = data == null ? Component.literal("null").withStyle(ChatFormatting.RED) : NbtUtils.toPrettyComponent(data);
-						ctx.getSource().sendSuccess(() -> Component.literal("").append(Component.literal("").withStyle(ChatFormatting.YELLOW).append(o.kjs$getDisplayName())).append(": ").append(dataStr), false);
-					}
-
-					return objects.size();
-				})
-			)
-		);
-
-		cmd.then(Commands.literal("merge")
-			.then(Commands.argument("nbt", CompoundTagArgument.compoundTag())
-				.executes(ctx -> {
-					var objects = factory.getAll(ctx);
-					var tag = CompoundTagArgument.getCompoundTag(ctx, "nbt");
-
-					for (var o : objects) {
-						o.kjs$getPersistentData().merge(tag);
-						ctx.getSource().sendSuccess(() -> Component.literal("").append(Component.literal("").withStyle(ChatFormatting.YELLOW).append(o.kjs$getDisplayName())).append(" updated"), false);
-					}
-
-					return objects.size();
-				})
-			)
-		);
-
-		cmd.then(Commands.literal("remove")
-			.then(Commands.literal("*")
-				.executes(ctx -> {
-					var objects = factory.getAll(ctx);
-
-					for (var o : objects) {
-						o.kjs$getPersistentData().getAllKeys().removeIf(UtilsJS.ALWAYS_TRUE);
-					}
-
-					return objects.size();
-				})
-			)
-			.then(Commands.argument("key", StringArgumentType.string())
-				.executes(ctx -> {
-					var objects = factory.getAll(ctx);
-					var key = StringArgumentType.getString(ctx, "key");
-
-					for (var o : objects) {
-						o.kjs$getPersistentData().remove(key);
-					}
-
-					return objects.size();
-				})
-			)
-		);
-
-		cmd.then(Commands.literal("scoreboard")
-			.then(Commands.literal("import")
-				.then(Commands.argument("key", StringArgumentType.string())
-					.then(Commands.argument("target", ScoreHolderArgument.scoreHolder())
-						.suggests(ScoreHolderArgument.SUGGEST_SCORE_HOLDERS)
-						.then(Commands.argument("objective", ObjectiveArgument.objective())
-							.executes(ctx -> {
-								var scoreboard = ctx.getSource().getServer().getScoreboard();
-								var objects = factory.getAll(ctx);
-								var key = StringArgumentType.getString(ctx, "key");
-								var target = ScoreHolderArgument.getName(ctx, "target");
-								var objective = ObjectiveArgument.getObjective(ctx, "objective");
-
-								var info = scoreboard.getPlayerScoreInfo(target, objective);
-
-								int score = info != null ? info.value() : 0;
-
-								for (var o : objects) {
-									o.kjs$getPersistentData().putInt(key, score);
-								}
-
-								return objects.size();
-							})
-						)
-					)
-				)
-			).then(Commands.literal("export")
-				.then(Commands.argument("key", StringArgumentType.string())
-					.then(Commands.argument("targets", ScoreHolderArgument.scoreHolders())
-						.suggests(ScoreHolderArgument.SUGGEST_SCORE_HOLDERS)
-						.then(Commands.argument("objective", ObjectiveArgument.objective())
-							.executes(ctx -> {
-								var scoreboard = ctx.getSource().getServer().getScoreboard();
-								var object = factory.getOne(ctx);
-								var key = StringArgumentType.getString(ctx, "key");
-								var targets = ScoreHolderArgument.getNames(ctx, "targets");
-								var objective = ObjectiveArgument.getObjective(ctx, "objective");
-
-								int score = object.kjs$getPersistentData().getInt(key);
-
-								for (var target : targets) {
-									scoreboard.getOrCreatePlayerScore(target, objective).set(score);
-								}
-
-								return 1;
-							})
-						)
-					)
-				)
-			)
-		);
-
-		return cmd;
 	}
 
 	private static int eval(CommandSourceStack source, String code) {

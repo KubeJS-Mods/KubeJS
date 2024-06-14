@@ -113,7 +113,7 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 							continue;
 						}
 
-						var data = new GeneratedData(new ResourceLocation(ns, pathStr), () -> {
+						var data = new GeneratedData(ResourceLocation.fromNamespaceAndPath(ns, pathStr), () -> {
 							try {
 								return Files.readAllBytes(path);
 							} catch (Exception ex) {

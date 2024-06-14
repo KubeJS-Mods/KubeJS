@@ -77,13 +77,12 @@ public class NotificationToast implements Toast {
 
 	private void drawRectangle(Matrix4f m, int x0, int y0, int x1, int y1, int r, int g, int b) {
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-		var buf = Tesselator.getInstance().getBuilder();
-		buf.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-		buf.vertex(m, x0, y1, 0F).color(r, g, b, 255).endVertex();
-		buf.vertex(m, x1, y1, 0F).color(r, g, b, 255).endVertex();
-		buf.vertex(m, x1, y0, 0F).color(r, g, b, 255).endVertex();
-		buf.vertex(m, x0, y0, 0F).color(r, g, b, 255).endVertex();
-		BufferUploader.drawWithShader(buf.end());
+		var buf = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+		buf.addVertex(m, x0, y1, 0F).setColor(r, g, b, 255);
+		buf.addVertex(m, x1, y1, 0F).setColor(r, g, b, 255);
+		buf.addVertex(m, x1, y0, 0F).setColor(r, g, b, 255);
+		buf.addVertex(m, x0, y0, 0F).setColor(r, g, b, 255);
+		BufferUploader.drawWithShader(buf.buildOrThrow());
 	}
 
 	@Override

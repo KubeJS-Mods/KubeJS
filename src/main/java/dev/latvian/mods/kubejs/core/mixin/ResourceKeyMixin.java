@@ -10,9 +10,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-/**
- * @author LatvianModder
- */
 @RemapPrefixForJS("kjs$")
 @Mixin(value = ResourceKey.class, priority = 1001)
 public abstract class ResourceKeyMixin implements SpecialEquality {
