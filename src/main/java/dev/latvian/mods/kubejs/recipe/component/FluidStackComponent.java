@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
-import dev.architectury.fluid.FluidStack;
 import dev.latvian.mods.kubejs.fluid.FluidLike;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
@@ -11,6 +10,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
 
 public class FluidStackComponent implements RecipeComponent<FluidStack> {
