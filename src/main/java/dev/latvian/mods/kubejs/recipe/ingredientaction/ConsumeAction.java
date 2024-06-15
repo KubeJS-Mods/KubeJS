@@ -5,10 +5,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
 public class ConsumeAction implements IngredientAction {
-	public static final IngredientActionType TYPE = new IngredientActionType("consume", MapCodec.unit(new ConsumeAction()));
+	public static final IngredientActionType<ConsumeAction> TYPE = new IngredientActionType<>("consume", MapCodec.unit(new ConsumeAction()));
 
 	@Override
-	public IngredientActionType getType() {
+	public IngredientActionType<?> getType() {
 		return TYPE;
 	}
 

@@ -22,9 +22,6 @@ public class KubeJSCommon {
 		return null;
 	}
 
-	public void paint(CompoundTag tag) {
-	}
-
 	public void reloadTextures() {
 	}
 

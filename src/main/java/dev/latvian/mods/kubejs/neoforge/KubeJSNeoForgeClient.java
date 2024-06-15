@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.neoforge;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
@@ -9,6 +10,7 @@ import dev.latvian.mods.kubejs.client.AtlasSpriteRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.BlockTintFunctionWrapper;
 import dev.latvian.mods.kubejs.client.ClientInitKubeEvent;
 import dev.latvian.mods.kubejs.client.ItemTintFunctionWrapper;
+import dev.latvian.mods.kubejs.client.KubeHighlight;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.client.KubeJSResourcePackFinder;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
@@ -19,9 +21,11 @@ import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesKubeEvent;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.api.distmarker.Dist;
@@ -32,10 +36,13 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import org.lwjgl.glfw.GLFW;
+
+import java.io.IOException;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class KubeJSNeoForgeClient {
@@ -128,6 +135,11 @@ public class KubeJSNeoForgeClient {
 
 	@SubscribeEvent
 	public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
-		event.register(KubeJSClient.key = new KeyMapping("key.kubejs", KeyConflictContext.UNIVERSAL, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, KeyMapping.CATEGORY_MISC));
+		event.register(KubeHighlight.keyMapping = new KeyMapping("key.kubejs", KeyConflictContext.UNIVERSAL, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, KeyMapping.CATEGORY_MISC));
+	}
+
+	@SubscribeEvent
+	public static void registerCoreShaders(RegisterShadersEvent event) throws IOException {
+		event.registerShader(new ShaderInstance(event.getResourceProvider(), ID.mc("kubejs/rendertype_highlight"), DefaultVertexFormat.POSITION_COLOR), s -> KubeHighlight.INSTANCE.highlightShader = s);
 	}
 }

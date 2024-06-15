@@ -33,7 +33,7 @@ public interface IngredientAction {
 		return ItemStack.EMPTY;
 	}
 
-	IngredientActionType getType();
+	IngredientActionType<?> getType();
 
 	ItemStack transform(ItemStack old, int index, CraftingInput input);
 }

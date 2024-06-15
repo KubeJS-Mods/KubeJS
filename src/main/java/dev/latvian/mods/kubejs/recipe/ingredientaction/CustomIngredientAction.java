@@ -9,12 +9,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
 public record CustomIngredientAction(String id) implements IngredientAction {
-	public static final IngredientActionType TYPE = new IngredientActionType("custom", RecordCodecBuilder.<CustomIngredientAction>mapCodec(instance -> instance.group(
+	public static final IngredientActionType<CustomIngredientAction> TYPE = new IngredientActionType<>("custom", RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.STRING.fieldOf("id").forGetter(CustomIngredientAction::id)
 	).apply(instance, CustomIngredientAction::new)));
 
 	@Override
-	public IngredientActionType getType() {
+	public IngredientActionType<?> getType() {
 		return TYPE;
 	}
 

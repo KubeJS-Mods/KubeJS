@@ -45,14 +45,6 @@ import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
 import dev.latvian.mods.kubejs.block.entity.InventoryAttachment;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
-import dev.latvian.mods.kubejs.client.painter.Painter;
-import dev.latvian.mods.kubejs.client.painter.screen.AtlasTextureObject;
-import dev.latvian.mods.kubejs.client.painter.screen.GradientObject;
-import dev.latvian.mods.kubejs.client.painter.screen.ItemObject;
-import dev.latvian.mods.kubejs.client.painter.screen.LineObject;
-import dev.latvian.mods.kubejs.client.painter.screen.RectangleObject;
-import dev.latvian.mods.kubejs.client.painter.screen.ScreenGroup;
-import dev.latvian.mods.kubejs.client.painter.screen.TextObject;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
@@ -194,8 +186,6 @@ import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
@@ -629,18 +619,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(DamageAction.TYPE);
 		registry.register(KeepAction.TYPE);
 		registry.register(ReplaceAction.TYPE);
-	}
-
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void painterRegistry(Painter painter) {
-		painter.registerObject("screen_group", ScreenGroup::new);
-		painter.registerObject("rectangle", RectangleObject::new);
-		painter.registerObject("text", TextObject::new);
-		painter.registerObject("atlas_texture", AtlasTextureObject::new);
-		painter.registerObject("gradient", GradientObject::new);
-		painter.registerObject("item", ItemObject::new);
-		painter.registerObject("line", LineObject::new);
 	}
 
 	@Override

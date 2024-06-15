@@ -6,12 +6,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
 public record DamageAction(int damage) implements IngredientAction {
-	public static final IngredientActionType TYPE = new IngredientActionType("damage", RecordCodecBuilder.<DamageAction>mapCodec(instance -> instance.group(
+	public static final IngredientActionType<DamageAction> TYPE = new IngredientActionType<>("damage", RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.INT.fieldOf("damage").forGetter(DamageAction::damage)
 	).apply(instance, DamageAction::new)));
 
 	@Override
-	public IngredientActionType getType() {
+	public IngredientActionType<?> getType() {
 		return TYPE;
 	}
 

@@ -14,7 +14,6 @@ import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.net.DisplayClientErrorsPayload;
 import dev.latvian.mods.kubejs.net.DisplayServerErrorsPayload;
-import dev.latvian.mods.kubejs.net.PaintPayload;
 import dev.latvian.mods.kubejs.net.ReloadStartupScriptsPayload;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -25,22 +24,18 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.fml.loading.FMLLoader;
@@ -200,14 +195,6 @@ public class KubeJSCommands {
 				.then(Commands.literal("list")
 					.then(Commands.argument("player", EntityArgument.players())
 						.executes(context -> StageCommands.listStages(context.getSource(), EntityArgument.getPlayers(context, "player")))
-					)
-				)
-			)
-			.then(Commands.literal("painter")
-				.requires(spOrOP)
-				.then(Commands.argument("player", EntityArgument.players())
-					.then(Commands.argument("object", CompoundTagArgument.compoundTag())
-						.executes(context -> painter(context.getSource(), EntityArgument.getPlayers(context, "player"), CompoundTagArgument.getCompoundTag(context, "object")))
 					)
 				)
 			)
@@ -507,16 +494,6 @@ public class KubeJSCommands {
 		source.sendSystemMessage(Component.literal("Total: " + items.size() + " elements"));
 		source.sendSystemMessage(Component.empty());
 		return Command.SINGLE_SUCCESS;
-	}
-
-	private static int painter(CommandSourceStack source, Collection<ServerPlayer> players, CompoundTag object) {
-		var payload = new ClientboundCustomPayloadPacket(new PaintPayload(object));
-
-		for (var player : players) {
-			player.connection.send(payload);
-		}
-
-		return 1;
 	}
 
 	private static int generateTypings(CommandSourceStack source) {

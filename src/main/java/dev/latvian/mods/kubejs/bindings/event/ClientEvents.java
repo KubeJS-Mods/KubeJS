@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.client.ClientKubeEvent;
 import dev.latvian.mods.kubejs.client.DebugInfoKubeEvent;
 import dev.latvian.mods.kubejs.client.GenerateClientAssetsKubeEvent;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
-import dev.latvian.mods.kubejs.client.painter.screen.PaintScreenKubeEvent;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.Extra;
@@ -25,7 +24,6 @@ public interface ClientEvents {
 	EventHandler PAINTER_UPDATED = GROUP.client("painterUpdated", () -> ClientKubeEvent.class);
 	EventHandler DEBUG_LEFT = GROUP.client("leftDebugInfo", () -> DebugInfoKubeEvent.class);
 	EventHandler DEBUG_RIGHT = GROUP.client("rightDebugInfo", () -> DebugInfoKubeEvent.class);
-	EventHandler PAINT_SCREEN = GROUP.client("paintScreen", () -> PaintScreenKubeEvent.class);
 	SpecializedEventHandler<ResourceLocation> ATLAS_SPRITE_REGISTRY = GROUP.client("atlasSpriteRegistry", Extra.ID, () -> AtlasSpriteRegistryKubeEvent.class).required();
 	SpecializedEventHandler<String> LANG = GROUP.client("lang", Extra.STRING, () -> LangKubeEvent.class).required();
 }

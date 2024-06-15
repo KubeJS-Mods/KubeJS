@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
-import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.item.ItemTooltipKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -12,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -41,7 +41,6 @@ import java.util.Map;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT)
 public class KubeJSClientEventHandler {
-	private static final ResourceLocation RECIPE_BUTTON_TEXTURE = ResourceLocation.parse("textures/gui/recipe_button.png");
 	public static Map<Item, List<ItemTooltipKubeEvent.StaticTooltipHandler>> staticItemTooltips = null;
 
 	@SubscribeEvent
@@ -129,35 +128,42 @@ public class KubeJSClientEventHandler {
 	@SubscribeEvent
 	public static void loggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
 		ClientEvents.LOGGED_OUT.post(ScriptType.CLIENT, new ClientKubeEvent(event.getPlayer()));
-		Painter.getGlobal().clear();
 	}
 
 	@SubscribeEvent
 	public static void hudPostDraw(RenderGuiEvent.Post event) {
-		Painter.getGlobal().inGameScreenDraw(event.getGuiGraphics(), event.getPartialTick());
-	}
-
-	@SubscribeEvent
-	public static void screenPostDraw(ScreenEvent.Render.Post event) {
-		Painter.getGlobal().guiScreenDraw(event.getScreen(), event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick());
-	}
-
-	@SubscribeEvent
-	public static void clientTick(ClientTickEvent.Post event) {
 		var mc = Minecraft.getInstance();
-		boolean prevKeyDown = KubeJSClient.keyDown;
 
-		KubeJSClient.keyDown = mc.level != null && mc.player != null && KubeJSClient.key != null && !mc.isPaused() && mc.kjs$isKeyMappingDown(KubeJSClient.key);
-
-		if (prevKeyDown != KubeJSClient.keyDown) {
-			// KubeJS.LOGGER.info("AAAA");
+		if (mc.screen == null) {
+			KubeHighlight.INSTANCE.afterEverything(mc, event.getPartialTick().getGameTimeDeltaPartialTick(false));
 		}
 	}
 
 	@SubscribeEvent
+	public static void screenPostDraw(ScreenEvent.Render.Post event) {
+		var mc = Minecraft.getInstance();
+
+		if (event.getScreen() instanceof AbstractContainerScreen<?> screen) {
+			KubeHighlight.INSTANCE.screen(mc, event.getGuiGraphics(), screen, event.getMouseX(), event.getMouseY(), event.getPartialTick());
+		}
+
+		KubeHighlight.INSTANCE.afterEverything(mc, event.getPartialTick());
+	}
+
+	@SubscribeEvent
+	public static void clientTick(ClientTickEvent.Pre event) {
+		var mc = Minecraft.getInstance();
+		KubeHighlight.INSTANCE.tickPre(mc);
+	}
+
+	@SubscribeEvent
 	public static void worldRender(RenderLevelStageEvent event) {
-		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
-			// noop
+		var mc = Minecraft.getInstance();
+
+		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
+			KubeHighlight.INSTANCE.clearBuffers(mc);
+		} else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+			KubeHighlight.INSTANCE.renderAfterEntities(mc, event);
 		}
 	}
 
@@ -178,7 +184,7 @@ public class KubeJSClientEventHandler {
 			var iterator = screen.children().iterator();
 			while (iterator.hasNext()) {
 				var listener = iterator.next();
-				if (listener instanceof ImageButton button && button.sprites.enabled().equals(RECIPE_BUTTON_TEXTURE)) {
+				if (listener instanceof ImageButton button && button.sprites.enabled().equals(KubeJSClient.RECIPE_BUTTON_TEXTURE)) {
 					screen.renderables.remove(listener);
 					screen.narratables.remove(listener);
 					iterator.remove();

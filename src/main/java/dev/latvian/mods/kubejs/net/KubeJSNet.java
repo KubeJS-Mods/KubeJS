@@ -14,7 +14,6 @@ public interface KubeJSNet {
 
 	CustomPacketPayload.Type<SendDataFromClientPayload> SEND_DATA_FROM_CLIENT = type("send_data_from_client");
 	CustomPacketPayload.Type<SendDataFromServerPayload> SEND_DATA_FROM_SERVER = type("send_data_from_server");
-	CustomPacketPayload.Type<PaintPayload> PAINT = type("paint");
 	CustomPacketPayload.Type<AddStagePayload> ADD_STAGE = type("add_stage");
 	CustomPacketPayload.Type<RemoveStagePayload> REMOVE_STAGE = type("remove_stage");
 	CustomPacketPayload.Type<SyncStagesPayload> SYNC_STAGES = type("sync_stages");
@@ -32,7 +31,6 @@ public interface KubeJSNet {
 
 		reg.playToServer(SEND_DATA_FROM_CLIENT, SendDataFromClientPayload.STREAM_CODEC, SendDataFromClientPayload::handle);
 		reg.playToClient(SEND_DATA_FROM_SERVER, SendDataFromServerPayload.STREAM_CODEC, SendDataFromServerPayload::handle);
-		reg.playToClient(PAINT, PaintPayload.STREAM_CODEC, PaintPayload::handle);
 		reg.playToClient(ADD_STAGE, AddStagePayload.STREAM_CODEC, AddStagePayload::handle);
 		reg.playToClient(REMOVE_STAGE, RemoveStagePayload.STREAM_CODEC, RemoveStagePayload::handle);
 		reg.playToClient(SYNC_STAGES, SyncStagesPayload.STREAM_CODEC, SyncStagesPayload::handle);

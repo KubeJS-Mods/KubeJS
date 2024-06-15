@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.gui.chest.ChestMenuData;
 import dev.latvian.mods.kubejs.gui.chest.CustomChestMenu;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.net.NotificationPayload;
-import dev.latvian.mods.kubejs.net.PaintPayload;
 import dev.latvian.mods.kubejs.net.SendDataFromServerPayload;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
@@ -45,11 +44,6 @@ public interface ServerPlayerKJS extends PlayerKJS {
 		if (!channel.isEmpty()) {
 			PacketDistributor.sendToPlayer(kjs$self(), new SendDataFromServerPayload(channel, data));
 		}
-	}
-
-	@Override
-	default void kjs$paint(CompoundTag renderer) {
-		PacketDistributor.sendToPlayer(kjs$self(), new PaintPayload(renderer));
 	}
 
 	@Override

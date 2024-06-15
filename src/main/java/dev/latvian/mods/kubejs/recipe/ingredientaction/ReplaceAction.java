@@ -5,12 +5,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 
 public record ReplaceAction(ItemStack item) implements IngredientAction {
-	public static final IngredientActionType TYPE = new IngredientActionType("replace", RecordCodecBuilder.<ReplaceAction>mapCodec(instance -> instance.group(
+	public static final IngredientActionType<ReplaceAction> TYPE = new IngredientActionType<>("replace", RecordCodecBuilder.mapCodec(instance -> instance.group(
 		ItemStack.CODEC.fieldOf("item").forGetter(ReplaceAction::item)
 	).apply(instance, ReplaceAction::new)));
 
 	@Override
-	public IngredientActionType getType() {
+	public IngredientActionType<?> getType() {
 		return TYPE;
 	}
 

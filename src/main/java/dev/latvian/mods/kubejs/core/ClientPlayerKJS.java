@@ -31,13 +31,6 @@ public interface ClientPlayerKJS extends PlayerKJS {
 	}
 
 	@Override
-	default void kjs$paint(CompoundTag tag) {
-		if (isSelf()) {
-			KubeJS.PROXY.paint(tag);
-		}
-	}
-
-	@Override
 	default PlayerStatsJS kjs$getStats() {
 		if (!isSelf()) {
 			throw new IllegalStateException("Can't access other client player stats!");

@@ -1,0 +1,13 @@
+{
+	"targets": [
+		"input",
+		"output"
+	],
+	"passes": [
+		{
+			"name": "kubejs/highlight",
+			"intarget": "input",
+			"outtarget": "output"
+		}
+	]
+}

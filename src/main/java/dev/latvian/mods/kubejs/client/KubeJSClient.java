@@ -4,18 +4,17 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
-import dev.latvian.mods.kubejs.client.painter.Painter;
 import dev.latvian.mods.kubejs.net.NetworkKubeEvent;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import net.minecraft.Util;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.player.Player;
@@ -29,8 +28,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class KubeJSClient extends KubeJSCommon {
-	public static KeyMapping key;
-	public static boolean keyDown = false;
+	public static final ResourceLocation WHITE_TEXTURE = ResourceLocation.parse("textures/misc/white.png");
+	public static final ResourceLocation RECIPE_BUTTON_TEXTURE = ResourceLocation.parse("textures/gui/recipe_button.png");
 
 	@Override
 	public void reloadClientInternal() {
@@ -68,11 +67,6 @@ public class KubeJSClient extends KubeJSCommon {
 	@Nullable
 	public Player getClientPlayer() {
 		return Minecraft.getInstance().player;
-	}
-
-	@Override
-	public void paint(CompoundTag tag) {
-		Painter.getGlobal().paint(tag);
 	}
 
 	private void reload(PreparableReloadListener listener) {
@@ -144,5 +138,13 @@ public class KubeJSClient extends KubeJSCommon {
 	@Override
 	public void openErrors(ScriptType type, List<ConsoleLine> errors, List<ConsoleLine> warnings) {
 		Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(new KubeJSErrorScreen(Minecraft.getInstance().screen, type, null, errors, warnings)));
+	}
+
+	public static void loadPostChains(Minecraft mc) {
+		KubeHighlight.INSTANCE.loadPostChains(mc);
+	}
+
+	public static void resizePostChains(int width, int height) {
+		KubeHighlight.INSTANCE.resizePostChains(width, height);
 	}
 }

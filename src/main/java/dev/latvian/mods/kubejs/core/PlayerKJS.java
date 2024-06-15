@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.stages.Stages;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -25,10 +24,6 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 	}
 
 	default Stages kjs$getStages() {
-		throw new NoMixinException();
-	}
-
-	default void kjs$paint(CompoundTag renderer) {
 		throw new NoMixinException();
 	}
 
