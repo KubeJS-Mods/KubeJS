@@ -122,12 +122,12 @@ public class KubeJSClientEventHandler {
 
 	@SubscribeEvent
 	public static void loggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
-		ClientEvents.LOGGED_IN.post(ScriptType.CLIENT, new ClientKubeEvent(event.getPlayer()));
+		ClientEvents.LOGGED_IN.post(ScriptType.CLIENT, new ClientPlayerKubeEvent(event.getPlayer()));
 	}
 
 	@SubscribeEvent
 	public static void loggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
-		ClientEvents.LOGGED_OUT.post(ScriptType.CLIENT, new ClientKubeEvent(event.getPlayer()));
+		ClientEvents.LOGGED_OUT.post(ScriptType.CLIENT, new ClientPlayerKubeEvent(event.getPlayer()));
 	}
 
 	@SubscribeEvent

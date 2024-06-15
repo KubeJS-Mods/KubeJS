@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
-import dev.latvian.mods.kubejs.client.ClientKubeEvent;
+import dev.latvian.mods.kubejs.client.ClientPlayerKubeEvent;
 import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.client.GeneratedClientResourcePack;
 import dev.latvian.mods.kubejs.client.ScheduledClientEvent;
@@ -70,7 +70,7 @@ public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 
 			if (ClientEvents.TICK.hasListeners()) {
 				try {
-					ClientEvents.TICK.post(ScriptType.CLIENT, new ClientKubeEvent(player));
+					ClientEvents.TICK.post(ScriptType.CLIENT, new ClientPlayerKubeEvent(player));
 				} catch (IllegalStateException ignored) {
 					// FIXME: Replace with rhino exception when it gets updated
 				}

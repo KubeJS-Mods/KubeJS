@@ -9,7 +9,7 @@ import java.util.List;
 @Info("""
 	Invoked when the debug info is rendered.
 	""")
-public class DebugInfoKubeEvent extends ClientKubeEvent {
+public class DebugInfoKubeEvent extends ClientPlayerKubeEvent {
 	private final List<String> lines;
 
 	public DebugInfoKubeEvent(LocalPlayer player, List<String> l) {

@@ -7,12 +7,14 @@ import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.client.AtlasSpriteRegistryKubeEvent;
+import dev.latvian.mods.kubejs.client.BlockEntityRendererRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.BlockTintFunctionWrapper;
-import dev.latvian.mods.kubejs.client.ClientInitKubeEvent;
+import dev.latvian.mods.kubejs.client.EntityRendererRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.ItemTintFunctionWrapper;
 import dev.latvian.mods.kubejs.client.KubeHighlight;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.client.KubeJSResourcePackFinder;
+import dev.latvian.mods.kubejs.client.MenuScreenRegistryKubeEvent;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.gui.KubeJSMenus;
@@ -33,6 +35,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
@@ -60,7 +63,6 @@ public class KubeJSNeoForgeClient {
 	}
 
 	private static void setupClient0() {
-		ClientEvents.INIT.post(ScriptType.STARTUP, new ClientInitKubeEvent());
 		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesKubeEvent());
 
 		ClientEvents.ATLAS_SPRITE_REGISTRY.listenJava(ScriptType.CLIENT, TextureAtlas.LOCATION_BLOCKS, event -> {
@@ -131,6 +133,13 @@ public class KubeJSNeoForgeClient {
 	@SubscribeEvent
 	public static void registerMenuScreens(RegisterMenuScreensEvent event) {
 		event.register(KubeJSMenus.MENU.get(), KubeJSScreen::new);
+		ClientEvents.MENU_SCREEN_REGISTRY.post(ScriptType.STARTUP, new MenuScreenRegistryKubeEvent(event));
+	}
+
+	@SubscribeEvent
+	public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+		ClientEvents.ENTITY_RENDERER_REGISTRY.post(ScriptType.STARTUP, new EntityRendererRegistryKubeEvent(event));
+		ClientEvents.BLOCK_ENTITY_RENDERER_REGISTRY.post(ScriptType.STARTUP, new BlockEntityRendererRegistryKubeEvent(event));
 	}
 
 	@SubscribeEvent
