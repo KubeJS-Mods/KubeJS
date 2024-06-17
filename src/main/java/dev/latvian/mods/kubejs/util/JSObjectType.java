@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
+// TODO: Remove
 public enum JSObjectType {
 	ANY,
 	MAP,

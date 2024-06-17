@@ -19,7 +19,7 @@ import java.util.List;
 
 public class IngredientComponent implements RecipeComponent<Ingredient> {
 	public static final IngredientComponent INGREDIENT = new IngredientComponent("ingredient", Ingredient.CODEC);
-	public static final IngredientComponent NON_EMPTY_INGREDIENT = new IngredientComponent("ingredient", Ingredient.CODEC_NONEMPTY);
+	public static final IngredientComponent NON_EMPTY_INGREDIENT = new IngredientComponent("non_empty_ingredient", Ingredient.CODEC_NONEMPTY);
 
 	public static final RecipeComponent<List<Ingredient>> UNWRAPPED_INGREDIENT_LIST = new RecipeComponentWithParent<>() {
 		private static final TypeInfo WRAP_TYPE = TypeInfo.RAW_LIST.withParams(TypeInfo.of(SizedIngredient.class));

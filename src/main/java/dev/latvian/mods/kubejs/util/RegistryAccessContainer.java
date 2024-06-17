@@ -56,7 +56,7 @@ public record RegistryAccessContainer(
 	public <T> T decode(Context cx, Codec<T> codec, Object o) {
 		if (o instanceof Tag tag) {
 			return codec.decode(nbt, tag).result().orElseThrow().getFirst();
-		} else if (o instanceof Map<?, ?> map) {
+		} else if (o instanceof Map<?, ?>) {
 			return codec.decode(java, o).result().orElseThrow().getFirst();
 		} else {
 			return codec.decode(json, MapJS.json(cx, o)).result().orElseThrow().getFirst();

@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
+import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
@@ -13,7 +14,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(Block.class)
 @RemapPrefixForJS("kjs$")
-public abstract class BlockMixin extends BlockBehaviourMixin {
+public abstract class BlockMixin extends BlockBehaviourMixin implements BlockKJS {
 	@Shadow
 	@Final
 	private Holder.Reference<Block> builtInRegistryHolder;

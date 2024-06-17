@@ -80,6 +80,7 @@ public class UtilsJS {
 		}
 	}
 
+	// TODO: Remove this garbage
 	@Nullable
 	public static Object wrap(@Nullable Object o, JSObjectType type) {
 		//Primitives and already normalized objects

@@ -96,7 +96,7 @@ dependencies {
 	modApi("dev.latvian.mods:rhino:$rhino_version") { transitive(false) }
 
 	// todo: reevaluate if we want to depend on jei
-	modCompileOnly("mezz.jei:jei-1.20.6-neoforge:$jei_version") { transitive(false) }
+	modCompileOnly("mezz.jei:jei-1.21-neoforge:$jei_version") { transitive(false) }
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version") { transitive(false) }
 }
 

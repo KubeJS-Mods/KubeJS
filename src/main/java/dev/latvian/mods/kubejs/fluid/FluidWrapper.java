@@ -17,6 +17,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.EmptyFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
 public interface FluidWrapper {
 	TypeInfo TYPE_INFO = TypeInfo.of(FluidStack.class);
 	TypeInfo INGREDIENT_TYPE_INFO = TypeInfo.of(FluidIngredient.class);
+	TypeInfo SIZED_INGREDIENT_TYPE_INFO = TypeInfo.of(SizedFluidIngredient.class);
 
 	static FluidStack wrap(RegistryAccessContainer registries, Object o) {
 		if (o == null || o == FluidStack.EMPTY || o == Fluids.EMPTY || o == EmptyFluidIngredient.INSTANCE) {

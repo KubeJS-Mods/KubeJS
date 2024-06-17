@@ -11,6 +11,8 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.jetbrains.annotations.Nullable;
 
 public class FluidStackComponent implements RecipeComponent<FluidStack> {
@@ -28,7 +30,7 @@ public class FluidStackComponent implements RecipeComponent<FluidStack> {
 
 	@Override
 	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
-		return from instanceof FluidStack || from instanceof Fluid;
+		return from instanceof SizedFluidIngredient || from instanceof FluidIngredient || from instanceof FluidStack || from instanceof Fluid;
 	}
 
 	@Override

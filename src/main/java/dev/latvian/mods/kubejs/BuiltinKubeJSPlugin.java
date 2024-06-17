@@ -99,6 +99,7 @@ import dev.latvian.mods.kubejs.recipe.component.MapRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NestedRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
 import dev.latvian.mods.kubejs.recipe.component.RegistryComponent;
+import dev.latvian.mods.kubejs.recipe.component.SizedFluidIngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.SizedIngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.component.TagKeyComponent;
@@ -562,52 +563,54 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void registerRecipeComponents(RecipeComponentFactoryRegistry registry) {
-		registry.register("boolean", BooleanComponent.BOOLEAN);
+		registry.register(BooleanComponent.BOOLEAN);
+		registry.register(StringComponent.ANY);
+		registry.register(StringComponent.NON_EMPTY);
+		registry.register(StringComponent.NON_BLANK);
+		registry.register(StringComponent.ID);
+		registry.register(CharacterComponent.CHARACTER);
 
 		registry.register("int", NumberComponent.INT_FACTORY);
 		registry.register("long", NumberComponent.LONG_FACTORY);
 		registry.register("float", NumberComponent.FLOAT_FACTORY);
 		registry.register("double", NumberComponent.DOUBLE_FACTORY);
 
-		registry.register("string", StringComponent.ANY);
-		registry.register("non_empty_string", StringComponent.NON_EMPTY);
-		registry.register("non_blank_string", StringComponent.NON_BLANK);
-		registry.register("id", StringComponent.ID);
-		registry.register("character", CharacterComponent.CHARACTER);
+		registry.register(IngredientComponent.INGREDIENT);
+		registry.register(IngredientComponent.NON_EMPTY_INGREDIENT);
+		registry.register(IngredientComponent.UNWRAPPED_INGREDIENT_LIST);
 
-		registry.register("ingredient", IngredientComponent.INGREDIENT);
-		registry.register("non_empty_ingredient", IngredientComponent.NON_EMPTY_INGREDIENT);
-		registry.register("unwrapped_ingredient_list", IngredientComponent.UNWRAPPED_INGREDIENT_LIST);
+		registry.register(SizedIngredientComponent.FLAT);
+		registry.register(SizedIngredientComponent.NESTED);
 
-		registry.register("flat_sized_ingredient", SizedIngredientComponent.FLAT);
-		registry.register("nested_sized_ingredient", SizedIngredientComponent.NESTED);
+		registry.register(ItemStackComponent.ITEM_STACK);
+		registry.register(ItemStackComponent.STRICT_ITEM_STACK);
 
-		registry.register("item_stack", ItemStackComponent.ITEM_STACK);
-		registry.register("strict_item_stack", ItemStackComponent.STRICT_ITEM_STACK);
+		registry.register(FluidStackComponent.FLUID_STACK);
+		registry.register(FluidIngredientComponent.FLUID_INGREDIENT);
 
-		registry.register("fluid_stack", FluidStackComponent.FLUID_STACK);
-		registry.register("fluid_ingredient", FluidIngredientComponent.FLUID_INGREDIENT);
+		registry.register(SizedFluidIngredientComponent.FLAT);
+		registry.register(SizedFluidIngredientComponent.NESTED);
 
-		registry.register("block", BlockComponent.BLOCK);
+		registry.register(BlockComponent.BLOCK);
 
-		registry.register("block_state", BlockStateComponent.BLOCK);
-		registry.register("block_state_string", BlockStateComponent.BLOCK_STRING);
+		registry.register(BlockStateComponent.BLOCK);
+		registry.register(BlockStateComponent.BLOCK_STRING);
 
-		registry.register("ticks", TimeComponent.TICKS);
-		registry.register("seconds", TimeComponent.SECONDS);
-		registry.register("minutes", TimeComponent.MINUTES);
-		registry.register("hours", TimeComponent.HOURS);
+		registry.register(TimeComponent.TICKS);
+		registry.register(TimeComponent.SECONDS);
+		registry.register(TimeComponent.MINUTES);
+		registry.register(TimeComponent.HOURS);
 
-		registry.register("block_tag", TagKeyComponent.BLOCK);
-		registry.register("item_tag", TagKeyComponent.ITEM);
-		registry.register("fluid_tag", TagKeyComponent.FLUID);
-		registry.register("entity_type_tag", TagKeyComponent.ENTITY_TYPE);
-		registry.register("biome_tag", TagKeyComponent.BIOME);
+		registry.register(TagKeyComponent.BLOCK);
+		registry.register(TagKeyComponent.ITEM);
+		registry.register(TagKeyComponent.FLUID);
+		registry.register(TagKeyComponent.ENTITY_TYPE);
+		registry.register(TagKeyComponent.BIOME);
+		registry.register(NestedRecipeComponent.RECIPE);
+
 		registry.register("tag", TagKeyComponent.FACTORY);
-
 		registry.register("registry_element", RegistryComponent.FACTORY);
 		registry.register("enum", EnumComponent.FACTORY);
-		registry.register("nested_recipe", NestedRecipeComponent.RECIPE);
 		registry.register("map", MapRecipeComponent.FACTORY);
 		registry.register("pattern", MapRecipeComponent.PATTERN_FACTORY);
 	}

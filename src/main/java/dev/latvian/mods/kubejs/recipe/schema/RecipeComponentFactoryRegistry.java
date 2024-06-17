@@ -9,8 +9,8 @@ public class RecipeComponentFactoryRegistry {
 		this.storage = storage;
 	}
 
-	public void register(String name, RecipeComponent<?> component) {
-		storage.simpleComponents.put(name, component);
+	public void register(RecipeComponent<?> component) {
+		storage.simpleComponents.put(component.toString(), component);
 	}
 
 	public void register(String name, RecipeComponentFactory componentFactory) {
