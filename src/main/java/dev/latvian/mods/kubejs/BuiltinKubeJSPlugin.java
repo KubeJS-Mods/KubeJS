@@ -54,6 +54,8 @@ import dev.latvian.mods.kubejs.event.EventGroups;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidTypeBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
+import dev.latvian.mods.kubejs.fluid.ThickFluidBuilder;
+import dev.latvian.mods.kubejs.fluid.ThinFluidBuilder;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
 import dev.latvian.mods.kubejs.item.ChancedItem;
@@ -266,8 +268,14 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 			reg.add("smithing_template", SmithingTemplateItemBuilder.class, SmithingTemplateItemBuilder::new);
 		});
 
-		registry.addDefault(NeoForgeRegistries.Keys.FLUID_TYPES, FluidTypeBuilder.class, FluidTypeBuilder::new);
 		registry.addDefault(Registries.FLUID, FluidBuilder.class, FluidBuilder::new);
+
+		registry.of(Registries.FLUID, reg -> {
+			reg.add("thin", ThinFluidBuilder.class, ThinFluidBuilder::new);
+			reg.add("thick", ThickFluidBuilder.class, ThickFluidBuilder::new);
+		});
+
+		registry.addDefault(NeoForgeRegistries.Keys.FLUID_TYPES, FluidTypeBuilder.class, FluidTypeBuilder::new);
 		// FIXME registry.addDefault(Registries.ENCHANTMENT, EnchantmentBuilder.class, EnchantmentBuilder::new);
 		registry.addDefault(Registries.MOB_EFFECT, BasicMobEffect.Builder.class, BasicMobEffect.Builder::new);
 		registry.addDefault(Registries.POTION, PotionBuilder.class, PotionBuilder::new);

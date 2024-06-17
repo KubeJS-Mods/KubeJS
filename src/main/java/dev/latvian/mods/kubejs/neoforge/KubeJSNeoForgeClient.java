@@ -70,8 +70,8 @@ public class KubeJSNeoForgeClient {
 
 			for (var builder : RegistryInfo.FLUID) {
 				if (builder instanceof FluidBuilder b) {
-					e.register(b.stillTexture);
-					e.register(b.flowingTexture);
+					// e.register(b.fluidType.stillTexture);
+					// e.register(b.fluidType.flowingTexture);
 				}
 			}
 
@@ -81,25 +81,26 @@ public class KubeJSNeoForgeClient {
 		for (var builder : RegistryInfo.BLOCK) {
 			if (builder instanceof BlockBuilder b) {
 				switch (b.renderType) {
-					case "cutout" -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.cutout());
-					case "cutout_mipped" -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.cutoutMipped());
-					case "translucent" -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.translucent());
+					// TODO: Move these to model json
+					case CUTOUT -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.cutout());
+					case CUTOUT_MIPPED -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.cutoutMipped());
+					case TRANSLUCENT -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.translucent());
 				}
 			}
 		}
 
 		for (var builder : RegistryInfo.FLUID) {
 			if (builder instanceof FluidBuilder b) {
-				switch (b.renderType) {
-					case "cutout" -> {
+				switch (b.fluidType.renderType) {
+					case CUTOUT -> {
 						ItemBlockRenderTypes.setRenderLayer(b.get().getSource(), RenderType.cutout());
 						ItemBlockRenderTypes.setRenderLayer(b.get().getFlowing(), RenderType.cutout());
 					}
-					case "cutout_mipped" -> {
+					case CUTOUT_MIPPED -> {
 						ItemBlockRenderTypes.setRenderLayer(b.get().getSource(), RenderType.cutoutMipped());
 						ItemBlockRenderTypes.setRenderLayer(b.get().getFlowing(), RenderType.cutoutMipped());
 					}
-					case "translucent" -> {
+					case TRANSLUCENT -> {
 						ItemBlockRenderTypes.setRenderLayer(b.get().getSource(), RenderType.translucent());
 						ItemBlockRenderTypes.setRenderLayer(b.get().getFlowing(), RenderType.translucent());
 					}
@@ -124,8 +125,8 @@ public class KubeJSNeoForgeClient {
 				event.register(new ItemTintFunctionWrapper(b.tint), b.get());
 			}
 
-			if (builder instanceof FluidBucketItemBuilder b && b.fluidBuilder.bucketColor != 0xFFFFFFFF) {
-				event.register((stack, index) -> index == 1 ? b.fluidBuilder.bucketColor : 0xFFFFFFFF, b.get());
+			if (builder instanceof FluidBucketItemBuilder b && (b.fluidBuilder.bucketTint != null || b.fluidBuilder.fluidType.tint != null)) {
+				event.register((stack, index) -> index == 1 ? (b.fluidBuilder.bucketTint == null ? b.fluidBuilder.fluidType.tint : b.fluidBuilder.bucketTint).getArgbJS() : 0xFFFFFFFF, b.get());
 			}
 		}
 	}

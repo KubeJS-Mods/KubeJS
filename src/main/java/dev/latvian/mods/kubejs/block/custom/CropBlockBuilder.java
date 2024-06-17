@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.block.custom;
 import com.mojang.datafixers.util.Pair;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import dev.latvian.mods.kubejs.block.BlockRenderType;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.block.SeedItemBuilder;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
@@ -88,7 +89,7 @@ public class CropBlockBuilder extends BlockBuilder {
 		growSpeedCallback = null;
 		fertilizerCallback = null;
 		surviveCallback = null;
-		renderType = "cutout";
+		renderType = BlockRenderType.CUTOUT;
 		noCollision = true;
 		itemBuilder = new SeedItemBuilder(newID("", "_seed"));
 		itemBuilder.blockBuilder = this;

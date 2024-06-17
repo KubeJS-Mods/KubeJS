@@ -75,7 +75,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient boolean opaque;
 	public transient boolean fullBlock;
 	public transient boolean requiresTool;
-	public transient String renderType;
+	public transient BlockRenderType renderType;
 	public transient BlockTintFunction tint;
 	public transient final JsonObject textures;
 	public transient String model;
@@ -119,7 +119,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		opaque = true;
 		fullBlock = false;
 		requiresTool = false;
-		renderType = "solid";
+		renderType = BlockRenderType.SOLID;
 		textures = new JsonObject();
 		textureAll(id.getNamespace() + ":block/" + id.getPath());
 		model = "";
@@ -430,7 +430,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	@Info("""
 		Sets the render type of the block. Can be `cutout`, `cutout_mipped`, `translucent`, or `basic`.
 		""")
-	public BlockBuilder renderType(String l) {
+	public BlockBuilder renderType(BlockRenderType l) {
 		renderType = l;
 		return this;
 	}
@@ -670,12 +670,12 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Info("Helper method for setting the render type of the block to `cutout` correctly.")
 	public BlockBuilder defaultCutout() {
-		return renderType("cutout").notSolid().noValidSpawns(true).suffocating(false).viewBlocking(false).redstoneConductor(false).transparent(true);
+		return renderType(BlockRenderType.CUTOUT).notSolid().noValidSpawns(true).suffocating(false).viewBlocking(false).redstoneConductor(false).transparent(true);
 	}
 
 	@Info("Helper method for setting the render type of the block to `translucent` correctly.")
 	public BlockBuilder defaultTranslucent() {
-		return defaultCutout().renderType("translucent");
+		return defaultCutout().renderType(BlockRenderType.TRANSLUCENT);
 	}
 
 	@Info("Note block instrument.")

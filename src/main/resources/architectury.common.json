@@ -6,8 +6,11 @@
 		"net/minecraft/class_310": [
 			"dev/latvian/mods/kubejs/core/MinecraftClientKJS"
 		],
-		"net/minecraft/class_4970": [
+		"net/minecraft/class_2248": [
 			"dev/latvian/mods/kubejs/core/BlockKJS"
+		],
+		"net/minecraft/class_4970": [
+			"dev/latvian/mods/kubejs/core/BlockBehaviourKJS"
 		],
 		"net/minecraft/class_2680": [
 			"dev/latvian/mods/kubejs/core/BlockStateKJS"

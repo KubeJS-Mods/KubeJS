@@ -397,4 +397,8 @@ public interface TextWrapper {
 	static MutableComponent entityTypeTagIcon() {
 		return icon(Component.literal("E"));
 	}
+
+	static MutableComponent idIcon() {
+		return icon(Component.literal("D"));
+	}
 }

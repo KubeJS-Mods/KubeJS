@@ -409,7 +409,7 @@ public class BlockContainerJS implements SpecialEquality {
 		return equals(o);
 	}
 
-	public CompoundTag getTypeData() {
+	public Map<String, Object> getTypeData() {
 		return getBlockState().getBlock().kjs$getTypeData();
 	}
 }

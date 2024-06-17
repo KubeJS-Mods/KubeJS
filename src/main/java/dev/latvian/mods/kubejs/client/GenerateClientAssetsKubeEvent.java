@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.client;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -9,6 +9,7 @@ import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class GenerateClientAssetsKubeEvent implements KubeEvent {
@@ -41,8 +42,8 @@ public class GenerateClientAssetsKubeEvent implements KubeEvent {
 		add(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
 	}
 
-	public void stencil(ResourceLocation target, String stencil, JsonObject colors) throws IOException {
-		generator.stencil(target, stencil, colors);
+	public void stencil(ResourceLocation target, ResourceLocation stencil, Map<Color, Color> remap) throws IOException {
+		generator.stencil(target, stencil, remap);
 	}
 
 	public void defaultItemModel(ResourceLocation id) {

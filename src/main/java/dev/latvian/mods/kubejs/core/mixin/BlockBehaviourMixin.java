@@ -1,18 +1,15 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
-import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
-import dev.latvian.mods.kubejs.core.BlockKJS;
+import dev.latvian.mods.kubejs.core.BlockBehaviourKJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Unique;
@@ -21,35 +18,23 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @Mixin(BlockBehaviour.class)
 @RemapPrefixForJS("kjs$")
-public abstract class BlockBehaviourMixin implements BlockKJS {
+public abstract class BlockBehaviourMixin implements BlockBehaviourKJS {
 	@Unique
-	private BlockBuilder kjs$blockBuilder;
-
-	@Unique
-	private CompoundTag kjs$typeData;
+	private Map<String, Object> kjs$typeData;
 
 	@Unique
 	private Consumer<RandomTickCallbackJS> kjs$randomTickCallback;
 
 	@Override
-	@Nullable
-	public BlockBuilder kjs$getBlockBuilder() {
-		return kjs$blockBuilder;
-	}
-
-	@Override
-	public void kjs$setBlockBuilder(BlockBuilder b) {
-		kjs$blockBuilder = b;
-	}
-
-	@Override
-	public CompoundTag kjs$getTypeData() {
+	public Map<String, Object> kjs$getTypeData() {
 		if (kjs$typeData == null) {
-			kjs$typeData = new CompoundTag();
+			kjs$typeData = new HashMap<>();
 		}
 
 		return kjs$typeData;

@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs.fluid;
 
+import dev.latvian.mods.kubejs.block.BlockRenderType;
+import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
@@ -7,11 +9,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.SoundAction;
+import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,7 +57,7 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 
 				@Override
 				public int getTintColor() {
-					return builder.tint;
+					return builder.tint == null ? 0xFFFFFFFF : builder.tint.getArgbJS();
 				}
 			});
 		}
@@ -64,14 +68,20 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 	public transient ResourceLocation flowingTexture;
 	public transient ResourceLocation screenOverlayTexture;
 	public transient ResourceLocation blockOverlayTexture;
-	public transient int tint;
+	public transient Color tint;
+	public transient BlockRenderType renderType;
 
 	public FluidTypeBuilder(ResourceLocation id) {
 		super(id);
 		this.properties = FluidType.Properties.create();
 		this.stillTexture = newID("block/", "_still");
 		this.flowingTexture = newID("block/", "_flow");
-		this.tint = 0xFFFFFFFF;
+		this.tint = null;
+		this.renderType = BlockRenderType.SOLID;
+
+		sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL);
+		sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY);
+		sound(SoundActions.FLUID_VAPORIZE, SoundEvents.FIRE_EXTINGUISH);
 	}
 
 	@Override
@@ -104,7 +114,7 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 		return this;
 	}
 
-	public FluidTypeBuilder tint(int tint) {
+	public FluidTypeBuilder tint(Color tint) {
 		this.tint = tint;
 		return this;
 	}
@@ -201,6 +211,11 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 
 	public FluidTypeBuilder addDripstoneDripping(float chance, ParticleOptions dripParticle, Block cauldron, @Nullable SoundEvent fillSound) {
 		properties.addDripstoneDripping(chance, dripParticle, cauldron, fillSound);
+		return this;
+	}
+
+	public FluidTypeBuilder renderType(BlockRenderType renderType) {
+		this.renderType = renderType;
 		return this;
 	}
 }

@@ -2,7 +2,9 @@ package dev.latvian.mods.kubejs.client;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
@@ -133,8 +135,13 @@ public class ModelGenerator {
 		parent = s;
 	}
 
+	@HideFromJS
 	public void texture(String name, String texture) {
 		textures.addProperty(name, texture);
+	}
+
+	public void texture(String name, ResourceLocation texture) {
+		textures.addProperty(name, texture.toString());
 	}
 
 	public void textures(JsonObject json) {

@@ -1,30 +1,29 @@
 package dev.latvian.mods.kubejs.generator;
 
-import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.client.LoadedTexture;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
-import dev.latvian.mods.kubejs.client.StencilTexture;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
+import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 
-import javax.imageio.ImageIO;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
 public class AssetJsonGenerator extends ResourceGenerator {
-	private final Map<String, StencilTexture> stencils;
+	private final Map<ResourceLocation, LoadedTexture> loadedTextures;
 
 	public AssetJsonGenerator(Map<ResourceLocation, GeneratedData> m) {
 		super(ConsoleJS.CLIENT, m);
-		this.stencils = new HashMap<>();
+		this.loadedTextures = new HashMap<>();
+	}
+
+	public LoadedTexture loadTexture(ResourceLocation id) {
+		return loadedTextures.computeIfAbsent(id, LoadedTexture::load);
 	}
 
 	public void blockState(ResourceLocation id, Consumer<VariantBlockStateGenerator> consumer) {
@@ -51,34 +50,62 @@ public class AssetJsonGenerator extends ResourceGenerator {
 		return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "models/item/" + id.getPath());
 	}
 
-	public void stencil(ResourceLocation target, String stencil, JsonObject colors) throws IOException {
-		var st = stencils.get(stencil);
+	public void texture(ResourceLocation target, LoadedTexture texture) {
+		add(ResourceLocation.fromNamespaceAndPath(target.getNamespace(), "textures/" + target.getPath() + ".png"), texture::toBytes);
 
-		if (st == null) {
-			var path = KubeJSPaths.ASSETS.resolve("kubejs/textures/stencil/" + stencil + ".png");
+		if (texture.mcmeta != null) {
+			add(ResourceLocation.fromNamespaceAndPath(target.getNamespace(), "textures/" + target.getPath() + ".png.mcmeta"), () -> texture.mcmeta);
+		}
+	}
 
-			if (Files.notExists(path)) {
-				throw new IllegalArgumentException("Stencil file 'kubejs/assets/kubejs/textures/stencil/'" + stencil + ".png' not found!");
-			}
+	public void stencil(ResourceLocation target, ResourceLocation stencil, Map<Color, Color> colors) {
+		texture(target, loadTexture(stencil).remap(colors));
+	}
 
-			try (var in = new BufferedInputStream(Files.newInputStream(path))) {
-				var metaPath = KubeJSPaths.ASSETS.resolve("kubejs/textures/stencil/" + stencil + ".png.mcmeta");
-				byte[] meta = null;
+	public boolean mask(ResourceLocation target, ResourceLocation mask, ResourceLocation input) {
+		var maskTexture = loadTexture(mask);
 
-				if (Files.exists(metaPath)) {
-					meta = Files.readAllBytes(metaPath);
+		if (maskTexture.height != maskTexture.width) {
+			return false;
+		}
+
+		var in = loadTexture(input);
+
+		int w = Math.max(maskTexture.width, in.width);
+
+		if (maskTexture.width != in.width) {
+			int mframes = maskTexture.height / maskTexture.width;
+			int iframes = in.height / in.width;
+			maskTexture = maskTexture.resize(w, w * mframes);
+			in = in.resize(w, w * iframes).copy();
+		} else {
+			in = in.copy();
+		}
+
+		for (int y = 0; y < in.height; y++) {
+			for (int x = 0; x < w; x++) {
+				int ii = x + (y * w);
+
+				int m = maskTexture.pixels[x + ((y % maskTexture.height) * w)];
+				int ma = (m >> 24) & 0xFF;
+
+				if (ma == 0) {
+					in.pixels[ii] = 0;
+				} else {
+					float mr = ((m >> 16) & 0xFF) / 255F;
+					float mg = ((m >> 8) & 0xFF) / 255F;
+					float mb = (m & 0xFF) / 255F;
+
+					float ir = ((in.pixels[ii] >> 16) & 0xFF) / 255F;
+					float ig = ((in.pixels[ii] >> 8) & 0xFF) / 255F;
+					float ib = (in.pixels[ii] & 0xFF) / 255F;
+
+					in.pixels[ii] = (((int) (mr * ir * 255F)) << 16) | (((int) (mg * ig * 255F)) << 8) | ((int) (mb * ib * 255F)) | (ma << 24);
 				}
-
-				st = new StencilTexture(ImageIO.read(in), meta);
-				stencils.put(stencil, st);
 			}
 		}
 
-		var st1 = st;
-		add(ResourceLocation.fromNamespaceAndPath(target.getNamespace(), "textures/" + target.getPath() + ".png"), () -> st1.create(colors));
-
-		if (st.mcmeta != null) {
-			add(ResourceLocation.fromNamespaceAndPath(target.getNamespace(), "textures/" + target.getPath() + ".png.mcmeta"), () -> st1.mcmeta);
-		}
+		texture(target, in);
+		return true;
 	}
 }

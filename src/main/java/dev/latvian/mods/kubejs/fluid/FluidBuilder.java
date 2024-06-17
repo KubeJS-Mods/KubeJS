@@ -1,7 +1,8 @@
 package dev.latvian.mods.kubejs.fluid;
 
-import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.block.BlockRenderType;
 import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -9,26 +10,23 @@ import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.FlowingFluid;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
-import net.neoforged.neoforge.fluids.FluidType;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @ReturnsSelf
 public class FluidBuilder extends BuilderBase<FlowingFluid> {
-	public transient ResourceLocation stillTexture;
-	public transient ResourceLocation flowingTexture;
-	public transient int color = 0xFFFFFFFF;
-	public transient int bucketColor = 0xFFFFFFFF;
-	public transient String renderType = "solid";
+	public static final Color WATER_COLOR = new SimpleColor(0xFF3F76E4);
 
-	public transient Supplier<FluidType> fluidType = NeoForgeMod.WATER_TYPE::value;
+	public transient Color bucketTint = null;
+
 	public transient int slopeFindDistance = 4;
 	public transient int levelDecreasePerBlock = 1;
 	public transient float explosionResistance = 1;
 	public transient int tickRate = 5;
 
+	public FluidTypeBuilder fluidType;
 	public FlowingFluidBuilder flowingFluid;
 	public FluidBlockBuilder block;
 	public FluidBucketItemBuilder bucketItem;
@@ -36,8 +34,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 
 	public FluidBuilder(ResourceLocation i) {
 		super(i);
-		stillTexture = newID("block/", "_still");
-		flowingTexture = newID("block/", "_flow");
+		fluidType = new FluidTypeBuilder(id);
 		flowingFluid = new FlowingFluidBuilder(this);
 		block = new FluidBlockBuilder(this);
 		bucketItem = new FluidBucketItemBuilder(this);
@@ -64,7 +61,8 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public BaseFlowingFluid.Properties createProperties() {
 		if (properties == null) {
 			properties = new BaseFlowingFluid.Properties(fluidType, this, flowingFluid);
-
+			properties.bucket(bucketItem);
+			properties.block((Supplier) block);
 			properties.slopeFindDistance(slopeFindDistance);
 			properties.levelDecreasePerBlock(levelDecreasePerBlock);
 			properties.explosionResistance(explosionResistance);
@@ -81,6 +79,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 
 	@Override
 	public void createAdditionalObjects(AdditionalObjectRegistry registry) {
+		registry.add(RegistryInfo.FLUID_TYPE, fluidType);
 		registry.add(RegistryInfo.FLUID, flowingFluid);
 
 		if (block != null) {
@@ -98,47 +97,38 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		return super.tag(tag);
 	}
 
-	public FluidBuilder color(Color c) {
-		this.color = bucketColor = c.getArgbJS();
+	public FluidBuilder type(Consumer<FluidTypeBuilder> builder) {
+		builder.accept(fluidType);
 		return this;
 	}
 
-	public FluidBuilder bucketColor(Color c) {
-		this.bucketColor = c.getArgbJS();
+	public FluidBuilder tint(Color c) {
+		fluidType.tint = c;
 		return this;
 	}
 
-	public FluidBuilder builtinTextures() {
-		stillTexture(KubeJS.id("fluid/fluid_thin_still"));
-		flowingTexture(KubeJS.id("fluid/fluid_thin_flow"));
+	public FluidBuilder bucketTint(Color c) {
+		this.bucketTint = c;
 		return this;
 	}
 
 	public FluidBuilder stillTexture(ResourceLocation id) {
-		this.stillTexture = id;
+		fluidType.stillTexture = id;
 		return this;
 	}
 
 	public FluidBuilder flowingTexture(ResourceLocation id) {
-		this.flowingTexture = id;
+		fluidType.flowingTexture = id;
 		return this;
 	}
 
-	public FluidBuilder renderType(String l) {
-		this.renderType = l;
+	public FluidBuilder renderType(BlockRenderType l) {
+		fluidType.renderType = l;
 		return this;
 	}
 
 	public FluidBuilder translucent() {
-		return renderType("translucent");
-	}
-
-	public FluidBuilder thickTexture(Color color) {
-		return stillTexture(KubeJS.id("block/thick_fluid_still")).flowingTexture(KubeJS.id("block/thick_fluid_flow")).color(color);
-	}
-
-	public FluidBuilder thinTexture(Color color) {
-		return stillTexture(KubeJS.id("block/thin_fluid_still")).flowingTexture(KubeJS.id("block/thin_fluid_flow")).color(color);
+		return renderType(BlockRenderType.TRANSLUCENT);
 	}
 
 	public FluidBuilder slopeFindDistance(int slopeFindDistance) {
