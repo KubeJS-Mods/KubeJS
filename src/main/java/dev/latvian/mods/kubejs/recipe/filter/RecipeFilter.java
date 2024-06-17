@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.recipe.filter;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -102,13 +103,13 @@ public interface RecipeFilter {
 			var input = map.get("input");
 
 			if (input != null) {
-				predicate.list.add(new InputFilter(ReplacementMatch.of(cx, input)));
+				predicate.list.add(new InputFilter(ReplacementMatch.of(((KubeJSContext) cx).getRegistries(), input)));
 			}
 
 			var output = map.get("output");
 
 			if (output != null) {
-				predicate.list.add(new OutputFilter(ReplacementMatch.of(cx, output)));
+				predicate.list.add(new OutputFilter(ReplacementMatch.of(((KubeJSContext) cx).getRegistries(), output)));
 			}
 
 			NeoForge.EVENT_BUS.post(new RecipeFilterParseEvent(cx, predicate.list, map));

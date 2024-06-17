@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.block.entity;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
 import dev.latvian.mods.rhino.type.JSOptionalParam;
@@ -28,7 +29,7 @@ public class InventoryAttachment extends SimpleContainer implements BlockEntityA
 		(cx, map) -> {
 			var width = ScriptRuntime.toInt32(cx, map.get("width"));
 			var height = ScriptRuntime.toInt32(cx, map.get("height"));
-			var inputFilter = map.containsKey("inputFilter") ? IngredientJS.wrap(cx, map.get("inputFilter")) : null;
+			var inputFilter = map.containsKey("inputFilter") ? IngredientJS.wrap(((KubeJSContext) cx).getRegistries(), map.get("inputFilter")) : null;
 			return new InventoryAttachmentFactory(width, height, inputFilter);
 		}
 	);

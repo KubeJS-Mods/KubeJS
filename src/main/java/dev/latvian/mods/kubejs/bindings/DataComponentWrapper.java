@@ -6,10 +6,9 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.serialization.DynamicOps;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
-import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -158,21 +157,19 @@ public interface DataComponentWrapper {
 		}
 	}
 
-	static DataComponentMap mapOf(Context cx, Object o) {
+	static DataComponentMap mapOf(RegistryAccessContainer registries, Object o) {
 		try {
-			return readMap(((KubeJSContext) cx).getNbtOps(), new StringReader(o.toString()));
+			return readMap(registries.nbt(), new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
-			((KubeJSContext) cx).getConsole().error("Error parsing DataComponentMap", ex);
-			return DataComponentMap.EMPTY;
+			throw new RuntimeException("Error parsing DataComponentMap from " + o, ex);
 		}
 	}
 
-	static DataComponentPatch patchOf(Context cx, Object o) {
+	static DataComponentPatch patchOf(RegistryAccessContainer registries, Object o) {
 		try {
-			return readPatch(((KubeJSContext) cx).getNbtOps(), new StringReader(o.toString()));
+			return readPatch(registries.nbt(), new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
-			((KubeJSContext) cx).getConsole().error("Error parsing DataComponentPatch", ex);
-			return DataComponentPatch.EMPTY;
+			throw new RuntimeException("Error parsing DataComponentPatch from " + o, ex);
 		}
 	}
 

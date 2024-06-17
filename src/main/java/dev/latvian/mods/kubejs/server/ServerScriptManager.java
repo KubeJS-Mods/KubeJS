@@ -15,7 +15,7 @@ import dev.latvian.mods.kubejs.script.data.DataPackKubeEvent;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.server.tag.PreTagKubeEvent;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.StaticRegistries;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -51,11 +51,11 @@ public class ServerScriptManager extends ScriptManager {
 	}
 
 	public final ReloadableServerResources resources;
-	public final StaticRegistries registries;
+	public final RegistryAccessContainer registries;
 	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
 	public final RecipeSchemaStorage recipeSchemaStorage;
 
-	public ServerScriptManager(ReloadableServerResources resources, StaticRegistries registries) {
+	public ServerScriptManager(ReloadableServerResources resources, RegistryAccessContainer registries) {
 		super(ScriptType.SERVER);
 		this.resources = resources;
 		this.registries = registries;
@@ -74,7 +74,7 @@ public class ServerScriptManager extends ScriptManager {
 	}
 
 	@Override
-	public StaticRegistries getRegistries() {
+	public RegistryAccessContainer getRegistries() {
 		return registries;
 	}
 

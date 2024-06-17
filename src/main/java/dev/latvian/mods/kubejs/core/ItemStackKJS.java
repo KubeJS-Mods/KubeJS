@@ -66,7 +66,7 @@ public interface ItemStackKJS extends
 			return kjs$equalsIgnoringCount(s);
 		}
 
-		return kjs$equalsIgnoringCount(ItemStackJS.wrap(cx, o));
+		return kjs$equalsIgnoringCount(ItemStackJS.wrap(((KubeJSContext) cx).getRegistries(), o));
 	}
 
 	default boolean kjs$equalsIgnoringCount(ItemStack stack) {

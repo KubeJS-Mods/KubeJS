@@ -1,30 +1,20 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import com.google.gson.JsonElement;
-import com.mojang.brigadier.StringReader;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.CountingMap;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.RegExpJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
-import dev.latvian.mods.rhino.Context;
 import net.minecraft.Util;
-import net.minecraft.commands.arguments.ParticleArgument;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,13 +28,6 @@ import java.util.regex.Pattern;
 
 @Info("A collection of utilities")
 public interface UtilsWrapper {
-	DustParticleOptions ERROR_PARTICLE = new DustParticleOptions(new Vector3f(0F, 0F, 0F), 1F);
-
-	@Info("Immediately run the passed runnable function in a try-catch block, and log the exception if it throws")
-	static void queueIO(Runnable runnable) {
-		UtilsJS.queueIO(runnable);
-	}
-
 	@Info("Get a Random, for generating random numbers. Note this will always return the same Random instance")
 	static Random getRandom() {
 		return UtilsJS.RANDOM;
@@ -78,12 +61,6 @@ public interface UtilsWrapper {
 	@Info("Returns a new counting map")
 	static CountingMap newCountingMap() {
 		return new CountingMap();
-	}
-
-	@Info("Typewraps the input string to a ResourceLocation. Format should be namespace:path")
-	static ResourceLocation id(ResourceLocation id) {
-		// TypeWrapper will convert any object into RL
-		return id;
 	}
 
 	@Info("Returns a regex pattern of the input")
@@ -205,28 +182,5 @@ public interface UtilsWrapper {
 	@Info("Returns the provided snake_case_string in Title Case")
 	static String snakeCaseToTitleCase(String string) {
 		return UtilsJS.snakeCaseToTitleCase(string);
-	}
-
-	static ParticleOptions particleOptions(Context cx, Object o) {
-		if (o instanceof ParticleOptions po) {
-			return po;
-		} else if (o != null) {
-			try {
-				var reader = new StringReader(o instanceof JsonElement j ? j.getAsString() : o.toString());
-				return ParticleArgument.readParticle(reader, ((KubeJSContext) cx).getRegistries().access());
-			} catch (Exception ex) {
-				((KubeJSContext) cx).getConsole().warn("Failed to parse ParticleOptions from " + o + ": " + ex);
-			}
-		}
-
-		return ERROR_PARTICLE;
-	}
-
-	@Info("Parses a block state from the input string. May throw for invalid inputs!")
-	static BlockState parseBlockState(Object o) {
-		if (o instanceof BlockState bs) {
-			return bs;
-		}
-		return o == null ? Blocks.AIR.defaultBlockState() : BlockWrapper.parseBlockState(o.toString());
 	}
 }

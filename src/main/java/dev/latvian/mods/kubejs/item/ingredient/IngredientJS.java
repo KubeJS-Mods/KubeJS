@@ -19,8 +19,8 @@ import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegExpJS;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 public interface IngredientJS {
 	TypeInfo TYPE_INFO = TypeInfo.of(Ingredient.class);
 
-	static Ingredient wrap(Context cx, @Nullable Object o) {
+	static Ingredient wrap(RegistryAccessContainer registries, @Nullable Object o) {
 		while (o instanceof Wrapper w) {
 			o = w.unwrap();
 		}
@@ -62,7 +62,7 @@ public interface IngredientJS {
 
 			return Ingredient.EMPTY;
 		} else if (o instanceof JsonElement json) {
-			return ofJson(cx, json);
+			return ofJson(registries, json);
 		} else if (o instanceof CharSequence) {
 			return ofString(o.toString());
 		}
@@ -73,7 +73,7 @@ public interface IngredientJS {
 			var inList = new ArrayList<Ingredient>(list.size());
 
 			for (var o1 : list) {
-				var ingredient = wrap(cx, o1);
+				var ingredient = wrap(registries, o1);
 
 				if (ingredient != Ingredient.EMPTY) {
 					inList.add(ingredient);
@@ -95,7 +95,7 @@ public interface IngredientJS {
 			return Ingredient.CODEC.decode(JavaOps.INSTANCE, map).result().map(Pair::getFirst).orElse(Ingredient.EMPTY);
 		}
 
-		return ItemStackJS.wrap(cx, o).kjs$asIngredient();
+		return ItemStackJS.wrap(registries, o).kjs$asIngredient();
 	}
 
 	static Ingredient ofString(String s) {
@@ -150,11 +150,11 @@ public interface IngredientJS {
 		return item.kjs$asIngredient();
 	}
 
-	static Ingredient ofJson(Context cx, JsonElement json) {
+	static Ingredient ofJson(RegistryAccessContainer registries, JsonElement json) {
 		if (json == null || json.isJsonNull() || json.isJsonArray() && json.getAsJsonArray().isEmpty()) {
 			return Ingredient.EMPTY;
 		} else if (json.isJsonPrimitive()) {
-			return wrap(cx, json.getAsString());
+			return wrap(registries, json.getAsString());
 		} else {
 			return Ingredient.CODEC.decode(JsonOps.INSTANCE, json).result().map(Pair::getFirst).orElseThrow();
 		}

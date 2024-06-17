@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.bindings.JavaWrapper;
 import dev.latvian.mods.kubejs.bindings.KMath;
+import dev.latvian.mods.kubejs.bindings.ParticleOptionsWrapper;
 import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UUIDWrapper;
@@ -51,9 +52,9 @@ import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.event.EventGroupWrapper;
 import dev.latvian.mods.kubejs.event.EventGroups;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
+import dev.latvian.mods.kubejs.fluid.FluidTypeBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
-import dev.latvian.mods.kubejs.integration.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
 import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
@@ -114,6 +115,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.UnknownKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessKubeRecipe;
+import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
@@ -191,6 +193,7 @@ import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -262,6 +265,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 			reg.add("smithing_template", SmithingTemplateItemBuilder.class, SmithingTemplateItemBuilder::new);
 		});
 
+		registry.addDefault(NeoForgeRegistries.Keys.FLUID_TYPES, FluidTypeBuilder.class, FluidTypeBuilder::new);
 		registry.addDefault(Registries.FLUID, FluidBuilder.class, FluidBuilder::new);
 		// FIXME registry.addDefault(Registries.ENCHANTMENT, EnchantmentBuilder.class, EnchantmentBuilder::new);
 		registry.addDefault(Registries.MOB_EFFECT, BasicMobEffect.Builder.class, BasicMobEffect.Builder::new);
@@ -420,6 +424,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		bindings.add("Notification", NotificationToastData.class);
 		bindings.add("SizedIngredient", SizedIngredientWrapper.class);
 		bindings.add("ChancedItem", ChancedItem.class);
+		bindings.add("ParticleOptions", ParticleOptionsWrapper.class);
 
 		bindings.add("Fluid", FluidWrapper.class);
 
@@ -510,8 +515,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(Set.class, ListJS::ofSet);
 		registry.register(ItemStack.class, ItemStackJS::wrap);
 		registry.register(Ingredient.class, IngredientJS::wrap);
-		registry.register(InputReplacement.class, InputReplacement::of);
-		registry.register(OutputReplacement.class, OutputReplacement::of);
+		registry.register(InputReplacement.class, InputReplacement::wrap);
+		registry.register(OutputReplacement.class, OutputReplacement::wrap);
 		registry.register(SizedIngredient.class, SizedIngredientWrapper::wrap);
 		registry.register(BlockStatePredicate.class, BlockStatePredicate::of);
 		registry.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
@@ -527,7 +532,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(Stat.class, PlayerStatsJS::statOf);
 		registry.register(MapColor.class, MapColorHelper::of);
 		registry.register(SoundType.class, SoundTypeWrapper.INSTANCE);
-		registry.register(ParticleOptions.class, UtilsWrapper::particleOptions);
+		registry.register(ParticleOptions.class, ParticleOptionsWrapper::wrap);
 		registry.register(ItemTintFunction.class, ItemTintFunction::of);
 		registry.register(BlockTintFunction.class, BlockTintFunction::of);
 		registry.register(RegistryInfo.class, RegistryInfo::wrap);

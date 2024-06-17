@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import dev.latvian.mods.kubejs.util.StaticRegistries;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.Scriptable;
@@ -21,7 +21,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +30,6 @@ public class KubeJSContext extends Context {
 	public final KubeJSContextFactory kjsFactory;
 	public final Scriptable topLevelScope;
 	private Map<String, Either<NativeJavaClass, Boolean>> javaClassCache;
-	public Map<String, ItemStack> itemStackParseCache = new HashMap<>();
 
 	public KubeJSContext(KubeJSContextFactory factory) {
 		super(factory);
@@ -65,7 +63,7 @@ public class KubeJSContext extends Context {
 		return kjsFactory.manager.scriptType.console;
 	}
 
-	public StaticRegistries getRegistries() {
+	public RegistryAccessContainer getRegistries() {
 		return kjsFactory.manager.getRegistries();
 	}
 

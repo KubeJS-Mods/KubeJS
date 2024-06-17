@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.LogType;
-import dev.latvian.mods.kubejs.util.StaticRegistries;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 
 import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
@@ -28,8 +28,8 @@ public class ScriptManager {
 		classFilter = KubeJSPlugins.createClassFilter(scriptType);
 	}
 
-	public StaticRegistries getRegistries() {
-		return StaticRegistries.current;
+	public RegistryAccessContainer getRegistries() {
+		return RegistryAccessContainer.current;
 	}
 
 	public void unload() {

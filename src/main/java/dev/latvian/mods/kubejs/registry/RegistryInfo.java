@@ -30,6 +30,8 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
@@ -68,6 +70,7 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 	}
 
 	public static final RegistryInfo<SoundEvent> SOUND_EVENT = of(Registries.SOUND_EVENT);
+	public static final RegistryInfo<FluidType> FLUID_TYPE = of(NeoForgeRegistries.Keys.FLUID_TYPES);
 	public static final RegistryInfo<Fluid> FLUID = of(Registries.FLUID);
 	public static final RegistryInfo<MobEffect> MOB_EFFECT = of(Registries.MOB_EFFECT).languageKeyPrefix("effect");
 	public static final RegistryInfo<Block> BLOCK = of(Registries.BLOCK);

@@ -11,13 +11,12 @@ import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegExpJS;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -81,7 +80,7 @@ public interface ItemStackJS {
 
 	Lazy<List<ItemStack>> CACHED_ITEM_LIST = Lazy.of(() -> CACHED_ITEM_MAP.get().values().stream().flatMap(Collection::stream).toList());
 
-	static ItemStack wrap(Context cx, @Nullable Object o) {
+	static ItemStack wrap(RegistryAccessContainer registries, @Nullable Object o) {
 		if (o instanceof Wrapper w) {
 			o = w.unwrap();
 		}
@@ -107,9 +106,9 @@ public interface ItemStackJS {
 		} else if (o instanceof ItemLike itemLike) {
 			return itemLike.asItem().getDefaultInstance();
 		} else if (o instanceof JsonElement json) {
-			return resultFromRecipeJson(((KubeJSContext) cx).getNbtOps(), json);
+			return resultFromRecipeJson(registries.nbt(), json);
 		} else if (o instanceof StringTag tag) {
-			return wrap(cx, tag.getAsString());
+			return wrap(registries, tag.getAsString());
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
 			var reg = RegExpJS.wrap(o);
 
@@ -122,7 +121,7 @@ public interface ItemStackJS {
 			var os = o.toString().trim();
 			var s = os;
 
-			var cached = ((KubeJSContext) cx).itemStackParseCache.get(os);
+			var cached = registries.itemStackParseCache().get(os);
 
 			if (cached != null) {
 				return cached.copy();
@@ -136,9 +135,9 @@ public interface ItemStackJS {
 				s = s.substring(spaceIndex + 1);
 			}
 
-			cached = ofString(((KubeJSContext) cx).getNbtOps(), s);
+			cached = ofString(registries.nbt(), s);
 			cached.setCount(count);
-			((KubeJSContext) cx).itemStackParseCache.put(os, cached);
+			registries.itemStackParseCache().put(os, cached);
 			return cached.copy();
 		}
 
@@ -178,7 +177,7 @@ public interface ItemStackJS {
 		return ItemStack.EMPTY;
 	}
 
-	static Item getRawItem(Context cx, @Nullable Object o) {
+	static Item getRawItem(RegistryAccessContainer registries, @Nullable Object o) {
 		if (o == null) {
 			return Items.AIR;
 		} else if (o instanceof ItemLike item) {
@@ -192,7 +191,7 @@ public interface ItemStackJS {
 			}
 		}
 
-		return wrap(cx, o).getItem();
+		return wrap(registries, o).getItem();
 	}
 
 	// Use ItemStackJS.of(object)

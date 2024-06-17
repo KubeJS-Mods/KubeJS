@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeMappingRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
+import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -29,6 +30,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public interface KubeJSPlugin {
 	default void init() {
@@ -77,6 +79,9 @@ public interface KubeJSPlugin {
 	}
 
 	default void registerIngredientActionTypes(IngredientActionTypeRegistry registry) {
+	}
+
+	default void registerRecipeViewerEntryTypes(Consumer<RecipeViewerEntryType> registry) {
 	}
 
 	default void attachServerData(AttachedData<MinecraftServer> event) {

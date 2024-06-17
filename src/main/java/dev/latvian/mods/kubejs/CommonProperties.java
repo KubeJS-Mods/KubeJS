@@ -5,7 +5,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.datafixers.util.Pair;
-import dev.latvian.mods.kubejs.util.StaticRegistries;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 
@@ -66,7 +66,7 @@ public class CommonProperties extends BaseProperties {
 
 	public Component getCreativeModeTabName() {
 		if (!creativeModeTabName.isJsonNull()) {
-			return ComponentSerialization.CODEC.decode(StaticRegistries.BUILTIN.json(), creativeModeTabName).result().map(Pair::getFirst).orElse(KubeJS.NAME_COMPONENT);
+			return ComponentSerialization.CODEC.decode(RegistryAccessContainer.BUILTIN.json(), creativeModeTabName).result().map(Pair::getFirst).orElse(KubeJS.NAME_COMPONENT);
 		}
 
 		return KubeJS.NAME_COMPONENT;

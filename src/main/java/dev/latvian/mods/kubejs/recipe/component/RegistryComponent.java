@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.registry.RegistryType;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -49,7 +50,7 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 			} else if (from instanceof Item) {
 				return (T) from;
 			} else {
-				return (T) ItemStackJS.wrap(cx, from).getItem();
+				return (T) ItemStackJS.wrap(((KubeJSContext) cx).getRegistries(), from).getItem();
 			}
 		} else if (registry == RegistryInfo.FLUID) {
 			if (from instanceof FluidStack fs) {
@@ -57,7 +58,7 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 			} else if (from instanceof Fluid) {
 				return (T) from;
 			} else {
-				return (T) FluidWrapper.wrap(cx, from).getFluid();
+				return (T) FluidWrapper.wrap(((KubeJSContext) cx).getRegistries(), from).getFluid();
 			}
 		} else {
 			var regType = RegistryType.ofKey(registry.key);

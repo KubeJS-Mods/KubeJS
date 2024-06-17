@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.util.wrap.DirectTypeWrapperFactory;
@@ -15,6 +16,12 @@ import net.minecraft.util.StringRepresentable;
 import java.util.function.BiFunction;
 
 public class TypeWrapperRegistry {
+	public interface ContextFromFunction<T> extends BiFunction<Context, Object, T> {
+	}
+
+	public interface RegistriesFromFunction<T> extends BiFunction<RegistryAccessContainer, Object, T> {
+	}
+
 	private final ScriptType type;
 	private final TypeWrappers typeWrappers;
 
@@ -35,12 +42,16 @@ public class TypeWrapperRegistry {
 		typeWrappers.register(target, factory);
 	}
 
-	public <T> void register(Class<T> target, TypeWrapperValidator validator, BiFunction<Context, Object, T> factory) {
+	public <T> void register(Class<T> target, TypeWrapperValidator validator, ContextFromFunction<T> factory) {
 		typeWrappers.register(target, validator, (cx, from, t) -> factory.apply(cx, from));
 	}
 
-	public <T> void register(Class<T> target, BiFunction<Context, Object, T> factory) {
+	public <T> void register(Class<T> target, ContextFromFunction<T> factory) {
 		typeWrappers.register(target, (cx, from, t) -> factory.apply(cx, from));
+	}
+
+	public <T> void register(Class<T> target, RegistriesFromFunction<T> factory) {
+		typeWrappers.register(target, (cx, from, t) -> factory.apply(((KubeJSContext) cx).getRegistries(), from));
 	}
 
 	public <T> void register(Class<T> target, TypeWrapperValidator validator, DirectTypeWrapperFactory<T> factory) {

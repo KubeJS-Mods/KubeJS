@@ -28,7 +28,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
-import dev.latvian.mods.kubejs.util.StaticRegistries;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.WrappedException;
@@ -154,7 +154,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		}, true);
 
 	public final RecipeSchemaStorage recipeSchemaStorage;
-	public final StaticRegistries registries;
+	public final RegistryAccessContainer registries;
 	public final Map<ResourceLocation, KubeRecipe> originalRecipes;
 	public final Collection<KubeRecipe> addedRecipes;
 	private final BinaryOperator<RecipeHolder<?>> mergeOriginal, mergeAdded;
@@ -178,7 +178,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	final RecipeSerializer<?> stageSerializer;
 
-	public RecipesKubeEvent(RecipeSchemaStorage recipeSchemaStorage, StaticRegistries registries) {
+	public RecipesKubeEvent(RecipeSchemaStorage recipeSchemaStorage, RegistryAccessContainer registries) {
 		ConsoleJS.SERVER.info("Initializing recipe event...");
 		this.recipeSchemaStorage = recipeSchemaStorage;
 		this.registries = registries;

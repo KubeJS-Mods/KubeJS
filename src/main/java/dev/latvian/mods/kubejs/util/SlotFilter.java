@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.util;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
@@ -41,7 +42,7 @@ public record SlotFilter(Ingredient item, int index) {
 		if (o instanceof Number num) {
 			return of(Ingredient.EMPTY, num.intValue());
 		} else if (o instanceof String || o instanceof Ingredient || o instanceof NativeRegExp || o instanceof Pattern) {
-			return of(IngredientJS.wrap(cx, o), -1);
+			return of(IngredientJS.wrap(((KubeJSContext) cx).getRegistries(), o), -1);
 		} else {
 			return (SlotFilter) ((RecordTypeInfo) target).wrap(cx, o, target);
 		}

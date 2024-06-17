@@ -146,4 +146,12 @@ public class BlockWrapper {
 			default -> (BlockSetType) ((RecordTypeInfo) target).wrap(cx, from, target);
 		};
 	}
+
+	@Info("Parses a block state from the input string. May throw for invalid inputs!")
+	static BlockState parseBlockState(Object o) {
+		if (o instanceof BlockState bs) {
+			return bs;
+		}
+		return o == null ? Blocks.AIR.defaultBlockState() : BlockWrapper.parseBlockState(o.toString());
+	}
 }

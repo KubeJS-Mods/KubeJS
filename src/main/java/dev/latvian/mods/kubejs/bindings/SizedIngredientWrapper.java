@@ -4,9 +4,8 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.nbt.Tag;
 import net.minecraft.tags.TagKey;
@@ -35,7 +34,7 @@ public interface SizedIngredientWrapper {
 		return SizedIngredient.of(tag, count);
 	}
 
-	static SizedIngredient wrap(Context cx, Object from) {
+	static SizedIngredient wrap(RegistryAccessContainer registries, Object from) {
 		if (from instanceof SizedIngredient s) {
 			return s;
 		} else if (from instanceof Ingredient ingredient) {
@@ -46,13 +45,13 @@ public interface SizedIngredientWrapper {
 			return Ingredient.of(item).kjs$asStack();
 		} else if (from instanceof CharSequence) {
 			try {
-				return read(((KubeJSContext) cx).getNbtOps(), new StringReader(from.toString()));
+				return read(registries.nbt(), new StringReader(from.toString()));
 			} catch (Exception ex) {
 				return empty;
 			}
 		}
 
-		return IngredientJS.wrap(cx, from).kjs$asStack();
+		return IngredientJS.wrap(registries, from).kjs$asStack();
 	}
 
 	static SizedIngredient read(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {

@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.architectury.event.EventResult;
+import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
+import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
 import me.shedaniel.rei.api.client.entry.filtering.base.BasicFilteringRule;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
@@ -95,12 +97,12 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 			categoriesRemoved.clear();
 			recipesRemoved.clear();
 
-			if (REIEvents.REMOVE_CATEGORIES.hasListeners()) {
-				REIEvents.REMOVE_CATEGORIES.post(new RemoveREICategoryKubeEvent(categoriesRemoved));
+			if (RecipeViewerEvents.REMOVE_CATEGORIES.hasListeners()) {
+				RecipeViewerEvents.REMOVE_CATEGORIES.post(new REIRemoveCategoriesKubeEvent(categoriesRemoved));
 			}
 
-			if (REIEvents.REMOVE_RECIPES.hasListeners()) {
-				REIEvents.REMOVE_RECIPES.post(new RemoveREIRecipeKubeEvent(recipesRemoved));
+			if (RecipeViewerEvents.REMOVE_RECIPES.hasListeners()) {
+				RecipeViewerEvents.REMOVE_RECIPES.post(new REIRemoveRecipeKubeEvent(recipesRemoved));
 			}
 		}
 	}
@@ -110,6 +112,12 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	public void registerCollapsibleEntries(CollapsibleEntryRegistry registry) {
 		if (REIEvents.GROUP_ENTRIES.hasListeners()) {
 			REIEvents.GROUP_ENTRIES.post(new GroupREIEntriesKubeEvent(entryWrappers, registry));
+		}
+
+		for (var type : RecipeViewerEntryType.ALL_TYPES.get()) {
+			if (RecipeViewerEvents.GROUP_ENTRIES.hasListeners(type)) {
+				RecipeViewerEvents.GROUP_ENTRIES.post(new REIGroupEntriesKubeEvent(type, registry));
+			}
 		}
 	}
 

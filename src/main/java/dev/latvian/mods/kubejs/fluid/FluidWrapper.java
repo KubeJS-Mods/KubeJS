@@ -5,8 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
-import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.Tag;
@@ -26,7 +25,7 @@ public interface FluidWrapper {
 	TypeInfo TYPE_INFO = TypeInfo.of(FluidStack.class);
 	TypeInfo INGREDIENT_TYPE_INFO = TypeInfo.of(FluidIngredient.class);
 
-	static FluidStack wrap(Context cx, Object o) {
+	static FluidStack wrap(RegistryAccessContainer registries, Object o) {
 		if (o == null || o == FluidStack.EMPTY || o == Fluids.EMPTY || o == EmptyFluidIngredient.INSTANCE) {
 			return FluidStack.EMPTY;
 		} else if (o instanceof FluidStack stack) {
@@ -36,11 +35,11 @@ public interface FluidWrapper {
 		} else if (o instanceof FluidIngredient in) {
 			return in.hasNoFluids() ? FluidStack.EMPTY : in.getStacks()[0];
 		} else {
-			return ofString(((KubeJSContext) cx).getNbtOps(), o.toString());
+			return ofString(registries.nbt(), o.toString());
 		}
 	}
 
-	static FluidIngredient wrapIngredient(Context cx, Object o) {
+	static FluidIngredient wrapIngredient(RegistryAccessContainer registries, Object o) {
 		if (o == null || o == FluidStack.EMPTY || o == Fluids.EMPTY || o == EmptyFluidIngredient.INSTANCE) {
 			return EmptyFluidIngredient.INSTANCE;
 		} else if (o instanceof FluidStack stack) {
@@ -50,7 +49,7 @@ public interface FluidWrapper {
 		} else if (o instanceof FluidIngredient in) {
 			return in;
 		} else {
-			var stack = wrap(cx, o);
+			var stack = wrap(registries, o);
 			return stack.isEmpty() ? EmptyFluidIngredient.INSTANCE : FluidIngredient.of(stack);
 		}
 	}

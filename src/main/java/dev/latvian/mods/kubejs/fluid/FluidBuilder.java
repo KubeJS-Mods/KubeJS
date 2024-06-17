@@ -1,21 +1,18 @@
 package dev.latvian.mods.kubejs.fluid;
 
-import dev.architectury.core.fluid.ArchitecturyFlowingFluid;
-import dev.architectury.core.fluid.ArchitecturyFluidAttributes;
-import dev.architectury.core.fluid.SimpleArchitecturyFluidAttributes;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.material.FlowingFluid;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.FluidType;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 @ReturnsSelf
@@ -24,18 +21,18 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public transient ResourceLocation flowingTexture;
 	public transient int color = 0xFFFFFFFF;
 	public transient int bucketColor = 0xFFFFFFFF;
-	public transient int luminosity = 0;
-	public transient int density = 1000;
-	public transient int temperature = 300;
-	public transient int viscosity = 1000;
-	public transient boolean isGaseous;
-	public transient Rarity rarity = Rarity.COMMON;
 	public transient String renderType = "solid";
-	public ArchitecturyFluidAttributes attributes;
+
+	public transient Supplier<FluidType> fluidType = NeoForgeMod.WATER_TYPE::value;
+	public transient int slopeFindDistance = 4;
+	public transient int levelDecreasePerBlock = 1;
+	public transient float explosionResistance = 1;
+	public transient int tickRate = 5;
 
 	public FlowingFluidBuilder flowingFluid;
 	public FluidBlockBuilder block;
 	public FluidBucketItemBuilder bucketItem;
+	private BaseFlowingFluid.Properties properties;
 
 	public FluidBuilder(ResourceLocation i) {
 		super(i);
@@ -64,31 +61,22 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		return RegistryInfo.FLUID;
 	}
 
-	@Override
-	public FlowingFluid createObject() {
-		return new ArchitecturyFlowingFluid.Source(createAttributes());
-	}
+	public BaseFlowingFluid.Properties createProperties() {
+		if (properties == null) {
+			properties = new BaseFlowingFluid.Properties(fluidType, this, flowingFluid);
 
-	public ArchitecturyFluidAttributes createAttributes() {
-		if (this.attributes != null) {
-			return this.attributes;
+			properties.slopeFindDistance(slopeFindDistance);
+			properties.levelDecreasePerBlock(levelDecreasePerBlock);
+			properties.explosionResistance(explosionResistance);
+			properties.tickRate(tickRate);
 		}
 
-		var attributes = SimpleArchitecturyFluidAttributes.of(flowingFluid, this)
-			.flowingTexture(flowingTexture)
-			.sourceTexture(stillTexture)
-			.color(color)
-			.rarity(rarity)
-			.density(density)
-			.viscosity(viscosity)
-			.luminosity(luminosity)
-			.temperature(temperature)
-			.lighterThanAir(isGaseous)
-			.bucketItem(() -> Optional.ofNullable(bucketItem).map(Supplier::get))
-			.block(() -> Optional.ofNullable(block).map(Supplier::get).map(Cast::to));
+		return properties;
+	}
 
-		this.attributes = attributes;
-		return attributes;
+	@Override
+	public FlowingFluid createObject() {
+		return new BaseFlowingFluid.Source(createProperties());
 	}
 
 	@Override
@@ -106,17 +94,17 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 
 	@Override
 	public BuilderBase<FlowingFluid> tag(ResourceLocation[] tag) {
-		flowingFluid.tag(tag);
+		this.flowingFluid.tag(tag);
 		return super.tag(tag);
 	}
 
 	public FluidBuilder color(Color c) {
-		color = bucketColor = c.getArgbJS();
+		this.color = bucketColor = c.getArgbJS();
 		return this;
 	}
 
 	public FluidBuilder bucketColor(Color c) {
-		bucketColor = c.getArgbJS();
+		this.bucketColor = c.getArgbJS();
 		return this;
 	}
 
@@ -127,17 +115,17 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	}
 
 	public FluidBuilder stillTexture(ResourceLocation id) {
-		stillTexture = id;
+		this.stillTexture = id;
 		return this;
 	}
 
 	public FluidBuilder flowingTexture(ResourceLocation id) {
-		flowingTexture = id;
+		this.flowingTexture = id;
 		return this;
 	}
 
 	public FluidBuilder renderType(String l) {
-		renderType = l;
+		this.renderType = l;
 		return this;
 	}
 
@@ -153,43 +141,33 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		return stillTexture(KubeJS.id("block/thin_fluid_still")).flowingTexture(KubeJS.id("block/thin_fluid_flow")).color(color);
 	}
 
-	public FluidBuilder luminosity(int luminosity) {
-		this.luminosity = luminosity;
+	public FluidBuilder slopeFindDistance(int slopeFindDistance) {
+		this.slopeFindDistance = slopeFindDistance;
 		return this;
 	}
 
-	public FluidBuilder density(int density) {
-		this.density = density;
+	public FluidBuilder levelDecreasePerBlock(int levelDecreasePerBlock) {
+		this.levelDecreasePerBlock = levelDecreasePerBlock;
 		return this;
 	}
 
-	public FluidBuilder temperature(int temperature) {
-		this.temperature = temperature;
+	public FluidBuilder explosionResistance(float explosionResistance) {
+		this.explosionResistance = explosionResistance;
 		return this;
 	}
 
-	public FluidBuilder viscosity(int viscosity) {
-		this.viscosity = viscosity;
-		return this;
-	}
-
-	public FluidBuilder gaseous() {
-		isGaseous = true;
-		return this;
-	}
-
-	public FluidBuilder rarity(Rarity rarity) {
-		this.rarity = rarity;
+	public FluidBuilder tickRate(int tickRate) {
+		this.tickRate = tickRate;
 		return this;
 	}
 
 	public FluidBuilder noBucket() {
-		bucketItem = null;
+		this.bucketItem = null;
 		return this;
 	}
 
 	public FluidBuilder noBlock() {
-		block = null;
+		this.block = null;
 		return this;
 	}
 }

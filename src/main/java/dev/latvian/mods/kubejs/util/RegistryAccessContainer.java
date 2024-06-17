@@ -12,28 +12,32 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.item.ItemStack;
 
+import java.util.HashMap;
 import java.util.Map;
 
-public record StaticRegistries(
+public record RegistryAccessContainer(
 	RegistryAccess.Frozen access,
 	RegistryOps<Tag> nbt,
 	RegistryOps<JsonElement> json,
 	RegistryOps<Object> java,
-	Lazy<DamageSources> damageSources
+	Lazy<DamageSources> damageSources,
+	Map<String, ItemStack> itemStackParseCache
 ) {
-	public static final StaticRegistries BUILTIN = new StaticRegistries(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
+	public static final RegistryAccessContainer BUILTIN = new RegistryAccessContainer(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
 
 	// Still necessary because STARTUP and CLIENT scripts need to know about registries
-	public static StaticRegistries current = BUILTIN;
+	public static RegistryAccessContainer current = BUILTIN;
 
-	public StaticRegistries(RegistryAccess.Frozen registryAccess) {
+	public RegistryAccessContainer(RegistryAccess.Frozen registryAccess) {
 		this(
 			registryAccess,
 			registryAccess.createSerializationContext(NbtOps.INSTANCE),
 			registryAccess.createSerializationContext(JsonOps.INSTANCE),
 			registryAccess.createSerializationContext(JavaOps.INSTANCE),
-			Lazy.of(() -> new DamageSources(registryAccess))
+			Lazy.of(() -> new DamageSources(registryAccess)),
+			new HashMap<>()
 		);
 	}
 

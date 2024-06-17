@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.fluid;
 
-import dev.architectury.core.fluid.ArchitecturyFlowingFluid;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.world.level.material.FlowingFluid;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 public class FlowingFluidBuilder extends BuilderBase<FlowingFluid> {
 	public final FluidBuilder fluidBuilder;
@@ -20,6 +20,6 @@ public class FlowingFluidBuilder extends BuilderBase<FlowingFluid> {
 
 	@Override
 	public FlowingFluid createObject() {
-		return new ArchitecturyFlowingFluid.Flowing(fluidBuilder.createAttributes());
+		return new BaseFlowingFluid.Flowing(fluidBuilder.createProperties());
 	}
 }

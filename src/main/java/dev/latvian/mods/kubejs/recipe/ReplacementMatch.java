@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 
 public interface ReplacementMatch {
 	ReplacementMatch NONE = new ReplacementMatch() {
@@ -11,14 +11,14 @@ public interface ReplacementMatch {
 		}
 	};
 
-	static ReplacementMatch of(Context cx, Object o) {
+	static ReplacementMatch of(RegistryAccessContainer registries, Object o) {
 		if (o == null) {
 			return NONE;
 		} else if (o instanceof ReplacementMatch m) {
 			return m;
 		}
 
-		var in = IngredientJS.wrap(cx, o);
+		var in = IngredientJS.wrap(registries, o);
 
 		if (in.isEmpty()) {
 			return NONE;

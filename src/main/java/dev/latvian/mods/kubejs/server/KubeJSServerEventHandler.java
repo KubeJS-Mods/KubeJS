@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.command.CommandRegistryKubeEvent;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
 import dev.latvian.mods.kubejs.level.SimpleLevelKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.util.StaticRegistries;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -98,7 +98,7 @@ public class KubeJSServerEventHandler {
 
 	@SubscribeEvent
 	public static void serverStopped(ServerStoppedEvent event) {
-		StaticRegistries.current = StaticRegistries.BUILTIN;
+		RegistryAccessContainer.current = RegistryAccessContainer.BUILTIN;
 	}
 
 	@SubscribeEvent
