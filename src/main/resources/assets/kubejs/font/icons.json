@@ -14,6 +14,12 @@
 		},
 		{
 			"type": "bitmap",
+			"file": "kubejs:font/icons/copy.png",
+			"ascent": 7,
+			"chars": ["C"]
+		},
+		{
+			"type": "bitmap",
 			"file": "kubejs:font/icons/id.png",
 			"ascent": 7,
 			"chars": ["D"]

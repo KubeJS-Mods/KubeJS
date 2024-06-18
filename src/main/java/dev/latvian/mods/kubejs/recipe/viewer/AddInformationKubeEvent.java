@@ -7,8 +7,6 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 
 public interface AddInformationKubeEvent extends KubeEvent {
-	RecipeViewerEntryType getType();
-
 	void add(Context cx, Object filter, Component title, List<Component> description);
 
 	default void add(Context cx, Object filter, Component title) {

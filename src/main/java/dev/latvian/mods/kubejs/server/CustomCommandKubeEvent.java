@@ -10,14 +10,16 @@ import org.jetbrains.annotations.Nullable;
 public class CustomCommandKubeEvent implements KubeEntityEvent {
 	private final Level level;
 	private final Entity entity;
-	private final BlockPos blockPos;
-	private final String id;
+	private final BlockPos pos;
+	public final String id;
+	public final String input;
 
-	public CustomCommandKubeEvent(Level l, @Nullable Entity e, BlockPos p, String i) {
-		level = l;
-		entity = e;
-		blockPos = p;
-		id = i;
+	public CustomCommandKubeEvent(Level level, @Nullable Entity entity, BlockPos pos, String id, String input) {
+		this.level = level;
+		this.entity = entity;
+		this.pos = pos;
+		this.id = id;
+		this.input = input;
 	}
 
 	public String getId() {
@@ -35,6 +37,6 @@ public class CustomCommandKubeEvent implements KubeEntityEvent {
 	}
 
 	public BlockContainerJS getBlock() {
-		return this.getLevel().kjs$getBlock(blockPos);
+		return this.getLevel().kjs$getBlock(pos);
 	}
 }

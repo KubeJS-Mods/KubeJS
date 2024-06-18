@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block.entity;
 
+import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
 import dev.latvian.mods.rhino.type.JSOptionalParam;
@@ -14,7 +14,6 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,12 +28,12 @@ public class InventoryAttachment extends SimpleContainer implements BlockEntityA
 		(cx, map) -> {
 			var width = ScriptRuntime.toInt32(cx, map.get("width"));
 			var height = ScriptRuntime.toInt32(cx, map.get("height"));
-			var inputFilter = map.containsKey("inputFilter") ? IngredientJS.wrap(((KubeJSContext) cx).getRegistries(), map.get("inputFilter")) : null;
+			var inputFilter = map.containsKey("inputFilter") ? ItemPredicate.wrap(cx, map.get("inputFilter")) : null;
 			return new InventoryAttachmentFactory(width, height, inputFilter);
 		}
 	);
 
-	private record InventoryAttachmentFactory(int width, int height, @Nullable Ingredient inputFilter) implements Factory {
+	private record InventoryAttachmentFactory(int width, int height, @Nullable ItemPredicate inputFilter) implements Factory {
 		@Override
 		public BlockEntityAttachment create(BlockEntityJS entity) {
 			return new InventoryAttachment(entity, width, height, inputFilter);
@@ -43,9 +42,9 @@ public class InventoryAttachment extends SimpleContainer implements BlockEntityA
 
 	public final int width, height;
 	public final BlockEntityJS blockEntity;
-	public final Ingredient inputFilter;
+	public final ItemPredicate inputFilter;
 
-	public InventoryAttachment(BlockEntityJS blockEntity, int width, int height, @Nullable Ingredient inputFilter) {
+	public InventoryAttachment(BlockEntityJS blockEntity, int width, int height, @Nullable ItemPredicate inputFilter) {
 		super(width * height);
 		this.width = width;
 		this.height = height;

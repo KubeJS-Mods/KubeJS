@@ -22,6 +22,9 @@ public interface KubeJSNet {
 	CustomPacketPayload.Type<ReloadStartupScriptsPayload> RELOAD_STARTUP_SCRIPTS = type("reload_startup_scripts");
 	CustomPacketPayload.Type<DisplayServerErrorsPayload> DISPLAY_SERVER_ERRORS = type("display_server_errors");
 	CustomPacketPayload.Type<DisplayClientErrorsPayload> DISPLAY_CLIENT_ERRORS = type("display_client_errors");
+	CustomPacketPayload.Type<RequestItemKubedexPayload> REQUEST_ITEM_KUBEDEX = type("request_item_kubedex");
+	CustomPacketPayload.Type<RequestBlockKubedexPayload> REQUEST_BLOCK_KUBEDEX = type("request_block_kubedex");
+	CustomPacketPayload.Type<RequestEntityKubedexPayload> REQUEST_ENTITY_KUBEDEX = type("request_entity_kubedex");
 
 	@SubscribeEvent
 	static void register(RegisterPayloadHandlersEvent event) {
@@ -39,5 +42,8 @@ public interface KubeJSNet {
 		reg.playToClient(RELOAD_STARTUP_SCRIPTS, ReloadStartupScriptsPayload.STREAM_CODEC, ReloadStartupScriptsPayload::handle);
 		reg.playToClient(DISPLAY_SERVER_ERRORS, DisplayServerErrorsPayload.STREAM_CODEC, DisplayServerErrorsPayload::handle);
 		reg.playToClient(DISPLAY_CLIENT_ERRORS, DisplayClientErrorsPayload.STREAM_CODEC, DisplayClientErrorsPayload::handle);
+		reg.playToServer(REQUEST_ITEM_KUBEDEX, RequestItemKubedexPayload.STREAM_CODEC, RequestItemKubedexPayload::handle);
+		reg.playToServer(REQUEST_BLOCK_KUBEDEX, RequestBlockKubedexPayload.STREAM_CODEC, RequestBlockKubedexPayload::handle);
+		reg.playToServer(REQUEST_ENTITY_KUBEDEX, RequestEntityKubedexPayload.STREAM_CODEC, RequestEntityKubedexPayload::handle);
 	}
 }

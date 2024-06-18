@@ -346,59 +346,63 @@ public interface TextWrapper {
 		return icon(Component.literal("."));
 	}
 
-	static MutableComponent logoIcon() {
-		return icon(Component.literal("K"));
-	}
-
-	static MutableComponent infoIcon() {
-		return icon(Component.literal("I"));
-	}
-
-	static MutableComponent info(Component text) {
-		return Component.empty().append(infoIcon()).append(smallSpace()).append(text);
-	}
-
-	static MutableComponent warnIcon() {
-		return icon(Component.literal("W"));
-	}
-
-	static MutableComponent warn(Component text) {
-		return Component.empty().append(warnIcon()).append(smallSpace()).append(text);
-	}
-
-	static MutableComponent yesIcon() {
-		return icon(Component.literal("Y"));
-	}
-
-	static MutableComponent noIcon() {
-		return icon(Component.literal("N"));
-	}
-
-	static MutableComponent yesIcon(boolean yes) {
-		return icon(yes ? Component.literal("Y") : Component.literal("N"));
-	}
-
-	static MutableComponent tagIcon() {
-		return icon(Component.literal("T"));
-	}
-
 	static MutableComponent blockTagIcon() {
 		return icon(Component.literal("B"));
 	}
 
-	static MutableComponent itemTagIcon() {
-		return icon(Component.literal("J"));
+	static MutableComponent copyIcon() {
+		return icon(Component.literal("C"));
 	}
 
-	static MutableComponent fluidTagIcon() {
-		return icon(Component.literal("F"));
+	static MutableComponent idIcon() {
+		return icon(Component.literal("D"));
 	}
 
 	static MutableComponent entityTypeTagIcon() {
 		return icon(Component.literal("E"));
 	}
 
-	static MutableComponent idIcon() {
-		return icon(Component.literal("D"));
+	static MutableComponent fluidTagIcon() {
+		return icon(Component.literal("F"));
+	}
+
+	static MutableComponent infoIcon() {
+		return icon(Component.literal("I"));
+	}
+
+	static MutableComponent itemTagIcon() {
+		return icon(Component.literal("J"));
+	}
+
+	static MutableComponent logoIcon() {
+		return icon(Component.literal("K"));
+	}
+
+	static MutableComponent noIcon() {
+		return icon(Component.literal("N"));
+	}
+
+	static MutableComponent tagIcon() {
+		return icon(Component.literal("T"));
+	}
+
+	static MutableComponent warnIcon() {
+		return icon(Component.literal("W"));
+	}
+
+	static MutableComponent yesIcon() {
+		return icon(Component.literal("Y"));
+	}
+
+	static MutableComponent info(Component text) {
+		return Component.empty().append(infoIcon()).append(smallSpace()).append(text);
+	}
+
+	static MutableComponent warn(Component text) {
+		return Component.empty().append(warnIcon()).append(smallSpace()).append(text);
+	}
+
+	static MutableComponent yesIcon(boolean yes) {
+		return icon(yes ? Component.literal("Y") : Component.literal("N"));
 	}
 }

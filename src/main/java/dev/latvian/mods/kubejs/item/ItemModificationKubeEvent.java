@@ -7,7 +7,6 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TieredItem;
-import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.function.Consumer;
 
@@ -21,7 +20,7 @@ public class ItemModificationKubeEvent implements KubeEvent {
 					
 		**NOTE**: tag ingredients are not supported at this time.
 		""")
-	public void modify(Ingredient in, Consumer<ItemModifications> c) {
+	public void modify(ItemPredicate in, Consumer<ItemModifications> c) {
 		for (var item : in.kjs$getItemTypes()) {
 			c.accept(new ItemModifications(item));
 		}

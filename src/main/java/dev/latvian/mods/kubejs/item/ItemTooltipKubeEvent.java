@@ -8,7 +8,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +77,7 @@ public class ItemTooltipKubeEvent implements KubeEvent {
 	}
 
 	@Info("Adds text to all items matching the ingredient.")
-	public void add(Ingredient item, List<Component> text) {
+	public void add(ItemPredicate item, List<Component> text) {
 		if (item.kjs$isWildcard()) {
 			addToAll(text);
 			return;
@@ -105,7 +104,7 @@ public class ItemTooltipKubeEvent implements KubeEvent {
 	}
 
 	@Info("Adds a dynamic tooltip handler to all items matching the ingredient.")
-	public void addAdvanced(Ingredient item, StaticTooltipHandlerFromJS handler) {
+	public void addAdvanced(ItemPredicate item, StaticTooltipHandlerFromJS handler) {
 		if (item.kjs$isWildcard()) {
 			addAdvancedToAll(handler);
 			return;

@@ -235,7 +235,10 @@ public class KubeJSCommands {
 		for (var id : ServerEvents.CUSTOM_COMMAND.findUniqueExtraIds(ScriptType.SERVER)) {
 			dispatcher.register(Commands.literal(id)
 				.requires(spOrOP)
-				.executes(context -> customCommand(context.getSource(), id))
+				.executes(ctx -> customCommand(ctx.getSource(), id, ""))
+				.then(Commands.argument("input", StringArgumentType.greedyString())
+					.executes(ctx -> customCommand(ctx.getSource(), id, StringArgumentType.getString(ctx, "input")))
+				)
 			);
 		}
 	}
@@ -261,9 +264,9 @@ public class KubeJSCommands {
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static int customCommand(CommandSourceStack source, String id) {
+	private static int customCommand(CommandSourceStack source, String id, String input) {
 		if (ServerEvents.CUSTOM_COMMAND.hasListeners(id)) {
-			var result = ServerEvents.CUSTOM_COMMAND.post(new CustomCommandKubeEvent(source.getLevel(), source.getEntity(), BlockPos.containing(source.getPosition()), id), id);
+			var result = ServerEvents.CUSTOM_COMMAND.post(new CustomCommandKubeEvent(source.getLevel(), source.getEntity(), BlockPos.containing(source.getPosition()), id, input.trim()), id);
 
 			if (result.type() == EventResult.Type.ERROR) {
 				source.sendFailure(Component.literal(result.value().toString()));

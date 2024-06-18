@@ -4,7 +4,9 @@ import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.rhino.Context;
 
 public interface RemoveEntriesKubeEvent extends KubeEvent {
-	RecipeViewerEntryType getType();
-
 	void remove(Context cx, Object filter);
+
+	void removeDirectly(Context cx, Object filter);
+
+	Object[] getAllEntryValues();
 }

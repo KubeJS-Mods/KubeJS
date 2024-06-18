@@ -2,10 +2,10 @@ package dev.latvian.mods.kubejs.item.creativetab;
 
 import dev.latvian.mods.kubejs.core.CreativeModeTabKJS;
 import dev.latvian.mods.kubejs.event.KubeEvent;
+import dev.latvian.mods.kubejs.item.ItemPredicate;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 
 public class CreativeTabKubeEvent implements KubeEvent {
 	public final CreativeModeTab tab;
@@ -50,15 +50,15 @@ public class CreativeTabKubeEvent implements KubeEvent {
 		callback.addBefore(order, items, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
 	}
 
-	public void removeDisplay(Ingredient filter) {
+	public void removeDisplay(ItemPredicate filter) {
 		callback.remove(filter, true, false);
 	}
 
-	public void removeSearch(Ingredient filter) {
+	public void removeSearch(ItemPredicate filter) {
 		callback.remove(filter, false, true);
 	}
 
-	public void remove(Ingredient filter) {
+	public void remove(ItemPredicate filter) {
 		callback.remove(filter, true, true);
 	}
 }

@@ -148,8 +148,7 @@ public class BlockContainerJS implements SpecialEquality {
 		return getBlockState().is(Tags.block(tag));
 	}
 
-	public void set(ResourceLocation id, Map<?, ?> properties, int flags) {
-		var block = RegistryInfo.BLOCK.getValue(id);
+	public void set(Block block, Map<?, ?> properties, int flags) {
 		var state = block.defaultBlockState();
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR) {
@@ -171,12 +170,12 @@ public class BlockContainerJS implements SpecialEquality {
 		setBlockState(state, flags);
 	}
 
-	public void set(ResourceLocation id, Map<?, ?> properties) {
-		set(id, properties, 3);
+	public void set(Block block, Map<?, ?> properties) {
+		set(block, properties, 3);
 	}
 
-	public void set(ResourceLocation id) {
-		set(id, Collections.emptyMap());
+	public void set(Block block) {
+		set(block, Collections.emptyMap());
 	}
 
 	public Map<String, String> getProperties() {

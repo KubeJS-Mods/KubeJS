@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.entity.EntityPotionEffectsJS;
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.item.FoodEatenKubeEvent;
+import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -20,7 +21,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -176,7 +176,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		kjs$damageHeldItem(InteractionHand.MAIN_HAND, 1);
 	}
 
-	default boolean kjs$isHoldingInAnyHand(Ingredient i) {
+	default boolean kjs$isHoldingInAnyHand(ItemPredicate i) {
 		return i.test(kjs$self().getItemInHand(InteractionHand.MAIN_HAND)) || i.test(kjs$self().getItemInHand(InteractionHand.OFF_HAND));
 	}
 

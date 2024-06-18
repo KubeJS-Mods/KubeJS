@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.integration.rei;
 import dev.architectury.event.EventResult;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import me.shedaniel.rei.api.client.entry.filtering.base.BasicFilteringRule;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
@@ -11,8 +12,8 @@ import me.shedaniel.rei.api.client.registry.entry.CollapsibleEntryRegistry;
 import me.shedaniel.rei.api.client.registry.entry.EntryRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.entry.EntryStack;
-import me.shedaniel.rei.api.common.entry.type.EntryType;
-import me.shedaniel.rei.api.common.entry.type.EntryTypeRegistry;
+import me.shedaniel.rei.api.common.entry.comparison.FluidComparatorRegistry;
+import me.shedaniel.rei.api.common.entry.comparison.ItemComparatorRegistry;
 import me.shedaniel.rei.api.common.plugins.PluginManager;
 import me.shedaniel.rei.api.common.registry.ReloadStage;
 import me.shedaniel.rei.forge.REIPluginClient;
@@ -23,19 +24,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 @REIPluginClient
+@SuppressWarnings("UnstableApiUsage")
 public class KubeJSREIPlugin implements REIClientPlugin {
 	private final Set<CategoryIdentifier<?>> categoriesRemoved = new HashSet<>();
 	private final Map<CategoryIdentifier<?>, Collection<ResourceLocation>> recipesRemoved = new HashMap<>();
-
-	private final REIEntryWrappers entryWrappers;
-
-	public KubeJSREIPlugin() {
-		entryWrappers = new REIEntryWrappers();
-	}
 
 	/**
 	 * We want to run as late as possible, so we can remove other
@@ -48,25 +43,24 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 	@Override
 	public void registerEntries(EntryRegistry registry) {
-		if (REIEvents.ADD.hasListeners()) {
-			for (var wrapper : entryWrappers.getWrappers()) {
-				if (REIEvents.ADD.hasListeners(wrapper.type().getId())) {
-					REIEvents.ADD.post(new AddREIKubeEvent<>(registry, wrapper), wrapper.type().getId());
-				}
+		for (var type : RecipeViewerEntryType.ALL_TYPES.get()) {
+			var entryType = REIIntegration.typeOf(type);
+
+			if (entryType != null && RecipeViewerEvents.ADD_ENTRIES.hasListeners(type)) {
+				RecipeViewerEvents.ADD_ENTRIES.post(ScriptType.CLIENT, type, new REIAddEntriesKubeEvent(type, entryType, registry));
 			}
 		}
 	}
 
 	@Override
 	public void registerBasicEntryFiltering(BasicFilteringRule<?> rule) {
-		if (REIEvents.HIDE.hasListeners()) {
-			var registry = EntryRegistry.getInstance();
-			var allEntries = registry.getEntryStacks().toArray(EntryStack[]::new);
+		for (var type : RecipeViewerEntryType.ALL_TYPES.get()) {
+			var entryType = REIIntegration.typeOf(type);
 
-			for (var wrapper : entryWrappers.getWrappers()) {
-				if (REIEvents.HIDE.hasListeners(wrapper.type().getId())) {
-					REIEvents.HIDE.post(new HideREIKubeEvent<>(registry, wrapper, rule, allEntries), wrapper.type().getId());
-				}
+			if (entryType != null && RecipeViewerEvents.REMOVE_ENTRIES.hasListeners(type)) {
+				var registry = EntryRegistry.getInstance();
+				var allEntries = registry.getEntryStacks().filter(e -> e.getType() == entryType).toArray(EntryStack[]::new);
+				RecipeViewerEvents.REMOVE_ENTRIES.post(ScriptType.CLIENT, type, new REIRemoveEntriesKubeEvent(type, registry, allEntries, rule));
 			}
 		}
 	}
@@ -75,7 +69,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	public void registerDisplays(DisplayRegistry registry) {
 		for (var type : RecipeViewerEntryType.ALL_TYPES.get()) {
 			if (RecipeViewerEvents.ADD_INFORMATION.hasListeners(type)) {
-				RecipeViewerEvents.ADD_INFORMATION.post(new REIAddInformationKubeEvent(type));
+				RecipeViewerEvents.ADD_INFORMATION.post(ScriptType.CLIENT, type, new REIAddInformationKubeEvent(type));
 			}
 		}
 
@@ -101,30 +95,37 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 			recipesRemoved.clear();
 
 			if (RecipeViewerEvents.REMOVE_CATEGORIES.hasListeners()) {
-				RecipeViewerEvents.REMOVE_CATEGORIES.post(new REIRemoveCategoriesKubeEvent(categoriesRemoved));
+				RecipeViewerEvents.REMOVE_CATEGORIES.post(ScriptType.CLIENT, new REIRemoveCategoriesKubeEvent(categoriesRemoved));
 			}
 
 			if (RecipeViewerEvents.REMOVE_RECIPES.hasListeners()) {
-				RecipeViewerEvents.REMOVE_RECIPES.post(new REIRemoveRecipeKubeEvent(recipesRemoved));
+				RecipeViewerEvents.REMOVE_RECIPES.post(ScriptType.CLIENT, new REIRemoveRecipeKubeEvent(recipesRemoved));
 			}
 		}
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
 	@Override
 	public void registerCollapsibleEntries(CollapsibleEntryRegistry registry) {
-		if (REIEvents.GROUP_ENTRIES.hasListeners()) {
-			REIEvents.GROUP_ENTRIES.post(new GroupREIEntriesKubeEvent(entryWrappers, registry));
-		}
-
 		for (var type : RecipeViewerEntryType.ALL_TYPES.get()) {
-			if (RecipeViewerEvents.GROUP_ENTRIES.hasListeners(type)) {
-				RecipeViewerEvents.GROUP_ENTRIES.post(new REIGroupEntriesKubeEvent(type, registry));
+			var entryType = REIIntegration.typeOf(type);
+
+			if (entryType != null && RecipeViewerEvents.GROUP_ENTRIES.hasListeners(type)) {
+				RecipeViewerEvents.GROUP_ENTRIES.post(ScriptType.CLIENT, type, new REIGroupEntriesKubeEvent(type, entryType, registry));
 			}
 		}
 	}
 
-	public static EntryType<?> getTypeOrThrow(ResourceLocation typeId) {
-		return Objects.requireNonNull(EntryTypeRegistry.getInstance().get(typeId), "Entry type '%s' not found!".formatted(typeId)).getType();
+	@Override
+	public void registerItemComparators(ItemComparatorRegistry registry) {
+		if (RecipeViewerEvents.REGISTER_SUBTYPES.hasListeners(RecipeViewerEntryType.ITEM)) {
+			RecipeViewerEvents.REGISTER_SUBTYPES.post(ScriptType.CLIENT, RecipeViewerEntryType.ITEM, new REIRegisterItemSubtypesKubeEvent(registry));
+		}
+	}
+
+	@Override
+	public void registerFluidComparators(FluidComparatorRegistry registry) {
+		if (RecipeViewerEvents.REGISTER_SUBTYPES.hasListeners(RecipeViewerEntryType.FLUID)) {
+			RecipeViewerEvents.REGISTER_SUBTYPES.post(ScriptType.CLIENT, RecipeViewerEntryType.FLUID, new REIRegisterFluidSubtypesKubeEvent(registry));
+		}
 	}
 }

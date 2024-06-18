@@ -16,11 +16,6 @@ public class REIAddInformationKubeEvent implements AddInformationKubeEvent {
 	}
 
 	@Override
-	public RecipeViewerEntryType getType() {
-		return type;
-	}
-
-	@Override
 	public void add(Context cx, Object filter, Component title, List<Component> description) {
 		var in = REIIntegration.ingredientOf(cx, type, filter);
 

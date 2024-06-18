@@ -6,6 +6,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.net.RequestBlockKubedexPayload;
+import dev.latvian.mods.kubejs.net.RequestEntityKubedexPayload;
+import dev.latvian.mods.kubejs.net.RequestItemKubedexPayload;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
@@ -23,8 +26,10 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -32,14 +37,28 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 public class KubeHighlight {
+	public enum Mode {
+		NONE(false),
+		SCREEN(false),
+		WORLD(true);
+
+		public final boolean cancelHighlight;
+
+		Mode(boolean cancelHighlight) {
+			this.cancelHighlight = cancelHighlight;
+		}
+	}
+
 	private static final class WrappedRenderType extends RenderType {
 		public final RenderType delegate;
 
@@ -113,7 +132,7 @@ public class KubeHighlight {
 	public static KeyMapping keyMapping;
 
 	public int color = 0x99FFB3;
-	public boolean key;
+	public Mode mode = Mode.NONE;
 	public boolean actualKey;
 
 	@Nullable
@@ -158,21 +177,50 @@ public class KubeHighlight {
 		boolean prevKeyDown = actualKey;
 		actualKey = mc.level != null && mc.player != null && keyMapping != null && !mc.isPaused() && mc.kjs$isKeyMappingDown(keyMapping);
 
-		while (actualKey && key && mc.options.keyInventory.consumeClick()) {
-			keyToggled(false);
+		while (actualKey && mode != Mode.NONE && mc.options.keyInventory.consumeClick()) {
+			keyToggled(mc, Mode.NONE, false);
 		}
 
 		if (prevKeyDown != actualKey) {
-			keyToggled(actualKey);
+			if (!actualKey) {
+				keyToggled(mc, Mode.NONE, true);
+			} else if (mc.screen != null) {
+				keyToggled(mc, Mode.SCREEN, true);
+			} else {
+				keyToggled(mc, Mode.WORLD, true);
+			}
 		}
 	}
 
-	private void keyToggled(boolean on) {
-		key = on;
+	private void keyToggled(Minecraft mc, Mode newMode, boolean success) {
+		if (newMode == Mode.NONE) {
+			if (mode == Mode.SCREEN) {
+				if (success && !hoveredSlots.isEmpty()) {
+					var slots = new ArrayList<Integer>();
+					var stacks = new ArrayList<ItemStack>();
 
-		if (!key) {
-			hoveredSlots.clear();
+					for (var slot : hoveredSlots) {
+						if (slot.container instanceof Inventory) {
+							slots.add(slot.getSlotIndex());
+						} else {
+							stacks.add(slot.getItem());
+						}
+					}
+
+					PacketDistributor.sendToServer(new RequestItemKubedexPayload(slots, stacks));
+				}
+
+				hoveredSlots.clear();
+			} else if (success) {
+				if (mc.hitResult instanceof EntityHitResult hit && hit.getType() == HitResult.Type.ENTITY) {
+					PacketDistributor.sendToServer(new RequestEntityKubedexPayload(hit.getEntity().getId()));
+				} else if (mc.hitResult instanceof BlockHitResult hit && hit.getType() == HitResult.Type.BLOCK) {
+					PacketDistributor.sendToServer(new RequestBlockKubedexPayload(hit.getBlockPos()));
+				}
+			}
 		}
+
+		mode = newMode;
 	}
 
 	public void clearBuffers(Minecraft mc) {
@@ -185,7 +233,7 @@ public class KubeHighlight {
 	}
 
 	public void renderAfterEntities(Minecraft mc, RenderLevelStageEvent event) {
-		if (!key || mc.hitResult == null || mc.hitResult.getType() == HitResult.Type.MISS || renderInput == null || highlightShader == null || mc.screen != null) {
+		if (mode != Mode.WORLD || mc.hitResult == null || mc.hitResult.getType() == HitResult.Type.MISS || renderInput == null || highlightShader == null || mc.screen != null) {
 			return;
 		}
 
@@ -196,7 +244,7 @@ public class KubeHighlight {
 		ms.pushPose();
 		ms.translate(-cam.x, -cam.y, -cam.z);
 
-		if (mc.hitResult instanceof BlockHitResult hit) {
+		if (mc.hitResult instanceof BlockHitResult hit && hit.getType() == HitResult.Type.BLOCK) {
 			mc.renderBuffers().bufferSource().endBatch();
 			renderInput.bindWrite(false);
 			renderAnything = true;
@@ -230,7 +278,7 @@ public class KubeHighlight {
 
 			mc.renderBuffers().bufferSource().endBatch();
 			mc.getMainRenderTarget().bindWrite(false);
-		} else if (mc.hitResult instanceof EntityHitResult hit) {
+		} else if (mc.hitResult instanceof EntityHitResult hit && hit.getType() == HitResult.Type.ENTITY) {
 			var entity = hit.getEntity();
 			mc.renderBuffers().bufferSource().endBatch();
 			renderInput.bindWrite(false);
@@ -299,60 +347,66 @@ public class KubeHighlight {
 			return;
 		}
 
-		while (actualKey && key && mc.options.keyInventory.consumeClick()) {
-			keyToggled(false);
+		while (actualKey && mode != Mode.NONE && mc.options.keyInventory.consumeClick()) {
+			keyToggled(mc, Mode.NONE, false);
 		}
 
-		if (key) {
-			for (var slot : screen.getMenu().slots) {
-				int sx = slot.x + screen.getGuiLeft();
-				int sy = slot.y + screen.getGuiTop();
+		if (mode != Mode.SCREEN) {
+			return;
+		}
 
-				if (mx >= sx && mx < sx + 16 && my >= sy && my < sy + 16 && slot.hasItem()) {
-					hoveredSlots.add(slot);
-				}
-			}
+		var menu = screen.getMenu();
 
-			if (!hoveredSlots.isEmpty()) {
-				renderAnything = true;
-				graphics.flush();
-				renderInput.bindWrite(false);
+		for (var slot : menu.slots) {
+			int sx = slot.x + screen.getGuiLeft();
+			int sy = slot.y + screen.getGuiTop();
 
-				var bufferSource = new WrappedMultiBufferSource(mc.renderBuffers().bufferSource(), color);
-
-				for (var slot : hoveredSlots) {
-					int x = slot.x + screen.getGuiLeft();
-					int y = slot.y + screen.getGuiTop();
-					var stack = slot.getItem();
-
-					var model = mc.getItemRenderer().getModel(stack, mc.level, mc.player, 0);
-
-					graphics.pose().pushPose();
-					graphics.pose().translate(x + 8F, y + 8F, 0F);
-					graphics.pose().scale(16F, -16F, 16F);
-
-					try {
-						var renderStack = stack.copy();
-						renderStack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, false);
-						renderStack.setDamageValue(0);
-						renderStack.setCount(1);
-						mc.getItemRenderer().render(renderStack, ItemDisplayContext.GUI, false, graphics.pose(), bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, model);
-					} catch (Throwable throwable) {
-						CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering item");
-						CrashReportCategory crashreportcategory = crashreport.addCategory("Item being rendered");
-						crashreportcategory.setDetail("Item Type", () -> String.valueOf(stack.getItem()));
-						crashreportcategory.setDetail("Item Components", () -> String.valueOf(stack.getComponents()));
-						crashreportcategory.setDetail("Item Foil", () -> String.valueOf(stack.hasFoil()));
-						throw new ReportedException(crashreport);
-					}
-
-					graphics.pose().popPose();
-				}
-
-				graphics.flush();
-				mc.getMainRenderTarget().bindWrite(false);
+			if (mx >= sx && mx < sx + 16 && my >= sy && my < sy + 16 && slot.hasItem()) {
+				hoveredSlots.add(slot);
 			}
 		}
+
+		if (hoveredSlots.isEmpty()) {
+			return;
+		}
+
+		renderAnything = true;
+		graphics.flush();
+		renderInput.bindWrite(false);
+
+		var bufferSource = new WrappedMultiBufferSource(mc.renderBuffers().bufferSource(), color);
+
+		for (var slot : hoveredSlots) {
+			int x = slot.x + screen.getGuiLeft();
+			int y = slot.y + screen.getGuiTop();
+			var stack = slot.getItem();
+
+			var model = mc.getItemRenderer().getModel(stack, mc.level, mc.player, 0);
+
+			graphics.pose().pushPose();
+			graphics.pose().translate(x + 8F, y + 8F, 0F);
+			graphics.pose().scale(16F, -16F, 16F);
+
+			try {
+				var renderStack = stack.copy();
+				renderStack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, false);
+				renderStack.setDamageValue(0);
+				renderStack.setCount(1);
+				mc.getItemRenderer().render(renderStack, ItemDisplayContext.GUI, false, graphics.pose(), bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, model);
+			} catch (Throwable throwable) {
+				CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering item");
+				CrashReportCategory crashreportcategory = crashreport.addCategory("Item being rendered");
+				crashreportcategory.setDetail("Item Type", () -> String.valueOf(stack.getItem()));
+				crashreportcategory.setDetail("Item Components", () -> String.valueOf(stack.getComponents()));
+				crashreportcategory.setDetail("Item Foil", () -> String.valueOf(stack.hasFoil()));
+				throw new ReportedException(crashreport);
+			}
+
+			graphics.pose().popPose();
+		}
+
+		graphics.flush();
+		mc.getMainRenderTarget().bindWrite(false);
 	}
 
 	public void afterEverything(Minecraft mc, float delta) {

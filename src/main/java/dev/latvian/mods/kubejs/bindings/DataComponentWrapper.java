@@ -189,7 +189,7 @@ public interface DataComponentWrapper {
 			var optional = comp.encodeValue(dynamicOps).result();
 
 			if (id != null && !optional.isEmpty()) {
-				builder.append(id).append('=').append(optional.get());
+				builder.append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).append('=').append(optional.get());
 			}
 		}
 
@@ -214,7 +214,7 @@ public interface DataComponentWrapper {
 			if (id != null) {
 				if (comp.getValue().isPresent()) {
 					var value = comp.getKey().codecOrThrow().encodeStart(dynamicOps, Cast.to(comp.getValue().get())).result().get();
-					builder.append(id).append('=').append(value);
+					builder.append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).append('=').append(value);
 				} else {
 					builder.append('!').append(id).append("={}");
 				}

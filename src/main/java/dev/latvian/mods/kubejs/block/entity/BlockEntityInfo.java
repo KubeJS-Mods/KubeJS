@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.block.entity;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.core.ServerPlayerKJS;
+import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -9,7 +10,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -90,7 +90,7 @@ public class BlockEntityInfo {
 		attach(cx, "inventory", Map.of("width", width, "height", height));
 	}
 
-	public void inventory(Context cx, int width, int height, Ingredient inputFilter) {
+	public void inventory(Context cx, int width, int height, ItemPredicate inputFilter) {
 		attach(cx, "inventory", Map.of("width", width, "height", height, "inputFilter", inputFilter));
 	}
 

@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.integration.jei;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
+import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.recipe.viewer.SubtypeInterpreter;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
@@ -9,7 +10,6 @@ import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 
 public class JEISubtypesKubeEvent implements KubeEvent {
 	public record DataComponentTypeInterpreter(DataComponentType<?>[] keys) implements IIngredientSubtypeInterpreter<ItemStack> {
@@ -56,7 +56,7 @@ public class JEISubtypesKubeEvent implements KubeEvent {
 		});
 	}
 
-	public void useComponents(Ingredient items, DataComponentType<?>[] keys) {
+	public void useComponents(ItemPredicate items, DataComponentType<?>[] keys) {
 		var in = new DataComponentTypeInterpreter(keys);
 
 		for (var item : items.kjs$getItemTypes()) {

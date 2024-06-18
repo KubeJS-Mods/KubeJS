@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.item.creativetab;
 
+import dev.latvian.mods.kubejs.item.ItemPredicate;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 
 import java.util.AbstractMap;
@@ -25,7 +25,7 @@ public record CreativeTabCallbackForge(BuildCreativeModeTabContentsEvent event) 
 	}
 
 	@Override
-	public void remove(Ingredient filter, boolean removeDisplay, boolean removeSearch) {
+	public void remove(ItemPredicate filter, boolean removeDisplay, boolean removeSearch) {
 		var entries = new ArrayList<Map.Entry<ItemStack, CreativeModeTab.TabVisibility>>();
 
 		for (var entry : event.getEntries()) {

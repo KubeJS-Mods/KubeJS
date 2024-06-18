@@ -60,6 +60,7 @@ import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
 import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
+import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemTintFunction;
 import dev.latvian.mods.kubejs.item.ItemToolTiers;
@@ -510,6 +511,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(Set.class, ListJS::ofSet);
 		registry.register(ItemStack.class, ItemStackJS::wrap);
 		registry.register(Ingredient.class, IngredientJS::wrap);
+		registry.register(ItemPredicate.class, ItemPredicate::wrap);
 		registry.register(InputReplacement.class, InputReplacement::wrap);
 		registry.register(OutputReplacement.class, OutputReplacement::wrap);
 		registry.register(SizedIngredient.class, SizedIngredientWrapper::wrap);

@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
+import dev.latvian.mods.kubejs.item.ItemPredicate;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.ComposterBlock;
 
@@ -21,8 +21,8 @@ public class CompostableRecipesKubeEvent implements KubeEvent {
 		}
 	}
 
-	public void remove(Ingredient ingredient) {
-		for (var item : ingredient.kjs$getItemTypes()) {
+	public void remove(ItemPredicate match) {
+		for (var item : match.kjs$getItemTypes()) {
 			ComposterBlock.COMPOSTABLES.removeFloat(item);
 		}
 	}
@@ -31,8 +31,8 @@ public class CompostableRecipesKubeEvent implements KubeEvent {
 		ComposterBlock.COMPOSTABLES.clear();
 	}
 
-	public void add(Ingredient ingredient, float f) {
-		for (var item : ingredient.kjs$getItemTypes()) {
+	public void add(ItemPredicate match, float f) {
+		for (var item : match.kjs$getItemTypes()) {
 			ComposterBlock.COMPOSTABLES.put(item, Mth.clamp(f, 0F, 1F));
 		}
 	}

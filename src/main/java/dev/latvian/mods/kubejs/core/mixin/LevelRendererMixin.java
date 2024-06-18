@@ -34,7 +34,7 @@ public abstract class LevelRendererMixin {
 
 	@Inject(method = "renderHitOutline", at = @At("HEAD"), cancellable = true)
 	private void kjs$highlightBlock(PoseStack poseStack, VertexConsumer consumer, Entity entity, double camX, double camY, double camZ, BlockPos pos, BlockState state, CallbackInfo ci) {
-		if (KubeHighlight.INSTANCE.key) {
+		if (KubeHighlight.INSTANCE.mode.cancelHighlight) {
 			ci.cancel();
 		}
 	}

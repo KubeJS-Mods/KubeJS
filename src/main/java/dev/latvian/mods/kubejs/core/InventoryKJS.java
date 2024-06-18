@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.core;
 
+import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
@@ -78,13 +78,13 @@ public interface InventoryKJS {
 		}
 	}
 
-	default void kjs$clear(Ingredient ingredient) {
-		if (ingredient.kjs$isWildcard()) {
+	default void kjs$clear(ItemPredicate match) {
+		if (match.kjs$isWildcard()) {
 			kjs$clear();
 		}
 
 		for (var i = kjs$getSlots(); i >= 0; i--) {
-			if (ingredient.test(kjs$getStackInSlot(i))) {
+			if (match.test(kjs$getStackInSlot(i))) {
 				if (kjs$isMutable()) {
 					kjs$setStackInSlot(i, ItemStack.EMPTY);
 				} else {
@@ -106,15 +106,15 @@ public interface InventoryKJS {
 		return -1;
 	}
 
-	default int kjs$find(Ingredient ingredient) {
-		if (ingredient.kjs$isWildcard()) {
+	default int kjs$find(ItemPredicate match) {
+		if (match.kjs$isWildcard()) {
 			return kjs$find();
 		}
 
 		for (var i = 0; i < kjs$getSlots(); i++) {
 			var stack1 = kjs$getStackInSlot(i);
 
-			if (ingredient.test(stack1)) {
+			if (match.test(stack1)) {
 				return i;
 			}
 		}
@@ -132,8 +132,8 @@ public interface InventoryKJS {
 		return count;
 	}
 
-	default int kjs$count(Ingredient ingredient) {
-		if (ingredient.kjs$isWildcard()) {
+	default int kjs$count(ItemPredicate match) {
+		if (match.kjs$isWildcard()) {
 			return kjs$count();
 		}
 
@@ -142,7 +142,7 @@ public interface InventoryKJS {
 		for (var i = 0; i < kjs$getSlots(); i++) {
 			var stack1 = kjs$getStackInSlot(i);
 
-			if (ingredient.test(stack1)) {
+			if (match.test(stack1)) {
 				count += stack1.getCount();
 			}
 		}
@@ -162,8 +162,8 @@ public interface InventoryKJS {
 		return count;
 	}
 
-	default int kjs$countNonEmpty(Ingredient ingredient) {
-		if (ingredient.kjs$isWildcard()) {
+	default int kjs$countNonEmpty(ItemPredicate match) {
+		if (match.kjs$isWildcard()) {
 			return kjs$countNonEmpty();
 		}
 
@@ -172,7 +172,7 @@ public interface InventoryKJS {
 		for (var i = 0; i < kjs$getSlots(); i++) {
 			var stack1 = kjs$getStackInSlot(i);
 
-			if (ingredient.test(stack1)) {
+			if (match.test(stack1)) {
 				count++;
 			}
 		}
