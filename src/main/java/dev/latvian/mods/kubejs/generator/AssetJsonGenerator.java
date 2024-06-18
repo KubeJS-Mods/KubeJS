@@ -51,6 +51,11 @@ public class AssetJsonGenerator extends ResourceGenerator {
 	}
 
 	public void texture(ResourceLocation target, LoadedTexture texture) {
+		if (texture.width <= 0 || texture.height <= 0) {
+			ConsoleJS.CLIENT.error("Failed to load texture " + target);
+			return;
+		}
+
 		add(ResourceLocation.fromNamespaceAndPath(target.getNamespace(), "textures/" + target.getPath() + ".png"), texture::toBytes);
 
 		if (texture.mcmeta != null) {
@@ -59,7 +64,8 @@ public class AssetJsonGenerator extends ResourceGenerator {
 	}
 
 	public void stencil(ResourceLocation target, ResourceLocation stencil, Map<Color, Color> colors) {
-		texture(target, loadTexture(stencil).remap(colors));
+		var stencilTexture = loadTexture(stencil);
+		texture(target, stencilTexture.remap(colors));
 	}
 
 	public boolean mask(ResourceLocation target, ResourceLocation mask, ResourceLocation input) {

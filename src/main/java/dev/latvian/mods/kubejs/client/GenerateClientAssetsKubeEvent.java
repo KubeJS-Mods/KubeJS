@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -42,7 +41,7 @@ public class GenerateClientAssetsKubeEvent implements KubeEvent {
 		add(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
 	}
 
-	public void stencil(ResourceLocation target, ResourceLocation stencil, Map<Color, Color> remap) throws IOException {
+	public void stencil(ResourceLocation target, ResourceLocation stencil, Map<Color, Color> remap) {
 		generator.stencil(target, stencil, remap);
 	}
 

@@ -19,4 +19,8 @@ public record ItemToolTierRegistryKubeEvent(Map<String, Tier> tiers) implements 
 		tier.accept(t);
 		tiers.put(id, t);
 	}
+
+	public void addExisting(String id, Tier tier) {
+		tiers.put(id, tier);
+	}
 }

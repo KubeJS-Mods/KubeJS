@@ -67,6 +67,10 @@ public class LoadedTexture {
 	}
 
 	public byte[] toBytes() {
+		if (width == 0 || height == 0) {
+			return new byte[0];
+		}
+
 		var img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		img.setRGB(0, 0, width, height, pixels, 0, width);
 

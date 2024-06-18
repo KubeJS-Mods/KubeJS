@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs;
 
 import com.google.common.base.Stopwatch;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
+import dev.latvian.mods.kubejs.client.ClientScriptManager;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.gui.KubeJSMenus;
@@ -9,6 +10,7 @@ import dev.latvian.mods.kubejs.ingredient.KubeJSIngredients;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallbackForge;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabKubeEvent;
 import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
+import dev.latvian.mods.kubejs.level.ruletest.KubeJSRuleTests;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistryHandler;
 import dev.latvian.mods.kubejs.registry.RegistryKubeEvent;
@@ -131,6 +133,7 @@ public class KubeJS {
 			new KubeJSBackgroundThread().start();
 			// Required to be called this way because ConsoleJS class hasn't been initialized yet
 			ScriptType.STARTUP.console.setCapturingErrors(true);
+			ScriptType.CLIENT.console.setCapturingErrors(true);
 		}
 
 		LOGGER.info("Loading vanilla registries...");
@@ -147,10 +150,13 @@ public class KubeJS {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);
 		KubeJSPlugins.forEachPlugin(new BuilderTypeRegistryHandler(), KubeJSPlugin::registerBuilderTypes);
 
-		startupScriptManager = new ScriptManager(ScriptType.STARTUP);
-		clientScriptManager = new ScriptManager(ScriptType.CLIENT);
-
+		startupScriptManager = new StartupScriptManager();
 		startupScriptManager.reload();
+
+		if (dist.isClient()) {
+			clientScriptManager = new ClientScriptManager();
+			clientScriptManager.reload();
+		}
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::initStartup);
 
@@ -158,12 +164,13 @@ public class KubeJS {
 			StartupEvents.REGISTRY.post(new RegistryKubeEvent<>((ResourceKey) key), key);
 		}
 
-		GeneratedResourcePack.scanForInvalidFiles("kubejs/assets/", KubeJSPaths.ASSETS);
+		if (dist.isClient()) {
+			GeneratedResourcePack.scanForInvalidFiles("kubejs/assets/", KubeJSPaths.ASSETS);
+		}
+
 		GeneratedResourcePack.scanForInvalidFiles("kubejs/data/", KubeJSPaths.DATA);
 
-		if (CommonProperties.get().serverOnly) {
-			// FIXME ModLoadingContext.get().registerExtensionPoint(DisplayTest.class, () -> new DisplayTest(() -> DisplayTest.IGNORESERVERONLY, (a, b) -> true));
-		} else {
+		if (dist.isClient() || !CommonProperties.get().serverOnly) {
 			// See NeoForgeRegistriesSetup.VANILLA_SYNC_REGISTRIES
 			NeoForgeMod.enableMilkFluid();
 			KubeJSIngredients.REGISTRY.register(bus);
@@ -173,6 +180,7 @@ public class KubeJS {
 		}
 
 		KubeJSCreativeTabs.REGISTRY.register(bus);
+		KubeJSRuleTests.REGISTRY.register(bus);
 
 		StartupEvents.INIT.post(ScriptType.STARTUP, KubeStartupEvent.BASIC);
 		// KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);

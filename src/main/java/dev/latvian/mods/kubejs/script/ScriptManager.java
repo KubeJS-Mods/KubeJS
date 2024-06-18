@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -48,8 +49,46 @@ public class ScriptManager {
 			scriptType.console.writeToFile(LogType.INIT, "- " + plugin.getClass().getName());
 		}
 
+		KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::beforeScriptsLoaded);
 		loadFromDirectory();
 		load();
+	}
+
+	public void loadPackFromDirectory(Path path, String name, boolean exampleFile) {
+		if (Files.notExists(path)) {
+			if (!exampleFile) {
+				return;
+			}
+
+			try {
+				Files.createDirectories(path);
+			} catch (Exception ex) {
+				scriptType.console.error("Failed to create script directory", ex);
+			}
+
+			try (var out = Files.newOutputStream(path.resolve("example.js"))) {
+				out.write(("""
+					// Visit the wiki for more info - https://kubejs.com/
+					console.info('Hello, World! (Loaded\s""" + name + " example script)')\n\n").getBytes(StandardCharsets.UTF_8));
+			} catch (Exception ex) {
+				scriptType.console.error("Failed to write example.js", ex);
+			}
+		}
+
+		var pack = new ScriptPack(this, new ScriptPackInfo(path.getFileName().toString(), ""));
+
+		if (Files.exists(path)) {
+			KubeJS.loadScripts(pack, path, "");
+
+			for (var fileInfo : pack.info.scripts) {
+				var scriptSource = (ScriptSource.FromPath) info -> path.resolve(info.file);
+				loadFile(pack, fileInfo, scriptSource);
+			}
+
+			pack.scripts.sort(null);
+		}
+
+		packs.put(pack.info.namespace, pack);
 	}
 
 	private void loadFile(ScriptPack pack, ScriptFileInfo fileInfo, ScriptSource source) {
@@ -68,35 +107,7 @@ public class ScriptManager {
 	}
 
 	public void loadFromDirectory() {
-		if (Files.notExists(scriptType.path)) {
-			try {
-				Files.createDirectories(scriptType.path);
-			} catch (Exception ex) {
-				scriptType.console.error("Failed to create script directory", ex);
-			}
-
-			try (var out = Files.newOutputStream(scriptType.path.resolve("example.js"))) {
-				out.write(("""
-					// priority: 0
-
-					// Visit the wiki for more info - https://kubejs.com/
-
-					console.info('Hello, World! (Loaded\s""" + scriptType.name + " scripts)')\n\n").getBytes(StandardCharsets.UTF_8));
-			} catch (Exception ex) {
-				scriptType.console.error("Failed to write example.js", ex);
-			}
-		}
-
-		var pack = new ScriptPack(this, new ScriptPackInfo(scriptType.path.getFileName().toString(), ""));
-		KubeJS.loadScripts(pack, scriptType.path, "");
-
-		for (var fileInfo : pack.info.scripts) {
-			var scriptSource = (ScriptSource.FromPath) info -> scriptType.path.resolve(info.file);
-			loadFile(pack, fileInfo, scriptSource);
-		}
-
-		pack.scripts.sort(null);
-		packs.put(pack.info.namespace, pack);
+		loadPackFromDirectory(scriptType.path, scriptType.name, true);
 	}
 
 	public boolean isClassAllowed(String name) {

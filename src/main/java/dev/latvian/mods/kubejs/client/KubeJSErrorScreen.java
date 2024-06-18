@@ -37,22 +37,24 @@ public class KubeJSErrorScreen extends Screen {
 	public final Path logFile;
 	public final List<ConsoleLine> errors;
 	public final List<ConsoleLine> warnings;
+	public final boolean canClose;
 	public List<ConsoleLine> viewing;
 	private ErrorList list;
 
-	public KubeJSErrorScreen(Screen lastScreen, ScriptType scriptType, @Nullable Path logFile, List<ConsoleLine> errors, List<ConsoleLine> warnings) {
+	public KubeJSErrorScreen(Screen lastScreen, ScriptType scriptType, @Nullable Path logFile, List<ConsoleLine> errors, List<ConsoleLine> warnings, boolean canClose) {
 		super(Component.empty());
 		this.lastScreen = lastScreen;
 		this.scriptType = scriptType;
 		this.logFile = logFile;
 		this.errors = errors;
 		this.warnings = warnings;
+		this.canClose = canClose;
 
 		this.viewing = errors.isEmpty() && !warnings.isEmpty() ? warnings : errors;
 	}
 
-	public KubeJSErrorScreen(Screen lastScreen, ConsoleJS console) {
-		this(lastScreen, console.scriptType, console.scriptType.getLogFile(), new ArrayList<>(console.errors), new ArrayList<>(console.warnings));
+	public KubeJSErrorScreen(Screen lastScreen, ConsoleJS console, boolean canClose) {
+		this(lastScreen, console.scriptType, console.scriptType.getLogFile(), new ArrayList<>(console.errors), new ArrayList<>(console.warnings), canClose);
 	}
 
 	@Override
@@ -72,11 +74,11 @@ public class KubeJSErrorScreen extends Screen {
 
 		if (CommonProperties.get().startupErrorReportUrl.isBlank()) {
 			openLog = this.addRenderableWidget(Button.builder(Component.literal("Open Log File"), this::openLog).bounds(this.width / 2 - 155, i, 150, 20).build());
-			this.addRenderableWidget(Button.builder(Component.literal(scriptType.isStartup() ? "Quit" : "Close"), this::quit).bounds(this.width / 2 - 155 + 160, i, 150, 20).build());
+			this.addRenderableWidget(Button.builder(Component.literal(canClose ? "Close" : "Quit"), this::quit).bounds(this.width / 2 - 155 + 160, i, 150, 20).build());
 		} else {
 			openLog = this.addRenderableWidget(Button.builder(Component.literal("Open Log File"), this::openLog).bounds(this.width / 4 - 55, i, 100, 20).build());
 			this.addRenderableWidget(Button.builder(Component.literal("Report"), this::report).bounds(this.width / 2 - 50, i, 100, 20).build());
-			this.addRenderableWidget(Button.builder(Component.literal(scriptType.isStartup() ? "Quit" : "Close"), this::quit).bounds(this.width * 3 / 4 - 45, i, 100, 20).build());
+			this.addRenderableWidget(Button.builder(Component.literal(canClose ? "Close" : "Quit"), this::quit).bounds(this.width * 3 / 4 - 45, i, 100, 20).build());
 		}
 
 		openLog.active = logFile != null;
@@ -89,10 +91,10 @@ public class KubeJSErrorScreen extends Screen {
 	}
 
 	private void quit(Button button) {
-		if (scriptType.isStartup()) {
-			minecraft.stop();
-		} else {
+		if (canClose) {
 			onClose();
+		} else {
+			minecraft.stop();
 		}
 	}
 
@@ -121,7 +123,7 @@ public class KubeJSErrorScreen extends Screen {
 
 	@Override
 	public boolean shouldCloseOnEsc() {
-		return !scriptType.isStartup();
+		return canClose;
 	}
 
 	@Override

@@ -59,21 +59,19 @@ import dev.latvian.mods.kubejs.fluid.ThinFluidBuilder;
 import dev.latvian.mods.kubejs.helpers.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
 import dev.latvian.mods.kubejs.item.ChancedItem;
-import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemTintFunction;
+import dev.latvian.mods.kubejs.item.ItemToolTiers;
 import dev.latvian.mods.kubejs.item.JukeboxSongBuilder;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabBuilder;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
 import dev.latvian.mods.kubejs.item.custom.DiggerItemBuilder;
-import dev.latvian.mods.kubejs.item.custom.ItemToolTierRegistryKubeEvent;
 import dev.latvian.mods.kubejs.item.custom.ShearsItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SmithingTemplateItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.level.ruletest.KubeJSRuleTests;
 import dev.latvian.mods.kubejs.misc.BasicMobEffect;
 import dev.latvian.mods.kubejs.misc.CustomStatBuilder;
 import dev.latvian.mods.kubejs.misc.PaintingVariantBuilder;
@@ -217,18 +215,6 @@ import java.util.regex.Pattern;
 
 public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	public static final HashMap<String, Object> GLOBAL = new HashMap<>();
-
-	@Override
-	public void initStartup() {
-		ItemEvents.TOOL_TIER_REGISTRY.post(ScriptType.STARTUP, new ItemToolTierRegistryKubeEvent(ItemBuilder.TOOL_TIERS));
-		KubeJSRuleTests.init();
-
-		/*
-		for (var types : RegistryObjectBuilderTypes.MAP.values()) {
-			// types.postEvent();
-		}
-		 */
-	}
 
 	@Override
 	public void registerBuilderTypes(BuilderTypeRegistry registry) {
@@ -533,7 +519,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(FluidIngredient.class, FluidWrapper::wrapIngredient);
 		registry.register(RecipeFilter.class, RecipeFilter::of);
 		registry.register(SlotFilter.class, SlotFilter::wrap);
-		registry.register(Tier.class, ItemBuilder::toolTierOf);
+		registry.register(Tier.class, ItemToolTiers::wrap);
 		registry.register(PlayerSelector.class, PlayerSelector::of);
 		registry.register(DamageSource.class, DamageSourceWrapper::of);
 		registry.register(EntitySelector.class, UtilsJS::entitySelector);

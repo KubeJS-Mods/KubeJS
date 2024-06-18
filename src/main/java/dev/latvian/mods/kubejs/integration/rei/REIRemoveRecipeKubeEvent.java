@@ -1,7 +1,8 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.viewer.RemoveRecipesKubeEvent;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.rhino.Context;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.CollectionUtils;
@@ -22,7 +23,7 @@ public class REIRemoveRecipeKubeEvent implements RemoveRecipesKubeEvent {
 	}
 
 	@Override
-	public void remove(ResourceLocation[] recipesToRemove) {
+	public void remove(Context cx, ResourceLocation[] recipesToRemove) {
 		var asList = List.of(recipesToRemove);
 
 		for (var catId : categories) {
@@ -31,12 +32,11 @@ public class REIRemoveRecipeKubeEvent implements RemoveRecipesKubeEvent {
 	}
 
 	@Override
-	public void removeFromCategory(ResourceLocation category, ResourceLocation[] recipesToRemove) {
+	public void removeFromCategory(Context cx, ResourceLocation category, ResourceLocation[] recipesToRemove) {
 		var catId = CategoryIdentifier.of(category);
 
 		if (categories.tryGet(catId).isEmpty()) {
-			KubeJS.LOGGER.warn("Failed to remove recipes for type {}: Category doesn't exist!", category);
-			KubeJS.LOGGER.info("Use event.categoryIds to get a list of all categories.");
+			((KubeJSContext) cx).getConsole().error("Failed to remove recipes for type '" + category + "': Category doesn't exist! Use 'event.categories' to get a list of all categories.");
 			return;
 		}
 

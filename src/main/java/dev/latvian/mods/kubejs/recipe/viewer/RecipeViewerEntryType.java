@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Note: predicateType has to be castable to {@link java.util.function.Predicate<entryyType>}
+ * Note: predicateType has to be able to be cast to {@link java.util.function.Predicate} of entryType
  */
 public record RecipeViewerEntryType(String id, TypeInfo entryType, TypeInfo predicateType) {
 	public static final RecipeViewerEntryType ITEM = new RecipeViewerEntryType("item", ItemStackJS.TYPE_INFO, IngredientJS.TYPE_INFO);

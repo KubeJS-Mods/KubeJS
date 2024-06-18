@@ -30,6 +30,7 @@ import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.flag.FeatureFlagSet;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 
 import java.nio.file.Files;
@@ -76,6 +77,15 @@ public class ServerScriptManager extends ScriptManager {
 	@Override
 	public RegistryAccessContainer getRegistries() {
 		return registries;
+	}
+
+	@Override
+	public void loadFromDirectory() {
+		super.loadFromDirectory();
+
+		if (FMLLoader.getDist().isDedicatedServer()) {
+			loadPackFromDirectory(KubeJSPaths.LOCAL_SERVER_SCRIPTS, "local server", true);
+		}
 	}
 
 	public static void addPacksFirst(AddPackFindersEvent event) {

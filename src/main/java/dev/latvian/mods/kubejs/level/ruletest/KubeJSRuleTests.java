@@ -10,7 +10,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.function.Supplier;
 
 public interface KubeJSRuleTests {
-	DeferredRegister<RuleTestType<?>> RULE_TEST_TYPES = DeferredRegister.create(Registries.RULE_TEST, KubeJS.MOD_ID);
+	DeferredRegister<RuleTestType<?>> REGISTRY = DeferredRegister.create(Registries.RULE_TEST, KubeJS.MOD_ID);
 
 	Supplier<RuleTestType<InvertRuleTest>> INVERT = register("invert", InvertRuleTest.CODEC);
 	Supplier<RuleTestType<AlwaysFalseRuleTest>> ALWAYS_FALSE = register("always_false", AlwaysFalseRuleTest.CODEC);
@@ -19,9 +19,6 @@ public interface KubeJSRuleTests {
 
 	static <P extends RuleTest> Supplier<RuleTestType<P>> register(String id, MapCodec<P> codec) {
 		var type = (RuleTestType<P>) () -> codec;
-		return RULE_TEST_TYPES.register(id, () -> type);
-	}
-
-	static void init() {
+		return REGISTRY.register(id, () -> type);
 	}
 }

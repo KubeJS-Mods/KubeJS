@@ -88,8 +88,10 @@ public class EventHandler extends BaseFunction {
 	}
 
 	public void listen(@Nullable Context cx, ScriptType type, @Nullable Object extraId, IEventHandler handler) {
-		if (!type.manager.get().canListenEvents) {
-			throw new IllegalStateException("Event handler '" + this + "' can only be registered during script loading!");
+		if (cx != null) {
+			if (!((KubeJSContext) cx).kjsFactory.manager.canListenEvents) {
+				throw new IllegalStateException("Event handler '" + this + "' can only be registered during script loading!");
+			}
 		}
 
 		if (!scriptTypePredicate.test(type)) {
@@ -136,10 +138,7 @@ public class EventHandler extends BaseFunction {
 
 	@HideFromJS
 	public void listenJava(ScriptType type, @Nullable Object extraId, IEventHandler handler) {
-		var b = type.manager.get().canListenEvents;
-		type.manager.get().canListenEvents = true;
 		listen(null, type, extraId, handler);
-		type.manager.get().canListenEvents = b;
 	}
 
 	/**

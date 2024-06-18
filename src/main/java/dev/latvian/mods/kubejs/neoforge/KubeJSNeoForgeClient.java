@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
-import dev.latvian.mods.kubejs.client.AtlasSpriteRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.BlockEntityRendererRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.BlockTintFunctionWrapper;
 import dev.latvian.mods.kubejs.client.EntityRendererRegistryKubeEvent;
@@ -28,7 +27,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -64,19 +62,6 @@ public class KubeJSNeoForgeClient {
 
 	private static void setupClient0() {
 		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesKubeEvent());
-
-		ClientEvents.ATLAS_SPRITE_REGISTRY.listenJava(ScriptType.CLIENT, TextureAtlas.LOCATION_BLOCKS, event -> {
-			var e = (AtlasSpriteRegistryKubeEvent) event;
-
-			for (var builder : RegistryInfo.FLUID) {
-				if (builder instanceof FluidBuilder b) {
-					// e.register(b.fluidType.stillTexture);
-					// e.register(b.fluidType.flowingTexture);
-				}
-			}
-
-			return null;
-		});
 
 		for (var builder : RegistryInfo.BLOCK) {
 			if (builder instanceof BlockBuilder b) {

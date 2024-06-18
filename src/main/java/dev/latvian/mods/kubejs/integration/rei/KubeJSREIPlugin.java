@@ -73,9 +73,12 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 	@Override
 	public void registerDisplays(DisplayRegistry registry) {
-		if (REIEvents.INFORMATION.hasListeners()) {
-			REIEvents.INFORMATION.post(new InformationREIKubeEvent(entryWrappers));
+		for (var type : RecipeViewerEntryType.ALL_TYPES.get()) {
+			if (RecipeViewerEvents.ADD_INFORMATION.hasListeners(type)) {
+				RecipeViewerEvents.ADD_INFORMATION.post(new REIAddInformationKubeEvent(type));
+			}
 		}
+
 		registry.registerVisibilityPredicate((cat, display) -> {
 			var id = display.getDisplayLocation();
 			if (id.isPresent() && recipesRemoved.getOrDefault(cat.getCategoryIdentifier(), List.of()).contains(id.get())) {

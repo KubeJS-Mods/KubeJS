@@ -10,7 +10,6 @@ import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
@@ -27,8 +26,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.JukeboxPlayable;
 import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.Tool;
@@ -49,29 +46,6 @@ import java.util.function.ToIntFunction;
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 @ReturnsSelf
 public abstract class ItemBuilder extends BuilderBase<Item> {
-	public static final Map<String, Tier> TOOL_TIERS = new HashMap<>();
-
-	static {
-		for (var tier : Tiers.values()) {
-			TOOL_TIERS.put(tier.toString().toLowerCase(), tier);
-		}
-	}
-
-	public static Tier toolTierOf(Object o) {
-		if (o instanceof Tier tier) {
-			return tier;
-		}
-
-		var asString = String.valueOf(o);
-		var toolTier = ItemBuilder.TOOL_TIERS.get(asString);
-
-		if (toolTier != null) {
-			return toolTier;
-		}
-
-		return ItemBuilder.TOOL_TIERS.getOrDefault(ID.kjsString(asString), Tiers.IRON);
-	}
-
 	public record HurtEnemyContext(ItemStack getItem, LivingEntity getTarget, LivingEntity getAttacker) {
 	}
 

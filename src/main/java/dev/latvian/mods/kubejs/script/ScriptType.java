@@ -1,9 +1,7 @@
 package dev.latvian.mods.kubejs.script;
 
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.event.EventGroups;
-import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.neoforged.fml.loading.FMLPaths;
@@ -14,13 +12,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.function.Supplier;
 
 public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
-	STARTUP("startup", "KubeJS Startup", KubeJSPaths.STARTUP_SCRIPTS, KubeJS::getStartupScriptManager),
-	SERVER("server", "KubeJS Server", KubeJSPaths.SERVER_SCRIPTS, ServerScriptManager::getScriptManager),
-	CLIENT("client", "KubeJS Client", KubeJSPaths.CLIENT_SCRIPTS, KubeJS::getClientScriptManager);
-
+	STARTUP("startup", "KubeJS Startup", KubeJSPaths.STARTUP_SCRIPTS),
+	SERVER("server", "KubeJS Server", KubeJSPaths.SERVER_SCRIPTS),
+	CLIENT("client", "KubeJS Client", KubeJSPaths.CLIENT_SCRIPTS);
 
 	static {
 		ConsoleJS.STARTUP = STARTUP.console;
@@ -34,15 +30,13 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 	public final ConsoleJS console;
 	public final Path path;
 	public final String nameStrip;
-	public final transient Supplier<ScriptManager> manager;
 	public transient Executor executor;
 
-	ScriptType(String n, String cname, Path path, Supplier<ScriptManager> m) {
+	ScriptType(String n, String cname, Path path) {
 		this.name = n;
 		this.console = new ConsoleJS(this, LoggerFactory.getLogger(cname));
 		this.path = path;
 		this.nameStrip = name + "_scripts:";
-		this.manager = m;
 		this.executor = Runnable::run;
 	}
 

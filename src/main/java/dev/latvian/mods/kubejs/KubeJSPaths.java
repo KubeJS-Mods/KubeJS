@@ -48,6 +48,8 @@ public interface KubeJSPaths {
 	Path LOCAL_DEV_PROPERTIES = LOCAL.resolve("dev.json");
 	Path EXPORT = dir(LOCAL.resolve("export"));
 	Path EXPORTED_PACKS = dir(LOCAL.resolve("exported_packs"));
+	Path LOCAL_STARTUP_SCRIPTS = dir(LOCAL.resolve("local_server_scripts"));
+	Path LOCAL_SERVER_SCRIPTS = dir(LOCAL.resolve("local_server_scripts"));
 
 	static Path get(PackType type) {
 		return type == PackType.CLIENT_RESOURCES ? ASSETS : DATA;
