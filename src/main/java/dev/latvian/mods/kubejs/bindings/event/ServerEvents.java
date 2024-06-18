@@ -14,8 +14,8 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeMappingRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.data.DataPackKubeEvent;
+import dev.latvian.mods.kubejs.server.BasicCommandKubeEvent;
 import dev.latvian.mods.kubejs.server.CommandKubeEvent;
-import dev.latvian.mods.kubejs.server.CustomCommandKubeEvent;
 import dev.latvian.mods.kubejs.server.ServerKubeEvent;
 import dev.latvian.mods.kubejs.server.tag.TagKubeEvent;
 import net.minecraft.core.Registry;
@@ -32,7 +32,7 @@ public interface ServerEvents {
 	SpecializedEventHandler<ResourceKey<Registry<?>>> TAGS = GROUP.server("tags", Extra.REGISTRY, () -> TagKubeEvent.class).required().exceptionHandler(TagKubeEvent.TAG_EVENT_HANDLER);
 	EventHandler COMMAND_REGISTRY = GROUP.server("commandRegistry", () -> CommandRegistryKubeEvent.class);
 	SpecializedEventHandler<String> COMMAND = GROUP.server("command", Extra.STRING, () -> CommandKubeEvent.class).hasResult();
-	SpecializedEventHandler<String> CUSTOM_COMMAND = GROUP.server("customCommand", Extra.STRING, () -> CustomCommandKubeEvent.class).hasResult();
+	SpecializedEventHandler<String> BASIC_COMMAND = GROUP.server("basicCommand", Extra.STRING, () -> BasicCommandKubeEvent.class).hasResult().required();
 	EventHandler RECIPE_MAPPING_REGISTRY = GROUP.server("recipeMappingRegistry", () -> RecipeMappingRegistry.class);
 	EventHandler RECIPE_SCHEMA_REGISTRY = GROUP.server("recipeSchemaRegistry", () -> RecipeSchemaRegistry.class);
 	EventHandler RECIPES = GROUP.server("recipes", () -> RecipesKubeEvent.class);

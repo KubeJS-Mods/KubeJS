@@ -7,16 +7,15 @@ import dev.latvian.mods.kubejs.gui.chest.CustomChestMenu;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
 import dev.latvian.mods.kubejs.server.ServerKubeEvent;
+import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.RegistryLayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -63,9 +62,6 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 
 	@Shadow
 	public abstract RegistryAccess.Frozen registryAccess();
-
-	@Shadow
-	public abstract LayeredRegistryAccess<RegistryLayer> registries();
 
 	@Override
 	public CompoundTag kjs$getPersistentData() {
@@ -134,8 +130,10 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	@RemapForJS("stop")
 	public abstract void stopServer();
 
-	@Shadow
-	private MinecraftServer.ReloadableResources resources;
+	@Inject(method = "reloadResources", at = @At("HEAD"))
+	private void startResourceReload(Collection<String> collection, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
+		ServerScriptManager.capture(registryAccess());
+	}
 
 	@Inject(method = "reloadResources", at = @At("TAIL"))
 	private void kjs$endResourceReload(Collection<String> collection, CallbackInfoReturnable<CompletableFuture<Void>> cir) {

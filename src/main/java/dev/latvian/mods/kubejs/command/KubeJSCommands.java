@@ -18,7 +18,7 @@ import dev.latvian.mods.kubejs.net.ReloadStartupScriptsPayload;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
-import dev.latvian.mods.kubejs.server.CustomCommandKubeEvent;
+import dev.latvian.mods.kubejs.server.BasicCommandKubeEvent;
 import dev.latvian.mods.kubejs.server.DataExport;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -232,7 +232,7 @@ public class KubeJSCommands {
 		var cmd1 = dispatcher.register(cmd);
 		dispatcher.register(Commands.literal("kjs").redirect(cmd1));
 
-		for (var id : ServerEvents.CUSTOM_COMMAND.findUniqueExtraIds(ScriptType.SERVER)) {
+		for (var id : ServerEvents.BASIC_COMMAND.findUniqueExtraIds(ScriptType.SERVER)) {
 			dispatcher.register(Commands.literal(id)
 				.requires(spOrOP)
 				.executes(ctx -> customCommand(ctx.getSource(), id, ""))
@@ -265,8 +265,8 @@ public class KubeJSCommands {
 	}
 
 	private static int customCommand(CommandSourceStack source, String id, String input) {
-		if (ServerEvents.CUSTOM_COMMAND.hasListeners(id)) {
-			var result = ServerEvents.CUSTOM_COMMAND.post(new CustomCommandKubeEvent(source.getLevel(), source.getEntity(), BlockPos.containing(source.getPosition()), id, input.trim()), id);
+		if (ServerEvents.BASIC_COMMAND.hasListeners(id)) {
+			var result = ServerEvents.BASIC_COMMAND.post(new BasicCommandKubeEvent(source.getLevel(), source.getEntity(), BlockPos.containing(source.getPosition()), id, input.trim()), id);
 
 			if (result.type() == EventResult.Type.ERROR) {
 				source.sendFailure(Component.literal(result.value().toString()));

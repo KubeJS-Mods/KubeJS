@@ -13,6 +13,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ public record RegistryAccessContainer(
 	public static final RegistryAccessContainer BUILTIN = new RegistryAccessContainer(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
 
 	// Still necessary because STARTUP and CLIENT scripts need to know about registries
+	@ApiStatus.Internal
 	public static RegistryAccessContainer current = BUILTIN;
 
 	public RegistryAccessContainer(RegistryAccess.Frozen registryAccess) {

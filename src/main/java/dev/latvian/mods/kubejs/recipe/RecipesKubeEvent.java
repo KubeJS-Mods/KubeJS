@@ -24,6 +24,7 @@ import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.DataExport;
+import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
@@ -178,14 +179,17 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	final RecipeSerializer<?> stageSerializer;
 
-	public RecipesKubeEvent(RecipeSchemaStorage recipeSchemaStorage, RegistryAccessContainer registries) {
+	public RecipesKubeEvent(ServerScriptManager manager) {
 		ConsoleJS.SERVER.info("Initializing recipe event...");
-		this.recipeSchemaStorage = recipeSchemaStorage;
-		this.registries = registries;
+		this.recipeSchemaStorage = manager.recipeSchemaStorage;
+		this.registries = manager.registries;
 		this.originalRecipes = new HashMap<>();
 		this.addedRecipes = new ConcurrentLinkedQueue<>();
 		this.recipeFunctions = new HashMap<>();
 		this.takenIds = new ConcurrentHashMap<>();
+
+		// var itemTags = manager.getLoadedTags(Registries.ITEM);
+		// System.out.println(itemTags);
 
 		this.mergeOriginal = (a, b) -> {
 			ConsoleJS.SERVER.warn("Duplicate original recipe for id " + a.id() + "!\nRecipe A: " + recipeToString(a.value()) + "\nRecipe B: " + recipeToString(b.value()) + "\nUsing last one encountered.");

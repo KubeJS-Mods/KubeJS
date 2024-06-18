@@ -14,5 +14,4 @@ public interface JEIEvents {
 	EventHandler REMOVE_RECIPES = GROUP.client("removeRecipes", () -> RemoveJEIRecipesKubeEvent.class);
 	EventHandler ADD_ITEMS = GROUP.client("addItems", () -> AddJEIKubeEvent.class);
 	EventHandler ADD_FLUIDS = GROUP.client("addFluids", () -> AddJEIKubeEvent.class);
-	EventHandler INFORMATION = GROUP.client("information", () -> InformationJEIKubeEvent.class);
 }

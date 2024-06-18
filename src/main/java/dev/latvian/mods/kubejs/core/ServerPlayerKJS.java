@@ -229,4 +229,9 @@ public interface ServerPlayerKJS extends PlayerKJS {
 			});
 		}
 	}
+
+	default void kjs$heal() {
+		kjs$self().heal(kjs$self().getMaxHealth());
+		kjs$self().getFoodData().eat(20, 1F);
+	}
 }

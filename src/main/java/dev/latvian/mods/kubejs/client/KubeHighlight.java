@@ -175,7 +175,7 @@ public class KubeHighlight {
 
 	public void tickPre(Minecraft mc) {
 		boolean prevKeyDown = actualKey;
-		actualKey = mc.level != null && mc.player != null && keyMapping != null && !mc.isPaused() && mc.kjs$isKeyMappingDown(keyMapping);
+		actualKey = mc.level != null && mc.player != null && keyMapping != null && !mc.isPaused() && mc.player.hasPermissions(2) && mc.kjs$isKeyMappingDown(keyMapping);
 
 		while (actualKey && mode != Mode.NONE && mc.options.keyInventory.consumeClick()) {
 			keyToggled(mc, Mode.NONE, false);

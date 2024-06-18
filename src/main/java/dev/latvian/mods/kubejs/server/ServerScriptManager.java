@@ -15,11 +15,12 @@ import dev.latvian.mods.kubejs.script.data.DataPackKubeEvent;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.server.tag.PreTagKubeEvent;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackSelectionConfig;
@@ -34,6 +35,8 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 
 import java.nio.file.Files;
+import java.util.Collection;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,23 +48,30 @@ public class ServerScriptManager extends ScriptManager {
 
 	private static ServerScriptManager staticInstance;
 
-	public static ServerScriptManager getScriptManager() {
-		// return ((ReloadableServerResourcesKJS) ServerLifecycleHooks.getCurrentServer().getServerResources().managers()).kjs$getServerScriptManager();
-		// I hate this, but it's required for Console.SERVER
-		return staticInstance;
+	public static void capture(RegistryAccess.Frozen registryAccess) {
+		var registries = new RegistryAccessContainer(registryAccess);
+		RegistryAccessContainer.current = registries;
+		ServerScriptManager.staticInstance = new ServerScriptManager(registries);
+		ServerScriptManager.staticInstance.reload();
 	}
 
-	public final ReloadableServerResources resources;
+	public static ServerScriptManager release() {
+		var instance = Objects.requireNonNull(ServerScriptManager.staticInstance);
+		ServerScriptManager.staticInstance = null;
+		return instance;
+	}
+
 	public final RegistryAccessContainer registries;
 	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
 	public final RecipeSchemaStorage recipeSchemaStorage;
+	public final Map<ResourceKey<?>, Lazy<Map<ResourceLocation, Collection<?>>>> loadedTags;
 
-	public ServerScriptManager(ReloadableServerResources resources, RegistryAccessContainer registries) {
+	private ServerScriptManager(RegistryAccessContainer registries) {
 		super(ScriptType.SERVER);
-		this.resources = resources;
 		this.registries = registries;
 		this.preTagEvents = new ConcurrentHashMap<>();
 		this.recipeSchemaStorage = new RecipeSchemaStorage();
+		this.loadedTags = new IdentityHashMap<>();
 
 		try {
 			if (Files.notExists(KubeJSPaths.DATA)) {
@@ -70,8 +80,11 @@ public class ServerScriptManager extends ScriptManager {
 		} catch (Throwable ex) {
 			throw new RuntimeException("KubeJS failed to register it's script loader!", ex);
 		}
+	}
 
-		staticInstance = this;
+	public Map<ResourceLocation, Collection<?>> getLoadedTags(ResourceKey<?> key) {
+		var l = loadedTags.get(key);
+		return l == null ? Map.of() : l.get();
 	}
 
 	@Override
@@ -200,7 +213,7 @@ public class ServerScriptManager extends ScriptManager {
 		recipeSchemaStorage.fireEvents(resourceManager);
 
 		if (ServerEvents.RECIPES.hasListeners()) {
-			new RecipesKubeEvent(recipeSchemaStorage, registries).post(recipeManager, map);
+			new RecipesKubeEvent(this).post(recipeManager, map);
 			return true;
 		}
 

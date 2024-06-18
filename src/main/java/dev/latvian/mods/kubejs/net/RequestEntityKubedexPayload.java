@@ -22,10 +22,11 @@ public record RequestEntityKubedexPayload(int entityId) implements CustomPacketP
 	public void handle(IPayloadContext ctx) {
 		if (ctx.player() instanceof ServerPlayer serverPlayer && serverPlayer.hasPermissions(2)) {
 			ctx.enqueueWork(() -> {
+				var registries = serverPlayer.server.registryAccess();
 				var entity = serverPlayer.level().getEntity(entityId);
 
 				if (entity != null) {
-					KubeJS.LOGGER.info("[Kubedex][" + serverPlayer.getScoreboardName() + "] Entity " + entity.getName().getString() + " #" + entityId);
+					KubeJS.LOGGER.info("[Kubedex][" + serverPlayer.getScoreboardName() + "] Entity " + entity.getName().getString() + " #" + entityId + " " + entity.serializeNBT(registries));
 				}
 			});
 		}

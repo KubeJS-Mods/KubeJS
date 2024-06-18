@@ -1,8 +1,12 @@
 package dev.latvian.mods.kubejs.integration.jei;
 
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
+import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
 
@@ -14,6 +18,17 @@ public class JEIPlugin implements IModPlugin {
 	@Override
 	public ResourceLocation getPluginUid() {
 		return ID;
+	}
+
+	@Override
+	public void registerRecipes(IRecipeRegistration registration) {
+		for (var type : RecipeViewerEntryType.ALL_TYPES.get()) {
+			var ingredientType = JEIIntegration.typeOf(type);
+
+			if (ingredientType != null && RecipeViewerEvents.ADD_INFORMATION.hasListeners(type)) {
+				RecipeViewerEvents.ADD_INFORMATION.post(ScriptType.CLIENT, type, new JEIAddInformationKubeEvent(type, ingredientType, registration));
+			}
+		}
 	}
 
 	/*@Override

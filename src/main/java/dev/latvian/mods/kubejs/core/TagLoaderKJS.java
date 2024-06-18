@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.server.tag.TagEventFilter;
 import dev.latvian.mods.kubejs.server.tag.TagKubeEvent;
 import dev.latvian.mods.kubejs.server.tag.TagWrapper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface TagLoaderKJS<T> {
-	default void kjs$customTags(Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
+	default void kjs$customTags(ReloadableServerResourcesKJS kjs$resources, Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
 		TagContext.INSTANCE.setValue(TagContext.EMPTY);
 		var reg = kjs$getRegistry();
 
@@ -69,6 +70,8 @@ public interface TagLoaderKJS<T> {
 			if (event.totalAdded > 0 || event.totalRemoved > 0 || ConsoleJS.SERVER.shouldPrintDebug()) {
 				ConsoleJS.SERVER.info("[%s] Found %d tags, added %d objects, removed %d objects".formatted(regInfo, event.tags.size(), event.totalAdded, event.totalRemoved));
 			}
+
+			kjs$resources.kjs$getServerScriptManager().loadedTags.put(reg.key(), Lazy.of(() -> (Map) kjs$callBuild(map)));
 		}
 
 		if (DataExport.export != null) {
@@ -99,4 +102,6 @@ public interface TagLoaderKJS<T> {
 
 	@Nullable
 	Registry<T> kjs$getRegistry();
+
+	Map<ResourceLocation, Collection<T>> kjs$callBuild(Map<ResourceLocation, List<TagLoader.EntryWithSource>> map);
 }

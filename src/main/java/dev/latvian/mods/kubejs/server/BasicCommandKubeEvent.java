@@ -7,14 +7,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class CustomCommandKubeEvent implements KubeEntityEvent {
+public class BasicCommandKubeEvent implements KubeEntityEvent {
 	private final Level level;
 	private final Entity entity;
 	private final BlockPos pos;
 	public final String id;
 	public final String input;
 
-	public CustomCommandKubeEvent(Level level, @Nullable Entity entity, BlockPos pos, String id, String input) {
+	public BasicCommandKubeEvent(Level level, @Nullable Entity entity, BlockPos pos, String id, String input) {
 		this.level = level;
 		this.entity = entity;
 		this.pos = pos;
