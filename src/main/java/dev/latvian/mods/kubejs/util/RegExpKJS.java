@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
 import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
@@ -12,10 +11,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
-public interface RegExpJS {
-	Pattern REGEX_PATTERN = Pattern.compile("/(.*)/([a-z]*)");
-	Codec<Pattern> CODEC = KubeJSCodecs.stringResolverCodec(RegExpJS::toRegExpString, RegExpJS::wrap);
-	StreamCodec<ByteBuf, Pattern> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(RegExpJS::wrap, RegExpJS::toRegExpString);
+public interface RegExpKJS {
+	Codec<Pattern> CODEC = KubeJSCodecs.stringResolverCodec(RegExpKJS::toRegExpString, RegExpKJS::wrap);
+	StreamCodec<ByteBuf, Pattern> STREAM_CODEC = ByteBufCodecs.STRING_UTF8.map(RegExpKJS::wrap, RegExpKJS::toRegExpString);
 
 	@Nullable
 	static Pattern wrap(Object o) {
@@ -52,18 +50,11 @@ public interface RegExpJS {
 
 	@Nullable
 	static Pattern ofString(String string) {
-		if (string.length() < 3) {
+		if (string.length() < 3 || string.charAt(0) != '/') {
 			return null;
 		}
 
-		var matcher = REGEX_PATTERN.matcher(string);
-
-		if (matcher.matches()) {
-			var flags = getFlags(matcher.group(2));
-			return Pattern.compile(matcher.group(1), flags);
-		}
-
-		return null;
+		return read(new StringReader(string));
 	}
 
 	static String toRegExpString(Pattern pattern) {
@@ -104,15 +95,33 @@ public interface RegExpJS {
 		return sb.toString();
 	}
 
-	static Pattern read(StringReader reader) throws CommandSyntaxException {
-		reader.expect('/');
-		var pattern = reader.readStringUntil('/');
+	static Pattern read(StringReader reader) {
+		if (!reader.canRead() || reader.peek() != '/') {
+			throw new IllegalArgumentException("RegExp must start with /");
+		}
+
+		reader.skip();
+		var pattern = new StringBuilder();
+
+		while (reader.canRead()) {
+			var c = reader.read();
+
+			if (c == '\\' && reader.canRead() && reader.peek() == '/') {
+				reader.skip();
+				pattern.append('/');
+			} else if (c == '/') {
+				break;
+			} else {
+				pattern.append(c);
+			}
+		}
+
 		var flags = new StringBuilder(0);
 
 		while (reader.canRead() && isValidFlag(reader.peek())) {
 			flags.append(reader.read());
 		}
 
-		return Pattern.compile(pattern, getFlags(flags.toString()));
+		return Pattern.compile(pattern.toString(), getFlags(flags.toString()));
 	}
 }

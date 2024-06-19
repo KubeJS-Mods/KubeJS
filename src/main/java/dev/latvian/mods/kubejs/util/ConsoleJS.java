@@ -12,6 +12,7 @@ import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.WrappedException;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.neoforged.fml.loading.FMLLoader;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -122,7 +123,7 @@ public class ConsoleJS {
 		} else if (capturingErrors != enabled) {
 			capturingErrors = enabled;
 
-			if (DevProperties.get().debugInfo) {
+			if (!FMLLoader.isProduction()) {
 				if (capturingErrors) {
 					logger.info("Capturing errors for " + scriptType.name + " scripts enabled");
 				} else {

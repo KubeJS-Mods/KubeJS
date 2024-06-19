@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
-import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.Context;

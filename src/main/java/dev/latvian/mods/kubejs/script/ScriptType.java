@@ -2,7 +2,10 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.event.EventGroups;
+import dev.latvian.mods.kubejs.plugin.ClassFilter;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.neoforged.fml.loading.FMLPaths;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +34,7 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 	public final Path path;
 	public final String nameStrip;
 	public transient Executor executor;
+	public final Lazy<ClassFilter> classFilter;
 
 	ScriptType(String n, String cname, Path path) {
 		this.name = n;
@@ -38,6 +42,7 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 		this.path = path;
 		this.nameStrip = name + "_scripts:";
 		this.executor = Runnable::run;
+		this.classFilter = Lazy.of(() -> KubeJSPlugins.createClassFilter(this));
 	}
 
 	public Path getLogFile() {

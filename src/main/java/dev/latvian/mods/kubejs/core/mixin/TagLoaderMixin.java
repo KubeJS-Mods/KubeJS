@@ -9,12 +9,10 @@ import net.minecraft.tags.TagLoader;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -48,8 +46,4 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 	public Registry<T> kjs$getRegistry() {
 		return kjs$storedRegistry;
 	}
-
-	@Override
-	@Invoker("build")
-	public abstract Map<ResourceLocation, Collection<T>> kjs$callBuild(Map<ResourceLocation, List<TagLoader.EntryWithSource>> map);
 }

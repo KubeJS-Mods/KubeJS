@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import dev.latvian.mods.kubejs.helpers.IngredientHelper;
+import dev.latvian.mods.kubejs.ingredient.IngredientHelper;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;

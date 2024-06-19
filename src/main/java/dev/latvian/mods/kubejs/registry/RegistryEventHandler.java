@@ -20,22 +20,22 @@ public class RegistryEventHandler {
 
 	private static <T> void handleRegistryEvent(RegistryInfo<T> registryInfo, RegisterEvent event) {
 		if (!registryInfo.bypassServerOnly && CommonProperties.get().serverOnly) {
-			if (DevProperties.get().debugInfo) {
-				KubeJS.LOGGER.info("Skipping " + registryInfo + " registry - server only");
+			if (DevProperties.get().logRegistryEventObjects) {
+				KubeJS.LOGGER.warn("Skipping " + registryInfo + " registry - server only");
 			}
 
 			return;
 		}
 
 		if (registryInfo.objects.isEmpty()) {
-			if (DevProperties.get().debugInfo) {
+			if (DevProperties.get().logRegistryEventObjects) {
 				KubeJS.LOGGER.info("Skipping " + registryInfo + " registry - no objects to build");
 			}
 
 			return;
 		}
 
-		if (DevProperties.get().debugInfo) {
+		if (DevProperties.get().logRegistryEventObjects) {
 			KubeJS.LOGGER.info("Building " + registryInfo.objects.size() + " objects of " + registryInfo + " registry");
 		}
 
@@ -45,7 +45,7 @@ public class RegistryEventHandler {
 			if (!builder.dummyBuilder) {
 				event.register(registryInfo.key, builder.id, builder::createTransformedObject);
 
-				if (DevProperties.get().debugInfo) {
+				if (DevProperties.get().logRegistryEventObjects) {
 					ConsoleJS.STARTUP.info("+ " + registryInfo + " | " + builder.id);
 				}
 
@@ -53,7 +53,7 @@ public class RegistryEventHandler {
 			}
 		}
 
-		if (!registryInfo.objects.isEmpty() && DevProperties.get().debugInfo) {
+		if (!registryInfo.objects.isEmpty() && DevProperties.get().logRegistryEventObjects) {
 			KubeJS.LOGGER.info("Registered " + added + "/" + registryInfo.objects.size() + " objects of " + registryInfo);
 		}
 	}

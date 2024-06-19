@@ -7,14 +7,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
-import dev.latvian.mods.kubejs.helpers.IngredientHelper;
+import dev.latvian.mods.kubejs.ingredient.IngredientHelper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.MapJS;
-import dev.latvian.mods.kubejs.util.RegExpJS;
+import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Wrapper;
@@ -110,7 +110,7 @@ public interface ItemStackJS {
 		} else if (o instanceof StringTag tag) {
 			return wrap(registries, tag.getAsString());
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
-			var reg = RegExpJS.wrap(o);
+			var reg = RegExpKJS.wrap(o);
 
 			if (reg != null) {
 				return IngredientHelper.get().regex(reg).kjs$getFirst();
@@ -164,7 +164,7 @@ public interface ItemStackJS {
 
 				return stack;
 			} else if (map.containsKey("tag")) {
-				var stack = IngredientHelper.get().tag(ID.mc(map.get("tag"))).kjs$getFirst();
+				var stack = IngredientHelper.get().tag(registries.cachedItemTags, ID.mc(map.get("tag"))).kjs$getFirst();
 
 				if (map.containsKey("count")) {
 					stack.setCount(UtilsJS.parseInt(map.get("count"), 1));

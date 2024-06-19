@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.player;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
-import dev.latvian.mods.kubejs.core.MenuTypeKJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceKey;
@@ -102,7 +101,7 @@ public class KubeJSPlayerEventHandler {
 			ResourceKey<MenuType<?>> key;
 
 			try {
-				key = ((MenuTypeKJS) menu.getType()).kjs$getRegistryKey();
+				key = menu.getType().kjs$getRegistryKey();
 			} catch (Exception ex) {
 				return;
 			}
@@ -127,7 +126,7 @@ public class KubeJSPlayerEventHandler {
 			ResourceKey<MenuType<?>> key;
 
 			try {
-				key = ((MenuTypeKJS) menu.getType()).kjs$getRegistryKey();
+				key = menu.getType().kjs$getRegistryKey();
 			} catch (Exception ex) {
 				return;
 			}

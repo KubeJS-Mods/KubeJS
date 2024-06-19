@@ -10,9 +10,9 @@ import dev.latvian.mods.kubejs.client.BlockEntityRendererRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.BlockTintFunctionWrapper;
 import dev.latvian.mods.kubejs.client.EntityRendererRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.ItemTintFunctionWrapper;
-import dev.latvian.mods.kubejs.client.KubeHighlight;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.client.KubeJSResourcePackFinder;
+import dev.latvian.mods.kubejs.client.KubedexHighlight;
 import dev.latvian.mods.kubejs.client.MenuScreenRegistryKubeEvent;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
@@ -130,11 +130,11 @@ public class KubeJSNeoForgeClient {
 
 	@SubscribeEvent
 	public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
-		event.register(KubeHighlight.keyMapping = new KeyMapping("key.kubejs", KeyConflictContext.UNIVERSAL, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, KeyMapping.CATEGORY_MISC));
+		event.register(KubedexHighlight.keyMapping = new KeyMapping("key.kubejs", KeyConflictContext.UNIVERSAL, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, KeyMapping.CATEGORY_MISC));
 	}
 
 	@SubscribeEvent
 	public static void registerCoreShaders(RegisterShadersEvent event) throws IOException {
-		event.registerShader(new ShaderInstance(event.getResourceProvider(), ID.mc("kubejs/rendertype_highlight"), DefaultVertexFormat.POSITION_COLOR), s -> KubeHighlight.INSTANCE.highlightShader = s);
+		event.registerShader(new ShaderInstance(event.getResourceProvider(), ID.mc("kubejs/rendertype_highlight"), DefaultVertexFormat.POSITION_COLOR), s -> KubedexHighlight.INSTANCE.highlightShader = s);
 	}
 }

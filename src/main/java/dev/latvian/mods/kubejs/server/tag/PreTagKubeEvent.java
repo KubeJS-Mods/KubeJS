@@ -27,7 +27,7 @@ public class PreTagKubeEvent extends TagKubeEvent {
 				} catch (Exception ex) {
 					e.invalid = true;
 
-					if (DevProperties.get().debugInfo) {
+					if (DevProperties.get().logEventErrorStackTrace) {
 						KubeJS.LOGGER.warn("Pre Tag event for " + e.registry + " failed:");
 						ex.printStackTrace();
 					}

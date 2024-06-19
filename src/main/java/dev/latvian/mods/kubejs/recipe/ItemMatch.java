@@ -31,6 +31,7 @@ public interface ItemMatch extends ReplacementMatch {
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -40,6 +41,7 @@ public interface ItemMatch extends ReplacementMatch {
 				return true;
 			}
 		}
+
 		return false;
 	}
 }

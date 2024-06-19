@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -12,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
+@RemapPrefixForJS("kjs$")
 public interface ItemPredicate extends Predicate<ItemStack> {
 	TypeInfo TYPE_INFO = TypeInfo.of(ItemPredicate.class);
 	ItemPredicate NONE = stack -> false;

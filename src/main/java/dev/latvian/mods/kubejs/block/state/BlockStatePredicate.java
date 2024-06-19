@@ -12,7 +12,7 @@ import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTUtils;
-import dev.latvian.mods.kubejs.util.RegExpJS;
+import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.Util;
@@ -151,7 +151,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			return new TagMatch((TagKey<Block>) tag);
 		}
 
-		var pattern = RegExpJS.wrap(o);
+		var pattern = RegExpKJS.wrap(o);
 		return pattern == null ? BlockStatePredicate.fromString(o.toString()) : new RegexMatch(pattern);
 	}
 

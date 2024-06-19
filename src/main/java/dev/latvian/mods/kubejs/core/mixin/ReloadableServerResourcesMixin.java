@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
-import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.LayeredRegistryAccess;
@@ -42,11 +41,6 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 		kjs$serverScriptManager = ServerScriptManager.release();
 		tagManager.kjs$setResources(this);
 		recipes.kjs$setResources(this);
-	}
-
-	@Inject(method = "updateRegistryTags(Lnet/minecraft/core/RegistryAccess;Lnet/minecraft/tags/TagManager$LoadResult;)V", at = @At("RETURN"))
-	private static void updateRegistryTags(RegistryAccess registryAccess, TagManager.LoadResult<?> result, CallbackInfo ci) {
-		TagContext.INSTANCE.setValue(TagContext.usingRegistry(registryAccess));
 	}
 
 	@Inject(method = "loadResources", at = @At("HEAD"))

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.event;
 
-import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
@@ -8,7 +7,6 @@ import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -189,14 +187,14 @@ public class EventHandler extends BaseFunction {
 				var handler = extraContainers[scriptType.ordinal()];
 
 				if (handler != null) {
-					handler.handle(event, exceptionHandler);
+					handler.handle(scriptType.console, this, event);
 				}
 
 				if (!scriptType.isStartup()) {
 					handler = extraContainers[ScriptType.STARTUP.ordinal()];
 
 					if (handler != null) {
-						handler.handle(event, exceptionHandler);
+						handler.handle(scriptType.console, this, event);
 					}
 				}
 			}
@@ -205,33 +203,22 @@ public class EventHandler extends BaseFunction {
 				var handler = eventContainers[scriptType.ordinal()];
 
 				if (handler != null) {
-					handler.handle(event, exceptionHandler);
+					handler.handle(scriptType.console, this, event);
 				}
 
 				if (!scriptType.isStartup()) {
 					handler = eventContainers[ScriptType.STARTUP.ordinal()];
 
 					if (handler != null) {
-						handler.handle(event, exceptionHandler);
+						handler.handle(scriptType.console, this, event);
 					}
 				}
 			}
 		} catch (EventExit exit) {
-			if (exit.result.type() == EventResult.Type.ERROR) {
-				if (DevProperties.get().debugInfo) {
-					((Throwable) exit.result.value()).printStackTrace();
-				}
-
-				scriptType.console.error("Error in '" + this + "'", (Throwable) exit.result.value());
-			} else {
-				eventResult = exit.result;
-
-				if (getResult() == null) {
-					scriptType.console.error("Error in '" + this + "'", new IllegalStateException("Event returned result when it's not cancellable"));
-				}
-			}
-		} catch (RhinoException error) {
-			scriptType.console.error("Error in '" + this + "'", error);
+			eventResult = exit.result;
+		} catch (Throwable error) {
+			scriptType.console.error("Internal Error in '" + this + "'", error);
+			eventResult = EventResult.Type.ERROR.exit(error).result;
 		}
 
 		event.afterPosted(eventResult);

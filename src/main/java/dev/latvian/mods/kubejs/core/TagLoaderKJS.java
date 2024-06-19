@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.core;
 
 import com.google.gson.JsonArray;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.server.DataExport;
@@ -10,7 +9,6 @@ import dev.latvian.mods.kubejs.server.tag.TagEventFilter;
 import dev.latvian.mods.kubejs.server.tag.TagKubeEvent;
 import dev.latvian.mods.kubejs.server.tag.TagWrapper;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -24,7 +22,6 @@ import java.util.Map;
 
 public interface TagLoaderKJS<T> {
 	default void kjs$customTags(ReloadableServerResourcesKJS kjs$resources, Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
-		TagContext.INSTANCE.setValue(TagContext.EMPTY);
 		var reg = kjs$getRegistry();
 
 		if (reg == null) {
@@ -71,7 +68,7 @@ public interface TagLoaderKJS<T> {
 				ConsoleJS.SERVER.info("[%s] Found %d tags, added %d objects, removed %d objects".formatted(regInfo, event.tags.size(), event.totalAdded, event.totalRemoved));
 			}
 
-			kjs$resources.kjs$getServerScriptManager().loadedTags.put(reg.key(), Lazy.of(() -> (Map) kjs$callBuild(map)));
+			kjs$resources.kjs$getServerScriptManager().registries.cacheTags(reg, map);
 		}
 
 		if (DataExport.export != null) {
@@ -102,6 +99,4 @@ public interface TagLoaderKJS<T> {
 
 	@Nullable
 	Registry<T> kjs$getRegistry();
-
-	Map<ResourceLocation, Collection<T>> kjs$callBuild(Map<ResourceLocation, List<TagLoader.EntryWithSource>> map);
 }

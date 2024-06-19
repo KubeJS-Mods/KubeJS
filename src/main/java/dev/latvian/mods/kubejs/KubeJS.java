@@ -6,11 +6,14 @@ import dev.latvian.mods.kubejs.client.ClientScriptManager;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.gui.KubeJSMenus;
+import dev.latvian.mods.kubejs.holder.KubeJSHolderSets;
 import dev.latvian.mods.kubejs.ingredient.KubeJSIngredients;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallbackForge;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabKubeEvent;
 import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
 import dev.latvian.mods.kubejs.level.ruletest.KubeJSRuleTests;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistryHandler;
 import dev.latvian.mods.kubejs.registry.RegistryKubeEvent;
@@ -26,10 +29,8 @@ import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -76,8 +77,6 @@ public class KubeJS {
 	public static final int MC_VERSION_NUMBER = 2006;
 	public static final String MC_VERSION_STRING = "1.20.6";
 	public static String QUERY;
-	public static final ResourceLocation ICONS_FONT = id("icons");
-	public static final Component NAME_COMPONENT = Component.empty().append(Component.literal("K.").kjs$font(ICONS_FONT).kjs$white()).append(Component.literal(MOD_NAME));
 	public static String VERSION = "0";
 
 	public static ResourceLocation id(String path) {
@@ -181,6 +180,7 @@ public class KubeJS {
 
 		KubeJSCreativeTabs.REGISTRY.register(bus);
 		KubeJSRuleTests.REGISTRY.register(bus);
+		KubeJSHolderSets.REGISTRY.register(bus);
 
 		StartupEvents.INIT.post(ScriptType.STARTUP, KubeStartupEvent.BASIC);
 		// KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);

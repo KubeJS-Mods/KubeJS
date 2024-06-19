@@ -1,10 +1,10 @@
-package dev.latvian.mods.kubejs.util;
+package dev.latvian.mods.kubejs.plugin;
 
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.ModResourceBindings;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforgespi.locating.IModFile;
 
@@ -95,11 +95,8 @@ public class KubeJSPlugins {
 	}
 
 	public static ClassFilter createClassFilter(ScriptType type) {
-		var filter = new ClassFilter();
-
-		for (var plugin : LIST) {
-			plugin.registerClasses(type, filter);
-		}
+		var filter = new ClassFilter(type);
+		forEachPlugin(filter, KubeJSPlugin::registerClasses);
 
 		for (var s : GLOBAL_CLASS_FILTER) {
 			if (s.length() >= 2) {

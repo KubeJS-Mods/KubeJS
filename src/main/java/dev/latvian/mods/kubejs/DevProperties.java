@@ -1,7 +1,5 @@
 package dev.latvian.mods.kubejs;
 
-import net.neoforged.fml.loading.FMLLoader;
-
 public class DevProperties extends BaseProperties {
 	private static DevProperties instance;
 
@@ -17,19 +15,23 @@ public class DevProperties extends BaseProperties {
 		instance = new DevProperties();
 	}
 
-	public boolean debugInfo;
-	public boolean dataPackOutput = false;
-	public boolean logAddedRecipes = false;
-	public boolean logRemovedRecipes = false;
-	public boolean logModifiedRecipes = false;
-	public boolean logSkippedRecipes = false;
-	public boolean logSkippedTags = false;
-	public boolean logErroringRecipes = true;
-	public boolean logInvalidRecipeHandlers = true;
-	public boolean logSkippedPlugins = true;
-	public boolean logGeneratedData = false;
-	public boolean strictTags = false;
-	public boolean alwaysCaptureErrors = false;
+	public boolean dataPackOutput;
+	public boolean logRegistryTypes;
+	public boolean logRegistryEventObjects;
+	public boolean logAddedRecipes;
+	public boolean logRemovedRecipes;
+	public boolean logModifiedRecipes;
+	public boolean logSkippedRecipes;
+	public boolean logRecipeDebug;
+	public boolean logSkippedTags;
+	public boolean logErroringRecipes;
+	public boolean logInvalidRecipeHandlers;
+	public boolean logSkippedPlugins;
+	public boolean logGeneratedData;
+	public boolean logEventErrorStackTrace;
+	public boolean strictTags;
+	public boolean alwaysCaptureErrors;
+	public String kubedexSound;
 
 	private DevProperties() {
 		super(KubeJSPaths.getLocalDevProperties(), "KubeJS Dev Properties");
@@ -37,18 +39,22 @@ public class DevProperties extends BaseProperties {
 
 	@Override
 	protected void load() {
-		debugInfo = get("debug_info", !FMLLoader.isProduction());
 		dataPackOutput = get("data_pack_output", false);
+		logRegistryTypes = get("log_registry_types", false);
+		logRegistryEventObjects = get("log_registry_event_objects", false);
 		logAddedRecipes = get("log_added_recipes", false);
 		logRemovedRecipes = get("log_removed_recipes", false);
 		logModifiedRecipes = get("log_modified_recipes", false);
 		logSkippedRecipes = get("log_skipped_recipes", false);
+		logRecipeDebug = get("log_recipe_debug", false);
 		logSkippedTags = get("log_skipped_tags", false);
 		logErroringRecipes = get("log_erroring_recipes", true);
 		logInvalidRecipeHandlers = get("log_invalid_recipe_handlers", true);
 		logSkippedPlugins = get("log_skipped_plugins", true);
 		logGeneratedData = get("log_generated_data", false);
+		logEventErrorStackTrace = get("log_event_error_stack_trace", false);
 		strictTags = get("strict_tags", false);
 		alwaysCaptureErrors = get("always_capture_errors", false);
+		kubedexSound = get("kubedex_sound", "entity.experience_orb.pickup");
 	}
 }

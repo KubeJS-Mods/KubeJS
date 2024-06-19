@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.integration.architectury;
 
 import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
-import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 

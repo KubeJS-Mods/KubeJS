@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.util.registrypredicate;
 
-import dev.latvian.mods.kubejs.util.RegExpJS;
+import dev.latvian.mods.kubejs.util.RegExpKJS;
 import net.minecraft.core.Holder;
 
 import java.util.regex.Pattern;
@@ -21,6 +21,6 @@ public record RegistryRegExpPredicate<T>(Pattern pattern) implements RegistryPre
 
 	@Override
 	public String toString() {
-		return RegExpJS.toRegExpString(pattern);
+		return RegExpKJS.toRegExpString(pattern);
 	}
 }

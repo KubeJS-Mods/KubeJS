@@ -96,7 +96,29 @@ public interface DataComponentWrapper {
 
 			while (reader.canRead() && reader.peek() != ']') {
 				reader.skipWhitespace();
+				boolean remove = reader.canRead() && reader.peek() == '!';
+
+				if (remove) {
+					reader.skipWhitespace();
+				}
+
 				var dataComponentType = readComponentType(reader);
+
+				if (remove) {
+					reader.skipWhitespace();
+
+					if (reader.canRead() && reader.peek() != ']') {
+						reader.expect(',');
+						reader.skipWhitespace();
+					}
+
+					if (builder == null) {
+						builder = DataComponentPatch.builder();
+					}
+
+					builder.remove(dataComponentType);
+					continue;
+				}
 
 				reader.skipWhitespace();
 				reader.expect('=');
@@ -216,7 +238,7 @@ public interface DataComponentWrapper {
 					var value = comp.getKey().codecOrThrow().encodeStart(dynamicOps, Cast.to(comp.getValue().get())).result().get();
 					builder.append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).append('=').append(value);
 				} else {
-					builder.append('!').append(id).append("={}");
+					builder.append('!').append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString());
 				}
 			}
 		}

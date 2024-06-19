@@ -16,6 +16,7 @@ import dev.latvian.mods.kubejs.bindings.JavaWrapper;
 import dev.latvian.mods.kubejs.bindings.KMath;
 import dev.latvian.mods.kubejs.bindings.ParticleOptionsWrapper;
 import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
+import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UUIDWrapper;
 import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
@@ -56,7 +57,7 @@ import dev.latvian.mods.kubejs.fluid.FluidTypeBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.fluid.ThickFluidBuilder;
 import dev.latvian.mods.kubejs.fluid.ThinFluidBuilder;
-import dev.latvian.mods.kubejs.helpers.IngredientHelper;
+import dev.latvian.mods.kubejs.ingredient.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
 import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
@@ -84,6 +85,9 @@ import dev.latvian.mods.kubejs.misc.VillagerProfessionBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerTypeBuilder;
 import dev.latvian.mods.kubejs.neoforge.NativeEventWrapper;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
+import dev.latvian.mods.kubejs.plugin.ClassFilter;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
@@ -122,23 +126,20 @@ import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
-import dev.latvian.mods.kubejs.util.ClassFilter;
 import dev.latvian.mods.kubejs.util.FluidAmounts;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.JsonUtils;
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
 import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
-import dev.latvian.mods.kubejs.util.RegExpJS;
+import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RotationAxis;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.kubejs.util.SlotFilter;
@@ -291,7 +292,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	public void registerClasses(ScriptType type, ClassFilter filter) {
+	public void registerClasses(ClassFilter filter) {
 		filter.deny("java.lang"); // java.lang
 		filter.allow("java.lang.Number");
 		filter.allow("java.lang.String");
@@ -401,6 +402,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		bindings.add("Java", JavaWrapper.class);
 		bindings.add("Text", TextWrapper.class);
 		bindings.add("Component", TextWrapper.class);
+		bindings.add("TextIcons", TextIcons.class);
 		bindings.add("UUID", UUIDWrapper.class);
 		bindings.add("JsonUtils", JsonUtils.class);
 		bindings.add("JsonIO", JsonIO.class);
@@ -465,7 +467,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(String.class, String::valueOf);
 		registry.register(CharSequence.class, String::valueOf);
 		registry.register(UUID.class, UUIDWrapper::fromString);
-		registry.register(Pattern.class, RegExpJS::wrap);
+		registry.register(Pattern.class, RegExpKJS::wrap);
 		registry.register(JsonObject.class, MapJS::json);
 		registry.register(JsonArray.class, ListJS::json);
 		registry.register(JsonElement.class, JsonUtils::of);

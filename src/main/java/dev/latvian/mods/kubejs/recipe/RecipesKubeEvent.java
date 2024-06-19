@@ -10,8 +10,7 @@ import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.KubeEvent;
-import dev.latvian.mods.kubejs.helpers.RecipeHelper;
-import dev.latvian.mods.kubejs.item.ingredient.TagContext;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.IDFilter;
 import dev.latvian.mods.kubejs.recipe.filter.OrFilter;
@@ -28,7 +27,6 @@ import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
@@ -39,10 +37,12 @@ import net.minecraft.ReportedException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,6 +74,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RecipesKubeEvent implements KubeEvent {
+	public static final MutableObject<CachedTagLookup<Item>> TEMP_ITEM_TAG_LOOKUP = new MutableObject<>(null);
+
 	public static final Pattern POST_SKIP_ERROR = Pattern.compile("dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesKubeEvent\\.post");
 	public static final Pattern CREATE_RECIPE_SKIP_ERROR = Pattern.compile("dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesKubeEvent\\.createRecipe");
 	private static final Predicate<KubeRecipe> RECIPE_NOT_REMOVED = r -> r != null && !r.removed;
@@ -159,7 +161,6 @@ public class RecipesKubeEvent implements KubeEvent {
 	public final Map<ResourceLocation, KubeRecipe> originalRecipes;
 	public final Collection<KubeRecipe> addedRecipes;
 	private final BinaryOperator<RecipeHolder<?>> mergeOriginal, mergeAdded;
-
 
 	public final AtomicInteger failedCount;
 	public final Map<ResourceLocation, KubeRecipe> takenIds;
@@ -261,9 +262,6 @@ public class RecipesKubeEvent implements KubeEvent {
 	public void post(RecipeManagerKJS recipeManager, Map<ResourceLocation, JsonElement> datapackRecipeMap) {
 		ConsoleJS.SERVER.info("Processing recipes...");
 		KubeRecipe.itemErrors = false;
-		var resources = recipeManager.kjs$getResources();
-
-		TagContext.INSTANCE.setValue(TagContext.fromLoadResult(resources.kjs$getTagManager().getResult()));
 
 		var timer = Stopwatch.createStarted();
 
@@ -310,14 +308,14 @@ public class RecipesKubeEvent implements KubeEvent {
 					}
 				}
 			} catch (Throwable ex) {
-				if (DevProperties.get().logErroringRecipes || DevProperties.get().debugInfo) {
+				if (DevProperties.get().logErroringRecipes) {
 					ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex, POST_SKIP_ERROR);
 				}
 
 				try {
 					originalRecipes.put(recipeId, UnknownRecipeSchema.SCHEMA.deserialize(type, recipeId, json));
 				} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
-					if (DevProperties.get().logErroringRecipes || DevProperties.get().debugInfo) {
+					if (DevProperties.get().logErroringRecipes) {
 						ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2, POST_SKIP_ERROR);
 					}
 				} catch (Exception ex3) {
@@ -381,7 +379,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			}
 		}
 
-		if (DevProperties.get().debugInfo) {
+		if (DevProperties.get().logRecipeDebug) {
 			ConsoleJS.SERVER.info("======== Debug output of all added recipes ========");
 
 			for (var r : addedRecipes) {

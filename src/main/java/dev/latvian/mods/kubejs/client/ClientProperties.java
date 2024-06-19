@@ -23,6 +23,7 @@ public class ClientProperties extends BaseProperties {
 
 	public String windowTitle;
 	public boolean showTagNames;
+	public boolean showComponents;
 	public boolean disableRecipeBook;
 	public boolean exportAtlases;
 	// public ColourScheme.Colour launchBackgroundColor;
@@ -39,7 +40,8 @@ public class ClientProperties extends BaseProperties {
 	@Override
 	protected void load() {
 		windowTitle = get("window_title", "");
-		showTagNames = get("show_tag_names", false);
+		showTagNames = get("show_tag_names", true);
+		showComponents = get("show_components", true);
 		disableRecipeBook = get("disable_recipe_book", false);
 		exportAtlases = get("export_atlases", false);
 		// launchBackgroundColor = getColor("launch_background_color", DEFAULT_BACKGROUND_COLOR);

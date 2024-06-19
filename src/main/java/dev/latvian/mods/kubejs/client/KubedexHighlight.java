@@ -5,6 +5,7 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.net.RequestBlockKubedexPayload;
 import dev.latvian.mods.kubejs.net.RequestEntityKubedexPayload;
@@ -22,8 +23,10 @@ import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Inventory;
@@ -46,7 +49,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class KubeHighlight {
+public class KubedexHighlight {
 	public enum Mode {
 		NONE(false),
 		SCREEN(false),
@@ -66,9 +69,7 @@ public class KubeHighlight {
 			super("kubejs:wrapped", delegate.format(), delegate.mode(), delegate.bufferSize(), delegate.affectsCrumbling(), delegate.sortOnUpload(), () -> {
 				delegate.setupRenderState();
 				RenderSystem.setShader(() -> INSTANCE.highlightShader);
-			}, () -> {
-				delegate.clearRenderState();
-			});
+			}, delegate::clearRenderState);
 
 			this.delegate = delegate;
 		}
@@ -128,7 +129,7 @@ public class KubeHighlight {
 		}
 	}
 
-	public static KubeHighlight INSTANCE = new KubeHighlight();
+	public static KubedexHighlight INSTANCE = new KubedexHighlight();
 	public static KeyMapping keyMapping;
 
 	public int color = 0x99FFB3;
@@ -192,6 +193,14 @@ public class KubeHighlight {
 		}
 	}
 
+	private void playSound(Minecraft mc) {
+		var sound = DevProperties.get().kubedexSound;
+
+		if (!sound.isEmpty()) {
+			mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvent.createVariableRangeEvent(ResourceLocation.parse(sound)), 1F));
+		}
+	}
+
 	private void keyToggled(Minecraft mc, Mode newMode, boolean success) {
 		if (newMode == Mode.NONE) {
 			if (mode == Mode.SCREEN) {
@@ -207,14 +216,17 @@ public class KubeHighlight {
 						}
 					}
 
+					playSound(mc);
 					PacketDistributor.sendToServer(new RequestItemKubedexPayload(slots, stacks));
 				}
 
 				hoveredSlots.clear();
 			} else if (success) {
 				if (mc.hitResult instanceof EntityHitResult hit && hit.getType() == HitResult.Type.ENTITY) {
+					playSound(mc);
 					PacketDistributor.sendToServer(new RequestEntityKubedexPayload(hit.getEntity().getId()));
 				} else if (mc.hitResult instanceof BlockHitResult hit && hit.getType() == HitResult.Type.BLOCK) {
+					playSound(mc);
 					PacketDistributor.sendToServer(new RequestBlockKubedexPayload(hit.getBlockPos()));
 				}
 			}

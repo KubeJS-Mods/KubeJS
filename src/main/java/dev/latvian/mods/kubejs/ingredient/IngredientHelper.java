@@ -1,14 +1,12 @@
-package dev.latvian.mods.kubejs.helpers;
+package dev.latvian.mods.kubejs.ingredient;
 
-import dev.latvian.mods.kubejs.ingredient.CreativeTabIngredient;
-import dev.latvian.mods.kubejs.ingredient.ModIngredient;
-import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
-import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
-import dev.latvian.mods.kubejs.util.Tags;
+import dev.latvian.mods.kubejs.recipe.CachedTagLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -35,12 +33,13 @@ public enum IngredientHelper {
 		return WildcardIngredient.INSTANCE.toVanilla();
 	}
 
-	public Ingredient tag(ResourceLocation tag) {
-		return Ingredient.of(Tags.item(tag));
+	public Ingredient tag(CachedTagLookup<Item> lookup, ResourceLocation tag) {
+		// return Ingredient.of(Tags.item(tag));
+		return new TagIngredient(lookup, TagKey.create(Registries.ITEM, tag)).toVanilla();
 	}
 
 	public Ingredient mod(String mod) {
-		return new ModIngredient(mod).toVanilla();
+		return new NamespaceIngredient(mod).toVanilla();
 	}
 
 	public Ingredient regex(Pattern pattern) {

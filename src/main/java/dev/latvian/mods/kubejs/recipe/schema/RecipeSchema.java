@@ -171,7 +171,7 @@ public class RecipeSchema {
 			var keys1 = Arrays.stream(keys).filter(RecipeKey::includeInAutoConstructors).toArray(RecipeKey[]::new);
 
 			constructors = keys1.length == 0 ? new Int2ObjectArrayMap<>() : new Int2ObjectArrayMap<>(keys1.length - minRequiredArguments + 1);
-			boolean dev = DevProperties.get().debugInfo;
+			boolean dev = DevProperties.get().logRecipeDebug;
 
 			if (dev) {
 				KubeJS.LOGGER.info("Generating constructors for " + new RecipeConstructor(keys1));
@@ -212,7 +212,7 @@ public class RecipeSchema {
 		r.newRecipe = id == null;
 		r.initValues(id == null);
 
-		if (id != null && DevProperties.get().debugInfo) {
+		if (id != null && DevProperties.get().logRecipeDebug) {
 			r.originalJson = (JsonObject) JsonUtils.copy(json);
 		}
 

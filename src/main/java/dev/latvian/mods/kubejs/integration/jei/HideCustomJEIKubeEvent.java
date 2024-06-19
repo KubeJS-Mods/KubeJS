@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.kubejs.util.RegExpJS;
+import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
@@ -37,7 +37,7 @@ public class HideCustomJEIKubeEvent implements KubeEvent {
 			List<Predicate> predicates = new ArrayList<>();
 
 			for (Object o1 : ListJS.orSelf(o)) {
-				var regex = RegExpJS.wrap(o1);
+				var regex = RegExpKJS.wrap(o1);
 				if (regex != null) {
 					predicates.add(it -> regex.asPredicate().test(idFn.apply(it)));
 				} else if (o1 instanceof Predicate p) {

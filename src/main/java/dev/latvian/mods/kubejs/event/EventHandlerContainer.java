@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs.event;
 
+import dev.latvian.mods.kubejs.DevProperties;
+import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.WrappedException;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,14 +33,18 @@ public class EventHandlerContainer {
 		this.line = line;
 	}
 
-	public EventResult handle(KubeEvent event, EventExceptionHandler exh) throws EventExit {
+	public EventResult handle(ConsoleJS console, EventHandler handler, KubeEvent event) throws EventExit {
 		var itr = this;
 
 		do {
 			try {
 				itr.handler.onEvent(event);
 			} catch (EventExit exit) {
-				throw exit;
+				if (handler.getResult() == null) {
+					console.error("Error in '" + this + "': Event returned result when it's not cancellable");
+				} else {
+					throw exit;
+				}
 			} catch (Throwable ex) {
 				var throwable = ex;
 
@@ -47,11 +53,19 @@ public class EventHandlerContainer {
 				}
 
 				if (throwable instanceof EventExit exit) {
-					throw exit;
+					if (handler.getResult() == null) {
+						console.error("Error in '" + this + "': Event returned result when it's not cancellable");
+					} else {
+						throw exit;
+					}
 				}
 
-				if (exh == null || (throwable = exh.handle(event, itr, throwable)) != null) {
-					throw EventResult.Type.ERROR.exit(throwable);
+				if (handler.exceptionHandler == null || (throwable = handler.exceptionHandler.handle(event, itr, throwable)) != null) {
+					console.error("Error in '" + handler + "'", throwable);
+
+					if (DevProperties.get().logEventErrorStackTrace) {
+						throwable.printStackTrace();
+					}
 				}
 			}
 

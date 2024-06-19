@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.client;
 
+import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -45,8 +46,8 @@ public class TagInstance {
 		}
 
 		return Component.empty()
-			.append(TextWrapper.icon(Component.literal("T.")))
+			.append(TextIcons.icon(Component.literal("T.")))
 			.append(TextWrapper.darkGray(Component.literal("#" + tag)))
-			.append(TextWrapper.icon(Component.literal(sb.toString())));
+			.append(TextIcons.icon(Component.literal(sb.toString())));
 	}
 }

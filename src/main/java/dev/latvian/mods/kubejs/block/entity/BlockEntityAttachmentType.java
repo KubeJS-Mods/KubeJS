@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block.entity;
 
-import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.rhino.type.TypeInfo;
 

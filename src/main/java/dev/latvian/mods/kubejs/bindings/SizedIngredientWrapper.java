@@ -2,12 +2,10 @@ package dev.latvian.mods.kubejs.bindings;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import net.minecraft.nbt.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
@@ -45,7 +43,7 @@ public interface SizedIngredientWrapper {
 			return Ingredient.of(item).kjs$asStack();
 		} else if (from instanceof CharSequence) {
 			try {
-				return read(registries.nbt(), new StringReader(from.toString()));
+				return read(registries, new StringReader(from.toString()));
 			} catch (Exception ex) {
 				return empty;
 			}
@@ -54,7 +52,7 @@ public interface SizedIngredientWrapper {
 		return IngredientJS.wrap(registries, from).kjs$asStack();
 	}
 
-	static SizedIngredient read(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+	static SizedIngredient read(RegistryAccessContainer registries, StringReader reader) throws CommandSyntaxException {
 		int count = 1;
 
 		if (StringReader.isAllowedNumber(reader.peek())) {
@@ -68,6 +66,6 @@ public interface SizedIngredientWrapper {
 			}
 		}
 
-		return IngredientJS.read(registryOps, reader).kjs$withCount(count);
+		return IngredientJS.read(registries, reader).kjs$withCount(count);
 	}
 }

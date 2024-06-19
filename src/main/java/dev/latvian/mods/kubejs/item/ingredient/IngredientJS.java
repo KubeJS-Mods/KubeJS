@@ -4,13 +4,12 @@ import com.google.gson.JsonElement;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
-import dev.latvian.mods.kubejs.helpers.IngredientHelper;
+import dev.latvian.mods.kubejs.ingredient.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
@@ -18,14 +17,13 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
-import dev.latvian.mods.kubejs.util.RegExpJS;
+import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
@@ -54,7 +52,7 @@ public interface IngredientJS {
 		} else if (o instanceof TagKey<?> tag) {
 			return Ingredient.of(TagKey.create(Registries.ITEM, tag.location()));
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
-			var reg = RegExpJS.wrap(o);
+			var reg = RegExpKJS.wrap(o);
 
 			if (reg != null) {
 				return IngredientHelper.get().regex(reg);
@@ -64,7 +62,7 @@ public interface IngredientJS {
 		} else if (o instanceof JsonElement json) {
 			return ofJson(registries, json);
 		} else if (o instanceof CharSequence) {
-			return ofString(o.toString());
+			return ofString(registries, o.toString());
 		}
 
 		List<?> list = ListJS.of(o);
@@ -98,13 +96,13 @@ public interface IngredientJS {
 		return ItemStackJS.wrap(registries, o).kjs$asIngredient();
 	}
 
-	static Ingredient ofString(String s) {
+	static Ingredient ofString(RegistryAccessContainer registries, String s) {
 		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
 			return Ingredient.EMPTY;
 		} else if (s.equals("*")) {
 			return IngredientHelper.get().wildcard();
 		} else if (s.startsWith("#")) {
-			return IngredientHelper.get().tag(ID.mc(s.substring(1)));
+			return IngredientHelper.get().tag(registries.cachedItemTags, ID.mc(s.substring(1)));
 		} else if (s.startsWith("@")) {
 			return IngredientHelper.get().mod(s.substring(1));
 		} else if (s.startsWith("%")) {
@@ -121,7 +119,7 @@ public interface IngredientJS {
 			return IngredientHelper.get().creativeTab(group);
 		}
 
-		var reg = RegExpJS.wrap(s);
+		var reg = RegExpKJS.wrap(s);
 
 		if (reg != null) {
 			return IngredientHelper.get().regex(reg);
@@ -164,7 +162,7 @@ public interface IngredientJS {
 		return from instanceof Ingredient || from instanceof SizedIngredient || from instanceof ItemStack;
 	}
 
-	static Ingredient read(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+	static Ingredient read(RegistryAccessContainer registries, StringReader reader) throws CommandSyntaxException {
 		if (!reader.canRead()) {
 			return Ingredient.EMPTY;
 		}
@@ -180,7 +178,7 @@ public interface IngredientJS {
 			}
 			case '#' -> {
 				reader.skip();
-				yield IngredientHelper.get().tag(ResourceLocation.read(reader));
+				yield IngredientHelper.get().tag(registries.cachedItemTags, ResourceLocation.read(reader));
 			}
 			case '@' -> {
 				reader.skip();
@@ -202,7 +200,7 @@ public interface IngredientJS {
 				yield IngredientHelper.get().creativeTab(group);
 			}
 			case '/' -> {
-				var regex = RegExpJS.read(reader);
+				var regex = RegExpKJS.read(reader);
 				yield IngredientHelper.get().regex(regex);
 			}
 			case '[' -> {
@@ -216,7 +214,7 @@ public interface IngredientJS {
 				var ingredients = new ArrayList<Ingredient>(2);
 
 				while (true) {
-					ingredients.add(read(registryOps, reader));
+					ingredients.add(read(registries, reader));
 					reader.skipWhitespace();
 
 					if (reader.canRead() && reader.peek() == ',') {
@@ -238,7 +236,7 @@ public interface IngredientJS {
 				var next = reader.canRead() ? reader.peek() : 0;
 
 				if (next == '[' || next == '{') {
-					var map = DataComponentWrapper.readMap(registryOps, reader);
+					var map = DataComponentWrapper.readMap(registries.nbt(), reader);
 					yield IngredientHelper.get().weakComponents(item, map);
 				}
 

@@ -3,10 +3,11 @@ package dev.latvian.mods.kubejs.script;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.holder.HolderWrapper;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
@@ -100,7 +101,7 @@ public class KubeJSContext extends Context {
 		return super.internalConversionWeightLast(fromObj, target);
 	}
 
-	private RegistryType<?> lookupRegistryType(TypeInfo type, Object from) {
+	public RegistryType<?> lookupRegistryType(TypeInfo type, Object from) {
 		var registryType = RegistryType.lookup(type);
 
 		if (registryType == null) {
@@ -110,7 +111,7 @@ public class KubeJSContext extends Context {
 		return registryType;
 	}
 
-	private Registry<?> lookupRegistry(TypeInfo type, Object from) {
+	public Registry<?> lookupRegistry(TypeInfo type, Object from) {
 		var registryType = lookupRegistryType(type, from);
 
 		var registry = getRegistries().access().registry(registryType.key()).orElse(null);
@@ -142,28 +143,9 @@ public class KubeJSContext extends Context {
 
 			return ResourceKey.create(registry.key(), id);
 		} else if (c == Holder.class) {
-			if (from instanceof Holder<?> h) {
-				return h;
-			}
-
-			var registry = lookupRegistry(target.param(0), from);
-			var id = ID.mc(from);
-
-			var holder = registry.getHolder(id);
-
-			if (holder.isEmpty()) {
-				throw reportRuntimeError("Can't interpret '" + from + "' as Holder: entry not found", this);
-			}
-
-			return holder.get();
+			return HolderWrapper.wrap(this, from, target.param(0));
 		} else if (c == HolderSet.class) {
-			if (from instanceof HolderSet<?> h) {
-				return h;
-			}
-
-			var registry = lookupRegistry(target.param(0), from);
-
-			throw reportRuntimeError("Can't interpret '" + from + "' as HolderSet: not supported yet", this);
+			return HolderWrapper.wrapSet(this, from, target.param(0));
 		} else if (c == TagKey.class) {
 			if (from instanceof TagKey<?> k) {
 				return k;

@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.registry;
 
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.neoforged.fml.loading.FMLLoader;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Modifier;
@@ -48,7 +48,7 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 		TYPE_MAP.put(type, t);
 		CLASS_MAP.computeIfAbsent(t.baseClass, c -> new ArrayList<>(1)).add(t);
 
-		if (!FMLLoader.isProduction()) {
+		if (DevProperties.get().logRegistryTypes) {
 			KubeJS.LOGGER.info("Registered RegistryType '" + key.location() + "': " + type);
 		}
 	}

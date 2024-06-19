@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.event;
 
-import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.Lazy;
 
 import java.util.LinkedHashMap;

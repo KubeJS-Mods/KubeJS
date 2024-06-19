@@ -92,7 +92,7 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 			generated = new HashMap<>();
 			generate(generated);
 
-			boolean debug = DevProperties.get().logGeneratedData || DevProperties.get().debugInfo;
+			boolean debug = DevProperties.get().logGeneratedData;
 
 			try {
 				var root = KubeJSPaths.get(packType);

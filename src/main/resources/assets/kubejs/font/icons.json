@@ -62,6 +62,18 @@
 		},
 		{
 			"type": "bitmap",
+			"file": "kubejs:font/icons/prototype_component.png",
+			"ascent": 7,
+			"chars": ["P"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/patched_component.png",
+			"ascent": 7,
+			"chars": ["Q"]
+		},
+		{
+			"type": "bitmap",
 			"file": "kubejs:font/icons/tag.png",
 			"ascent": 7,
 			"chars": ["T"]

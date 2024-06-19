@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import dev.latvian.mods.kubejs.client.KubeHighlight;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
+import dev.latvian.mods.kubejs.client.KubedexHighlight;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -34,7 +34,7 @@ public abstract class LevelRendererMixin {
 
 	@Inject(method = "renderHitOutline", at = @At("HEAD"), cancellable = true)
 	private void kjs$highlightBlock(PoseStack poseStack, VertexConsumer consumer, Entity entity, double camX, double camY, double camZ, BlockPos pos, BlockState state, CallbackInfo ci) {
-		if (KubeHighlight.INSTANCE.mode.cancelHighlight) {
+		if (KubedexHighlight.INSTANCE.mode.cancelHighlight) {
 			ci.cancel();
 		}
 	}

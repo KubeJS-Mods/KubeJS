@@ -33,8 +33,10 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -194,5 +196,14 @@ public final class RegistryInfo<T> implements Iterable<BuilderBase<? extends T>>
 
 	public ResourceKey<T> getKeyOf(T value) {
 		return getVanillaRegistry().getResourceKey(value).orElse(unknownKey);
+	}
+
+	@Nullable
+	public BuilderType<T> getDefaultType() {
+		return defaultType;
+	}
+
+	public Collection<BuilderType<T>> getTypes() {
+		return types == null ? List.of() : List.copyOf(types.values());
 	}
 }

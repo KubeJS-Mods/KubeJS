@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.server;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
@@ -15,7 +16,6 @@ import dev.latvian.mods.kubejs.script.data.DataPackKubeEvent;
 import dev.latvian.mods.kubejs.script.data.VirtualKubeJSDataPack;
 import dev.latvian.mods.kubejs.server.tag.PreTagKubeEvent;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
-import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
@@ -35,8 +35,6 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 
 import java.nio.file.Files;
-import java.util.Collection;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,7 +42,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerScriptManager extends ScriptManager {
-	private static final Component GEN_PACK_NAME = Component.empty().append(KubeJS.NAME_COMPONENT).append(" (Generated)");
+	private static final Component GEN_PACK_NAME = Component.empty().append(TextIcons.NAME).append(" (Generated)");
 
 	private static ServerScriptManager staticInstance;
 
@@ -64,14 +62,12 @@ public class ServerScriptManager extends ScriptManager {
 	public final RegistryAccessContainer registries;
 	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
 	public final RecipeSchemaStorage recipeSchemaStorage;
-	public final Map<ResourceKey<?>, Lazy<Map<ResourceLocation, Collection<?>>>> loadedTags;
 
 	private ServerScriptManager(RegistryAccessContainer registries) {
 		super(ScriptType.SERVER);
 		this.registries = registries;
 		this.preTagEvents = new ConcurrentHashMap<>();
 		this.recipeSchemaStorage = new RecipeSchemaStorage();
-		this.loadedTags = new IdentityHashMap<>();
 
 		try {
 			if (Files.notExists(KubeJSPaths.DATA)) {
@@ -80,11 +76,6 @@ public class ServerScriptManager extends ScriptManager {
 		} catch (Throwable ex) {
 			throw new RuntimeException("KubeJS failed to register it's script loader!", ex);
 		}
-	}
-
-	public Map<ResourceLocation, Collection<?>> getLoadedTags(ResourceKey<?> key) {
-		var l = loadedTags.get(key);
-		return l == null ? Map.of() : l.get();
 	}
 
 	@Override
@@ -213,7 +204,9 @@ public class ServerScriptManager extends ScriptManager {
 		recipeSchemaStorage.fireEvents(resourceManager);
 
 		if (ServerEvents.RECIPES.hasListeners()) {
+			RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.setValue(registries.cachedItemTags);
 			new RecipesKubeEvent(this).post(recipeManager, map);
+			RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.setValue(null);
 			return true;
 		}
 

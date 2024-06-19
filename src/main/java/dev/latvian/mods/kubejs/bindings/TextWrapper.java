@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.bindings;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.JsonOps;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.JSObjectType;
@@ -338,71 +337,11 @@ public interface TextWrapper {
 		return text.kjs$white();
 	}
 
-	static MutableComponent icon(MutableComponent character) {
-		return character.kjs$font(KubeJS.ICONS_FONT);
-	}
-
-	static MutableComponent smallSpace() {
-		return icon(Component.literal("."));
-	}
-
-	static MutableComponent blockTagIcon() {
-		return icon(Component.literal("B"));
-	}
-
-	static MutableComponent copyIcon() {
-		return icon(Component.literal("C"));
-	}
-
-	static MutableComponent idIcon() {
-		return icon(Component.literal("D"));
-	}
-
-	static MutableComponent entityTypeTagIcon() {
-		return icon(Component.literal("E"));
-	}
-
-	static MutableComponent fluidTagIcon() {
-		return icon(Component.literal("F"));
-	}
-
-	static MutableComponent infoIcon() {
-		return icon(Component.literal("I"));
-	}
-
-	static MutableComponent itemTagIcon() {
-		return icon(Component.literal("J"));
-	}
-
-	static MutableComponent logoIcon() {
-		return icon(Component.literal("K"));
-	}
-
-	static MutableComponent noIcon() {
-		return icon(Component.literal("N"));
-	}
-
-	static MutableComponent tagIcon() {
-		return icon(Component.literal("T"));
-	}
-
-	static MutableComponent warnIcon() {
-		return icon(Component.literal("W"));
-	}
-
-	static MutableComponent yesIcon() {
-		return icon(Component.literal("Y"));
-	}
-
 	static MutableComponent info(Component text) {
-		return Component.empty().append(infoIcon()).append(smallSpace()).append(text);
+		return Component.empty().append(TextIcons.info()).append(TextIcons.smallSpace()).append(text);
 	}
 
 	static MutableComponent warn(Component text) {
-		return Component.empty().append(warnIcon()).append(smallSpace()).append(text);
-	}
-
-	static MutableComponent yesIcon(boolean yes) {
-		return icon(yes ? Component.literal("Y") : Component.literal("N"));
+		return Component.empty().append(TextIcons.info()).append(TextIcons.smallSpace()).append(text);
 	}
 }

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.script.data;
 
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -47,7 +48,7 @@ public class VirtualKubeJSDataPack extends AbstractPackResources implements Expo
 	private VirtualKubeJSDataPack(boolean high) {
 		super(GeneratedResourcePack.PACK_LOCATION_INFO);
 		this.high = high;
-		this.name = Component.empty().append(KubeJS.NAME_COMPONENT).append(high ? " (High)" : " (Low)");
+		this.name = Component.empty().append(TextIcons.NAME).append(high ? " (High)" : " (Low)");
 
 		var id = high ? "kubejs_virtual_high" : "kubejs_virtual_low";
 		this.pack = new Pack(

@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs;
+package dev.latvian.mods.kubejs.plugin;
 
 import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
@@ -17,12 +17,10 @@ import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.ScriptManager;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.AttachedData;
-import dev.latvian.mods.kubejs.util.ClassFilter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
@@ -52,7 +50,7 @@ public interface KubeJSPlugin {
 	default void registerEvents(EventGroupRegistry registry) {
 	}
 
-	default void registerClasses(ScriptType type, ClassFilter filter) {
+	default void registerClasses(ClassFilter filter) {
 	}
 
 	default void registerBindings(BindingRegistry bindings) {

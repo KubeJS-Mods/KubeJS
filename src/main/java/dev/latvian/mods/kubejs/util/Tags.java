@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.util;
 
-import dev.latvian.mods.kubejs.item.ingredient.TagContext;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -40,36 +39,35 @@ public class Tags {
 		return generic(id, Registries.BIOME);
 	}
 
-	public static Stream<TagKey<Item>> byItemStack(Context cx, ItemStack stack) {
-		return byItem(cx, stack.getItem());
+	public static Stream<TagKey<Item>> byItemStack(ItemStack stack) {
+		return byItem(stack.getItem());
 	}
 
-	public static Stream<TagKey<Item>> byItem(Context cx, Item item) {
-		return forHolder(cx, item.builtInRegistryHolder());
+	public static Stream<TagKey<Item>> byItem(Item item) {
+		return forHolder(item.builtInRegistryHolder());
 	}
 
-	public static Stream<TagKey<Block>> byBlockState(Context cx, BlockState state) {
-		return byBlock(cx, state.getBlock());
+	public static Stream<TagKey<Block>> byBlockState(BlockState state) {
+		return byBlock(state.getBlock());
 	}
 
-	public static Stream<TagKey<Block>> byBlock(Context cx, Block block) {
-		return forHolder(cx, block.builtInRegistryHolder());
+	public static Stream<TagKey<Block>> byBlock(Block block) {
+		return forHolder(block.builtInRegistryHolder());
 	}
 
-	public static Stream<TagKey<Fluid>> byFluid(Context cx, Fluid fluid) {
-		return forHolder(cx, fluid.builtInRegistryHolder());
+	public static Stream<TagKey<Fluid>> byFluid(Fluid fluid) {
+		return forHolder(fluid.builtInRegistryHolder());
 	}
 
-	public static Stream<TagKey<EntityType<?>>> byEntity(Context cx, Entity entity) {
-		return byEntityType(cx, entity.getType());
+	public static Stream<TagKey<EntityType<?>>> byEntity(Entity entity) {
+		return byEntityType(entity.getType());
 	}
 
-	public static Stream<TagKey<EntityType<?>>> byEntityType(Context cx, EntityType<?> entityType) {
-		return forHolder(cx, entityType.builtInRegistryHolder());
+	public static Stream<TagKey<EntityType<?>>> byEntityType(EntityType<?> entityType) {
+		return forHolder(entityType.builtInRegistryHolder());
 	}
 
 	public static <T> Stream<TagKey<T>> forType(Context cx, T object, Registry<T> registry) {
-		warnIfUnbound(cx);
 		return registry.getResourceKey(object)
 			.flatMap(registry::getHolder)
 			.stream()
@@ -80,14 +78,7 @@ public class Tags {
 		return TagKey.create(registry, id);
 	}
 
-	private static <T> Stream<TagKey<T>> forHolder(Context cx, Holder.Reference<T> registryHolder) {
-		warnIfUnbound(cx);
+	private static <T> Stream<TagKey<T>> forHolder(Holder.Reference<T> registryHolder) {
 		return registryHolder.tags();
-	}
-
-	private static void warnIfUnbound(Context cx) {
-		if (!TagContext.INSTANCE.getValue().areTagsBound()) {
-			ConsoleJS.getCurrent(cx).warn("Tags have not been bound to registry yet! The values returned by this method may be outdated!", new Throwable());
-		}
 	}
 }

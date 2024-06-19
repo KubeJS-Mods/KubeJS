@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
-import dev.latvian.mods.kubejs.util.RegExpJS;
+import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import net.neoforged.neoforge.common.NeoForge;
@@ -33,7 +33,7 @@ public interface RecipeFilter {
 			} else if (s.equals("-")) {
 				return ConstantFilter.FALSE;
 			} else {
-				var r = RegExpJS.wrap(s);
+				var r = RegExpKJS.wrap(s);
 				return r == null ? new IDFilter(ID.mc(s)) : RegexIDFilter.of(r);
 			}
 		}
@@ -78,7 +78,7 @@ public interface RecipeFilter {
 			var id = map.get("id");
 
 			if (id != null) {
-				var pattern = RegExpJS.wrap(id);
+				var pattern = RegExpKJS.wrap(id);
 				predicate.list.add(pattern == null ? new IDFilter(ID.mc(id)) : RegexIDFilter.of(pattern));
 			}
 

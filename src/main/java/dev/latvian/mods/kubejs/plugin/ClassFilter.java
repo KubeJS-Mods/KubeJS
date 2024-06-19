@@ -1,5 +1,6 @@
-package dev.latvian.mods.kubejs.util;
+package dev.latvian.mods.kubejs.plugin;
 
+import dev.latvian.mods.kubejs.script.ScriptType;
 import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
 
 import java.util.ArrayList;
@@ -12,19 +13,21 @@ public class ClassFilter {
 	private static final byte V_DENY = 0;
 	private static final byte V_ALLOW = 1;
 
+	public final ScriptType scriptType;
 	private final Set<String> denyStrong;
 	private final List<String> denyWeak;
 	private final Set<String> allowStrong;
 	private final List<String> allowWeak;
 	private final Object2ByteOpenHashMap<String> cache;
 
-	public ClassFilter() {
-		denyStrong = new HashSet<>();
-		denyWeak = new ArrayList<>();
-		allowStrong = new HashSet<>();
-		allowWeak = new ArrayList<>();
-		cache = new Object2ByteOpenHashMap<>();
-		cache.defaultReturnValue(V_DEF);
+	public ClassFilter(ScriptType scriptType) {
+		this.scriptType = scriptType;
+		this.denyStrong = new HashSet<>();
+		this.denyWeak = new ArrayList<>();
+		this.allowStrong = new HashSet<>();
+		this.allowWeak = new ArrayList<>();
+		this.cache = new Object2ByteOpenHashMap<>();
+		this.cache.defaultReturnValue(V_DEF);
 	}
 
 	public void deny(String s) {

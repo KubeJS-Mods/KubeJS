@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.util.registrypredicate;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ID;
-import dev.latvian.mods.kubejs.util.RegExpJS;
+import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
@@ -27,7 +27,7 @@ public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
 		} else if (from instanceof RegistryPredicate<?> p) {
 			return p;
 		} else if (from instanceof Pattern || from instanceof NativeRegExp) {
-			return new RegistryRegExpPredicate<>(RegExpJS.wrap(from));
+			return new RegistryRegExpPredicate<>(RegExpKJS.wrap(from));
 		} else if (from instanceof CharSequence || from instanceof JsonPrimitive) {
 			var s = from instanceof JsonPrimitive p ? p.getAsString() : from.toString();
 
@@ -47,7 +47,7 @@ public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
 			} else if (s.startsWith("@")) {
 				return new RegistryNamespacePredicate<>(s.substring(1));
 			} else {
-				var pattern = RegExpJS.wrap(s);
+				var pattern = RegExpKJS.wrap(s);
 
 				if (pattern != null) {
 					return new RegistryRegExpPredicate<>(pattern);

@@ -1,7 +1,9 @@
 package dev.latvian.mods.kubejs.client;
 
+import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.item.ItemTooltipKubeEvent;
@@ -13,6 +15,13 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
@@ -57,8 +66,25 @@ public class KubeJSClientEventHandler {
 		}
 	}
 
+	private static <T> void appendComponentValue(DynamicOps<Tag> ops, MutableComponent line, DataComponentType<T> type, T value) {
+		if (value == null) {
+			line.append(Component.literal("null").kjs$red());
+			return;
+		} else if (value instanceof Component c) {
+			line.append(Component.empty().kjs$green().append(c));
+		}
+
+		try {
+			var tag = type.codecOrThrow().encodeStart(ops, value).getOrThrow();
+			line.append(NbtUtils.toPrettyComponent(tag));
+		} catch (Exception ex) {
+			line.append(Component.literal(String.valueOf(value)).kjs$green());
+		}
+	}
+
 	@SubscribeEvent
 	public static void onItemTooltip(ItemTooltipEvent event) {
+		var mc = Minecraft.getInstance();
 		var stack = event.getItemStack();
 		var lines = event.getToolTip();
 		var flag = event.getFlags();
@@ -69,7 +95,47 @@ public class KubeJSClientEventHandler {
 
 		var advanced = flag.isAdvanced();
 
-		if (advanced && ClientProperties.get().showTagNames && Screen.hasShiftDown()) {
+		if (mc.level != null && advanced && ClientProperties.get().showComponents && Screen.hasAltDown()) {
+			var components = BuiltInRegistries.DATA_COMPONENT_TYPE;
+			var ops = mc.level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+
+			for (var entry : stack.getComponentsPatch().entrySet()) {
+				var id = components.getKey(entry.getKey());
+
+				if (id != null) {
+					var line = Component.empty();
+					line.append(TextIcons.icon(Component.literal("Q.")));
+
+					if (entry.getValue().isEmpty()) {
+						line.append(Component.literal("!"));
+					}
+
+					line.append(Component.literal(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).kjs$yellow());
+
+					if (entry.getValue().isPresent()) {
+						line.append(Component.literal("="));
+						appendComponentValue(ops, line, (DataComponentType) entry.getKey(), entry.getValue().get());
+					}
+
+					lines.add(line);
+				}
+			}
+
+			if (Screen.hasShiftDown()) {
+				for (var type : stack.getPrototype()) {
+					var id = components.getKey(type.type());
+
+					if (id != null && stack.getComponentsPatch().get(type.type()) == null) {
+						var line = Component.empty();
+						line.append(TextIcons.icon(Component.literal("P.")));
+						line.append(Component.literal(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).kjs$gray());
+						line.append(Component.literal("="));
+						appendComponentValue(ops, line, (DataComponentType) type.type(), type.value());
+						lines.add(line);
+					}
+				}
+			}
+		} else if (advanced && ClientProperties.get().showTagNames && Screen.hasShiftDown()) {
 			var tempTagNames = new LinkedHashMap<ResourceLocation, TagInstance>();
 			TagInstance.Type.ITEM.append(tempTagNames, stack.getItem().builtInRegistryHolder().tags());
 
@@ -135,7 +201,7 @@ public class KubeJSClientEventHandler {
 		var mc = Minecraft.getInstance();
 
 		if (mc.screen == null) {
-			KubeHighlight.INSTANCE.afterEverything(mc, event.getPartialTick().getGameTimeDeltaPartialTick(false));
+			KubedexHighlight.INSTANCE.afterEverything(mc, event.getPartialTick().getGameTimeDeltaPartialTick(false));
 		}
 	}
 
@@ -144,16 +210,16 @@ public class KubeJSClientEventHandler {
 		var mc = Minecraft.getInstance();
 
 		if (event.getScreen() instanceof AbstractContainerScreen<?> screen) {
-			KubeHighlight.INSTANCE.screen(mc, event.getGuiGraphics(), screen, event.getMouseX(), event.getMouseY(), event.getPartialTick());
+			KubedexHighlight.INSTANCE.screen(mc, event.getGuiGraphics(), screen, event.getMouseX(), event.getMouseY(), event.getPartialTick());
 		}
 
-		KubeHighlight.INSTANCE.afterEverything(mc, event.getPartialTick());
+		KubedexHighlight.INSTANCE.afterEverything(mc, event.getPartialTick());
 	}
 
 	@SubscribeEvent
 	public static void clientTick(ClientTickEvent.Pre event) {
 		var mc = Minecraft.getInstance();
-		KubeHighlight.INSTANCE.tickPre(mc);
+		KubedexHighlight.INSTANCE.tickPre(mc);
 	}
 
 	@SubscribeEvent
@@ -161,9 +227,9 @@ public class KubeJSClientEventHandler {
 		var mc = Minecraft.getInstance();
 
 		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
-			KubeHighlight.INSTANCE.clearBuffers(mc);
+			KubedexHighlight.INSTANCE.clearBuffers(mc);
 		} else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
-			KubeHighlight.INSTANCE.renderAfterEntities(mc, event);
+			KubedexHighlight.INSTANCE.renderAfterEntities(mc, event);
 		}
 	}
 

@@ -93,7 +93,7 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 			throw new IllegalArgumentException("Can't add null builder in registry '" + registry + "'!");
 		}
 
-		if (DevProperties.get().debugInfo) {
+		if (DevProperties.get().logRegistryEventObjects) {
 			ConsoleJS.STARTUP.info("~ " + registry + " | " + builder.id);
 		}
 

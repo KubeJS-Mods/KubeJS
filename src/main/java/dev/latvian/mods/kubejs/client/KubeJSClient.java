@@ -141,10 +141,10 @@ public class KubeJSClient extends KubeJSCommon {
 	}
 
 	public static void loadPostChains(Minecraft mc) {
-		KubeHighlight.INSTANCE.loadPostChains(mc);
+		KubedexHighlight.INSTANCE.loadPostChains(mc);
 	}
 
 	public static void resizePostChains(int width, int height) {
-		KubeHighlight.INSTANCE.resizePostChains(width, height);
+		KubedexHighlight.INSTANCE.resizePostChains(width, height);
 	}
 }

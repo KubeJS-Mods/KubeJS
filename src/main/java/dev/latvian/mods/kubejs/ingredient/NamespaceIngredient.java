@@ -7,14 +7,14 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.Nullable;
 
-public record ModIngredient(String mod) implements KubeJSIngredient {
-	public static final MapCodec<ModIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-		Codec.STRING.fieldOf("mod").forGetter(ModIngredient::mod)
-	).apply(instance, ModIngredient::new));
+public record NamespaceIngredient(String mod) implements KubeJSIngredient {
+	public static final MapCodec<NamespaceIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+		Codec.STRING.fieldOf("namespace").forGetter(NamespaceIngredient::mod)
+	).apply(instance, NamespaceIngredient::new));
 
 	@Override
 	public IngredientType<?> getType() {
-		return KubeJSIngredients.MOD.get();
+		return KubeJSIngredients.NAMESPACE.get();
 	}
 
 	@Override

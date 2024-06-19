@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.CountingMap;
 import dev.latvian.mods.kubejs.util.Lazy;
-import dev.latvian.mods.kubejs.util.RegExpJS;
+import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import net.minecraft.Util;
@@ -65,7 +65,7 @@ public interface UtilsWrapper {
 
 	@Info("Returns a regex pattern of the input")
 	static Pattern regex(Object s) {
-		var pattern = RegExpJS.wrap(s);
+		var pattern = RegExpKJS.wrap(s);
 		return pattern == null ? Pattern.compile(s.toString()) : pattern;
 	}
 

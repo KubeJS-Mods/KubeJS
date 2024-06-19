@@ -11,7 +11,6 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.net.DisplayClientErrorsPayload;
 import dev.latvian.mods.kubejs.net.DisplayServerErrorsPayload;
 import dev.latvian.mods.kubejs.net.ReloadStartupScriptsPayload;
@@ -268,8 +267,8 @@ public class KubeJSCommands {
 		if (ServerEvents.BASIC_COMMAND.hasListeners(id)) {
 			var result = ServerEvents.BASIC_COMMAND.post(new BasicCommandKubeEvent(source.getLevel(), source.getEntity(), BlockPos.containing(source.getPosition()), id, input.trim()), id);
 
-			if (result.type() == EventResult.Type.ERROR) {
-				source.sendFailure(Component.literal(result.value().toString()));
+			if (result.value() instanceof Throwable ex) {
+				source.sendFailure(Component.literal(ex.toString()));
 				return 0;
 			}
 
