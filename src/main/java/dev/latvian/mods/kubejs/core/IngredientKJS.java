@@ -17,7 +17,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 @RemapPrefixForJS("kjs$")
-public interface IngredientKJS extends IngredientSupplierKJS, ItemPredicate, InputReplacement, WithCodec {
+public interface IngredientKJS extends ItemPredicate, InputReplacement, WithCodec {
 	default Ingredient kjs$self() {
 		throw new NoMixinException();
 	}
@@ -35,8 +35,8 @@ public interface IngredientKJS extends IngredientSupplierKJS, ItemPredicate, Inp
 		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : IngredientHelper.get().or(new Ingredient[]{kjs$self(), ingredient});
 	}
 
-	default Ingredient kjs$subtract(Ingredient subtracted) {
-		return IngredientHelper.get().subtract(kjs$self(), subtracted);
+	default Ingredient kjs$except(Ingredient subtracted) {
+		return IngredientHelper.get().except(kjs$self(), subtracted);
 	}
 
 	default SizedIngredient kjs$asStack() {

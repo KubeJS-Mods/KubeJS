@@ -143,6 +143,9 @@ public class KubedexHighlight {
 	public RenderTarget renderInput;
 
 	@Nullable
+	public RenderTarget mcDepthInput;
+
+	@Nullable
 	public RenderTarget renderOutput;
 
 	@Nullable
@@ -157,6 +160,7 @@ public class KubedexHighlight {
 			postChain.close();
 			postChain = null;
 			renderInput = null;
+			mcDepthInput = null;
 			renderOutput = null;
 		}
 
@@ -166,6 +170,7 @@ public class KubedexHighlight {
 			postChain = new PostChain(mc.getTextureManager(), mc.getResourceManager(), mc.getMainRenderTarget(), id);
 			postChain.resize(mc.getWindow().getWidth(), mc.getWindow().getHeight());
 			renderInput = postChain.getTempTarget("input");
+			mcDepthInput = postChain.getTempTarget("mcdepth");
 			renderOutput = postChain.getTempTarget("output");
 		} catch (IOException ex) {
 			KubeJS.LOGGER.warn("Failed to load shader: {}", id, ex);

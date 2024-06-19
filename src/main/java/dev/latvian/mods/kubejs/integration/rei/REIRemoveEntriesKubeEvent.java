@@ -42,6 +42,11 @@ public class REIRemoveEntriesKubeEvent implements RemoveEntriesKubeEvent {
 	}
 
 	@Override
+	public void removeAll() {
+		rule.hide(Arrays.asList(allEntries));
+	}
+
+	@Override
 	public Object[] getAllEntryValues() {
 		if (allValues == null) {
 			allValues = new Object[allEntries.length];

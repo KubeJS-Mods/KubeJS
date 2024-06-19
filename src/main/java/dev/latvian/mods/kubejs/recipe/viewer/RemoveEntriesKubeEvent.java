@@ -8,5 +8,7 @@ public interface RemoveEntriesKubeEvent extends KubeEvent {
 
 	void removeDirectly(Context cx, Object filter);
 
+	void removeAll();
+
 	Object[] getAllEntryValues();
 }

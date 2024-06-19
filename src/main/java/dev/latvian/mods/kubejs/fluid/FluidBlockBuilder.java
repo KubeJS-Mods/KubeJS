@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 public class FluidBlockBuilder extends BlockBuilder {
-	private final FluidBuilder fluidBuilder;
+	public final FluidBuilder fluidBuilder;
 
 	public FluidBlockBuilder(FluidBuilder b) {
 		super(b.id);
@@ -25,7 +25,7 @@ public class FluidBlockBuilder extends BlockBuilder {
 
 	@Override
 	public Block createObject() {
-		return new LiquidBlock(fluidBuilder.get(), Block.Properties.ofFullCopy(Blocks.WATER).noCollission().strength(100.0F).noLootTable());
+		return new LiquidBlock(fluidBuilder.get(), Block.Properties.ofFullCopy(Blocks.WATER).noCollission().strength(100F).noLootTable());
 	}
 
 	@Override

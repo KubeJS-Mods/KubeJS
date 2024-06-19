@@ -14,7 +14,6 @@ import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
-import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
@@ -101,51 +100,14 @@ public interface IngredientJS {
 			return Ingredient.EMPTY;
 		} else if (s.equals("*")) {
 			return IngredientHelper.get().wildcard();
-		} else if (s.startsWith("#")) {
-			return IngredientHelper.get().tag(registries.cachedItemTags, ID.mc(s.substring(1)));
-		} else if (s.startsWith("@")) {
-			return IngredientHelper.get().mod(s.substring(1));
-		} else if (s.startsWith("%")) {
-			var group = UtilsJS.findCreativeTab(ResourceLocation.parse(s.substring(1)));
-
-			if (group == null) {
-				if (KubeRecipe.itemErrors) {
-					throw new RecipeExceptionJS("Item group '" + s.substring(1) + "' not found!").error();
-				}
-
+		} else {
+			try {
+				return read(registries, new StringReader(s));
+			} catch (CommandSyntaxException e) {
+				KubeJS.LOGGER.error("Failed to read ingredient from '" + s + "': " + e);
 				return Ingredient.EMPTY;
 			}
-
-			return IngredientHelper.get().creativeTab(group);
 		}
-
-		var reg = RegExpKJS.wrap(s);
-
-		if (reg != null) {
-			return IngredientHelper.get().regex(reg);
-		}
-
-		var i = s.indexOf('[');
-
-		if (i != -1) {
-			KubeJS.LOGGER.warn("Ingredient with components: " + s);
-			s = s.substring(0, i);
-		}
-
-		i = s.indexOf('{');
-
-		if (i != -1) {
-			KubeJS.LOGGER.warn("Ingredient with components: " + s);
-			s = s.substring(0, i);
-		}
-
-		var item = RegistryInfo.ITEM.getValue(ResourceLocation.parse(s));
-
-		if (item == null || item == Items.AIR) {
-			return Ingredient.EMPTY;
-		}
-
-		return item.kjs$asIngredient();
 	}
 
 	static Ingredient ofJson(RegistryAccessContainer registries, JsonElement json) {

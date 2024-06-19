@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.BaseFunction;
@@ -8,13 +9,14 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
 @RemapPrefixForJS("kjs$")
-public interface ItemPredicate extends Predicate<ItemStack> {
+public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierKJS {
 	TypeInfo TYPE_INFO = TypeInfo.of(ItemPredicate.class);
 	ItemPredicate NONE = stack -> false;
 	ItemPredicate ALL = stack -> true;
@@ -125,5 +127,10 @@ public interface ItemPredicate extends Predicate<ItemStack> {
 	 */
 	default boolean kjs$canBeUsedForMatching() {
 		return true;
+	}
+
+	@Override
+	default Ingredient kjs$asIngredient() {
+		return Ingredient.of(kjs$getStackArray());
 	}
 }

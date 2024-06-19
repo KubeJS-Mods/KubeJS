@@ -1,13 +1,24 @@
 {
 	"targets": [
 		"input",
-		"output"
+		"output",
+		"mcdepth"
 	],
 	"passes": [
 		{
 			"name": "kubejs/highlight",
 			"intarget": "input",
-			"outtarget": "output"
+			"outtarget": "output",
+			"auxtargets": [
+				{
+					"name": "DiffuseDepthSampler",
+					"id": "input:depth"
+				},
+				{
+					"name": "MCDepthSampler",
+					"id": "mcdepth:depth"
+				}
+			]
 		}
 	]
 }

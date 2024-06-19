@@ -4,10 +4,12 @@ import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.NativeArray;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 
 import java.util.List;
 
@@ -52,10 +54,13 @@ public interface HolderWrapper {
 				return HolderSet.empty();
 			} else if (s.charAt(0) == '@') {
 				return new NamespaceHolderSet<>(registry.asLookup(), s.substring(1));
+			} else if (s.charAt(0) == '#') {
+				var tagKey = TagKey.create((ResourceKey) registry.key(), ResourceLocation.parse(s.substring(1)));
+				return (HolderSet) registry.getTag(tagKey).orElse(HolderSet.empty());
 			}
 		}
 
-		if (from instanceof NativeArray || from instanceof Iterable<?>) {
+		if (from instanceof Iterable<?>) {
 			var holder = (List) cx.jsToJava(from, TypeInfo.RAW_LIST.withParams(HOLDER.withParams(param)));
 			return HolderSet.direct(holder);
 		} else {

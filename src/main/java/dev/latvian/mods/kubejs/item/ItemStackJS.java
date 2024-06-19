@@ -43,6 +43,7 @@ import java.util.regex.Pattern;
 
 public interface ItemStackJS {
 	ItemStack[] EMPTY_ARRAY = new ItemStack[0];
+	TypeInfo ITEM_TYPE_INFO = TypeInfo.of(Item.class);
 	TypeInfo TYPE_INFO = TypeInfo.of(ItemStack.class);
 
 	Lazy<List<String>> CACHED_ITEM_TYPE_LIST = Lazy.of(() -> {

@@ -336,6 +336,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		filter.allow("dev.latvian.mods.kubejs"); // KubeJS
 		filter.deny("dev.latvian.mods.kubejs.script");
+		filter.deny("dev.latvian.mods.kubejs.plugin");
 		filter.deny("dev.latvian.mods.kubejs.mixin");
 		filter.deny(KubeJSPlugin.class);
 		filter.deny(KubeJSPlugins.class);

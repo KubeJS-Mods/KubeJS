@@ -140,7 +140,7 @@ unifiedPublishing {
 		]
 		gameLoaders = ["neoforge"]
 		displayName = "$mod_name NeoForge $project.version"
-		changelog = 'Changelog not available'
+		changelog = "https://kubejs.com/changelog?mc=${project.minecraft_version}"
 		mainPublication remapJar
 
 		relations {

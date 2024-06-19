@@ -50,7 +50,7 @@ public enum IngredientHelper {
 		return new CreativeTabIngredient(tab).toVanilla();
 	}
 
-	public Ingredient subtract(Ingredient base, Ingredient subtracted) {
+	public Ingredient except(Ingredient base, Ingredient subtracted) {
 		return DifferenceIngredient.of(base, subtracted);
 	}
 

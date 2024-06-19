@@ -25,6 +25,7 @@ public interface KubeJSNet {
 	CustomPacketPayload.Type<RequestItemKubedexPayload> REQUEST_ITEM_KUBEDEX = type("request_item_kubedex");
 	CustomPacketPayload.Type<RequestBlockKubedexPayload> REQUEST_BLOCK_KUBEDEX = type("request_block_kubedex");
 	CustomPacketPayload.Type<RequestEntityKubedexPayload> REQUEST_ENTITY_KUBEDEX = type("request_entity_kubedex");
+	CustomPacketPayload.Type<SyncRecipeViewerDataPayload> SYNC_RECIPE_VIEWER = type("sync_recipe_viewer");
 
 	@SubscribeEvent
 	static void register(RegisterPayloadHandlersEvent event) {
@@ -45,5 +46,6 @@ public interface KubeJSNet {
 		reg.playToServer(REQUEST_ITEM_KUBEDEX, RequestItemKubedexPayload.STREAM_CODEC, RequestItemKubedexPayload::handle);
 		reg.playToServer(REQUEST_BLOCK_KUBEDEX, RequestBlockKubedexPayload.STREAM_CODEC, RequestBlockKubedexPayload::handle);
 		reg.playToServer(REQUEST_ENTITY_KUBEDEX, RequestEntityKubedexPayload.STREAM_CODEC, RequestEntityKubedexPayload::handle);
+		reg.playToClient(SYNC_RECIPE_VIEWER, SyncRecipeViewerDataPayload.STREAM_CODEC, SyncRecipeViewerDataPayload::handle);
 	}
 }

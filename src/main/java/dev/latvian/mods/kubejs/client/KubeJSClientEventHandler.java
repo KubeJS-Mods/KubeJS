@@ -230,6 +230,14 @@ public class KubeJSClientEventHandler {
 			KubedexHighlight.INSTANCE.clearBuffers(mc);
 		} else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
 			KubedexHighlight.INSTANCE.renderAfterEntities(mc, event);
+		} else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
+			var depth = KubedexHighlight.INSTANCE.mcDepthInput;
+
+			if (depth != null) {
+				depth.bindWrite(false);
+				depth.clear(Minecraft.ON_OSX);
+				depth.copyDepthFrom(mc.getMainRenderTarget());
+			}
 		}
 	}
 

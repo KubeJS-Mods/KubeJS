@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.client.KubeJSResourcePackFinder;
 import dev.latvian.mods.kubejs.client.KubedexHighlight;
 import dev.latvian.mods.kubejs.client.MenuScreenRegistryKubeEvent;
+import dev.latvian.mods.kubejs.fluid.FluidBlockBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.gui.KubeJSMenus;
@@ -65,7 +66,7 @@ public class KubeJSNeoForgeClient {
 
 		for (var builder : RegistryInfo.BLOCK) {
 			if (builder instanceof BlockBuilder b) {
-				switch (b.renderType) {
+				switch (b instanceof FluidBlockBuilder fb ? fb.fluidBuilder.fluidType.renderType : b.renderType) {
 					// TODO: Move these to model json
 					case CUTOUT -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.cutout());
 					case CUTOUT_MIPPED -> ItemBlockRenderTypes.setRenderLayer(b.get(), RenderType.cutoutMipped());
@@ -130,7 +131,7 @@ public class KubeJSNeoForgeClient {
 
 	@SubscribeEvent
 	public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
-		event.register(KubedexHighlight.keyMapping = new KeyMapping("key.kubejs", KeyConflictContext.UNIVERSAL, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, KeyMapping.CATEGORY_MISC));
+		event.register(KubedexHighlight.keyMapping = new KeyMapping("key.kubejs.kubedex", KeyConflictContext.UNIVERSAL, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "key.categories.kubejs"));
 	}
 
 	@SubscribeEvent

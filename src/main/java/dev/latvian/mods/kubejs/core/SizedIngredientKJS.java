@@ -9,7 +9,7 @@ import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
-public interface SizedIngredientKJS extends InputReplacement {
+public interface SizedIngredientKJS extends InputReplacement, IngredientSupplierKJS {
 	default SizedIngredient kjs$self() {
 		return (SizedIngredient) (Object) this;
 	}
@@ -27,5 +27,10 @@ public interface SizedIngredientKJS extends InputReplacement {
 
 	default ChancedIngredient kjs$withChance(FloatProvider chance) {
 		return new ChancedIngredient(kjs$self().ingredient(), kjs$self().count(), chance);
+	}
+
+	@Override
+	default Ingredient kjs$asIngredient() {
+		return kjs$self().ingredient();
 	}
 }

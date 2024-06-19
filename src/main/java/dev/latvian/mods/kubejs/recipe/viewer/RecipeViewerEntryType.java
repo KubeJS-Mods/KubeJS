@@ -10,6 +10,9 @@ import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +23,7 @@ import java.util.Map;
  * Note: predicateType has to be able to be cast to {@link java.util.function.Predicate} of entryType
  */
 public class RecipeViewerEntryType {
-	public static final RecipeViewerEntryType ITEM = new RecipeViewerEntryType("item", ItemStackJS.TYPE_INFO, ItemPredicate.TYPE_INFO) {
+	public static final RecipeViewerEntryType ITEM = new RecipeViewerEntryType("item", ItemStackJS.TYPE_INFO, ItemPredicate.TYPE_INFO, ItemStackJS.ITEM_TYPE_INFO) {
 		@Override
 		public Object wrapEntry(Context cx, Object from) {
 			return ItemStackJS.wrap(((KubeJSContext) cx).getRegistries(), from);
@@ -30,9 +33,14 @@ public class RecipeViewerEntryType {
 		public Object wrapPredicate(Context cx, Object from) {
 			return ItemPredicate.wrap(cx, from);
 		}
+
+		@Override
+		public Object getBase(Object from) {
+			return ((ItemStack) from).getItem();
+		}
 	};
 
-	public static final RecipeViewerEntryType FLUID = new RecipeViewerEntryType("fluid", FluidWrapper.TYPE_INFO, FluidWrapper.INGREDIENT_TYPE_INFO) {
+	public static final RecipeViewerEntryType FLUID = new RecipeViewerEntryType("fluid", FluidWrapper.TYPE_INFO, FluidWrapper.INGREDIENT_TYPE_INFO, FluidWrapper.FLUID_TYPE_INFO) {
 		@Override
 		public Object wrapEntry(Context cx, Object from) {
 			return FluidWrapper.wrap(((KubeJSContext) cx).getRegistries(), from);
@@ -41,6 +49,11 @@ public class RecipeViewerEntryType {
 		@Override
 		public Object wrapPredicate(Context cx, Object from) {
 			return FluidWrapper.wrapIngredient(((KubeJSContext) cx).getRegistries(), from);
+		}
+
+		@Override
+		public Object getBase(Object from) {
+			return ((FluidStack) from).getFluid();
 		}
 	};
 
@@ -58,22 +71,32 @@ public class RecipeViewerEntryType {
 		return List.copyOf(list);
 	});
 
-	public static final Extra<RecipeViewerEntryType> EXTRA = Extra.create(RecipeViewerEntryType.class).transformer(id -> switch (id == null ? "" : id.toString()) {
-		case null -> null;
-		case "" -> null;
-		case "item" -> ITEM;
-		case "fluid" -> FLUID;
-		default -> CUSTOM_TYPES.get().get(String.valueOf(id));
-	}).identity();
+	public static RecipeViewerEntryType fromString(@Nullable Object id) {
+		return switch (id == null ? "" : id.toString()) {
+			case null -> null;
+			case "" -> null;
+			case "item" -> ITEM;
+			case "fluid" -> FLUID;
+			default -> CUSTOM_TYPES.get().get(String.valueOf(id));
+		};
+	}
+
+	public static final Extra<RecipeViewerEntryType> EXTRA = Extra.create(RecipeViewerEntryType.class).transformer(RecipeViewerEntryType::fromString).identity();
 
 	public final String id;
 	public final TypeInfo entryType;
 	public final TypeInfo predicateType;
+	public final TypeInfo baseClass;
 
-	public RecipeViewerEntryType(String id, TypeInfo entryType, TypeInfo predicateType) {
+	public RecipeViewerEntryType(String id, TypeInfo entryType, TypeInfo predicateType, TypeInfo baseClass) {
 		this.id = id;
 		this.entryType = entryType;
 		this.predicateType = predicateType;
+		this.baseClass = baseClass;
+	}
+
+	public RecipeViewerEntryType(String id, TypeInfo entryType, TypeInfo predicateType) {
+		this(id, entryType, predicateType, TypeInfo.NONE);
 	}
 
 	public Object wrapEntry(Context cx, Object from) {
@@ -82,5 +105,9 @@ public class RecipeViewerEntryType {
 
 	public Object wrapPredicate(Context cx, Object from) {
 		return cx.jsToJava(from, predicateType);
+	}
+
+	public Object getBase(Object from) {
+		return from;
 	}
 }

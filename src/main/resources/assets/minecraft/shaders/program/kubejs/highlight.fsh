@@ -1,19 +1,31 @@
 #version 150
 
 uniform sampler2D DiffuseSampler;
-uniform float Time;
+uniform sampler2D DiffuseDepthSampler;
+uniform sampler2D MCDepthSampler;
 
 in vec2 texCoord;
 in vec2 sampleStep;
+in vec2 ScreenPosition;
 
 out vec4 fragColor;
 
 void main() {
 	vec4 hl = texture(DiffuseSampler, texCoord);
-	// 0.6, 1.0, 0.7
 
 	if (hl.a > 0.005) {
-		fragColor = vec4(hl.r, hl.g, hl.b, 0.3);
+		if (texture(DiffuseDepthSampler, texCoord).r - texture(MCDepthSampler, texCoord).r > 0.0001) {
+			vec2 Pos = floor(ScreenPosition / 3.0);
+			float f = mod(Pos.x + mod(Pos.y, 2.0), 2.0) * 0.3;
+
+			if (f < 0.0001) {
+				discard;
+			} else {
+				fragColor = vec4(hl.r, hl.g, hl.b, 0.3);
+			}
+		} else {
+			fragColor = vec4(hl.r, hl.g, hl.b, 0.3);
+		}
 	} else {
 		float a = 0.0;
 		float r = 1.0;

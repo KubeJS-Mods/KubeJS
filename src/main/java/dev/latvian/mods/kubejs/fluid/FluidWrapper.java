@@ -24,6 +24,7 @@ import java.util.List;
 
 public interface FluidWrapper {
 	TypeInfo TYPE_INFO = TypeInfo.of(FluidStack.class);
+	TypeInfo FLUID_TYPE_INFO = TypeInfo.of(Fluid.class);
 	TypeInfo INGREDIENT_TYPE_INFO = TypeInfo.of(FluidIngredient.class);
 	TypeInfo SIZED_INGREDIENT_TYPE_INFO = TypeInfo.of(SizedFluidIngredient.class);
 
