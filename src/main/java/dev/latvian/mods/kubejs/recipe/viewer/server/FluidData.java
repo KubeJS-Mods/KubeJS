@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.viewer.server;
 
+import dev.latvian.mods.kubejs.util.MutableBoolean;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -49,7 +50,7 @@ public record FluidData(
 
 	public static FluidData collect() {
 		var addedEntries = new ArrayList<FluidStack>();
-		var removeAll = false;
+		var removeAll = new MutableBoolean(false);
 		var removedEntries = new ArrayList<FluidIngredient>();
 		var directlyRemovedEntries = new ArrayList<FluidIngredient>();
 		var groupedEntries = new ArrayList<Group>();
@@ -57,11 +58,15 @@ public record FluidData(
 
 		return new FluidData(
 			List.copyOf(addedEntries),
-			removeAll,
+			removeAll.value,
 			List.copyOf(removedEntries),
 			List.copyOf(directlyRemovedEntries),
 			List.copyOf(groupedEntries),
 			List.copyOf(info)
 		);
+	}
+
+	public boolean isEmpty() {
+		return addedEntries.isEmpty() && !removeAll && removedEntries.isEmpty() && directlyRemovedEntries.isEmpty() && groupedEntries.isEmpty() && info.isEmpty();
 	}
 }

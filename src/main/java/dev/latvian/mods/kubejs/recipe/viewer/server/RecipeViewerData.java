@@ -1,12 +1,15 @@
 package dev.latvian.mods.kubejs.recipe.viewer.server;
 
+import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public record RecipeViewerData(
@@ -25,17 +28,35 @@ public record RecipeViewerData(
 		RecipeViewerData::new
 	);
 
+	@Nullable
 	public static RecipeViewerData collect() {
-		var removedCategories = new ArrayList<ResourceLocation>();
-		var removedGlobalRecipes = new ArrayList<ResourceLocation>();
+		var removedCategories = new HashSet<ResourceLocation>();
+		var removedGlobalRecipes = new HashSet<ResourceLocation>();
 		var categoryData = new HashMap<ResourceLocation, CategoryData>();
 
-		return new RecipeViewerData(
-			ItemData.collect(),
-			FluidData.collect(),
+		if (RecipeViewerEvents.REMOVE_CATEGORIES.hasListeners()) {
+			RecipeViewerEvents.REMOVE_CATEGORIES.post(ScriptType.SERVER, new ServerRemoveCategoriesKubeEvent(removedCategories));
+		}
+
+		if (RecipeViewerEvents.REMOVE_RECIPES.hasListeners()) {
+			RecipeViewerEvents.REMOVE_RECIPES.post(ScriptType.SERVER, new ServerRemoveRecipesKubeEvent(removedGlobalRecipes, categoryData));
+		}
+
+		var itemData = ItemData.collect();
+		var fluidData = FluidData.collect();
+
+		var data = new RecipeViewerData(
+			itemData,
+			fluidData,
 			List.copyOf(removedCategories),
 			List.copyOf(removedGlobalRecipes),
 			List.copyOf(categoryData.values().stream().map(CategoryData::lock).toList())
 		);
+
+		return data.isEmpty() ? null : data;
+	}
+
+	public boolean isEmpty() {
+		return itemData.isEmpty() && fluidData.isEmpty() && removedCategories.isEmpty() && removedGlobalRecipes.isEmpty() && categoryData.isEmpty();
 	}
 }

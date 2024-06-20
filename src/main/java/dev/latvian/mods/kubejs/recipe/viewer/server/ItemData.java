@@ -1,5 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.viewer.server;
 
+import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
+import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
+import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.MutableBoolean;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -49,19 +53,39 @@ public record ItemData(
 
 	public static ItemData collect() {
 		var addedEntries = new ArrayList<ItemStack>();
-		var removeAll = false;
+		var removeAll = new MutableBoolean(false);
 		var removedEntries = new ArrayList<Ingredient>();
 		var directlyRemovedEntries = new ArrayList<Ingredient>();
 		var groupedEntries = new ArrayList<Group>();
 		var info = new ArrayList<Info>();
 
+		if (RecipeViewerEvents.ADD_ENTRIES.hasListeners(RecipeViewerEntryType.ITEM)) {
+			RecipeViewerEvents.ADD_ENTRIES.post(ScriptType.SERVER, RecipeViewerEntryType.ITEM, new ServerAddItemEntriesKubeEvent(addedEntries));
+		}
+
+		if (RecipeViewerEvents.REMOVE_ENTRIES.hasListeners(RecipeViewerEntryType.ITEM)) {
+			RecipeViewerEvents.REMOVE_ENTRIES.post(ScriptType.SERVER, RecipeViewerEntryType.ITEM, new ServerRemoveItemEntriesKubeEvent(removedEntries, directlyRemovedEntries, removeAll));
+		}
+
+		if (RecipeViewerEvents.GROUP_ENTRIES.hasListeners(RecipeViewerEntryType.ITEM)) {
+			RecipeViewerEvents.GROUP_ENTRIES.post(ScriptType.SERVER, RecipeViewerEntryType.ITEM, new ServerGroupItemEntriesKubeEvent(groupedEntries));
+		}
+
+		if (RecipeViewerEvents.ADD_INFORMATION.hasListeners(RecipeViewerEntryType.ITEM)) {
+			RecipeViewerEvents.ADD_INFORMATION.post(ScriptType.SERVER, RecipeViewerEntryType.ITEM, new ServerAddItemInformationKubeEvent(info));
+		}
+
 		return new ItemData(
 			List.copyOf(addedEntries),
-			removeAll,
+			removeAll.value,
 			List.copyOf(removedEntries),
 			List.copyOf(directlyRemovedEntries),
 			List.copyOf(groupedEntries),
 			List.copyOf(info)
 		);
+	}
+
+	public boolean isEmpty() {
+		return addedEntries.isEmpty() && !removeAll && removedEntries.isEmpty() && directlyRemovedEntries.isEmpty() && groupedEntries.isEmpty() && info.isEmpty();
 	}
 }

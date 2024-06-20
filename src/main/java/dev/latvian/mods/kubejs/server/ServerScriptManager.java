@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
+import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerData;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.DataPackKubeEvent;
@@ -62,6 +63,7 @@ public class ServerScriptManager extends ScriptManager {
 	public final RegistryAccessContainer registries;
 	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
 	public final RecipeSchemaStorage recipeSchemaStorage;
+	public RecipeViewerData recipeViewerData;
 
 	private ServerScriptManager(RegistryAccessContainer registries) {
 		super(ScriptType.SERVER);
@@ -201,15 +203,17 @@ public class ServerScriptManager extends ScriptManager {
 			ServerEvents.COMPOSTABLE_RECIPES.post(ScriptType.SERVER, new CompostableRecipesKubeEvent());
 		}
 
+		boolean result = false;
+		RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.setValue(registries.cachedItemTags);
 		recipeSchemaStorage.fireEvents(resourceManager);
 
 		if (ServerEvents.RECIPES.hasListeners()) {
-			RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.setValue(registries.cachedItemTags);
 			new RecipesKubeEvent(this).post(recipeManager, map);
-			RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.setValue(null);
-			return true;
+			result = true;
 		}
 
-		return false;
+		recipeViewerData = RecipeViewerData.collect();
+		RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.setValue(null);
+		return result;
 	}
 }

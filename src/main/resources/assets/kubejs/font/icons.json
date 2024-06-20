@@ -68,6 +68,12 @@
 		},
 		{
 			"type": "bitmap",
+			"file": "kubejs:font/icons/error.png",
+			"ascent": 7,
+			"chars": ["R"]
+		},
+		{
+			"type": "bitmap",
 			"file": "kubejs:font/icons/patched_component.png",
 			"ascent": 7,
 			"chars": ["Q"]

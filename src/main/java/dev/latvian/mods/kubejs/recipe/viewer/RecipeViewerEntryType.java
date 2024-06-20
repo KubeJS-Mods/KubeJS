@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.viewer;
 
+import dev.latvian.mods.kubejs.core.FluidKJS;
 import dev.latvian.mods.kubejs.event.Extra;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
@@ -10,20 +11,34 @@ import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Note: predicateType has to be able to be cast to {@link java.util.function.Predicate} of entryType
  */
 public class RecipeViewerEntryType {
-	public static final RecipeViewerEntryType ITEM = new RecipeViewerEntryType("item", ItemStackJS.TYPE_INFO, ItemPredicate.TYPE_INFO, ItemStackJS.ITEM_TYPE_INFO) {
+	public record Component<T>(TypeInfo type, StreamCodec<?, T> streamCodec, Predicate<T> empty) {
+	}
+
+	public static final RecipeViewerEntryType ITEM = new RecipeViewerEntryType("item",
+		new Component<>(ItemStackJS.TYPE_INFO, ItemStack.STREAM_CODEC, ItemStack::isEmpty),
+		new Component<>(ItemPredicate.TYPE_INFO, Ingredient.CONTENTS_STREAM_CODEC, Ingredient::isEmpty),
+		new Component<>(ItemStackJS.ITEM_TYPE_INFO, ByteBufCodecs.registry(Registries.ITEM), i -> i == Items.AIR)
+	) {
 		@Override
 		public Object wrapEntry(Context cx, Object from) {
 			return ItemStackJS.wrap(((KubeJSContext) cx).getRegistries(), from);
@@ -40,7 +55,11 @@ public class RecipeViewerEntryType {
 		}
 	};
 
-	public static final RecipeViewerEntryType FLUID = new RecipeViewerEntryType("fluid", FluidWrapper.TYPE_INFO, FluidWrapper.INGREDIENT_TYPE_INFO, FluidWrapper.FLUID_TYPE_INFO) {
+	public static final RecipeViewerEntryType FLUID = new RecipeViewerEntryType("fluid",
+		new Component<>(FluidWrapper.TYPE_INFO, FluidStack.STREAM_CODEC, FluidStack::isEmpty),
+		new Component<>(FluidWrapper.INGREDIENT_TYPE_INFO, FluidIngredient.STREAM_CODEC, FluidIngredient::isEmpty),
+		new Component<>(FluidWrapper.FLUID_TYPE_INFO, ByteBufCodecs.registry(Registries.FLUID), FluidKJS::kjs$isEmpty)
+	) {
 		@Override
 		public Object wrapEntry(Context cx, Object from) {
 			return FluidWrapper.wrap(((KubeJSContext) cx).getRegistries(), from);
@@ -84,27 +103,23 @@ public class RecipeViewerEntryType {
 	public static final Extra<RecipeViewerEntryType> EXTRA = Extra.create(RecipeViewerEntryType.class).transformer(RecipeViewerEntryType::fromString).identity();
 
 	public final String id;
-	public final TypeInfo entryType;
-	public final TypeInfo predicateType;
-	public final TypeInfo baseClass;
+	public final Component<?> entryType;
+	public final Component<?> predicateType;
+	public final Component<?> baseClass;
 
-	public RecipeViewerEntryType(String id, TypeInfo entryType, TypeInfo predicateType, TypeInfo baseClass) {
+	public RecipeViewerEntryType(String id, Component<?> entryType, Component<?> predicateType, @Nullable Component<?> baseClass) {
 		this.id = id;
 		this.entryType = entryType;
 		this.predicateType = predicateType;
 		this.baseClass = baseClass;
 	}
 
-	public RecipeViewerEntryType(String id, TypeInfo entryType, TypeInfo predicateType) {
-		this(id, entryType, predicateType, TypeInfo.NONE);
-	}
-
 	public Object wrapEntry(Context cx, Object from) {
-		return cx.jsToJava(from, entryType);
+		return cx.jsToJava(from, entryType.type);
 	}
 
 	public Object wrapPredicate(Context cx, Object from) {
-		return cx.jsToJava(from, predicateType);
+		return cx.jsToJava(from, predicateType.type);
 	}
 
 	public Object getBase(Object from) {

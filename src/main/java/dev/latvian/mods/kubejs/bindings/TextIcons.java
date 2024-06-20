@@ -61,6 +61,10 @@ public interface TextIcons {
 		return icon(Component.literal("Q"));
 	}
 
+	static MutableComponent error() {
+		return icon(Component.literal("R"));
+	}
+
 	static MutableComponent tag() {
 		return icon(Component.literal("T"));
 	}

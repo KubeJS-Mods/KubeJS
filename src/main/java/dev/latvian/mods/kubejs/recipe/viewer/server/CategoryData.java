@@ -5,6 +5,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public record CategoryData(
@@ -17,7 +19,11 @@ public record CategoryData(
 		CategoryData::new
 	);
 
+	public CategoryData(ResourceLocation category) {
+		this(category, new ArrayList<>());
+	}
+
 	public CategoryData lock() {
-		return new CategoryData(category, List.copyOf(removedRecipes));
+		return new CategoryData(category, List.copyOf(new HashSet<>(removedRecipes)));
 	}
 }
