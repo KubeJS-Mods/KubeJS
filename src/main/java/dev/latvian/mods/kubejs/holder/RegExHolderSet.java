@@ -7,69 +7,68 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderOwner;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
 import net.neoforged.neoforge.registries.holdersets.ICustomHolderSet;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
-public record RegExHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup, Pattern pattern) implements ICustomHolderSet<T> {
+public class RegExHolderSet<T> extends HolderSet.ListBacked<T> implements ICustomHolderSet<T> {
 	public static <T> MapCodec<RegExHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
-			RegistryOps.retrieveRegistryLookup(registryKey).fieldOf("registry").forGetter(RegExHolderSet::registryLookup),
-			RegExpKJS.CODEC.fieldOf("pattern").forGetter(RegExHolderSet::pattern)
+			RegistryOps.retrieveRegistryLookup(registryKey).fieldOf("registry").forGetter(s -> s.registryLookup),
+			RegExpKJS.CODEC.fieldOf("pattern").forGetter(s -> s.pattern)
 		).apply(instance, RegExHolderSet::new));
+	}
+
+	public final HolderLookup.RegistryLookup<T> registryLookup;
+	public final Pattern pattern;
+
+	@Nullable
+	private Set<Holder<T>> set = null;
+
+	@Nullable
+	private List<Holder<T>> list = null;
+
+	public RegExHolderSet(HolderLookup.RegistryLookup<T> registryLookup, Pattern pattern) {
+		this.registryLookup = registryLookup;
+		this.pattern = pattern;
 	}
 
 	@Override
 	public HolderSetType type() {
-		// return KubeJSHolderSets.REGEX.value();
-		return null;
+		return KubeJSHolderSets.REGEX.value();
 	}
 
 	@Override
-	public Stream<Holder<T>> stream() {
-		return Stream.empty();
-	}
+	protected List<Holder<T>> contents() {
+		if (list == null) {
+			list = List.copyOf(registryLookup.listElements().filter(ref -> pattern.matcher(ref.key().location().toString()).find()).toList());
+		}
 
-	@Override
-	public int size() {
-		return 0;
+		return list;
 	}
 
 	@Override
 	public Either<TagKey<T>, List<Holder<T>>> unwrap() {
-		return null;
-	}
-
-	@Override
-	public Optional<Holder<T>> getRandomElement(RandomSource random) {
-		return Optional.empty();
-	}
-
-	@Override
-	public Holder<T> get(int index) {
-		return null;
+		return Either.right(contents());
 	}
 
 	@Override
 	public boolean contains(Holder<T> holder) {
-		return false;
-	}
+		if (set == null) {
+			set = Set.copyOf(contents());
+		}
 
-	@Override
-	public boolean canSerializeIn(HolderOwner<T> owner) {
-		return false;
+		return set.contains(holder);
 	}
 
 	@Override
@@ -77,9 +76,8 @@ public record RegExHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup, P
 		return Optional.empty();
 	}
 
-	@NotNull
 	@Override
-	public Iterator<Holder<T>> iterator() {
-		return null;
+	public String toString() {
+		return "KubeJSRegExHolderSet[" + RegExpKJS.toRegExpString(pattern) + ']';
 	}
 }

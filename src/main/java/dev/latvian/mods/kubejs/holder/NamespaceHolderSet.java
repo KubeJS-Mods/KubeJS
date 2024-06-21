@@ -6,68 +6,67 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderOwner;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
 import net.neoforged.neoforge.registries.holdersets.ICustomHolderSet;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.Set;
 
-public record NamespaceHolderSet<T>(HolderLookup.RegistryLookup<T> registryLookup, String namespace) implements ICustomHolderSet<T> {
+public class NamespaceHolderSet<T> extends HolderSet.ListBacked<T> implements ICustomHolderSet<T> {
 	public static <T> MapCodec<NamespaceHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
-			RegistryOps.retrieveRegistryLookup(registryKey).fieldOf("registry").forGetter(NamespaceHolderSet::registryLookup),
-			Codec.STRING.fieldOf("namespace").forGetter(NamespaceHolderSet::namespace)
+			RegistryOps.retrieveRegistryLookup(registryKey).fieldOf("registry").forGetter(s -> s.registryLookup),
+			Codec.STRING.fieldOf("namespace").forGetter(s -> s.namespace)
 		).apply(instance, NamespaceHolderSet::new));
+	}
+
+	public final HolderLookup.RegistryLookup<T> registryLookup;
+	public final String namespace;
+
+	@Nullable
+	private Set<Holder<T>> set = null;
+
+	@Nullable
+	private List<Holder<T>> list = null;
+
+	public NamespaceHolderSet(HolderLookup.RegistryLookup<T> registryLookup, String namespace) {
+		this.registryLookup = registryLookup;
+		this.namespace = namespace;
 	}
 
 	@Override
 	public HolderSetType type() {
-		// return KubeJSHolderSets.NAMESPACE.value();
-		return null;
+		return KubeJSHolderSets.NAMESPACE.value();
 	}
 
 	@Override
-	public Stream<Holder<T>> stream() {
-		return Stream.empty();
-	}
+	protected List<Holder<T>> contents() {
+		if (list == null) {
+			list = List.copyOf(registryLookup.listElements().filter(ref -> ref.key().location().getNamespace().equals(namespace)).toList());
+		}
 
-	@Override
-	public int size() {
-		return 0;
+		return list;
 	}
 
 	@Override
 	public Either<TagKey<T>, List<Holder<T>>> unwrap() {
-		return null;
-	}
-
-	@Override
-	public Optional<Holder<T>> getRandomElement(RandomSource random) {
-		return Optional.empty();
-	}
-
-	@Override
-	public Holder<T> get(int index) {
-		return null;
+		return Either.right(contents());
 	}
 
 	@Override
 	public boolean contains(Holder<T> holder) {
-		return false;
-	}
+		if (set == null) {
+			set = Set.copyOf(contents());
+		}
 
-	@Override
-	public boolean canSerializeIn(HolderOwner<T> owner) {
-		return false;
+		return set.contains(holder);
 	}
 
 	@Override
@@ -75,9 +74,8 @@ public record NamespaceHolderSet<T>(HolderLookup.RegistryLookup<T> registryLooku
 		return Optional.empty();
 	}
 
-	@NotNull
 	@Override
-	public Iterator<Holder<T>> iterator() {
-		return null;
+	public String toString() {
+		return "KubeJSNamespaceHolderSet[" + namespace + ']';
 	}
 }

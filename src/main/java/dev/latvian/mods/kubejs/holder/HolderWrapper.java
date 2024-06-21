@@ -56,7 +56,7 @@ public interface HolderWrapper {
 				return new NamespaceHolderSet<>(registry.asLookup(), s.substring(1));
 			} else if (s.charAt(0) == '#') {
 				var tagKey = TagKey.create((ResourceKey) registry.key(), ResourceLocation.parse(s.substring(1)));
-				return (HolderSet) registry.getTag(tagKey).orElse(HolderSet.empty());
+				return registry.getOrCreateTag(tagKey);
 			}
 		}
 
