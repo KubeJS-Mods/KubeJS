@@ -18,8 +18,6 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.Desktop;
@@ -168,7 +166,6 @@ public class KubeJSErrorScreen extends Screen {
 		}
 	}
 
-	@OnlyIn(Dist.CLIENT)
 	public static class Entry extends ObjectSelectionList.Entry<Entry> {
 		private final ErrorList errorList;
 		private final Minecraft minecraft;

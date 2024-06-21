@@ -440,10 +440,12 @@ public class KubedexHighlight {
 		mc.getMainRenderTarget().bindWrite(false);
 	}
 
-	public void afterEverything(Minecraft mc, float delta) {
+	public void afterEverything(Minecraft mc, GuiGraphics graphics, float delta) {
 		if (renderOutput == null || postChain == null || !renderAnything) {
 			return;
 		}
+
+		graphics.flush();
 
 		postChain.process(delta);
 		mc.getMainRenderTarget().bindWrite(false);

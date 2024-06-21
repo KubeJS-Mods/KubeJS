@@ -1,13 +1,10 @@
 package dev.latvian.mods.kubejs.recipe.special;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionHolder;
-import it.unimi.dsi.fastutil.chars.CharArraySet;
-import it.unimi.dsi.fastutil.chars.CharSet;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -15,14 +12,12 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
-import java.util.Optional;
 
 public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRecipe {
 	private final boolean mirror;
@@ -138,34 +133,5 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 		public StreamCodec<RegistryFriendlyByteBuf, ShapedKubeJSRecipe> streamCodec() {
 			return STREAM_CODEC;
 		}
-	}
-
-	private static DataResult<ShapedRecipePattern> unpackNoShrink(ShapedRecipePattern.Data data) {
-		var pattern = data.pattern();
-		// we can assume that the pattern is rectangular
-		// because the codec has already validated that
-		var width = pattern.getFirst().length();
-		var height = pattern.size();
-		NonNullList<Ingredient> nonNullList = NonNullList.withSize(width * height, Ingredient.EMPTY);
-		CharSet charSet = new CharArraySet(data.key().keySet());
-
-		for (int row = 0; row < pattern.size(); ++row) {
-			String string = pattern.get(row);
-
-			for (int cell = 0; cell < string.length(); ++cell) {
-				char symbol = string.charAt(cell);
-				Ingredient ingredient = symbol == ' ' ? Ingredient.EMPTY : data.key().get(symbol);
-				if (ingredient == null) {
-					return DataResult.error(() -> "Pattern references symbol '" + symbol + "' but it's not defined in the key");
-				}
-
-				charSet.remove(symbol);
-				nonNullList.set(cell + width * row, ingredient);
-			}
-		}
-
-		return !charSet.isEmpty()
-			? DataResult.error(() -> "Key defines symbols that aren't used in pattern: " + charSet)
-			: DataResult.success(new ShapedRecipePattern(width, height, nonNullList, Optional.of(data)));
 	}
 }

@@ -202,7 +202,7 @@ public class KubeJSClientEventHandler {
 		var mc = Minecraft.getInstance();
 
 		if (mc.screen == null) {
-			KubedexHighlight.INSTANCE.afterEverything(mc, event.getPartialTick().getGameTimeDeltaPartialTick(false));
+			KubedexHighlight.INSTANCE.afterEverything(mc, event.getGuiGraphics(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
 		}
 	}
 
@@ -214,7 +214,7 @@ public class KubeJSClientEventHandler {
 			KubedexHighlight.INSTANCE.screen(mc, event.getGuiGraphics(), screen, event.getMouseX(), event.getMouseY(), event.getPartialTick());
 		}
 
-		KubedexHighlight.INSTANCE.afterEverything(mc, event.getPartialTick());
+		KubedexHighlight.INSTANCE.afterEverything(mc, event.getGuiGraphics(), event.getPartialTick());
 	}
 
 	@SubscribeEvent
@@ -238,6 +238,7 @@ public class KubeJSClientEventHandler {
 				depth.bindWrite(false);
 				depth.clear(Minecraft.ON_OSX);
 				depth.copyDepthFrom(mc.getMainRenderTarget());
+				mc.getMainRenderTarget().bindWrite(false);
 			}
 		}
 	}
