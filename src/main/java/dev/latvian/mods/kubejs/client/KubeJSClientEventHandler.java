@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.item.ItemTooltipKubeEvent;
+import dev.latvian.mods.kubejs.kubedex.KubedexHighlight;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.client.Minecraft;

@@ -44,6 +44,7 @@ public class RecipeSchema {
 	private int minRequiredArguments;
 	private Int2ObjectMap<RecipeConstructor> constructors;
 	public Function<KubeRecipe, String> uniqueIdFunction;
+	boolean hidden;
 
 	/**
 	 * Defines a new recipe schema that creates recipes of the given {@link KubeRecipe} subclass.
@@ -92,6 +93,7 @@ public class RecipeSchema {
 		}
 
 		this.uniqueIdFunction = DEFAULT_UNIQUE_ID_FUNCTION;
+		this.hidden = false;
 	}
 
 	public RecipeSchema factory(KubeRecipeFactory factory) {
@@ -202,6 +204,10 @@ public class RecipeSchema {
 
 	public int outputCount() {
 		return outputCount;
+	}
+
+	public boolean isHidden() {
+		return hidden;
 	}
 
 	public KubeRecipe deserialize(RecipeTypeFunction type, @Nullable ResourceLocation id, JsonObject json) {

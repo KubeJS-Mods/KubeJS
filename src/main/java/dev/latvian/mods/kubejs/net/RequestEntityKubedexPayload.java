@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.net;
 
-import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.kubedex.KubedexPayloadHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -21,14 +21,7 @@ public record RequestEntityKubedexPayload(int entityId) implements CustomPacketP
 
 	public void handle(IPayloadContext ctx) {
 		if (ctx.player() instanceof ServerPlayer serverPlayer && serverPlayer.hasPermissions(2)) {
-			ctx.enqueueWork(() -> {
-				var registries = serverPlayer.server.registryAccess();
-				var entity = serverPlayer.level().getEntity(entityId);
-
-				if (entity != null) {
-					KubeJS.LOGGER.info("[Kubedex][" + serverPlayer.getScoreboardName() + "] Entity " + entity.getName().getString() + " #" + entityId + " " + entity.serializeNBT(registries));
-				}
-			});
+			ctx.enqueueWork(() -> KubedexPayloadHandler.entity(serverPlayer, entityId));
 		}
 	}
 }

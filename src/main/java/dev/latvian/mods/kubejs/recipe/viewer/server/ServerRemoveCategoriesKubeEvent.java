@@ -22,6 +22,6 @@ public class ServerRemoveCategoriesKubeEvent implements RemoveCategoriesKubeEven
 
 	@Override
 	public Collection<ResourceLocation> getCategories() {
-		throw new IllegalStateException("Not available on server side!");
+		throw new UnsupportedOperationException("Not available on server side!");
 	}
 }

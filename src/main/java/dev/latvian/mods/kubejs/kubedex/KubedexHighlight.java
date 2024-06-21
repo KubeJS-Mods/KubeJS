@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.client;
+package dev.latvian.mods.kubejs.kubedex;
 
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.net.RequestBlockKubedexPayload;
 import dev.latvian.mods.kubejs.net.RequestEntityKubedexPayload;
-import dev.latvian.mods.kubejs.net.RequestItemKubedexPayload;
+import dev.latvian.mods.kubejs.net.RequestInventoryKubedexPayload;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
@@ -24,11 +24,13 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -206,33 +208,45 @@ public class KubedexHighlight {
 		}
 	}
 
+	private void requestBlock(BlockPos pos) {
+		PacketDistributor.sendToServer(new RequestBlockKubedexPayload(pos));
+	}
+
+	private void requestEntity(Entity entity) {
+		PacketDistributor.sendToServer(new RequestEntityKubedexPayload(entity.getId()));
+	}
+
+	private void requestInventory(Set<Slot> slots) {
+		var slotIds = new ArrayList<Integer>();
+		var stacks = new ArrayList<ItemStack>();
+
+		for (var slot : slots) {
+			if (slot.container instanceof Inventory) {
+				slotIds.add(slot.getSlotIndex());
+			} else {
+				stacks.add(slot.getItem());
+			}
+		}
+
+		PacketDistributor.sendToServer(new RequestInventoryKubedexPayload(slotIds, stacks));
+	}
+
 	private void keyToggled(Minecraft mc, Mode newMode, boolean success) {
 		if (newMode == Mode.NONE) {
 			if (mode == Mode.SCREEN) {
 				if (success && !hoveredSlots.isEmpty()) {
-					var slots = new ArrayList<Integer>();
-					var stacks = new ArrayList<ItemStack>();
-
-					for (var slot : hoveredSlots) {
-						if (slot.container instanceof Inventory) {
-							slots.add(slot.getSlotIndex());
-						} else {
-							stacks.add(slot.getItem());
-						}
-					}
-
 					playSound(mc);
-					PacketDistributor.sendToServer(new RequestItemKubedexPayload(slots, stacks));
+					requestInventory(hoveredSlots);
 				}
 
 				hoveredSlots.clear();
 			} else if (success) {
 				if (mc.hitResult instanceof EntityHitResult hit && hit.getType() == HitResult.Type.ENTITY) {
 					playSound(mc);
-					PacketDistributor.sendToServer(new RequestEntityKubedexPayload(hit.getEntity().getId()));
+					requestEntity(hit.getEntity());
 				} else if (mc.hitResult instanceof BlockHitResult hit && hit.getType() == HitResult.Type.BLOCK) {
 					playSound(mc);
-					PacketDistributor.sendToServer(new RequestBlockKubedexPayload(hit.getBlockPos()));
+					requestBlock(hit.getBlockPos());
 				}
 			}
 		}

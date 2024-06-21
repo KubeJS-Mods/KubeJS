@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.core;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JavaOps;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -15,15 +14,11 @@ import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import dev.latvian.mods.rhino.util.ToStringJS;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -53,6 +48,7 @@ public interface ItemStackKJS extends
 	IngredientSupplierKJS,
 	ToStringJS,
 	OutputReplacement,
+	MutableDataComponentHolderKJS,
 	RegistryObjectKJS<Item> {
 	default ItemStack kjs$self() {
 		return (ItemStack) this;
@@ -133,67 +129,9 @@ public interface ItemStackKJS extends
 		return DataComponentWrapper.patchToString(new StringBuilder(), cx.getNbtOps(), kjs$self().getComponentsPatch()).toString();
 	}
 
-	@ReturnsSelf
-	default ItemStack kjs$set(DataComponentType<?> component, Object value) {
-		var is = kjs$self();
-
-		if (value == null || Undefined.isUndefined(value)) {
-			is.remove(component);
-		} else {
-			var c = component.codec();
-
-			if (c != null) {
-				is.set((DataComponentType) component, component.codec().parse(JavaOps.INSTANCE, value).getOrThrow());
-			} else {
-				is.set((DataComponentType) component, value);
-			}
-		}
-
-		return is;
-	}
-
-	@ReturnsSelf
-	default ItemStack kjs$remove(DataComponentType<?> component) {
-		var is = kjs$self();
-		is.remove(component);
-		return is;
-	}
-
-	@ReturnsSelf
-	default ItemStack kjs$set(DataComponentMap components) {
-		var is = kjs$self();
-		is.applyComponents(components);
-		return is;
-	}
-
-	@ReturnsSelf
-	default ItemStack kjs$applyPatch(DataComponentPatch components) {
-		var is = kjs$self();
-		is.applyComponents(components);
-		return is;
-	}
-
-	@ReturnsSelf
-	default ItemStack kjs$setCustomName(@Nullable Component name) {
-		var is = kjs$self();
-
-		if (name != null) {
-			is.set(DataComponents.CUSTOM_NAME, name);
-		} else {
-			is.remove(DataComponents.CUSTOM_NAME);
-		}
-
-		return is;
-	}
-
-	@Nullable
-	default Component kjs$getCustomName() {
-		return kjs$self().get(DataComponents.CUSTOM_NAME);
-	}
-
 	@ReturnsSelf(copy = true)
 	default ItemStack kjs$withCustomName(@Nullable Component name) {
-		return kjs$self().copy().kjs$setCustomName(name);
+		return (ItemStack) kjs$self().copy().kjs$setCustomName(name);
 	}
 
 	@ReturnsSelf

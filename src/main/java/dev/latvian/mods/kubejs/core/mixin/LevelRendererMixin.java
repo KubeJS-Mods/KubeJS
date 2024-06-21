@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.core.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
-import dev.latvian.mods.kubejs.client.KubedexHighlight;
+import dev.latvian.mods.kubejs.kubedex.KubedexHighlight;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;

@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.net;
 
-import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.kubedex.KubedexPayloadHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
@@ -21,20 +21,7 @@ public record RequestBlockKubedexPayload(BlockPos pos) implements CustomPacketPa
 
 	public void handle(IPayloadContext ctx) {
 		if (ctx.player() instanceof ServerPlayer serverPlayer && serverPlayer.hasPermissions(2)) {
-			ctx.enqueueWork(() -> {
-				var registries = serverPlayer.server.registryAccess();
-				var blockState = serverPlayer.level().getBlockState(pos);
-
-				if (!blockState.isAir()) {
-					KubeJS.LOGGER.info("[Kubedex][" + serverPlayer.getScoreboardName() + "] Block State " + blockState + " @ " + pos);
-				}
-
-				var blockEntity = serverPlayer.level().getBlockEntity(pos);
-
-				if (blockEntity != null) {
-					KubeJS.LOGGER.info("[Kubedex][" + serverPlayer.getScoreboardName() + "] Block Entity " + blockEntity.saveWithoutMetadata(registries));
-				}
-			});
+			ctx.enqueueWork(() -> KubedexPayloadHandler.block(serverPlayer, pos));
 		}
 	}
 }

@@ -39,6 +39,7 @@
 		"MenuTypeMixin",
 		"MinecraftServerMixin",
 		"MutableComponentMixin",
+		"MutableDataComponentHolderMixin",
 		"NumericTagMixin",
 		"PlayerListMixin",
 		"PlayerMixin",

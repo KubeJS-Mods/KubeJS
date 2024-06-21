@@ -3,93 +3,80 @@ package dev.latvian.mods.kubejs.integration.jei;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.recipe.viewer.RemoveRecipesKubeEvent;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JEIRemoveRecipesKubeEvent implements RemoveRecipesKubeEvent {
-	private final IJeiRuntime runtime;
-	private final Map<IRecipeCategory, Collection<ResourceLocation>> recipesRemoved;
-	private final Map<ResourceLocation, IRecipeCategory> categoryById;
+	private final IRecipeManager recipeManager;
+	private final Map<ResourceLocation, IRecipeCategory> categories;
+	private final Set<ResourceLocation> removedGlobal;
+	private final Map<IRecipeCategory, Collection<ResourceLocation>> removed;
 
-	public JEIRemoveRecipesKubeEvent(IJeiRuntime r) {
-		this.runtime = r;
-		this.recipesRemoved = new IdentityHashMap<>();
-		this.categoryById = runtime.getRecipeManager().createRecipeCategoryLookup()
-			.get()
-			.collect(Collectors.toMap(cat -> cat.getRecipeType().getUid(), Function.identity()));
+	public JEIRemoveRecipesKubeEvent(IRecipeManager recipeManager, Map<ResourceLocation, IRecipeCategory<?>> categories) {
+		this.recipeManager = recipeManager;
+		this.categories = (Map) categories;
+		this.removedGlobal = new HashSet<>();
+		this.removed = new IdentityHashMap<>();
 	}
 
 	@Override
 	public Collection<ResourceLocation> getCategories() {
-		return categoryById.keySet();
+		return categories.keySet();
 	}
 
 	@Override
 	public void remove(Context cx, ResourceLocation[] recipesToRemove) {
-		for (var category : categoryById.values()) {
-			recipesRemoved.computeIfAbsent(category, _0 -> new HashSet<>()).addAll(Set.of(recipesToRemove));
+		for (var cat : categories.values()) {
+			removed.computeIfAbsent(cat, _0 -> new HashSet<>()).addAll(Arrays.asList(recipesToRemove));
 		}
 	}
 
 	@Override
 	public void removeFromCategory(Context cx, ResourceLocation category, ResourceLocation[] recipesToRemove) {
-		for (var toRemove : recipesToRemove) {
-			var cat = categoryById.get(category);
+		var cat = categories.get(category);
 
-			if (cat == null) {
-				ConsoleJS.CLIENT.warn("Failed to remove recipes for type '" + category + "': Category doesn't exist! Use event.categories to get a list of all categories.");
-				continue;
-			}
-
-			recipesRemoved.computeIfAbsent(cat, _0 -> new HashSet<>()).add(toRemove);
+		if (cat == null) {
+			KubeJS.LOGGER.info("Failed to remove recipes for type '" + category + "': Category doesn't exist! Use event.categories to get a list of all categories.");
+			return;
 		}
+
+		removed.computeIfAbsent(cat, _0 -> new HashSet<>()).addAll(Arrays.asList(recipesToRemove));
 	}
 
 	@Override
 	public void afterPosted(EventResult result) {
-		var rm = runtime.getRecipeManager();
-		for (var cat : recipesRemoved.keySet()) {
-			var type = cat.getRecipeType();
-			var allRecipes = rm.createRecipeLookup(cat.getRecipeType()).get().toList();
-			var ids = recipesRemoved.get(cat);
-			var recipesHidden = new HashSet<>(ids.size());
+		for (var cat : categories.values()) {
+			var removedCat = removed.get(cat);
 
-			for (var id : ids) {
-				var found = false;
-				for (var recipe : allRecipes) {
-					var recipeId = cat.getRegistryName(recipe);
+			if ((removedCat == null || removedCat.isEmpty()) && removedGlobal.isEmpty()) {
+				continue;
+			}
 
-					if (recipeId == null) {
-						KubeJS.LOGGER.warn("Failed to remove recipe {} for type {}: Category does not support removal by id!", id, type);
-						break;
-					}
+			var allRecipes = recipeManager.createRecipeLookup(cat.getRecipeType()).get().toList();
+			var removedRecipes = new ArrayList<>();
 
-					if (recipeId.equals(id)) {
-						found = true;
-						recipesHidden.add(recipe);
-						break;
-					}
+			for (var recipe : allRecipes) {
+				var id = cat.getRegistryName(recipe);
 
-				}
-
-				if (!found) {
-					KubeJS.LOGGER.warn("Failed to remove recipe {} for type {}: Recipe doesn't exist!", id, type);
+				if (id != null && ((removedCat != null && removedCat.contains(id)) || removedGlobal.contains(id))) {
+					removedRecipes.add(recipe);
 				}
 			}
 
-			rm.hideRecipes(type, recipesHidden);
+			if (!removedRecipes.isEmpty()) {
+				recipeManager.hideRecipes(cat.getRecipeType(), removedRecipes);
+			}
 		}
 	}
 }

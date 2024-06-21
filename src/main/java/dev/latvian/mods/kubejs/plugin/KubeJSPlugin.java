@@ -16,6 +16,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
+import dev.latvian.mods.kubejs.script.DataComponentTypeInfoRegistry;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
@@ -81,6 +82,9 @@ public interface KubeJSPlugin {
 	}
 
 	default void registerRecipeViewerEntryTypes(Consumer<RecipeViewerEntryType> registry) {
+	}
+
+	default void registerDataComponentTypeDescriptions(DataComponentTypeInfoRegistry registry) {
 	}
 
 	default void attachServerData(AttachedData<MinecraftServer> event) {

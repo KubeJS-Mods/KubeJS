@@ -13,18 +13,18 @@ import java.util.HashSet;
 import java.util.List;
 
 public record RecipeViewerData(
-	ItemData itemData,
-	FluidData fluidData,
 	List<ResourceLocation> removedCategories,
 	List<ResourceLocation> removedGlobalRecipes,
-	List<CategoryData> categoryData
+	List<CategoryData> categoryData,
+	ItemData itemData,
+	FluidData fluidData
 ) {
 	public static final StreamCodec<RegistryFriendlyByteBuf, RecipeViewerData> STREAM_CODEC = StreamCodec.composite(
-		ItemData.STREAM_CODEC, RecipeViewerData::itemData,
-		FluidData.STREAM_CODEC, RecipeViewerData::fluidData,
 		ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()), RecipeViewerData::removedCategories,
 		ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()), RecipeViewerData::removedGlobalRecipes,
 		CategoryData.STREAM_CODEC.apply(ByteBufCodecs.list()), RecipeViewerData::categoryData,
+		ItemData.STREAM_CODEC, RecipeViewerData::itemData,
+		FluidData.STREAM_CODEC, RecipeViewerData::fluidData,
 		RecipeViewerData::new
 	);
 
@@ -46,11 +46,11 @@ public record RecipeViewerData(
 		var fluidData = FluidData.collect();
 
 		var data = new RecipeViewerData(
-			itemData,
-			fluidData,
 			List.copyOf(removedCategories),
 			List.copyOf(removedGlobalRecipes),
-			List.copyOf(categoryData.values().stream().map(CategoryData::lock).toList())
+			List.copyOf(categoryData.values().stream().map(CategoryData::lock).toList()),
+			itemData,
+			fluidData
 		);
 
 		return data.isEmpty() ? null : data;

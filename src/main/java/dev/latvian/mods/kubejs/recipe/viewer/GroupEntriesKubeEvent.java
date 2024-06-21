@@ -6,5 +6,5 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 public interface GroupEntriesKubeEvent extends KubeEvent {
-	void group(Context cx, ResourceLocation groupId, Component description, Object filter);
+	void group(Context cx, Object filter, ResourceLocation groupId, Component description);
 }

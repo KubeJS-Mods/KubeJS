@@ -7,7 +7,11 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.Collection;
 
 public interface RemoveRecipesKubeEvent extends KubeEvent {
-	void remove(Context cx, ResourceLocation[] recipesToRemove);
+	default void remove(Context cx, ResourceLocation[] recipesToRemove) {
+		for (var category : getCategories()) {
+			removeFromCategory(cx, category, recipesToRemove);
+		}
+	}
 
 	void removeFromCategory(Context cx, ResourceLocation category, ResourceLocation[] recipesToRemove);
 

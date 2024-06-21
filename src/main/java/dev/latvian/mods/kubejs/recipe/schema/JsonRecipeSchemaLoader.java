@@ -32,6 +32,7 @@ public class JsonRecipeSchemaLoader {
 		private Map<String, FunctionBuilder> functions;
 		private KubeRecipeFactory recipeFactory;
 		private List<String> unique;
+		private boolean hidden;
 		private RecipeSchema schema;
 
 		private RecipeSchemaBuilder(ResourceLocation id, JsonObject json) {
@@ -86,6 +87,16 @@ public class JsonRecipeSchemaLoader {
 				return parent.getUnique();
 			} else {
 				return List.of();
+			}
+		}
+
+		private boolean isHidden() {
+			if (hidden) {
+				return true;
+			} else if (parent != null) {
+				return parent.isHidden();
+			} else {
+				return false;
 			}
 		}
 
@@ -193,6 +204,8 @@ public class JsonRecipeSchemaLoader {
 
 						schema.uniqueIds(uniqueKeys);
 					}
+
+					schema.hidden = isHidden();
 				} else if (parent != null) {
 					schema = parent.getSchema();
 				} else {
@@ -225,6 +238,10 @@ public class JsonRecipeSchemaLoader {
 		}
 
 		for (var holder : map.values()) {
+			if (holder.json.has("hidden")) {
+				holder.hidden = holder.json.get("hidden").getAsBoolean();
+			}
+
 			holder.parent = holder.json.has("parent") ? map.get(ResourceLocation.parse(holder.json.get("parent").getAsString())) : null;
 
 			if (holder.json.has("factory")) {

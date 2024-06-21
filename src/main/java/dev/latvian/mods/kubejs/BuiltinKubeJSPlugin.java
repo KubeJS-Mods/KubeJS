@@ -125,6 +125,7 @@ import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
+import dev.latvian.mods.kubejs.script.DataComponentTypeInfoRegistry;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
@@ -633,5 +634,10 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		ItemStackJS.CACHED_ITEM_MAP.forget();
 		ItemStackJS.CACHED_ITEM_LIST.forget();
 		ItemStackJS.CACHED_ITEM_TYPE_LIST.forget();
+	}
+
+	@Override
+	public void registerDataComponentTypeDescriptions(DataComponentTypeInfoRegistry registry) {
+		// DataComponents.ATTRIBUTE_MODIFIERS
 	}
 }

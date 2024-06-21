@@ -54,6 +54,10 @@ repositories {
 	mavenCentral()
 
 	maven {
+		url "https://maven.neoforged.net/releases"
+	}
+
+	maven {
 		url "https://maven.architectury.dev/"
 	}
 
@@ -62,10 +66,6 @@ repositories {
 		content {
 			includeGroup "dev.latvian.mods"
 		}
-	}
-
-	maven {
-		url "https://maven.neoforged.net/releases"
 	}
 
 	maven {
@@ -80,6 +80,17 @@ repositories {
 	maven {
 		name = 'ParchmentMC'
 		url = 'https://maven.parchmentmc.org'
+		content {
+			includeGroup "org.parchmentmc.data"
+		}
+	}
+
+	maven {
+		name = "TerraformersMC"
+		url = "https://maven.terraformersmc.com/"
+		content {
+			includeGroup "dev.emi"
+		}
 	}
 }
 
@@ -95,8 +106,9 @@ dependencies {
 	modApi("dev.architectury:architectury-neoforge:$architectury_version")
 	modApi("dev.latvian.mods:rhino:$rhino_version") { transitive(false) }
 
-	modCompileOnly("mezz.jei:jei-1.21-neoforge:$jei_version") { transitive(false) }
-	modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version") { transitive(false) }
+	modCompileOnly("mezz.jei:jei-1.21-neoforge:$jei_version")
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version")
+	modCompileOnly("dev.emi:emi-neoforge:$emi_version:api")
 }
 
 processResources {

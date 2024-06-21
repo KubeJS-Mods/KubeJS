@@ -25,10 +25,11 @@ public class ServerRemoveRecipesKubeEvent implements RemoveRecipesKubeEvent {
 
 	@Override
 	public void removeFromCategory(Context cx, ResourceLocation category, ResourceLocation[] recipesToRemove) {
+		categoryData.computeIfAbsent(category, CategoryData::new).removedRecipes().addAll(Arrays.asList(recipesToRemove));
 	}
 
 	@Override
 	public Collection<ResourceLocation> getCategories() {
-		throw new IllegalStateException("Not available on server side!");
+		throw new UnsupportedOperationException("Not available on server side!");
 	}
 }

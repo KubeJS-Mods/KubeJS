@@ -17,18 +17,18 @@ public class JEIRemoveEntriesKubeEvent implements RemoveEntriesKubeEvent {
 	private final RecipeViewerEntryType type;
 	private final IIngredientType ingredientType;
 	private final Collection<Object> hidden;
-	private final Object[] allIngredients;
+	private final List<Object> allIngredients;
 
 	public JEIRemoveEntriesKubeEvent(IJeiRuntime r, RecipeViewerEntryType type, IIngredientType<?> t) {
 		this.runtime = r;
 		this.type = type;
 		this.ingredientType = t;
 		this.hidden = new HashSet<>();
-		this.allIngredients = runtime.getIngredientManager().getAllIngredients(ingredientType).toArray();
+		this.allIngredients = List.copyOf(runtime.getIngredientManager().getAllIngredients(ingredientType));
 	}
 
 	@Override
-	public Object[] getAllEntryValues() {
+	public List<Object> getAllEntryValues() {
 		return allIngredients;
 	}
 
@@ -41,15 +41,6 @@ public class JEIRemoveEntriesKubeEvent implements RemoveEntriesKubeEvent {
 				hidden.add(value);
 			}
 		}
-	}
-
-	@Override
-	public void removeDirectly(Context cx, Object filter) {
-	}
-
-	@Override
-	public void removeAll() {
-		hidden.addAll(List.of(allIngredients));
 	}
 
 	@Override

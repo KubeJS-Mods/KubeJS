@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
+import dev.latvian.mods.kubejs.kubedex.KubedexHighlight;
 import dev.latvian.mods.kubejs.net.NetworkKubeEvent;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;

@@ -5,11 +5,12 @@ import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.recipe.viewer.RegisterSubtypesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.viewer.SubtypeInterpreter;
 import dev.latvian.mods.rhino.Context;
+import me.shedaniel.rei.api.common.entry.comparison.EntryComparator;
 import me.shedaniel.rei.api.common.entry.comparison.ItemComparatorRegistry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 
-import java.util.Objects;
+import java.util.List;
 
 public class REIRegisterItemSubtypesKubeEvent implements RegisterSubtypesKubeEvent {
 	private final ItemComparatorRegistry registry;
@@ -35,22 +36,8 @@ public class REIRegisterItemSubtypesKubeEvent implements RegisterSubtypesKubeEve
 	}
 
 	@Override
-	public void useComponents(Context cx, Object filter) {
+	public void useComponents(Context cx, Object filter, List<DataComponentType<?>> components) {
 		var in = (ItemPredicate) RecipeViewerEntryType.ITEM.wrapPredicate(cx, filter);
-		registry.registerComponents(in.kjs$getItemTypes().toArray(new Item[0]));
-	}
-
-	@Override
-	public void useComponents(Context cx, Object filter, DataComponentType<?>[] components) {
-		var in = (ItemPredicate) RecipeViewerEntryType.ITEM.wrapPredicate(cx, filter);
-		registry.register((ctx, stack) -> {
-			long hash = 1L;
-
-			for (var component : components) {
-				hash = hash * 31 + (Objects.hashCode(component) ^ Objects.hashCode(stack.get(component)));
-			}
-
-			return hash;
-		}, in.kjs$getItemTypes().toArray(new Item[0]));
+		registry.register((EntryComparator) DataComponentComparator.of(components), in.kjs$getItemTypes().toArray(new Item[0]));
 	}
 }

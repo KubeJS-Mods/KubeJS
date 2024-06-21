@@ -24,7 +24,7 @@ public class REIGroupEntriesKubeEvent implements GroupEntriesKubeEvent {
 
 	@Override
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void group(Context cx, ResourceLocation groupId, Component description, Object filter) {
+	public void group(Context cx, Object filter, ResourceLocation groupId, Component description) {
 		var predicate = (Predicate) type.wrapPredicate(cx, filter);
 		registry.group(groupId, description, e -> e.getType() == entryType && predicate.test(e.getValue()));
 	}

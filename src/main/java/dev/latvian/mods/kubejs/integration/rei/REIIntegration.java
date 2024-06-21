@@ -47,13 +47,16 @@ public class REIIntegration implements KubeJSPlugin {
 		}
 	}
 
+	public static EntryIngredient fluidIngredient(FluidIngredient ingredient) {
+		return EntryIngredient.of(Arrays.stream(ingredient.getStacks()).map(FluidStackHooksForge::fromForge).map(EntryStacks::of).toList());
+	}
+
 	public static EntryIngredient ingredientOf(Context cx, RecipeViewerEntryType type, Object from) {
 		if (type == RecipeViewerEntryType.ITEM) {
 			var in = (ItemPredicate) type.wrapPredicate(cx, from);
 			return in instanceof Ingredient i ? EntryIngredients.ofIngredient(i) : EntryIngredients.ofItemStacks(Arrays.asList(in.kjs$getStackArray()));
 		} else if (type == RecipeViewerEntryType.FLUID) {
-			var in = (FluidIngredient) type.wrapPredicate(cx, from);
-			return EntryIngredient.of(Arrays.stream(in.getStacks()).map(FluidStackHooksForge::fromForge).map(EntryStacks::of).toList());
+			return fluidIngredient((FluidIngredient) type.wrapPredicate(cx, from));
 		} else {
 			((KubeJSContext) cx).getConsole().error("Currently custom type '" + type.id + "' isn't supported");
 			return EntryIngredient.empty();

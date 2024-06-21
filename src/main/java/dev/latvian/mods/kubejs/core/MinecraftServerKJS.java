@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.net.SendDataFromServerPayload;
-import dev.latvian.mods.kubejs.net.SyncRecipeViewerDataPayload;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
@@ -23,7 +22,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 @RemapPrefixForJS("kjs$")
@@ -110,11 +108,6 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 			} else {
 				kjs$tell(ConsoleJS.SERVER.errorsComponent("/kubejs errors server"));
 			}
-		}
-
-		if (reload) {
-			var manager = kjs$self().getServerResources().managers().kjs$getServerScriptManager();
-			PacketDistributor.sendToAllPlayers(new SyncRecipeViewerDataPayload(Optional.ofNullable(manager.recipeViewerData)));
 		}
 
 		ConsoleJS.SERVER.setCapturingErrors(false);

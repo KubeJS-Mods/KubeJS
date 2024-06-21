@@ -14,6 +14,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
@@ -25,6 +26,12 @@ import java.util.Optional;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSPlayerEventHandler {
+	@SubscribeEvent(priority = EventPriority.HIGH)
+	public static void datapackSync(OnDatapackSyncEvent event) {
+		var payload = new SyncRecipeViewerDataPayload(Optional.ofNullable(event.getPlayerList().getServer().getServerResources().managers().kjs$getServerScriptManager().recipeViewerData));
+		event.getRelevantPlayers().forEach(player -> PacketDistributor.sendToPlayer(player, payload));
+	}
+
 	@SubscribeEvent
 	public static void loggedIn(PlayerEvent.PlayerLoggedInEvent event) {
 		if (PlayerEvents.LOGGED_IN.hasListeners() && event.getEntity() instanceof ServerPlayer player) {
@@ -36,10 +43,6 @@ public class KubeJSPlayerEventHandler {
 			}
 
 			player.kjs$getStages().sync();
-		}
-
-		if (event.getEntity() instanceof ServerPlayer player) {
-			PacketDistributor.sendToPlayer(player, new SyncRecipeViewerDataPayload(Optional.ofNullable(player.server.getServerResources().managers().kjs$getServerScriptManager().recipeViewerData)));
 		}
 	}
 

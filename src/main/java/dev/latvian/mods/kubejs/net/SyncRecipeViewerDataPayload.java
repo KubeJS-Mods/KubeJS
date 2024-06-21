@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.net;
 
 import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerData;
-import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerDataUpdatedEvent;
+import dev.latvian.mods.kubejs.recipe.viewer.server.RemoteRecipeViewerDataUpdatedEvent;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -20,6 +20,6 @@ public record SyncRecipeViewerDataPayload(Optional<RecipeViewerData> data) imple
 	}
 
 	public void handle(IPayloadContext ctx) {
-		ctx.enqueueWork(() -> NeoForge.EVENT_BUS.post(new RecipeViewerDataUpdatedEvent(data.orElse(null))));
+		ctx.enqueueWork(() -> NeoForge.EVENT_BUS.post(new RemoteRecipeViewerDataUpdatedEvent(data.orElse(null))));
 	}
 }

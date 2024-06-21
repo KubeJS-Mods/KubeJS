@@ -6,9 +6,13 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.serialization.DynamicOps;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
+import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -20,10 +24,41 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.CustomData;
 
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.util.IdentityHashMap;
+import java.util.Map;
+
 public interface DataComponentWrapper {
 	DynamicCommandExceptionType ERROR_UNKNOWN_COMPONENT = new DynamicCommandExceptionType((object) -> Component.translatableEscape("arguments.item.component.unknown", object));
 	Dynamic2CommandExceptionType ERROR_MALFORMED_COMPONENT = new Dynamic2CommandExceptionType((object, object2) -> Component.translatableEscape("arguments.item.component.malformed", object, object2));
 	SimpleCommandExceptionType ERROR_EXPECTED_COMPONENT = new SimpleCommandExceptionType(Component.translatable("arguments.item.component.expected"));
+	Lazy<Map<DataComponentType<?>, TypeInfo>> TYPE_INFOS = Lazy.of(() -> {
+		var map = new IdentityHashMap<DataComponentType<?>, TypeInfo>();
+
+		try {
+			for (var field : DataComponents.class.getDeclaredFields()) {
+				if (field.getType() == DataComponentType.class
+					&& Modifier.isPublic(field.getModifiers())
+					&& Modifier.isStatic(field.getModifiers())
+					&& field.getGenericType() instanceof ParameterizedType t
+				) {
+					var key = (DataComponentType) field.get(null);
+					var typeInfo = TypeInfo.of(t.getActualTypeArguments()[0]);
+					map.put(key, typeInfo);
+				}
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		KubeJSPlugins.forEachPlugin(map::put, KubeJSPlugin::registerDataComponentTypeDescriptions);
+		return Map.copyOf(map);
+	});
+
+	static TypeInfo getTypeInfo(DataComponentType<?> type) {
+		return TYPE_INFOS.get().getOrDefault(type, TypeInfo.NONE);
+	}
 
 	static DataComponentType<?> wrapType(Object object) {
 		if (object instanceof DataComponentType) {
