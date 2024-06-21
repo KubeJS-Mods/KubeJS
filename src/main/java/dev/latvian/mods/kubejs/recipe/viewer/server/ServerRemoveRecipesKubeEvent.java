@@ -3,9 +3,9 @@ package dev.latvian.mods.kubejs.recipe.viewer.server;
 import dev.latvian.mods.kubejs.recipe.viewer.RemoveRecipesKubeEvent;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,12 +24,12 @@ public class ServerRemoveRecipesKubeEvent implements RemoveRecipesKubeEvent {
 	}
 
 	@Override
-	public void removeFromCategory(Context cx, ResourceLocation category, ResourceLocation[] recipesToRemove) {
-		categoryData.computeIfAbsent(category, CategoryData::new).removedRecipes().addAll(Arrays.asList(recipesToRemove));
-	}
+	public void removeFromCategory(Context cx, @Nullable ResourceLocation category, ResourceLocation[] recipesToRemove) {
+		if (category == null) {
+			remove(cx, recipesToRemove);
+			return;
+		}
 
-	@Override
-	public Collection<ResourceLocation> getCategories() {
-		throw new UnsupportedOperationException("Not available on server side!");
+		categoryData.computeIfAbsent(category, CategoryData::new).removedRecipes().addAll(Arrays.asList(recipesToRemove));
 	}
 }

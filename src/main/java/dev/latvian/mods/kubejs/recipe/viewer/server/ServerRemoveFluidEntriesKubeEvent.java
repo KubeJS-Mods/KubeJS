@@ -19,9 +19,4 @@ public class ServerRemoveFluidEntriesKubeEvent implements RemoveEntriesKubeEvent
 	public void remove(Context cx, Object filter) {
 		removedEntries.add(FluidWrapper.wrapIngredient(((KubeJSContext) cx).getRegistries(), filter));
 	}
-
-	@Override
-	public List<Object> getAllEntryValues() {
-		throw new UnsupportedOperationException("Not available on server side!");
-	}
 }

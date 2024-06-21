@@ -5,7 +5,6 @@ import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Set;
 
 public class ServerRemoveCategoriesKubeEvent implements RemoveCategoriesKubeEvent {
@@ -18,10 +17,5 @@ public class ServerRemoveCategoriesKubeEvent implements RemoveCategoriesKubeEven
 	@Override
 	public void remove(Context cx, ResourceLocation[] categories) {
 		this.categories.addAll(Arrays.asList(categories));
-	}
-
-	@Override
-	public Collection<ResourceLocation> getCategories() {
-		throw new UnsupportedOperationException("Not available on server side!");
 	}
 }

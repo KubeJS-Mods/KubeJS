@@ -20,6 +20,9 @@ public record SyncRecipeViewerDataPayload(Optional<RecipeViewerData> data) imple
 	}
 
 	public void handle(IPayloadContext ctx) {
-		ctx.enqueueWork(() -> NeoForge.EVENT_BUS.post(new RemoteRecipeViewerDataUpdatedEvent(data.orElse(null))));
+		ctx.enqueueWork(() -> {
+			RecipeViewerData.remote = data.orElse(null);
+			NeoForge.EVENT_BUS.post(new RemoteRecipeViewerDataUpdatedEvent(RecipeViewerData.remote));
+		});
 	}
 }

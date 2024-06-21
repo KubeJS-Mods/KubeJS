@@ -13,7 +13,6 @@ public class REIRemoveEntriesKubeEvent implements RemoveEntriesKubeEvent {
 	private final RecipeViewerEntryType type;
 	private final EntryRegistry registry;
 	private final List<EntryStack<?>> allEntries;
-	private List<Object> allValues;
 
 	public REIRemoveEntriesKubeEvent(RecipeViewerEntryType type, EntryRegistry registry, List<EntryStack<?>> allEntries) {
 		this.type = type;
@@ -30,14 +29,5 @@ public class REIRemoveEntriesKubeEvent implements RemoveEntriesKubeEvent {
 				registry.removeEntry(entry);
 			}
 		}
-	}
-
-	@Override
-	public List<Object> getAllEntryValues() {
-		if (allValues == null) {
-			allValues = List.copyOf(allEntries.stream().map(EntryStack::getValue).toList());
-		}
-
-		return allValues;
 	}
 }

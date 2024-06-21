@@ -5,8 +5,8 @@ import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.Context;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
-import me.shedaniel.rei.api.common.util.CollectionUtils;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -32,7 +32,12 @@ public class REIRemoveRecipeKubeEvent implements RemoveRecipesKubeEvent {
 	}
 
 	@Override
-	public void removeFromCategory(Context cx, ResourceLocation category, ResourceLocation[] recipesToRemove) {
+	public void removeFromCategory(Context cx, @Nullable ResourceLocation category, ResourceLocation[] recipesToRemove) {
+		if (category == null) {
+			remove(cx, recipesToRemove);
+			return;
+		}
+
 		var catId = CategoryIdentifier.of(category);
 
 		if (categories.tryGet(catId).isEmpty()) {
@@ -41,10 +46,5 @@ public class REIRemoveRecipeKubeEvent implements RemoveRecipesKubeEvent {
 		}
 
 		recipesRemoved.computeIfAbsent(catId, _0 -> new HashSet<>()).addAll(List.of(recipesToRemove));
-	}
-
-	@Override
-	public Collection<ResourceLocation> getCategories() {
-		return CollectionUtils.map(categories, CategoryRegistry.CategoryConfiguration::getIdentifier);
 	}
 }

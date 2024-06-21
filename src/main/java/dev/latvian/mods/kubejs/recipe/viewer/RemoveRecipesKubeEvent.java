@@ -3,17 +3,12 @@ package dev.latvian.mods.kubejs.recipe.viewer;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.Collection;
+import org.jetbrains.annotations.Nullable;
 
 public interface RemoveRecipesKubeEvent extends KubeEvent {
 	default void remove(Context cx, ResourceLocation[] recipesToRemove) {
-		for (var category : getCategories()) {
-			removeFromCategory(cx, category, recipesToRemove);
-		}
+		removeFromCategory(cx, null, recipesToRemove);
 	}
 
-	void removeFromCategory(Context cx, ResourceLocation category, ResourceLocation[] recipesToRemove);
-
-	Collection<ResourceLocation> getCategories();
+	void removeFromCategory(Context cx, @Nullable ResourceLocation category, ResourceLocation[] recipesToRemove);
 }

@@ -7,6 +7,7 @@ import dev.latvian.mods.rhino.Context;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,11 +32,6 @@ public class JEIRemoveRecipesKubeEvent implements RemoveRecipesKubeEvent {
 	}
 
 	@Override
-	public Collection<ResourceLocation> getCategories() {
-		return categories.keySet();
-	}
-
-	@Override
 	public void remove(Context cx, ResourceLocation[] recipesToRemove) {
 		for (var cat : categories.values()) {
 			removed.computeIfAbsent(cat, _0 -> new HashSet<>()).addAll(Arrays.asList(recipesToRemove));
@@ -43,7 +39,12 @@ public class JEIRemoveRecipesKubeEvent implements RemoveRecipesKubeEvent {
 	}
 
 	@Override
-	public void removeFromCategory(Context cx, ResourceLocation category, ResourceLocation[] recipesToRemove) {
+	public void removeFromCategory(Context cx, @Nullable ResourceLocation category, ResourceLocation[] recipesToRemove) {
+		if (category == null) {
+			remove(cx, recipesToRemove);
+			return;
+		}
+
 		var cat = categories.get(category);
 
 		if (cat == null) {

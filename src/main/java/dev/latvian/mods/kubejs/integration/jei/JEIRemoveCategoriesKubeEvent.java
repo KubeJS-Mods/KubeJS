@@ -6,7 +6,6 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Collection;
 import java.util.Map;
 
 public class JEIRemoveCategoriesKubeEvent implements RemoveCategoriesKubeEvent {
@@ -28,10 +27,5 @@ public class JEIRemoveCategoriesKubeEvent implements RemoveCategoriesKubeEvent {
 				categories.remove(c);
 			}
 		}
-	}
-
-	@Override
-	public Collection<ResourceLocation> getCategories() {
-		return categories.keySet();
 	}
 }

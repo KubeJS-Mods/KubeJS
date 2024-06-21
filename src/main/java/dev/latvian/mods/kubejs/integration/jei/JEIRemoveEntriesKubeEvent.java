@@ -28,11 +28,6 @@ public class JEIRemoveEntriesKubeEvent implements RemoveEntriesKubeEvent {
 	}
 
 	@Override
-	public List<Object> getAllEntryValues() {
-		return allIngredients;
-	}
-
-	@Override
 	public void remove(Context cx, Object filter) {
 		var predicate = (Predicate) type.wrapPredicate(cx, filter);
 

@@ -13,7 +13,6 @@ public class REIRemoveEntriesCompletelyKubeEvent implements RemoveEntriesKubeEve
 	private final RecipeViewerEntryType type;
 	private final List<EntryStack<?>> allEntries;
 	private final BasicFilteringRule<?> rule;
-	private List<Object> allValues;
 
 	public REIRemoveEntriesCompletelyKubeEvent(RecipeViewerEntryType type, List<EntryStack<?>> allEntries, BasicFilteringRule<?> rule) {
 		this.type = type;
@@ -25,14 +24,5 @@ public class REIRemoveEntriesCompletelyKubeEvent implements RemoveEntriesKubeEve
 	public void remove(Context cx, Object filter) {
 		var predicate = (Predicate) type.wrapPredicate(cx, filter);
 		rule.hide(allEntries.stream().filter(e -> predicate.test(e.getValue())).toList());
-	}
-
-	@Override
-	public List<Object> getAllEntryValues() {
-		if (allValues == null) {
-			allValues = List.copyOf(allEntries.stream().map(EntryStack::getValue).toList());
-		}
-
-		return allValues;
 	}
 }
