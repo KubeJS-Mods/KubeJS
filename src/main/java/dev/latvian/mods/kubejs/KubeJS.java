@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs;
 import com.google.common.base.Stopwatch;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.client.ClientScriptManager;
-import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.gui.KubeJSMenus;
 import dev.latvian.mods.kubejs.holder.KubeJSHolderSets;
@@ -125,8 +124,6 @@ public class KubeJS {
 				ex.printStackTrace();
 			}
 		}
-
-		PROXY = new KubeJSClient();
 
 		if (!PlatformWrapper.isGeneratingData()) {
 			new KubeJSBackgroundThread().start();

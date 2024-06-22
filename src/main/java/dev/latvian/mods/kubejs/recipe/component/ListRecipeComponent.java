@@ -61,7 +61,8 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 			} else if (size == 1) {
 				return List.of(component.wrap(cx, recipe, iterable.iterator().next()));
 			} else if (size == 2) {
-				return List.of(component.wrap(cx, recipe, iterable.iterator().next()), component.wrap(cx, recipe, iterable.iterator().next()));
+				var itr = iterable.iterator();
+				return List.of(component.wrap(cx, recipe, itr.next()), component.wrap(cx, recipe, itr.next()));
 			} else if (size > 0) {
 				var arr = new ArrayList<T>(size);
 
