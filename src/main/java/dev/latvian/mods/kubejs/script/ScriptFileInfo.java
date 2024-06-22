@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -32,7 +33,7 @@ public class ScriptFileInfo {
 	public ScriptFileInfo(ScriptPackInfo p, String f) {
 		pack = p;
 		file = f;
-		id = ResourceLocation.fromNamespaceAndPath(pack.namespace, FILE_FIXER.matcher(pack.pathStart + file).replaceAll("_").toLowerCase());
+		id = ResourceLocation.fromNamespaceAndPath(pack.namespace, FILE_FIXER.matcher(pack.pathStart + file).replaceAll("_").toLowerCase(Locale.ROOT));
 		location = ID.string(pack.namespace + ":" + pack.pathStart + file);
 		properties = new HashMap<>();
 		priority = 0;
