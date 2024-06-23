@@ -3,6 +3,7 @@
 uniform sampler2D DiffuseSampler;
 uniform sampler2D DiffuseDepthSampler;
 uniform sampler2D MCDepthSampler;
+uniform float OutlineSize;
 
 in vec2 texCoord;
 in vec2 sampleStep;
@@ -32,8 +33,8 @@ void main() {
 		float g = 1.0;
 		float b = 1.0;
 
-		for (float i = -2.0; i <= 2.0; i += 1.0) {
-			for (float j = -2.0; j <= 2.0; j += 1.0) {
+		for (float i = -OutlineSize; i <= OutlineSize; i += 1.0) {
+			for (float j = -OutlineSize; j <= OutlineSize; j += 1.0) {
 				vec4 c = texture(DiffuseSampler, texCoord + vec2(i, j) * sampleStep);
 
 				if (c.a > 0.005) {

@@ -447,6 +447,7 @@ public class KubedexHighlight {
 
 		graphics.flush();
 
+		postChain.setUniform("OutlineSize", (float) mc.getWindow().getGuiScale());
 		postChain.process(delta);
 		mc.getMainRenderTarget().bindWrite(false);
 

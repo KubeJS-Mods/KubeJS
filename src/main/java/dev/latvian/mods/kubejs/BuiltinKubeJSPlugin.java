@@ -209,6 +209,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -375,7 +376,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void registerBindings(BindingRegistry bindings) {
-		bindings.add("global", GLOBAL);
+		bindings.add("global", bindings.type().isStartup() ? GLOBAL : Collections.unmodifiableMap(GLOBAL));
 		bindings.add("Platform", PlatformWrapper.class);
 		bindings.add("console", bindings.type().console);
 
