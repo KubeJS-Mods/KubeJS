@@ -15,7 +15,6 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
-import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -31,6 +30,10 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
 		this.stage = stage;
+
+		if (!mirror) {
+			this.pattern.symmetrical = true;
+		}
 	}
 
 	@Override
@@ -67,15 +70,8 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 		return kjs$assemble(input, registryAccess);
 	}
 
-	@Override
-	public boolean matches(CraftingInput input, Level level) {
-		// FIXME: mirror
-		return pattern.matches(input);
-	}
-
 	public static class SerializerKJS implements RecipeSerializer<ShapedKubeJSRecipe> {
 
-		// TODO: this is still a bit of a mess
 		public static final MapCodec<ShapedKubeJSRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			// manually copied from the shaped recipe codec
 			// (would be nice if we could just swap out specifically the pattern codec from the underlying codec)

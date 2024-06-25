@@ -18,6 +18,8 @@ accessible field net/minecraft/tags/TagEntry tag Z
 
 accessible field net/minecraft/world/item/crafting/ShapelessRecipe$Serializer CODEC Lcom/mojang/serialization/MapCodec;
 # accessible field net/minecraft/world/item/crafting/ShapedRecipe$Serializer CODEC Lcom/mojang/serialization/MapCodec;
+accessible field net/minecraft/world/item/crafting/ShapedRecipePattern symmetrical Z
+mutable field net/minecraft/world/item/crafting/ShapedRecipePattern symmetrical Z
 
 # attributes
 accessible class net/minecraft/world/effect/MobEffect$AttributeTemplate

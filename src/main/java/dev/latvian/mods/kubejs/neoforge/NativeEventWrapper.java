@@ -41,6 +41,6 @@ public interface NativeEventWrapper {
 			bus.addListener(priority, false, (Class) eventClass, listeners);
 		}
 
-		listeners.listeners.add((Consumer<Event>) cx.jsToJava(consumer, NativeEventListeners.EVENT_CONSUMER_TYPE));
+		listeners.listeners.add(consumer);
 	}
 }
