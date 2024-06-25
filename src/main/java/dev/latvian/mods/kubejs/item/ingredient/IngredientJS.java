@@ -22,6 +22,8 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -29,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.Nullable;
 
@@ -198,8 +201,11 @@ public interface IngredientJS {
 				var next = reader.canRead() ? reader.peek() : 0;
 
 				if (next == '[' || next == '{') {
-					var map = DataComponentWrapper.readMap(registries.nbt(), reader);
-					yield IngredientHelper.get().weakComponents(item, map);
+					var components = DataComponentWrapper.readPredicate(registries.nbt(), reader);
+
+					if (components != DataComponentPredicate.EMPTY) {
+						yield new DataComponentIngredient(HolderSet.direct(item.builtInRegistryHolder()), components, false).toVanilla();
+					}
 				}
 
 				yield Ingredient.of(item);

@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.block.entity;
 
+import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -11,14 +11,21 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public class BlockEntityJS extends BlockEntity {
+	public static final BlockEntityTicker<BlockEntityJS> TICKER = (level, pos, state, entity) -> entity.tick();
+
 	public final BlockEntityInfo info;
+	public final ResourceKey<Block> blockKey;
 	protected BlockContainerJS block;
 	public final int x, y, z;
 	public int tick, cycle;
@@ -26,15 +33,15 @@ public class BlockEntityJS extends BlockEntity {
 	public final BlockEntityAttachment[] attachments;
 	public InventoryKJS inventory;
 	public UUID placerId;
+	private BlockEntityTickKubeEvent tickEvent;
 
 	public BlockEntityJS(BlockPos blockPos, BlockState blockState, BlockEntityInfo entityInfo) {
 		super(entityInfo.entityType, blockPos, blockState);
 		this.info = entityInfo;
+		this.blockKey = blockState.kjs$getRegistryKey();
 		this.x = blockPos.getX();
 		this.y = blockPos.getY();
 		this.z = blockPos.getZ();
-		this.tick = 0;
-		this.cycle = 0;
 		this.data = info.initialData.copy();
 
 		if (entityInfo.attachments != null) {
@@ -50,6 +57,12 @@ public class BlockEntityJS extends BlockEntity {
 		} else {
 			this.attachments = BlockEntityAttachment.EMPTY_ARRAY;
 		}
+	}
+
+	@Override
+	public void setLevel(Level level) {
+		super.setLevel(level);
+		block = null;
 	}
 
 	@Override
@@ -159,20 +172,33 @@ public class BlockEntityJS extends BlockEntity {
 		return false;
 	}
 
-	@HideFromJS
-	public void postTick(boolean c) {
-		tick++;
-
-		if (c) {
-			cycle++;
-		}
-	}
-
 	public BlockContainerJS getBlock() {
 		if (block == null) {
 			this.block = new BlockContainerJS(level, worldPosition);
 			this.block.cachedEntity = this;
+			this.block.cachedState = getBlockState();
 		}
+
 		return block;
+	}
+
+	private void tick() {
+		if (tick % info.tickFrequency == info.tickOffset) {
+			var side = level.kjs$getScriptType();
+
+			try {
+				if (tickEvent == null) {
+					tickEvent = new BlockEntityTickKubeEvent(this);
+				}
+
+				BlockEvents.BLOCK_ENTITY_TICK.post(side, blockKey, tickEvent);
+			} catch (Exception ex) {
+				side.console.error("Error while ticking KubeJS block entity '" + info.blockBuilder.id + "'", ex);
+			}
+
+			cycle++;
+		}
+
+		tick++;
 	}
 }

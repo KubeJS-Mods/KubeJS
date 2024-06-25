@@ -15,6 +15,8 @@ public class KubeJSEMIPlugin implements EmiPlugin {
 	public void register(EmiRegistry registry) {
 		var remote = RecipeViewerData.remote;
 
+		registry.removeRecipes(r -> remote.removedGlobalRecipes().contains(r.getId()));
+
 		for (var type : RecipeViewerEntryType.ALL_TYPES.get()) {
 			if (RecipeViewerEvents.REMOVE_ENTRIES.hasListeners(type)) {
 				RecipeViewerEvents.REMOVE_ENTRIES.post(ScriptType.CLIENT, type, new EMIRemoveEntriesKubeEvent(type, registry));

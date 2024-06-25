@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -13,15 +13,9 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import org.jetbrains.annotations.Nullable;
 
-public enum RecipeHelper {
-	INSTANCE;
-
-	public static RecipeHelper get() {
-		return INSTANCE;
-	}
-
+public interface RecipeHelper {
 	@Nullable
-	public RecipeHolder<?> fromJson(DynamicOps<JsonElement> ops, RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json, boolean errors) {
+	static RecipeHolder<?> fromJson(DynamicOps<JsonElement> ops, RecipeSerializer<?> serializer, ResourceLocation id, JsonObject json, boolean errors) {
 		var codec = serializer.codec();
 
 		if (codec == null) {
@@ -61,7 +55,7 @@ public enum RecipeHelper {
 		return null;
 	}
 
-	public DataResult<JsonObject> validate(DynamicOps<JsonElement> ops, JsonElement jsonElement) {
+	static DataResult<JsonObject> validate(DynamicOps<JsonElement> ops, JsonElement jsonElement) {
 		if (!jsonElement.isJsonObject()) {
 			return DataResult.error(() -> "not a json object: " + jsonElement);
 		}

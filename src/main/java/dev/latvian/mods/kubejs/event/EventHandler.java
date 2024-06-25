@@ -28,8 +28,8 @@ public class EventHandler extends BaseFunction {
 	public final ScriptTypePredicate scriptTypePredicate;
 	public final Supplier<Class<? extends KubeEvent>> eventType;
 	private TypeInfo result;
-	public transient Extra<?> extra;
-	public transient boolean extraRequired;
+	public transient EventTargetType<?> target;
+	public transient boolean targetRequired;
 	protected EventHandlerContainer[] eventContainers;
 	public transient EventExceptionHandler exceptionHandler;
 
@@ -39,8 +39,8 @@ public class EventHandler extends BaseFunction {
 		this.scriptTypePredicate = st;
 		this.eventType = e;
 		this.result = null;
-		this.extra = null;
-		this.extraRequired = false;
+		this.target = null;
+		this.targetRequired = false;
 		this.eventContainers = null;
 		this.exceptionHandler = null;
 	}
@@ -70,6 +70,27 @@ public class EventHandler extends BaseFunction {
 		return this;
 	}
 
+	private <E> TargetedEventHandler<E> requiredTarget(EventTargetType<E> type, boolean required) {
+		var handler = new TargetedEventHandler<>(group, name, scriptTypePredicate, type, eventType);
+		handler.targetRequired = required;
+		handler.group.getHandlers().put(name, handler);
+		return handler;
+	}
+
+	/**
+	 * Marks this event handler to require a target, usually needed for events related to registries
+	 */
+	public <E> TargetedEventHandler<E> requiredTarget(EventTargetType<E> type) {
+		return requiredTarget(type, true);
+	}
+
+	/**
+	 * Marks this event handler to support a target, usually needed for events related to registries
+	 */
+	public <E> TargetedEventHandler<E> supportsTarget(EventTargetType<E> type) {
+		return requiredTarget(type, false);
+	}
+
 	@HideFromJS
 	public void clear(ScriptType type) {
 		if (eventContainers != null) {
@@ -96,21 +117,21 @@ public class EventHandler extends BaseFunction {
 			throw new UnsupportedOperationException("Tried to register event handler '" + this + "' for invalid script type " + type + "! Valid script types: " + scriptTypePredicate.getValidTypes());
 		}
 
-		if (extraId != null && extra != null) {
+		if (extraId != null && target != null) {
 			extraId = Wrapper.unwrapped(extraId);
-			extraId = extra.transformer.transform(extraId);
+			extraId = target.transformer.transform(extraId);
 		}
 
-		if (extra != null && extraRequired && extraId == null) {
+		if (target != null && targetRequired && extraId == null) {
 			throw new IllegalArgumentException("Event handler '" + this + "' requires extra id!");
 		}
 
-		if (extra == null && extraId != null) {
+		if (target == null && extraId != null) {
 			throw new IllegalArgumentException("Event handler '" + this + "' doesn't support extra id!");
 		}
 
-		if (extra != null && extraId != null && !extra.validator.test(extraId)) {
-			throw new IllegalArgumentException("Event handler '" + this + "' doesn't accept id '" + extra.toString.transform(extraId) + "'!");
+		if (target != null && extraId != null && !target.validator.test(extraId)) {
+			throw new IllegalArgumentException("Event handler '" + this + "' doesn't accept id '" + target.toString.transform(extraId) + "'!");
 		}
 
 		var line = new int[1];
@@ -170,18 +191,18 @@ public class EventHandler extends BaseFunction {
 
 		var scriptType = type.kjs$getScriptType();
 
-		if (extra != null && extraRequired && extraId == null) {
+		if (target != null && targetRequired && extraId == null) {
 			throw new IllegalArgumentException("Event handler '" + this + "' requires extra id!");
 		}
 
-		if (extra == null && extraId != null) {
+		if (target == null && extraId != null) {
 			throw new IllegalArgumentException("Event handler '" + this + "' doesn't support extra id " + extraId + "!");
 		}
 
 		var eventResult = EventResult.PASS;
 
 		try {
-			var extraContainers = this instanceof SpecializedEventHandler<?> h ? (h.extraEventContainers == null ? null : h.extraEventContainers.get(extraId)) : null;
+			var extraContainers = this instanceof TargetedEventHandler<?> h ? (h.extraEventContainers == null ? null : h.extraEventContainers.get(extraId)) : null;
 
 			if (extraContainers != null) {
 				var handler = extraContainers[scriptType.ordinal()];

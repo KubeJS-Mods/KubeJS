@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.viewer;
 
 import dev.latvian.mods.kubejs.core.FluidKJS;
-import dev.latvian.mods.kubejs.event.Extra;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -99,8 +98,6 @@ public class RecipeViewerEntryType {
 			default -> CUSTOM_TYPES.get().get(String.valueOf(id));
 		};
 	}
-
-	public static final Extra<RecipeViewerEntryType> EXTRA = Extra.create(RecipeViewerEntryType.class).transformer(RecipeViewerEntryType::fromString).identity();
 
 	public final String id;
 	public final Component<?> entryType;

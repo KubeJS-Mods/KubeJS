@@ -18,6 +18,6 @@ public interface KubeJSIngredient extends ICustomIngredient, Predicate<ItemStack
 
 	@Override
 	default boolean isSimple() {
-		return false;
+		return true;
 	}
 }

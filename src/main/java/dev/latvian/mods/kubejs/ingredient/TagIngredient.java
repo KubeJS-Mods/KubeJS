@@ -3,11 +3,14 @@ package dev.latvian.mods.kubejs.ingredient;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.recipe.CachedTagLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,9 +49,9 @@ public final class TagIngredient implements KubeJSIngredient {
 						cachedItems.add(item);
 					}
 				}
-
-				cachedItems = Set.copyOf(cachedItems);
 			}
+
+			cachedItems = Set.copyOf(cachedItems);
 		}
 
 		return cachedItems;
@@ -65,12 +68,20 @@ public final class TagIngredient implements KubeJSIngredient {
 
 	@Override
 	public Stream<ItemStack> getItems() {
-		return kjs$getItems().stream().map(ItemStack::new);
+		var set = kjs$getItems();
+
+		if (set.isEmpty()) {
+			var error = new ItemStack(Blocks.BARRIER);
+			error.set(DataComponents.CUSTOM_NAME, Component.literal("Empty Tag: " + tagKey.location()));
+			return Stream.of(error);
+		}
+
+		return set.stream().map(ItemStack::new);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		return obj == this || obj instanceof TagIngredient t && tagKey == t.tagKey;
+		return obj == this || obj instanceof TagIngredient i && tagKey == i.tagKey;
 	}
 
 	@Override

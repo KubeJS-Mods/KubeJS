@@ -32,6 +32,8 @@ import java.util.Map;
 
 @Info("Various block related helper functions")
 public class BlockWrapper {
+	public static final TypeInfo TYPE_INFO = TypeInfo.of(Block.class);
+	public static final TypeInfo STATE_TYPE_INFO = TypeInfo.of(BlockState.class);
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
 
 	public static BlockIDPredicate id(ResourceLocation id) {

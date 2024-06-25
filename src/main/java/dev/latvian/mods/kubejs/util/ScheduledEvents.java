@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.RhinoException;

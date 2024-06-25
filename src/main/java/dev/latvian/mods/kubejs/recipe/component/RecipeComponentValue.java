@@ -1,10 +1,8 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.Context;
 
@@ -33,32 +31,12 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 		return copy;
 	}
 
-	public boolean matches(KubeRecipe recipe, ReplacementMatch match) {
-		return value != null && key.role.isInput() && key.component.matches(recipe, value, match);
+	public boolean matches(Context cx, KubeRecipe recipe, ReplacementMatchInfo match) {
+		return value != null && key.component.matches(cx, recipe, value, match);
 	}
 
-	public boolean replaceInput(Context cx, KubeRecipe recipe, ReplacementMatch match, InputReplacement with) {
-		if (!key.role.isInput()) {
-			return false;
-		}
-
-		var newValue = value == null ? null : key.component.replaceInput(cx, recipe, value, match, with);
-
-		if (key.component.checkValueHasChanged(value, newValue)) {
-			value = newValue;
-			write();
-			return true;
-		}
-
-		return false;
-	}
-
-	public boolean replaceOutput(Context cx, KubeRecipe recipe, ReplacementMatch match, OutputReplacement with) {
-		if (!key.role.isOutput()) {
-			return false;
-		}
-
-		var newValue = value == null ? null : key.component.replaceOutput(cx, recipe, value, match, with);
+	public boolean replace(Context cx, KubeRecipe recipe, ReplacementMatchInfo match, Object with) {
+		var newValue = value == null ? null : key.component.replace(cx, recipe, value, match, with);
 
 		if (key.component.checkValueHasChanged(value, newValue)) {
 			value = newValue;

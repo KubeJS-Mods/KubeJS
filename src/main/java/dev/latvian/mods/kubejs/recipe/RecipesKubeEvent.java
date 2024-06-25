@@ -15,19 +15,22 @@ import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.IDFilter;
 import dev.latvian.mods.kubejs.recipe.filter.OrFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.recipe.schema.UnknownRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.server.ChangesForChat;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.WrappedException;
@@ -64,6 +67,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
@@ -272,12 +276,15 @@ public class RecipesKubeEvent implements KubeEvent {
 				continue; //Forge: filter anything beginning with "_" as it's used for metadata.
 			}
 
-			var jsonResult = RecipeHelper.get().validate(registries.json(), entry.getValue());
+			var jsonResult = RecipeHelper.validate(registries.json(), entry.getValue());
+
 			if (jsonResult.error().isPresent()) {
 				var error = jsonResult.error().get();
+
 				if (DevProperties.get().logSkippedRecipes) {
 					ConsoleJS.SERVER.info("Skipping recipe %s, %s".formatted(recipeId, error.message()));
 				}
+
 				continue;
 			}
 
@@ -370,7 +377,12 @@ public class RecipesKubeEvent implements KubeEvent {
 		KubeJSPlugins.forEachPlugin(p -> p.injectRuntimeRecipes(this, recipeManager, recipesByName));
 
 		recipeManager.kjs$replaceRecipes(recipesByName);
-		ConsoleJS.SERVER.info("Added " + addedRecipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, modified " + modifiedCount + " recipes, with " + failedCount.get() + " failed recipes in " + timer.stop());
+		ChangesForChat.recipesAdded = addedRecipes.size();
+		ChangesForChat.recipesModified = modifiedCount;
+		ChangesForChat.recipesRemoved = removedRecipes.size();
+		ChangesForChat.recipesMs = timer.stop().elapsed(TimeUnit.MILLISECONDS);
+
+		ConsoleJS.SERVER.info("Added " + addedRecipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, modified " + modifiedCount + " recipes, with " + failedCount.get() + " failed recipes in " + TimeJS.msToString(ChangesForChat.recipesMs));
 		KubeRecipe.itemErrors = false;
 
 		if (DataExport.export != null) {
@@ -547,7 +559,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 	}
 
-	public void replaceInput(Context cx, RecipeFilter filter, ReplacementMatch match, InputReplacement with) {
+	public void replaceInput(Context cx, RecipeFilter filter, ReplacementMatchInfo match, Object with) {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": IN " + match + " -> " + with) : "";
 
 		forEachRecipeAsync(cx, filter, r -> {
@@ -561,7 +573,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		});
 	}
 
-	public void replaceOutput(Context cx, RecipeFilter filter, ReplacementMatch match, OutputReplacement with) {
+	public void replaceOutput(Context cx, RecipeFilter filter, ReplacementMatchInfo match, Object with) {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": OUT " + match + " -> " + with) : "";
 
 		forEachRecipeAsync(cx, filter, r -> {

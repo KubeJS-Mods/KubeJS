@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-public class Extra<T> {
+public class EventTargetType<T> {
 	@FunctionalInterface
 	public interface Transformer {
 		Transformer IDENTITY = o -> o;
@@ -20,15 +20,15 @@ public class Extra<T> {
 		Object transform(Object source);
 	}
 
-	public static <T> Extra<T> create(Class<T> type) {
-		return new Extra<>(type);
+	public static <T> EventTargetType<T> create(Class<T> type) {
+		return new EventTargetType<>(type);
 	}
 
-	public static final Extra<String> STRING = create(String.class).transformer(Extra::toString);
-	public static final Extra<ResourceLocation> ID = create(ResourceLocation.class).transformer(Extra::toResourceLocation);
-	public static final Extra<ResourceKey<Registry<?>>> REGISTRY = Cast.to(create(ResourceKey.class).transformer(Extra::toRegistryKey).identity());
+	public static final EventTargetType<String> STRING = create(String.class).transformer(EventTargetType::toString);
+	public static final EventTargetType<ResourceLocation> ID = create(ResourceLocation.class).transformer(EventTargetType::toResourceLocation);
+	public static final EventTargetType<ResourceKey<Registry<?>>> REGISTRY = Cast.to(create(ResourceKey.class).transformer(EventTargetType::toRegistryKey).identity());
 
-	public static <T> Extra<ResourceKey<T>> registryKey(ResourceKey<Registry<T>> registry, Class<?> type) {
+	public static <T> EventTargetType<ResourceKey<T>> registryKey(ResourceKey<Registry<T>> registry, Class<?> type) {
 		return Cast.to(create(ResourceKey.class).identity().transformer(o -> toKey(registry, o)).describeType(TypeInfo.of(ResourceKey.class).withParams(TypeInfo.of(type))));
 	}
 
@@ -87,7 +87,7 @@ public class Extra<T> {
 	public Transformer toString;
 	public TypeInfo describeType;
 
-	private Extra(Class<T> type) {
+	private EventTargetType(Class<T> type) {
 		this.type = type;
 		this.transformer = Transformer.IDENTITY;
 		this.identity = false;
@@ -96,27 +96,27 @@ public class Extra<T> {
 		this.describeType = TypeInfo.STRING;
 	}
 
-	public Extra<T> transformer(Transformer factory) {
+	public EventTargetType<T> transformer(Transformer factory) {
 		this.transformer = factory;
 		return this;
 	}
 
-	public Extra<T> identity() {
+	public EventTargetType<T> identity() {
 		this.identity = true;
 		return this;
 	}
 
-	public Extra<T> validator(Predicate<Object> validator) {
+	public EventTargetType<T> validator(Predicate<Object> validator) {
 		this.validator = validator;
 		return this;
 	}
 
-	public Extra<T> describeType(TypeInfo describeType) {
+	public EventTargetType<T> describeType(TypeInfo describeType) {
 		this.describeType = describeType;
 		return this;
 	}
 
-	public Extra<T> toString(Transformer factory) {
+	public EventTargetType<T> toString(Transformer factory) {
 		this.toString = factory;
 		return this;
 	}

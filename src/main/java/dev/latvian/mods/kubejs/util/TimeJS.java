@@ -125,4 +125,12 @@ public interface TimeJS {
 
 		builder.append(s);
 	}
+
+	static String msToString(long ms) {
+		if (ms < 1000L) {
+			return ms + " ms";
+		} else {
+			return "%.3f".formatted(ms / 1000F) + " s";
+		}
+	}
 }

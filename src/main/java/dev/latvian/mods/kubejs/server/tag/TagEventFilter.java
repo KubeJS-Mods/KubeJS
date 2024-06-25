@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.server.tag;
 
 import dev.latvian.mods.kubejs.DevProperties;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagEntry;

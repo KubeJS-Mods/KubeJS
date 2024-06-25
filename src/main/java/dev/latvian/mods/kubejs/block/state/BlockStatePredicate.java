@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.level.ruletest.AllMatchRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.AlwaysFalseRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.AnyMatchRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.InvertRuleTest;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatch;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ListJS;

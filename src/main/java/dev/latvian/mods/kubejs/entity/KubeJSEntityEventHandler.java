@@ -7,9 +7,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSEntityEventHandler {
@@ -45,11 +45,22 @@ public class KubeJSEntityEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void livingHurt(LivingHurtEvent event) {
+	public static void beforeLivingHurt(LivingDamageEvent.Pre event) {
 		var key = event.getEntity().getType().kjs$getRegistryKey();
 
-		if (EntityEvents.HURT.hasListeners(key)) {
-			EntityEvents.HURT.post(event.getEntity(), key, new LivingEntityHurtKubeEvent(event.getEntity(), event.getSource(), event.getAmount())).applyCancel(event);
+		if (EntityEvents.BEFORE_HURT.hasListeners(key)) {
+			if (EntityEvents.BEFORE_HURT.post(event.getEntity(), key, new BeforeLivingEntityHurtKubeEvent(event)).interruptFalse()) {
+				event.getContainer().setNewDamage(0F);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void afterLivingHurt(LivingDamageEvent.Post event) {
+		var key = event.getEntity().getType().kjs$getRegistryKey();
+
+		if (EntityEvents.AFTER_HURT.hasListeners(key)) {
+			EntityEvents.AFTER_HURT.post(event.getEntity(), key, new AfterLivingEntityHurtKubeEvent(event));
 		}
 	}
 

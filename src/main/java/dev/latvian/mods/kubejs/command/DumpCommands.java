@@ -5,9 +5,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.event.EventGroups;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.JavaMembers;
 import net.minecraft.commands.CommandSourceStack;
@@ -213,8 +213,8 @@ public class DumpCommands {
 				builder.append("### Example script:\n\n");
 				builder.append("```js\n");
 				builder.append(fullName).append('(');
-				if (handler.extra != null) {
-					builder.append(handler.extraRequired ? "extra_id, " : "/* extra_id (optional), */ ");
+				if (handler.target != null) {
+					builder.append(handler.targetRequired ? "extra_id, " : "/* extra_id (optional), */ ");
 				}
 				builder.append("(event) => {\n");
 				builder.append("\t// This space (un)intentionally left blank\n");

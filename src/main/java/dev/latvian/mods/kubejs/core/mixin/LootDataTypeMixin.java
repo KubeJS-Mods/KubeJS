@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.DynamicOps;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.server.DataExport;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

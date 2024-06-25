@@ -1,7 +1,10 @@
 package dev.latvian.mods.kubejs.bindings;
 
 import dev.latvian.mods.kubejs.ingredient.IngredientHelper;
+import dev.latvian.mods.kubejs.ingredient.TagIngredient;
 import dev.latvian.mods.kubejs.typings.Info;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
@@ -34,5 +37,16 @@ public interface IngredientWrapper {
 
 	static ItemStack first(Ingredient ingredient) {
 		return ingredient.kjs$getFirst();
+	}
+
+	@Nullable
+	static TagKey<Item> tagKeyOf(Ingredient in) {
+		if (!in.isCustom() && in.getValues().length == 1 && in.getValues()[0] instanceof Ingredient.TagValue value) {
+			return value.tag();
+		} else if (in.getCustomIngredient() instanceof TagIngredient tin) {
+			return tin.tagKey;
+		} else {
+			return null;
+		}
 	}
 }

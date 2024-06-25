@@ -2,13 +2,12 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.Replaceable;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -20,8 +19,7 @@ import org.jetbrains.annotations.Nullable;
  * contained within the context of a recipe with a {@link #codec()}.
  * <p>
  * Recipe components are used in conjunction with {@link RecipeKey}s to define the structure of a recipe,
- * and are also referred to by bulk recipe operations such as {@link #replaceInput(KubeRecipe, Object, ReplacementMatch, InputReplacement) input} and
- * {@link #replaceOutput(KubeRecipe, Object, ReplacementMatch, OutputReplacement) output} replacements.
+ * and are also referred to by bulk recipe operations such as replacements.
  * <p>
  * There are lots of standard components provided in the {@link dev.latvian.mods.kubejs.recipe.component} package,
  * including items and fluid in- and outputs, generic group and logic components (array, map, and, or)
@@ -175,16 +173,12 @@ public interface RecipeComponent<T> {
 	 * @param match  The replacement match to check against
 	 * @return true if the given value matches the given replacement match.
 	 */
-	default boolean matches(KubeRecipe recipe, T value, ReplacementMatch match) {
+	default boolean matches(Context cx, KubeRecipe recipe, T value, ReplacementMatchInfo match) {
 		return false;
 	}
 
-	default T replaceInput(Context cx, KubeRecipe recipe, T original, ReplacementMatch match, InputReplacement with) {
-		return original instanceof InputReplacement r && matches(recipe, original, match) ? wrap(cx, recipe, with.replaceInput(cx, recipe, match, r)) : original;
-	}
-
-	default T replaceOutput(Context cx, KubeRecipe recipe, T original, ReplacementMatch match, OutputReplacement with) {
-		return original instanceof OutputReplacement r && matches(recipe, original, match) ? wrap(cx, recipe, with.replaceOutput(cx, recipe, match, r)) : original;
+	default T replace(Context cx, KubeRecipe recipe, T original, ReplacementMatchInfo match, Object with) {
+		return original instanceof Replaceable r && matches(cx, recipe, original, match) ? wrap(cx, recipe, r.replaceThisWith(cx, with)) : original;
 	}
 
 	/**

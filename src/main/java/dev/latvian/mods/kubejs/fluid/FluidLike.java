@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.fluid;
 
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatch;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.level.material.Fluid;
 
@@ -16,9 +16,5 @@ public interface FluidLike extends ReplacementMatch {
 
 	default FluidLike kjs$copy(int amount) {
 		return this;
-	}
-
-	default boolean contains(FluidLike other) {
-		return kjs$getFluid().isSame(other.kjs$getFluid());
 	}
 }

@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.rhino.Context;
@@ -55,8 +55,8 @@ public record BlockStateComponent(boolean preferObjectForm) implements RecipeCom
 	}
 
 	@Override
-	public boolean matches(KubeRecipe recipe, BlockState value, ReplacementMatch match) {
-		return match instanceof BlockStatePredicate m2 && m2.test(value);
+	public boolean matches(Context cx, KubeRecipe recipe, BlockState value, ReplacementMatchInfo match) {
+		return match.match() instanceof BlockStatePredicate m2 && m2.test(value);
 	}
 
 	@Override

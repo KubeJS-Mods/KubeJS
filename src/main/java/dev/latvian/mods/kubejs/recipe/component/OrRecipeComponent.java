@@ -2,12 +2,10 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
@@ -48,33 +46,20 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 	}
 
 	@Override
-	public boolean matches(KubeRecipe recipe, Either<H, L> value, ReplacementMatch match) {
+	public boolean matches(Context cx, KubeRecipe recipe, Either<H, L> value, ReplacementMatchInfo match) {
 		var l = value.left();
-		return l.isPresent() ? high.matches(recipe, l.get(), match) : low.matches(recipe, value.right().get(), match);
+		return l.isPresent() ? high.matches(cx, recipe, l.get(), match) : low.matches(cx, recipe, value.right().get(), match);
 	}
 
 	@Override
-	public Either<H, L> replaceInput(Context cx, KubeRecipe recipe, Either<H, L> original, ReplacementMatch match, InputReplacement with) {
+	public Either<H, L> replace(Context cx, KubeRecipe recipe, Either<H, L> original, ReplacementMatchInfo match, Object with) {
 		var l = original.left();
 
 		if (l.isPresent()) {
-			var r = high.replaceInput(cx, recipe, l.get(), match, with);
+			var r = high.replace(cx, recipe, l.get(), match, with);
 			return r == l.get() ? original : Either.left(r);
 		} else {
-			var r = low.replaceInput(cx, recipe, original.right().get(), match, with);
-			return r == original.right().get() ? original : Either.right(r);
-		}
-	}
-
-	@Override
-	public Either<H, L> replaceOutput(Context cx, KubeRecipe recipe, Either<H, L> original, ReplacementMatch match, OutputReplacement with) {
-		var l = original.left();
-
-		if (l.isPresent()) {
-			var r = high.replaceOutput(cx, recipe, l.get(), match, with);
-			return r == l.get() ? original : Either.left(r);
-		} else {
-			var r = low.replaceOutput(cx, recipe, original.right().get(), match, with);
+			var r = low.replace(cx, recipe, original.right().get(), match, with);
 			return r == original.right().get() ? original : Either.right(r);
 		}
 	}

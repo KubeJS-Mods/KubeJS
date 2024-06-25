@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.registry;
 
-import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 

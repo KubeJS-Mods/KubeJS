@@ -16,39 +16,31 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class SpecializedEventHandler<E> extends EventHandler {
+public class TargetedEventHandler<E> extends EventHandler {
 	protected Map<Object, EventHandlerContainer[]> extraEventContainers;
 
-	SpecializedEventHandler(EventGroup g, String n, ScriptTypePredicate st, Extra<E> extra, Supplier<Class<? extends KubeEvent>> e) {
+	TargetedEventHandler(EventGroup g, String n, ScriptTypePredicate st, EventTargetType<E> target, Supplier<Class<? extends KubeEvent>> e) {
 		super(g, n, st, e);
-		this.extra = extra;
+		this.target = target;
 		this.extraEventContainers = null;
-	}
-
-	/**
-	 * Marks this event handler to require extra argument, usually needed for events related to registries
-	 */
-	public SpecializedEventHandler<E> required() {
-		extraRequired = true;
-		return this;
 	}
 
 	@Override
 	@HideFromJS
-	public SpecializedEventHandler<E> hasResult(TypeInfo result) {
+	public TargetedEventHandler<E> hasResult(TypeInfo result) {
 		super.hasResult(result);
 		return this;
 	}
 
 	@Override
-	public SpecializedEventHandler<E> hasResult() {
+	public TargetedEventHandler<E> hasResult() {
 		super.hasResult();
 		return this;
 	}
 
 	@Override
 	@HideFromJS
-	public SpecializedEventHandler<E> exceptionHandler(EventExceptionHandler handler) {
+	public TargetedEventHandler<E> exceptionHandler(EventExceptionHandler handler) {
 		this.exceptionHandler = handler;
 		return this;
 	}
@@ -63,7 +55,7 @@ public class SpecializedEventHandler<E> extends EventHandler {
 	}
 
 	/**
-	 * @see SpecializedEventHandler#post(ScriptTypeHolder, E, KubeEvent)
+	 * @see TargetedEventHandler#post(ScriptTypeHolder, E, KubeEvent)
 	 */
 	public EventResult post(KubeEvent event, @Nullable E extraId) {
 		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
@@ -116,7 +108,7 @@ public class SpecializedEventHandler<E> extends EventHandler {
 		}
 
 		if (extraEventContainers == null) {
-			extraEventContainers = extra.identity ? new IdentityHashMap<>() : new HashMap<>();
+			extraEventContainers = target.identity ? new IdentityHashMap<>() : new HashMap<>();
 		}
 
 		var map = extraEventContainers.get(extraId);
@@ -154,8 +146,8 @@ public class SpecializedEventHandler<E> extends EventHandler {
 		var set = new HashSet<E>();
 
 		forEachListener(type, c -> {
-			if (c.extraId != null) {
-				set.add((E) c.extraId);
+			if (c.target != null) {
+				set.add((E) c.target);
 			}
 		});
 

@@ -2,11 +2,9 @@ package dev.latvian.mods.kubejs.recipe.schema;
 
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.recipe.InputReplacement;
-import dev.latvian.mods.kubejs.recipe.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -23,8 +21,8 @@ public class UnknownKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public boolean hasInput(Context cx, ReplacementMatch match) {
-		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
+	public boolean hasInput(Context cx, ReplacementMatchInfo match) {
+		if (CommonProperties.get().matchJsonRecipes && match.match() instanceof ItemMatch m && getOriginalRecipe() != null) {
 			var arr = getOriginalRecipe().getIngredients();
 
 			//noinspection ConstantValue
@@ -33,7 +31,7 @@ public class UnknownKubeRecipe extends KubeRecipe {
 			}
 
 			for (var ingredient : arr) {
-				if (ingredient != null && ingredient != Ingredient.EMPTY && ingredient.kjs$canBeUsedForMatching() && m.contains(ingredient)) {
+				if (ingredient != null && ingredient != Ingredient.EMPTY && ingredient.kjs$canBeUsedForMatching() && m.matches(cx, ingredient, match.exact())) {
 					return true;
 				}
 			}
@@ -43,23 +41,23 @@ public class UnknownKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public boolean replaceInput(Context cx, ReplacementMatch match, InputReplacement with) {
+	public boolean replaceInput(Context cx, ReplacementMatchInfo match, Object with) {
 		return false;
 	}
 
 	@Override
-	public boolean hasOutput(Context cx, ReplacementMatch match) {
-		if (CommonProperties.get().matchJsonRecipes && match instanceof ItemMatch m && getOriginalRecipe() != null) {
+	public boolean hasOutput(Context cx, ReplacementMatchInfo match) {
+		if (CommonProperties.get().matchJsonRecipes && match.match() instanceof ItemMatch m && getOriginalRecipe() != null) {
 			var result = getOriginalRecipe().getResultItem(type.event.registries.access());
 			//noinspection ConstantValue
-			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.contains(result);
+			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.matches(cx, result, match.exact());
 		}
 
 		return false;
 	}
 
 	@Override
-	public boolean replaceOutput(Context cx, ReplacementMatch match, OutputReplacement with) {
+	public boolean replaceOutput(Context cx, ReplacementMatchInfo match, Object with) {
 		return false;
 	}
 }

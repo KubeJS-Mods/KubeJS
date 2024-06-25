@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.neoforge;
 
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;

@@ -5,9 +5,9 @@ import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
 import dev.latvian.mods.kubejs.ingredient.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ChancedIngredient;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
-import dev.latvian.mods.kubejs.recipe.InputReplacement;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.recipe.match.Replaceable;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -17,7 +17,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 @RemapPrefixForJS("kjs$")
-public interface IngredientKJS extends ItemPredicate, InputReplacement, WithCodec {
+public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec {
 	default Ingredient kjs$self() {
 		throw new NoMixinException();
 	}
@@ -71,9 +71,12 @@ public interface IngredientKJS extends ItemPredicate, InputReplacement, WithCode
 	}
 
 	@Override
-	default Object replaceInput(Context cx, KubeRecipe recipe, ReplacementMatch match, InputReplacement original) {
-		if (original instanceof SizedIngredientKJS s) {
-			return new SizedIngredient(kjs$self(), s.kjs$self().count());
+	default Object replaceThisWith(Context cx, Object with) {
+		var t = kjs$self();
+		var r = IngredientJS.wrap(((KubeJSContext) cx).getRegistries(), with);
+
+		if (!r.equals(t)) {
+			return r;
 		}
 
 		return this;

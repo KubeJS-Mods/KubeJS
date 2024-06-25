@@ -1,10 +1,13 @@
-package dev.latvian.mods.kubejs.util;
+package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.DevProperties;
-import dev.latvian.mods.kubejs.script.ConsoleLine;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
-import dev.latvian.mods.kubejs.script.PlatformWrapper;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.JSObjectType;
+import dev.latvian.mods.kubejs.util.LogType;
+import dev.latvian.mods.kubejs.util.MutedError;
+import dev.latvian.mods.kubejs.util.StackTraceCollector;
+import dev.latvian.mods.kubejs.util.TimeJS;
+import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.ContextFactory;
 import dev.latvian.mods.rhino.EcmaError;
@@ -167,6 +170,12 @@ public class ConsoleJS {
 					if (el.fileName != null && el.lineNumber >= 0) {
 						line.withSourceLine(el.fileName, el.lineNumber);
 					}
+				}
+			}
+		} else if (error != null && capturingErrors) {
+			for (var el : error.getStackTrace()) {
+				if (el.getFileName() != null && el.getLineNumber() >= 0) {
+					line.withSourceLine(el.getFileName(), el.getLineNumber());
 				}
 			}
 		}

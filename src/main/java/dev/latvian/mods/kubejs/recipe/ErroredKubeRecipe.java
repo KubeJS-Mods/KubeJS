@@ -1,7 +1,8 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
@@ -40,22 +41,22 @@ public class ErroredKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public boolean hasInput(Context cx, ReplacementMatch match) {
+	public boolean hasInput(Context cx, ReplacementMatchInfo match) {
 		return false;
 	}
 
 	@Override
-	public boolean replaceInput(Context cx, ReplacementMatch match, InputReplacement with) {
+	public boolean replaceInput(Context cx, ReplacementMatchInfo match, Object with) {
 		return false;
 	}
 
 	@Override
-	public boolean hasOutput(Context cx, ReplacementMatch match) {
+	public boolean hasOutput(Context cx, ReplacementMatchInfo match) {
 		return false;
 	}
 
 	@Override
-	public boolean replaceOutput(Context cx, ReplacementMatch match, OutputReplacement with) {
+	public boolean replaceOutput(Context cx, ReplacementMatchInfo match, Object with) {
 		return false;
 	}
 

@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -38,8 +38,8 @@ public record BlockComponent() implements RecipeComponent<Block> {
 	}
 
 	@Override
-	public boolean matches(KubeRecipe recipe, Block value, ReplacementMatch match) {
-		return match instanceof BlockStatePredicate m2 && m2.testBlock(value);
+	public boolean matches(Context cx, KubeRecipe recipe, Block value, ReplacementMatchInfo match) {
+		return match.match() instanceof BlockStatePredicate m2 && m2.testBlock(value);
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.generator;
 
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;

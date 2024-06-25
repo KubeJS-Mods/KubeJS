@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.client.ClientScriptManager;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
+import dev.latvian.mods.kubejs.fluid.KubeJSFluidIngredients;
 import dev.latvian.mods.kubejs.gui.KubeJSMenus;
 import dev.latvian.mods.kubejs.holder.KubeJSHolderSets;
 import dev.latvian.mods.kubejs.ingredient.KubeJSIngredients;
@@ -17,6 +18,7 @@ import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistryHandler;
 import dev.latvian.mods.kubejs.registry.RegistryKubeEvent;
 import dev.latvian.mods.kubejs.registry.RegistryType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptFileInfo;
@@ -26,7 +28,6 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
@@ -169,12 +170,13 @@ public class KubeJS {
 		if (dist.isClient() || !CommonProperties.get().serverOnly) {
 			// See NeoForgeRegistriesSetup.VANILLA_SYNC_REGISTRIES
 			NeoForgeMod.enableMilkFluid();
-			KubeJSIngredients.REGISTRY.register(bus);
 			// KubeJSComponents.REGISTRY.register(bus);
 			KubeJSRecipeSerializers.REGISTRY.register(bus);
 			KubeJSMenus.REGISTRY.register(bus);
 		}
 
+		KubeJSIngredients.REGISTRY.register(bus);
+		KubeJSFluidIngredients.REGISTRY.register(bus);
 		KubeJSCreativeTabs.REGISTRY.register(bus);
 		KubeJSRuleTests.REGISTRY.register(bus);
 		KubeJSHolderSets.REGISTRY.register(bus);

@@ -7,77 +7,97 @@ import net.minecraft.resources.ResourceLocation;
 
 public interface TextIcons {
 	ResourceLocation FONT = KubeJS.id("icons");
-	Component NAME = Component.empty().append(Component.literal("K.").kjs$font(FONT).kjs$white()).append(Component.literal(KubeJS.MOD_NAME));
+	Component NAME = Component.empty().append(icons("K.").kjs$white()).append(Component.literal(KubeJS.MOD_NAME));
 
 	static MutableComponent icon(MutableComponent character) {
 		return character.kjs$font(FONT);
 	}
 
+	static MutableComponent icons(String characters) {
+		return Component.literal(characters).kjs$font(FONT);
+	}
+
 	static MutableComponent smallSpace() {
-		return icon(Component.literal("."));
-	}
-
-	static MutableComponent blockTagIcon() {
-		return icon(Component.literal("B"));
-	}
-
-	static MutableComponent copy() {
-		return icon(Component.literal("C"));
-	}
-
-	static MutableComponent id() {
-		return icon(Component.literal("D"));
-	}
-
-	static MutableComponent entityTypeTag() {
-		return icon(Component.literal("E"));
-	}
-
-	static MutableComponent fluidTag() {
-		return icon(Component.literal("F"));
-	}
-
-	static MutableComponent info() {
-		return icon(Component.literal("I"));
-	}
-
-	static MutableComponent itemTag() {
-		return icon(Component.literal("J"));
-	}
-
-	static MutableComponent logo() {
-		return icon(Component.literal("K"));
-	}
-
-	static MutableComponent no() {
-		return icon(Component.literal("N"));
-	}
-
-	static MutableComponent prototypeComponent() {
-		return icon(Component.literal("P"));
-	}
-
-	static MutableComponent patchedComponent() {
-		return icon(Component.literal("Q"));
+		return icons(".");
 	}
 
 	static MutableComponent error() {
-		return icon(Component.literal("R"));
+		return icons("!");
+	}
+
+	static MutableComponent plus() {
+		return icons("+");
+	}
+
+	static MutableComponent minus() {
+		return icons("-");
+	}
+
+	static MutableComponent tilde() {
+		return icons("~");
+	}
+
+	static MutableComponent blockTagIcon() {
+		return icons("B");
+	}
+
+	static MutableComponent crafting() {
+		return icons("A");
+	}
+
+	static MutableComponent copy() {
+		return icons("C");
+	}
+
+	static MutableComponent id() {
+		return icons("D");
+	}
+
+	static MutableComponent entityTypeTag() {
+		return icons("E");
+	}
+
+	static MutableComponent fluidTag() {
+		return icons("F");
+	}
+
+	static MutableComponent info() {
+		return icons("I");
+	}
+
+	static MutableComponent itemTag() {
+		return icons("J");
+	}
+
+	static MutableComponent logo() {
+		return icons("K");
+	}
+
+	static MutableComponent no() {
+		return icons("N");
+	}
+
+	static MutableComponent prototypeComponent() {
+		return icons("P");
+	}
+
+	static MutableComponent patchedComponent() {
+		return icons("Q");
 	}
 
 	static MutableComponent tag() {
-		return icon(Component.literal("T"));
+		return icons("T");
 	}
 
 	static MutableComponent warn() {
-		return icon(Component.literal("W"));
+		return icons("W");
 	}
 
 	static MutableComponent yes() {
-		return icon(Component.literal("Y"));
+		return icons("Y");
 	}
 
 	static MutableComponent yes(boolean yes) {
-		return icon(yes ? Component.literal("Y") : Component.literal("N"));
+		return icons(yes ? "Y" : "N");
 	}
 }

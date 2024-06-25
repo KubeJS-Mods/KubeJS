@@ -6,9 +6,7 @@ import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ID;
@@ -47,7 +45,7 @@ public interface ItemStackKJS extends
 	WithCodec,
 	IngredientSupplierKJS,
 	ToStringJS,
-	OutputReplacement,
+	Replaceable,
 	MutableDataComponentHolderKJS,
 	RegistryObjectKJS<Item> {
 	default ItemStack kjs$self() {
@@ -259,13 +257,15 @@ public interface ItemStackKJS extends
 	}
 
 	@Override
-	default Object replaceOutput(Context cx, KubeRecipe recipe, ReplacementMatch match, OutputReplacement original) {
-		if (original instanceof ItemStack o) {
-			var replacement = kjs$self().copy();
-			replacement.setCount(o.getCount());
-			return replacement;
+	default Object replaceThisWith(Context cx, Object with) {
+		var t = kjs$self();
+		var r = ItemStackJS.wrap(((KubeJSContext) cx).getRegistries(), with);
+
+		if (!ItemStack.isSameItemSameComponents(t, r)) {
+			r.setCount(t.getCount());
+			return r;
 		}
 
-		return kjs$self().copy(); // return this?
+		return this;
 	}
 }

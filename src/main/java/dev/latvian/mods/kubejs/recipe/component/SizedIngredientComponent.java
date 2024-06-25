@@ -3,10 +3,10 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.recipe.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -41,8 +41,8 @@ public class SizedIngredientComponent implements RecipeComponent<SizedIngredient
 	}
 
 	@Override
-	public boolean matches(KubeRecipe recipe, SizedIngredient value, ReplacementMatch match) {
-		return match instanceof ItemMatch m && m.contains(value.ingredient());
+	public boolean matches(Context cx, KubeRecipe recipe, SizedIngredient value, ReplacementMatchInfo match) {
+		return match.match() instanceof ItemMatch m && m.matches(cx, value.ingredient(), match.exact());
 	}
 
 	@Override

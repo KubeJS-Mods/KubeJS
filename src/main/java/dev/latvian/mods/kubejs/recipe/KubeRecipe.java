@@ -15,10 +15,11 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionHolder;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.recipe.special.KubeJSCraftingRecipe;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Cast;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.SlotFilter;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
@@ -323,9 +324,9 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean hasInput(Context cx, ReplacementMatch match) {
+	public boolean hasInput(Context cx, ReplacementMatchInfo match) {
 		for (var v : inputValues()) {
-			if (v.matches(this, match)) {
+			if (v.matches(cx, this, match)) {
 				return true;
 			}
 		}
@@ -334,11 +335,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean replaceInput(Context cx, ReplacementMatch match, InputReplacement with) {
+	public boolean replaceInput(Context cx, ReplacementMatchInfo match, Object with) {
 		boolean replaced = false;
 
 		for (var v : inputValues()) {
-			replaced = v.replaceInput(cx, this, match, with) || replaced;
+			replaced = v.replace(cx, this, match, with) || replaced;
 		}
 
 		if (replaced) {
@@ -349,9 +350,9 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean hasOutput(Context cx, ReplacementMatch match) {
+	public boolean hasOutput(Context cx, ReplacementMatchInfo match) {
 		for (var v : outputValues()) {
-			if (v.matches(this, match)) {
+			if (v.matches(cx, this, match)) {
 				return true;
 			}
 		}
@@ -360,11 +361,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean replaceOutput(Context cx, ReplacementMatch match, OutputReplacement with) {
+	public boolean replaceOutput(Context cx, ReplacementMatchInfo match, Object with) {
 		boolean replaced = false;
 
 		for (var v : outputValues()) {
-			replaced = v.replaceOutput(cx, this, match, with) || replaced;
+			replaced = v.replace(cx, this, match, with) || replaced;
 		}
 
 		if (replaced) {
@@ -504,7 +505,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			return new RecipeHolder<>(getOrCreateId(), originalRecipe.getValue());
 		}
 
-		return RecipeHelper.get().fromJson(type.event.registries.json(), getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json, !FMLLoader.isProduction());
+		return RecipeHelper.fromJson(type.event.registries.json(), getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json, !FMLLoader.isProduction());
 	}
 
 	@Nullable
@@ -515,7 +516,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			originalRecipe = new MutableObject<>();
 			try {
 				// todo: this sucks
-				originalRecipe.setValue(RecipeHelper.get().fromJson(type.event.registries.json(), type.schemaType.getSerializer(), getOrCreateId(), json, !FMLLoader.isProduction()).value());
+				originalRecipe.setValue(RecipeHelper.fromJson(type.event.registries.json(), type.schemaType.getSerializer(), getOrCreateId(), json, !FMLLoader.isProduction()).value());
 			} catch (Throwable e) {
 				error = e;
 			}

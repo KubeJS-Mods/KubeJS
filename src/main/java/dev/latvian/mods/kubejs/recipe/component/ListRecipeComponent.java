@@ -3,10 +3,8 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonArray;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
-import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import org.jetbrains.annotations.Nullable;
@@ -100,9 +98,9 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 	}
 
 	@Override
-	public boolean matches(KubeRecipe recipe, List<T> value, ReplacementMatch match) {
+	public boolean matches(Context cx, KubeRecipe recipe, List<T> value, ReplacementMatchInfo match) {
 		for (var v : value) {
-			if (component.matches(recipe, v, match)) {
+			if (component.matches(cx, recipe, v, match)) {
 				return true;
 			}
 		}
@@ -111,32 +109,11 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 	}
 
 	@Override
-	public List<T> replaceInput(Context cx, KubeRecipe recipe, List<T> original, ReplacementMatch match, InputReplacement with) {
+	public List<T> replace(Context cx, KubeRecipe recipe, List<T> original, ReplacementMatchInfo match, Object with) {
 		var arr = original;
 
 		for (int i = 0; i < original.size(); i++) {
-			var r = component.replaceInput(cx, recipe, original.get(i), match, with);
-
-			if (arr.get(i) != r) {
-				if (arr == original) {
-					arr = new ArrayList<>(original);
-				}
-
-				if (arr != original) {
-					arr.set(i, r);
-				}
-			}
-		}
-
-		return arr;
-	}
-
-	@Override
-	public List<T> replaceOutput(Context cx, KubeRecipe recipe, List<T> original, ReplacementMatch match, OutputReplacement with) {
-		var arr = original;
-
-		for (int i = 0; i < original.size(); i++) {
-			var r = component.replaceOutput(cx, recipe, original.get(i), match, with);
+			var r = component.replace(cx, recipe, original.get(i), match, with);
 
 			if (arr.get(i) != r) {
 				if (arr == original) {

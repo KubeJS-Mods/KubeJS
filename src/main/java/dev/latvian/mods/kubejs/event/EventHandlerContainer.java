@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.kubejs.DevProperties;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.rhino.WrappedException;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,14 +20,14 @@ public class EventHandlerContainer {
 		return true;
 	}
 
-	public final Object extraId;
+	public final Object target;
 	public final IEventHandler handler;
 	public final String source;
 	public final int line;
 	EventHandlerContainer child;
 
-	public EventHandlerContainer(Object extraId, IEventHandler handler, String source, int line) {
-		this.extraId = extraId;
+	public EventHandlerContainer(Object target, IEventHandler handler, String source, int line) {
+		this.target = target;
 		this.handler = handler;
 		this.source = source;
 		this.line = line;

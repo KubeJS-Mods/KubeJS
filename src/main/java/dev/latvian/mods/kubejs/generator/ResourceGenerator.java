@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.generator;
 
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.DevProperties;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.resources.ResourceLocation;
 

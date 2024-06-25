@@ -9,10 +9,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
-public record RegExIngredient(Pattern pattern) implements KubeJSIngredient {
+public record RegExIngredient(Pattern pattern, String patternString) implements KubeJSIngredient {
 	public static final MapCodec<RegExIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		RegExpKJS.CODEC.fieldOf("pattern").forGetter(RegExIngredient::pattern)
 	).apply(instance, RegExIngredient::new));
+
+	public RegExIngredient(Pattern pattern) {
+		this(pattern, RegExpKJS.toRegExpString(pattern));
+	}
 
 	@Override
 	public IngredientType<?> getType() {
@@ -22,5 +26,20 @@ public record RegExIngredient(Pattern pattern) implements KubeJSIngredient {
 	@Override
 	public boolean test(@Nullable ItemStack stack) {
 		return stack != null && pattern.matcher(stack.kjs$getId()).find();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return o == this || o instanceof RegExIngredient i && patternString.equals(i.patternString);
+	}
+
+	@Override
+	public int hashCode() {
+		return patternString.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return "KubeJSItemRegExIngredient[" + patternString + "]";
 	}
 }

@@ -1,11 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
@@ -41,18 +39,13 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default boolean matches(KubeRecipe recipe, T value, ReplacementMatch match) {
-		return parentComponent().matches(recipe, value, match);
+	default boolean matches(Context cx, KubeRecipe recipe, T value, ReplacementMatchInfo match) {
+		return parentComponent().matches(cx, recipe, value, match);
 	}
 
 	@Override
-	default T replaceInput(Context cx, KubeRecipe recipe, T original, ReplacementMatch match, InputReplacement with) {
-		return parentComponent().replaceInput(cx, recipe, original, match, with);
-	}
-
-	@Override
-	default T replaceOutput(Context cx, KubeRecipe recipe, T original, ReplacementMatch match, OutputReplacement with) {
-		return parentComponent().replaceOutput(cx, recipe, original, match, with);
+	default T replace(Context cx, KubeRecipe recipe, T original, ReplacementMatchInfo match, Object with) {
+		return parentComponent().replace(cx, recipe, original, match, with);
 	}
 
 	@Override

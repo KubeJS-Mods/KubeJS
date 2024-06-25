@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.bindings.event;
 
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
-import dev.latvian.mods.kubejs.event.Extra;
-import dev.latvian.mods.kubejs.event.SpecializedEventHandler;
+import dev.latvian.mods.kubejs.event.EventTargetType;
+import dev.latvian.mods.kubejs.event.TargetedEventHandler;
 import dev.latvian.mods.kubejs.player.ChestKubeEvent;
 import dev.latvian.mods.kubejs.player.InventoryChangedKubeEvent;
 import dev.latvian.mods.kubejs.player.InventoryKubeEvent;
@@ -20,7 +20,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 
 public interface PlayerEvents {
-	Extra<ResourceKey<MenuType<?>>> SUPPORTS_MENU_TYPE = Extra.registryKey(Registries.MENU, MenuType.class);
+	EventTargetType<ResourceKey<MenuType<?>>> MENU_TARGET = EventTargetType.registryKey(Registries.MENU, MenuType.class);
 
 	EventGroup GROUP = EventGroup.of("PlayerEvents");
 	EventHandler LOGGED_IN = GROUP.server("loggedIn", () -> SimplePlayerKubeEvent.class);
@@ -30,12 +30,12 @@ public interface PlayerEvents {
 	EventHandler TICK = GROUP.common("tick", () -> SimplePlayerKubeEvent.class);
 	EventHandler DECORATE_CHAT = GROUP.server("decorateChat", () -> PlayerChatReceivedKubeEvent.class).hasResult();
 	EventHandler CHAT = GROUP.server("chat", () -> PlayerChatReceivedKubeEvent.class).hasResult();
-	SpecializedEventHandler<ResourceLocation> ADVANCEMENT = GROUP.server("advancement", Extra.ID, () -> PlayerAdvancementKubeEvent.class).hasResult();
-	SpecializedEventHandler<ResourceKey<MenuType<?>>> INVENTORY_OPENED = GROUP.common("inventoryOpened", SUPPORTS_MENU_TYPE, () -> InventoryKubeEvent.class);
-	SpecializedEventHandler<ResourceKey<MenuType<?>>> INVENTORY_CLOSED = GROUP.common("inventoryClosed", SUPPORTS_MENU_TYPE, () -> InventoryKubeEvent.class);
-	SpecializedEventHandler<ResourceKey<Item>> INVENTORY_CHANGED = GROUP.common("inventoryChanged", ItemEvents.SUPPORTS_ITEM, () -> InventoryChangedKubeEvent.class);
-	SpecializedEventHandler<ResourceKey<MenuType<?>>> CHEST_OPENED = GROUP.common("chestOpened", SUPPORTS_MENU_TYPE, () -> ChestKubeEvent.class);
-	SpecializedEventHandler<ResourceKey<MenuType<?>>> CHEST_CLOSED = GROUP.common("chestClosed", SUPPORTS_MENU_TYPE, () -> ChestKubeEvent.class);
-	SpecializedEventHandler<String> STAGE_ADDED = GROUP.common("stageAdded", Extra.STRING, () -> StageChangedEvent.class);
-	SpecializedEventHandler<String> STAGE_REMOVED = GROUP.common("stageRemoved", Extra.STRING, () -> StageChangedEvent.class);
+	TargetedEventHandler<ResourceLocation> ADVANCEMENT = GROUP.server("advancement", () -> PlayerAdvancementKubeEvent.class).hasResult().supportsTarget(EventTargetType.ID);
+	TargetedEventHandler<ResourceKey<MenuType<?>>> INVENTORY_OPENED = GROUP.common("inventoryOpened", () -> InventoryKubeEvent.class).supportsTarget(MENU_TARGET);
+	TargetedEventHandler<ResourceKey<MenuType<?>>> INVENTORY_CLOSED = GROUP.common("inventoryClosed", () -> InventoryKubeEvent.class).supportsTarget(MENU_TARGET);
+	TargetedEventHandler<ResourceKey<Item>> INVENTORY_CHANGED = GROUP.common("inventoryChanged", () -> InventoryChangedKubeEvent.class).supportsTarget(ItemEvents.TARGET);
+	TargetedEventHandler<ResourceKey<MenuType<?>>> CHEST_OPENED = GROUP.common("chestOpened", () -> ChestKubeEvent.class).supportsTarget(MENU_TARGET);
+	TargetedEventHandler<ResourceKey<MenuType<?>>> CHEST_CLOSED = GROUP.common("chestClosed", () -> ChestKubeEvent.class).supportsTarget(MENU_TARGET);
+	TargetedEventHandler<String> STAGE_ADDED = GROUP.common("stageAdded", () -> StageChangedEvent.class).supportsTarget(EventTargetType.STRING);
+	TargetedEventHandler<String> STAGE_REMOVED = GROUP.common("stageRemoved", () -> StageChangedEvent.class).supportsTarget(EventTargetType.STRING);
 }

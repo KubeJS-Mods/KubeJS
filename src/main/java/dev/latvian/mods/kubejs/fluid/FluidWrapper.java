@@ -5,16 +5,22 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.EmptyFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
@@ -170,5 +176,42 @@ public interface FluidWrapper {
 		}
 
 		return fluidStack;
+	}
+
+	static FluidIngredient readIngredient(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+		if (!reader.canRead()) {
+			return FluidIngredient.empty();
+		}
+
+		if (reader.peek() == '-') {
+			return FluidIngredient.empty();
+		} else if (reader.peek() == '#') {
+			reader.skip();
+			var tag = ResourceLocation.read(reader);
+			return FluidIngredient.tag(TagKey.create(Registries.FLUID, tag));
+		} else if (reader.peek() == '@') {
+			reader.skip();
+			var id = reader.readString();
+			return new NamespaceFluidIngredient(id);
+		} else if (reader.peek() == '/') {
+			reader.skip();
+			var pattern = RegExpKJS.read(reader);
+			return new RegExFluidIngredient(pattern);
+		}
+
+		var fluidId = ResourceLocation.read(reader);
+		var fluid = RegistryInfo.FLUID.getValue(fluidId);
+
+		var next = reader.canRead() ? reader.peek() : 0;
+
+		if (next == '[' || next == '{') {
+			var components = DataComponentWrapper.readPredicate(registryOps, reader);
+
+			if (components != DataComponentPredicate.EMPTY) {
+				return new DataComponentFluidIngredient(HolderSet.direct(fluid.builtInRegistryHolder()), components, false);
+			}
+		}
+
+		return FluidIngredient.of(fluid);
 	}
 }

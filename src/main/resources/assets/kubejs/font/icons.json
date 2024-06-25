@@ -8,6 +8,36 @@
 		},
 		{
 			"type": "bitmap",
+			"file": "kubejs:font/icons/error.png",
+			"ascent": 7,
+			"chars": ["!"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/plus.png",
+			"ascent": 7,
+			"chars": ["+"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/minus.png",
+			"ascent": 7,
+			"chars": ["-"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/tilde.png",
+			"ascent": 7,
+			"chars": ["~"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/crafting.png",
+			"ascent": 7,
+			"chars": ["A"]
+		},
+		{
+			"type": "bitmap",
 			"file": "kubejs:font/icons/block_tag.png",
 			"ascent": 7,
 			"chars": ["B"]
@@ -65,12 +95,6 @@
 			"file": "kubejs:font/icons/prototype_component.png",
 			"ascent": 7,
 			"chars": ["P"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/error.png",
-			"ascent": 7,
-			"chars": ["R"]
 		},
 		{
 			"type": "bitmap",

@@ -1,10 +1,12 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.net.SendDataFromServerPayload;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.server.ChangesForChat;
 import dev.latvian.mods.kubejs.server.DataExport;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.ChatFormatting;
@@ -107,6 +109,10 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 				kjs$tell(Component.literal("Reloaded with no KubeJS errors!").withStyle(ChatFormatting.GREEN));
 			} else {
 				kjs$tell(ConsoleJS.SERVER.errorsComponent("/kubejs errors server"));
+			}
+
+			if (DevProperties.get().logChangesInChat) {
+				ChangesForChat.print(this::kjs$tell);
 			}
 		}
 

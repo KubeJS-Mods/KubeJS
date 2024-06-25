@@ -5,11 +5,9 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
 import dev.latvian.mods.rhino.type.JSOptionalParam;
@@ -128,9 +126,9 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public boolean matches(KubeRecipe recipe, RecipeComponentBuilderMap value, ReplacementMatch match) {
+	public boolean matches(Context cx, KubeRecipe recipe, RecipeComponentBuilderMap value, ReplacementMatchInfo match) {
 		for (var e : value.holders) {
-			if (e.matches(recipe, match)) {
+			if (e.matches(cx, recipe, match)) {
 				return true;
 			}
 		}
@@ -139,20 +137,9 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public RecipeComponentBuilderMap replaceInput(Context cx, KubeRecipe recipe, RecipeComponentBuilderMap original, ReplacementMatch match, InputReplacement with) {
+	public RecipeComponentBuilderMap replace(Context cx, KubeRecipe recipe, RecipeComponentBuilderMap original, ReplacementMatchInfo match, Object with) {
 		for (var e : original.holders) {
-			if (e.replaceInput(cx, recipe, match, with)) {
-				original.hasChanged = true;
-			}
-		}
-
-		return original;
-	}
-
-	@Override
-	public RecipeComponentBuilderMap replaceOutput(Context cx, KubeRecipe recipe, RecipeComponentBuilderMap original, ReplacementMatch match, OutputReplacement with) {
-		for (var e : original.holders) {
-			if (e.replaceOutput(cx, recipe, match, with)) {
+			if (e.replace(cx, recipe, match, with)) {
 				original.hasChanged = true;
 			}
 		}

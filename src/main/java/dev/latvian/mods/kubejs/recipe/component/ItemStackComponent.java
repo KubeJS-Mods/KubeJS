@@ -2,10 +2,10 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.recipe.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -40,8 +40,8 @@ public class ItemStackComponent implements RecipeComponent<ItemStack> {
 	}
 
 	@Override
-	public boolean matches(KubeRecipe recipe, ItemStack value, ReplacementMatch match) {
-		return match instanceof ItemMatch m && !value.isEmpty() && m.contains(value);
+	public boolean matches(Context cx, KubeRecipe recipe, ItemStack value, ReplacementMatchInfo match) {
+		return match.match() instanceof ItemMatch m && !value.isEmpty() && m.matches(cx, value, match.exact());
 	}
 
 	@Override

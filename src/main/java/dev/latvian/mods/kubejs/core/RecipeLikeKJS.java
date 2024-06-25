@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.recipe.InputReplacement;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.ResourceLocation;
@@ -25,19 +23,19 @@ public interface RecipeLikeKJS {
 
 	RecipeSerializer<?> kjs$getSerializer();
 
-	default boolean hasInput(Context cx, ReplacementMatch match) {
+	default boolean hasInput(Context cx, ReplacementMatchInfo match) {
 		return false;
 	}
 
-	default boolean replaceInput(Context cx, ReplacementMatch match, InputReplacement with) {
+	default boolean replaceInput(Context cx, ReplacementMatchInfo match, Object with) {
 		return false;
 	}
 
-	default boolean hasOutput(Context cx, ReplacementMatch match) {
+	default boolean hasOutput(Context cx, ReplacementMatchInfo match) {
 		return false;
 	}
 
-	default boolean replaceOutput(Context cx, ReplacementMatch match, OutputReplacement with) {
+	default boolean replaceOutput(Context cx, ReplacementMatchInfo match, Object with) {
 		return false;
 	}
 }

@@ -99,14 +99,14 @@ dependencies {
 	//mappings loom.officialMojangMappings()
 	mappings loom.layered() {
 		officialMojangMappings()
-		parchment("org.parchmentmc.data:parchment-1.20.6:$parchment_version@zip")
+		parchment("org.parchmentmc.data:parchment-1.21:$parchment_version@zip")
 	}
 
 	neoForge("net.neoforged:neoforge:$neoforge_version")
 
-	modApi("dev.architectury:architectury-neoforge:$architectury_version")
 	modApi("dev.latvian.mods:rhino:$rhino_version") { transitive(false) }
 
+	modCompileOnly("dev.architectury:architectury-neoforge:$architectury_version")
 	modCompileOnly("mezz.jei:jei-1.21-neoforge:$jei_version")
 	modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version")
 	modCompileOnly("dev.emi:emi-neoforge:$emi_version:api")
@@ -114,9 +114,8 @@ dependencies {
 
 processResources {
 	def toReplace = [
-			"version"             : project.version,
-			"rhino_version"       : project.rhino_version,
-			"architectury_version": project.architectury_version,
+			"version"      : project.version,
+			"rhino_version": project.rhino_version,
 	]
 
 	println("[Process Resources] Replacing properties in resources: " + toReplace)
@@ -157,9 +156,6 @@ unifiedPublishing {
 		mainPublication remapJar
 
 		relations {
-			depends {
-				curseforge = modrinth = "architectury-api"
-			}
 			depends {
 				curseforge = modrinth = "rhino"
 			}

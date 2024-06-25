@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.block.entity;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.core.ServerPlayerKJS;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -24,8 +24,10 @@ public class BlockEntityInfo {
 	public transient final BlockBuilder blockBuilder;
 	public transient BlockEntityType<?> entityType;
 	public transient CompoundTag initialData;
-	public transient BlockEntityJSTicker serverTicker;
-	public transient BlockEntityJSTicker clientTicker;
+	public transient boolean serverTicking;
+	public transient boolean clientTicking;
+	public transient int tickFrequency;
+	public transient int tickOffset;
 	public transient boolean sync;
 	public transient List<BlockEntityAttachmentHolder> attachments;
 	public transient Int2ObjectMap<BlockEntityEventCallback> eventHandlers;
@@ -33,6 +35,10 @@ public class BlockEntityInfo {
 	public BlockEntityInfo(BlockBuilder blockBuilder) {
 		this.blockBuilder = blockBuilder;
 		this.initialData = new CompoundTag();
+		this.serverTicking = false;
+		this.clientTicking = false;
+		this.tickFrequency = 1;
+		this.tickOffset = 0;
 		this.sync = false;
 		this.attachments = new ArrayList<>(1);
 		this.eventHandlers = new Int2ObjectArrayMap<>(0);
@@ -42,30 +48,25 @@ public class BlockEntityInfo {
 		initialData = data;
 	}
 
-	public void serverTick(int frequency, int offset, BlockEntityCallback callback) {
-		serverTicker = new BlockEntityJSTicker(this, Math.max(1, frequency), Math.max(0, offset), callback, true);
+	public void serverTicking() {
+		serverTicking = true;
 	}
 
-	public void serverTick(BlockEntityCallback callback) {
-		serverTick(1, 0, callback);
+	public void clientTicking() {
+		clientTicking = true;
 	}
 
-	public void clientTick(int frequency, int offset, BlockEntityCallback callback) {
-		clientTicker = new BlockEntityJSTicker(this, Math.max(1, frequency), Math.max(0, offset), callback, false);
+	public void ticking() {
+		serverTicking();
+		clientTicking();
 	}
 
-	public void clientTick(BlockEntityCallback callback) {
-		clientTick(1, 0, callback);
+	public void tickFrequency(int frequency) {
+		tickFrequency = Math.max(1, frequency);
 	}
 
-	public void tick(int frequency, int offset, BlockEntityCallback callback) {
-		serverTick(frequency, offset, callback);
-		clientTick(frequency, offset, callback);
-	}
-
-	public void tick(BlockEntityCallback callback) {
-		serverTick(callback);
-		clientTick(callback);
+	public void tickOffset(int offset) {
+		tickOffset = Math.max(0, offset);
 	}
 
 	public void enableSync() {
@@ -113,7 +114,11 @@ public class BlockEntityInfo {
 
 	@HideFromJS
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level) {
-		return (BlockEntityTicker) (level.isClientSide() ? clientTicker : serverTicker);
+		if (level.isClientSide()) {
+			return clientTicking ? (BlockEntityTicker) BlockEntityJS.TICKER : null;
+		} else {
+			return serverTicking ? (BlockEntityTicker) BlockEntityJS.TICKER : null;
+		}
 	}
 
 	@Override

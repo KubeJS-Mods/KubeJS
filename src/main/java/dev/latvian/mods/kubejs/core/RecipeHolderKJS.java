@@ -1,9 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.recipe.InputReplacement;
-import dev.latvian.mods.kubejs.recipe.ItemMatch;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
@@ -57,10 +55,10 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	}
 
 	@Override
-	default boolean hasInput(Context cx, ReplacementMatch match) {
-		if (match instanceof ItemMatch m) {
+	default boolean hasInput(Context cx, ReplacementMatchInfo match) {
+		if (match.match() instanceof ItemMatch m) {
 			for (var in : kjs$getRecipe().getIngredients()) {
-				if (m.contains(in)) {
+				if (m.matches(cx, in, match.exact())) {
 					return true;
 				}
 			}
@@ -70,23 +68,23 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	}
 
 	@Override
-	default boolean replaceInput(Context cx, ReplacementMatch match, InputReplacement with) {
+	default boolean replaceInput(Context cx, ReplacementMatchInfo match, Object with) {
 		return false;
 	}
 
 	@Override
-	default boolean hasOutput(Context cx, ReplacementMatch match) {
-		if (match instanceof ItemMatch m) {
+	default boolean hasOutput(Context cx, ReplacementMatchInfo match) {
+		if (match.match() instanceof ItemMatch m) {
 			var result = kjs$getRecipe().getResultItem(((KubeJSContext) cx).getRegistries().access());
 			//noinspection ConstantValue
-			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.contains(result);
+			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.matches(cx, result, match.exact());
 		}
 
 		return false;
 	}
 
 	@Override
-	default boolean replaceOutput(Context cx, ReplacementMatch match, OutputReplacement with) {
+	default boolean replaceOutput(Context cx, ReplacementMatchInfo match, Object with) {
 		return false;
 	}
 }

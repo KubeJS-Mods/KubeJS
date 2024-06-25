@@ -1,13 +1,13 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
 
 public class OutputFilter implements RecipeFilter {
-	private final ReplacementMatch match;
+	private final ReplacementMatchInfo match;
 
-	public OutputFilter(ReplacementMatch match) {
+	public OutputFilter(ReplacementMatchInfo match) {
 		this.match = match;
 	}
 

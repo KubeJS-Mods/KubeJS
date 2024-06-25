@@ -2,11 +2,9 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.recipe.InputReplacement;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.OutputReplacement;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
@@ -86,9 +84,9 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public boolean matches(KubeRecipe recipe, TinyMap<K, V> value, ReplacementMatch match) {
+	public boolean matches(Context cx, KubeRecipe recipe, TinyMap<K, V> value, ReplacementMatchInfo match) {
 		for (var entry : value.entries()) {
-			if (component.matches(recipe, entry.value(), match)) {
+			if (component.matches(cx, recipe, entry.value(), match)) {
 				return true;
 			}
 		}
@@ -97,30 +95,11 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public TinyMap<K, V> replaceInput(Context cx, KubeRecipe recipe, TinyMap<K, V> original, ReplacementMatch match, InputReplacement with) {
+	public TinyMap<K, V> replace(Context cx, KubeRecipe recipe, TinyMap<K, V> original, ReplacementMatchInfo match, Object with) {
 		var map = original;
 
 		for (int i = 0; i < original.entries().length; i++) {
-			var r = component.replaceInput(cx, recipe, original.entries()[i].value(), match, with);
-
-			if (r != original.entries()[i].value()) {
-				if (map == original) {
-					map = new TinyMap<>(original);
-				}
-
-				map.entries()[i] = new TinyMap.Entry<>(original.entries()[i].key(), r);
-			}
-		}
-
-		return map;
-	}
-
-	@Override
-	public TinyMap<K, V> replaceOutput(Context cx, KubeRecipe recipe, TinyMap<K, V> original, ReplacementMatch match, OutputReplacement with) {
-		var map = original;
-
-		for (int i = 0; i < original.entries().length; i++) {
-			var r = component.replaceOutput(cx, recipe, original.entries()[i].value(), match, with);
+			var r = component.replace(cx, recipe, original.entries()[i].value(), match, with);
 
 			if (r != original.entries()[i].value()) {
 				if (map == original) {

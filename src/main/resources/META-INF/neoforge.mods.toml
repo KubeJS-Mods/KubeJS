@@ -32,13 +32,6 @@ ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.kubejs]]
-modId = "architectury"
-type = "required"
-versionRange = "[${architectury_version},)"
-ordering = "AFTER"
-side = "BOTH"
-
-[[dependencies.kubejs]]
 modId = "jei"
 type = "optional"
 versionRange = "[1.0.0,)"

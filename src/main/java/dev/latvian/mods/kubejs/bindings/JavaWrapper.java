@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.bindings;
 
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 

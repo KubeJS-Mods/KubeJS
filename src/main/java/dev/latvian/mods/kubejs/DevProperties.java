@@ -29,6 +29,7 @@ public class DevProperties extends BaseProperties {
 	public boolean logSkippedPlugins;
 	public boolean logGeneratedData;
 	public boolean logEventErrorStackTrace;
+	public boolean logChangesInChat;
 	public boolean strictTags;
 	public boolean alwaysCaptureErrors;
 	public String kubedexSound;
@@ -53,6 +54,7 @@ public class DevProperties extends BaseProperties {
 		logSkippedPlugins = get("log_skipped_plugins", true);
 		logGeneratedData = get("log_generated_data", false);
 		logEventErrorStackTrace = get("log_event_error_stack_trace", false);
+		logChangesInChat = get("log_changes_in_chat", false);
 		strictTags = get("strict_tags", false);
 		alwaysCaptureErrors = get("always_capture_errors", false);
 		kubedexSound = get("kubedex_sound", "entity.experience_orb.pickup");

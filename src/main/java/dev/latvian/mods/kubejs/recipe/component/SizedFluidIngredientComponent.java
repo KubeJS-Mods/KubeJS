@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.fluid.FluidLike;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.ReplacementMatch;
+import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
+import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -43,8 +43,8 @@ public class SizedFluidIngredientComponent implements RecipeComponent<SizedFluid
 	}
 
 	@Override
-	public boolean matches(KubeRecipe recipe, SizedFluidIngredient value, ReplacementMatch match) {
-		return match instanceof FluidLike m && m.contains((FluidLike) value.ingredient());
+	public boolean matches(Context cx, KubeRecipe recipe, SizedFluidIngredient value, ReplacementMatchInfo match) {
+		return match.match() instanceof FluidMatch m && m.matches(cx, value.ingredient(), match.exact());
 	}
 
 	@Override

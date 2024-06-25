@@ -1,9 +1,12 @@
 package dev.latvian.mods.kubejs.core;
 
+import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.block.RandomTickKubeEvent;
+import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -15,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
 @RemapPrefixForJS("kjs$")
-public interface BlockStateKJS extends RegistryObjectKJS<Block> {
+public interface BlockStateKJS extends RegistryObjectKJS<Block>, Replaceable {
 	@Override
 	default RegistryInfo<Block> kjs$getKubeRegistry() {
 		return RegistryInfo.BLOCK;
@@ -54,5 +57,10 @@ public interface BlockStateKJS extends RegistryObjectKJS<Block> {
 		}
 
 		return false;
+	}
+
+	@Override
+	default Object replaceThisWith(Context cx, Object with) {
+		return with instanceof BlockState state ? state : with instanceof Block block ? block.defaultBlockState() : cx.jsToJava(with, BlockWrapper.STATE_TYPE_INFO);
 	}
 }

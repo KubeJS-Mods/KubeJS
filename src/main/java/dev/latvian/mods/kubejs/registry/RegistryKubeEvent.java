@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.registry;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
-import dev.latvian.mods.kubejs.util.ConsoleJS;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
