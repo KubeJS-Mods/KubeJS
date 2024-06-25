@@ -83,6 +83,7 @@ public class KubeJS {
 		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 	}
 
+	public static IEventBus modEventBus;
 	public static ModContainer thisMod;
 
 	public static KubeJSCommon PROXY = new KubeJSCommon();
@@ -98,6 +99,7 @@ public class KubeJS {
 	}
 
 	public KubeJS(IEventBus bus, Dist dist, ModContainer mod) throws Throwable {
+		modEventBus = bus;
 		thisMod = mod;
 		VERSION = mod.getModInfo().getVersion().toString();
 

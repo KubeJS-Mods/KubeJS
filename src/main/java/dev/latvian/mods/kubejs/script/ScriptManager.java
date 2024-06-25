@@ -18,14 +18,12 @@ public class ScriptManager {
 	public final ScriptType scriptType;
 	public final Map<String, ScriptPack> packs;
 	private final ClassFilter classFilter;
-	public boolean firstLoad;
 	public KubeJSContextFactory contextFactory;
 	public boolean canListenEvents;
 
 	public ScriptManager(ScriptType t) {
 		scriptType = t;
 		packs = new LinkedHashMap<>();
-		firstLoad = true;
 		classFilter = KubeJSPlugins.createClassFilter(scriptType);
 	}
 
@@ -121,7 +119,6 @@ public class ScriptManager {
 		scriptType.console.contextFactory = new WeakReference<>(contextFactory);
 
 		if (PlatformWrapper.isGeneratingData()) {
-			firstLoad = false;
 			scriptType.console.info("Skipping KubeJS script loading (DataGen)");
 			return;
 		}
@@ -158,7 +155,6 @@ public class ScriptManager {
 		}
 
 		scriptType.console.info("Loaded " + i + "/" + t + " KubeJS " + scriptType.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s with " + scriptType.console.errors.size() + " errors and " + scriptType.console.warnings.size() + " warnings");
-		firstLoad = false;
 		canListenEvents = false;
 	}
 }

@@ -1,29 +1,46 @@
 package dev.latvian.mods.kubejs.neoforge;
 
-import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.Context;
+import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.IModBusEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
-public record NativeEventWrapper(String name, IEventBus eventBus) {
-	public Object onEvent(Context cx, Object eventClass, NativeEventConsumer consumer) {
-		if (!((KubeJSContext) cx).getType().isStartup()) {
-			throw new RuntimeException("Native event wrappers are only allowed in startup scripts!");
-		} else if (!(eventClass instanceof CharSequence || eventClass instanceof Class)) {
-			throw new RuntimeException("Invalid syntax! " + name + ".onEvent(eventType, function) requires event class and handler");
-		} else if (!((KubeJSContext) cx).kjsFactory.manager.firstLoad) {
-			ConsoleJS.STARTUP.warn(name + ".onEvent() can't be reloaded! You will have to restart the game for changes to take effect.");
-			return null;
+import java.util.function.Consumer;
+
+public interface NativeEventWrapper {
+	static void onEvent(Context cx, Class<?> eventClass, Consumer<Event> consumer) {
+		onEvent(cx, EventPriority.NORMAL, eventClass, consumer);
+	}
+
+	static void onEvent(Context cx, EventPriority priority, Class<?> eventClass, Consumer<Event> consumer) {
+		if (!Event.class.isAssignableFrom(eventClass)) {
+			throw new IllegalArgumentException("Event class must extend net.neoforged.bus.api.Event!");
 		}
 
-		try {
-			Class type = eventClass instanceof Class<?> c ? c : Class.forName(eventClass.toString());
-			eventBus.addListener(EventPriority.NORMAL, false, type, consumer);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+		var scriptType = ((KubeJSContext) cx).kjsFactory.manager.scriptType;
+		var key = new NativeEventListeners.Key(eventClass, priority == null ? EventPriority.NORMAL : priority);
+
+		var listeners = scriptType.nativeEventListeners.get(key);
+
+		if (listeners == null) {
+			listeners = new NativeEventListeners();
+			scriptType.nativeEventListeners.put(key, listeners);
+
+			IEventBus bus;
+
+			if (IModBusEvent.class.isAssignableFrom(eventClass)) {
+				bus = KubeJS.modEventBus;
+			} else {
+				bus = NeoForge.EVENT_BUS;
+			}
+
+			bus.addListener(priority, false, (Class) eventClass, listeners);
 		}
 
-		return null;
+		listeners.listeners.add((Consumer<Event>) cx.jsToJava(consumer, NativeEventListeners.EVENT_CONSUMER_TYPE));
 	}
 }

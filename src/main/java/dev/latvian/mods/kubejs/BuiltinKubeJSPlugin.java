@@ -191,7 +191,6 @@ import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.ToolAction;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -450,15 +449,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		bindings.add("BlockProperties", BlockStateProperties.class);
 
-		if (bindings.type().isStartup()) {
-			bindings.add("NativeEvents", new NativeEventWrapper("NativeEvents", NeoForge.EVENT_BUS));
-
-			var modBus = KubeJS.thisMod.getEventBus();
-
-			if (modBus != null) {
-				bindings.add("NativeModEvents", new NativeEventWrapper("NativeModEvents", modBus));
-			}
-		}
+		bindings.add("NativeEvents", NativeEventWrapper.class);
 	}
 
 	@Override

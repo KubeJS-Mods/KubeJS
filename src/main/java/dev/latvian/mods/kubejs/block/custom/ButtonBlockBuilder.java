@@ -18,7 +18,6 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 
 	public transient BlockSetType behaviour;
 	public transient int ticksToStayPressed;
-	public transient boolean arrowsCanPress;
 
 	public ButtonBlockBuilder(ResourceLocation i) {
 		super(i, "_button");
@@ -27,7 +26,6 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 		// tagBoth(BlockTags.WOODEN_BUTTONS.location());
 		behaviour = BlockSetType.OAK;
 		ticksToStayPressed = 30;
-		arrowsCanPress = true;
 	}
 
 	public ButtonBlockBuilder behaviour(BlockSetType wt) {
@@ -37,12 +35,6 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 
 	public ButtonBlockBuilder ticksToStayPressed(int t) {
 		ticksToStayPressed = t;
-		return this;
-	}
-
-	// TODO: this is now determined by the BlockSetType
-	public ButtonBlockBuilder arrowsCanPress(boolean b) {
-		arrowsCanPress = b;
 		return this;
 	}
 
