@@ -1,0 +1,64 @@
+name: Java CI (Main)
+
+on:
+  push:
+    branches:
+      - 'main'
+  workflow_dispatch:
+    branches:
+      - 'main'
+    inputs:
+      release_type:
+        description: 'Release Type'
+        required: true
+        type: choice
+        default: 'release'
+        options:
+          - 'release'
+          - 'beta'
+          - 'alpha'
+          - 'none'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: |
+      !contains(github.event.head_commit.message, '[ci skip]')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 30
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Build and Publish with Gradle
+        uses: gradle/gradle-build-action@v2
+        env:
+          MAVEN_TOKEN: ${{ secrets.MAVEN_TOKEN }}
+          SAPS_TOKEN: ${{ secrets.SAPS_TOKEN }}
+        with:
+          arguments: build publish --stacktrace --no-daemon
+
+      - name: Release to CurseForge
+        uses: gradle/gradle-build-action@v2
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_type != 'none' }}
+        env:
+          GIT_COMMIT: ${{ github.event.after }}
+          GIT_PREVIOUS_COMMIT: ${{ github.event.before }}
+          CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          RELEASE_TYPE: ${{ inputs.release_type }}
+        with:
+          arguments: curseforge modrinth --stacktrace --no-daemon
