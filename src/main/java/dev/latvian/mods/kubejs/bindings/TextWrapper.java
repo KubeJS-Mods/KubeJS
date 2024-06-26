@@ -57,6 +57,8 @@ public interface TextWrapper {
 			} else {
 				return ofString(s);
 			}
+		} else if (o instanceof Tag tag) {
+			return (MutableComponent) NbtUtils.toPrettyComponent(tag);
 		} else if (o instanceof Map<?, ?> map && (map.containsKey("text") || map.containsKey("translate"))) {
 			MutableComponent text;
 

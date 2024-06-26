@@ -27,7 +27,7 @@ public class EventHandler extends BaseFunction {
 	public final String name;
 	public final ScriptTypePredicate scriptTypePredicate;
 	public final Supplier<Class<? extends KubeEvent>> eventType;
-	private TypeInfo result;
+	protected TypeInfo result;
 	public transient EventTargetType<?> target;
 	public transient boolean targetRequired;
 	protected EventHandlerContainer[] eventContainers;
@@ -72,7 +72,9 @@ public class EventHandler extends BaseFunction {
 
 	private <E> TargetedEventHandler<E> requiredTarget(EventTargetType<E> type, boolean required) {
 		var handler = new TargetedEventHandler<>(group, name, scriptTypePredicate, type, eventType);
+		handler.result = result;
 		handler.targetRequired = required;
+		handler.exceptionHandler = exceptionHandler;
 		handler.group.getHandlers().put(name, handler);
 		return handler;
 	}

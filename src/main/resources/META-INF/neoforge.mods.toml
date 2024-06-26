@@ -20,7 +20,7 @@ displayTest = "NONE"
 [[dependencies.kubejs]]
 modId = "neoforge"
 type = "required"
-versionRange = "[20.6.75-beta,)"
+versionRange = "[21.0,)"
 ordering = "NONE"
 side = "BOTH"
 
@@ -34,16 +34,23 @@ side = "BOTH"
 [[dependencies.kubejs]]
 modId = "jei"
 type = "optional"
-versionRange = "[1.0.0,)"
+versionRange = "[19.0.0.11,)"
 ordering = "AFTER"
-side = "BOTH"
+side = "CLIENT"
 
 [[dependencies.kubejs]]
 modId = "roughlyenoughitems"
 type = "optional"
-versionRange = "[9.1.572,)"
+versionRange = "[16.0.729,)"
 ordering = "AFTER"
-side = "BOTH"
+side = "CLIENT"
+
+[[dependencies.kubejs]]
+modId = "emi"
+type = "optional"
+versionRange = "[1.1,)"
+ordering = "AFTER"
+side = "CLIENT"
 
 [[mixins]]
 config = "kubejs.mixins.json"
