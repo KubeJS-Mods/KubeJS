@@ -133,12 +133,23 @@ public class KubeJSClient extends KubeJSCommon {
 
 	@Override
 	public void openErrors(ScriptType type) {
-		Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(new KubeJSErrorScreen(Minecraft.getInstance().screen, type.console, true)));
+		runInMainThread(() -> Minecraft.getInstance().setScreen(new KubeJSErrorScreen(null, type.console, true)));
 	}
 
 	@Override
 	public void openErrors(ScriptType type, List<ConsoleLine> errors, List<ConsoleLine> warnings) {
-		Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(new KubeJSErrorScreen(Minecraft.getInstance().screen, type, null, errors, warnings, true)));
+		runInMainThread(() -> Minecraft.getInstance().setScreen(new KubeJSErrorScreen(null, type, null, errors, warnings, true)));
+	}
+
+	@Override
+	public void runInMainThread(Runnable runnable) {
+		var mc = Minecraft.getInstance();
+
+		if (mc != null) {
+			mc.execute(runnable);
+		} else {
+			runnable.run();
+		}
 	}
 
 	public static void loadPostChains(Minecraft mc) {

@@ -11,6 +11,7 @@ import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
 import dev.latvian.mods.rhino.Scriptable;
+import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.ClassVisibilityContext;
 import net.minecraft.core.Holder;
@@ -22,6 +23,7 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 
+import java.lang.reflect.AccessibleObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -81,6 +83,16 @@ public class KubeJSContext extends Context {
 
 	public RegistryOps<Object> getJavaOps() {
 		return getRegistries().java();
+	}
+
+	@Override
+	public Scriptable wrapAsJavaObject(Scriptable scope, Object javaObject, TypeInfo target) {
+		if (javaObject instanceof AccessibleObject) {
+			getConsole().error("Reflection access denied");
+			return Undefined.SCRIPTABLE_INSTANCE;
+		}
+
+		return super.wrapAsJavaObject(scope, javaObject, target);
 	}
 
 	@Override
@@ -153,6 +165,8 @@ public class KubeJSContext extends Context {
 			var registryType = lookupRegistryType(target.param(0), from);
 			var id = ID.mc(from);
 			return TagKey.create(registryType.key(), id);
+		} else if (AccessibleObject.class.isAssignableFrom(c)) {
+			throw throwAsScriptRuntimeEx(new IllegalAccessException("Reflection access denied"), this);
 		} else if (from instanceof Holder<?> holder && c.isInstance(holder.value())) {
 			return holder.value();
 		} else {

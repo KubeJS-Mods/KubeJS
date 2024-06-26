@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.command;
 
-import dev.latvian.mods.kubejs.ingredient.IngredientHelper;
+import dev.latvian.mods.kubejs.ingredient.NamespaceIngredient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
@@ -49,7 +49,7 @@ public class InformationCommands {
 			player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Item Tag [" + size + " items]"));
 		}
 		// mod
-		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + IngredientHelper.get().mod(stack.kjs$getMod()).kjs$getStacks().size() + " items]"));
+		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + new NamespaceIngredient(stack.kjs$getMod()).toVanilla().kjs$getStacks().size() + " items]"));
 		// TODO: creative tabs (neo has made them client only in 1.20.1, this is fixed in 1.20.4)
 		/*var cat = stack.getItem().getItemCategory();
 		if (cat != null) {

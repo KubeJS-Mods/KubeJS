@@ -142,4 +142,8 @@ public class PlatformWrapper {
 	public static void breakpoint(Object... args) {
 		KubeJS.LOGGER.info(Arrays.stream(args).map(String::valueOf).collect(Collectors.joining(", ")));
 	}
+
+	public static String getCurrentThreadName() {
+		return Thread.currentThread().getName();
+	}
 }

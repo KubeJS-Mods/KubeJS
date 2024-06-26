@@ -7,9 +7,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
-import dev.latvian.mods.kubejs.ingredient.IngredientHelper;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
+import dev.latvian.mods.kubejs.ingredient.TagIngredient;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Lazy;
@@ -23,6 +22,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -96,10 +96,6 @@ public interface ItemStackJS {
 			var item = RegistryInfo.ITEM.getValue(id);
 
 			if (item == null || item == Items.AIR) {
-				if (KubeRecipe.itemErrors) {
-					throw new RecipeExceptionJS("Item '" + id + "' not found!").error();
-				}
-
 				return ItemStack.EMPTY;
 			}
 
@@ -114,7 +110,7 @@ public interface ItemStackJS {
 			var reg = RegExpKJS.wrap(o);
 
 			if (reg != null) {
-				return IngredientHelper.get().regex(reg).kjs$getFirst();
+				return new RegExIngredient(reg).toVanilla().kjs$getFirst();
 			}
 
 			return ItemStack.EMPTY;
@@ -149,11 +145,7 @@ public interface ItemStackJS {
 				var id = ID.mc(map.get("item").toString());
 				var item = RegistryInfo.ITEM.getValue(id);
 
-				if (item == Items.AIR) {
-					if (KubeRecipe.itemErrors) {
-						throw new RecipeExceptionJS("Item '" + id + "' not found!").error();
-					}
-
+				if (item == null || item == Items.AIR) {
 					return ItemStack.EMPTY;
 				}
 
@@ -165,7 +157,7 @@ public interface ItemStackJS {
 
 				return stack;
 			} else if (map.containsKey("tag")) {
-				var stack = IngredientHelper.get().tag(registries.cachedItemTags, ID.mc(map.get("tag"))).kjs$getFirst();
+				var stack = new TagIngredient(registries.cachedItemTags, ItemTags.create(ID.mc(map.get("tag")))).toVanilla().kjs$getFirst();
 
 				if (map.containsKey("count")) {
 					stack.setCount(UtilsJS.parseInt(map.get("count"), 1));

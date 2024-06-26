@@ -3,10 +3,14 @@ package dev.latvian.mods.kubejs.ingredient;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.recipe.CachedTagLookup;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +26,8 @@ public final class TagIngredient implements KubeJSIngredient {
 	public static final MapCodec<TagIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		TagKey.codec(Registries.ITEM).fieldOf("tag").forGetter(t -> t.tagKey)
 	).apply(instance, tagKey -> new TagIngredient(null, tagKey)));
+
+	public static final StreamCodec<ByteBuf, TagIngredient> STREAM_CODEC = ResourceLocation.STREAM_CODEC.map(id -> new TagIngredient(null, ItemTags.create(id)), in -> in.tagKey.location());
 
 	public final @Nullable CachedTagLookup<Item> lookup;
 	public final TagKey<Item> tagKey;

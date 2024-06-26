@@ -8,11 +8,13 @@ import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
+import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
-import dev.latvian.mods.kubejs.ingredient.IngredientHelper;
+import dev.latvian.mods.kubejs.ingredient.CreativeTabIngredient;
+import dev.latvian.mods.kubejs.ingredient.NamespaceIngredient;
+import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
+import dev.latvian.mods.kubejs.ingredient.TagIngredient;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -24,8 +26,8 @@ import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentPredicate;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -52,12 +54,12 @@ public interface IngredientJS {
 		} else if (o instanceof IngredientSupplierKJS ingr) {
 			return ingr.kjs$asIngredient();
 		} else if (o instanceof TagKey<?> tag) {
-			return Ingredient.of(TagKey.create(Registries.ITEM, tag.location()));
+			return Ingredient.of(ItemTags.create(tag.location()));
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
 			var reg = RegExpKJS.wrap(o);
 
 			if (reg != null) {
-				return IngredientHelper.get().regex(reg);
+				return new RegExIngredient(reg).toVanilla();
 			}
 
 			return Ingredient.EMPTY;
@@ -85,7 +87,7 @@ public interface IngredientJS {
 			} else if (inList.size() == 1) {
 				return inList.getFirst();
 			} else {
-				return IngredientHelper.get().or(inList.toArray(new Ingredient[0]));
+				return CompoundIngredient.of(inList.toArray(new Ingredient[0]));
 			}
 		}
 
@@ -102,7 +104,7 @@ public interface IngredientJS {
 		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
 			return Ingredient.EMPTY;
 		} else if (s.equals("*")) {
-			return IngredientHelper.get().wildcard();
+			return IngredientWrapper.all;
 		} else {
 			try {
 				return read(registries, new StringReader(s));
@@ -139,34 +141,25 @@ public interface IngredientJS {
 			}
 			case '*' -> {
 				reader.skip();
-				yield IngredientHelper.get().wildcard();
+				yield IngredientWrapper.all;
 			}
 			case '#' -> {
 				reader.skip();
-				yield IngredientHelper.get().tag(registries.cachedItemTags, ResourceLocation.read(reader));
+				yield new TagIngredient(registries.cachedItemTags, ItemTags.create(ResourceLocation.read(reader))).toVanilla();
 			}
 			case '@' -> {
 				reader.skip();
-				yield IngredientHelper.get().mod(reader.readUnquotedString());
+				yield new NamespaceIngredient(reader.readUnquotedString()).toVanilla();
 			}
 			case '%' -> {
 				reader.skip();
 				var id = ResourceLocation.read(reader);
 				var group = UtilsJS.findCreativeTab(id);
-
-				if (group == null) {
-					if (KubeRecipe.itemErrors) {
-						throw new RecipeExceptionJS("Item group '" + id + "' not found!").error();
-					}
-
-					yield Ingredient.EMPTY;
-				}
-
-				yield IngredientHelper.get().creativeTab(group);
+				yield group == null ? Ingredient.EMPTY : new CreativeTabIngredient(group).toVanilla();
 			}
 			case '/' -> {
 				var regex = RegExpKJS.read(reader);
-				yield IngredientHelper.get().regex(regex);
+				yield new RegExIngredient(regex).toVanilla();
 			}
 			case '[' -> {
 				reader.skip();

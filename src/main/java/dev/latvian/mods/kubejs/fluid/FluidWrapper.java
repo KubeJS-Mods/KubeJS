@@ -11,10 +11,9 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPredicate;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -188,7 +187,7 @@ public interface FluidWrapper {
 		} else if (reader.peek() == '#') {
 			reader.skip();
 			var tag = ResourceLocation.read(reader);
-			return FluidIngredient.tag(TagKey.create(Registries.FLUID, tag));
+			return FluidIngredient.tag(FluidTags.create(tag));
 		} else if (reader.peek() == '@') {
 			reader.skip();
 			var id = reader.readString();

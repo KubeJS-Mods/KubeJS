@@ -117,6 +117,10 @@ public class KubeJSErrorScreen extends Screen {
 		super.render(guiGraphics, mx, my, delta);
 		this.list.render(guiGraphics, mx, my, delta);
 		guiGraphics.drawCenteredString(this.font, "KubeJS " + scriptType.name + " script " + (viewing == errors ? "errors" : "warnings"), this.width / 2, 12, 0xFFFFFF);
+
+		if (errors.isEmpty() && warnings.isEmpty()) {
+			guiGraphics.drawCenteredString(this.font, "No errors or warnings found!", this.width / 2, height / 2 - 6, 0x66FF66);
+		}
 	}
 
 	@Override

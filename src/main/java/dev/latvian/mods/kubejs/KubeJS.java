@@ -20,6 +20,7 @@ import dev.latvian.mods.kubejs.registry.RegistryKubeEvent;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
+import dev.latvian.mods.kubejs.script.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptFileInfo;
 import dev.latvian.mods.kubejs.script.ScriptManager;
@@ -28,7 +29,6 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
-import dev.latvian.mods.kubejs.util.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceKey;
@@ -131,8 +131,8 @@ public class KubeJS {
 		if (!PlatformWrapper.isGeneratingData()) {
 			new KubeJSBackgroundThread().start();
 			// Required to be called this way because ConsoleJS class hasn't been initialized yet
-			ScriptType.STARTUP.console.setCapturingErrors(true);
-			ScriptType.CLIENT.console.setCapturingErrors(true);
+			ScriptType.STARTUP.console.startCapturingErrors();
+			ScriptType.CLIENT.console.startCapturingErrors();
 		}
 
 		LOGGER.info("Loading vanilla registries...");
@@ -199,7 +199,7 @@ public class KubeJS {
 				var fileName = dir.relativize(file).toString().replace(File.separatorChar, '/');
 
 				if (fileName.endsWith(".js") || fileName.endsWith(".ts") && !fileName.endsWith(".d.ts")) {
-					pack.info.scripts.add(new ScriptFileInfo(pack.info, pathPrefix + fileName));
+					pack.info.scripts.add(new ScriptFileInfo(pack.info, file, pathPrefix + fileName));
 				}
 			}
 		} catch (IOException ex) {
@@ -254,7 +254,7 @@ public class KubeJS {
 			}
 		}
 
-		ConsoleJS.STARTUP.setCapturingErrors(false);
+		ConsoleJS.STARTUP.stopCapturingErrors();
 
 		QUERY = "source=kubejs&mc=" + MC_VERSION_NUMBER + "&loader=neoforge&v=" + URLEncoder.encode(thisMod.getModInfo().getVersion().toString(), StandardCharsets.UTF_8);
 

@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
-import dev.latvian.mods.kubejs.ingredient.IngredientHelper;
+import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.item.ChancedIngredient;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
@@ -14,6 +14,9 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
+import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
+import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 @RemapPrefixForJS("kjs$")
@@ -28,15 +31,15 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec {
 	}
 
 	default Ingredient kjs$and(Ingredient ingredient) {
-		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : IngredientHelper.get().and(new Ingredient[]{kjs$self(), ingredient});
+		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : IntersectionIngredient.of(kjs$self(), ingredient);
 	}
 
 	default Ingredient kjs$or(Ingredient ingredient) {
-		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : IngredientHelper.get().or(new Ingredient[]{kjs$self(), ingredient});
+		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : CompoundIngredient.of(kjs$self(), ingredient);
 	}
 
 	default Ingredient kjs$except(Ingredient subtracted) {
-		return IngredientHelper.get().except(kjs$self(), subtracted);
+		return DifferenceIngredient.of(kjs$self(), subtracted);
 	}
 
 	default SizedIngredient kjs$asStack() {
@@ -57,7 +60,7 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec {
 
 	@Override
 	default boolean kjs$isWildcard() {
-		return IngredientHelper.get().isWildcard(kjs$self());
+		return kjs$self().getCustomIngredient() == WildcardIngredient.INSTANCE;
 	}
 
 	@Override

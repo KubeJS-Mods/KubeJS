@@ -19,6 +19,7 @@ import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
@@ -79,7 +80,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient BlockTintFunction tint;
 	public transient final JsonObject textures;
 	public transient String model;
-	public transient BlockItemBuilder itemBuilder;
+	public transient ItemBuilder itemBuilder;
 	public transient List<AABB> customShape;
 	public transient boolean noCollision;
 	public transient boolean notSolid;
@@ -124,7 +125,11 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		textureAll(id.getNamespace() + ":block/" + id.getPath());
 		model = "";
 		itemBuilder = getOrCreateItemBuilder();
-		itemBuilder.blockBuilder = this;
+
+		if (itemBuilder instanceof BlockItemBuilder b) {
+			b.blockBuilder = this;
+		}
+
 		customShape = new ArrayList<>();
 		noCollision = false;
 		notSolid = false;
@@ -496,14 +501,18 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	@Info("""
 		Modifies the block's item representation.
 		""")
-	public BlockBuilder item(@Nullable Consumer<BlockItemBuilder> i) {
+	public BlockBuilder item(@Nullable Consumer<ItemBuilder> i) {
 		if (i == null) {
 			itemBuilder = null;
 			drops = BlockDropSupplier.NO_DROPS;
 		} else {
 			if (itemBuilder == null) {
 				itemBuilder = getOrCreateItemBuilder();
-				itemBuilder.blockBuilder = this;
+
+				if (itemBuilder instanceof BlockItemBuilder b) {
+					b.blockBuilder = this;
+				}
+
 				ScriptType.STARTUP.console.warn("`item` is called with non-null builder callback after block item is set to null! Creating another block item as fallback.");
 			}
 			i.accept(itemBuilder);
@@ -513,7 +522,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@HideFromJS
-	protected BlockItemBuilder getOrCreateItemBuilder() {
+	protected ItemBuilder getOrCreateItemBuilder() {
 		return itemBuilder == null ? (itemBuilder = new BlockItemBuilder(id)) : itemBuilder;
 	}
 

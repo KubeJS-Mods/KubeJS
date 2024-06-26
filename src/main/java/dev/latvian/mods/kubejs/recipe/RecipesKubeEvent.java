@@ -33,12 +33,8 @@ import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.WrappedException;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.ReportType;
-import net.minecraft.ReportedException;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.Bootstrap;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -46,10 +42,8 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,13 +54,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
@@ -130,42 +120,13 @@ public class RecipesKubeEvent implements KubeEvent {
 	private static final Predicate<RecipeHolder<?>> RECIPE_NON_NULL = Objects::nonNull;
 	private static final Function<RecipeHolder<?>, RecipeHolder<?>> RECIPE_IDENTITY = Function.identity();
 
-	// hacky workaround for parallel streams, which are executed on the common fork/join pool by default
-	// and forge / event bus REALLY does not like that (plus it's generally just safer to use our own pool)
-	private static final ForkJoinPool PARALLEL_THREAD_POOL = new ForkJoinPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1),
-		forkJoinPool -> {
-			final ForkJoinWorkerThread thread = new ForkJoinWorkerThread(forkJoinPool) {
-			};
-			thread.setContextClassLoader(RecipesKubeEvent.class.getClassLoader()); // better safe than sorry
-			thread.setName(String.format("KubeJS Recipe Event Worker %d", thread.getPoolIndex()));
-			return thread;
-		},
-		(thread, ex) -> {
-			while ((ex instanceof CompletionException | ex instanceof InvocationTargetException | ex instanceof WrappedException) && ex.getCause() != null) {
-				ex = ex.getCause();
-			}
-
-			if (ex instanceof ReportedException crashed) {
-				// crash the same way Minecraft would
-				Bootstrap.realStdoutPrintln(crashed.getReport().getFriendlyReport(ReportType.CRASH));
-				System.exit(-1);
-			}
-
-			ConsoleJS.SERVER.error("Error in thread %s while performing bulk recipe operation!".formatted(thread), ex);
-
-			RecipeExceptionJS rex = ex instanceof RecipeExceptionJS rex1 ? rex1 : new RecipeExceptionJS(null, ex).error();
-
-			if (rex.error) {
-				throw rex;
-			}
-		}, true);
-
 	public final RecipeSchemaStorage recipeSchemaStorage;
 	public final RegistryAccessContainer registries;
 	public final Map<ResourceLocation, KubeRecipe> originalRecipes;
 	public final Collection<KubeRecipe> addedRecipes;
 	private final BinaryOperator<RecipeHolder<?>> mergeOriginal, mergeAdded;
 
+	private ForkJoinPool parallelThreadPool;
 	public final AtomicInteger failedCount;
 	public final Map<ResourceLocation, KubeRecipe> takenIds;
 
@@ -206,6 +167,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			return b;
 		};
 
+		this.parallelThreadPool = null;
 		this.failedCount = new AtomicInteger(0);
 
 		for (var namespace : recipeSchemaStorage.namespaces.values()) {
@@ -265,7 +227,6 @@ public class RecipesKubeEvent implements KubeEvent {
 	@HideFromJS
 	public void post(RecipeManagerKJS recipeManager, Map<ResourceLocation, JsonElement> datapackRecipeMap) {
 		ConsoleJS.SERVER.info("Processing recipes...");
-		KubeRecipe.itemErrors = false;
 
 		var timer = Stopwatch.createStarted();
 
@@ -348,7 +309,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			}
 		}
 
-		ConsoleJS.SERVER.info("Posted recipe events in " + timer.stop());
+		ConsoleJS.SERVER.info("Posted recipe events in " + TimeJS.msToString(timer.stop().elapsed(TimeUnit.MILLISECONDS)));
 
 		timer.reset().start();
 		addedRecipes.removeIf(RecipesKubeEvent::addedRecipeRemoveCheck);
@@ -356,20 +317,20 @@ public class RecipesKubeEvent implements KubeEvent {
 		var recipesByName = new HashMap<ResourceLocation, RecipeHolder<?>>(originalRecipes.size() + addedRecipes.size());
 
 		try {
-			recipesByName.putAll(runInParallel(() -> originalRecipes.values().parallelStream()
+			recipesByName.putAll(originalRecipes.values().parallelStream()
 				.filter(RECIPE_NOT_REMOVED)
 				.map(this::createRecipe)
 				.filter(RECIPE_NON_NULL)
-				.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, mergeOriginal))));
+				.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, mergeOriginal)));
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating datapack recipes", ex, POST_SKIP_ERROR);
 		}
 
 		try {
-			recipesByName.putAll(runInParallel(() -> addedRecipes.parallelStream()
+			recipesByName.putAll(addedRecipes.parallelStream()
 				.map(this::createRecipe)
 				.filter(RECIPE_NON_NULL)
-				.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, mergeAdded))));
+				.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, mergeAdded)));
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating script recipes", ex, POST_SKIP_ERROR);
 		}
@@ -383,7 +344,6 @@ public class RecipesKubeEvent implements KubeEvent {
 		ChangesForChat.recipesMs = timer.stop().elapsed(TimeUnit.MILLISECONDS);
 
 		ConsoleJS.SERVER.info("Added " + addedRecipes.size() + " recipes, removed " + removedRecipes.size() + " recipes, modified " + modifiedCount + " recipes, with " + failedCount.get() + " failed recipes in " + TimeJS.msToString(ChangesForChat.recipesMs));
-		KubeRecipe.itemErrors = false;
 
 		if (DataExport.export != null) {
 			for (var r : removedRecipes) {
@@ -410,6 +370,15 @@ public class RecipesKubeEvent implements KubeEvent {
 
 			for (var r : removedRecipes) {
 				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
+			}
+		}
+
+		if (parallelThreadPool != null) {
+			try {
+				parallelThreadPool.shutdown();
+				parallelThreadPool = null;
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
 		}
 	}
@@ -462,10 +431,6 @@ public class RecipesKubeEvent implements KubeEvent {
 		return r;
 	}
 
-	public RecipeFilter customFilter(RecipeFilter filter) {
-		return filter;
-	}
-
 	private record RecipeStreamFilter(Context cx, RecipeFilter filter) implements Predicate<KubeRecipe> {
 		@Override
 		public boolean test(KubeRecipe r) {
@@ -473,20 +438,15 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 	}
 
-	/**
-	 * Creates a <i>non-parallel</i> stream of all recipes matching the given filter.
-	 * <p>
-	 * You may call .parallel() on the stream yourself after construction, but note
-	 * that due to a bug in Forge (which will be resolved in Minecraft 1.20), you
-	 * will *have* to execute the Stream on a separate fork/join pool then!
-	 */
-	public Stream<KubeRecipe> recipeStream(Context cx, RecipeFilter filter) {
+	public Stream<KubeRecipe> recipeStream(Context cx, RecipeFilter filter, boolean parallel) {
 		if (filter == ConstantFilter.FALSE) {
 			return Stream.empty();
 		} else if (filter instanceof IDFilter id) {
 			var r = originalRecipes.get(id.id);
 			return r == null || r.removed ? Stream.empty() : Stream.of(r);
 		}
+
+		boolean actuallyParallel = parallel && CommonProperties.get().allowAsyncStreams;
 
 		exit:
 		if (filter instanceof OrFilter or) {
@@ -500,35 +460,23 @@ public class RecipesKubeEvent implements KubeEvent {
 				}
 			}
 
-			return or.list.stream().map(idf -> originalRecipes.get(((IDFilter) idf).id)).filter(RECIPE_NOT_REMOVED);
+			return (actuallyParallel ? or.list.parallelStream() : or.list.stream()).map(idf -> originalRecipes.get(((IDFilter) idf).id)).filter(RECIPE_NOT_REMOVED);
 		}
 
-		return originalRecipes.values().stream().filter(new RecipeStreamFilter(cx, filter));
-	}
-
-	/**
-	 * Creates a <i>possibly parallel</i> stream of all recipes matching the given filter.
-	 * Note that this should <b>only</b> be used with a terminal operation that is
-	 * executed on our own fork/join pool!
-	 * <p>
-	 * See {@link #recipeStream(Context, RecipeFilter)} for more information on why this needs to exist.
-	 */
-	@ApiStatus.Internal
-	private Stream<KubeRecipe> recipeStreamAsync(Context cx, RecipeFilter filter) {
-		var stream = recipeStream(cx, filter);
-		return CommonProperties.get().allowAsyncStreams ? stream.parallel() : stream;
+		return (actuallyParallel ? originalRecipes.values().parallelStream() : originalRecipes.values().stream()).filter(new RecipeStreamFilter(cx, filter));
 	}
 
 	private void forEachRecipeAsync(Context cx, RecipeFilter filter, Consumer<KubeRecipe> consumer) {
-		runInParallel(() -> recipeStreamAsync(cx, filter).forEach(consumer));
+		var stream = recipeStream(cx, filter, true);
+		stream.forEach(consumer);
 	}
 
 	private <T> T reduceRecipesAsync(Context cx, RecipeFilter filter, Function<Stream<KubeRecipe>, T> function) {
-		return runInParallel(() -> function.apply(recipeStreamAsync(cx, filter)));
+		return function.apply(recipeStream(cx, filter, true));
 	}
 
 	public void forEachRecipe(Context cx, RecipeFilter filter, Consumer<KubeRecipe> consumer) {
-		recipeStream(cx, filter).forEach(consumer);
+		recipeStream(cx, filter, false).forEach(consumer);
 	}
 
 	public int countRecipes(Context cx, RecipeFilter filter) {
@@ -577,6 +525,8 @@ public class RecipesKubeEvent implements KubeEvent {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": OUT " + match + " -> " + with) : "";
 
 		forEachRecipeAsync(cx, filter, r -> {
+			ConsoleJS.SERVER.info("Thread of " + r.id + ": " + Thread.currentThread().getName());
+
 			if (r.replaceOutput(cx, match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);
@@ -681,23 +631,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		return id;
 	}
 
-	public void setItemErrors(boolean b) {
-		KubeRecipe.itemErrors = b;
-	}
-
 	public void stage(Context cx, RecipeFilter filter, String stage) {
 		forEachRecipeAsync(cx, filter, r -> r.stage(stage));
-	}
-
-	public static void runInParallel(final Runnable runnable) {
-		try {
-			PARALLEL_THREAD_POOL.invoke(ForkJoinTask.adapt(runnable));
-		} catch (Throwable ex) {
-			ConsoleJS.SERVER.error("Error running a recipe task", ex, POST_SKIP_ERROR);
-		}
-	}
-
-	public static <T> T runInParallel(final Callable<T> callable) {
-		return PARALLEL_THREAD_POOL.invoke(ForkJoinTask.adapt(callable));
 	}
 }

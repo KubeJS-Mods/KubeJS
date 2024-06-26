@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.DevProperties;
+import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.util.JSObjectType;
 import dev.latvian.mods.kubejs.util.LogType;
 import dev.latvian.mods.kubejs.util.MutedError;
@@ -13,7 +14,6 @@ import dev.latvian.mods.rhino.ContextFactory;
 import dev.latvian.mods.rhino.EcmaError;
 import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.WrappedException;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.loading.FMLLoader;
 import org.jetbrains.annotations.Nullable;
@@ -120,7 +120,15 @@ public class ConsoleJS {
 		return writeToFile;
 	}
 
-	public synchronized void setCapturingErrors(boolean enabled) {
+	public synchronized void startCapturingErrors() {
+		setCapturingErrors(true);
+	}
+
+	public synchronized void stopCapturingErrors() {
+		setCapturingErrors(false);
+	}
+
+	private synchronized void setCapturingErrors(boolean enabled) {
 		if (DevProperties.get().alwaysCaptureErrors) {
 			capturingErrors = true;
 		} else if (capturingErrors != enabled) {
@@ -529,10 +537,11 @@ public class ConsoleJS {
 	}
 
 	public Component errorsComponent(String command) {
-		return Component.literal("KubeJS errors found [" + errors.size() + "]! Run '" + command + "' for more info")
+		return Component.empty()
+			.append(TextIcons.error())
+			.append(Component.literal(" KubeJS errors found [" + errors.size() + "]! Click here for more info").kjs$red())
 			.kjs$clickRunCommand(command)
-			.kjs$hover(Component.literal("Click to show"))
-			.withStyle(ChatFormatting.DARK_RED);
+			.kjs$hover(Component.literal("Click to show"));
 	}
 
 	private static final class VarFunc implements Comparable<VarFunc> {

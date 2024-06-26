@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.script;
 
+import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.ClassFilter;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
@@ -11,6 +12,7 @@ import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -79,8 +81,7 @@ public class ScriptManager {
 			KubeJS.loadScripts(pack, path, "");
 
 			for (var fileInfo : pack.info.scripts) {
-				var scriptSource = (ScriptSource.FromPath) info -> path.resolve(info.file);
-				loadFile(pack, fileInfo, scriptSource);
+				loadFile(pack, fileInfo);
 			}
 
 			pack.scripts.sort(null);
@@ -89,13 +90,13 @@ public class ScriptManager {
 		packs.put(pack.info.namespace, pack);
 	}
 
-	private void loadFile(ScriptPack pack, ScriptFileInfo fileInfo, ScriptSource source) {
+	private void loadFile(ScriptPack pack, ScriptFileInfo fileInfo) {
 		try {
-			fileInfo.preload(source);
-			var skip = fileInfo.skipLoading();
+			var file = new ScriptFile(pack, fileInfo);
+			var skip = file.skipLoading();
 
 			if (skip.isEmpty()) {
-				pack.scripts.add(new ScriptFile(pack, fileInfo, source));
+				pack.scripts.add(file);
 			} else {
 				scriptType.console.info("Skipped " + fileInfo.location + ": " + skip);
 			}
@@ -135,6 +136,10 @@ public class ScriptManager {
 		var i = 0;
 		var t = 0;
 
+		var cx = (KubeJSContext) contextFactory.enter();
+
+		var watchingFiles = new ArrayList<ScriptFile>();
+
 		for (var pack : packs.values()) {
 			try {
 				for (var file : pack.scripts) {
@@ -142,9 +147,10 @@ public class ScriptManager {
 					var start = System.currentTimeMillis();
 
 					try {
-						file.load();
+						file.load(cx);
 						i++;
 						scriptType.console.info("Loaded script " + file.info.location + " in " + (System.currentTimeMillis() - start) / 1000D + " s");
+						watchingFiles.add(file);
 					} catch (Throwable ex) {
 						scriptType.console.error("", ex);
 					}
@@ -156,5 +162,14 @@ public class ScriptManager {
 
 		scriptType.console.info("Loaded " + i + "/" + t + " KubeJS " + scriptType.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s with " + scriptType.console.errors.size() + " errors and " + scriptType.console.warnings.size() + " warnings");
 		canListenEvents = false;
+
+		if (!watchingFiles.isEmpty() && DevProperties.get().reloadOnFileSave) {
+			scriptType.fileWatcherThread = new KubeJSFileWatcherThread(scriptType, watchingFiles.toArray(new ScriptFile[0]), this::fullReload);
+			scriptType.fileWatcherThread.start();
+		}
+	}
+
+	protected void fullReload() {
+		KubeJS.PROXY.runInMainThread(this::reload);
 	}
 }

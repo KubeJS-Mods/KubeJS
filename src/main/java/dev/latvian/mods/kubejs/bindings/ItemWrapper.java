@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.component.ResolvableProfile;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
@@ -133,11 +133,11 @@ public interface ItemWrapper {
 		return playerHeadFromUrl("https://textures.minecraft.net/texture/" + hash);
 	}
 
-	static ToolAction toolActionOf(Object object) {
-		if (object instanceof ToolAction ta) {
+	static ItemAbility itemAbilityOf(Object object) {
+		if (object instanceof ItemAbility ta) {
 			return ta;
 		} else if (object != null) {
-			return ToolAction.get(object.toString());
+			return ItemAbility.get(object.toString());
 		} else {
 			return null;
 		}

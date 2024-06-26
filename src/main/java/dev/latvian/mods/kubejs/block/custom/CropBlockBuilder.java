@@ -92,7 +92,7 @@ public class CropBlockBuilder extends BlockBuilder {
 		renderType = BlockRenderType.CUTOUT;
 		noCollision = true;
 		itemBuilder = new SeedItemBuilder(newID("", "_seed"));
-		itemBuilder.blockBuilder = this;
+		((SeedItemBuilder) itemBuilder).blockBuilder = this;
 		hardness = 0.0f;
 		resistance = 0.0f;
 		dropSeed = true;
@@ -272,7 +272,7 @@ public class CropBlockBuilder extends BlockBuilder {
 				int age = this.getAge(blockState);
 				if (age < this.getMaxAge()) {
 					if (f < 0) {
-						f = getGrowthSpeed(this, serverLevel, blockPos);
+						f = getGrowthSpeed(blockState, serverLevel, blockPos);
 					}
 					if (f > 0 && random.nextInt((int) (25.0F / f) + 1) == 0) {
 						serverLevel.setBlock(blockPos, this.getStateForAge(age + 1), 2);

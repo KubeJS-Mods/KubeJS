@@ -1,6 +1,4 @@
-package dev.latvian.mods.kubejs.util;
-
-import dev.latvian.mods.kubejs.script.ScriptType;
+package dev.latvian.mods.kubejs.script;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -11,6 +9,7 @@ public class KubeJSBackgroundThread extends Thread {
 
 	public KubeJSBackgroundThread() {
 		super("KubeJS Background Thread");
+		setDaemon(true);
 	}
 
 	@Override
@@ -34,7 +33,7 @@ public class KubeJSBackgroundThread extends Thread {
 		}
 
 		for (var type : types) {
-			type.console.flush(false);
+			type.console.flush(true);
 			((ExecutorService) type.executor).shutdown();
 
 			boolean b;
@@ -48,6 +47,5 @@ public class KubeJSBackgroundThread extends Thread {
 				((ExecutorService) type.executor).shutdownNow();
 			}
 		}
-
 	}
 }

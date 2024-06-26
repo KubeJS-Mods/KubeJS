@@ -15,9 +15,7 @@ public class ChangesForChat {
 	public static void print(Consumer<Component> out) {
 		if (recipesAdded != 0 || recipesRemoved != 0 || recipesModified != 0 || recipesMs != 0L) {
 			out.accept(Component.empty()
-				.append("|")
 				.append(TextIcons.crafting().kjs$hover(Component.literal("Recipe Changes")))
-				.append("|")
 				.append(Component.empty()
 					.kjs$hover(Component.literal("Added Recipes"))
 					.append(" ")

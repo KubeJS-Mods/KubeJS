@@ -132,7 +132,7 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 
 	@HideFromJS
 	default void kjs$afterResourcesLoaded(boolean reload) {
-		ConsoleJS.CLIENT.setCapturingErrors(false);
+		ConsoleJS.CLIENT.stopCapturingErrors();
 		ConsoleJS.CLIENT.info("Client resource reload complete!");
 	}
 }

@@ -104,6 +104,8 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 			DataExport.exportData();
 		}
 
+		ConsoleJS.SERVER.stopCapturingErrors();
+
 		if (reload && CommonProperties.get().announceReload && !CommonProperties.get().hideServerScriptErrors) {
 			if (ConsoleJS.SERVER.errors.isEmpty()) {
 				kjs$tell(Component.literal("Reloaded with no KubeJS errors!").withStyle(ChatFormatting.GREEN));
@@ -116,7 +118,6 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 			}
 		}
 
-		ConsoleJS.SERVER.setCapturingErrors(false);
 		ConsoleJS.SERVER.info("Server resource reload complete!");
 	}
 

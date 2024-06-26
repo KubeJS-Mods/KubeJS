@@ -15,7 +15,6 @@
 		"CompoundTagMixin",
 		"ContainerMixin",
 		"CreativeModeTabMixin",
-		"CropBlockMixin",
 		"DamageSourceMixin",
 		"DifferenceIngredientMixin",
 		"DirectionMixin",

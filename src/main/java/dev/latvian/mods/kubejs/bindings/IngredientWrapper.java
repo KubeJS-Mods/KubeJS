@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import dev.latvian.mods.kubejs.ingredient.IngredientHelper;
 import dev.latvian.mods.kubejs.ingredient.TagIngredient;
+import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -15,7 +15,7 @@ public interface IngredientWrapper {
 	@Info("A completely empty ingredient that will only match air")
 	Ingredient none = Ingredient.EMPTY;
 	@Info("An ingredient that matches everything")
-	Ingredient all = IngredientHelper.get().wildcard();
+	Ingredient all = WildcardIngredient.INSTANCE.toVanilla();
 
 	@Info("Returns an ingredient of the input")
 	static Ingredient of(Ingredient ingredient) {

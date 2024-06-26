@@ -34,6 +34,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.nio.file.Files;
 import java.util.List;
@@ -87,6 +88,7 @@ public class ServerScriptManager extends ScriptManager {
 
 	@Override
 	public void loadFromDirectory() {
+		ConsoleJS.SERVER.startCapturingErrors();
 		super.loadFromDirectory();
 
 		if (FMLLoader.getDist().isDedicatedServer()) {
@@ -139,7 +141,6 @@ public class ServerScriptManager extends ScriptManager {
 
 	@Override
 	public void reload() {
-		ConsoleJS.SERVER.setCapturingErrors(true);
 		super.reload();
 		ConsoleJS.SERVER.info("Scripts loaded");
 		SpecialRecipeSerializerManager.INSTANCE.reset();
@@ -215,5 +216,14 @@ public class ServerScriptManager extends ScriptManager {
 		recipeViewerData = RecipeViewerData.collect();
 		RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.setValue(null);
 		return result;
+	}
+
+	@Override
+	protected void fullReload() {
+		var server = ServerLifecycleHooks.getCurrentServer();
+
+		if (server != null) {
+			server.execute(() -> server.kjs$runCommand("reload"));
+		}
 	}
 }

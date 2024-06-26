@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.integration.jei;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.ingredient.IngredientHelper;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerData;
@@ -22,6 +21,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.CompoundFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
@@ -101,7 +101,7 @@ public class KubeJSJEIPlugin implements IModPlugin {
 				var filterList = new ArrayList<Ingredient>(remote.itemData().removedEntries().size() + remote.itemData().completelyRemovedEntries().size());
 				filterList.addAll(remote.itemData().removedEntries());
 				filterList.addAll(remote.itemData().completelyRemovedEntries());
-				var filter = IngredientHelper.get().or(filterList.toArray(new Ingredient[0]));
+				var filter = CompoundIngredient.of(filterList.toArray(new Ingredient[0]));
 				var removed = new ArrayList<ItemStack>();
 
 				for (var stack : allItems) {

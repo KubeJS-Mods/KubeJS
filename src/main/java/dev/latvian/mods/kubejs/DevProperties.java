@@ -32,6 +32,7 @@ public class DevProperties extends BaseProperties {
 	public boolean logChangesInChat;
 	public boolean strictTags;
 	public boolean alwaysCaptureErrors;
+	public boolean reloadOnFileSave;
 	public String kubedexSound;
 
 	private DevProperties() {
@@ -57,6 +58,7 @@ public class DevProperties extends BaseProperties {
 		logChangesInChat = get("log_changes_in_chat", false);
 		strictTags = get("strict_tags", false);
 		alwaysCaptureErrors = get("always_capture_errors", false);
+		reloadOnFileSave = get("reload_on_file_save", false);
 		kubedexSound = get("kubedex_sound", "entity.experience_orb.pickup");
 	}
 }

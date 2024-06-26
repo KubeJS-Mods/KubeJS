@@ -57,7 +57,6 @@ import dev.latvian.mods.kubejs.fluid.FluidTypeBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.fluid.ThickFluidBuilder;
 import dev.latvian.mods.kubejs.fluid.ThinFluidBuilder;
-import dev.latvian.mods.kubejs.ingredient.IngredientHelper;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
 import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
@@ -191,7 +190,7 @@ import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
@@ -412,7 +411,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		bindings.add("Item", ItemWrapper.class);
 		bindings.add("Items", Items.class);
 		bindings.add("Ingredient", IngredientWrapper.class);
-		bindings.add("IngredientHelper", IngredientHelper.get());
 		bindings.add("NBT", NBTUtils.class);
 		bindings.add("NBTIO", NBTIOWrapper.class);
 		bindings.add("Direction", DirectionWrapper.class);
@@ -496,7 +494,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		// FIXME registry.register(Enchantment.Cost.class, EnchantmentBuilder::costOf);
 		registry.registerEnumFromStringCodec(ArmorItem.Type.class, ArmorItem.Type.CODEC);
 		registry.register(BlockSetType.class, BlockWrapper::setTypeOf);
-		registry.register(ToolAction.class, ItemWrapper::toolActionOf);
+		registry.register(ItemAbility.class, ItemWrapper::itemAbilityOf);
 
 		// KubeJS //
 		registry.register(Map.class, MapJS::of);

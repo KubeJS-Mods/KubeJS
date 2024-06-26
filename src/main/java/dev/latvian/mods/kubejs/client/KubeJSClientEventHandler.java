@@ -41,6 +41,7 @@ import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -334,6 +335,13 @@ public class KubeJSClientEventHandler {
 
 		if (s != null && event.getScreen() != s) {
 			event.setNewScreen(s);
+		}
+	}
+
+	@SubscribeEvent
+	public static void tagsUpdated(TagsUpdatedEvent event) {
+		if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED && Minecraft.getInstance().screen instanceof KubeJSErrorScreen screen && screen.scriptType == ScriptType.SERVER) {
+			Minecraft.getInstance().kjs$runCommand("kubejs errors server");
 		}
 	}
 }

@@ -42,8 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
-	public static boolean itemErrors = false;
-
 	public ResourceLocation id;
 	public RecipeTypeFunction type;
 	public boolean newRecipe;
@@ -510,23 +508,13 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 
 	@Nullable
 	public Recipe<?> getOriginalRecipe() {
-		Throwable error = new Throwable("Original recipe is null!");
-
 		if (originalRecipe == null) {
 			originalRecipe = new MutableObject<>();
 			try {
 				// todo: this sucks
 				originalRecipe.setValue(RecipeHelper.fromJson(type.event.registries.json(), type.schemaType.getSerializer(), getOrCreateId(), json, !FMLLoader.isProduction()).value());
 			} catch (Throwable e) {
-				error = e;
-			}
-
-			if (originalRecipe == null) {
-				if (KubeRecipe.itemErrors) {
-					throw new RecipeExceptionJS("Could not create recipe from json for " + this, error);
-				} else {
-					ConsoleJS.SERVER.warn("Could not create recipe from json for " + this, error);
-				}
+				ConsoleJS.SERVER.error("Could not create recipe from json for " + this, e);
 			}
 		}
 

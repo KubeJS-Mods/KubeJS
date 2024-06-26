@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -46,5 +47,15 @@ public class KubeJSCommon {
 	}
 
 	public void openErrors(ScriptType type, List<ConsoleLine> errors, List<ConsoleLine> warnings) {
+	}
+
+	public void runInMainThread(Runnable runnable) {
+		var server = ServerLifecycleHooks.getCurrentServer();
+
+		if (server != null) {
+			server.execute(runnable);
+		} else {
+			runnable.run();
+		}
 	}
 }

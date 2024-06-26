@@ -38,6 +38,7 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 	public transient Executor executor;
 	public final Lazy<ClassFilter> classFilter;
 	public final Map<NativeEventListeners.Key, NativeEventListeners> nativeEventListeners;
+	public KubeJSFileWatcherThread fileWatcherThread;
 
 	ScriptType(String n, String cname, Path path) {
 		this.name = n;
@@ -99,6 +100,8 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 		for (var listener : nativeEventListeners.values()) {
 			listener.listeners.clear();
 		}
+
+		fileWatcherThread = null;
 	}
 
 	@Override

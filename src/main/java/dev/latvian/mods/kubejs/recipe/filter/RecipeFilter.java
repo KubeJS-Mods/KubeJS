@@ -8,8 +8,10 @@ import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
+import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +37,8 @@ public interface RecipeFilter {
 				var r = RegExpKJS.wrap(s);
 				return r == null ? new IDFilter(ID.mc(s)) : RegexIDFilter.of(r);
 			}
+		} else if (o instanceof BaseFunction func) {
+			return (RecipeFilter) cx.createInterfaceAdapter(TypeInfo.of(RecipeFilter.class), func);
 		}
 
 		var list = ListJS.orSelf(o);

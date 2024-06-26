@@ -285,11 +285,6 @@ public class KubeJSCommands {
 			return 1;
 		}
 
-		if (type.console.errors.isEmpty() && type.console.warnings.isEmpty()) {
-			source.sendSystemMessage(Component.literal("No errors or warnings found!").withStyle(ChatFormatting.GREEN));
-			return 0;
-		}
-
 		if (source.getServer().isSingleplayer()) {
 			KubeJS.PROXY.openErrors(type);
 			return 1;
