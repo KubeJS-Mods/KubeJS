@@ -10,8 +10,11 @@ import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerData;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import net.minecraft.resources.ResourceLocation;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @EmiEntrypoint
 public class KubeJSEMIPlugin implements EmiPlugin {
@@ -19,7 +22,35 @@ public class KubeJSEMIPlugin implements EmiPlugin {
 	public void register(EmiRegistry registry) {
 		var remote = RecipeViewerData.remote;
 
-		registry.removeRecipes(r -> remote.removedGlobalRecipes().contains(r.getId()));
+		if (remote != null) {
+			var removedCategories = Set.copyOf(remote.removedCategories());
+			var globalRemovedRecipes = Set.copyOf(remote.removedGlobalRecipes());
+			var removedRecipes = new HashMap<ResourceLocation, Set<ResourceLocation>>();
+
+			for (var data : remote.categoryData()) {
+				removedRecipes.put(data.category(), Set.copyOf(data.removedRecipes()));
+			}
+
+			registry.removeRecipes(r -> {
+				var cat = r.getCategory().getId();
+
+				if (cat == null) {
+					return false;
+				}
+
+				if (removedCategories.contains(cat)) {
+					return true;
+				}
+
+				var id = r.getId();
+
+				if (id == null) {
+					return false;
+				}
+
+				return globalRemovedRecipes.contains(id) || removedRecipes.getOrDefault(cat, Set.of()).contains(id);
+			});
+		}
 
 		for (var type : RecipeViewerEntryType.ALL_TYPES.get()) {
 			if (RecipeViewerEvents.REMOVE_ENTRIES.hasListeners(type)) {
