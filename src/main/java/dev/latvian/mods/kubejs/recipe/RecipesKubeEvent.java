@@ -56,7 +56,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
@@ -126,7 +125,6 @@ public class RecipesKubeEvent implements KubeEvent {
 	public final Collection<KubeRecipe> addedRecipes;
 	private final BinaryOperator<RecipeHolder<?>> mergeOriginal, mergeAdded;
 
-	private ForkJoinPool parallelThreadPool;
 	public final AtomicInteger failedCount;
 	public final Map<ResourceLocation, KubeRecipe> takenIds;
 
@@ -167,7 +165,6 @@ public class RecipesKubeEvent implements KubeEvent {
 			return b;
 		};
 
-		this.parallelThreadPool = null;
 		this.failedCount = new AtomicInteger(0);
 
 		for (var namespace : recipeSchemaStorage.namespaces.values()) {
@@ -372,15 +369,6 @@ public class RecipesKubeEvent implements KubeEvent {
 				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
 			}
 		}
-
-		if (parallelThreadPool != null) {
-			try {
-				parallelThreadPool.shutdown();
-				parallelThreadPool = null;
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
 	}
 
 	@Nullable
@@ -525,8 +513,6 @@ public class RecipesKubeEvent implements KubeEvent {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": OUT " + match + " -> " + with) : "";
 
 		forEachRecipeAsync(cx, filter, r -> {
-			ConsoleJS.SERVER.info("Thread of " + r.id + ": " + Thread.currentThread().getName());
-
 			if (r.replaceOutput(cx, match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);

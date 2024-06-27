@@ -47,13 +47,13 @@ public class VariantBlockStateGenerator {
 			return this;
 		}
 
-		public Model x(int _x) {
-			x = _x;
+		public Model x(int x) {
+			this.x = x;
 			return this;
 		}
 
-		public Model y(int _y) {
-			y = _y;
+		public Model y(int y) {
+			this.y = y;
 			return this;
 		}
 

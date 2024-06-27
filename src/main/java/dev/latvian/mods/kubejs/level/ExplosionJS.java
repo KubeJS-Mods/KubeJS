@@ -12,15 +12,15 @@ public class ExplosionJS {
 	public boolean causesFire;
 	public Level.ExplosionInteraction explosionMode;
 
-	public ExplosionJS(LevelAccessor l, double _x, double _y, double _z) {
-		level = l;
-		x = _x;
-		y = _y;
-		z = _z;
-		exploder = null;
-		strength = 3F;
-		causesFire = false;
-		explosionMode = Level.ExplosionInteraction.NONE;
+	public ExplosionJS(LevelAccessor level, double x, double y, double z) {
+		this.level = level;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.exploder = null;
+		this.strength = 3F;
+		this.causesFire = false;
+		this.explosionMode = Level.ExplosionInteraction.NONE;
 	}
 
 	public ExplosionJS exploder(Entity entity) {

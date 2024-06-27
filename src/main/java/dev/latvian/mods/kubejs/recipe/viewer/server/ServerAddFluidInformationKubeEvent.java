@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.network.chat.Component;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class ServerAddFluidInformationKubeEvent implements AddInformationKubeEvent {
@@ -17,7 +16,7 @@ public class ServerAddFluidInformationKubeEvent implements AddInformationKubeEve
 	}
 
 	@Override
-	public void add(Context cx, Object filter, Component[] info) {
-		list.add(new FluidData.Info(FluidWrapper.wrapIngredient(((KubeJSContext) cx).getRegistries(), filter), Arrays.asList(info)));
+	public void add(Context cx, Object filter, List<Component> info) {
+		list.add(new FluidData.Info(FluidWrapper.wrapIngredient(((KubeJSContext) cx).getRegistries(), filter), info));
 	}
 }

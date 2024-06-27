@@ -195,8 +195,8 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		changed = true;
 	}
 
-	public KubeRecipe id(ResourceLocation _id) {
-		id = _id;
+	public KubeRecipe id(ResourceLocation id) {
+		this.id = id;
 		save();
 		return this;
 	}

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.script;
 
-import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.holder.HolderWrapper;
@@ -17,9 +16,6 @@ import dev.latvian.mods.rhino.util.ClassVisibilityContext;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 
@@ -67,22 +63,6 @@ public class KubeJSContext extends Context {
 
 	public RegistryAccessContainer getRegistries() {
 		return kjsFactory.manager.getRegistries();
-	}
-
-	public RegistryAccess.Frozen getRegistryAccess() {
-		return getRegistries().access();
-	}
-
-	public RegistryOps<Tag> getNbtOps() {
-		return getRegistries().nbt();
-	}
-
-	public RegistryOps<JsonElement> getJsonOps() {
-		return getRegistries().json();
-	}
-
-	public RegistryOps<Object> getJavaOps() {
-		return getRegistries().java();
 	}
 
 	@Override
@@ -235,7 +215,8 @@ public class KubeJSContext extends Context {
 		}
 	}
 
-	public Class<?> loadJavaClass(Object from) {
+	@Override
+	public Object classOf(Object from) {
 		if (from instanceof Class<?> c) {
 			return c;
 		} else if (from instanceof NativeJavaClass c) {

@@ -124,7 +124,7 @@ public interface ItemStackKJS extends
 	}
 
 	default String kjs$getComponentString(KubeJSContext cx) {
-		return DataComponentWrapper.patchToString(new StringBuilder(), cx.getNbtOps(), kjs$self().getComponentsPatch()).toString();
+		return DataComponentWrapper.patchToString(new StringBuilder(), cx.getRegistries().nbt(), kjs$self().getComponentsPatch()).toString();
 	}
 
 	@ReturnsSelf(copy = true)
@@ -195,11 +195,11 @@ public interface ItemStackKJS extends
 
 	@Override
 	default String toStringJS(Context cx) {
-		return kjs$toItemString0(((KubeJSContext) cx).getNbtOps());
+		return kjs$toItemString0(((KubeJSContext) cx).getRegistries().nbt());
 	}
 
 	default String kjs$toItemString(KubeJSContext cx) {
-		return kjs$toItemString0(cx.getNbtOps());
+		return kjs$toItemString0(cx.getRegistries().nbt());
 	}
 
 	default String kjs$toItemString0(DynamicOps<Tag> dynamicOps) {

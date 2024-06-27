@@ -6,6 +6,8 @@ import dev.latvian.mods.rhino.Context;
 import me.shedaniel.rei.plugin.client.BuiltinClientPlugin;
 import net.minecraft.network.chat.Component;
 
+import java.util.List;
+
 public class REIAddInformationKubeEvent implements AddInformationKubeEvent {
 	private final RecipeViewerEntryType type;
 
@@ -14,8 +16,8 @@ public class REIAddInformationKubeEvent implements AddInformationKubeEvent {
 	}
 
 	@Override
-	public void add(Context cx, Object filter, Component[] info) {
-		if (info.length == 0) {
+	public void add(Context cx, Object filter, List<Component> info) {
+		if (info.isEmpty()) {
 			return;
 		}
 
@@ -25,10 +27,9 @@ public class REIAddInformationKubeEvent implements AddInformationKubeEvent {
 			return;
 		}
 
-		BuiltinClientPlugin.getInstance().registerInformation(in, info[0], components -> {
-			//noinspection ManualArrayToCollectionCopy
-			for (int i = 1; i < info.length; i++) {
-				components.add(info[i]);
+		BuiltinClientPlugin.getInstance().registerInformation(in, info.getFirst(), components -> {
+			for (int i = 1; i < info.size(); i++) {
+				components.add(info.get(i));
 			}
 
 			return components;

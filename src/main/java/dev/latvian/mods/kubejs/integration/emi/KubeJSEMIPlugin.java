@@ -3,11 +3,15 @@ package dev.latvian.mods.kubejs.integration.emi;
 import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
+import dev.emi.emi.api.recipe.EmiInfoRecipe;
+import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerData;
 import dev.latvian.mods.kubejs.script.ScriptType;
+
+import java.util.List;
 
 @EmiEntrypoint
 public class KubeJSEMIPlugin implements EmiPlugin {
@@ -58,6 +62,22 @@ public class KubeJSEMIPlugin implements EmiPlugin {
 
 			for (var stack : remote.fluidData().addedEntries()) {
 				registry.addEmiStack(EmiStack.of(stack.getFluid(), stack.getComponentsPatch(), stack.getAmount()));
+			}
+		}
+
+		for (var type : RecipeViewerEntryType.ALL_TYPES.get()) {
+			if (RecipeViewerEvents.ADD_INFORMATION.hasListeners(type)) {
+				RecipeViewerEvents.ADD_INFORMATION.post(ScriptType.CLIENT, type, new EMIAddInformationKubeEvent(type, registry));
+			}
+		}
+
+		if (remote != null) {
+			for (var info : remote.itemData().info()) {
+				registry.addRecipe(new EmiInfoRecipe(List.of(EmiIngredient.of(info.filter())), info.info(), null));
+			}
+
+			for (var info : remote.fluidData().info()) {
+				registry.addRecipe(new EmiInfoRecipe(List.of(EMIIntegration.fluidIngredient(info.filter())), info.info(), null));
 			}
 		}
 	}

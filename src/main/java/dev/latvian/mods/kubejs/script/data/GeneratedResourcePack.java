@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -43,7 +44,7 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 		for (var p : Files.list(path).filter(Files::isDirectory).flatMap(GeneratedResourcePack::tryWalk).filter(Files::isRegularFile).filter(Files::isReadable).toList()) {
 			try {
 				var fileName = p.getFileName().toString();
-				var fileNameLC = fileName.toLowerCase();
+				var fileNameLC = fileName.toLowerCase(Locale.ROOT);
 
 				if (fileNameLC.endsWith(".zip") || fileNameLC.equals(".ds_store") || fileNameLC.equals("thumbs.db") || fileNameLC.equals("desktop.ini")) {
 					continue;
@@ -105,7 +106,7 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 					}
 
 					for (var path : Files.walk(dir).filter(Files::isRegularFile).filter(Files::isReadable).toList()) {
-						var pathStr = dir.relativize(path).toString().replace('\\', '/').toLowerCase();
+						var pathStr = dir.relativize(path).toString().replace('\\', '/').toLowerCase(Locale.ROOT);
 						int sindex = pathStr.lastIndexOf('/');
 						var fileNameLC = sindex == -1 ? pathStr : pathStr.substring(sindex + 1);
 

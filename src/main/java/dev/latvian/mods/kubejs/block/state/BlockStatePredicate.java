@@ -133,7 +133,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		}
 
 		return Optional.ofNullable(NBTUtils.toTagCompound(cx, o))
-			.map(tag -> RuleTest.CODEC.parse(((KubeJSContext) cx).getNbtOps(), tag))
+			.map(tag -> RuleTest.CODEC.parse(((KubeJSContext) cx).getRegistries().nbt(), tag))
 			.flatMap(DataResult::result)
 			.or(() -> Optional.ofNullable(of(o).asRuleTest()))
 			.orElseThrow(() -> new IllegalArgumentException("Could not parse valid rule test from " + o + "!"));

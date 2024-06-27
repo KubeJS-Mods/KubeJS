@@ -8,6 +8,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.network.chat.Component;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class JEIAddInformationKubeEvent implements AddInformationKubeEvent {
@@ -23,7 +24,7 @@ public class JEIAddInformationKubeEvent implements AddInformationKubeEvent {
 	}
 
 	@Override
-	public void add(Context cx, Object filter, Component[] info) {
+	public void add(Context cx, Object filter, List<Component> info) {
 		var in = (Predicate) type.wrapPredicate(cx, filter);
 
 		if (allIngredients == null) {
@@ -31,9 +32,11 @@ public class JEIAddInformationKubeEvent implements AddInformationKubeEvent {
 			allIngredients = manager.getAllIngredients(ingredientType);
 		}
 
+		var infoArr = info.toArray(new Component[0]);
+
 		for (var v : allIngredients) {
 			if (in.test(v)) {
-				registration.addIngredientInfo(v, ingredientType, info);
+				registration.addIngredientInfo(v, ingredientType, infoArr);
 			}
 		}
 	}

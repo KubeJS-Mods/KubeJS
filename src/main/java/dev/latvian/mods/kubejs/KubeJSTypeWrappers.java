@@ -58,7 +58,7 @@ public interface KubeJSTypeWrappers {
 				}
 			}
 
-			var decoded = IntProvider.CODEC.parse(((KubeJSContext) cx).getNbtOps(), NBTUtils.toTagCompound(cx, m)).result();
+			var decoded = IntProvider.CODEC.parse(((KubeJSContext) cx).getRegistries().nbt(), NBTUtils.toTagCompound(cx, m)).result();
 			if (decoded.isPresent()) {
 				return decoded.get();
 			}
@@ -90,7 +90,8 @@ public interface KubeJSTypeWrappers {
 				}
 			}
 
-			var decoded = FloatProvider.CODEC.parse(((KubeJSContext) cx).getNbtOps(), NBTUtils.toTagCompound(cx, m)).result();
+			var decoded = FloatProvider.CODEC.parse(((KubeJSContext) cx).getRegistries().nbt(), NBTUtils.toTagCompound(cx, m)).result();
+
 			if (decoded.isPresent()) {
 				return decoded.get();
 			}
