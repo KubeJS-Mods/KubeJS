@@ -57,8 +57,7 @@ public interface FluidWrapper {
 		} else if (o instanceof FluidIngredient in) {
 			return in;
 		} else {
-			var stack = wrap(registries, o);
-			return stack.isEmpty() ? EmptyFluidIngredient.INSTANCE : FluidIngredient.of(stack);
+			return ingredientOfString(registries.nbt(), o.toString());
 		}
 	}
 
@@ -125,7 +124,7 @@ public interface FluidWrapper {
 	}
 
 	static FluidStack ofString(DynamicOps<Tag> registryOps, String s) {
-		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
+		if (s.isEmpty() || s.equals("-") || s.equals("empty") || s.equals("minecraft:empty")) {
 			return FluidStack.EMPTY;
 		} else {
 			try {
@@ -175,6 +174,25 @@ public interface FluidWrapper {
 		}
 
 		return fluidStack;
+	}
+
+	static FluidIngredient ingredientOfString(DynamicOps<Tag> registryOps, String s) {
+		if (s.isEmpty() || s.equals("-") || s.equals("empty") || s.equals("minecraft:empty")) {
+			return FluidIngredient.empty();
+		} else {
+			try {
+				var reader = new StringReader(s);
+				reader.skipWhitespace();
+
+				if (!reader.canRead()) {
+					return FluidIngredient.empty();
+				}
+
+				return readIngredient(registryOps, new StringReader(s));
+			} catch (CommandSyntaxException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
 	}
 
 	static FluidIngredient readIngredient(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
