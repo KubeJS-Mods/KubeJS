@@ -38,6 +38,7 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -112,8 +113,22 @@ public class ServerScriptManager extends ScriptManager {
 			var fileName = file.getName();
 
 			if (file.isFile() && fileName.endsWith(".zip")) {
+				var packName = new StringBuilder();
+
+				for (var c : fileName.toCharArray()) {
+					if (c == '_' || c == '.' || c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
+						packName.append(c);
+					}
+				}
+
+				long lastModified = 0L;
+
+				if (file.exists()) {
+					lastModified = file.lastModified();
+				}
+
 				var zipPack = new Pack(
-					new PackLocationInfo(fileName, Component.literal(fileName), PackSource.BUILT_IN, Optional.of(new KnownPack(KubeJS.MOD_ID, "kubejs_generated", "1"))),
+					new PackLocationInfo(fileName, Component.literal(fileName), PackSource.BUILT_IN, Optional.of(new KnownPack(KubeJS.MOD_ID, "kubejs_file_" + packName.toString().toLowerCase(Locale.ROOT), lastModified <= 0L ? "1" : Long.toUnsignedString(lastModified)))),
 					new FilePackResources.FileResourcesSupplier(file),
 					new Pack.Metadata(GEN_PACK_NAME, PackCompatibility.COMPATIBLE, FeatureFlagSet.of(), List.of(), true),
 					new PackSelectionConfig(true, Pack.Position.BOTTOM, true)
