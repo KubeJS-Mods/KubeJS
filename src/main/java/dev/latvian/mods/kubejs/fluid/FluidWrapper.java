@@ -33,6 +33,8 @@ public interface FluidWrapper {
 	TypeInfo INGREDIENT_TYPE_INFO = TypeInfo.of(FluidIngredient.class);
 	TypeInfo SIZED_INGREDIENT_TYPE_INFO = TypeInfo.of(SizedFluidIngredient.class);
 
+	SizedFluidIngredient EMPTY_SIZED = new SizedFluidIngredient(FluidIngredient.empty(), FluidType.BUCKET_VOLUME);
+
 	static FluidStack wrap(RegistryAccessContainer registries, Object o) {
 		if (o == null || o == FluidStack.EMPTY || o == Fluids.EMPTY || o == EmptyFluidIngredient.INSTANCE) {
 			return FluidStack.EMPTY;
@@ -42,6 +44,8 @@ public interface FluidWrapper {
 			return new FluidStack(fluid, FluidType.BUCKET_VOLUME);
 		} else if (o instanceof FluidIngredient in) {
 			return in.hasNoFluids() ? FluidStack.EMPTY : in.getStacks()[0];
+		} else if (o instanceof SizedFluidIngredient s) {
+			return s.getFluids()[0];
 		} else {
 			return ofString(registries.nbt(), o.toString());
 		}
@@ -56,8 +60,26 @@ public interface FluidWrapper {
 			return FluidIngredient.of(fluid);
 		} else if (o instanceof FluidIngredient in) {
 			return in;
+		} else if (o instanceof SizedFluidIngredient s) {
+			return s.ingredient();
 		} else {
 			return ingredientOfString(registries.nbt(), o.toString());
+		}
+	}
+
+	static SizedFluidIngredient wrapSizedIngredient(RegistryAccessContainer registries, Object o) {
+		if (o == null || o == FluidStack.EMPTY || o == Fluids.EMPTY || o == EmptyFluidIngredient.INSTANCE) {
+			return EMPTY_SIZED;
+		} else if (o instanceof SizedFluidIngredient s) {
+			return s;
+		} else if (o instanceof FluidStack stack) {
+			return SizedFluidIngredient.of(stack);
+		} else if (o instanceof Fluid fluid) {
+			return SizedFluidIngredient.of(fluid, FluidType.BUCKET_VOLUME);
+		} else if (o instanceof FluidIngredient in) {
+			return new SizedFluidIngredient(in, FluidType.BUCKET_VOLUME);
+		} else {
+			return sizedIngredientOfString(registries.nbt(), o.toString());
 		}
 	}
 
@@ -230,5 +252,59 @@ public interface FluidWrapper {
 		}
 
 		return FluidIngredient.of(fluid);
+	}
+
+	static SizedFluidIngredient sizedIngredientOfString(DynamicOps<Tag> registryOps, String s) {
+		if (s.isEmpty() || s.equals("-") || s.equals("empty") || s.equals("minecraft:empty")) {
+			return EMPTY_SIZED;
+		} else {
+			try {
+				var reader = new StringReader(s);
+				reader.skipWhitespace();
+
+				if (!reader.canRead()) {
+					return EMPTY_SIZED;
+				}
+
+				return readSizedIngredient(registryOps, new StringReader(s));
+			} catch (CommandSyntaxException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+	}
+
+	static SizedFluidIngredient readSizedIngredient(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+		if (!reader.canRead()) {
+			return EMPTY_SIZED;
+		}
+
+		int amount = FluidType.BUCKET_VOLUME;
+
+		if (StringReader.isAllowedNumber(reader.peek())) {
+			var amountd = reader.readDouble();
+			reader.skipWhitespace();
+
+			if (reader.peek() == 'b' || reader.peek() == 'B') {
+				reader.skip();
+				reader.skipWhitespace();
+				amountd *= FluidType.BUCKET_VOLUME;
+			}
+
+			if (reader.peek() == '/') {
+				reader.skip();
+				reader.skipWhitespace();
+				amountd = amountd / reader.readDouble();
+			}
+
+			amount = Mth.ceil(amountd);
+			reader.expect('x');
+			reader.skipWhitespace();
+
+			if (amount < 1) {
+				throw new IllegalArgumentException("SizedFluidIngredient amount smaller than 1 is not allowed!");
+			}
+		}
+
+		return new SizedFluidIngredient(readIngredient(registryOps, reader), amount);
 	}
 }

@@ -194,6 +194,7 @@ import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -510,6 +511,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
 		registry.register(FluidStack.class, FluidWrapper::wrap);
 		registry.register(FluidIngredient.class, FluidWrapper::wrapIngredient);
+		registry.register(SizedFluidIngredient.class, FluidWrapper::wrapSizedIngredient);
 		registry.register(RecipeFilter.class, RecipeFilter::of);
 		registry.register(SlotFilter.class, SlotFilter::wrap);
 		registry.register(Tier.class, ItemToolTiers::wrap);
