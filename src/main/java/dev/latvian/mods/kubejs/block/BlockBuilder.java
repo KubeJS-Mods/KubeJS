@@ -335,7 +335,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	public BlockBuilder noSoundType() {
-		return soundType(SoundType.EMPTY);
+		soundType = SoundType.EMPTY;
+		return this;
 	}
 
 	public BlockBuilder woodSoundType() {
