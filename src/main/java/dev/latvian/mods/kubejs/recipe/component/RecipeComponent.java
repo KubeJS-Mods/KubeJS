@@ -13,6 +13,8 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 /**
  * A <b>recipe component</b> is a reusable definition of a recipe element (such as an in/output item, a fluid, or even just a number value)
  * that has a {@link #typeInfo() description} associated with it and defines logic on how to serialize the value
@@ -203,11 +205,11 @@ public interface RecipeComponent<T> {
 		return value == null ? null : value.toString().toLowerCase().replaceAll("\\W", "_").replaceAll("_{2,}", "_");
 	}
 
-	default ListRecipeComponent<T> asList() {
+	default RecipeComponent<List<T>> asList() {
 		return ListRecipeComponent.create(this, false);
 	}
 
-	default ListRecipeComponent<T> asListOrSelf() {
+	default RecipeComponent<List<T>> asListOrSelf() {
 		return ListRecipeComponent.create(this, true);
 	}
 
