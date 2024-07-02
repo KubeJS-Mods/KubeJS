@@ -106,16 +106,32 @@ public interface RecipeFilter {
 			var input = map.get("input");
 
 			if (input != null) {
-				predicate.list.add(new InputFilter(ReplacementMatchInfo.wrap(cx, input, ReplacementMatchInfo.TYPE_INFO)));
+				var m = ReplacementMatchInfo.wrap(cx, input, ReplacementMatchInfo.TYPE_INFO);
+
+				if (m != ReplacementMatchInfo.NONE) {
+					predicate.list.add(new InputFilter(m));
+				} else {
+					throw Context.reportRuntimeError("Unable to parse recipe input filter `" + input + "`", cx);
+				}
 			}
 
 			var output = map.get("output");
 
 			if (output != null) {
-				predicate.list.add(new OutputFilter(ReplacementMatchInfo.wrap(cx, output, ReplacementMatchInfo.TYPE_INFO)));
+				var m = ReplacementMatchInfo.wrap(cx, output, ReplacementMatchInfo.TYPE_INFO);
+
+				if (m != ReplacementMatchInfo.NONE) {
+					predicate.list.add(new OutputFilter(m));
+				} else {
+					throw Context.reportRuntimeError("Unable to parse recipe output filter `" + output + "`", cx);
+				}
 			}
 
 			NeoForge.EVENT_BUS.post(new RecipeFilterParseEvent(cx, predicate.list, map));
+
+			if (predicate.list.isEmpty() && !map.isEmpty()) {
+				throw Context.reportRuntimeError("Unable to parse recipe filter " + map, cx);
+			}
 
 			return predicate.list.isEmpty() ? ConstantFilter.TRUE : predicate.list.size() == 1 ? predicate.list.getFirst() : predicate;
 		} catch (RecipeExceptionJS rex) {

@@ -20,7 +20,8 @@ public record ReplacementMatchInfo(ReplacementMatch match, boolean exact) {
 		} else if (o instanceof Map || o instanceof NativeJavaMap) {
 			return (ReplacementMatchInfo) TYPE_INFO.wrap(cx, o, target);
 		} else {
-			return new ReplacementMatchInfo(ReplacementMatch.wrap(cx, o), false);
+			var m = ReplacementMatch.wrap(cx, o);
+			return m == ReplacementMatch.NONE ? NONE : new ReplacementMatchInfo(m, false);
 		}
 	}
 
