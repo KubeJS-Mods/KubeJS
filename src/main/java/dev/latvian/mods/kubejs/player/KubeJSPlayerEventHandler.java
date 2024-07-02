@@ -34,8 +34,11 @@ public class KubeJSPlayerEventHandler {
 
 	@SubscribeEvent
 	public static void loggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-		if (PlayerEvents.LOGGED_IN.hasListeners() && event.getEntity() instanceof ServerPlayer player) {
-			PlayerEvents.LOGGED_IN.post(ScriptType.SERVER, new SimplePlayerKubeEvent(player));
+		if (event.getEntity() instanceof ServerPlayer player) {
+			if (PlayerEvents.LOGGED_IN.hasListeners()) {
+				PlayerEvents.LOGGED_IN.post(ScriptType.SERVER, new SimplePlayerKubeEvent(player));
+			}
+
 			player.inventoryMenu.addSlotListener(player.kjs$getInventoryChangeListener());
 
 			if (!ConsoleJS.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors) {
@@ -51,14 +54,20 @@ public class KubeJSPlayerEventHandler {
 		if (event.getOriginal() instanceof ServerPlayer oldPlayer && event.getEntity() instanceof ServerPlayer newPlayer) {
 			newPlayer.kjs$setRawPersistentData(oldPlayer.kjs$getRawPersistentData());
 			newPlayer.inventoryMenu.addSlotListener(newPlayer.kjs$getInventoryChangeListener()); // move this to respawn?
-			PlayerEvents.CLONED.post(ScriptType.SERVER, new PlayerClonedKubeEvent(newPlayer, oldPlayer, !event.isWasDeath()));
+
+			if (PlayerEvents.CLONED.hasListeners()) {
+				PlayerEvents.CLONED.post(ScriptType.SERVER, new PlayerClonedKubeEvent(newPlayer, oldPlayer, !event.isWasDeath()));
+			}
 		}
 	}
 
 	@SubscribeEvent
 	public static void respawn(PlayerEvent.PlayerRespawnEvent event) {
-		if (PlayerEvents.RESPAWNED.hasListeners() && event.getEntity() instanceof ServerPlayer player) {
-			PlayerEvents.RESPAWNED.post(ScriptType.SERVER, new PlayerRespawnedKubeEvent(player, event.isEndConquered()));
+		if (event.getEntity() instanceof ServerPlayer player) {
+			if (PlayerEvents.RESPAWNED.hasListeners()) {
+				PlayerEvents.RESPAWNED.post(ScriptType.SERVER, new PlayerRespawnedKubeEvent(player, event.isEndConquered()));
+			}
+
 			player.kjs$getStages().sync();
 		}
 	}
