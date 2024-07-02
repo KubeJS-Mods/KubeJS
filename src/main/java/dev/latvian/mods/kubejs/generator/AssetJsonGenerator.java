@@ -52,7 +52,7 @@ public class AssetJsonGenerator extends ResourceGenerator {
 
 	public void texture(ResourceLocation target, LoadedTexture texture) {
 		if (texture.width <= 0 || texture.height <= 0) {
-			ConsoleJS.CLIENT.error("Failed to load texture " + target);
+			ConsoleJS.CLIENT.error("Failed to save texture " + target);
 			return;
 		}
 
@@ -65,17 +65,27 @@ public class AssetJsonGenerator extends ResourceGenerator {
 
 	public void stencil(ResourceLocation target, ResourceLocation stencil, Map<Color, Color> colors) {
 		var stencilTexture = loadTexture(stencil);
+
+		if (stencilTexture.width == 0 || stencilTexture.height == 0) {
+			ConsoleJS.CLIENT.error("Failed to load texture " + stencil);
+			return;
+		}
+
 		texture(target, stencilTexture.remap(colors));
 	}
 
 	public boolean mask(ResourceLocation target, ResourceLocation mask, ResourceLocation input) {
 		var maskTexture = loadTexture(mask);
 
-		if (maskTexture.height != maskTexture.width) {
+		if (maskTexture.height != maskTexture.width || maskTexture.width == 0) {
 			return false;
 		}
 
 		var in = loadTexture(input);
+
+		if (in.width == 0 || in.height == 0) {
+			return false;
+		}
 
 		int w = Math.max(maskTexture.width, in.width);
 

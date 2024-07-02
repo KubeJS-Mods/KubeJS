@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.integration.jei;
 
 import dev.latvian.mods.kubejs.item.ItemPredicate;
-import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.rhino.Context;
 import mezz.jei.api.constants.VanillaTypes;
@@ -10,7 +9,7 @@ import mezz.jei.api.neoforge.NeoForgeTypes;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import org.jetbrains.annotations.Nullable;
 
-public class JEIIntegration implements KubeJSPlugin {
+public class JEIIntegration {
 	@Nullable
 	public static IIngredientType<?> typeOf(RecipeViewerEntryType type) {
 		if (type == RecipeViewerEntryType.ITEM) {

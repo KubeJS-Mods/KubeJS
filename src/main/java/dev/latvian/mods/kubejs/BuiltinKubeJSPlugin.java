@@ -58,6 +58,7 @@ import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.fluid.ThickFluidBuilder;
 import dev.latvian.mods.kubejs.fluid.ThinFluidBuilder;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
+import dev.latvian.mods.kubejs.item.ChancedIngredient;
 import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
@@ -580,6 +581,9 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		registry.register(SizedFluidIngredientComponent.FLAT);
 		registry.register(SizedFluidIngredientComponent.NESTED);
+
+		registry.register(ChancedItem.RECIPE_COMPONENT);
+		registry.register(ChancedIngredient.RECIPE_COMPONENT);
 
 		registry.register(BlockComponent.BLOCK);
 
