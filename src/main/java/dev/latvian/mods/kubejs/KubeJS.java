@@ -29,6 +29,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
+import dev.latvian.mods.kubejs.util.RecordDefaults;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceKey;
@@ -127,6 +128,8 @@ public class KubeJS {
 				ex.printStackTrace();
 			}
 		}
+
+		RecordDefaults.init();
 
 		if (!PlatformWrapper.isGeneratingData()) {
 			new KubeJSBackgroundThread().start();
