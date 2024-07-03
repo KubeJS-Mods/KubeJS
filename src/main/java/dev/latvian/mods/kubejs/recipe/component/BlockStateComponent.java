@@ -69,6 +69,11 @@ public record BlockStateComponent(boolean preferObjectForm) implements RecipeCom
 	}
 
 	@Override
+	public void buildUniqueId(UniqueIdBuilder builder, BlockState value) {
+		builder.append(value.kjs$getIdLocation());
+	}
+
+	@Override
 	public String toString() {
 		return preferObjectForm ? "block_state" : "block_state_string";
 	}

@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
+import dev.latvian.mods.kubejs.recipe.component.UniqueIdBuilder;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.rhino.util.RemapForJS;
@@ -133,39 +134,50 @@ public class RecipeSchema {
 	public RecipeSchema uniqueId(RecipeKey<?> key) {
 		return uniqueId(r -> {
 			var value = r.getValue(key);
-			return value == null ? null : key.component.createUniqueId(Cast.to(value));
+
+			if (value != null) {
+				var builder = new UniqueIdBuilder(new StringBuilder());
+				key.component.buildUniqueId(builder, Cast.to(value));
+				return builder.build();
+			}
+
+			return null;
 		});
 	}
 
 	public RecipeSchema uniqueIds(SequencedCollection<RecipeKey<?>> keys) {
+		if (keys.isEmpty()) {
+			return uniqueId(DEFAULT_UNIQUE_ID_FUNCTION);
+		} else if (keys.size() == 1) {
+			return uniqueId(keys.getFirst());
+		}
+
 		return uniqueId(r -> {
 			var sb = new StringBuilder();
+			var builder = new UniqueIdBuilder(new StringBuilder());
+			boolean first = true;
 
 			for (var key : keys) {
 				var value = r.getValue(key);
-				var u = value == null ? null : key.component.createUniqueId(Cast.to(value));
 
-				if (u != null) {
-					if (!sb.isEmpty()) {
-						sb.append('_');
+				if (value != null) {
+					key.component.buildUniqueId(builder, Cast.to(value));
+					var result = builder.build();
+
+					if (result != null) {
+						if (first) {
+							first = false;
+						} else {
+							sb.append('/');
+						}
+
+						sb.append(result);
 					}
-
-					sb.append(u);
 				}
 			}
 
 			return sb.isEmpty() ? null : sb.toString();
 		});
-	}
-
-	public static String normalizeId(String id) {
-		if (id.startsWith("minecraft:")) {
-			return id.substring(10);
-		} else if (id.startsWith("kubejs:")) {
-			return id.substring(7);
-		} else {
-			return id;
-		}
 	}
 
 	public Int2ObjectMap<RecipeConstructor> constructors() {

@@ -52,4 +52,9 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	default String checkEmpty(RecipeKey<T> key, T value) {
 		return parentComponent().checkEmpty(key, value);
 	}
+
+	@Override
+	default void buildUniqueId(UniqueIdBuilder builder, T value) {
+		parentComponent().buildUniqueId(builder, value);
+	}
 }

@@ -78,6 +78,15 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 	}
 
 	@Override
+	public void buildUniqueId(UniqueIdBuilder builder, T value) {
+		var id = registry.getId(value);
+
+		if (id != null) {
+			builder.append(id);
+		}
+	}
+
+	@Override
 	public String toString() {
 		return "registry_element<" + registry + ">";
 	}

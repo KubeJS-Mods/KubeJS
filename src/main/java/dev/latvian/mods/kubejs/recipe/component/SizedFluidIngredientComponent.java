@@ -6,14 +6,12 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
-import org.jetbrains.annotations.Nullable;
 
 public class SizedFluidIngredientComponent implements RecipeComponent<SizedFluidIngredient> {
 	public static final SizedFluidIngredientComponent FLAT = new SizedFluidIngredientComponent("flat_sized_fluid_ingredient", SizedFluidIngredient.FLAT_CODEC);
@@ -57,9 +55,14 @@ public class SizedFluidIngredientComponent implements RecipeComponent<SizedFluid
 	}
 
 	@Override
-	@Nullable
-	public String createUniqueId(SizedFluidIngredient value) {
-		return value == null || value.ingredient().isEmpty() || value.ingredient().hasNoFluids() ? null : RecipeSchema.normalizeId(value.ingredient().getStacks()[0].getFluid().kjs$getId()).replace('/', '_');
+	public void buildUniqueId(UniqueIdBuilder builder, SizedFluidIngredient value) {
+		if (!value.ingredient().isEmpty()) {
+			var stacks = value.ingredient().getStacks();
+
+			if (stacks.length > 0) {
+				builder.append(stacks[0].getFluid().kjs$getIdLocation());
+			}
+		}
 	}
 
 	@Override

@@ -6,11 +6,9 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 public class ItemStackComponent implements RecipeComponent<ItemStack> {
 	public static final ItemStackComponent ITEM_STACK = new ItemStackComponent("item_stack", ItemStack.OPTIONAL_CODEC);
@@ -54,9 +52,10 @@ public class ItemStackComponent implements RecipeComponent<ItemStack> {
 	}
 
 	@Override
-	@Nullable
-	public String createUniqueId(ItemStack value) {
-		return value == null || value.isEmpty() ? null : RecipeSchema.normalizeId(value.kjs$getId()).replace('/', '_');
+	public void buildUniqueId(UniqueIdBuilder builder, ItemStack value) {
+		if (!value.isEmpty()) {
+			builder.append(value.kjs$getIdLocation());
+		}
 	}
 
 	@Override

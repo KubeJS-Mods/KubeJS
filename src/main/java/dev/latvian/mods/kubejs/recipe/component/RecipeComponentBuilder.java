@@ -8,6 +8,7 @@ import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
 import dev.latvian.mods.rhino.type.JSOptionalParam;
@@ -145,6 +146,23 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 		}
 
 		return original;
+	}
+
+	@Override
+	public void buildUniqueId(UniqueIdBuilder builder, RecipeComponentBuilderMap value) {
+		boolean first = true;
+
+		for (var entry : value.entrySet()) {
+			if (entry.getValue() != null) {
+				if (first) {
+					first = false;
+				} else {
+					builder.appendSeparator();
+				}
+
+				entry.getKey().component.buildUniqueId(builder, Cast.to(entry.getValue()));
+			}
+		}
 	}
 
 	@Override

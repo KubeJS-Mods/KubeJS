@@ -33,7 +33,7 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(EnumTypeInf
 				for (var c : enumTypeInfo.enumConstants()) {
 					if (c instanceof RemappedEnumConstant r && r.getRemappedEnumConstantName().equalsIgnoreCase(s)) {
 						return c;
-					} else if (c instanceof Enum e && e.name().equalsIgnoreCase(s)) {
+					} else if (c instanceof Enum<?> e && e.name().equalsIgnoreCase(s)) {
 						return c;
 					}
 				}
@@ -53,6 +53,17 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(EnumTypeInf
 	@Override
 	public TypeInfo typeInfo() {
 		return enumTypeInfo;
+	}
+
+	@Override
+	public void buildUniqueId(UniqueIdBuilder builder, T value) {
+		if (value instanceof RemappedEnumConstant r) {
+			builder.append(r.getRemappedEnumConstantName());
+		} else if (value instanceof Enum<?> e) {
+			builder.append(e.name());
+		} else {
+			builder.append(value.toString());
+		}
 	}
 
 	@Override

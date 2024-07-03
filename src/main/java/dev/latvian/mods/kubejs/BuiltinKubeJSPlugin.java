@@ -92,6 +92,7 @@ import dev.latvian.mods.kubejs.recipe.component.BlockComponent;
 import dev.latvian.mods.kubejs.recipe.component.BlockStateComponent;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
 import dev.latvian.mods.kubejs.recipe.component.CharacterComponent;
+import dev.latvian.mods.kubejs.recipe.component.EitherRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.EnumComponent;
 import dev.latvian.mods.kubejs.recipe.component.FluidIngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.FluidStackComponent;
@@ -608,6 +609,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register("enum", EnumComponent.FACTORY);
 		registry.register("map", MapRecipeComponent.FACTORY);
 		registry.register("pattern", MapRecipeComponent.PATTERN_FACTORY);
+		registry.register("either", EitherRecipeComponent.FACTORY);
 	}
 
 	@Override

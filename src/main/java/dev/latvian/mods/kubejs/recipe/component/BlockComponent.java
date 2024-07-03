@@ -52,6 +52,11 @@ public record BlockComponent() implements RecipeComponent<Block> {
 	}
 
 	@Override
+	public void buildUniqueId(UniqueIdBuilder builder, Block value) {
+		builder.append(value.kjs$getIdLocation());
+	}
+
+	@Override
 	public String toString() {
 		return "block";
 	}

@@ -8,8 +8,8 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.util.List;
 
-public record AndRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> b, Codec<Pair<A, B>> codec) implements RecipeComponent<Pair<A, B>> {
-	public AndRecipeComponent(RecipeComponent<A> a, RecipeComponent<B> b) {
+public record PairRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> b, Codec<Pair<A, B>> codec) implements RecipeComponent<Pair<A, B>> {
+	public PairRecipeComponent(RecipeComponent<A> a, RecipeComponent<B> b) {
 		this(a, b, Codec.pair(a.codec(), b.codec()));
 	}
 
@@ -21,6 +21,13 @@ public record AndRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> 
 	@Override
 	public TypeInfo typeInfo() {
 		return new JSFixedArrayTypeInfo(List.of(new JSOptionalParam("", a.typeInfo()), new JSOptionalParam("", b.typeInfo())));
+	}
+
+	@Override
+	public void buildUniqueId(UniqueIdBuilder builder, Pair<A, B> value) {
+		a.buildUniqueId(builder, value.getFirst());
+		builder.appendSeparator();
+		b.buildUniqueId(builder, value.getSecond());
 	}
 
 	@Override

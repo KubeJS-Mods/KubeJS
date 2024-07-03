@@ -114,6 +114,23 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
+	public void buildUniqueId(UniqueIdBuilder builder, TinyMap<K, V> value) {
+		boolean first = true;
+
+		for (var entry : value.entries()) {
+			if (entry.value() != null) {
+				if (first) {
+					first = false;
+				} else {
+					builder.appendSeparator();
+				}
+
+				component.buildUniqueId(builder, entry.value());
+			}
+		}
+	}
+
+	@Override
 	public String toString() {
 		if (patternKey) {
 			return "pattern<" + component + ">";

@@ -16,5 +16,5 @@
 			"type": "ingredient"
 		}
 	],
-	"unique": ["base"]
+	"unique": ["template", "base"]
 }

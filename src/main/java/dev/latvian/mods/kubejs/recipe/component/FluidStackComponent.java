@@ -6,14 +6,12 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
-import org.jetbrains.annotations.Nullable;
 
 public class FluidStackComponent implements RecipeComponent<FluidStack> {
 	public static final FluidStackComponent FLUID_STACK = new FluidStackComponent();
@@ -48,9 +46,10 @@ public class FluidStackComponent implements RecipeComponent<FluidStack> {
 	}
 
 	@Override
-	@Nullable
-	public String createUniqueId(FluidStack value) {
-		return value == null || value.isEmpty() ? null : RecipeSchema.normalizeId(value.getFluid().kjs$getId()).replace('/', '_');
+	public void buildUniqueId(UniqueIdBuilder builder, FluidStack value) {
+		if (!value.isEmpty()) {
+			builder.append(value.getFluid().kjs$getIdLocation());
+		}
 	}
 
 	@Override

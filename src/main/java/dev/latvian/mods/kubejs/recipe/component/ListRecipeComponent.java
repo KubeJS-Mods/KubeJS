@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -130,27 +129,14 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 	}
 
 	@Override
-	@Nullable
-	public String createUniqueId(List<T> value) {
-		if (value == null || value.isEmpty()) {
-			return null;
-		}
-
-		var sb = new StringBuilder();
-
-		for (var item : value) {
-			var u = component.createUniqueId(item);
-
-			if (u != null) {
-				if (!sb.isEmpty()) {
-					sb.append('_');
-				}
-
-				sb.append(u);
+	public void buildUniqueId(UniqueIdBuilder builder, List<T> value) {
+		for (int i = 0; i < value.size(); i++) {
+			if (i > 0) {
+				builder.appendSeparator();
 			}
-		}
 
-		return sb.isEmpty() ? null : sb.toString();
+			component.buildUniqueId(builder, value.get(i));
+		}
 	}
 
 	@Override

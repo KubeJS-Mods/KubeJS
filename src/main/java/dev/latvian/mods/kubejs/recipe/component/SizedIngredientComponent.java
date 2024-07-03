@@ -1,17 +1,16 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
-import org.jetbrains.annotations.Nullable;
 
 public class SizedIngredientComponent implements RecipeComponent<SizedIngredient> {
 	public static final SizedIngredientComponent FLAT = new SizedIngredientComponent("flat_sized_ingredient", SizedIngredient.FLAT_CODEC);
@@ -55,10 +54,18 @@ public class SizedIngredientComponent implements RecipeComponent<SizedIngredient
 	}
 
 	@Override
-	@Nullable
-	public String createUniqueId(SizedIngredient value) {
-		var item = value == null ? null : value.ingredient().kjs$getFirst();
-		return item == null || item.isEmpty() ? null : RecipeSchema.normalizeId(item.kjs$getId()).replace('/', '_');
+	public void buildUniqueId(UniqueIdBuilder builder, SizedIngredient value) {
+		var tag = IngredientWrapper.tagKeyOf(value.ingredient());
+
+		if (tag != null) {
+			builder.append(tag.location());
+		} else {
+			var first = value.ingredient().kjs$getFirst();
+
+			if (!first.isEmpty()) {
+				builder.append(first.kjs$getIdLocation());
+			}
+		}
 	}
 
 	@Override

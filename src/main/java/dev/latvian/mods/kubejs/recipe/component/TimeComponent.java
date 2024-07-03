@@ -39,6 +39,11 @@ public record TimeComponent(String name, long scale, Codec<TickDuration> codec) 
 	}
 
 	@Override
+	public void buildUniqueId(UniqueIdBuilder builder, TickDuration value) {
+		builder.append(value.ticks() + "t");
+	}
+
+	@Override
 	public String toString() {
 		return name;
 	}

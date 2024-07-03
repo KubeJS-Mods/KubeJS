@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @param <T> The value type of this component
  * @see RecipeComponentWithParent
- * @see AndRecipeComponent
+ * @see PairRecipeComponent
  */
 @Nullable
 public interface RecipeComponent<T> {
@@ -159,7 +159,7 @@ public interface RecipeComponent<T> {
 
 	/**
 	 * Declares whether this component should take priority when being
-	 * considered by e.g. an {@link OrRecipeComponent} during deserialization.
+	 * considered by e.g. an {@link EitherRecipeComponent} during deserialization.
 	 *
 	 * @param recipe The recipe object used for context
 	 * @param from   The object to be deserialized from
@@ -200,9 +200,8 @@ public interface RecipeComponent<T> {
 		return oldValue != newValue;
 	}
 
-	@Nullable
-	default String createUniqueId(T value) {
-		return value == null ? null : value.toString().toLowerCase().replaceAll("\\W", "_").replaceAll("_{2,}", "_");
+	default void buildUniqueId(UniqueIdBuilder builder, T value) {
+		builder.append(value.toString());
 	}
 
 	default RecipeComponent<List<T>> asList() {
@@ -225,12 +224,12 @@ public interface RecipeComponent<T> {
 		return new MapRecipeComponent<>(CharacterComponent.CHARACTER, this, true);
 	}
 
-	default <O> OrRecipeComponent<T, O> or(RecipeComponent<O> other) {
-		return new OrRecipeComponent<>(this, other);
+	default <O> EitherRecipeComponent<T, O> or(RecipeComponent<O> other) {
+		return new EitherRecipeComponent<>(this, other);
 	}
 
-	default <O> AndRecipeComponent<T, O> and(RecipeComponent<O> other) {
-		return new AndRecipeComponent<>(this, other);
+	default <O> PairRecipeComponent<T, O> and(RecipeComponent<O> other) {
+		return new PairRecipeComponent<>(this, other);
 	}
 
 	default RecipeComponent<T> withCodec(Codec<T> codec) {

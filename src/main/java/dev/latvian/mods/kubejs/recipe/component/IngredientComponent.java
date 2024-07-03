@@ -1,18 +1,17 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,10 +90,18 @@ public class IngredientComponent implements RecipeComponent<Ingredient> {
 	}
 
 	@Override
-	@Nullable
-	public String createUniqueId(Ingredient value) {
-		var item = value == null ? null : value.kjs$getFirst();
-		return item == null || item.isEmpty() ? null : RecipeSchema.normalizeId(item.kjs$getId()).replace('/', '_');
+	public void buildUniqueId(UniqueIdBuilder builder, Ingredient value) {
+		var tag = IngredientWrapper.tagKeyOf(value);
+
+		if (tag != null) {
+			builder.append(tag.location());
+		} else {
+			var first = value.kjs$getFirst();
+
+			if (!first.isEmpty()) {
+				builder.append(first.kjs$getIdLocation());
+			}
+		}
 	}
 
 	@Override

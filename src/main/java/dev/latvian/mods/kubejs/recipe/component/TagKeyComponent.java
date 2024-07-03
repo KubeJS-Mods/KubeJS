@@ -69,6 +69,11 @@ public record TagKeyComponent<T>(ResourceKey<? extends Registry<T>> registry, Ty
 	}
 
 	@Override
+	public void buildUniqueId(UniqueIdBuilder builder, TagKey<T> value) {
+		builder.append(value.location());
+	}
+
+	@Override
 	public String toString() {
 		var key = (ResourceKey) registry;
 

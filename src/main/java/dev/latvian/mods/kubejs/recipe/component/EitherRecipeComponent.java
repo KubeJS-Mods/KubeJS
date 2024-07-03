@@ -5,12 +5,15 @@ import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 @SuppressWarnings("OptionalIsPresent")
-public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L> low) implements RecipeComponent<Either<H, L>> {
+public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L> low) implements RecipeComponent<Either<H, L>> {
+	public static final RecipeComponentFactory FACTORY = RecipeComponentFactory.readTwoComponents(EitherRecipeComponent::new);
+
 	@Override
 	public Codec<Either<H, L>> codec() {
 		return Codec.either(high.codec(), low.codec());
@@ -79,6 +82,17 @@ public record OrRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L
 		}
 
 		return oldValue != newValue;
+	}
+
+	@Override
+	public void buildUniqueId(UniqueIdBuilder builder, Either<H, L> value) {
+		var left = value.left();
+
+		if (left.isPresent()) {
+			high.buildUniqueId(builder, left.get());
+		} else {
+			low.buildUniqueId(builder, value.right().get());
+		}
 	}
 
 	@Override
