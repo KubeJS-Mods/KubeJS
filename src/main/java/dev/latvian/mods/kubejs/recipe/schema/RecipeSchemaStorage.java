@@ -130,6 +130,12 @@ public class RecipeSchemaStorage {
 	public RecipeComponent<?> readComponent(StringReader reader) throws Exception {
 		reader.skipWhitespace();
 		var key = reader.readUnquotedString();
+
+		if (reader.canRead() && reader.peek() == ':') {
+			reader.skip();
+			key += ":" + reader.readUnquotedString();
+		}
+
 		RecipeComponent<?> component = simpleComponents.get(key);
 
 		if (component == null) {

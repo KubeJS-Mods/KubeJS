@@ -35,8 +35,6 @@ import java.util.List;
  */
 @Nullable
 public interface RecipeComponent<T> {
-	Codec<RecipeComponent<?>> CODEC = Codec.unit(null); // FIXME!!!
-
 	static RecipeComponentBuilder builder() {
 		return new RecipeComponentBuilder(4);
 	}
