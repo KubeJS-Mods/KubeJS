@@ -19,8 +19,8 @@ public interface ClientEvents {
 
 	// add low assets
 	EventHandler HIGH_ASSETS = GROUP.client("highPriorityAssets", () -> GenerateClientAssetsKubeEvent.class);
-	EventHandler ENTITY_RENDERER_REGISTRY = GROUP.startup("blockEntityRendererRegistry", () -> BlockEntityRendererRegistryKubeEvent.class);
-	EventHandler BLOCK_ENTITY_RENDERER_REGISTRY = GROUP.startup("entityRendererRegistry", () -> EntityRendererRegistryKubeEvent.class);
+	EventHandler BLOCK_ENTITY_RENDERER_REGISTRY = GROUP.startup("blockEntityRendererRegistry", () -> BlockEntityRendererRegistryKubeEvent.class);
+	EventHandler ENTITY_RENDERER_REGISTRY = GROUP.startup("entityRendererRegistry", () -> EntityRendererRegistryKubeEvent.class);
 	EventHandler MENU_SCREEN_REGISTRY = GROUP.startup("menuScreenRegistry", () -> MenuScreenRegistryKubeEvent.class);
 	EventHandler LOGGED_IN = GROUP.client("loggedIn", () -> ClientPlayerKubeEvent.class);
 	EventHandler LOGGED_OUT = GROUP.client("loggedOut", () -> ClientPlayerKubeEvent.class);
