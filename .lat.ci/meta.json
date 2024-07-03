@@ -1,6 +1,7 @@
 {
 	"minecraft": 2100,
 	"type": "neoforge",
+	"icon": "https://raw.githubusercontent.com/KubeJS-Mods/KubeJS/main/.lat.ci/icon.png",
 	"version": {
 		"file": "gradle.properties",
 		"pattern": "^mod_version=([\\w.]+)$",
@@ -9,7 +10,7 @@
 	},
 	"downloads": [
 		{
-			"name": "NeoForge",
+			"name": "Download",
 			"url": "https://maven.saps.dev/releases/dev/latvian/mods/kubejs-neoforge/{version}/kubejs-neoforge-{version}.jar"
 		}
 	]
