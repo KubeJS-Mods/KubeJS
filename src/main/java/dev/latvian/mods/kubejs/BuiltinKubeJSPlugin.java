@@ -15,6 +15,7 @@ import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.bindings.JavaWrapper;
 import dev.latvian.mods.kubejs.bindings.KMath;
 import dev.latvian.mods.kubejs.bindings.ParticleOptionsWrapper;
+import dev.latvian.mods.kubejs.bindings.RegistryWrapper;
 import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
@@ -423,6 +424,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		bindings.add("SizedIngredient", SizedIngredientWrapper.class);
 		bindings.add("ChancedItem", ChancedItem.class);
 		bindings.add("ParticleOptions", ParticleOptionsWrapper.class);
+		bindings.add("Registry", RegistryWrapper.class);
 
 		bindings.add("Fluid", FluidWrapper.class);
 

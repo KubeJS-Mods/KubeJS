@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
+import dev.latvian.mods.kubejs.bindings.RegistryWrapper;
 import dev.latvian.mods.kubejs.recipe.CachedTagLookup;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.Registry;
@@ -42,6 +43,7 @@ public final class RegistryAccessContainer {
 	public CachedTagLookup<Item> cachedItemTags;
 	public CachedTagLookup<Item> cachedBlockTags;
 	public CachedTagLookup<Item> cachedFluidTags;
+	private Map<ResourceLocation, RegistryWrapper> cachedRegistryWrappers;
 
 	public RegistryAccessContainer(RegistryAccess.Frozen access) {
 		this.access = access;
@@ -123,5 +125,13 @@ public final class RegistryAccessContainer {
 		} else {
 			return codec.decode(json, json.getMap(MapJS.json(cx, o)).getOrThrow()).result().orElseThrow();
 		}
+	}
+
+	public RegistryWrapper wrapRegistry(ResourceLocation id) {
+		if (cachedRegistryWrappers == null) {
+			cachedRegistryWrappers = new HashMap<>();
+		}
+
+		return cachedRegistryWrappers.computeIfAbsent(id, i -> new RegistryWrapper(access.registryOrThrow(ResourceKey.createRegistryKey(i))));
 	}
 }

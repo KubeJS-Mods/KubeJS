@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import net.minecraft.Util;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
@@ -129,23 +128,6 @@ public interface UtilsWrapper {
 	@Info("Capitalises the first letter of the string. If ignoreSpecial is true, it will also capitalise articles and prepositions")
 	static String toTitleCase(String s, boolean ignoreSpecial) {
 		return UtilsJS.toTitleCase(s, ignoreSpecial);
-	}
-
-	@Info("Gets the specified registry")
-	static RegistryInfo<?> getRegistry(ResourceLocation id) {
-		return RegistryInfo.of(ResourceKey.createRegistryKey(id));
-	}
-
-	@Info("Gets all ids from the registry with the specified id")
-	static List<ResourceLocation> getRegistryIds(ResourceLocation id) {
-		var entries = getRegistry(id).entrySet();
-		var list = new ArrayList<ResourceLocation>(entries.size());
-
-		for (var entry : entries) {
-			list.add(entry.getKey().location());
-		}
-
-		return list;
 	}
 
 	@Info("Returns a lazy value with the supplier function as its value factory")
