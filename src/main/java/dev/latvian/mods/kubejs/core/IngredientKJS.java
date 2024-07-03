@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.core;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
 import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
-import dev.latvian.mods.kubejs.item.ChancedIngredient;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
@@ -11,7 +10,6 @@ import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
@@ -52,10 +50,6 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec {
 
 	default SizedIngredient kjs$withCount(int count) {
 		return new SizedIngredient(kjs$self(), count);
-	}
-
-	default ChancedIngredient kjs$withChance(FloatProvider chance) {
-		return new ChancedIngredient(kjs$self(), 1, chance);
 	}
 
 	@Override
