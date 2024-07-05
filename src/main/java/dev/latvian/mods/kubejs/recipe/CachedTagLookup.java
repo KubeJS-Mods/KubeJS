@@ -8,6 +8,7 @@ import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.util.DependencySorter;
+import net.minecraft.world.item.Items;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -98,6 +99,21 @@ public class CachedTagLookup<T> {
 
 	public Set<T> values(TagKey<T> key) {
 		return keyToValue().getOrDefault(key, Set.of());
+	}
+
+	public boolean isEmpty(TagKey<T> key) {
+		var set = values(key);
+
+		if (set.size() == 1) {
+			var item = set.iterator().next();
+
+			// kinda cringe fix
+			if (item == Items.BARRIER) {
+				return true;
+			}
+		}
+
+		return set.isEmpty();
 	}
 
 	public Set<TagKey<T>> keys(T value) {

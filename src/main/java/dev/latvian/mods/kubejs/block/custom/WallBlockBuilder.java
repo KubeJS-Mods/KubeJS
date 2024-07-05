@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
@@ -47,7 +47,7 @@ public class WallBlockBuilder extends MultipartShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
+	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
 		var texture = textures.get("texture").getAsString();
 
 		generator.blockModel(newID("", "_post"), m -> {

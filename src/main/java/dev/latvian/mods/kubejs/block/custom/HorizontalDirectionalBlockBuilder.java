@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.block.custom;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -52,7 +52,7 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModelJsons(AssetJsonGenerator gen) {
+	protected void generateBlockModelJsons(KubeAssetGenerator gen) {
 		gen.blockModel(id, mg -> {
 			var side = getTextureOrDefault("side", newID("block/", "").toString());
 

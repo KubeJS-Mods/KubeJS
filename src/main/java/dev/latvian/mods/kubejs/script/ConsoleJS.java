@@ -182,7 +182,7 @@ public class ConsoleJS {
 			}
 		} else if (error != null && capturingErrors) {
 			for (var el : error.getStackTrace()) {
-				if (el.getFileName() != null && el.getLineNumber() >= 0) {
+				if (el.getFileName() != null && el.getLineNumber() >= 0 && el.getClassName().startsWith("dev.latvian.mods.kubejs.")) {
 					line.withSourceLine(el.getFileName(), el.getLineNumber());
 				}
 			}

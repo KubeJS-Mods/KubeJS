@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.fluid;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import net.minecraft.world.item.BucketItem;
 
@@ -20,9 +20,9 @@ public class FluidBucketItemBuilder extends ItemBuilder {
 	}
 
 	@Override
-	public void generateAssetJsons(AssetJsonGenerator generator) {
+	public void generateAssetJsons(KubeAssetGenerator generator) {
 		if (modelJson != null) {
-			generator.json(AssetJsonGenerator.asItemModelLocation(id), modelJson);
+			generator.json(KubeAssetGenerator.asItemModelLocation(id), modelJson);
 			return;
 		}
 

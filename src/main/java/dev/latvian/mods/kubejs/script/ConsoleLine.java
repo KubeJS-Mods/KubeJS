@@ -41,7 +41,7 @@ public class ConsoleLine {
 		@Override
 		public ConsoleLine decode(FriendlyByteBuf buf) {
 			var console = ScriptType.VALUES[buf.readByte()].console;
-			var timestamp = buf.readLong();
+			var timestamp = buf.readVarLong();
 			var message = buf.readUtf();
 			var line = new ConsoleLine(console, timestamp, message);
 			line.type = LogType.VALUES[buf.readByte()];
@@ -54,7 +54,7 @@ public class ConsoleLine {
 		@Override
 		public void encode(FriendlyByteBuf buf, ConsoleLine line) {
 			buf.writeByte(line.console.scriptType.ordinal());
-			buf.writeLong(line.timestamp);
+			buf.writeVarLong(line.timestamp);
 			buf.writeUtf(line.message);
 			buf.writeByte(line.type.ordinal());
 			buf.writeCollection(line.sourceLines, SourceLine::write);

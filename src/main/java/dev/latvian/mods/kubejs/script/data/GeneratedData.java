@@ -1,7 +1,9 @@
 package dev.latvian.mods.kubejs.script.data;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.IoSupplier;
@@ -33,6 +35,10 @@ public record GeneratedData(ResourceLocation id, Supplier<byte[]> data) implemen
 			return new byte[0];
 		}
 	});
+
+	public static GeneratedData json(ResourceLocation id, Supplier<JsonElement> json) {
+		return new GeneratedData(id.getPath().endsWith(".json") ? id : ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath() + ".json"), Lazy.of(() -> JsonIO.toString(json.get()).getBytes(StandardCharsets.UTF_8)));
+	}
 
 	@Override
 	@NotNull

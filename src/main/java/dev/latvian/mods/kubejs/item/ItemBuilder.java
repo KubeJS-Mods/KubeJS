@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.color.Color;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
-import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
@@ -125,13 +125,13 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	@Override
-	public void generateDataJsons(DataJsonGenerator generator) {
+	public void generateDataJsons(KubeDataGenerator generator) {
 	}
 
 	@Override
-	public void generateAssetJsons(AssetJsonGenerator generator) {
+	public void generateAssetJsons(KubeAssetGenerator generator) {
 		if (modelJson != null) {
-			generator.json(AssetJsonGenerator.asItemModelLocation(id), modelJson);
+			generator.json(KubeAssetGenerator.asItemModelLocation(id), modelJson);
 			return;
 		}
 

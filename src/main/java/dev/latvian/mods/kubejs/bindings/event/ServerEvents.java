@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventTargetType;
 import dev.latvian.mods.kubejs.event.TargetedEventHandler;
+import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.AfterRecipesLoadedKubeEvent;
 import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
@@ -13,7 +14,8 @@ import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeMappingRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
-import dev.latvian.mods.kubejs.script.data.DataPackKubeEvent;
+import dev.latvian.mods.kubejs.registry.ServerRegistryKubeEvent;
+import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
 import dev.latvian.mods.kubejs.server.BasicCommandKubeEvent;
 import dev.latvian.mods.kubejs.server.CommandKubeEvent;
 import dev.latvian.mods.kubejs.server.ServerKubeEvent;
@@ -24,8 +26,8 @@ import net.minecraft.resources.ResourceKey;
 public interface ServerEvents {
 	EventGroup GROUP = EventGroup.of("ServerEvents");
 
-	EventHandler LOW_DATA = GROUP.server("lowPriorityData", () -> DataPackKubeEvent.class);
-	EventHandler HIGH_DATA = GROUP.server("highPriorityData", () -> DataPackKubeEvent.class);
+	TargetedEventHandler<ResourceKey<Registry<?>>> REGISTRY = GROUP.server("registry", () -> ServerRegistryKubeEvent.class).requiredTarget(EventTargetType.REGISTRY);
+	TargetedEventHandler<GeneratedDataStage> GENERATE_DATA = GROUP.server("generateData", () -> KubeDataGenerator.class).requiredTarget(GeneratedDataStage.TARGET);
 	EventHandler LOADED = GROUP.server("loaded", () -> ServerKubeEvent.class);
 	EventHandler UNLOADED = GROUP.server("unloaded", () -> ServerKubeEvent.class);
 	EventHandler TICK = GROUP.server("tick", () -> ServerKubeEvent.class);

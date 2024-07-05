@@ -2,9 +2,11 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.RegistryLayer;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -45,7 +47,11 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 
 	@Inject(method = "loadResources", at = @At("HEAD"))
 	private static void injectKubeJSPacks(ResourceManager resourceManager, LayeredRegistryAccess<RegistryLayer> registries, FeatureFlagSet enabledFeatures, Commands.CommandSelection commandSelection, int functionCompilationLevel, Executor backgroundExecutor, Executor gameExecutor, CallbackInfoReturnable<CompletableFuture<ReloadableServerResources>> cir) {
-		ServerScriptManager.capture(registries.compositeAccess());
+		RegistryAccessContainer.current = new RegistryAccessContainer(registries.compositeAccess());
+
+		if (gameExecutor instanceof MinecraftServer s && s.getServerResources() != null && s.getServerResources().managers().kjs$getServerScriptManager() != null) {
+			s.getServerResources().managers().kjs$getServerScriptManager().reloadAndCapture();
+		}
 	}
 
 	@Override

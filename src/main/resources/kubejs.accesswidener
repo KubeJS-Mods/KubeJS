@@ -39,6 +39,8 @@ accessible method net/minecraft/world/level/block/state/BlockBehaviour$Propertie
 
 accessible field net/minecraft/server/packs/resources/MultiPackResourceManager namespacedManagers Ljava/util/Map;
 accessible field net/minecraft/server/packs/resources/MultiPackResourceManager packs Ljava/util/List;
+accessible class net/minecraft/resources/RegistryDataLoader$Loader
+accessible class net/minecraft/resources/RegistryDataLoader$LoadingFunction
 
 accessible field net/minecraft/commands/Commands$CommandSelection includeIntegrated Z
 accessible field net/minecraft/commands/Commands$CommandSelection includeDedicated Z

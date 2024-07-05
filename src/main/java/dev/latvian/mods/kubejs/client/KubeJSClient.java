@@ -10,6 +10,8 @@ import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
+import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
+import dev.latvian.mods.kubejs.script.data.VirtualAssetPack;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
@@ -25,12 +27,22 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class KubeJSClient extends KubeJSCommon {
 	public static final ResourceLocation WHITE_TEXTURE = ResourceLocation.parse("textures/misc/white.png");
 	public static final ResourceLocation RECIPE_BUTTON_TEXTURE = ResourceLocation.parse("textures/gui/recipe_button.png");
+
+	public static final Map<GeneratedDataStage, VirtualAssetPack> CLIENT_PACKS = new EnumMap<>(GeneratedDataStage.class);
+
+	static {
+		for (var stage : GeneratedDataStage.values()) {
+			CLIENT_PACKS.put(stage, new VirtualAssetPack(stage));
+		}
+	}
 
 	@Override
 	public void reloadClientInternal() {

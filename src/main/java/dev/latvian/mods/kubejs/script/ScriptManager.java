@@ -113,7 +113,7 @@ public class ScriptManager {
 		return classFilter.isAllowed(name);
 	}
 
-	public void load() {
+	private void load() {
 		var startAll = System.currentTimeMillis();
 
 		contextFactory = new KubeJSContextFactory(this);
@@ -160,6 +160,7 @@ public class ScriptManager {
 			}
 		}
 
+		loadAdditional();
 		scriptType.console.info("Loaded " + i + "/" + t + " KubeJS " + scriptType.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s with " + scriptType.console.errors.size() + " errors and " + scriptType.console.warnings.size() + " warnings");
 		canListenEvents = false;
 
@@ -167,6 +168,9 @@ public class ScriptManager {
 			scriptType.fileWatcherThread = new KubeJSFileWatcherThread(scriptType, watchingFiles.toArray(new ScriptFile[0]), this::fullReload);
 			scriptType.fileWatcherThread.start();
 		}
+	}
+
+	public void loadAdditional() {
 	}
 
 	protected void fullReload() {

@@ -7,9 +7,13 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
+import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.VanillaPackResources;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import org.jetbrains.annotations.NotNull;
@@ -22,13 +26,15 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public abstract class GeneratedResourcePack implements ExportablePackResources {
+public class KubeFileResourcePack implements PackResources {
 	public static final PackLocationInfo PACK_LOCATION_INFO = new PackLocationInfo(KubeJS.MOD_ID, Component.empty(), PackSource.BUILT_IN, Optional.empty());
 
 	private static Stream<Path> tryWalk(Path path) {
@@ -41,7 +47,7 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 	}
 
 	public static void scanForInvalidFiles(String pathName, Path path) throws IOException {
-		for (var p : Files.list(path).filter(Files::isDirectory).flatMap(GeneratedResourcePack::tryWalk).filter(Files::isRegularFile).filter(Files::isReadable).toList()) {
+		for (var p : Files.list(path).filter(Files::isDirectory).flatMap(KubeFileResourcePack::tryWalk).filter(Files::isRegularFile).filter(Files::isReadable).toList()) {
 			try {
 				var fileName = p.getFileName().toString();
 				var fileNameLC = fileName.toLowerCase(Locale.ROOT);
@@ -70,11 +76,59 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 		}
 	}
 
+	public static int findBeforeModsIndex(List<PackResources> packs) {
+		for (int i = 0; i < packs.size(); i++) {
+			var pack = packs.get(i);
+
+			if (pack instanceof VanillaPackResources) {
+				return i + 1;
+			}
+		}
+
+		return 1;
+	}
+
+	public static int findAfterModsIndex(List<PackResources> packs) {
+		for (int i = packs.size() - 1; i >= 0; i--) {
+			var pack = packs.get(i);
+
+			if (pack instanceof FilePackResources) {
+				return i + 1;
+			}
+		}
+
+		return packs.size();
+	}
+
+	public static void scanAndLoad(Path path, List<PackResources> packs) {
+		for (var file : Objects.requireNonNull(path.toFile().listFiles())) {
+			var fileName = file.getName();
+
+			if (file.isFile() && fileName.endsWith(".zip")) {
+				var packName = new StringBuilder();
+
+				for (var c : fileName.toCharArray()) {
+					if (c == '_' || c == '.' || c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') {
+						packName.append(c);
+					}
+				}
+
+				long lastModified = 0L;
+
+				if (file.exists()) {
+					lastModified = file.lastModified();
+				}
+
+				packs.add(new FilePackResources(new PackLocationInfo(fileName, Component.literal(fileName), PackSource.BUILT_IN, Optional.of(new KnownPack(KubeJS.MOD_ID, "kubejs_file_" + packName.toString().toLowerCase(Locale.ROOT), lastModified <= 0L ? "1" : Long.toUnsignedString(lastModified)))), new FilePackResources.SharedZipFileAccess(file), ""));
+			}
+		}
+	}
+
 	private final PackType packType;
 	private Map<ResourceLocation, GeneratedData> generated;
 	private Set<String> generatedNamespaces;
 
-	public GeneratedResourcePack(PackType t) {
+	public KubeFileResourcePack(PackType t) {
 		packType = t;
 	}
 
@@ -155,7 +209,11 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 	}
 
 	protected boolean skipFile(GeneratedData data) {
-		return false;
+		if (packType == PackType.CLIENT_RESOURCES) {
+			return data.id().getPath().startsWith("lang/");
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -223,7 +281,7 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 	@Override
 	@NotNull
 	public String packId() {
-		return "KubeJS Resource Pack [" + packType.getDirectory() + "]";
+		return "KubeJS File Resource Pack [" + packType.getDirectory() + "]";
 	}
 
 	@Override
@@ -238,6 +296,12 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 	}
 
 	@Override
+	public String toString() {
+		return packId();
+	}
+
+	/*
+	@Override
 	public void export(Path root) throws IOException {
 		for (var file : getGenerated().entrySet()) {
 			var path = root.resolve(packType.getDirectory() + "/" + file.getKey().getNamespace() + "/" + file.getKey().getPath());
@@ -248,4 +312,5 @@ public abstract class GeneratedResourcePack implements ExportablePackResources {
 		Files.write(root.resolve(PACK_META), GeneratedData.PACK_META.data().get());
 		Files.write(root.resolve("pack.png"), GeneratedData.PACK_ICON.data().get());
 	}
+	*/
 }

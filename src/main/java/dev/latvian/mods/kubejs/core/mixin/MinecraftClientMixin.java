@@ -2,9 +2,9 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
+import dev.latvian.mods.kubejs.client.ClientAssetPacks;
 import dev.latvian.mods.kubejs.client.ClientPlayerKubeEvent;
 import dev.latvian.mods.kubejs.client.ClientProperties;
-import dev.latvian.mods.kubejs.client.GeneratedClientResourcePack;
 import dev.latvian.mods.kubejs.client.ScheduledClientEvent;
 import dev.latvian.mods.kubejs.core.MinecraftClientKJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -50,7 +50,7 @@ public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;")
 	)
 	private List<PackResources> kjs$loadPacks(List<PackResources> resources) {
-		return GeneratedClientResourcePack.inject(kjs$self(), resources);
+		return ClientAssetPacks.INSTANCE.inject(resources);
 	}
 
 	@Inject(method = "startAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;swing(Lnet/minecraft/world/InteractionHand;)V", shift = At.Shift.AFTER))

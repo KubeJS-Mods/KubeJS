@@ -146,7 +146,7 @@ public class RecipesKubeEvent implements KubeEvent {
 	public RecipesKubeEvent(ServerScriptManager manager) {
 		ConsoleJS.SERVER.info("Initializing recipe event...");
 		this.recipeSchemaStorage = manager.recipeSchemaStorage;
-		this.registries = manager.registries;
+		this.registries = manager.getRegistries();
 		this.originalRecipes = new HashMap<>();
 		this.addedRecipes = new ConcurrentLinkedQueue<>();
 		this.recipeFunctions = new HashMap<>();

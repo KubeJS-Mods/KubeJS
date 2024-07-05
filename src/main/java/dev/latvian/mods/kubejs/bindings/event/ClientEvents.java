@@ -5,20 +5,21 @@ import dev.latvian.mods.kubejs.client.BlockEntityRendererRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.ClientPlayerKubeEvent;
 import dev.latvian.mods.kubejs.client.DebugInfoKubeEvent;
 import dev.latvian.mods.kubejs.client.EntityRendererRegistryKubeEvent;
-import dev.latvian.mods.kubejs.client.GenerateClientAssetsKubeEvent;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.client.MenuScreenRegistryKubeEvent;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventTargetType;
 import dev.latvian.mods.kubejs.event.TargetedEventHandler;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
 import net.minecraft.resources.ResourceLocation;
 
 public interface ClientEvents {
 	EventGroup GROUP = EventGroup.of("ClientEvents");
 
 	// add low assets
-	EventHandler HIGH_ASSETS = GROUP.client("highPriorityAssets", () -> GenerateClientAssetsKubeEvent.class);
+	TargetedEventHandler<GeneratedDataStage> GENERATE_ASSETS = GROUP.client("generateAssets", () -> KubeAssetGenerator.class).requiredTarget(GeneratedDataStage.TARGET);
 	EventHandler BLOCK_ENTITY_RENDERER_REGISTRY = GROUP.startup("blockEntityRendererRegistry", () -> BlockEntityRendererRegistryKubeEvent.class);
 	EventHandler ENTITY_RENDERER_REGISTRY = GROUP.startup("entityRendererRegistry", () -> EntityRendererRegistryKubeEvent.class);
 	EventHandler MENU_SCREEN_REGISTRY = GROUP.startup("menuScreenRegistry", () -> MenuScreenRegistryKubeEvent.class);

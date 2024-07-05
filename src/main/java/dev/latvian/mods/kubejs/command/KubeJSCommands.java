@@ -10,6 +10,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.net.DisplayClientErrorsPayload;
 import dev.latvian.mods.kubejs.net.DisplayServerErrorsPayload;
@@ -398,18 +399,43 @@ public class KubeJSCommands {
 		KubeJS.PROXY.export(packs);
 		int success = 0;
 
+		var combinedPath = KubeJSPaths.EXPORTED_PACKS.resolve(exportZip ? "combined.zip" : "combined");
+
+		try {
+			if (exportZip) {
+				Files.deleteIfExists(combinedPath);
+			} else if (Files.exists(combinedPath)) {
+				Files.walk(combinedPath)
+					.sorted(Comparator.reverseOrder())
+					.map(Path::toFile)
+					.forEach(File::delete);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 		for (var pack : packs) {
+			var packName = exportZip ? (pack.exportPath() + ".zip") : pack.exportPath();
+
 			try {
+				var path = KubeJSPaths.EXPORTED_PACKS.resolve(packName);
+				var parent = path.getParent();
+
+				if (Files.notExists(parent)) {
+					Files.createDirectories(parent);
+				}
+
 				if (exportZip) {
-					var path = KubeJSPaths.EXPORTED_PACKS.resolve(pack.packId() + ".zip");
 					Files.deleteIfExists(path);
 
 					try (var fs = FileSystems.newFileSystem(path, Map.of("create", true))) {
 						pack.export(fs.getPath("."));
 					}
-				} else {
-					var path = KubeJSPaths.EXPORTED_PACKS.resolve(pack.packId());
 
+					try (var fs = FileSystems.newFileSystem(combinedPath, Map.of("create", true))) {
+						pack.export(fs.getPath("."));
+					}
+				} else {
 					if (Files.exists(path)) {
 						Files.walk(path)
 							.sorted(Comparator.reverseOrder())
@@ -419,13 +445,14 @@ public class KubeJSCommands {
 
 					Files.createDirectories(path);
 					pack.export(path);
+					pack.export(combinedPath);
 				}
 
-				source.sendSuccess(() -> Component.literal("Successfully exported ").withStyle(ChatFormatting.GREEN).append(Component.literal(pack.packId()).withStyle(ChatFormatting.BLUE)), false);
+				source.sendSuccess(() -> Component.empty().append(TextIcons.yes()).append(Component.literal(packName).withStyle(ChatFormatting.BLUE)), false);
 				success++;
 			} catch (IOException e) {
 				e.printStackTrace();
-				source.sendFailure(Component.literal("Failed to export %s!".formatted(pack)).withStyle(style ->
+				source.sendFailure(Component.empty().append(TextIcons.no().kjs$white()).append("Failed to export %s!".formatted(packName)).withStyle(style ->
 					style.withColor(ChatFormatting.RED)
 						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(e.getMessage())))));
 			}

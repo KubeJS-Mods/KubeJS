@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -75,7 +75,7 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
+	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
 		var texture = textures.get("texture").getAsString();
 
 		generator.blockModel(id, m -> {

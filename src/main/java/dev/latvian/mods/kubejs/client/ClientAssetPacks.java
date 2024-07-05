@@ -4,81 +4,62 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.script.data.GeneratedData;
-import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
+import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
+import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
+import dev.latvian.mods.kubejs.script.data.VirtualAssetPack;
 import dev.latvian.mods.kubejs.util.JsonUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.FilePackResources;
-import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.repository.PackSource;
+import net.neoforged.fml.loading.FMLLoader;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class GeneratedClientResourcePack extends GeneratedResourcePack {
-	public static List<PackResources> inject(Minecraft client, List<PackResources> packs) {
-		// only add the resource pack if KubeJS has loaded
-		// to prevent crashes on mod loading errors
-		if (KubeJS.thisMod != null) {
-			packs = new ArrayList<>(packs);
+public class ClientAssetPacks {
+	public static final ClientAssetPacks INSTANCE = new ClientAssetPacks();
 
-			int i = packs.size();
+	public final VirtualAssetPack internalAssetPack;
+	public final Map<GeneratedDataStage, VirtualAssetPack> virtualPacks;
 
-			for (int j = 1; j < packs.size(); j++) {
-				if (packs.get(j) instanceof FilePackResources) {
-					i = j;
-					break;
-				}
-			}
-
-			var injected = new ArrayList<PackResources>(2);
-			injected.add(new GeneratedClientResourcePack(client));
-
-			for (var file : Objects.requireNonNull(KubeJSPaths.ASSETS.toFile().listFiles())) {
-				if (file.isFile() && file.getName().endsWith(".zip")) {
-					var access = new FilePackResources.FileResourcesSupplier(file);
-					injected.add(access.openPrimary(new PackLocationInfo(file.getName(), Component.empty(), PackSource.BUILT_IN, Optional.empty())));
-				}
-			}
-
-			packs.addAll(i, injected);
-		}
-
-		return packs;
+	public ClientAssetPacks() {
+		this.internalAssetPack = new VirtualAssetPack(GeneratedDataStage.INTERNAL);
+		this.virtualPacks = GeneratedDataStage.forScripts(VirtualAssetPack::new);
 	}
 
-	public final Minecraft client;
+	public List<PackResources> inject(List<PackResources> original) {
+		var packs = new ArrayList<>(original);
 
-	public GeneratedClientResourcePack(Minecraft client) {
-		super(PackType.CLIENT_RESOURCES);
-		this.client = client;
-		getGenerated();
-	}
+		var filePacks = new ArrayList<PackResources>();
+		KubeFileResourcePack.scanAndLoad(KubeJSPaths.ASSETS, filePacks);
+		filePacks.sort((p1, p2) -> p1.packId().compareToIgnoreCase(p2.packId()));
+		filePacks.add(new KubeFileResourcePack(PackType.CLIENT_RESOURCES));
 
-	@Override
-	public void generate(Map<ResourceLocation, GeneratedData> map) {
-		var generator = new AssetJsonGenerator(map);
+		int beforeModsIndex = KubeFileResourcePack.findBeforeModsIndex(packs);
+		int afterModsIndex = KubeFileResourcePack.findAfterModsIndex(packs);
+
+		packs.add(beforeModsIndex, virtualPacks.get(GeneratedDataStage.BEFORE_MODS));
+		packs.add(afterModsIndex, internalAssetPack);
+		packs.add(afterModsIndex + 1, virtualPacks.get(GeneratedDataStage.AFTER_MODS));
+		packs.addAll(afterModsIndex + 2, filePacks);
+		packs.add(virtualPacks.get(GeneratedDataStage.LAST));
+
+		internalAssetPack.reset();
 
 		for (var builder : RegistryInfo.ALL_BUILDERS) {
-			builder.generateAssetJsons(generator);
+			builder.generateAssetJsons(internalAssetPack);
 		}
 
-		KubeJSPlugins.forEachPlugin(generator, KubeJSPlugin::generateAssetJsons);
+		KubeJSPlugins.forEachPlugin(internalAssetPack, KubeJSPlugin::generateAssets);
 
 		var langMap = new HashMap<LangKubeEvent.Key, String>();
 		var langEvents = new HashMap<String, LangKubeEvent>();
@@ -90,7 +71,7 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 
 		KubeJSPlugins.forEachPlugin(enUsLangEvent, KubeJSPlugin::generateLang);
 
-		ClientEvents.HIGH_ASSETS.post(ScriptType.CLIENT, new GenerateClientAssetsKubeEvent(generator));
+		ClientEvents.GENERATE_ASSETS.post(ScriptType.CLIENT, GeneratedDataStage.AFTER_MODS, virtualPacks.get(GeneratedDataStage.AFTER_MODS));
 
 		for (var lang : ClientEvents.LANG.findUniqueExtraIds(ScriptType.CLIENT)) {
 			var l = String.valueOf(lang);
@@ -141,13 +122,22 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 
 		for (var e1 : finalMap.entrySet()) { // namespaces
 			for (var e2 : e1.getValue().entrySet()) { // languages
-				generator.json(ResourceLocation.parse(e1.getKey() + ":lang/" + e2.getKey()), e2.getValue());
+				internalAssetPack.json(ResourceLocation.parse(e1.getKey() + ":lang/" + e2.getKey()), e2.getValue());
 			}
 		}
-	}
 
-	@Override
-	protected boolean skipFile(GeneratedData data) {
-		return data.id().getPath().startsWith("lang/");
+		for (var pack : virtualPacks.values()) {
+			pack.reset();
+
+			if (ClientEvents.GENERATE_ASSETS.hasListeners(pack.stage)) {
+				ClientEvents.GENERATE_ASSETS.post(ScriptType.CLIENT, pack.stage, pack);
+			}
+		}
+
+		if (!FMLLoader.isProduction()) {
+			KubeJS.LOGGER.info("Loaded " + packs.size() + " asset packs: " + packs.stream().map(PackResources::packId).collect(Collectors.joining(", ")));
+		}
+
+		return packs;
 	}
 }

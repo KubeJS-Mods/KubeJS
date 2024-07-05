@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
 import net.minecraft.core.BlockPos;
@@ -50,9 +50,9 @@ public class SeedItemBuilder extends BlockItemBuilder {
 	}
 
 	@Override
-	public void generateAssetJsons(AssetJsonGenerator generator) {
+	public void generateAssetJsons(KubeAssetGenerator generator) {
 		if (modelJson != null) {
-			generator.json(AssetJsonGenerator.asItemModelLocation(id), modelJson);
+			generator.json(KubeAssetGenerator.asItemModelLocation(id), modelJson);
 			return;
 		}
 

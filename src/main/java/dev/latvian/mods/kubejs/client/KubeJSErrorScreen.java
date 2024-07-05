@@ -25,9 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class KubeJSErrorScreen extends Screen {
 	public final Screen lastScreen;
@@ -189,8 +187,26 @@ public class KubeJSErrorScreen extends Screen {
 			this.indexText = Component.literal("#" + (index + 1)).getVisualOrderText();
 
 			var sourceLines = new ArrayList<>(line.sourceLines);
-			Collections.reverse(sourceLines);
-			this.scriptLineText = Component.literal(sourceLines.stream().map(Object::toString).map(s -> s.isEmpty() ? (this.line.type == LogType.WARN ? "Internal Warning" : "Internal Error") : s).collect(Collectors.joining(" -> "))).getVisualOrderText();
+			var scriptLineTextList = new ArrayList<String>();
+
+			for (int i = 0; i < sourceLines.size(); i++) {
+				if (sourceLines.get(i).source().endsWith(".java")) {
+					continue;
+				}
+
+				if (i >= 3) {
+					scriptLineTextList.add("...");
+					break;
+				} else {
+					scriptLineTextList.add(sourceLines.get(i).toString());
+				}
+			}
+
+			if (scriptLineTextList.isEmpty()) {
+				scriptLineTextList.add(this.line.type == LogType.WARN ? "Internal Warning" : "Internal Error");
+			}
+
+			this.scriptLineText = Component.literal(String.join(" < ", scriptLineTextList)).getVisualOrderText();
 
 			var sb = new StringBuilder();
 			calendar.setTimeInMillis(line.timestamp);
@@ -219,7 +235,17 @@ public class KubeJSErrorScreen extends Screen {
 			}
 
 			if (hovered && !stackTraceText.isEmpty()) {
-				errorList.screen.setTooltipForNextRenderPass(Screen.hasShiftDown() ? stackTraceText : stackTraceText.stream().limit(4L).toList());
+				if (my < y + 10 && line.sourceLines.size() >= 3) {
+					var lines = new ArrayList<FormattedCharSequence>();
+
+					for (var line : line.sourceLines) {
+						lines.add(Component.literal(line.toString()).getVisualOrderText());
+					}
+
+					errorList.screen.setTooltipForNextRenderPass(lines);
+				} else {
+					errorList.screen.setTooltipForNextRenderPass(Screen.hasShiftDown() ? stackTraceText : stackTraceText.stream().limit(4L).toList());
+				}
 			}
 		}
 

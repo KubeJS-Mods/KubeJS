@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.ingredient;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.recipe.CachedTagLookup;
+import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,7 +16,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,9 +79,13 @@ public final class TagIngredient implements KubeJSIngredient {
 		var set = kjs$getItems();
 
 		if (set.isEmpty()) {
-			var error = new ItemStack(Blocks.BARRIER);
-			error.set(DataComponents.CUSTOM_NAME, Component.literal("Empty Tag: " + tagKey.location()));
-			return Stream.of(error);
+			if (RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.getValue() != null) {
+				throw new RecipeExceptionJS("Empty tag: " + tagKey.location());
+			} else {
+				var error = new ItemStack(Items.BARRIER);
+				error.set(DataComponents.CUSTOM_NAME, Component.literal("Empty Tag: " + tagKey.location()));
+				return Stream.of(error);
+			}
 		}
 
 		return set.stream().map(ItemStack::new);

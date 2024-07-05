@@ -10,60 +10,70 @@ import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class AssetJsonGenerator extends ResourceGenerator {
-	private final Map<ResourceLocation, LoadedTexture> loadedTextures;
-
-	public AssetJsonGenerator(Map<ResourceLocation, GeneratedData> m) {
-		super(ConsoleJS.CLIENT, m);
-		this.loadedTextures = new HashMap<>();
+public interface KubeAssetGenerator extends KubeResourceGenerator {
+	static ResourceLocation asItemModelLocation(ResourceLocation id) {
+		return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "models/item/" + id.getPath());
 	}
 
-	public LoadedTexture loadTexture(ResourceLocation id) {
-		return loadedTextures.computeIfAbsent(id, LoadedTexture::load);
+	default void addLang(String key, String value) {
+		ConsoleJS.CLIENT.error("Use ClientEvents.lang('en_us', event => { event.add(key, value) }) instead!");
 	}
 
-	public void blockState(ResourceLocation id, Consumer<VariantBlockStateGenerator> consumer) {
+	default LoadedTexture loadTexture(ResourceLocation id) {
+		return LoadedTexture.load(id);
+	}
+
+	default void blockState(ResourceLocation id, Consumer<VariantBlockStateGenerator> consumer) {
 		var gen = Util.make(new VariantBlockStateGenerator(), consumer);
 		json(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
 	}
 
-	public void multipartState(ResourceLocation id, Consumer<MultipartBlockStateGenerator> consumer) {
+	default void multipartState(ResourceLocation id, Consumer<MultipartBlockStateGenerator> consumer) {
 		var gen = Util.make(new MultipartBlockStateGenerator(), consumer);
 		json(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
 	}
 
-	public void blockModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
+	default void blockModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
 		var gen = Util.make(new ModelGenerator(), consumer);
 		json(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "models/block/" + id.getPath()), gen.toJson());
 	}
 
-	public void itemModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
+	default void itemModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
 		var gen = Util.make(new ModelGenerator(), consumer);
 		json(asItemModelLocation(id), gen.toJson());
 	}
 
-	public static ResourceLocation asItemModelLocation(ResourceLocation id) {
-		return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "models/item/" + id.getPath());
+	default void defaultItemModel(ResourceLocation id) {
+		itemModel(id, model -> {
+			model.parent("minecraft:item/generated");
+			model.texture("layer0", id.getNamespace() + ":item/" + id.getPath());
+		});
 	}
 
-	public void texture(ResourceLocation target, LoadedTexture texture) {
+	default void defaultHandheldItemModel(ResourceLocation id) {
+		itemModel(id, model -> {
+			model.parent("minecraft:item/handheld");
+			model.texture("layer0", id.getNamespace() + ":item/" + id.getPath());
+		});
+	}
+
+	default void texture(ResourceLocation target, LoadedTexture texture) {
 		if (texture.width <= 0 || texture.height <= 0) {
 			ConsoleJS.CLIENT.error("Failed to save texture " + target);
 			return;
 		}
 
-		add(ResourceLocation.fromNamespaceAndPath(target.getNamespace(), "textures/" + target.getPath() + ".png"), texture::toBytes);
+		add(new GeneratedData(ResourceLocation.fromNamespaceAndPath(target.getNamespace(), "textures/" + target.getPath() + ".png"), texture::toBytes));
 
 		if (texture.mcmeta != null) {
-			add(ResourceLocation.fromNamespaceAndPath(target.getNamespace(), "textures/" + target.getPath() + ".png.mcmeta"), () -> texture.mcmeta);
+			add(new GeneratedData(ResourceLocation.fromNamespaceAndPath(target.getNamespace(), "textures/" + target.getPath() + ".png.mcmeta"), () -> texture.mcmeta));
 		}
 	}
 
-	public void stencil(ResourceLocation target, ResourceLocation stencil, Map<Color, Color> colors) {
+	default void stencil(ResourceLocation target, ResourceLocation stencil, Map<Color, Color> colors) {
 		var stencilTexture = loadTexture(stencil);
 
 		if (stencilTexture.width == 0 || stencilTexture.height == 0) {
@@ -74,7 +84,7 @@ public class AssetJsonGenerator extends ResourceGenerator {
 		texture(target, stencilTexture.remap(colors));
 	}
 
-	public boolean mask(ResourceLocation target, ResourceLocation mask, ResourceLocation input) {
+	default boolean mask(ResourceLocation target, ResourceLocation mask, ResourceLocation input) {
 		var maskTexture = loadTexture(mask);
 
 		if (maskTexture.height != maskTexture.width || maskTexture.width == 0) {

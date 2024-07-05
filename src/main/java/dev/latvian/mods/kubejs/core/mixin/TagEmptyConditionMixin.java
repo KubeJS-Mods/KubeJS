@@ -23,7 +23,7 @@ public abstract class TagEmptyConditionMixin {
 		var lookup = RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.getValue();
 
 		if (lookup != null) {
-			cir.setReturnValue(lookup.values(tag).isEmpty());
+			cir.setReturnValue(lookup.isEmpty(tag));
 		}
 	}
 }

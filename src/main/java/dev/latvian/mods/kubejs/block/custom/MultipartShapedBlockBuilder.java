@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import net.minecraft.resources.ResourceLocation;
 
 public abstract class MultipartShapedBlockBuilder extends ShapedBlockBuilder {
@@ -10,7 +10,7 @@ public abstract class MultipartShapedBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	public void generateAssetJsons(AssetJsonGenerator generator) {
+	public void generateAssetJsons(KubeAssetGenerator generator) {
 		if (blockstateJson != null) {
 			generator.json(newID("blockstates/", ""), blockstateJson);
 		} else {

@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.event;
 import dev.latvian.mods.kubejs.core.RegistryObjectKJS;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.type.EnumTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -30,6 +31,34 @@ public class EventTargetType<T> {
 
 	public static <T> EventTargetType<ResourceKey<T>> registryKey(ResourceKey<Registry<T>> registry, Class<?> type) {
 		return Cast.to(create(ResourceKey.class).identity().transformer(o -> toKey(registry, o)).describeType(TypeInfo.of(ResourceKey.class).withParams(TypeInfo.of(type))));
+	}
+
+	public static <T extends Enum<T>> EventTargetType<T> fromEnum(Class<T> type) {
+		var typeInfo = (EnumTypeInfo) TypeInfo.of(type);
+
+		return create(type).transformer(o -> {
+			if (o == null) {
+				return null;
+			} else if (type.isInstance(o)) {
+				return o;
+			} else if (o instanceof CharSequence) {
+				String s = o.toString();
+
+				if (s.isEmpty()) {
+					return null;
+				}
+
+				for (var entry : typeInfo.enumConstants()) {
+					if (EnumTypeInfo.getName(entry).equalsIgnoreCase(s)) {
+						return entry;
+					}
+				}
+
+				return null;
+			} else {
+				return null;
+			}
+		});
 	}
 
 	private static String toString(Object object) {

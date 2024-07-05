@@ -17,8 +17,8 @@ import dev.latvian.mods.kubejs.block.entity.BlockEntityBuilder;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityInfo;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
-import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
@@ -185,7 +185,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Override
-	public void generateDataJsons(DataJsonGenerator generator) {
+	public void generateDataJsons(KubeDataGenerator generator) {
 		var table = generateLootTable();
 
 		if (table != null) {
@@ -231,7 +231,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Override
-	public void generateAssetJsons(AssetJsonGenerator generator) {
+	public void generateAssetJsons(KubeAssetGenerator generator) {
 		if (blockstateJson != null) {
 			generator.json(newID("blockstates/", ""), blockstateJson);
 		} else {
@@ -263,7 +263,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 	}
 
-	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
+	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
 		generator.blockModel(id, mg -> {
 			var particle = textures.get("particle").getAsString();
 

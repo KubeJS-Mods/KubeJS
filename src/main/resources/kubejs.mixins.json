@@ -58,12 +58,15 @@
 		"TagManagerMixin",
 		"TextColorMixin",
 		"UtilMixin",
+		"WorldLoaderMixin",
 		"WorldLoaderPackConfigMixin"
 	],
 	"client": [
 		"AbstractClientPlayerMixin",
 		"AbstractSelectionListMixin",
 		"ClientLevelMixin",
+		"CreativeModeInventoryScreenMixin",
+		"ItemStackClientMixin",
 		"KeyboardHandlerMixin",
 		"LevelRendererMixin",
 		"LoadingOverlayMixin",

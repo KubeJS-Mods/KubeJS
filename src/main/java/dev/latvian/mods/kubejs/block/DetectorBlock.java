@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -46,7 +46,7 @@ public class DetectorBlock extends Block {
 		}
 
 		@Override
-		public void generateAssetJsons(AssetJsonGenerator generator) {
+		public void generateAssetJsons(KubeAssetGenerator generator) {
 			generator.blockState(id, bs -> {
 				bs.simpleVariant("powered=false", "kubejs:block/detector");
 				bs.simpleVariant("powered=true", "kubejs:block/detector_on");

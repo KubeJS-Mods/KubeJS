@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.registry;
 
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
-import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
@@ -113,10 +113,10 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), pre + id.getPath() + post);
 	}
 
-	public void generateDataJsons(DataJsonGenerator generator) {
+	public void generateDataJsons(KubeDataGenerator generator) {
 	}
 
-	public void generateAssetJsons(AssetJsonGenerator generator) {
+	public void generateAssetJsons(KubeAssetGenerator generator) {
 	}
 
 	public String getBuilderTranslationKey() {

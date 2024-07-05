@@ -5,8 +5,8 @@ import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
-import dev.latvian.mods.kubejs.generator.DataJsonGenerator;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistry;
@@ -96,10 +96,10 @@ public interface KubeJSPlugin {
 	default void attachPlayerData(AttachedData<Player> event) {
 	}
 
-	default void generateDataJsons(DataJsonGenerator generator) {
+	default void generateData(KubeDataGenerator generator) {
 	}
 
-	default void generateAssetJsons(AssetJsonGenerator generator) {
+	default void generateAssets(KubeAssetGenerator generator) {
 	}
 
 	default void generateLang(LangKubeEvent event) {

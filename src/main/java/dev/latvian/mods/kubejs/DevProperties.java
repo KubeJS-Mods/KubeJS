@@ -15,7 +15,7 @@ public class DevProperties extends BaseProperties {
 		instance = new DevProperties();
 	}
 
-	public boolean dataPackOutput;
+	public boolean virtualPackOutput;
 	public boolean logRegistryTypes;
 	public boolean logRegistryEventObjects;
 	public boolean logAddedRecipes;
@@ -41,7 +41,7 @@ public class DevProperties extends BaseProperties {
 
 	@Override
 	protected void load() {
-		dataPackOutput = get("data_pack_output", false);
+		virtualPackOutput = get("virtual_pack_output", false);
 		logRegistryTypes = get("log_registry_types", false);
 		logRegistryEventObjects = get("log_registry_event_objects", false);
 		logAddedRecipes = get("log_added_recipes", false);

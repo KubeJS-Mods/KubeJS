@@ -68,7 +68,7 @@ public interface TagLoaderKJS<T> {
 				ConsoleJS.SERVER.info("[%s] Found %d tags, added %d objects, removed %d objects".formatted(regInfo, event.tags.size(), event.totalAdded, event.totalRemoved));
 			}
 
-			kjs$resources.kjs$getServerScriptManager().registries.cacheTags(reg, map);
+			kjs$resources.kjs$getServerScriptManager().getRegistries().cacheTags(reg, map);
 		}
 
 		if (DataExport.export != null) {

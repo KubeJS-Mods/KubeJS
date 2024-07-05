@@ -6,5 +6,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public interface ExportablePackResources extends PackResources {
+	default String exportPath() {
+		return packId();
+	}
+
 	void export(Path root) throws IOException;
 }

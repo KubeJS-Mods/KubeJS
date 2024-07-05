@@ -27,8 +27,7 @@ import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptPack;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
-import dev.latvian.mods.kubejs.script.data.GeneratedResourcePack;
-import dev.latvian.mods.kubejs.server.ServerScriptManager;
+import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
 import dev.latvian.mods.kubejs.util.RecordDefaults;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
@@ -167,10 +166,10 @@ public class KubeJS {
 		}
 
 		if (dist.isClient()) {
-			GeneratedResourcePack.scanForInvalidFiles("kubejs/assets/", KubeJSPaths.ASSETS);
+			KubeFileResourcePack.scanForInvalidFiles("kubejs/assets/", KubeJSPaths.ASSETS);
 		}
 
-		GeneratedResourcePack.scanForInvalidFiles("kubejs/data/", KubeJSPaths.DATA);
+		KubeFileResourcePack.scanForInvalidFiles("kubejs/data/", KubeJSPaths.DATA);
 
 		if (dist.isClient() || !CommonProperties.get().serverOnly) {
 			// See NeoForgeRegistriesSetup.VANILLA_SYNC_REGISTRIES
@@ -283,14 +282,14 @@ public class KubeJS {
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void addPacksFirst(AddPackFindersEvent event) {
 		if (event.getPackType() == PackType.SERVER_DATA) {
-			ServerScriptManager.addPacksFirst(event);
+			// ServerScriptManager.addPacksFirst(event);
 		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void addPacksLast(AddPackFindersEvent event) {
 		if (event.getPackType() == PackType.SERVER_DATA) {
-			ServerScriptManager.addPacksLast(event);
+			// ServerScriptManager.addPacksLast(event);
 		}
 	}
 }

@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.block.BlockRenderType;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.block.SeedItemBuilder;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
-import dev.latvian.mods.kubejs.generator.AssetJsonGenerator;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
@@ -236,7 +236,7 @@ public class CropBlockBuilder extends BlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
+	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
 		for (int i = 0; i <= age; i++) {
 			final int fi = i;
 			generator.blockModel(newID("", String.valueOf(i)), m -> {
