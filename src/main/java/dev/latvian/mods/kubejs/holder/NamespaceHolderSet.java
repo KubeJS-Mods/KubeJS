@@ -22,7 +22,7 @@ import java.util.Set;
 public class NamespaceHolderSet<T> extends HolderSet.ListBacked<T> implements ICustomHolderSet<T> {
 	public static <T> MapCodec<NamespaceHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
-			RegistryOps.retrieveRegistryLookup(registryKey).fieldOf("registry").forGetter(s -> s.registryLookup),
+			RegistryOps.retrieveRegistryLookup(registryKey).forGetter(s -> s.registryLookup),
 			Codec.STRING.fieldOf("namespace").forGetter(s -> s.namespace)
 		).apply(instance, NamespaceHolderSet::new));
 	}
