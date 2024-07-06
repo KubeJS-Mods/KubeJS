@@ -35,7 +35,7 @@ public class NestedRecipeComponent implements RecipeComponent<KubeRecipe> {
 			r.newRecipe = false;
 			return r;
 		} else if (from instanceof JsonObject json && json.has("type")) {
-			var r = recipe.type.event.custom(json);
+			var r = recipe.type.event.custom(cx, json);
 			r.newRecipe = false;
 			return r;
 		}

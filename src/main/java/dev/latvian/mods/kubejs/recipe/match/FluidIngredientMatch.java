@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.match;
 
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.rhino.Context;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
@@ -24,7 +24,7 @@ public record FluidIngredientMatch(FluidIngredient ingredient) implements FluidM
 				}
 			}
 		} catch (Exception ex) {
-			throw new RecipeExceptionJS("Failed to test fluid ingredient " + in, ex);
+			throw new KubeRuntimeException("Failed to test fluid ingredient " + in, ex);
 		}
 
 		return false;

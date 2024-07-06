@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe;
 
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
@@ -22,11 +23,11 @@ public class ErroredKubeRecipe extends KubeRecipe {
 		}
 	};
 
-	public ErroredKubeRecipe(RecipesKubeEvent event, RecipeExceptionJS rex) {
+	public ErroredKubeRecipe(RecipesKubeEvent event, KubeRuntimeException rex) {
 		this(event, rex.getMessage(), rex, null);
 	}
 
-	public ErroredKubeRecipe(RecipesKubeEvent event, String errorMessage, RecipeExceptionJS rex, @Nullable Pattern skipError) {
+	public ErroredKubeRecipe(RecipesKubeEvent event, String errorMessage, KubeRuntimeException rex, @Nullable Pattern skipError) {
 		this.context = errorMessage;
 		ConsoleJS.SERVER.error(errorMessage, rex, skipError);
 		event.failedCount.incrementAndGet();

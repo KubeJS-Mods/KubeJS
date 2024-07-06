@@ -25,9 +25,9 @@ public class EventTargetType<T> {
 		return new EventTargetType<>(type);
 	}
 
-	public static final EventTargetType<String> STRING = create(String.class).transformer(EventTargetType::toString);
-	public static final EventTargetType<ResourceLocation> ID = create(ResourceLocation.class).transformer(EventTargetType::toResourceLocation);
-	public static final EventTargetType<ResourceKey<Registry<?>>> REGISTRY = Cast.to(create(ResourceKey.class).transformer(EventTargetType::toRegistryKey).identity());
+	public static final EventTargetType<String> STRING = create(String.class).transformer(EventTargetType::toString).describeType(TypeInfo.STRING);
+	public static final EventTargetType<ResourceLocation> ID = create(ResourceLocation.class).transformer(EventTargetType::toResourceLocation).describeType(TypeInfo.of(ResourceLocation.class));
+	public static final EventTargetType<ResourceKey<Registry<?>>> REGISTRY = Cast.to(create(ResourceKey.class).transformer(EventTargetType::toRegistryKey).identity().describeType(TypeInfo.of(ResourceKey.class).withParams(TypeInfo.of(Registry.class))));
 
 	public static <T> EventTargetType<ResourceKey<T>> registryKey(ResourceKey<Registry<T>> registry, Class<?> type) {
 		return Cast.to(create(ResourceKey.class).identity().transformer(o -> toKey(registry, o)).describeType(TypeInfo.of(ResourceKey.class).withParams(TypeInfo.of(type))));
@@ -58,7 +58,7 @@ public class EventTargetType<T> {
 			} else {
 				return null;
 			}
-		});
+		}).describeType(typeInfo);
 	}
 
 	private static String toString(Object object) {

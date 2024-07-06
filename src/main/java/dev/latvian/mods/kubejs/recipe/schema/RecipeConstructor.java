@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.Context;
 
@@ -47,6 +48,7 @@ public class RecipeConstructor {
 
 	public KubeRecipe create(Context cx, RecipeTypeFunction type, RecipeSchemaType schemaType, ComponentValueMap from) {
 		var r = schemaType.schema.recipeFactory.create();
+		r.sourceLine = SourceLine.of(cx);
 		r.type = type;
 		r.json = new JsonObject();
 		r.json.addProperty("type", "unknown");

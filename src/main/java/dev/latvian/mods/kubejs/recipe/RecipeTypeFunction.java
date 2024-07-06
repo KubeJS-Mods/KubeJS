@@ -1,8 +1,10 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.BaseFunction;
@@ -35,12 +37,10 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 	public KubeRecipe call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args0) {
 		try {
 			return createRecipe(cx, args0);
-		} catch (RecipeExceptionJS rex) {
-			if (rex.error) {
-				throw rex;
-			} else {
-				return new ErroredKubeRecipe(event, "Failed to create recipe for type '%s'".formatted(idString), rex, SKIP_ERROR);
-			}
+		} catch (KubeRuntimeException rex) {
+			var recipe = new ErroredKubeRecipe(event, "Failed to create recipe for type '%s'".formatted(idString), rex, SKIP_ERROR);
+			recipe.sourceLine = rex.sourceLine;
+			return recipe;
 		}
 	}
 
@@ -56,13 +56,13 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 
 			if (constructor == null) {
 				if (args.length == 1 && (args[0] instanceof Map<?, ?> || args[0] instanceof JsonObject)) {
-					var recipe = schemaType.schema.deserialize(this, null, MapJS.json(cx, args[0]));
+					var recipe = schemaType.schema.deserialize(SourceLine.of(cx), this, null, MapJS.json(cx, args[0]));
 					recipe.afterLoaded();
 					return event.addRecipe(recipe, true);
 					// throw new RecipeExceptionJS("Use event.custom(json) for json recipes!");
 				}
 
-				throw new RecipeExceptionJS("Constructor for " + id + " with " + args.length + " arguments not found!");
+				throw new KubeRuntimeException("Constructor for " + id + " with " + args.length + " arguments not found!");
 			}
 
 			/*
@@ -83,10 +83,10 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			var recipe = constructor.create(cx, this, schemaType, argMap);
 			recipe.afterLoaded();
 			return event.addRecipe(recipe, false);
-		} catch (RecipeExceptionJS rex) {
+		} catch (KubeRuntimeException rex) {
 			throw rex;
 		} catch (Throwable ex) {
-			throw new RecipeExceptionJS("Failed to create recipe for type '" + id + "' with args " + Arrays.stream(args).map(o -> o == null ? "null" : (o + ": " + o.getClass().getSimpleName())).collect(Collectors.joining(", ", "[", "]")), ex);
+			throw new KubeRuntimeException("Failed to create recipe for type '" + id + "' with args " + Arrays.stream(args).map(o -> o == null ? "null" : (o + ": " + o.getClass().getSimpleName())).collect(Collectors.joining(", ", "[", "]")), ex);
 		}
 	}
 

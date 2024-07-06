@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -28,7 +28,7 @@ public class RecipeSchemaType {
 		var s = serializer.orElse(null);
 
 		if (s == null) {
-			throw new RecipeExceptionJS("Serializer for type " + id + " is not found!");
+			throw new KubeRuntimeException("Serializer for type " + id + " is not found!");
 		}
 
 		return s;

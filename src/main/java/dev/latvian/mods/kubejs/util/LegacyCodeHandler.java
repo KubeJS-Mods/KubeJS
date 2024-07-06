@@ -1,22 +1,12 @@
 package dev.latvian.mods.kubejs.util;
 
+import dev.latvian.mods.kubejs.error.LegacyError;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Symbol;
 
 public class LegacyCodeHandler extends BaseFunction {
-	public static class LegacyError extends RuntimeException implements MutedError {
-		public LegacyError(String message) {
-			super(message);
-		}
-
-		@Override
-		public String toString() {
-			return getLocalizedMessage();
-		}
-	}
-
 	public final String code;
 
 	public LegacyCodeHandler(String code) {

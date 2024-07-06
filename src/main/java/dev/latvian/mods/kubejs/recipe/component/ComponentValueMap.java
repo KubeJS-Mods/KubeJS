@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.rhino.Context;
 
@@ -20,13 +20,13 @@ public class ComponentValueMap extends IdentityHashMap<RecipeKey<?>, Object> {
 				return null;
 			}
 
-			throw new RecipeExceptionJS("Value for '" + key + "' is missing!");
+			throw new KubeRuntimeException("Value for '" + key + "' is missing!");
 		}
 
 		try {
 			return key.component.wrap(cx, recipe, o);
 		} catch (Throwable ex) {
-			throw new RecipeExceptionJS("Unable to cast '" + key + "' value '" + o + "' to '" + key.component + "'!", ex);
+			throw new KubeRuntimeException("Unable to cast '" + key + "' value '" + o + "' to '" + key.component + "'!", ex);
 		}
 	}
 }

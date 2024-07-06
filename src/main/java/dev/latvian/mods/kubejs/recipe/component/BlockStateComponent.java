@@ -5,8 +5,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.JsonUtils;
@@ -47,7 +47,7 @@ public record BlockStateComponent(boolean preferObjectForm) implements RecipeCom
 					// this is formatted like so:
 					// { Name: "blockid", Properties: {Property: "value"}}
 					yield BlockState.CODEC.parse(JsonOps.INSTANCE, JsonUtils.GSON.toJsonTree(from)).getPartialOrThrow(message -> {
-						throw new RecipeExceptionJS("Failed to parse blockstate: " + message);
+						throw new KubeRuntimeException("Failed to parse blockstate: " + message);
 					});
 				}
 			}

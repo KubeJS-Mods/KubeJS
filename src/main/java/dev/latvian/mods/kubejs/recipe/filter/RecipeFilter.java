@@ -1,7 +1,8 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
@@ -134,13 +135,8 @@ public interface RecipeFilter {
 			}
 
 			return predicate.list.isEmpty() ? ConstantFilter.TRUE : predicate.list.size() == 1 ? predicate.list.getFirst() : predicate;
-		} catch (RecipeExceptionJS rex) {
-			if (rex.error) {
-				ConsoleJS.getCurrent(cx).error(rex.getMessage());
-			} else {
-				ConsoleJS.getCurrent(cx).warn(rex.getMessage());
-			}
-
+		} catch (KubeRuntimeException rex) {
+			ConsoleJS.getCurrent(cx).warn("", rex, RecipesKubeEvent.POST_SKIP_ERROR);
 			return ConstantFilter.FALSE;
 		}
 	}

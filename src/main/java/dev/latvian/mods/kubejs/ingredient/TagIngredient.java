@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.ingredient;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.error.EmptyTagException;
 import dev.latvian.mods.kubejs.recipe.CachedTagLookup;
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.component.DataComponents;
@@ -80,7 +80,7 @@ public final class TagIngredient implements KubeJSIngredient {
 
 		if (set.isEmpty()) {
 			if (RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.getValue() != null) {
-				throw new RecipeExceptionJS("Empty tag: " + tagKey.location());
+				throw new EmptyTagException(tagKey);
 			} else {
 				var error = new ItemStack(Items.BARRIER);
 				error.set(DataComponents.CUSTOM_NAME, Component.literal("Empty Tag: " + tagKey.location()));

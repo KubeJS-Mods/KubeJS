@@ -8,6 +8,8 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.error.UnknownRecipeTypeException;
 import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
@@ -24,6 +26,7 @@ import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.server.ChangesForChat;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
@@ -73,7 +76,7 @@ public class RecipesKubeEvent implements KubeEvent {
 	private static final Predicate<KubeRecipe> RECIPE_NOT_REMOVED = r -> r != null && !r.removed;
 	private static final EventExceptionHandler RECIPE_EXCEPTION_HANDLER = (event, handler, ex) -> {
 		// skip the current handler on a recipe or JSON exception, but let other handlers run
-		if (ex instanceof RecipeExceptionJS || ex instanceof JsonParseException) {
+		if (ex instanceof KubeRuntimeException || ex instanceof JsonParseException) {
 			ConsoleJS.SERVER.error("Error while processing recipe event handler: " + handler, ex);
 			return null;
 		} else {
@@ -259,7 +262,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			}
 
 			try {
-				var recipe = type.schemaType.schema.deserialize(type, recipeId, json);
+				var recipe = type.schemaType.schema.deserialize(SourceLine.UNKNOWN, type, recipeId, json);
 				recipe.afterLoaded();
 				originalRecipes.put(recipeId, recipe);
 
@@ -277,7 +280,7 @@ public class RecipesKubeEvent implements KubeEvent {
 				}
 
 				try {
-					originalRecipes.put(recipeId, UnknownRecipeSchema.SCHEMA.deserialize(type, recipeId, json));
+					originalRecipes.put(recipeId, UnknownRecipeSchema.SCHEMA.deserialize(SourceLine.UNKNOWN, type, recipeId, json));
 				} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
 					if (DevProperties.get().logErroringRecipes) {
 						ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2, POST_SKIP_ERROR);
@@ -532,27 +535,25 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 	}
 
-	public KubeRecipe custom(JsonObject json) {
+	public KubeRecipe custom(Context cx, JsonObject json) {
 		try {
 			if (json == null || !json.has("type")) {
-				throw new RecipeExceptionJS("JSON must contain 'type'!");
+				throw new KubeRuntimeException("JSON must contain 'type'!");
 			}
 
 			var type = getRecipeFunction(json.get("type").getAsString());
 
 			if (type == null) {
-				throw new RecipeExceptionJS("Unknown recipe type: " + json.get("type").getAsString());
+				throw new UnknownRecipeTypeException(json.get("type").getAsString());
 			}
 
-			var recipe = type.schemaType.schema.deserialize(type, null, json);
+			var recipe = type.schemaType.schema.deserialize(SourceLine.of(cx), type, null, json);
 			recipe.afterLoaded();
 			return addRecipe(recipe, true);
-		} catch (RecipeExceptionJS rex) {
-			if (rex.error) {
-				throw rex;
-			} else {
-				return new ErroredKubeRecipe(this, "Failed to create custom JSON recipe from '%s'".formatted(json), rex, POST_SKIP_ERROR);
-			}
+		} catch (KubeRuntimeException rex) {
+			var recipe = new ErroredKubeRecipe(this, "Failed to create custom JSON recipe from '%s'".formatted(json), rex, POST_SKIP_ERROR);
+			recipe.sourceLine = rex.sourceLine;
+			return recipe;
 		}
 	}
 

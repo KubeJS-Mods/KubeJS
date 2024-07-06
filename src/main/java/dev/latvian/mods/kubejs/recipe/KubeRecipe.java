@@ -5,7 +5,8 @@ import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
-import dev.latvian.mods.kubejs.recipe.component.MissingComponentException;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.error.MissingComponentException;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentBuilderMap;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ConsumeAction;
@@ -19,6 +20,7 @@ import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.recipe.special.KubeJSCraftingRecipe;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.SlotFilter;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -46,6 +48,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public RecipeTypeFunction type;
 	public boolean newRecipe;
 	public boolean removed;
+	public SourceLine sourceLine = SourceLine.UNKNOWN;
 	public String modifyResult = "";
 
 	private RecipeComponentBuilderMap valueMap = RecipeComponentBuilderMap.EMPTY;
@@ -69,7 +72,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			try {
 				v.key.component.readFromJson(this, Cast.to(v), json);
 			} catch (Exception ex) {
-				ConsoleJS.SERVER.error("Failed to read " + v.key + " from recipe " + this, ex, RecipesKubeEvent.POST_SKIP_ERROR);
+				ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to read " + v.key + " from recipe " + this, ex).source(sourceLine), RecipesKubeEvent.POST_SKIP_ERROR);
 			}
 
 			if (v.value != null) {
@@ -86,7 +89,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		for (var v : valueMap.holders) {
 			if (v.shouldWrite()) {
 				if (v.value == null) {
-					throw new RecipeExceptionJS("Value not set for " + v.key + " in recipe " + this);
+					throw new KubeRuntimeException("Value not set for " + v.key + " in recipe " + this);
 				}
 
 				v.key.component.writeToJson(this, Cast.to(v), json);
@@ -186,7 +189,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			var e = v.checkEmpty();
 
 			if (!e.isEmpty()) {
-				throw new RecipeExceptionJS(e);
+				throw new KubeRuntimeException(e);
 			}
 		}
 	}

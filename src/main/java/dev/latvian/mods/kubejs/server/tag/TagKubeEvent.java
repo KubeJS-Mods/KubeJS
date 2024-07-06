@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.server.tag;
 
+import dev.latvian.mods.kubejs.error.EmptyTagTargetException;
 import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;

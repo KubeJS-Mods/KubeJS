@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.mods.kubejs.error.EmptyTagException;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -29,7 +29,7 @@ public abstract class IngredientTagValueMixin {
 			var values = lookup.values(tag);
 
 			if (values.isEmpty()) {
-				throw new RecipeExceptionJS("Empty tag: " + tag.location());
+				throw new EmptyTagException(tag);
 			} else {
 				info.setReturnValue(values.stream().map(ItemStack::new).toList());
 			}

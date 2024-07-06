@@ -1,11 +1,10 @@
-package dev.latvian.mods.kubejs.recipe.component;
+package dev.latvian.mods.kubejs.error;
 
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 
 import java.util.Collection;
 
-public class MissingComponentException extends RecipeExceptionJS {
+public class MissingComponentException extends KubeRuntimeException {
 	public final RecipeKey<?> key;
 	public final Collection<RecipeKey<?>> valid;
 

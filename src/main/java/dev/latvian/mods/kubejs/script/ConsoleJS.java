@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.TextIcons;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.util.JSObjectType;
 import dev.latvian.mods.kubejs.util.LogType;
 import dev.latvian.mods.kubejs.util.MutedError;
@@ -168,6 +169,10 @@ public class ConsoleJS {
 		line.type = type;
 		line.group = group;
 
+		if (error instanceof KubeRuntimeException ex) {
+			line.withSourceLine(ex.sourceLine);
+		}
+
 		if (error instanceof RhinoException ex) {
 			if (ex.lineSource() != null) {
 				line.withSourceLine(ex.lineSource(), ex.lineNumber());
@@ -210,9 +215,7 @@ public class ConsoleJS {
 			var factory = contextFactory == null ? null : contextFactory.get();
 
 			if (factory != null) {
-				int[] lineP = {0};
-				var source = Context.getSourcePositionFromStack(factory.enter(), lineP);
-				line.withSourceLine(source, lineP[0]);
+				line.withSourceLine(SourceLine.of(factory.enter()));
 			}
 		}
 

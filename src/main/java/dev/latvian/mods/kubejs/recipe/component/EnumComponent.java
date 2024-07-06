@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.rhino.type.EnumTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -26,7 +26,7 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(EnumTypeInf
 			var typeInfo = TypeInfo.of(clazz);
 
 			if (!(typeInfo instanceof EnumTypeInfo enumTypeInfo)) {
-				throw new RecipeExceptionJS("Class " + clazz.getTypeName() + " is not an enum!");
+				throw new KubeRuntimeException("Class " + clazz.getTypeName() + " is not an enum!");
 			}
 
 			return new EnumComponent(enumTypeInfo, Codec.STRING.xmap(s -> {
@@ -38,10 +38,10 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(EnumTypeInf
 					}
 				}
 
-				throw new RecipeExceptionJS("Enum value '" + s + "' of " + clazz.getName() + " not found");
+				throw new KubeRuntimeException("Enum value '" + s + "' of " + clazz.getName() + " not found");
 			}, EnumTypeInfo::getName));
 		} catch (Exception ex) {
-			throw new RecipeExceptionJS("Error loading class " + cname + " for EnumComponent", ex);
+			throw new KubeRuntimeException("Error loading class " + cname + " for EnumComponent", ex);
 		}
 	};
 

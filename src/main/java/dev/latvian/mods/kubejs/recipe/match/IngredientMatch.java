@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.match;
 
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -43,7 +43,7 @@ public record IngredientMatch(Ingredient ingredient) implements ItemMatch {
 				}
 			}
 		} catch (Exception ex) {
-			throw new RecipeExceptionJS("Failed to test ingredient " + in, ex);
+			throw new KubeRuntimeException("Failed to test ingredient " + in, ex);
 		}
 
 		return false;

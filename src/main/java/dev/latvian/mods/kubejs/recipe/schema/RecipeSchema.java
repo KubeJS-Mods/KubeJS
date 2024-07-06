@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.UniqueIdBuilder;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.rhino.util.RemapForJS;
@@ -222,8 +223,9 @@ public class RecipeSchema {
 		return hidden;
 	}
 
-	public KubeRecipe deserialize(RecipeTypeFunction type, @Nullable ResourceLocation id, JsonObject json) {
+	public KubeRecipe deserialize(SourceLine sourceLine, RecipeTypeFunction type, @Nullable ResourceLocation id, JsonObject json) {
 		var r = recipeFactory.create();
+		r.sourceLine = sourceLine;
 		r.type = type;
 		r.id = id;
 		r.json = json;

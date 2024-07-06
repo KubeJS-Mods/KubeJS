@@ -11,30 +11,6 @@ import java.util.List;
 import java.util.Set;
 
 public class ConsoleLine {
-	public record SourceLine(String source, int line) {
-		public SourceLine(FriendlyByteBuf buf) {
-			this(buf.readUtf(), buf.readVarInt());
-		}
-
-		@Override
-		public String toString() {
-			if (source.isEmpty() && line == 0) {
-				return "";
-			} else if (source.isEmpty()) {
-				return "<unknown source>#" + line;
-			} else if (line == 0) {
-				return source;
-			} else {
-				return source + "#" + line;
-			}
-		}
-
-		public static void write(FriendlyByteBuf buf, SourceLine sourceLine) {
-			buf.writeUtf(sourceLine.source);
-			buf.writeVarInt(sourceLine.line);
-		}
-	}
-
 	public static final ConsoleLine[] EMPTY_ARRAY = new ConsoleLine[0];
 
 	public static final StreamCodec<FriendlyByteBuf, ConsoleLine> STREAM_CODEC = new StreamCodec<>() {
@@ -46,7 +22,7 @@ public class ConsoleLine {
 			var line = new ConsoleLine(console, timestamp, message);
 			line.type = LogType.VALUES[buf.readByte()];
 			line.group = "";
-			line.sourceLines = buf.readList(SourceLine::new);
+			line.sourceLines = buf.readList(SourceLine::read);
 			line.stackTrace = buf.readList(FriendlyByteBuf::readUtf);
 			return line;
 		}
@@ -84,8 +60,8 @@ public class ConsoleLine {
 
 			if (!sourceLines.isEmpty()) {
 				for (var line : sourceLines) {
-					if (line.line != 0 && !line.source.isEmpty()) {
-						builder.append(line.source).append('#').append(line.line).append(':').append(' ');
+					if (!line.isUnknown()) {
+						builder.append(line.source()).append('#').append(line.line()).append(':').append(' ');
 						break;
 					}
 				}
@@ -115,8 +91,16 @@ public class ConsoleLine {
 			line = 0;
 		}
 
+		return source.isEmpty() && line == 0 ? this : withSourceLine(new SourceLine(source, line));
+	}
+
+	public ConsoleLine withSourceLine(SourceLine sourceLine) {
+		if (sourceLine.isUnknown()) {
+			return this;
+		}
+
 		if (sourceLines.isEmpty()) {
-			sourceLines = Set.of(new SourceLine(source, line));
+			sourceLines = Set.of(sourceLine);
 			return this;
 		} else if (sourceLines.size() == 1) {
 			var line0 = sourceLines.iterator().next();
@@ -124,7 +108,7 @@ public class ConsoleLine {
 			sourceLines.add(line0);
 		}
 
-		sourceLines.add(new SourceLine(source, line));
+		sourceLines.add(sourceLine);
 		return this;
 	}
 

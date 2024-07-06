@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeExceptionJS;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
@@ -40,9 +40,9 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeCompone
 				try {
 					return Either.right(low.wrap(cx, recipe, from));
 				} catch (Exception ex2) {
-					ConsoleJS.SERVER.error("Failed to read %s as high priority (%s)!".formatted(from, high), ex1);
-					ConsoleJS.SERVER.error("Failed to read %s as low priority (%s)!".formatted(from, low), ex2);
-					throw new RecipeExceptionJS("Failed to read %s as either %s or %s!".formatted(from, high, low));
+					ConsoleJS.SERVER.warn("Failed to read %s as high priority (%s)!".formatted(from, high), ex1);
+					ConsoleJS.SERVER.warn("Failed to read %s as low priority (%s)!".formatted(from, low), ex2);
+					throw new KubeRuntimeException("Failed to read %s as either %s or %s!".formatted(from, high, low)).source(recipe.sourceLine);
 				}
 			}
 		}
