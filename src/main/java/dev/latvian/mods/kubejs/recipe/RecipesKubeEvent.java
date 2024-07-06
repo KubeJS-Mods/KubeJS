@@ -36,7 +36,6 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -67,7 +66,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RecipesKubeEvent implements KubeEvent {
-	public static final MutableObject<CachedTagLookup<Item>> TEMP_ITEM_TAG_LOOKUP = new MutableObject<>(null);
+	public static final MutableObject<CachedItemTagLookup> TEMP_ITEM_TAG_LOOKUP = new MutableObject<>(null);
 
 	public static final Pattern POST_SKIP_ERROR = Pattern.compile("dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesKubeEvent\\.post");
 	public static final Pattern CREATE_RECIPE_SKIP_ERROR = Pattern.compile("dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesKubeEvent\\.createRecipe");

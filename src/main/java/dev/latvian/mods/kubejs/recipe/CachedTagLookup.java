@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.recipe;
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
@@ -103,17 +105,8 @@ public class CachedTagLookup<T> {
 
 	public boolean isEmpty(TagKey<T> key) {
 		var set = values(key);
-
-		if (set.size() == 1) {
-			var item = set.iterator().next();
-
-			// kinda cringe fix
-			if (item == Items.BARRIER) {
-				return true;
-			}
-		}
-
-		return set.isEmpty();
+		// noinspection RedundantCast
+		return set.size() - ((ResourceKey) registry.key() == Registries.ITEM ? ((set.contains(Items.AIR) ? 1 : 0) + (set.contains(Items.BARRIER) ? 1 : 0)) : 0) <= 0;
 	}
 
 	public Set<TagKey<T>> keys(T value) {

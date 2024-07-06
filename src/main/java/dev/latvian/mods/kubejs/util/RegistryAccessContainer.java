@@ -6,6 +6,7 @@ import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.bindings.RegistryWrapper;
+import dev.latvian.mods.kubejs.recipe.CachedItemTagLookup;
 import dev.latvian.mods.kubejs.recipe.CachedTagLookup;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.Registry;
@@ -40,7 +41,7 @@ public final class RegistryAccessContainer {
 	private final RegistryOps<Object> java;
 	private DamageSources damageSources;
 	private final Map<String, ItemStack> itemStackParseCache;
-	public CachedTagLookup<Item> cachedItemTags;
+	public CachedItemTagLookup cachedItemTags;
 	public CachedTagLookup<Item> cachedBlockTags;
 	public CachedTagLookup<Item> cachedFluidTags;
 	private Map<ResourceLocation, RegistryWrapper> cachedRegistryWrappers;
@@ -87,7 +88,7 @@ public final class RegistryAccessContainer {
 		var key1 = (ResourceKey) registry.key();
 
 		if (key1 == Registries.ITEM) {
-			cachedItemTags = Cast.to(new CachedTagLookup<>(registry, map));
+			cachedItemTags = Cast.to(new CachedItemTagLookup((Registry) registry, map));
 		} else if (key1 == Registries.BLOCK) {
 			cachedBlockTags = Cast.to(new CachedTagLookup<>(registry, map));
 		} else if (key1 == Registries.FLUID) {
