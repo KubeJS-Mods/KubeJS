@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 @RemapPrefixForJS("kjs$")
 public interface MessageSenderKJS {
@@ -25,5 +27,8 @@ public interface MessageSenderKJS {
 
 	default void kjs$runCommandSilent(String command) {
 		kjs$runCommand(command);
+	}
+
+	default void kjs$setActivePostShader(@Nullable ResourceLocation id) {
 	}
 }

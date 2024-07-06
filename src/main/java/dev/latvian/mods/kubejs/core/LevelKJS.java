@@ -70,6 +70,13 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
 		}
 	}
 
+	@Override
+	default void kjs$setActivePostShader(@Nullable ResourceLocation id) {
+		for (var entity : kjs$self().players()) {
+			entity.kjs$setActivePostShader(id);
+		}
+	}
+
 	default ResourceLocation kjs$getDimension() {
 		return kjs$self().dimension().location();
 	}

@@ -13,6 +13,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
@@ -42,12 +43,17 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 
 	@Override
 	default void kjs$runCommand(String command) {
-		kjs$self().player.connection.sendCommand(command);
+		kjs$self().player.kjs$runCommand(command);
 	}
 
 	@Override
 	default void kjs$runCommandSilent(String command) {
-		kjs$self().player.connection.sendCommand(command);
+		kjs$self().player.kjs$runCommandSilent(command);
+	}
+
+	@Override
+	default void kjs$setActivePostShader(@Nullable ResourceLocation id) {
+		kjs$self().player.kjs$setActivePostShader(id);
 	}
 
 	@Nullable

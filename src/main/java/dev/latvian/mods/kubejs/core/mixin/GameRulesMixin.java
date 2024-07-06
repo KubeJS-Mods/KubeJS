@@ -7,6 +7,7 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,10 +18,12 @@ public abstract class GameRulesMixin implements GameRulesKJS {
 	@Shadow
 	public abstract <T extends GameRules.Value<T>> T getRule(GameRules.Key<T> key);
 
+	@Unique
 	private Map<String, GameRules.Key<?>> kjs$keyCache;
 
 	@Nullable
-	private GameRules.Key<?> getKey(String rule) {
+	@Unique
+	private GameRules.Key<?> kjs$getKey(String rule) {
 		if (kjs$keyCache == null) {
 			kjs$keyCache = new HashMap<>();
 
@@ -38,13 +41,13 @@ public abstract class GameRulesMixin implements GameRulesKJS {
 	@Override
 	@Nullable
 	public GameRules.Value<?> kjs$get(String rule) {
-		var key = getKey(rule);
+		var key = kjs$getKey(rule);
 		return key == null ? null : getRule(key);
 	}
 
 	@Override
 	public void kjs$set(String rule, String value) {
-		var key = getKey(rule);
+		var key = kjs$getKey(rule);
 		var r = key == null ? null : getRule(key);
 
 		if (r != null) {

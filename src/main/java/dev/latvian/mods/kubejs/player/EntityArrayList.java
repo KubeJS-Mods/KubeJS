@@ -6,6 +6,7 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -76,6 +77,13 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 	public void kjs$runCommandSilent(String command) {
 		for (var entity : this) {
 			entity.kjs$runCommandSilent(command);
+		}
+	}
+
+	@Override
+	public void kjs$setActivePostShader(@Nullable ResourceLocation id) {
+		for (var entity : this) {
+			entity.kjs$setActivePostShader(id);
 		}
 	}
 

@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(DamageSource.class)
 @RemapPrefixForJS("kjs$")
@@ -25,6 +26,7 @@ public abstract class DamageSourceMixin {
 	public abstract Entity getEntity();
 
 	@Nullable
+	@Unique
 	public Player kjs$getPlayer() {
 		return getEntity() instanceof Player p ? p : null;
 	}

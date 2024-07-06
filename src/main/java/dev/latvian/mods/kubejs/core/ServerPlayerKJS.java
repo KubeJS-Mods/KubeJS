@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.gui.chest.CustomChestMenu;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.net.NotificationPayload;
 import dev.latvian.mods.kubejs.net.SendDataFromServerPayload;
+import dev.latvian.mods.kubejs.net.SetActivePostShaderPayload;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @RemapPrefixForJS("kjs$")
@@ -233,5 +235,10 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	default void kjs$heal() {
 		kjs$self().heal(kjs$self().getMaxHealth());
 		kjs$self().getFoodData().eat(20, 1F);
+	}
+
+	@Override
+	default void kjs$setActivePostShader(@Nullable ResourceLocation id) {
+		PacketDistributor.sendToPlayer(kjs$self(), new SetActivePostShaderPayload(Optional.ofNullable(id)));
 	}
 }

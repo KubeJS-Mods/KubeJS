@@ -65,6 +65,13 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 		kjs$self().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack().withSuppressedOutput(), command);
 	}
 
+	@Override
+	default void kjs$setActivePostShader(@Nullable ResourceLocation id) {
+		for (var player : kjs$self().getPlayerList().getPlayers()) {
+			player.kjs$setActivePostShader(id);
+		}
+	}
+
 	default ServerLevel kjs$getLevel(ResourceLocation dimension) {
 		return kjs$self().getLevel(ResourceKey.create(Registries.DIMENSION, dimension));
 	}
