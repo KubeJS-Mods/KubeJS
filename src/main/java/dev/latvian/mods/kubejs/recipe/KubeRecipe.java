@@ -485,7 +485,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				try {
 					json.add(KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, IngredientActionHolder.LIST_CODEC.encodeStart(type.event.registries.json(), recipeIngredientActions).getOrThrow());
 				} catch (Exception ex) {
-					ConsoleJS.SERVER.error("Failed to encode " + KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, ex, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
+					ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to encode " + KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, ex).source(sourceLine), RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
 				}
 			}
 

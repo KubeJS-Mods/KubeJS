@@ -2,8 +2,10 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
@@ -121,7 +123,7 @@ public interface RecipeComponent<T> {
 		var encoded = cv.key.codec.encodeStart(recipe.type.event.registries.json(), cv.value);
 
 		if (encoded.error().isPresent()) {
-			ConsoleJS.SERVER.error("Failed to encode " + cv.key.name + " for " + recipe.id + " from " + cv.value + ": " + encoded.error().get().message());
+			ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to encode " + cv.key.name + " for " + recipe.id + " from " + cv.value + ": " + encoded.error().get().message()).source(recipe.sourceLine), RecipesKubeEvent.POST_SKIP_ERROR);
 		} else if (encoded.isSuccess()) {
 			var e = encoded.getOrThrow();
 			json.add(cv.key.name, e);
