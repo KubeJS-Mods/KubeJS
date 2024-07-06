@@ -67,9 +67,9 @@ public interface TagLoaderKJS<T> {
 			if (event.totalAdded > 0 || event.totalRemoved > 0 || ConsoleJS.SERVER.shouldPrintDebug()) {
 				ConsoleJS.SERVER.info("[%s] Found %d tags, added %d objects, removed %d objects".formatted(regInfo, event.tags.size(), event.totalAdded, event.totalRemoved));
 			}
-
-			kjs$resources.kjs$getServerScriptManager().getRegistries().cacheTags(reg, map);
 		}
+
+		kjs$resources.kjs$getServerScriptManager().getRegistries().cacheTags(reg, map);
 
 		if (DataExport.export != null) {
 			var loc = "tags/" + regInfo + "/";
