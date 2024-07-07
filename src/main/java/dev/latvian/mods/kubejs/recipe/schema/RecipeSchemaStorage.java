@@ -1,8 +1,10 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
+import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
@@ -43,7 +45,7 @@ public class RecipeSchemaStorage {
 		return namespaces.computeIfAbsent(namespace, n -> new RecipeNamespace(this, n));
 	}
 
-	public void fireEvents(ResourceManager resourceManager) {
+	public void fireEvents(ResourceManager resourceManager, DynamicOps<JsonElement> jsonOps) {
 		recipeTypes.clear();
 		namespaces.clear();
 		mappings.clear();
@@ -102,7 +104,7 @@ public class RecipeSchemaStorage {
 		}
 
 		var schemaRegistry = new RecipeSchemaRegistry(this);
-		JsonRecipeSchemaLoader.load(this, schemaRegistry, resourceManager);
+		JsonRecipeSchemaLoader.load(this, schemaRegistry, resourceManager, jsonOps);
 
 		shapedSchema = Objects.requireNonNull(namespace("minecraft").get("shaped").schema);
 		shapelessSchema = Objects.requireNonNull(namespace("minecraft").get("shapeless").schema);

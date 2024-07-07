@@ -168,7 +168,7 @@ public class ServerScriptManager extends ScriptManager {
 
 		boolean result = false;
 		RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.setValue(getRegistries().cachedItemTags);
-		recipeSchemaStorage.fireEvents(resourceManager);
+		recipeSchemaStorage.fireEvents(resourceManager, getRegistries().json());
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
 		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);

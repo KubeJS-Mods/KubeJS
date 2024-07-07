@@ -16,9 +16,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.SequencedCollection;
 import java.util.function.Function;
@@ -26,7 +26,7 @@ import java.util.function.Function;
 /**
  * A recipe schema is a set of keys that defines how a recipe is constructed
  * from both KubeJS scripts (through the {@link #constructors}) and JSON files
- * (using the {@link #deserialize(RecipeTypeFunction, ResourceLocation, JsonObject)} method).
+ * (using the {@link #deserialize(SourceLine, RecipeTypeFunction, ResourceLocation, JsonObject)} method).
  * <p>
  * The schema also defines a {@link #recipeFactory} in order to create a {@link KubeRecipe} object that
  * implements serialization logic, post-load validation ({@link KubeRecipe#afterLoaded()}),
@@ -39,7 +39,10 @@ public class RecipeSchema {
 	public static final Function<KubeRecipe, String> DEFAULT_UNIQUE_ID_FUNCTION = r -> null;
 
 	public KubeRecipeFactory recipeFactory;
-	public final RecipeKey<?>[] keys;
+	public ResourceLocation typeOverride;
+	public final List<RecipeKey<?>> keys;
+	public final List<RecipeKey<?>> includedKeys;
+	public final Map<RecipeKey<?>, RecipeOptional<?>> keyOverrides;
 	public final Map<String, RecipeSchemaFunction> functions;
 	private int inputCount;
 	private int outputCount;
@@ -56,9 +59,12 @@ public class RecipeSchema {
 	 *
 	 * @param keys The keys that define this schema.
 	 */
-	public RecipeSchema(RecipeKey<?>... keys) {
+	public RecipeSchema(Map<RecipeKey<?>, RecipeOptional<?>> keyOverrides, List<RecipeKey<?>> keys) {
 		this.recipeFactory = KubeRecipeFactory.DEFAULT;
-		this.keys = keys;
+		this.typeOverride = null;
+		this.keys = List.copyOf(keys);
+		this.keyOverrides = Map.copyOf(keyOverrides);
+		this.includedKeys = List.copyOf(this.keys.stream().filter(k -> (k.optional == null || !k.excluded) && !this.keyOverrides.containsKey(k)).toList());
 		this.functions = new LinkedHashMap<>(0);
 		this.minRequiredArguments = 0;
 		this.inputCount = 0;
@@ -66,36 +72,42 @@ public class RecipeSchema {
 
 		var set = new HashSet<String>();
 
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i].optional()) {
+		for (int i = 0; i < includedKeys.size(); i++) {
+			var k = includedKeys.get(i);
+
+			if (k.optional()) {
 				if (minRequiredArguments == 0) {
 					minRequiredArguments = i;
 				}
 			} else if (minRequiredArguments > 0) {
-				throw new IllegalArgumentException("Required key '" + keys[i].name + "' must be ahead of optional keys!");
+				throw new IllegalArgumentException("Required key '" + k.name + "' must be ahead of optional keys!");
 			}
 
-			if (!set.add(keys[i].name)) {
-				throw new IllegalArgumentException("Duplicate key '" + keys[i].name + "' found!");
+			if (!set.add(k.name)) {
+				throw new IllegalArgumentException("Duplicate key '" + k.name + "' found!");
 			}
 
-			if (keys[i].role.isInput()) {
+			if (k.role.isInput()) {
 				inputCount++;
-			} else if (keys[i].role.isOutput()) {
+			} else if (k.role.isOutput()) {
 				outputCount++;
 			}
 
-			if (keys[i].alwaysWrite && keys[i].optional() && keys[i].optional.isDefault()) {
-				throw new IllegalArgumentException("Key '" + keys[i] + "' can't have alwaysWrite() enabled with defaultOptional()!");
+			if (k.alwaysWrite && k.optional() && k.optional.isDefault()) {
+				throw new IllegalArgumentException("Key '" + k + "' can't have alwaysWrite() enabled with defaultOptional()!");
 			}
 		}
 
 		if (minRequiredArguments == 0) {
-			minRequiredArguments = keys.length;
+			minRequiredArguments = includedKeys.size();
 		}
 
 		this.uniqueIdFunction = DEFAULT_UNIQUE_ID_FUNCTION;
 		this.hidden = false;
+	}
+
+	public RecipeSchema(RecipeKey<?>... keys) {
+		this(Map.of(), List.of(keys));
 	}
 
 	public RecipeSchema factory(KubeRecipeFactory factory) {
@@ -103,13 +115,18 @@ public class RecipeSchema {
 		return this;
 	}
 
+	public RecipeSchema typeOverride(ResourceLocation id) {
+		this.typeOverride = id;
+		return this;
+	}
+
 	public RecipeSchema constructor(RecipeConstructor constructor) {
 		if (constructors == null) {
-			constructors = new Int2ObjectArrayMap<>(keys.length - minRequiredArguments + 1);
+			constructors = new Int2ObjectArrayMap<>(keys.size() - minRequiredArguments() + 1);
 		}
 
-		if (constructors.put(constructor.keys.length, constructor) != null) {
-			throw new IllegalStateException("Constructor with " + constructor.keys.length + " arguments already exists!");
+		if (constructors.put(constructor.keys.size(), constructor) != null) {
+			throw new IllegalStateException("Constructor with " + constructor.keys.size() + " arguments already exists!");
 		}
 
 		return this;
@@ -183,19 +200,15 @@ public class RecipeSchema {
 
 	public Int2ObjectMap<RecipeConstructor> constructors() {
 		if (constructors == null) {
-			var keys1 = Arrays.stream(keys).filter(RecipeKey::includeInAutoConstructors).toArray(RecipeKey[]::new);
-
-			constructors = keys1.length == 0 ? new Int2ObjectArrayMap<>() : new Int2ObjectArrayMap<>(keys1.length - minRequiredArguments + 1);
+			constructors = includedKeys.isEmpty() ? new Int2ObjectArrayMap<>() : new Int2ObjectArrayMap<>(includedKeys.size() - minRequiredArguments + 1);
 			boolean dev = DevProperties.get().logRecipeDebug;
 
 			if (dev) {
-				KubeJS.LOGGER.info("Generating constructors for " + new RecipeConstructor(keys1));
+				KubeJS.LOGGER.info("Generating constructors for " + new RecipeConstructor(includedKeys));
 			}
 
-			for (int a = minRequiredArguments; a <= keys1.length; a++) {
-				var k = new RecipeKey<?>[a];
-				System.arraycopy(keys1, 0, k, 0, a);
-				var c = new RecipeConstructor(k);
+			for (int a = minRequiredArguments; a <= includedKeys.size(); a++) {
+				var c = new RecipeConstructor(List.copyOf(includedKeys.subList(0, a)));
 				constructors.put(a, c);
 
 				if (dev) {

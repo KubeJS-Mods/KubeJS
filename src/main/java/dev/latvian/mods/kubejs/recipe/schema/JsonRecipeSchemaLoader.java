@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.schema;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.ComponentRole;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
@@ -26,14 +26,17 @@ public class JsonRecipeSchemaLoader {
 	private static final class RecipeSchemaBuilder {
 		private final ResourceLocation id;
 		private final JsonObject json;
+		private RecipeSchema schema;
+
 		private RecipeSchemaBuilder parent;
+		private ResourceLocation overrideType;
 		private List<RecipeKey<?>> keys;
 		private List<ConstructorBuilder> constructors;
 		private Map<String, FunctionBuilder> functions;
 		private KubeRecipeFactory recipeFactory;
 		private List<String> unique;
 		private boolean hidden;
-		private RecipeSchema schema;
+		private Map<String, JsonElement> overrideKeys;
 
 		private RecipeSchemaBuilder(ResourceLocation id, JsonObject json) {
 			this.id = id;
@@ -100,9 +103,9 @@ public class JsonRecipeSchemaLoader {
 			}
 		}
 
-		private RecipeSchema getSchema() {
+		private RecipeSchema getSchema(DynamicOps<JsonElement> jsonOps) {
 			if (schema == null) {
-				if (keys != null || constructors != null || functions != null || recipeFactory != null || unique != null) {
+				if (overrideType != null || keys != null || constructors != null || functions != null || recipeFactory != null || unique != null || overrideKeys != null) {
 					var keys = getKeys();
 					var keyMap = new HashMap<String, RecipeKey<?>>();
 
@@ -113,7 +116,26 @@ public class JsonRecipeSchemaLoader {
 					var functionMap = new HashMap<String, FunctionBuilder>();
 					gatherFunctions(functionMap);
 
-					schema = new RecipeSchema(getKeys().toArray(new RecipeKey[0]));
+					var keyOverrides = new IdentityHashMap<RecipeKey<?>, RecipeOptional<?>>(overrideKeys == null ? 0 : overrideKeys.size());
+
+					if (overrideKeys != null) {
+						for (var entry : overrideKeys.entrySet()) {
+							var key = keyMap.get(entry.getKey());
+
+							if (key != null) {
+								try {
+									keyOverrides.put(key, new RecipeOptional.Constant(key.codec.decode(jsonOps, entry.getValue()).getOrThrow().getFirst()));
+								} catch (Exception ex) {
+									throw new IllegalArgumentException("Failed to create optional value for key '" + key + "' of '" + id + "' from " + entry.getValue(), ex);
+								}
+							} else {
+								throw new NullPointerException("Key '" + entry.getKey() + "' not found in key overrides of recipe schema '" + id + "'");
+							}
+						}
+					}
+
+					schema = new RecipeSchema(keyOverrides, getKeys());
+					schema.typeOverride = overrideType;
 
 					var rf = getRecipeFactory();
 
@@ -147,7 +169,7 @@ public class JsonRecipeSchemaLoader {
 
 									if (key != null) {
 										try {
-											constructor.overrides.put(key, new RecipeOptional.Constant(key.codec.decode(JsonOps.INSTANCE, entry.getValue()).getOrThrow().getFirst()));
+											constructor.overrides.put(key, new RecipeOptional.Constant(key.codec.decode(jsonOps, entry.getValue()).getOrThrow().getFirst()));
 										} catch (Exception ex) {
 											throw new IllegalArgumentException("Failed to create optional value for key '" + key + "' of '" + id + "' from " + entry.getValue(), ex);
 										}
@@ -173,7 +195,7 @@ public class JsonRecipeSchemaLoader {
 								var key = keyMap.get(entry1.getKey());
 
 								if (key != null) {
-									map.put(key, key.codec.decode(JsonOps.INSTANCE, entry1.getValue()).getOrThrow().getFirst());
+									map.put(key, key.codec.decode(jsonOps, entry1.getValue()).getOrThrow().getFirst());
 								} else {
 									throw new NullPointerException("Key '" + entry1.getKey() + "' not found in function '" + entry1.getKey() + "' of recipe schema '" + id + "'");
 								}
@@ -207,9 +229,9 @@ public class JsonRecipeSchemaLoader {
 
 					schema.hidden = isHidden();
 				} else if (parent != null) {
-					schema = parent.getSchema();
+					schema = parent.getSchema(jsonOps);
 				} else {
-					schema = new RecipeSchema();
+					schema = new RecipeSchema(Map.of(), List.of());
 					schema.constructor();
 				}
 			}
@@ -218,13 +240,13 @@ public class JsonRecipeSchemaLoader {
 		}
 	}
 
-	public static void load(RecipeSchemaStorage storage, RecipeSchemaRegistry event, ResourceManager resourceManager) {
+	public static void load(RecipeSchemaStorage storage, RecipeSchemaRegistry event, ResourceManager resourceManager, DynamicOps<JsonElement> jsonOps) {
 		var map = new HashMap<ResourceLocation, RecipeSchemaBuilder>();
 
-		for (var entry : resourceManager.listResources("kubejs/recipe_schemas", path -> path.getPath().endsWith(".json")).entrySet()) {
+		for (var entry : resourceManager.listResources("kubejs/recipe_schema", path -> path.getPath().endsWith(".json")).entrySet()) {
 			try (var reader = entry.getValue().openAsReader()) {
 				var json = JsonUtils.GSON.fromJson(reader, JsonObject.class);
-				var holder = new RecipeSchemaBuilder(ResourceLocation.fromNamespaceAndPath(entry.getKey().getNamespace(), entry.getKey().getPath().substring("kubejs/recipe_schemas/".length(), entry.getKey().getPath().length() - ".json".length())), json);
+				var holder = new RecipeSchemaBuilder(ResourceLocation.fromNamespaceAndPath(entry.getKey().getNamespace(), entry.getKey().getPath().substring("kubejs/recipe_schema/".length(), entry.getKey().getPath().length() - ".json".length())), json);
 				map.put(holder.id, holder);
 
 				if (holder.json.has("mappings")) {
@@ -243,6 +265,10 @@ public class JsonRecipeSchemaLoader {
 			}
 
 			holder.parent = holder.json.has("parent") ? map.get(ResourceLocation.parse(holder.json.get("parent").getAsString())) : null;
+
+			if (holder.json.has("override_type")) {
+				holder.overrideType = ResourceLocation.parse(holder.json.get("override_type").getAsString());
+			}
 
 			if (holder.json.has("factory")) {
 				var fname = ResourceLocation.parse(holder.json.get("factory").getAsString());
@@ -276,7 +302,7 @@ public class JsonRecipeSchemaLoader {
 								key.defaultOptional();
 							} else {
 								try {
-									key.optional = new RecipeOptional.Constant(key.codec.decode(JsonOps.INSTANCE, optionalJson).getOrThrow().getFirst());
+									key.optional = new RecipeOptional.Constant(key.codec.decode(jsonOps, optionalJson).getOrThrow().getFirst());
 								} catch (Exception ex) {
 									throw new IllegalArgumentException("Failed to create optional value for key '" + key + "' of '" + holder.id + "' from " + optionalJson, ex);
 								}
@@ -358,10 +384,18 @@ public class JsonRecipeSchemaLoader {
 					holder.functions.put(entry.getKey(), new FunctionBuilder(entry.getKey(), entry.getValue().getAsJsonObject()));
 				}
 			}
+
+			if (holder.json.has("override_keys")) {
+				holder.overrideKeys = new HashMap<>();
+
+				for (var e : holder.json.getAsJsonObject("override_keys").entrySet()) {
+					holder.overrideKeys.put(e.getKey(), e.getValue());
+				}
+			}
 		}
 
 		for (var holder : map.values()) {
-			var schema = holder.getSchema();
+			var schema = holder.getSchema(jsonOps);
 			event.namespace(holder.id.getNamespace()).register(holder.id.getPath(), schema);
 		}
 	}

@@ -21,14 +21,16 @@ public class RecipeSchemaType {
 	}
 
 	public RecipeSerializer<?> getSerializer() {
+		var serializerId = schema.typeOverride == null ? id : schema.typeOverride;
+
 		if (serializer == null) {
-			serializer = Optional.ofNullable(RegistryInfo.RECIPE_SERIALIZER.getValue(id));
+			serializer = Optional.ofNullable(RegistryInfo.RECIPE_SERIALIZER.getValue(serializerId));
 		}
 
 		var s = serializer.orElse(null);
 
 		if (s == null) {
-			throw new KubeRuntimeException("Serializer for type " + id + " is not found!");
+			throw new KubeRuntimeException("Serializer for type " + serializerId + " is not found!");
 		}
 
 		return s;

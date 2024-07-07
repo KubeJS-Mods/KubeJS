@@ -6,6 +6,7 @@ import dev.latvian.mods.rhino.Wrapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -35,11 +36,11 @@ public class RecipeComponentBuilderMap extends AbstractMap<RecipeKey<?>, Object>
 		}
 	}
 
-	public RecipeComponentBuilderMap(RecipeKey<?>[] keys) {
-		this.holders = new RecipeComponentValue[keys.length];
+	public RecipeComponentBuilderMap(List<RecipeKey<?>> keys) {
+		this.holders = new RecipeComponentValue[keys.size()];
 
 		for (int i = 0; i < holders.length; i++) {
-			this.holders[i] = new RecipeComponentValue<>(keys[i], i);
+			this.holders[i] = new RecipeComponentValue<>(keys.get(i), i);
 		}
 	}
 

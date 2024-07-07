@@ -9,18 +9,22 @@ import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.Context;
 
-import java.util.Arrays;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class RecipeConstructor {
-	public final RecipeKey<?>[] keys;
+	public final List<RecipeKey<?>> keys;
 	public Map<RecipeKey<?>, RecipeOptional<?>> overrides;
 
-	public RecipeConstructor(RecipeKey<?>... keys) {
+	public RecipeConstructor(List<RecipeKey<?>> keys) {
 		this.keys = keys;
 		this.overrides = Map.of();
+	}
+
+	public RecipeConstructor(RecipeKey<?>... keys) {
+		this(List.of(keys));
 	}
 
 	public <T> RecipeConstructor override(RecipeKey<T> key, RecipeOptional<T> value) {
@@ -43,12 +47,12 @@ public class RecipeConstructor {
 
 	@Override
 	public String toString() {
-		return Arrays.stream(keys).map(RecipeKey::toString).collect(Collectors.joining(", ", "(", ")"));
+		return keys.stream().map(RecipeKey::toString).collect(Collectors.joining(", ", "(", ")"));
 	}
 
-	public KubeRecipe create(Context cx, RecipeTypeFunction type, RecipeSchemaType schemaType, ComponentValueMap from) {
+	public KubeRecipe create(Context cx, SourceLine sourceLine, RecipeTypeFunction type, RecipeSchemaType schemaType, ComponentValueMap from) {
 		var r = schemaType.schema.recipeFactory.create();
-		r.sourceLine = SourceLine.of(cx);
+		r.sourceLine = sourceLine;
 		r.type = type;
 		r.json = new JsonObject();
 		r.json.addProperty("type", "unknown");
@@ -64,6 +68,10 @@ public class RecipeConstructor {
 		}
 
 		for (var entry : overrides.entrySet()) {
+			recipe.setValue(entry.getKey(), Cast.to(entry.getValue().getDefaultValue(schemaType)));
+		}
+
+		for (var entry : schemaType.schema.keyOverrides.entrySet()) {
 			recipe.setValue(entry.getKey(), Cast.to(entry.getValue().getDefaultValue(schemaType)));
 		}
 	}

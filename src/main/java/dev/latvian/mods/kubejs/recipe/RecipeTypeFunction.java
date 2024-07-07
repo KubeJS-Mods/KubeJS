@@ -45,6 +45,8 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 	}
 
 	public KubeRecipe createRecipe(Context cx, Object[] args) {
+		var sourceLine = SourceLine.of(cx);
+
 		try {
 			for (int i = 0; i < args.length; i++) {
 				args[i] = Wrapper.unwrapped(args[i]);
@@ -56,13 +58,13 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 
 			if (constructor == null) {
 				if (args.length == 1 && (args[0] instanceof Map<?, ?> || args[0] instanceof JsonObject)) {
-					var recipe = schemaType.schema.deserialize(SourceLine.of(cx), this, null, MapJS.json(cx, args[0]));
+					var recipe = schemaType.schema.deserialize(sourceLine, this, null, MapJS.json(cx, args[0]));
 					recipe.afterLoaded();
 					return event.addRecipe(recipe, true);
 					// throw new RecipeExceptionJS("Use event.custom(json) for json recipes!");
 				}
 
-				throw new KubeRuntimeException("Constructor for " + id + " with " + args.length + " arguments not found!");
+				throw new KubeRuntimeException("Constructor for " + id + " with " + args.length + " arguments not found!").source(sourceLine);
 			}
 
 			/*
@@ -80,23 +82,19 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 				argMap.put(key, Wrapper.unwrapped(args[index++]));
 			}
 
-			var recipe = constructor.create(cx, this, schemaType, argMap);
+			var recipe = constructor.create(cx, sourceLine, this, schemaType, argMap);
 			recipe.afterLoaded();
 			return event.addRecipe(recipe, false);
 		} catch (KubeRuntimeException rex) {
-			throw rex;
+			throw rex.source(sourceLine);
 		} catch (Throwable ex) {
-			throw new KubeRuntimeException("Failed to create recipe for type '" + id + "' with args " + Arrays.stream(args).map(o -> o == null ? "null" : (o + ": " + o.getClass().getSimpleName())).collect(Collectors.joining(", ", "[", "]")), ex);
+			throw new KubeRuntimeException("Failed to create recipe for type '" + id + "' with args " + Arrays.stream(args).map(o -> o == null ? "null" : (o + ": " + o.getClass().getSimpleName())).collect(Collectors.joining(", ", "[", "]")), ex).source(sourceLine);
 		}
 	}
 
 	@Override
 	public String toString() {
 		return idString;
-	}
-
-	public String getMod() {
-		return id.getNamespace();
 	}
 
 	@Override

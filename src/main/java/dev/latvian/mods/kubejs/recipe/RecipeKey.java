@@ -165,10 +165,6 @@ public final class RecipeKey<T> {
 		return this;
 	}
 
-	public boolean includeInAutoConstructors() {
-		return optional == null || !excluded;
-	}
-
 	/**
 	 * Disables the generation of builder functions for this key.
 	 */

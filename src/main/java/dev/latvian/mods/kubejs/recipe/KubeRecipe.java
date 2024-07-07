@@ -155,7 +155,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			save();
 		}
 
-		if (type.schemaType.schema.keys.length > 0) {
+		if (!type.schemaType.schema.keys.isEmpty()) {
 			valueMap = new RecipeComponentBuilderMap(type.schemaType.schema.keys);
 
 			if (created) {
