@@ -1,10 +1,13 @@
 package dev.latvian.mods.kubejs.registry;
 
 import dev.latvian.mods.kubejs.DevProperties;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.ID;
+import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 
@@ -13,60 +16,74 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectRegistry {
-	private final RegistryInfo<T> registryInfo;
+	private final ResourceKey<Registry<T>> registryKey;
+	private final BuilderTypeRegistryHandler.Info<T> builderInfo;
 	public final List<BuilderBase<? extends T>> created;
 
 	public RegistryKubeEvent(ResourceKey<Registry<T>> registryKey) {
-		this.registryInfo = RegistryInfo.of(registryKey);
+		this.registryKey = registryKey;
+		this.builderInfo = BuilderTypeRegistryHandler.info(registryKey);
 		this.created = new LinkedList<>();
 	}
 
-	public BuilderBase<? extends T> create(String id, String type) {
-		var t = registryInfo.types == null ? null : registryInfo.types.get(type);
+	public BuilderBase<? extends T> create(Context cx, String id, String type) {
+		var sourceLine = SourceLine.of(cx);
+		var t = builderInfo.namedType(type);
 
 		if (t == null) {
-			throw new IllegalArgumentException("Unknown type '" + type + "' for object '" + id + "'!");
+			throw new KubeRuntimeException("Unknown type '" + type + "' for object '" + id + "'!").source(sourceLine);
 		}
 
 		var b = t.factory().createBuilder(ID.kjs(id));
 
 		if (b == null) {
-			throw new IllegalArgumentException("Unknown type '" + type + "' for object '" + id + "'!");
+			throw new KubeRuntimeException("Unknown type '" + type + "' for object '" + id + "'!").source(sourceLine);
+		} else if (builderInfo.directCodec() != null) {
+			throw new KubeRuntimeException("Type '" + type + "' for object '" + id + "' is a datapack registry type!").source(sourceLine);
 		} else {
-			addBuilder(registryInfo, b);
+			b.sourceLine = sourceLine;
+			b.registryKey = registryKey;
+			addBuilder(b);
 			created.add(b);
 		}
 
 		return b;
 	}
 
-	public BuilderBase<? extends T> create(String id) {
-		var t = registryInfo.defaultType;
+	public BuilderBase<? extends T> create(Context cx, String id) {
+		var sourceLine = SourceLine.of(cx);
+		var t = builderInfo.defaultType();
 
 		if (t == null) {
-			throw new IllegalArgumentException("Registry '" + registryInfo.key.location() + "' doesn't have a default type registered!");
+			throw new KubeRuntimeException("Registry '" + registryKey.location() + "' doesn't have a default type registered!").source(sourceLine);
 		}
 
 		var b = t.factory().createBuilder(ID.kjs(id));
 
 		if (b == null) {
-			throw new IllegalArgumentException("Unknown type '" + t.type() + "' for object '" + id + "'!");
+			throw new KubeRuntimeException("Unknown type '" + t.type() + "' for object '" + id + "'!").source(sourceLine);
 		} else {
-			addBuilder(registryInfo, b);
+			b.sourceLine = sourceLine;
+			b.registryKey = registryKey;
+			addBuilder(b);
 			created.add(b);
 		}
 
 		return b;
 	}
 
-	public CustomBuilderObject createCustom(String id, Supplier<Object> object) {
+	public CustomBuilderObject createCustom(Context cx, String id, Supplier<Object> object) {
+		var sourceLine = SourceLine.of(cx);
+
 		if (object == null) {
-			throw new IllegalArgumentException("Tried to register a null object with id: " + id);
+			throw new KubeRuntimeException("Tried to register a null object with id: " + id).source(sourceLine);
 		}
 
 		var rl = ID.kjs(id);
-		var b = new CustomBuilderObject(rl, object, registryInfo);
-		addBuilder(registryInfo, b);
+		var b = new CustomBuilderObject(rl, object);
+		b.sourceLine = sourceLine;
+		b.registryKey = registryKey;
+		addBuilder(b);
 		created.add(b);
 		return b;
 	}
@@ -80,29 +97,27 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 
 	@Override
 	public <R> void add(ResourceKey<Registry<R>> registry, BuilderBase<? extends R> builder) {
-		addBuilder(RegistryInfo.of(registry), builder);
+		builder.registryKey = (ResourceKey) registry;
+		addBuilder(builder);
 	}
 
-	@Override
-	public <R> void add(RegistryInfo<R> registry, BuilderBase<? extends R> builder) {
-		addBuilder(registry, builder);
-	}
-
-	private <R> void addBuilder(RegistryInfo<R> registry, BuilderBase<? extends R> builder) {
+	private <R> void addBuilder(BuilderBase<? extends R> builder) {
 		if (builder == null) {
-			throw new IllegalArgumentException("Can't add null builder in registry '" + registry + "'!");
+			throw new IllegalArgumentException("Can't add null builder in registry '" + builder.registryKey.location() + "'!");
 		}
 
 		if (DevProperties.get().logRegistryEventObjects) {
-			ConsoleJS.STARTUP.info("~ " + registry + " | " + builder.id);
+			ConsoleJS.STARTUP.info("~ " + builder.registryKey.location() + " | " + builder.id);
 		}
 
-		if (registry.objects.containsKey(builder.id)) {
-			throw new IllegalArgumentException("Duplicate key '" + builder.id + "' in registry '" + registry + "'!");
+		var objStorage = RegistryObjectStorage.of(builder.registryKey);
+
+		if (objStorage.objects.containsKey(builder.id)) {
+			throw new IllegalArgumentException("Duplicate key '" + builder.id + "' in registry '" + builder.registryKey.location() + "'!");
 		}
 
-		registry.objects.put(builder.id, builder);
-		RegistryInfo.ALL_BUILDERS.add(builder);
+		objStorage.objects.put(builder.id, (BuilderBase) builder);
+		RegistryObjectStorage.ALL_BUILDERS.add(builder);
 
 		// registry.deferredRegister.register()
 	}

@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.misc;
 
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -19,11 +18,6 @@ public class ParticleTypeBuilder extends BuilderBase<ParticleType<?>> {
 	public ParticleTypeBuilder(ResourceLocation i) {
 		super(i);
 		overrideLimiter = false;
-	}
-
-	@Override
-	public final RegistryInfo getRegistryType() {
-		return RegistryInfo.PARTICLE_TYPE;
 	}
 
 	@Override

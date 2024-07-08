@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.item.custom;
 
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -80,8 +79,8 @@ public class ArmorItemBuilder extends ItemBuilder {
 		return new ArmorItem(material, armorType, createItemProperties());
 	}
 
-	public ArmorItemBuilder material(ResourceLocation id) {
-		material = RegistryInfo.ARMOR_MATERIAL.getHolder(id);
+	public ArmorItemBuilder material(Holder<ArmorMaterial> material) {
+		this.material = material;
 		return this;
 	}
 }

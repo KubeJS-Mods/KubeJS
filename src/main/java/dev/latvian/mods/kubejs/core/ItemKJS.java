@@ -2,10 +2,13 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,8 +22,13 @@ public interface ItemKJS extends IngredientSupplierKJS, RegistryObjectKJS<Item> 
 	}
 
 	@Override
-	default RegistryInfo<Item> kjs$getKubeRegistry() {
-		return RegistryInfo.ITEM;
+	default ResourceKey<Registry<Item>> kjs$getRegistryId() {
+		return Registries.ITEM;
+	}
+
+	@Override
+	default Registry<Item> kjs$getRegistry() {
+		return BuiltInRegistries.ITEM;
 	}
 
 	@Nullable

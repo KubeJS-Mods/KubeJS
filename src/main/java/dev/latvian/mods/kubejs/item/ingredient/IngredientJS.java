@@ -15,7 +15,6 @@ import dev.latvian.mods.kubejs.ingredient.NamespaceIngredient;
 import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.ingredient.TagIngredient;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
@@ -26,6 +25,7 @@ import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -189,7 +189,7 @@ public interface IngredientJS {
 			}
 			default -> {
 				var itemId = ResourceLocation.read(reader);
-				var item = RegistryInfo.ITEM.getValue(itemId);
+				var item = BuiltInRegistries.ITEM.get(itemId);
 
 				var next = reader.canRead() ? reader.peek() : 0;
 

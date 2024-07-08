@@ -6,45 +6,48 @@ import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.RegistryFixedCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.Nullable;
 
-public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeComponent<T> {
+public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<T> regType, Codec<T> codec) implements RecipeComponent<T> {
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public static final RecipeComponentFactory FACTORY = (storage, reader) -> {
+	public static final RecipeComponentFactory FACTORY = (registries, storage, reader) -> {
 		reader.skipWhitespace();
 		reader.expect('<');
 		reader.skipWhitespace();
 		var regId = ResourceLocation.read(reader);
 		reader.expect('>');
-		return new RegistryComponent(RegistryInfo.of(ResourceKey.createRegistryKey(regId)));
+		var key = ResourceKey.createRegistryKey(regId);
+		return new RegistryComponent(registries.access().registry(key).orElseThrow(), RegistryType.ofKey(key), RegistryFixedCodec.create(key));
 	};
 
 	@Override
 	public Codec<T> codec() {
-		return registry.valueByNameCodec();
+		return codec;
 	}
 
 	@Override
 	public TypeInfo typeInfo() {
-		var t = RegistryType.ofKey(registry.key);
-		return t == null || t.type() == TypeInfo.STRING ? TypeInfo.STRING : TypeInfo.STRING.or(t.type());
+		return regType == null || regType.type() == TypeInfo.STRING ? TypeInfo.STRING : TypeInfo.STRING.or(regType.type());
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public T wrap(Context cx, KubeRecipe recipe, Object from) {
-		if (registry == RegistryInfo.ITEM) {
+		if (registry == BuiltInRegistries.ITEM) {
 			if (from instanceof ItemStack is) {
 				return (T) is.getItem();
 			} else if (from instanceof Item) {
@@ -52,7 +55,7 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 			} else {
 				return (T) ItemStackJS.wrap(((KubeJSContext) cx).getRegistries(), from).getItem();
 			}
-		} else if (registry == RegistryInfo.FLUID) {
+		} else if (registry == BuiltInRegistries.FLUID) {
 			if (from instanceof FluidStack fs) {
 				return (T) fs.getFluid();
 			} else if (from instanceof Fluid) {
@@ -61,25 +64,22 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 				return (T) FluidWrapper.wrap(((KubeJSContext) cx).getRegistries(), from).getFluid();
 			}
 		} else {
-			var regType = RegistryType.ofKey(registry.key);
-
 			if (regType != null && regType.baseClass().isInstance(from)) {
 				return (T) from;
 			}
 
-			return registry.getValue(ID.mc(from));
+			return registry.get(ID.mc(from));
 		}
 	}
 
 	@Override
 	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
-		var regType = RegistryType.ofKey(registry.key);
 		return (regType != null && regType.baseClass().isInstance(from)) || (from instanceof CharSequence && ID.mc(from.toString()) != null) || (from instanceof JsonPrimitive json && json.isString() && ID.mc(json.getAsString()) != null);
 	}
 
 	@Override
 	public void buildUniqueId(UniqueIdBuilder builder, T value) {
-		var id = registry.getId(value);
+		var id = registry.getKey(value);
 
 		if (id != null) {
 			builder.append(id);
@@ -88,6 +88,6 @@ public record RegistryComponent<T>(RegistryInfo<T> registry) implements RecipeCo
 
 	@Override
 	public String toString() {
-		return "registry_element<" + registry + ">";
+		return "registry_element<" + registry.key().location() + ">";
 	}
 }

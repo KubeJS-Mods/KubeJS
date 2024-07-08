@@ -27,7 +27,7 @@ public record TagKeyComponent<T>(ResourceKey<? extends Registry<T>> registry, Ty
 	public static final RecipeComponent<TagKey<Biome>> BIOME = new TagKeyComponent<>(Registries.BIOME, TypeInfo.of(Biome.class));
 	public static final RecipeComponent<TagKey<Fluid>> FLUID = new TagKeyComponent<>(Registries.FLUID, TypeInfo.of(Fluid.class));
 
-	public static final RecipeComponentFactory FACTORY = (storage, reader) -> {
+	public static final RecipeComponentFactory FACTORY = (registries, storage, reader) -> {
 		reader.skipWhitespace();
 		reader.expect('<');
 		reader.skipWhitespace();

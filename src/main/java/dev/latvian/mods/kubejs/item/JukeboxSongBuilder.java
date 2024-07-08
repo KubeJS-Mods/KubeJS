@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
@@ -24,11 +23,6 @@ public class JukeboxSongBuilder extends BuilderBase<JukeboxSong> {
 		this.lengthInSeconds = 71F;
 		this.description = Component.translatable(Util.makeDescriptionId("jukebox_song", id));
 		this.comparatorOutput = 0;
-	}
-
-	@Override
-	public final RegistryInfo getRegistryType() {
-		return RegistryInfo.JUKEBOX_SONG;
 	}
 
 	@Override

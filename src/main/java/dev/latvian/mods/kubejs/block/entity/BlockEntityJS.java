@@ -38,7 +38,7 @@ public class BlockEntityJS extends BlockEntity {
 	public BlockEntityJS(BlockPos blockPos, BlockState blockState, BlockEntityInfo entityInfo) {
 		super(entityInfo.entityType, blockPos, blockState);
 		this.info = entityInfo;
-		this.blockKey = blockState.kjs$getRegistryKey();
+		this.blockKey = blockState.kjs$getKey();
 		this.x = blockPos.getX();
 		this.y = blockPos.getY();
 		this.z = blockPos.getZ();

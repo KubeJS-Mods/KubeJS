@@ -45,7 +45,7 @@ public interface LivingEntityKJS extends EntityKJS {
 				b.foodBuilder.eaten.accept(event);
 			}
 
-			var key = i.kjs$getRegistryKey();
+			var key = i.kjs$getKey();
 
 			if (ItemEvents.FOOD_EATEN.hasListeners(key)) {
 				ItemEvents.FOOD_EATEN.post(entity, key, event);

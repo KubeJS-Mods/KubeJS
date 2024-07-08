@@ -6,7 +6,6 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import net.minecraft.Util;
@@ -74,18 +73,17 @@ public interface ItemWrapper {
 
 	@Info("Gets an Item from an item id")
 	static Item getItem(ResourceLocation id) {
-		return RegistryInfo.ITEM.getValue(id);
+		return BuiltInRegistries.ITEM.get(id);
 	}
 
-	@Nullable
 	@Info("Gets an items id from the Item")
 	static ResourceLocation getId(Item item) {
-		return RegistryInfo.ITEM.getId(item);
+		return BuiltInRegistries.ITEM.getKey(item);
 	}
 
 	@Info("Checks if the provided item id exists in the registry")
 	static boolean exists(ResourceLocation id) {
-		return RegistryInfo.ITEM.hasValue(id);
+		return BuiltInRegistries.ITEM.containsKey(id);
 	}
 
 	@Info("""

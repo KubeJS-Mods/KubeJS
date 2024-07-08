@@ -1,13 +1,18 @@
 package dev.latvian.mods.kubejs.registry;
 
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.Util;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
@@ -18,6 +23,8 @@ import java.util.function.Supplier;
 @ReturnsSelf
 public abstract class BuilderBase<T> implements Supplier<T> {
 	public final ResourceLocation id;
+	public SourceLine sourceLine;
+	public ResourceKey<Registry<T>> registryKey;
 	protected T object;
 	public String translationKey;
 	public Component displayName;
@@ -25,20 +32,21 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	public transient boolean dummyBuilder;
 	public transient Set<ResourceLocation> defaultTags;
 
-	public BuilderBase(ResourceLocation i) {
-		id = i;
-		object = null;
-		translationKey = "";
-		displayName = null;
-		formattedDisplayName = false;
-		dummyBuilder = false;
-		defaultTags = new HashSet<>();
+	public BuilderBase(ResourceLocation id) {
+		this.id = id;
+		this.sourceLine = SourceLine.UNKNOWN;
+		this.object = null;
+		this.translationKey = "";
+		this.displayName = null;
+		this.formattedDisplayName = false;
+		this.dummyBuilder = false;
+		this.defaultTags = new HashSet<>();
 	}
 
-	public abstract RegistryInfo getRegistryType();
-
+	@HideFromJS
 	public abstract T createObject();
 
+	@HideFromJS
 	public T transformObject(T obj) {
 		return obj;
 	}
@@ -49,18 +57,23 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 			return object;
 		} catch (Exception ex) {
 			if (dummyBuilder) {
-				throw new RuntimeException("Object '" + id + "' of registry '" + getRegistryType().key.location() + "' is from a dummy builder and doesn't have a value!");
+				throw new KubeRuntimeException("Object '" + id + "' of registry '" + registryKey.location() + "' is from a dummy builder and doesn't have a value!").source(sourceLine);
 			} else {
-				throw new RuntimeException("Object '" + id + "' of registry '" + getRegistryType().key.location() + "' hasn't been registered yet!", ex);
+				throw new KubeRuntimeException("Object '" + id + "' of registry '" + registryKey.location() + "' hasn't been registered yet!", ex).source(sourceLine);
 			}
 		}
 	}
 
+	@HideFromJS
 	public void createAdditionalObjects(AdditionalObjectRegistry registry) {
 	}
 
 	public String getTranslationKeyGroup() {
-		return getRegistryType().languageKeyPrefix;
+		if (registryKey == null) {
+			return "unknown_registry";
+		}
+
+		return registryKey.location().getPath().replace('/', '.');
 	}
 
 	@Info("""
@@ -101,10 +114,10 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		""")
 	public BuilderBase<T> tag(ResourceLocation[] tag) {
 		defaultTags.addAll(Arrays.asList(tag));
-		getRegistryType().hasDefaultTags = true;
 		return this;
 	}
 
+	@HideFromJS
 	public ResourceLocation newID(String pre, String post) {
 		if (pre.isEmpty() && post.isEmpty()) {
 			return id;
@@ -113,9 +126,11 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), pre + id.getPath() + post);
 	}
 
+	@HideFromJS
 	public void generateDataJsons(KubeDataGenerator generator) {
 	}
 
+	@HideFromJS
 	public void generateAssetJsons(KubeAssetGenerator generator) {
 	}
 
@@ -127,6 +142,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		return translationKey;
 	}
 
+	@HideFromJS
 	public void generateLang(LangKubeEvent lang) {
 		if (displayName != null) {
 			lang.add(id.getNamespace(), getBuilderTranslationKey(), displayName.getString());
@@ -135,7 +151,8 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		}
 	}
 
-	protected T createTransformedObject() {
+	@HideFromJS
+	public T createTransformedObject() {
 		object = transformObject(createObject());
 		return object;
 	}

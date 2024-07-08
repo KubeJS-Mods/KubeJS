@@ -1,17 +1,16 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
-import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.JsonUtils;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -45,7 +44,7 @@ public class RecipeSchemaStorage {
 		return namespaces.computeIfAbsent(namespace, n -> new RecipeNamespace(this, n));
 	}
 
-	public void fireEvents(ResourceManager resourceManager, DynamicOps<JsonElement> jsonOps) {
+	public void fireEvents(RegistryAccessContainer registries, ResourceManager resourceManager) {
 		recipeTypes.clear();
 		namespaces.clear();
 		mappings.clear();
@@ -91,20 +90,20 @@ public class RecipeSchemaStorage {
 				var json = JsonUtils.GSON.fromJson(reader, JsonObject.class);
 
 				for (var entry1 : json.entrySet()) {
-					simpleComponents.put(entry1.getKey(), getComponent(entry1.getValue().getAsString()));
+					simpleComponents.put(entry1.getKey(), getComponent(registries, entry1.getValue().getAsString()));
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
 
-		for (var entry : RegistryInfo.RECIPE_SERIALIZER.entrySet()) {
+		for (var entry : BuiltInRegistries.RECIPE_SERIALIZER.entrySet()) {
 			var ns = namespace(entry.getKey().location().getNamespace());
 			ns.put(entry.getKey().location().getPath(), new UnknownRecipeSchemaType(ns, entry.getKey().location(), entry.getValue()));
 		}
 
 		var schemaRegistry = new RecipeSchemaRegistry(this);
-		JsonRecipeSchemaLoader.load(this, schemaRegistry, resourceManager, jsonOps);
+		JsonRecipeSchemaLoader.load(this, registries, schemaRegistry, resourceManager);
 
 		shapedSchema = Objects.requireNonNull(namespace("minecraft").get("shaped").schema);
 		shapelessSchema = Objects.requireNonNull(namespace("minecraft").get("shapeless").schema);
@@ -114,12 +113,12 @@ public class RecipeSchemaStorage {
 		ServerEvents.RECIPE_SCHEMA_REGISTRY.post(ScriptType.SERVER, schemaRegistry);
 	}
 
-	public RecipeComponent<?> getComponent(String string) {
+	public RecipeComponent<?> getComponent(RegistryAccessContainer registries, String string) {
 		var c = componentCache.get(string);
 
 		if (c == null) {
 			try {
-				c = readComponent(new StringReader(string));
+				c = readComponent(registries, new StringReader(string));
 				componentCache.put(string, c);
 			} catch (Exception ex) {
 				throw new IllegalArgumentException(ex);
@@ -129,7 +128,7 @@ public class RecipeSchemaStorage {
 		return c;
 	}
 
-	public RecipeComponent<?> readComponent(StringReader reader) throws Exception {
+	public RecipeComponent<?> readComponent(RegistryAccessContainer registries, StringReader reader) throws Exception {
 		reader.skipWhitespace();
 		var key = reader.readUnquotedString();
 
@@ -144,7 +143,7 @@ public class RecipeSchemaStorage {
 			var d = dynamicComponents.get(key);
 
 			if (d != null) {
-				component = d.readComponent(this, reader);
+				component = d.readComponent(registries, this, reader);
 			}
 		}
 

@@ -15,7 +15,6 @@ import dev.latvian.mods.kubejs.level.ruletest.KubeJSRuleTests;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
-import dev.latvian.mods.kubejs.registry.BuilderTypeRegistryHandler;
 import dev.latvian.mods.kubejs.registry.RegistryKubeEvent;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
@@ -149,7 +148,6 @@ public class KubeJS {
 		LOGGER.info("Done in " + pluginTimer.stop());
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);
-		KubeJSPlugins.forEachPlugin(new BuilderTypeRegistryHandler(), KubeJSPlugin::registerBuilderTypes);
 
 		startupScriptManager = new StartupScriptManager();
 		startupScriptManager.reload();

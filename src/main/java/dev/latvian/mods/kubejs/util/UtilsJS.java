@@ -9,7 +9,6 @@ import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockModificationKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
@@ -19,6 +18,7 @@ import dev.latvian.mods.rhino.type.TypeUtils;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
@@ -401,7 +401,7 @@ public class UtilsJS {
 
 	@Nullable
 	public static CreativeModeTab findCreativeTab(ResourceLocation id) {
-		return RegistryInfo.CREATIVE_MODE_TAB.getValue(id);
+		return BuiltInRegistries.CREATIVE_MODE_TAB.get(id);
 	}
 
 	public static <T> T makeFunctionProxy(Context cx, TypeInfo targetClass, BaseFunction function) {

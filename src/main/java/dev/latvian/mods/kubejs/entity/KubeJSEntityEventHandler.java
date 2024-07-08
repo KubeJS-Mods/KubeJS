@@ -15,7 +15,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 public class KubeJSEntityEventHandler {
 	@SubscribeEvent
 	public static void checkSpawn(FinalizeSpawnEvent event) {
-		var key = event.getEntity().getType().kjs$getRegistryKey();
+		var key = event.getEntity().getType().kjs$getKey();
 
 		if (event.getLevel() instanceof ServerLevel level && EntityEvents.CHECK_SPAWN.hasListeners(key)) {
 			var result = EntityEvents.CHECK_SPAWN.post(level, key, new CheckLivingEntitySpawnKubeEvent(
@@ -37,7 +37,7 @@ public class KubeJSEntityEventHandler {
 
 	@SubscribeEvent
 	public static void livingDeath(LivingDeathEvent event) {
-		var key = event.getEntity().getType().kjs$getRegistryKey();
+		var key = event.getEntity().getType().kjs$getKey();
 
 		if (EntityEvents.DEATH.hasListeners(key)) {
 			EntityEvents.DEATH.post(event.getEntity(), key, new LivingEntityDeathKubeEvent(event.getEntity(), event.getSource())).applyCancel(event);
@@ -46,7 +46,7 @@ public class KubeJSEntityEventHandler {
 
 	@SubscribeEvent
 	public static void beforeLivingHurt(LivingDamageEvent.Pre event) {
-		var key = event.getEntity().getType().kjs$getRegistryKey();
+		var key = event.getEntity().getType().kjs$getKey();
 
 		if (EntityEvents.BEFORE_HURT.hasListeners(key)) {
 			if (EntityEvents.BEFORE_HURT.post(event.getEntity(), key, new BeforeLivingEntityHurtKubeEvent(event)).interruptFalse()) {
@@ -57,7 +57,7 @@ public class KubeJSEntityEventHandler {
 
 	@SubscribeEvent
 	public static void afterLivingHurt(LivingDamageEvent.Post event) {
-		var key = event.getEntity().getType().kjs$getRegistryKey();
+		var key = event.getEntity().getType().kjs$getKey();
 
 		if (EntityEvents.AFTER_HURT.hasListeners(key)) {
 			EntityEvents.AFTER_HURT.post(event.getEntity(), key, new AfterLivingEntityHurtKubeEvent(event));
@@ -66,7 +66,7 @@ public class KubeJSEntityEventHandler {
 
 	@SubscribeEvent
 	public static void entitySpawned(EntityJoinLevelEvent event) {
-		var key = event.getEntity().getType().kjs$getRegistryKey();
+		var key = event.getEntity().getType().kjs$getKey();
 
 		if (EntityEvents.SPAWNED.hasListeners(key) && event.getLevel() instanceof ServerLevel level) {
 			EntityEvents.SPAWNED.post(level, key, new EntitySpawnedKubeEvent(event.getEntity(), level)).applyCancel(event);
@@ -75,7 +75,7 @@ public class KubeJSEntityEventHandler {
 
 	@SubscribeEvent
 	public static void livingDrops(LivingDropsEvent event) {
-		var key = event.getEntity().getType().kjs$getRegistryKey();
+		var key = event.getEntity().getType().kjs$getKey();
 
 		if (EntityEvents.ENTITY_DROPS.hasListeners(key)) {
 			var e = new LivingEntityDropsKubeEvent(event);

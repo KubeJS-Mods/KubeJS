@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.server.tag;
 import dev.latvian.mods.kubejs.error.EmptyTagTargetException;
 import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.KubeEvent;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.core.Holder;
@@ -39,23 +38,23 @@ public class TagKubeEvent implements KubeEvent {
 
 	public static final String SOURCE = "KubeJS Custom Tags";
 
-	public final RegistryInfo registry;
+	public final ResourceKey<?> registryKey;
 	public final Registry<?> vanillaRegistry;
 	public final Map<ResourceLocation, TagWrapper> tags;
 	public int totalAdded;
 	public int totalRemoved;
 	private Set<ResourceLocation> elementIds;
 
-	public TagKubeEvent(RegistryInfo ri, Registry<?> vr) {
-		registry = ri;
-		vanillaRegistry = vr;
-		tags = new ConcurrentHashMap<>();
-		totalAdded = 0;
-		totalRemoved = 0;
+	public TagKubeEvent(ResourceKey<?> registryKey, Registry<?> vr) {
+		this.registryKey = registryKey;
+		this.vanillaRegistry = vr;
+		this.tags = new ConcurrentHashMap<>();
+		this.totalAdded = 0;
+		this.totalRemoved = 0;
 	}
 
 	public ResourceLocation getType() {
-		return registry.key.location();
+		return registryKey.location();
 	}
 
 	public TagWrapper get(ResourceLocation id) {

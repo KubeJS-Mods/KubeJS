@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import com.google.gson.JsonArray;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.tag.TagEventFilter;
@@ -28,30 +28,39 @@ public interface TagLoaderKJS<T> {
 			return;
 		}
 
-		var regInfo = RegistryInfo.of((ResourceKey) reg.key());
+		var objStorage = RegistryObjectStorage.of((ResourceKey) reg.key());
 
-		if (regInfo.hasDefaultTags || ServerEvents.TAGS.hasListeners(regInfo.key)) {
+		boolean hasDefaultTags = false;
+
+		for (var builder : (Collection<BuilderBase<?>>) objStorage.objects.values()) {
+			if (!builder.defaultTags.isEmpty()) {
+				hasDefaultTags = true;
+				break;
+			}
+		}
+
+		if (hasDefaultTags || ServerEvents.TAGS.hasListeners(objStorage.key)) {
 			var preEvent = kjs$getResources().kjs$getServerScriptManager().preTagEvents.get(reg.key());
 
-			var event = new TagKubeEvent(regInfo, reg);
+			var event = new TagKubeEvent(objStorage.key, reg);
 
 			for (var entry : map.entrySet()) {
 				var w = new TagWrapper(event, entry.getKey(), entry.getValue());
 				event.tags.put(w.id, w);
 
 				if (ConsoleJS.SERVER.shouldPrintDebug()) {
-					ConsoleJS.SERVER.debug("Tags %s/#%s; %d".formatted(regInfo, w.id, w.entries.size()));
+					ConsoleJS.SERVER.debug("Tags %s/#%s; %d".formatted(objStorage, w.id, w.entries.size()));
 				}
 			}
 
-			for (var builder : (Collection<BuilderBase<?>>) regInfo.objects.values()) {
+			for (var builder : (Collection<BuilderBase<?>>) objStorage.objects.values()) {
 				for (var s : builder.defaultTags) {
 					event.add(s, new TagEventFilter.ID(builder.id));
 				}
 			}
 
 			if (preEvent == null) {
-				ServerEvents.TAGS.post(event, regInfo.key);
+				ServerEvents.TAGS.post(event, objStorage.key);
 			} else {
 				for (var a : preEvent.actions) {
 					a.accept(event);
@@ -65,14 +74,14 @@ public interface TagLoaderKJS<T> {
 			}
 
 			if (event.totalAdded > 0 || event.totalRemoved > 0 || ConsoleJS.SERVER.shouldPrintDebug()) {
-				ConsoleJS.SERVER.info("[%s] Found %d tags, added %d objects, removed %d objects".formatted(regInfo, event.tags.size(), event.totalAdded, event.totalRemoved));
+				ConsoleJS.SERVER.info("[%s] Found %d tags, added %d objects, removed %d objects".formatted(objStorage, event.tags.size(), event.totalAdded, event.totalRemoved));
 			}
 		}
 
 		kjs$resources.kjs$getServerScriptManager().getRegistries().cacheTags(reg, map);
 
 		if (DataExport.export != null) {
-			var loc = "tags/" + regInfo + "/";
+			var loc = "tags/" + objStorage + "/";
 
 			for (var entry : map.entrySet()) {
 				var list = new ArrayList<String>();

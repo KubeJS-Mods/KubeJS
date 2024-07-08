@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.level.ruletest.AlwaysFalseRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.AnyMatchRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.InvertRuleTest;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatch;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -68,7 +67,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 				return new StateMatch(state);
 			}
 		} else {
-			var block = RegistryInfo.BLOCK.getValue(ResourceLocation.parse(s));
+			var block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(s));
 
 			if (block != Blocks.AIR) {
 				return new BlockMatch(block);
@@ -177,11 +176,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		Set<ResourceLocation> set = new LinkedHashSet<>();
 
 		for (var block : getBlocks()) {
-			var blockId = RegistryInfo.BLOCK.getId(block);
-
-			if (blockId != null) {
-				set.add(blockId);
-			}
+			set.add(block.kjs$getIdLocation());
 		}
 
 		return set;
@@ -251,8 +246,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 
 		@Override
 		public Set<ResourceLocation> getBlockIds() {
-			var blockId = RegistryInfo.BLOCK.getId(block);
-			return blockId == null ? Collections.emptySet() : Collections.singleton(blockId);
+			return Set.of(block.kjs$getIdLocation());
 		}
 
 		@Override
@@ -284,8 +278,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 
 		@Override
 		public Set<ResourceLocation> getBlockIds() {
-			var blockId = RegistryInfo.BLOCK.getId(state.getBlock());
-			return blockId == null ? Collections.emptySet() : Collections.singleton(blockId);
+			return Set.of(state.getBlock().kjs$getIdLocation());
 		}
 
 		@Override
@@ -435,8 +428,8 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 
 			cachedStates = new LinkedHashSet<>();
 
-			for (var entry : RegistryInfo.BLOCK.entrySet()) {
-				for (var state : entry.getValue().getStateDefinition().getPossibleStates()) {
+			for (var block : BuiltInRegistries.BLOCK) {
+				for (var state : block.getStateDefinition().getPossibleStates()) {
 					if (!predicate.test(state)) {
 						cachedStates.add(state);
 					}
@@ -473,7 +466,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			var set = new HashSet<ResourceLocation>();
 
 			for (var block : getBlocks()) {
-				set.add(RegistryInfo.BLOCK.getId(block));
+				set.add(block.kjs$getIdLocation());
 			}
 
 			return set;
@@ -493,8 +486,8 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			this.list = list;
 			cachedStates = new LinkedHashSet<>();
 
-			for (var entry : RegistryInfo.BLOCK.entrySet()) {
-				for (var state : entry.getValue().getStateDefinition().getPossibleStates()) {
+			for (var block : BuiltInRegistries.BLOCK) {
+				for (var state : block.getStateDefinition().getPossibleStates()) {
 					var match = true;
 					for (var predicate : list) {
 						if (!predicate.test(state)) {

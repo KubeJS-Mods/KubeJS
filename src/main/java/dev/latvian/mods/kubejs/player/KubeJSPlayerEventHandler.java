@@ -121,7 +121,7 @@ public class KubeJSPlayerEventHandler {
 			ResourceKey<MenuType<?>> key;
 
 			try {
-				key = menu.getType().kjs$getRegistryKey();
+				key = menu.getType().kjs$getKey();
 			} catch (Exception ex) {
 				return;
 			}
@@ -146,7 +146,7 @@ public class KubeJSPlayerEventHandler {
 			ResourceKey<MenuType<?>> key;
 
 			try {
-				key = menu.getType().kjs$getRegistryKey();
+				key = menu.getType().kjs$getKey();
 			} catch (Exception ex) {
 				return;
 			}

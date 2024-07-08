@@ -123,7 +123,6 @@ import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.DataComponentTypeInfoRegistry;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
@@ -172,6 +171,7 @@ import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -278,6 +278,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.addDefault(Registries.CREATIVE_MODE_TAB, CreativeTabBuilder.class, CreativeTabBuilder::new);
 		registry.addDefault(Registries.ARMOR_MATERIAL, ArmorMaterialBuilder.class, ArmorMaterialBuilder::new);
 		registry.addDefault(Registries.JUKEBOX_SONG, JukeboxSongBuilder.class, JukeboxSongBuilder::new);
+
+		registry.serverRegistry(Registries.PAINTING_VARIANT, PaintingVariant.DIRECT_CODEC, PaintingVariant.class);
 	}
 
 	@Override
@@ -529,7 +531,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ParticleOptions.class, ParticleOptionsWrapper::wrap);
 		registry.register(ItemTintFunction.class, ItemTintFunction::of);
 		registry.register(BlockTintFunction.class, BlockTintFunction::of);
-		registry.register(RegistryInfo.class, RegistryInfo::wrap);
 		registry.register(ChancedItem.class, ChancedItem::wrap);
 
 		// components //

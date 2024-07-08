@@ -1,8 +1,11 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.fluid.FluidLike;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -15,8 +18,13 @@ public interface FluidKJS extends RegistryObjectKJS<Fluid>, FluidLike {
 	}
 
 	@Override
-	default RegistryInfo<Fluid> kjs$getKubeRegistry() {
-		return RegistryInfo.FLUID;
+	default ResourceKey<Registry<Fluid>> kjs$getRegistryId() {
+		return Registries.FLUID;
+	}
+
+	@Override
+	default Registry<Fluid> kjs$getRegistry() {
+		return BuiltInRegistries.FLUID;
 	}
 
 	@Override

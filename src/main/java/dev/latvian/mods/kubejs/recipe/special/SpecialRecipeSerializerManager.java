@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.special;
 
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.event.KubeEvent;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.bus.api.Event;
@@ -30,7 +30,7 @@ public class SpecialRecipeSerializerManager implements KubeEvent {
 	}
 
 	public boolean isSpecial(Recipe<?> recipe) {
-		return data.getOrDefault(RegistryInfo.RECIPE_SERIALIZER.getId(recipe.getSerializer()), recipe.isSpecial());
+		return data.getOrDefault(BuiltInRegistries.RECIPE_SERIALIZER.getKey(recipe.getSerializer()), recipe.isSpecial());
 	}
 
 	public void ignoreSpecialFlag(ResourceLocation id) {
@@ -47,7 +47,7 @@ public class SpecialRecipeSerializerManager implements KubeEvent {
 
 	public void ignoreSpecialMod(String modid) {
 		synchronized (data) {
-			for (var entry : RegistryInfo.RECIPE_SERIALIZER.entrySet()) {
+			for (var entry : BuiltInRegistries.RECIPE_SERIALIZER.entrySet()) {
 				if (entry.getKey().location().getNamespace().equals(modid)) {
 					data.put(entry.getKey().location(), false);
 				}
@@ -57,7 +57,7 @@ public class SpecialRecipeSerializerManager implements KubeEvent {
 
 	public void addSpecialMod(String modid) {
 		synchronized (data) {
-			for (var entry : RegistryInfo.RECIPE_SERIALIZER.entrySet()) {
+			for (var entry : BuiltInRegistries.RECIPE_SERIALIZER.entrySet()) {
 				if (entry.getKey().location().getNamespace().equals(modid)) {
 					data.put(entry.getKey().location(), true);
 				}

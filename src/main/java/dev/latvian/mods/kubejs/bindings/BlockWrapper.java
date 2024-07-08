@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.bindings;
 import dev.latvian.mods.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockPredicate;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.rhino.Context;
@@ -75,21 +74,21 @@ public class BlockWrapper {
 
 	@Info("Gets a Block from a block id")
 	public static Block getBlock(ResourceLocation id) {
-		return RegistryInfo.BLOCK.getValue(id);
+		return BuiltInRegistries.BLOCK.get(id);
 	}
 
 	@Info("Gets a blocks id from the Block")
 	@Nullable
 	public static ResourceLocation getId(Block block) {
-		return RegistryInfo.BLOCK.getId(block);
+		return BuiltInRegistries.BLOCK.getKey(block);
 	}
 
 	@Info("Gets a list of the classname of all registered blocks")
 	public static List<String> getTypeList() {
 		var list = new ArrayList<String>();
 
-		for (var block : RegistryInfo.BLOCK.entrySet()) {
-			list.add(block.getKey().location().toString());
+		for (var block : BuiltInRegistries.BLOCK) {
+			list.add(block.kjs$getId());
 		}
 
 		return list;

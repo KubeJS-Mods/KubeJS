@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
@@ -21,11 +20,6 @@ public class PoiTypeBuilder extends BuilderBase<PoiType> {
 		blockStates = Set.of();
 		maxTickets = 1;
 		validRange = 1;
-	}
-
-	@Override
-	public final RegistryInfo getRegistryType() {
-		return RegistryInfo.POINT_OF_INTEREST_TYPE;
 	}
 
 	@Override

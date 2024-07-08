@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.bindings;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public record RegistryWrapper<T>(Registry<T> registry) implements Iterable<T> {
+public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey) implements Iterable<T> {
 	public static RegistryWrapper<?> of(Context cx, ResourceLocation id) {
 		return ((KubeJSContext) cx).getRegistries().wrapRegistry(id);
 	}
@@ -45,6 +46,11 @@ public record RegistryWrapper<T>(Registry<T> registry) implements Iterable<T> {
 	@Nullable
 	public ResourceLocation getId(T value) {
 		return registry.getKey(value);
+	}
+
+	@Nullable
+	public ResourceKey<T> getKey(T value) {
+		return registry.getResourceKey(value).orElse(unknownKey);
 	}
 
 	@NotNull

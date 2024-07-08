@@ -33,7 +33,7 @@ public abstract class BlockMixin implements BlockKJS {
 	}
 
 	@Override
-	public ResourceKey<Block> kjs$getRegistryKey() {
+	public ResourceKey<Block> kjs$getKey() {
 		return builtInRegistryHolder.key();
 	}
 

@@ -77,9 +77,9 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Override
-	public ResourceKey<Item> kjs$getRegistryKey() {
+	public ResourceKey<Item> kjs$getKey() {
 		if (kjs$registryKey == null) {
-			kjs$registryKey = ItemKJS.super.kjs$getRegistryKey();
+			kjs$registryKey = ItemKJS.super.kjs$getKey();
 		}
 
 		return kjs$registryKey;

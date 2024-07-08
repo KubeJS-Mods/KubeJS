@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.CountingMap;
 import dev.latvian.mods.kubejs.util.Lazy;
@@ -8,6 +7,7 @@ import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import net.minecraft.Util;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
@@ -94,7 +94,7 @@ public interface UtilsWrapper {
 	@Nullable
 	@Info("Gets a SoundEvent from the id")
 	static SoundEvent getSound(ResourceLocation id) {
-		return RegistryInfo.SOUND_EVENT.getValue(id);
+		return BuiltInRegistries.SOUND_EVENT.get(id);
 	}
 
 	@Info("Gets a random object from the list using the passed in random")

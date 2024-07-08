@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
@@ -55,7 +55,7 @@ public class ClientAssetPacks {
 
 		internalAssetPack.reset();
 
-		for (var builder : RegistryInfo.ALL_BUILDERS) {
+		for (var builder : RegistryObjectStorage.ALL_BUILDERS) {
 			builder.generateAssetJsons(internalAssetPack);
 		}
 
@@ -65,7 +65,7 @@ public class ClientAssetPacks {
 		var langEvents = new HashMap<String, LangKubeEvent>();
 		var enUsLangEvent = langEvents.computeIfAbsent("en_us", s -> new LangKubeEvent(s, langMap));
 
-		for (var builder : RegistryInfo.ALL_BUILDERS) {
+		for (var builder : RegistryObjectStorage.ALL_BUILDERS) {
 			builder.generateLang(enUsLangEvent);
 		}
 

@@ -108,7 +108,7 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 		if (ItemEvents.FIRST_LEFT_CLICKED.hasListeners()) {
 			var player = kjs$self().player;
 			var stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-			var key = stack.getItem().kjs$getRegistryKey();
+			var key = stack.getItem().kjs$getKey();
 
 			if (ItemEvents.FIRST_LEFT_CLICKED.hasListeners(key)) {
 				ItemEvents.FIRST_LEFT_CLICKED.post(ScriptType.CLIENT, key, new ItemClickedKubeEvent(player, InteractionHand.MAIN_HAND, stack));
@@ -125,7 +125,7 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 
 			for (var hand : InteractionHand.values()) {
 				var stack = player.getItemInHand(hand);
-				var key = stack.getItem().kjs$getRegistryKey();
+				var key = stack.getItem().kjs$getKey();
 
 				if (ItemEvents.FIRST_RIGHT_CLICKED.hasListeners(key)) {
 					ItemEvents.FIRST_RIGHT_CLICKED.post(ScriptType.CLIENT, key, new ItemClickedKubeEvent(player, hand, stack));

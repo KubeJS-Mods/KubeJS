@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.fluid;
 import dev.latvian.mods.kubejs.block.BlockRenderType;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleOptions;
@@ -82,11 +81,6 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 		sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL);
 		sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY);
 		sound(SoundActions.FLUID_VAPORIZE, SoundEvents.FIRE_EXTINGUISH);
-	}
-
-	@Override
-	public final RegistryInfo getRegistryType() {
-		return RegistryInfo.FLUID_TYPE;
 	}
 
 	@Override

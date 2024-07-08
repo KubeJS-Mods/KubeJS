@@ -23,7 +23,6 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.recipe.schema.UnknownRecipeSchema;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.SourceLine;
@@ -37,6 +36,7 @@ import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
@@ -86,7 +86,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	private String recipeToString(Recipe<?> recipe) {
 		var map = new LinkedHashMap<String, Object>();
-		map.put("type", RegistryInfo.RECIPE_SERIALIZER.getId(recipe.getSerializer()));
+		map.put("type", BuiltInRegistries.RECIPE_SERIALIZER.getKey(recipe.getSerializer()));
 
 		try {
 			var in = new ArrayList<>();
@@ -220,7 +220,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		recipeFunctions.put("smithing", smithing);
 		recipeFunctions.put("smithingTrim", smithingTrim);
 
-		stageSerializer = RegistryInfo.RECIPE_SERIALIZER.getValue(ResourceLocation.parse("recipestages:stage"));
+		stageSerializer = BuiltInRegistries.RECIPE_SERIALIZER.get(ResourceLocation.parse("recipestages:stage"));
 	}
 
 	@HideFromJS
@@ -589,7 +589,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	public void printAllTypes() {
 		ConsoleJS.SERVER.info("== All recipe types [available] ==");
-		printTypes(t -> RegistryInfo.RECIPE_SERIALIZER.getValue(t.id) != null);
+		printTypes(t -> BuiltInRegistries.RECIPE_SERIALIZER.get(t.id) != null);
 	}
 
 	public void printExamples(String type) {

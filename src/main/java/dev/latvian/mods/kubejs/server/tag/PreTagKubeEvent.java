@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.server.tag;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -21,20 +20,20 @@ public class PreTagKubeEvent extends TagKubeEvent {
 
 		if (ServerEvents.TAGS.hasListeners()) {
 			for (var id : ServerEvents.TAGS.findUniqueExtraIds(ScriptType.SERVER)) {
-				var e = new PreTagKubeEvent(RegistryInfo.of((ResourceKey) id));
+				var e = new PreTagKubeEvent(id);
 				try {
 					ServerEvents.TAGS.post(ScriptType.SERVER, id, e);
 				} catch (Exception ex) {
 					e.invalid = true;
 
 					if (DevProperties.get().logEventErrorStackTrace) {
-						KubeJS.LOGGER.warn("Pre Tag event for " + e.registry + " failed:");
+						KubeJS.LOGGER.warn("Pre Tag event for " + e.registryKey.location() + " failed:");
 						ex.printStackTrace();
 					}
 				}
 
 				if (!e.invalid) {
-					tagEventHolders.put(e.registry.key, e);
+					tagEventHolders.put(e.registryKey, e);
 				}
 			}
 		}
@@ -51,8 +50,8 @@ public class PreTagKubeEvent extends TagKubeEvent {
 	public final List<Consumer<TagKubeEvent>> actions;
 	public boolean invalid;
 
-	public PreTagKubeEvent(RegistryInfo registry) {
-		super(registry, null);
+	public PreTagKubeEvent(ResourceKey<?> registryKey) {
+		super(registryKey, null);
 		this.tags = new ConcurrentHashMap<>();
 		this.actions = new ArrayList<>();
 	}

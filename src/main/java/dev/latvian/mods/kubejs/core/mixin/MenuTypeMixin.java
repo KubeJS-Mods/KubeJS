@@ -15,9 +15,9 @@ public abstract class MenuTypeMixin implements MenuTypeKJS {
 	private String kjs$id;
 
 	@Override
-	public ResourceKey<MenuType<?>> kjs$getRegistryKey() {
+	public ResourceKey<MenuType<?>> kjs$getKey() {
 		if (kjs$registryKey == null) {
-			kjs$registryKey = MenuTypeKJS.super.kjs$getRegistryKey();
+			kjs$registryKey = MenuTypeKJS.super.kjs$getKey();
 		}
 
 		return kjs$registryKey;

@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
@@ -106,11 +105,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 		tool = null;
 		itemAttributeModifiers = null;
-	}
-
-	@Override
-	public final RegistryInfo getRegistryType() {
-		return RegistryInfo.ITEM;
 	}
 
 	@Override

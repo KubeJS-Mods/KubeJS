@@ -87,7 +87,7 @@ public class EventTargetType<T> {
 		} else if (object instanceof ResourceKey<?> rl) {
 			return rl;
 		} else if (object instanceof RegistryObjectKJS<?> wrk) {
-			return wrk.kjs$getRegistryKey();
+			return wrk.kjs$getKey();
 		} else if (object instanceof ResourceLocation rl) {
 			return ResourceKey.create(registry, rl);
 		} else {

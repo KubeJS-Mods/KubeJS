@@ -5,12 +5,13 @@ import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -53,11 +54,6 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		return super.displayName(name);
 	}
 
-	@Override
-	public final RegistryInfo getRegistryType() {
-		return RegistryInfo.FLUID;
-	}
-
 	public BaseFlowingFluid.Properties createProperties() {
 		if (properties == null) {
 			properties = new BaseFlowingFluid.Properties(fluidType, this, flowingFluid);
@@ -79,15 +75,15 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 
 	@Override
 	public void createAdditionalObjects(AdditionalObjectRegistry registry) {
-		registry.add(RegistryInfo.FLUID_TYPE, fluidType);
-		registry.add(RegistryInfo.FLUID, flowingFluid);
+		registry.add(NeoForgeRegistries.Keys.FLUID_TYPES, fluidType);
+		registry.add(Registries.FLUID, flowingFluid);
 
 		if (block != null) {
-			registry.add(RegistryInfo.BLOCK, block);
+			registry.add(Registries.BLOCK, block);
 		}
 
 		if (bucketItem != null) {
-			registry.add(RegistryInfo.ITEM, bucketItem);
+			registry.add(Registries.ITEM, bucketItem);
 		}
 	}
 

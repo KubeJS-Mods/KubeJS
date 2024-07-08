@@ -6,8 +6,4 @@ import net.minecraft.resources.ResourceKey;
 @FunctionalInterface
 public interface AdditionalObjectRegistry {
 	<T> void add(ResourceKey<Registry<T>> registry, BuilderBase<? extends T> builder);
-
-	default <T> void add(RegistryInfo<T> registryInfo, BuilderBase<? extends T> builder) {
-		add(registryInfo.key, builder);
-	}
 }

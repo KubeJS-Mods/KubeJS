@@ -22,7 +22,6 @@ import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -31,6 +30,7 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -149,11 +149,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Override
-	public final RegistryInfo getRegistryType() {
-		return RegistryInfo.BLOCK;
-	}
-
-	@Override
 	public Block transformObject(Block obj) {
 		obj.kjs$setBlockBuilder(this);
 		return obj;
@@ -162,11 +157,11 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	@Override
 	public void createAdditionalObjects(AdditionalObjectRegistry registry) {
 		if (itemBuilder != null) {
-			registry.add(RegistryInfo.ITEM, itemBuilder);
+			registry.add(Registries.ITEM, itemBuilder);
 		}
 
 		if (blockEntityInfo != null) {
-			registry.add(RegistryInfo.BLOCK_ENTITY_TYPE, new BlockEntityBuilder(id, blockEntityInfo));
+			registry.add(Registries.BLOCK_ENTITY_TYPE, new BlockEntityBuilder(id, blockEntityInfo));
 		}
 	}
 

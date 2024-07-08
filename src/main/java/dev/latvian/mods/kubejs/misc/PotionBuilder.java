@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -22,11 +22,6 @@ public class PotionBuilder extends BuilderBase<Potion> {
 	}
 
 	@Override
-	public RegistryInfo getRegistryType() {
-		return RegistryInfo.POTION;
-	}
-
-	@Override
 	public Potion createObject() {
 		return new Potion(id.getPath(), mobEffects.toArray(new MobEffectInstance[0]));
 	}
@@ -36,27 +31,27 @@ public class PotionBuilder extends BuilderBase<Potion> {
 		return this;
 	}
 
-	public PotionBuilder effect(MobEffect effect) {
+	public PotionBuilder effect(Holder<MobEffect> effect) {
 		return effect(effect, 0, 0);
 	}
 
-	public PotionBuilder effect(MobEffect effect, int duration) {
+	public PotionBuilder effect(Holder<MobEffect> effect, int duration) {
 		return effect(effect, duration, 0);
 	}
 
-	public PotionBuilder effect(MobEffect effect, int duration, int amplifier) {
+	public PotionBuilder effect(Holder<MobEffect> effect, int duration, int amplifier) {
 		return effect(effect, duration, amplifier, false, true);
 	}
 
-	public PotionBuilder effect(MobEffect effect, int duration, int amplifier, boolean ambient, boolean visible) {
+	public PotionBuilder effect(Holder<MobEffect> effect, int duration, int amplifier, boolean ambient, boolean visible) {
 		return effect(effect, duration, amplifier, ambient, visible, visible);
 	}
 
-	public PotionBuilder effect(MobEffect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon) {
+	public PotionBuilder effect(Holder<MobEffect> effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon) {
 		return effect(effect, duration, amplifier, ambient, visible, showIcon, null);
 	}
 
-	public PotionBuilder effect(MobEffect effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon, @Nullable MobEffectInstance hiddenEffect) {
-		return addEffect(new MobEffectInstance(RegistryInfo.MOB_EFFECT.getHolderOf(effect), duration, amplifier, ambient, visible, showIcon, hiddenEffect));
+	public PotionBuilder effect(Holder<MobEffect> effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon, @Nullable MobEffectInstance hiddenEffect) {
+		return addEffect(new MobEffectInstance(effect, duration, amplifier, ambient, visible, showIcon, hiddenEffect));
 	}
 }

@@ -3,11 +3,11 @@ package dev.latvian.mods.kubejs.core;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -51,7 +51,7 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 
 	@Override
 	default ResourceLocation kjs$getType() {
-		return RegistryInfo.RECIPE_SERIALIZER.getId(kjs$getSerializer());
+		return BuiltInRegistries.RECIPE_SERIALIZER.getKey(kjs$getSerializer());
 	}
 
 	@Override

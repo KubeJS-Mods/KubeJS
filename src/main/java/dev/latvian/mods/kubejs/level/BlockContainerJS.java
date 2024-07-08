@@ -2,13 +2,13 @@ package dev.latvian.mods.kubejs.level;
 
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -136,8 +136,8 @@ public class BlockContainerJS implements SpecialEquality {
 		cachedState = state;
 	}
 
-	public String getId() {
-		return RegistryInfo.BLOCK.getId(getBlockState().getBlock()).toString();
+	public ResourceLocation getId() {
+		return getBlockState().getBlock().kjs$getIdLocation();
 	}
 
 	public Collection<ResourceLocation> getTags() {
@@ -200,7 +200,7 @@ public class BlockContainerJS implements SpecialEquality {
 
 	public String getEntityId() {
 		var entity = getEntity();
-		return entity == null ? "minecraft:air" : RegistryInfo.BLOCK_ENTITY_TYPE.getId(entity.getType()).toString();
+		return entity == null ? "minecraft:air" : BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(entity.getType()).toString();
 	}
 
 	@Nullable
@@ -264,10 +264,10 @@ public class BlockContainerJS implements SpecialEquality {
 		var properties = getProperties();
 
 		if (properties.isEmpty()) {
-			return id;
+			return id.toString();
 		}
 
-		var builder = new StringBuilder(id);
+		var builder = new StringBuilder(id.toString());
 		builder.append('[');
 
 		var first = true;

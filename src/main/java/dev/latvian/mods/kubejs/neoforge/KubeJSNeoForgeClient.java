@@ -21,7 +21,7 @@ import dev.latvian.mods.kubejs.gui.KubeJSScreen;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesKubeEvent;
 import dev.latvian.mods.kubejs.kubedex.KubedexHighlight;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.client.KeyMapping;
@@ -64,7 +64,7 @@ public class KubeJSNeoForgeClient {
 	private static void setupClient0() {
 		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesKubeEvent());
 
-		for (var builder : RegistryInfo.BLOCK) {
+		for (var builder : RegistryObjectStorage.BLOCK) {
 			if (builder instanceof BlockBuilder b) {
 				switch (b instanceof FluidBlockBuilder fb ? fb.fluidBuilder.fluidType.renderType : b.renderType) {
 					// TODO: Move these to model json
@@ -75,7 +75,7 @@ public class KubeJSNeoForgeClient {
 			}
 		}
 
-		for (var builder : RegistryInfo.FLUID) {
+		for (var builder : RegistryObjectStorage.FLUID) {
 			if (builder instanceof FluidBuilder b) {
 				switch (b.fluidType.renderType) {
 					case CUTOUT -> {
@@ -97,7 +97,7 @@ public class KubeJSNeoForgeClient {
 
 	@SubscribeEvent
 	public static void blockColors(RegisterColorHandlersEvent.Block event) {
-		for (var builder : RegistryInfo.BLOCK) {
+		for (var builder : RegistryObjectStorage.BLOCK) {
 			if (builder instanceof BlockBuilder b && b.tint != null) {
 				event.register(new BlockTintFunctionWrapper(b.tint), b.get());
 			}
@@ -106,7 +106,7 @@ public class KubeJSNeoForgeClient {
 
 	@SubscribeEvent
 	public static void itemColors(RegisterColorHandlersEvent.Item event) {
-		for (var builder : RegistryInfo.ITEM) {
+		for (var builder : RegistryObjectStorage.ITEM) {
 			if (builder instanceof ItemBuilder b && b.tint != null) {
 				event.register(new ItemTintFunctionWrapper(b.tint), b.get());
 			}

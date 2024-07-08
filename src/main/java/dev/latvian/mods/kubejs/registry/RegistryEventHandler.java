@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.registry;
 
-import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -15,46 +15,40 @@ public class RegistryEventHandler {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void registerAll(RegisterEvent event) {
-		handleRegistryEvent(RegistryInfo.of((ResourceKey) event.getRegistryKey()), event);
+		handleRegistryEvent((ResourceKey) event.getRegistryKey(), event);
 	}
 
-	private static <T> void handleRegistryEvent(RegistryInfo<T> registryInfo, RegisterEvent event) {
-		if (!registryInfo.bypassServerOnly && CommonProperties.get().serverOnly) {
-			if (DevProperties.get().logRegistryEventObjects) {
-				KubeJS.LOGGER.warn("Skipping " + registryInfo + " registry - server only");
-			}
+	private static <T> void handleRegistryEvent(ResourceKey<Registry<T>> registryKey, RegisterEvent event) {
+		var objStorage = RegistryObjectStorage.of(registryKey);
 
-			return;
-		}
-
-		if (registryInfo.objects.isEmpty()) {
+		if (objStorage.objects.isEmpty()) {
 			if (DevProperties.get().logRegistryEventObjects) {
-				KubeJS.LOGGER.info("Skipping " + registryInfo + " registry - no objects to build");
+				KubeJS.LOGGER.info("Skipping " + registryKey.location() + " registry - no objects to build");
 			}
 
 			return;
 		}
 
 		if (DevProperties.get().logRegistryEventObjects) {
-			KubeJS.LOGGER.info("Building " + registryInfo.objects.size() + " objects of " + registryInfo + " registry");
+			KubeJS.LOGGER.info("Building " + objStorage.objects.size() + " objects of " + registryKey.location() + " registry");
 		}
 
 		int added = 0;
 
-		for (var builder : registryInfo) {
+		for (var builder : objStorage) {
 			if (!builder.dummyBuilder) {
-				event.register(registryInfo.key, builder.id, builder::createTransformedObject);
+				event.register(registryKey, builder.id, builder::createTransformedObject);
 
 				if (DevProperties.get().logRegistryEventObjects) {
-					ConsoleJS.STARTUP.info("+ " + registryInfo + " | " + builder.id);
+					ConsoleJS.STARTUP.info("+ " + registryKey.location() + " | " + builder.id);
 				}
 
 				added++;
 			}
 		}
 
-		if (!registryInfo.objects.isEmpty() && DevProperties.get().logRegistryEventObjects) {
-			KubeJS.LOGGER.info("Registered " + added + "/" + registryInfo.objects.size() + " objects of " + registryInfo);
+		if (!objStorage.objects.isEmpty() && DevProperties.get().logRegistryEventObjects) {
+			KubeJS.LOGGER.info("Registered " + added + "/" + objStorage.objects.size() + " objects of " + registryKey.location());
 		}
 	}
 }

@@ -33,7 +33,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 	}
 
 	static <T extends Number> RecipeComponentFactory createFactory(T zero, NumberComponent<?, T> range, StringReaderFunction<T> numFunc) {
-		return (storage, reader) -> {
+		return (registries, storage, reader) -> {
 			reader.skipWhitespace();
 
 			if (!reader.canRead() || reader.peek() != '<') {

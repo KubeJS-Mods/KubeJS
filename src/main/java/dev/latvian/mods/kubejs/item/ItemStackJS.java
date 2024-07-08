@@ -9,7 +9,6 @@ import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.ingredient.TagIngredient;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -19,6 +18,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -49,8 +49,8 @@ public interface ItemStackJS {
 	Lazy<List<String>> CACHED_ITEM_TYPE_LIST = Lazy.of(() -> {
 		var cachedItemTypeList = new ArrayList<String>();
 
-		for (var entry : RegistryInfo.ITEM.entrySet()) {
-			cachedItemTypeList.add(entry.getKey().location().toString());
+		for (var item : BuiltInRegistries.ITEM) {
+			cachedItemTypeList.add(item.kjs$getId());
 		}
 
 		return cachedItemTypeList;
@@ -73,7 +73,7 @@ public interface ItemStackJS {
 
 		for (var itemId : CACHED_ITEM_TYPE_LIST.get()) {
 			var itemRl = ResourceLocation.parse(itemId);
-			map.computeIfAbsent(itemRl, id -> Set.of(RegistryInfo.ITEM.getValue(id).getDefaultInstance()));
+			map.computeIfAbsent(itemRl, id -> Set.of(BuiltInRegistries.ITEM.get(id).getDefaultInstance()));
 		}
 
 		return map;
@@ -93,7 +93,7 @@ public interface ItemStackJS {
 		} else if (o instanceof Ingredient ingr) {
 			return ingr.kjs$getFirst();
 		} else if (o instanceof ResourceLocation id) {
-			var item = RegistryInfo.ITEM.getValue(id);
+			var item = BuiltInRegistries.ITEM.get(id);
 
 			if (item == null || item == Items.AIR) {
 				return ItemStack.EMPTY;
@@ -143,7 +143,7 @@ public interface ItemStackJS {
 		if (map != null) {
 			if (map.containsKey("item")) {
 				var id = ID.mc(map.get("item").toString());
-				var item = RegistryInfo.ITEM.getValue(id);
+				var item = BuiltInRegistries.ITEM.get(id);
 
 				if (item == null || item == Items.AIR) {
 					return ItemStack.EMPTY;
@@ -180,7 +180,7 @@ public interface ItemStackJS {
 			if (s.isEmpty()) {
 				return Items.AIR;
 			} else if (s.charAt(0) != '#') {
-				return RegistryInfo.ITEM.getValue(ID.mc(s));
+				return BuiltInRegistries.ITEM.get(ID.mc(s));
 			}
 		}
 
@@ -259,7 +259,7 @@ public interface ItemStackJS {
 		}
 
 		var itemId = ResourceLocation.read(reader);
-		var itemStack = new ItemStack(RegistryInfo.ITEM.getValue(itemId), count);
+		var itemStack = new ItemStack(BuiltInRegistries.ITEM.get(itemId), count);
 
 		var next = reader.canRead() ? reader.peek() : 0;
 

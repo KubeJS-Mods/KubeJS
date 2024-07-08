@@ -4,12 +4,14 @@ import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.block.RandomTickKubeEvent;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -20,8 +22,13 @@ import net.minecraft.world.level.block.state.BlockState;
 @RemapPrefixForJS("kjs$")
 public interface BlockStateKJS extends RegistryObjectKJS<Block>, Replaceable {
 	@Override
-	default RegistryInfo<Block> kjs$getKubeRegistry() {
-		return RegistryInfo.BLOCK;
+	default ResourceKey<Registry<Block>> kjs$getRegistryId() {
+		return Registries.BLOCK;
+	}
+
+	@Override
+	default Registry<Block> kjs$getRegistry() {
+		return BuiltInRegistries.BLOCK;
 	}
 
 	@Override
@@ -30,8 +37,8 @@ public interface BlockStateKJS extends RegistryObjectKJS<Block>, Replaceable {
 	}
 
 	@Override
-	default ResourceKey<Block> kjs$getRegistryKey() {
-		return ((BlockBehaviour.BlockStateBase) this).getBlock().kjs$getRegistryKey();
+	default ResourceKey<Block> kjs$getKey() {
+		return ((BlockBehaviour.BlockStateBase) this).getBlock().kjs$getKey();
 	}
 
 	@Override
@@ -52,8 +59,8 @@ public interface BlockStateKJS extends RegistryObjectKJS<Block>, Replaceable {
 	}
 
 	default boolean kjs$randomTickOverride(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-		if (BlockEvents.RANDOM_TICK.hasListeners(state.kjs$getRegistryKey())) {
-			return BlockEvents.RANDOM_TICK.post(ScriptType.SERVER, state.kjs$getRegistryKey(), new RandomTickKubeEvent(level, pos, state, random)).interruptFalse();
+		if (BlockEvents.RANDOM_TICK.hasListeners(state.kjs$getKey())) {
+			return BlockEvents.RANDOM_TICK.post(ScriptType.SERVER, state.kjs$getKey(), new RandomTickKubeEvent(level, pos, state, random)).interruptFalse();
 		}
 
 		return false;

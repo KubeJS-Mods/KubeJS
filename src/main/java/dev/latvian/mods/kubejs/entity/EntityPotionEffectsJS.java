@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.entity;
 
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -29,49 +28,34 @@ public class EntityPotionEffectsJS {
 		return entity.getActiveEffectsMap();
 	}
 
-	public boolean isHolderActive(Holder<MobEffect> mobEffect) {
+	public boolean isActive(Holder<MobEffect> mobEffect) {
 		return mobEffect != null && entity.hasEffect(mobEffect);
 	}
 
-	public boolean isActive(MobEffect mobEffect) {
-		return isHolderActive(RegistryInfo.MOB_EFFECT.getHolderOf(mobEffect));
-	}
-
-	public int getDuration(MobEffect mobEffect) {
-		return getHolderDuration(RegistryInfo.MOB_EFFECT.getHolderOf(mobEffect));
-	}
-
-	public int getHolderDuration(Holder<MobEffect> mobEffect) {
+	public int getDuration(Holder<MobEffect> mobEffect) {
 		var i = entity.getEffect(mobEffect);
 		return i == null ? 0 : i.getDuration();
 	}
 
 	@Nullable
-	public MobEffectInstance getActive(MobEffect mobEffect) {
-		return getHolderActive(RegistryInfo.MOB_EFFECT.getHolderOf(mobEffect));
-	}
-
-	@Nullable
-	public MobEffectInstance getHolderActive(Holder<MobEffect> mobEffect) {
+	public MobEffectInstance getActive(Holder<MobEffect> mobEffect) {
 		return mobEffect == null ? null : entity.getEffect(mobEffect);
 	}
 
-	public void add(MobEffect mobEffect) {
+	public void add(Holder<MobEffect> mobEffect) {
 		add(mobEffect, 200);
 	}
 
-	public void add(MobEffect mobEffect, int duration) {
+	public void add(Holder<MobEffect> mobEffect, int duration) {
 		add(mobEffect, duration, 0);
 	}
 
-	public void add(MobEffect mobEffect, int duration, int amplifier) {
+	public void add(Holder<MobEffect> mobEffect, int duration, int amplifier) {
 		add(mobEffect, duration, amplifier, false, true);
 	}
 
-	public void add(MobEffect mobEffect, int duration, int amplifier, boolean ambient, boolean showParticles) {
-		if (mobEffect != null) {
-			entity.addEffect(new MobEffectInstance(RegistryInfo.MOB_EFFECT.getHolderOf(mobEffect), duration, amplifier, ambient, showParticles));
-		}
+	public void add(Holder<MobEffect> mobEffect, int duration, int amplifier, boolean ambient, boolean showParticles) {
+		entity.addEffect(new MobEffectInstance(mobEffect, duration, amplifier, ambient, showParticles));
 	}
 
 	public boolean isApplicable(MobEffectInstance effect) {

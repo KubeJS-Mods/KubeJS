@@ -29,9 +29,9 @@ public abstract class FluidMixin implements FluidKJS {
 	}
 
 	@Override
-	public ResourceKey<Fluid> kjs$getRegistryKey() {
+	public ResourceKey<Fluid> kjs$getKey() {
 		if (kjs$registryKey == null) {
-			kjs$registryKey = FluidKJS.super.kjs$getRegistryKey();
+			kjs$registryKey = FluidKJS.super.kjs$getKey();
 		}
 
 		return kjs$registryKey;

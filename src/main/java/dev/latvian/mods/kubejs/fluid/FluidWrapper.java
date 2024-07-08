@@ -4,13 +4,13 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
@@ -120,14 +120,14 @@ public interface FluidWrapper {
 	}
 
 	static Fluid getType(ResourceLocation id) {
-		return RegistryInfo.FLUID.getValue(id);
+		return BuiltInRegistries.FLUID.get(id);
 	}
 
 	static List<String> getTypes() {
 		var types = new ArrayList<String>();
 
-		for (var entry : RegistryInfo.FLUID.entrySet()) {
-			types.add(entry.getKey().location().toString());
+		for (var fluid : BuiltInRegistries.FLUID) {
+			types.add(fluid.kjs$getId());
 		}
 
 		return types;
@@ -138,11 +138,11 @@ public interface FluidWrapper {
 	}
 
 	static boolean exists(ResourceLocation id) {
-		return RegistryInfo.FLUID.hasValue(id);
+		return BuiltInRegistries.FLUID.containsKey(id);
 	}
 
 	static ResourceLocation getId(Fluid fluid) {
-		return RegistryInfo.FLUID.getId(fluid);
+		return BuiltInRegistries.FLUID.getKey(fluid);
 	}
 
 	static FluidStack ofString(DynamicOps<Tag> registryOps, String s) {
@@ -187,7 +187,7 @@ public interface FluidWrapper {
 		}
 
 		var fluidId = ResourceLocation.read(reader);
-		var fluidStack = new FluidStack(RegistryInfo.FLUID.getValue(fluidId), amount);
+		var fluidStack = new FluidStack(BuiltInRegistries.FLUID.get(fluidId), amount);
 
 		var next = reader.canRead() ? reader.peek() : 0;
 
@@ -239,7 +239,7 @@ public interface FluidWrapper {
 		}
 
 		var fluidId = ResourceLocation.read(reader);
-		var fluid = RegistryInfo.FLUID.getValue(fluidId);
+		var fluid = BuiltInRegistries.FLUID.get(fluidId);
 
 		var next = reader.canRead() ? reader.peek() : 0;
 

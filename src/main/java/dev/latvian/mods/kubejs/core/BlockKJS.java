@@ -3,9 +3,12 @@ package dev.latvian.mods.kubejs.core;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -14,8 +17,13 @@ import java.util.List;
 @RemapPrefixForJS("kjs$")
 public interface BlockKJS extends BlockBuilderProvider, RegistryObjectKJS<Block>, Replaceable {
 	@Override
-	default RegistryInfo<Block> kjs$getKubeRegistry() {
-		return RegistryInfo.BLOCK;
+	default ResourceKey<Registry<Block>> kjs$getRegistryId() {
+		return Registries.BLOCK;
+	}
+
+	@Override
+	default Registry<Block> kjs$getRegistry() {
+		return BuiltInRegistries.BLOCK;
 	}
 
 	default void kjs$setBlockBuilder(BlockBuilder b) {

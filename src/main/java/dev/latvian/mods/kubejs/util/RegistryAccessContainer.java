@@ -128,11 +128,16 @@ public final class RegistryAccessContainer {
 		}
 	}
 
+	private <T> RegistryWrapper<T> createRegistryWrapper(ResourceLocation id) {
+		var key = ResourceKey.<T>createRegistryKey(id);
+		return new RegistryWrapper<>(access.registryOrThrow(key), ResourceKey.create(key, ID.UNKNOWN));
+	}
+
 	public RegistryWrapper wrapRegistry(ResourceLocation id) {
 		if (cachedRegistryWrappers == null) {
 			cachedRegistryWrappers = new HashMap<>();
 		}
 
-		return cachedRegistryWrappers.computeIfAbsent(id, i -> new RegistryWrapper(access.registryOrThrow(ResourceKey.createRegistryKey(i))));
+		return cachedRegistryWrappers.computeIfAbsent(id, this::createRegistryWrapper);
 	}
 }

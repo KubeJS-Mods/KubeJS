@@ -9,7 +9,6 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
 import net.minecraft.Util;
@@ -46,6 +45,7 @@ import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemPredicateArgument;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
@@ -167,7 +167,7 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 		if (byNameCache == null) {
 			return byNameCache = Util.make(new HashMap<>(), map -> {
 				for (var entry : ArgumentTypeInfos.BY_CLASS.entrySet()) {
-					var id = RegistryInfo.COMMAND_ARGUMENT_TYPE.getId(entry.getValue());
+					var id = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(entry.getValue());
 					byNameCache.put(id, new ClassWrapper<>(entry.getKey()));
 				}
 			});

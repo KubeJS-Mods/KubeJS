@@ -1,10 +1,12 @@
 package dev.latvian.mods.kubejs.server;
 
 import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
@@ -12,16 +14,21 @@ import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerData;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
+import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.registry.ServerRegistryKubeEvent;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
 import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
 import dev.latvian.mods.kubejs.script.data.VirtualDataPack;
 import dev.latvian.mods.kubejs.server.tag.PreTagKubeEvent;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
@@ -33,6 +40,7 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -115,9 +123,18 @@ public class ServerScriptManager extends ScriptManager {
 		}
 	}
 
+	private record AdditionalServerRegistryHandler(SourceLine sourceLine, List<BuilderBase<?>> builders) implements AdditionalObjectRegistry {
+		@Override
+		public <T> void add(ResourceKey<Registry<T>> registry, BuilderBase<? extends T> builder) {
+			builder.sourceLine = sourceLine;
+			builder.registryKey = (ResourceKey) registry;
+			builders.add(builder);
+		}
+	}
+
 	@Override
 	public void loadAdditional() {
-		for (var builder : RegistryInfo.ALL_BUILDERS) {
+		for (var builder : RegistryObjectStorage.ALL_BUILDERS) {
 			builder.generateDataJsons(internalDataPack);
 		}
 
@@ -127,13 +144,49 @@ public class ServerScriptManager extends ScriptManager {
 			firstLoad = false;
 
 			if (ServerEvents.REGISTRY.hasListeners()) {
+				var builders = new ArrayList<BuilderBase<?>>();
+
 				var ops = RegistryAccessContainer.current.json();
+
+				var codecs = new IdentityHashMap<ResourceKey<?>, Codec<?>>();
 
 				for (var reg : DataPackRegistriesHooks.getDataPackRegistries()) {
 					var key = (ResourceKey) reg.key();
+					codecs.put(key, reg.elementCodec());
 
 					if (ServerEvents.REGISTRY.hasListeners(key)) {
-						ServerEvents.REGISTRY.post(ScriptType.SERVER, key, new ServerRegistryKubeEvent(registriesDataPack, key, ops, reg.elementCodec()));
+						ServerEvents.REGISTRY.post(ScriptType.SERVER, key, new ServerRegistryKubeEvent(key, ops, reg.elementCodec(), builders));
+					}
+				}
+
+				for (var b : List.copyOf(builders)) {
+					b.createAdditionalObjects(new AdditionalServerRegistryHandler(b.sourceLine, builders));
+				}
+
+				for (var b : builders) {
+					if (b.registryKey == null) {
+						ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to register object '" + b.id + "' - unknown registry").source(b.sourceLine));
+						continue;
+					}
+
+					try {
+						var codec = codecs.get(b.registryKey);
+
+						if (codec == null) {
+							throw new KubeRuntimeException("Don't know how to encode '" + b.id + "' of '" + b.registryKey.location() + "'!").source(b.sourceLine);
+						}
+
+						var obj = b.createTransformedObject();
+						var json = codec.encodeStart(ops, Cast.to(obj)).getOrThrow();
+						var k = b.registryKey.location();
+
+						if (k.getNamespace().equals("minecraft")) {
+							registriesDataPack.json(ResourceLocation.fromNamespaceAndPath(b.id.getNamespace(), k.getPath() + "/" + b.id.getPath()), json);
+						} else {
+							registriesDataPack.json(ResourceLocation.fromNamespaceAndPath(b.id.getNamespace(), k.getNamespace() + "/" + k.getPath() + "/" + b.id.getPath()), json);
+						}
+					} catch (Exception ex) {
+						ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to register object '" + b.id + "' of registry '" + b.registryKey.location() + "'!", ex).source(b.sourceLine));
 					}
 				}
 			}
@@ -168,7 +221,7 @@ public class ServerScriptManager extends ScriptManager {
 
 		boolean result = false;
 		RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.setValue(getRegistries().cachedItemTags);
-		recipeSchemaStorage.fireEvents(resourceManager, getRegistries().json());
+		recipeSchemaStorage.fireEvents(getRegistries(), resourceManager);
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
 		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);

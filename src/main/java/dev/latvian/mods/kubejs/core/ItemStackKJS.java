@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.WithCodec;
@@ -17,7 +16,10 @@ import dev.latvian.mods.rhino.util.ReturnsSelf;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import dev.latvian.mods.rhino.util.ToStringJS;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -76,8 +78,13 @@ public interface ItemStackKJS extends
 	}
 
 	@Override
-	default RegistryInfo<Item> kjs$getKubeRegistry() {
-		return RegistryInfo.ITEM;
+	default ResourceKey<Registry<Item>> kjs$getRegistryId() {
+		return Registries.ITEM;
+	}
+
+	@Override
+	default Registry<Item> kjs$getRegistry() {
+		return BuiltInRegistries.ITEM;
 	}
 
 	@Override
@@ -91,8 +98,8 @@ public interface ItemStackKJS extends
 	}
 
 	@Override
-	default ResourceKey<Item> kjs$getRegistryKey() {
-		return kjs$self().getItem().kjs$getRegistryKey();
+	default ResourceKey<Item> kjs$getKey() {
+		return kjs$self().getItem().kjs$getKey();
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.ComponentRole;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonUtils;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -240,7 +241,7 @@ public class JsonRecipeSchemaLoader {
 		}
 	}
 
-	public static void load(RecipeSchemaStorage storage, RecipeSchemaRegistry event, ResourceManager resourceManager, DynamicOps<JsonElement> jsonOps) {
+	public static void load(RecipeSchemaStorage storage, RegistryAccessContainer registries, RecipeSchemaRegistry event, ResourceManager resourceManager) {
 		var map = new HashMap<ResourceLocation, RecipeSchemaBuilder>();
 
 		for (var entry : resourceManager.listResources("kubejs/recipe_schema", path -> path.getPath().endsWith(".json")).entrySet()) {
@@ -292,7 +293,7 @@ public class JsonRecipeSchemaLoader {
 							default -> ComponentRole.OTHER;
 						};
 
-						var type = storage.getComponent(keyJson.get("type").getAsString());
+						var type = storage.getComponent(registries, keyJson.get("type").getAsString());
 						var key = type.key(name, role);
 
 						if (keyJson.has("optional")) {
@@ -302,7 +303,7 @@ public class JsonRecipeSchemaLoader {
 								key.defaultOptional();
 							} else {
 								try {
-									key.optional = new RecipeOptional.Constant(key.codec.decode(jsonOps, optionalJson).getOrThrow().getFirst());
+									key.optional = new RecipeOptional.Constant(key.codec.decode(registries.json(), optionalJson).getOrThrow().getFirst());
 								} catch (Exception ex) {
 									throw new IllegalArgumentException("Failed to create optional value for key '" + key + "' of '" + holder.id + "' from " + optionalJson, ex);
 								}
@@ -395,7 +396,7 @@ public class JsonRecipeSchemaLoader {
 		}
 
 		for (var holder : map.values()) {
-			var schema = holder.getSchema(jsonOps);
+			var schema = holder.getSchema(registries.json());
 			event.namespace(holder.id.getNamespace()).register(holder.id.getPath(), schema);
 		}
 	}

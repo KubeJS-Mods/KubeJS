@@ -9,7 +9,7 @@ import dev.latvian.mods.rhino.util.RemappedEnumConstant;
 import net.minecraft.util.StringRepresentable;
 
 public record EnumComponent<T extends Enum<T> & StringRepresentable>(EnumTypeInfo enumTypeInfo, Codec<T> codec) implements RecipeComponent<T> {
-	public static final RecipeComponentFactory FACTORY = (storage, reader) -> {
+	public static final RecipeComponentFactory FACTORY = (registries, storage, reader) -> {
 		reader.skipWhitespace();
 		reader.expect('<');
 		reader.skipWhitespace();

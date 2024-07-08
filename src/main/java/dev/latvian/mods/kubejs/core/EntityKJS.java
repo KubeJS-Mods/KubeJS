@@ -5,7 +5,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -55,7 +54,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	default String kjs$getType() {
-		return String.valueOf(RegistryInfo.ENTITY_TYPE.getId(kjs$self().getType()));
+		return kjs$self().getType().kjs$getId();
 	}
 
 	default GameProfile kjs$getProfile() {

@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -139,10 +139,10 @@ public class FoodBuilder {
 		@Override
 		public MobEffectInstance get() {
 			if (cachedEffect == null) {
-				cachedEffect = RegistryInfo.MOB_EFFECT.getHolder(id);
+				cachedEffect = BuiltInRegistries.MOB_EFFECT.getHolder(id).orElse(null);
 
 				if (cachedEffect == null) {
-					var effectIds = RegistryInfo.MOB_EFFECT.entrySet().stream().map(entry -> entry.getKey().location()).collect(Collectors.toSet());
+					var effectIds = BuiltInRegistries.MOB_EFFECT.entrySet().stream().map(entry -> entry.getKey().location()).collect(Collectors.toSet());
 					throw new RuntimeException(String.format("Missing effect '%s'. Check spelling or maybe potion id was used instead of effect id. Possible ids: %s", id, effectIds));
 				}
 			}

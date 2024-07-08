@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.misc;
 
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
@@ -42,7 +42,7 @@ public class BasicMobEffect extends MobEffect {
 
 	private void applyAttributeModifications() {
 		if (!modified) {
-			modifierMap.forEach((r, m) -> attributeModifiers.put(RegistryInfo.ATTRIBUTE.getHolder(r), m));
+			modifierMap.forEach((r, m) -> BuiltInRegistries.ATTRIBUTE.getHolder(r).ifPresent(h -> attributeModifiers.put(h, m)));
 			modified = true;
 		}
 	}

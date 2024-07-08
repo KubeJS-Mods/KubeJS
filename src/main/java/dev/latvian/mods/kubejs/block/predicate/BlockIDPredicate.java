@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.block.predicate;
 
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.util.Cast;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -65,7 +65,7 @@ public class BlockIDPredicate implements BlockPredicate {
 
 	private Block getBlock() {
 		if (cachedBlock == null) {
-			cachedBlock = RegistryInfo.BLOCK.getValue(id);
+			cachedBlock = BuiltInRegistries.BLOCK.get(id);
 
 			if (cachedBlock == null) {
 				cachedBlock = Blocks.AIR;

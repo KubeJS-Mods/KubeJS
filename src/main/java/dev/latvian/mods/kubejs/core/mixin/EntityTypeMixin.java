@@ -27,9 +27,9 @@ public abstract class EntityTypeMixin implements EntityTypeKJS {
 	}
 
 	@Override
-	public ResourceKey<EntityType<?>> kjs$getRegistryKey() {
+	public ResourceKey<EntityType<?>> kjs$getKey() {
 		if (kjs$registryKey == null) {
-			kjs$registryKey = EntityTypeKJS.super.kjs$getRegistryKey();
+			kjs$registryKey = EntityTypeKJS.super.kjs$getKey();
 		}
 
 		return kjs$registryKey;

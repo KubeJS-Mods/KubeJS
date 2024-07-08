@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -38,11 +37,6 @@ public class ArmorMaterialBuilder extends BuilderBase<ArmorMaterial> {
 	}
 
 	@Override
-	public RegistryInfo getRegistryType() {
-		return RegistryInfo.ARMOR_MATERIAL;
-	}
-
-	@Override
 	public ArmorMaterial createObject() {
 		return new ArmorMaterial(
 			defense == null ? Map.of(
@@ -71,8 +65,8 @@ public class ArmorMaterialBuilder extends BuilderBase<ArmorMaterial> {
 		return this;
 	}
 
-	public ArmorMaterialBuilder equipSound(ResourceLocation id) {
-		equipSound = RegistryInfo.SOUND_EVENT.getHolder(id);
+	public ArmorMaterialBuilder equipSound(Holder<SoundEvent> sound) {
+		equipSound = sound;
 		return this;
 	}
 

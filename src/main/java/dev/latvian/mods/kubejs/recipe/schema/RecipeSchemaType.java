@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
@@ -24,7 +24,7 @@ public class RecipeSchemaType {
 		var serializerId = schema.typeOverride == null ? id : schema.typeOverride;
 
 		if (serializer == null) {
-			serializer = Optional.ofNullable(RegistryInfo.RECIPE_SERIALIZER.getValue(serializerId));
+			serializer = Optional.ofNullable(BuiltInRegistries.RECIPE_SERIALIZER.get(serializerId));
 		}
 
 		var s = serializer.orElse(null);
