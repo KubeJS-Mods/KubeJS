@@ -22,6 +22,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.KubeJSPlugins;
+import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -34,7 +35,11 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -73,7 +78,10 @@ public class KubeJSClient extends KubeJSCommon {
 			if (Files.exists(defOptions)) {
 				try {
 					KubeJS.LOGGER.info("Loaded default options from kubejs/config/defaultoptions.txt");
-					Files.copy(defOptions, optionsFile.toPath());
+					final PrintWriter printwriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(optionsFile), StandardCharsets.UTF_8));
+					printwriter.println("version:" + SharedConstants.getCurrentVersion().getWorldVersion());
+					printwriter.print(Files.readString(defOptions));
+					printwriter.close();
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
