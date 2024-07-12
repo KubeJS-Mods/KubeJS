@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.forge;
 import dev.latvian.mods.kubejs.BuiltinKubeJSPlugin;
 import dev.latvian.mods.kubejs.fluid.FluidStackJS;
 import dev.latvian.mods.kubejs.integration.forge.jei.JEIEvents;
+import dev.latvian.mods.kubejs.item.forge.custom.MultitoolItemJSForge;
+import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ClassFilter;
@@ -14,6 +16,12 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class BuiltinKubeJSForgePlugin extends BuiltinKubeJSPlugin {
+	@Override
+	public void init() {
+		super.init();
+
+		RegistryInfo.ITEM.addType("multitool", MultitoolItemJSForge.Builder.class, MultitoolItemJSForge.Builder::new);
+	}
 	@Override
 	public void registerEvents() {
 		super.registerEvents();
