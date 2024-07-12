@@ -20,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 @JeiPlugin
 public class KubeJSJEIPlugin implements IModPlugin {
 	public static final ResourceLocation ID = KubeJS.id("jei");
+	public static final boolean DISABLED = ModList.get().isLoaded("emi");
 	private RecipeViewerData remote = null;
 
 	public KubeJSJEIPlugin() {
@@ -53,6 +55,10 @@ public class KubeJSJEIPlugin implements IModPlugin {
 
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime runtime) {
+		if (DISABLED) {
+			return;
+		}
+
 		var recipeManager = runtime.getRecipeManager();
 		var ingredientManager = runtime.getIngredientManager();
 
@@ -157,6 +163,10 @@ public class KubeJSJEIPlugin implements IModPlugin {
 
 	@Override
 	public void registerRecipes(IRecipeRegistration registration) {
+		if (DISABLED) {
+			return;
+		}
+
 		for (var type : RecipeViewerEntryType.ALL_TYPES.get()) {
 			var ingredientType = JEIIntegration.typeOf(type);
 
@@ -198,6 +208,10 @@ public class KubeJSJEIPlugin implements IModPlugin {
 
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistration registration) {
+		if (DISABLED) {
+			return;
+		}
+
 		if (RecipeViewerEvents.REGISTER_SUBTYPES.hasListeners(RecipeViewerEntryType.ITEM)) {
 			RecipeViewerEvents.REGISTER_SUBTYPES.post(ScriptType.CLIENT, RecipeViewerEntryType.ITEM, new JEIRegisterSubtypesKubeEvent(RecipeViewerEntryType.ITEM, VanillaTypes.ITEM_STACK, registration));
 		}
@@ -215,6 +229,10 @@ public class KubeJSJEIPlugin implements IModPlugin {
 
 	@Override
 	public <T> void registerFluidSubtypes(ISubtypeRegistration registration, IPlatformFluidHelper<T> platformFluidHelper) {
+		if (DISABLED) {
+			return;
+		}
+
 		if (RecipeViewerEvents.REGISTER_SUBTYPES.hasListeners(RecipeViewerEntryType.FLUID)) {
 			RecipeViewerEvents.REGISTER_SUBTYPES.post(ScriptType.CLIENT, RecipeViewerEntryType.FLUID, new JEIRegisterSubtypesKubeEvent(RecipeViewerEntryType.FLUID, NeoForgeTypes.FLUID_STACK, registration));
 		}

@@ -50,11 +50,11 @@ public class CreativeTabKubeEvent implements KubeEvent {
 		callback.addBefore(order, items, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
 	}
 
-	public void removeDisplay(ItemPredicate filter) {
+	public void removeFromParent(ItemPredicate filter) {
 		callback.remove(filter, true, false);
 	}
 
-	public void removeSearch(ItemPredicate filter) {
+	public void removeFromSearch(ItemPredicate filter) {
 		callback.remove(filter, false, true);
 	}
 

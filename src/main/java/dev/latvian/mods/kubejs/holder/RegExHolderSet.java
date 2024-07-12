@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.holder;
 
 import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
@@ -9,6 +8,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
@@ -22,11 +23,15 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class RegExHolderSet<T> extends HolderSet.ListBacked<T> implements ICustomHolderSet<T> {
-	public static <T> MapCodec<RegExHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
+	public static <T> MapCodec<RegExHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
 			RegistryOps.retrieveRegistryLookup(registryKey).forGetter(s -> s.registryLookup),
 			RegExpKJS.CODEC.fieldOf("pattern").forGetter(s -> s.pattern)
 		).apply(instance, RegExHolderSet::new));
+	}
+
+	public static <T> StreamCodec<RegistryFriendlyByteBuf, RegExHolderSet<T>> streamCodec(ResourceKey<? extends Registry<T>> registryKey) {
+		return null;
 	}
 
 	public final HolderLookup.RegistryLookup<T> registryLookup;

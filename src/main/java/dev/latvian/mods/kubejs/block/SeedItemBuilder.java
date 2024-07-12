@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.neoforged.neoforge.common.SpecialPlantable;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +26,7 @@ public class SeedItemBuilder extends BlockItemBuilder {
 		}
 
 		@Override
-		public void spawnPlantAtPosition(ItemStack stack, LevelReader level, BlockPos pos, @Nullable Direction direction) {
+		public void spawnPlantAtPosition(ItemStack stack, LevelAccessor level, BlockPos pos, @Nullable Direction direction) {
 		}
 
 		@Override

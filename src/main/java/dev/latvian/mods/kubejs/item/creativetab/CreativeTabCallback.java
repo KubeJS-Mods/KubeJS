@@ -9,5 +9,5 @@ public interface CreativeTabCallback {
 
 	void addBefore(ItemStack order, ItemStack[] items, CreativeModeTab.TabVisibility visibility);
 
-	void remove(ItemPredicate filter, boolean removeDisplay, boolean removeSearch);
+	void remove(ItemPredicate filter, boolean removeParent, boolean removeSearch);
 }

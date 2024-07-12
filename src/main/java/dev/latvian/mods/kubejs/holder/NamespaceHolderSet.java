@@ -8,6 +8,8 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
@@ -20,11 +22,15 @@ import java.util.Optional;
 import java.util.Set;
 
 public class NamespaceHolderSet<T> extends HolderSet.ListBacked<T> implements ICustomHolderSet<T> {
-	public static <T> MapCodec<NamespaceHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey, Codec<Holder<T>> holderCodec, boolean forceList) {
+	public static <T> MapCodec<NamespaceHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
 			RegistryOps.retrieveRegistryLookup(registryKey).forGetter(s -> s.registryLookup),
 			Codec.STRING.fieldOf("namespace").forGetter(s -> s.namespace)
 		).apply(instance, NamespaceHolderSet::new));
+	}
+
+	public static <T> StreamCodec<RegistryFriendlyByteBuf, NamespaceHolderSet<T>> streamCodec(ResourceKey<? extends Registry<T>> registryKey) {
+		return null;
 	}
 
 	public final HolderLookup.RegistryLookup<T> registryLookup;

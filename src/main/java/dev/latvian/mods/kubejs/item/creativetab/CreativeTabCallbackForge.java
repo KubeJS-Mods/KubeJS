@@ -5,9 +5,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 
 public record CreativeTabCallbackForge(BuildCreativeModeTabContentsEvent event) implements CreativeTabCallback {
 	@Override
@@ -25,34 +23,20 @@ public record CreativeTabCallbackForge(BuildCreativeModeTabContentsEvent event) 
 	}
 
 	@Override
-	public void remove(ItemPredicate filter, boolean removeDisplay, boolean removeSearch) {
-		var entries = new ArrayList<Map.Entry<ItemStack, CreativeModeTab.TabVisibility>>();
-
-		for (var entry : event.getEntries()) {
-			if (filter.test(entry.getKey())) {
-				var visibility = entry.getValue();
-
-				if (removeDisplay && removeSearch) {
-					visibility = null;
+	public void remove(ItemPredicate filter, boolean removeParent, boolean removeSearch) {
+		if (removeParent) {
+			for (var is : List.copyOf(event.getParentEntries())) {
+				if (filter.test(is)) {
+					event.remove(is, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY);
 				}
-
-				if (removeDisplay && visibility == CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS) {
-					visibility = CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY;
-				}
-
-				if (removeSearch && visibility == CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS) {
-					visibility = CreativeModeTab.TabVisibility.PARENT_TAB_ONLY;
-				}
-
-				entries.add(new AbstractMap.SimpleEntry<>(entry.getKey(), visibility));
 			}
 		}
 
-		for (var entry : entries) {
-			if (entry.getValue() == null) {
-				event.getEntries().remove(entry.getKey());
-			} else {
-				event.getEntries().put(entry.getKey(), entry.getValue());
+		if (removeSearch) {
+			for (var is : List.copyOf(event.getSearchEntries())) {
+				if (filter.test(is)) {
+					event.remove(is, CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY);
+				}
 			}
 		}
 	}
