@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentBuilder;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
@@ -14,6 +15,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -130,6 +132,63 @@ public class RecipeSchemaStorage {
 
 	public RecipeComponent<?> readComponent(RegistryAccessContainer registries, StringReader reader) throws Exception {
 		reader.skipWhitespace();
+
+		if (!reader.canRead()) {
+			throw new IllegalArgumentException("Nothing to read");
+		}
+
+		if (reader.peek() == '{') {
+			reader.skip();
+
+			var keys = new ArrayList<RecipeComponentBuilder.Key>();
+
+			while (true) {
+				reader.skipWhitespace();
+
+				if (!reader.canRead()) {
+					throw new IllegalArgumentException("Expected key name");
+				}
+
+				var name = reader.readString();
+				var optional = false;
+				var alwaysWrite = false;
+
+				reader.skipWhitespace();
+
+				if (reader.canRead() && reader.peek() == '?') {
+					reader.skip();
+					reader.skipWhitespace();
+					optional = true;
+				}
+
+				if (reader.canRead() && reader.peek() == '!') {
+					reader.skip();
+					reader.skipWhitespace();
+					alwaysWrite = true;
+				}
+
+				reader.expect(':');
+				reader.skipWhitespace();
+
+				var component = readComponent(registries, reader);
+
+				keys.add(new RecipeComponentBuilder.Key(name, component, optional, alwaysWrite));
+
+				reader.skipWhitespace();
+
+				if (!reader.canRead()) {
+					throw new IllegalArgumentException("Unexpected EOL");
+				} else if (reader.peek() == ',') {
+					reader.skip();
+				} else if (reader.peek() == '}') {
+					reader.skip();
+					break;
+				}
+			}
+
+			return new RecipeComponentBuilder(keys);
+		}
+
 		var key = reader.readUnquotedString();
 
 		if (reader.canRead() && reader.peek() == ':') {
@@ -148,7 +207,7 @@ public class RecipeSchemaStorage {
 		}
 
 		if (component == null) {
-			throw new UnsupportedOperationException("Recipe Component '" + key + "' not found");
+			throw new NullPointerException("Recipe Component '" + key + "' not found");
 		}
 
 		reader.skipWhitespace();

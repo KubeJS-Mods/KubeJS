@@ -38,7 +38,7 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 	public boolean replace(Context cx, KubeRecipe recipe, ReplacementMatchInfo match, Object with) {
 		var newValue = value == null ? null : key.component.replace(cx, recipe, value, match, with);
 
-		if (key.component.checkValueHasChanged(value, newValue)) {
+		if (value != newValue) {
 			value = newValue;
 			write();
 			return true;

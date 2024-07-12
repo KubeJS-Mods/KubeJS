@@ -24,6 +24,11 @@ public interface SizedIngredientWrapper {
 	SizedIngredient all = new SizedIngredient(IngredientWrapper.all, 1);
 
 	@Info("Returns a sized ingredient of the input")
+	static SizedIngredient of(SizedIngredient ingredient) {
+		return ingredient;
+	}
+
+	@Info("Returns a sized ingredient of the input")
 	static SizedIngredient of(Ingredient ingredient, int count) {
 		return new SizedIngredient(ingredient, count);
 	}

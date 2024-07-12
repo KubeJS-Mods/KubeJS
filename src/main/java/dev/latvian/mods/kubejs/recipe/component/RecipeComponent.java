@@ -37,18 +37,12 @@ import java.util.List;
  */
 @Nullable
 public interface RecipeComponent<T> {
-	static RecipeComponentBuilder builder() {
-		return new RecipeComponentBuilder(4);
+	static RecipeComponentBuilder builder(List<RecipeComponentBuilder.Key> keys) {
+		return new RecipeComponentBuilder(keys);
 	}
 
-	static RecipeComponentBuilder builder(RecipeKey<?>... key) {
-		var b = new RecipeComponentBuilder(key.length);
-
-		for (var k : key) {
-			b.add(k);
-		}
-
-		return b;
+	static RecipeComponentBuilder builder(RecipeComponentBuilder.Key... keys) {
+		return new RecipeComponentBuilder(List.of(keys));
 	}
 
 	/**
@@ -194,10 +188,6 @@ public interface RecipeComponent<T> {
 	 */
 	default String checkEmpty(RecipeKey<T> key, T value) {
 		return "";
-	}
-
-	default boolean checkValueHasChanged(T oldValue, T newValue) {
-		return oldValue != newValue;
 	}
 
 	default void buildUniqueId(UniqueIdBuilder builder, T value) {

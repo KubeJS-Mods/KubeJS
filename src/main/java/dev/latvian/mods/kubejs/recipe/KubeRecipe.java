@@ -7,8 +7,8 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.error.MissingComponentException;
-import dev.latvian.mods.kubejs.recipe.component.RecipeComponentBuilderMap;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValueMap;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ConsumeAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
@@ -51,7 +51,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public SourceLine sourceLine = SourceLine.UNKNOWN;
 	public String modifyResult = "";
 
-	private RecipeComponentBuilderMap valueMap = RecipeComponentBuilderMap.EMPTY;
+	private RecipeComponentValueMap valueMap = RecipeComponentValueMap.EMPTY;
 	private RecipeComponentValue<?>[] inputValues;
 	private RecipeComponentValue<?>[] outputValues;
 
@@ -156,7 +156,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		}
 
 		if (!type.schemaType.schema.keys.isEmpty()) {
-			valueMap = new RecipeComponentBuilderMap(type.schemaType.schema.keys);
+			valueMap = new RecipeComponentValueMap(type.schemaType.schema.keys);
 
 			if (created) {
 				for (var v : valueMap.holders) {

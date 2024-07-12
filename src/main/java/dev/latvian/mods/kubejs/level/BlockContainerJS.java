@@ -396,7 +396,8 @@ public class BlockContainerJS implements SpecialEquality {
 	}
 
 	public ResourceLocation getBiomeId() {
-		return minecraftLevel.getBiome(pos).unwrapKey().orElse(Biomes.PLAINS).location();
+		var k = minecraftLevel.getBiome(pos).getKey();
+		return k == null ? Biomes.PLAINS.location() : k.location();
 	}
 
 	@Override

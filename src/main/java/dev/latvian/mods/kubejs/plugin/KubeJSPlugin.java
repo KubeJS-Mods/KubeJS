@@ -15,6 +15,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeMappingRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
+import dev.latvian.mods.kubejs.registry.ServerRegistryRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.DataComponentTypeInfoRegistry;
 import dev.latvian.mods.kubejs.script.ScriptManager;
@@ -43,6 +44,9 @@ public interface KubeJSPlugin {
 	}
 
 	default void registerBuilderTypes(BuilderTypeRegistry registry) {
+	}
+
+	default void registerServerRegistries(ServerRegistryRegistry registry) {
 	}
 
 	/**

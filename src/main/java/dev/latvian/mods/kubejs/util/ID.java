@@ -62,7 +62,7 @@ public interface ID {
 		} else if (o instanceof ResourceKey<?> key) {
 			return key.location();
 		} else if (o instanceof Holder<?> holder) {
-			return holder.unwrapKey().get().location();
+			return holder.getKey().location();
 		} else if (o instanceof RegistryObjectKJS<?> key) {
 			return key.kjs$getIdLocation();
 		}

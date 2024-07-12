@@ -31,8 +31,7 @@ public interface RegistryObjectKJS<T> {
 
 	default ResourceKey<T> kjs$getKey() {
 		try {
-			var h = kjs$asHolder();
-			return h instanceof Holder.Reference ref ? ref.key() : h.unwrapKey().orElseThrow();
+			return kjs$asHolder().getKey();
 		} catch (Exception ex) {
 			return kjs$getRegistry().getResourceKey((T) this).orElseThrow();
 		}

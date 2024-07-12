@@ -290,9 +290,19 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		Set the food properties of the item.
 		""")
 	public ItemBuilder food(Consumer<FoodBuilder> b) {
-		foodBuilder = new FoodBuilder();
+		if (foodBuilder == null) {
+			foodBuilder = new FoodBuilder();
+		}
+
 		b.accept(foodBuilder);
 		return this;
+	}
+
+	@Info("""
+		Set the food nutrition and saturation of the item.
+		""")
+	public ItemBuilder food(int nutrition, float saturation) {
+		return food(b -> b.nutrition(nutrition).saturation(saturation));
 	}
 
 	@Info("Makes the item fire resistant like netherite tools (or not).")

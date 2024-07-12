@@ -12,7 +12,6 @@ import net.minecraft.Util;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -98,7 +97,11 @@ public class BlockWrapper {
 	public static List<ResourceLocation> getTaggedIds(ResourceLocation tag) {
 		return Util.make(new LinkedList<>(), list -> {
 			for (var holder : BuiltInRegistries.BLOCK.getTagOrEmpty(Tags.block(tag))) {
-				holder.unwrapKey().map(ResourceKey::location).ifPresent(list::add);
+				var l = holder.getKey();
+
+				if (l != null) {
+					list.add(l.location());
+				}
 			}
 		});
 	}

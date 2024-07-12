@@ -1,12 +1,13 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapLike;
+import com.mojang.serialization.RecordBuilder;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.Context;
@@ -15,23 +16,53 @@ import dev.latvian.mods.rhino.type.JSOptionalParam;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBuilderMap> {
-	public final List<RecipeKey<?>> keys;
-	public Predicate<Set<String>> hasPriority;
+public class RecipeComponentBuilder implements RecipeComponent<Map<RecipeComponentBuilder.Key, RecipeComponentBuilder.Value>> {
+	public record Key(String name, RecipeComponent<?> component, boolean optional, boolean alwaysWrite) {
+		public Key(String name, RecipeComponent<?> component, boolean optional) {
+			this(name, component, optional, false);
+		}
 
-	public RecipeComponentBuilder(int init) {
-		this.keys = new ArrayList<>(init);
+		public Key(String name, RecipeComponent<?> component) {
+			this(name, component, false);
+		}
+
+		@Override
+		public String toString() {
+			return name + (optional ? "?" : "") + (alwaysWrite ? "!" : "") + ": " + component;
+		}
 	}
 
-	public RecipeComponentBuilder add(RecipeKey<?> key) {
-		keys.add(key);
-		return this;
+	public record Value(Key key, int index, Object value) implements Map.Entry<Key, Object> {
+		@Override
+		public Key getKey() {
+			return key;
+		}
+
+		@Override
+		public Object getValue() {
+			return value;
+		}
+
+		@Override
+		public Object setValue(Object object) {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	public final List<Key> keys;
+	public Predicate<Set<String>> hasPriority;
+
+	public RecipeComponentBuilder(List<Key> keys) {
+		this.keys = List.copyOf(keys);
 	}
 
 	public RecipeComponentBuilder hasPriority(Predicate<Set<String>> hasPriority) {
@@ -40,48 +71,52 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	public RecipeComponentBuilder createCopy() {
-		var copy = new RecipeComponentBuilder(keys.size());
-		copy.keys.addAll(keys);
+		var copy = new RecipeComponentBuilder(keys);
 		copy.hasPriority = hasPriority;
 		return copy;
 	}
 
-	@Override
-	public Codec<RecipeComponentBuilderMap> codec() {
-		return new Codec<>() {
+	public MapCodec<Map<Key, Value>> mapCodec() {
+		return new MapCodec<>() {
 			@Override
-			public <T> DataResult<Pair<RecipeComponentBuilderMap, T>> decode(DynamicOps<T> ops, T input) {
-				/*
-				for (var holder : value.holders) {
-					holder.key.component.readFromJson(recipe, Cast.to(holder), json);
-
-					if (!holder.key.optional() && holder.value == null) {
-						throw new IllegalArgumentException("Missing required key '" + holder.key + "'!");
-					}
-				}
-				 */
-
-				// return ops.getMapEntries(input).flatMap(map -> {
-				return DataResult.error(() -> "I don't understand codecs well enough yet");
+			public <T> Stream<T> keys(DynamicOps<T> ops) {
+				return keys.stream().map(Key::name).map(ops::createString);
 			}
 
 			@Override
-			public <T> DataResult<T> encode(RecipeComponentBuilderMap input, DynamicOps<T> ops, T prefix) {
+			public <T> DataResult<Map<Key, Value>> decode(DynamicOps<T> ops, MapLike<T> input) {
+				var map = new HashMap<Key, Value>(keys.size());
+				var keyMap = new HashMap<String, Key>();
+
+				keys.forEach(key -> keyMap.put(key.name, key));
+
+				input.entries().forEach(entry -> {
+					var key = keyMap.get(ops.getStringValue(entry.getFirst()).getOrThrow());
+
+					if (key != null) {
+						map.put(key, new Value(key, keys.indexOf(key), key.component.codec().decode(ops, entry.getSecond())));
+					}
+				});
+
+				return DataResult.success(map);
+			}
+
+			@Override
+			public <T> RecordBuilder<T> encode(Map<Key, Value> input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
 				var builder = ops.mapBuilder();
 
-				/*
-				for (var val : value.holders) {
-					if (val.value != null) {
-						var vc = new RecipeComponentValue<>(val.key, val.getIndex());
-						vc.value = Cast.to(val.value);
-						val.key.component.writeToJson(recipe, Cast.to(vc), json);
-					}
+				for (var entry : input.values()) {
+					builder.add(ops.createString(entry.key.name), entry.key.component.codec().encodeStart(ops, Cast.to(entry.value)));
 				}
-				 */
 
-				return builder.build(prefix);
+				return builder;
 			}
 		};
+	}
+
+	@Override
+	public Codec<Map<Key, Value>> codec() {
+		return mapCodec().codec();
 	}
 
 	@Override
@@ -127,9 +162,9 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public boolean matches(Context cx, KubeRecipe recipe, RecipeComponentBuilderMap value, ReplacementMatchInfo match) {
-		for (var e : value.holders) {
-			if (e.matches(cx, recipe, match)) {
+	public boolean matches(Context cx, KubeRecipe recipe, Map<Key, Value> value, ReplacementMatchInfo match) {
+		for (var e : value.values()) {
+			if (e.key.component.matches(cx, recipe, Cast.to(e.value), match)) {
 				return true;
 			}
 		}
@@ -138,40 +173,43 @@ public class RecipeComponentBuilder implements RecipeComponent<RecipeComponentBu
 	}
 
 	@Override
-	public RecipeComponentBuilderMap replace(Context cx, KubeRecipe recipe, RecipeComponentBuilderMap original, ReplacementMatchInfo match, Object with) {
-		for (var e : original.holders) {
-			if (e.replace(cx, recipe, match, with)) {
-				original.hasChanged = true;
+	public Map<Key, Value> replace(Context cx, KubeRecipe recipe, Map<Key, Value> original, ReplacementMatchInfo match, Object with) {
+		var replaced = original;
+
+		for (var e : original.values()) {
+			var r = e.key.component.replace(cx, recipe, Cast.to(e.value), match, with);
+
+			if (r != e.value) {
+				if (replaced == original) {
+					replaced = new LinkedHashMap<>(original);
+				}
+
+				replaced.put(e.key, new Value(e.key, e.index, r));
 			}
 		}
 
-		return original;
+		return replaced;
 	}
 
 	@Override
-	public void buildUniqueId(UniqueIdBuilder builder, RecipeComponentBuilderMap value) {
+	public void buildUniqueId(UniqueIdBuilder builder, Map<Key, Value> map) {
 		boolean first = true;
 
-		for (var entry : value.entrySet()) {
-			if (entry.getValue() != null) {
+		for (var value : map.values()) {
+			if (value.value != null) {
 				if (first) {
 					first = false;
 				} else {
 					builder.appendSeparator();
 				}
 
-				entry.getKey().component.buildUniqueId(builder, Cast.to(entry.getValue()));
+				value.key.component.buildUniqueId(builder, Cast.to(value.value));
 			}
 		}
 	}
 
 	@Override
 	public String toString() {
-		return keys.stream().map(RecipeKey::toString).collect(Collectors.joining(", ", "builder<", ">"));
-	}
-
-	@Override
-	public boolean checkValueHasChanged(RecipeComponentBuilderMap oldValue, RecipeComponentBuilderMap newValue) {
-		return newValue.hasChanged;
+		return keys.stream().map(Key::toString).collect(Collectors.joining(", ", "{", "}"));
 	}
 }

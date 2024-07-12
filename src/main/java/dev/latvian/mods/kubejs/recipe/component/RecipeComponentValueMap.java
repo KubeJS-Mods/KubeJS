@@ -11,24 +11,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class RecipeComponentBuilderMap extends AbstractMap<RecipeKey<?>, Object> {
-	public static final RecipeComponentBuilderMap EMPTY = new RecipeComponentBuilderMap(RecipeComponentValue.EMPTY_ARRAY);
+public class RecipeComponentValueMap extends AbstractMap<RecipeKey<?>, Object> {
+	public static final RecipeComponentValueMap EMPTY = new RecipeComponentValueMap(RecipeComponentValue.EMPTY_ARRAY);
 
 	public final RecipeComponentValue<?>[] holders;
 	private Set<Entry<RecipeKey<?>, Object>> holderSet;
-	public boolean hasChanged;
 
-	public RecipeComponentBuilderMap(RecipeComponentBuilder builder) {
-		this.holders = new RecipeComponentValue[builder.keys.size()];
-
-		for (int i = 0; i < holders.length; i++) {
-			this.holders[i] = new RecipeComponentValue<>(builder.keys.get(i), i);
-		}
-
-		this.hasChanged = false;
-	}
-
-	public RecipeComponentBuilderMap(RecipeComponentValue<?>[] holders) {
+	public RecipeComponentValueMap(RecipeComponentValue<?>[] holders) {
 		this.holders = new RecipeComponentValue[holders.length];
 
 		for (int i = 0; i < holders.length; i++) {
@@ -36,7 +25,7 @@ public class RecipeComponentBuilderMap extends AbstractMap<RecipeKey<?>, Object>
 		}
 	}
 
-	public RecipeComponentBuilderMap(List<RecipeKey<?>> keys) {
+	public RecipeComponentValueMap(List<RecipeKey<?>> keys) {
 		this.holders = new RecipeComponentValue[keys.size()];
 
 		for (int i = 0; i < holders.length; i++) {
@@ -103,7 +92,7 @@ public class RecipeComponentBuilderMap extends AbstractMap<RecipeKey<?>, Object>
 	public boolean equals(Object o) {
 		if (o == this) {
 			return true;
-		} else if (o instanceof RecipeComponentBuilderMap map) {
+		} else if (o instanceof RecipeComponentValueMap map) {
 			if (holders.length != map.holders.length) {
 				return false;
 			} else {

@@ -68,23 +68,6 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeCompone
 	}
 
 	@Override
-	public boolean checkValueHasChanged(Either<H, L> oldValue, Either<H, L> newValue) {
-		if (oldValue != null && newValue != null) {
-			var left = oldValue.left();
-
-			if (left.isPresent()) {
-				if (high.checkValueHasChanged(left.get(), newValue.left().get())) {
-					return true;
-				}
-			} else if (low.checkValueHasChanged(oldValue.right().get(), newValue.right().get())) {
-				return true;
-			}
-		}
-
-		return oldValue != newValue;
-	}
-
-	@Override
 	public void buildUniqueId(UniqueIdBuilder builder, Either<H, L> value) {
 		var left = value.left();
 

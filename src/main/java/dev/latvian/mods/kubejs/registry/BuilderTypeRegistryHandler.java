@@ -16,10 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) implements BuilderTypeRegistry {
+public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) implements BuilderTypeRegistry, ServerRegistryRegistry {
 	public static final Lazy<Map<ResourceKey<?>, Info<?>>> INFO = Lazy.of(() -> {
 		var handler = new BuilderTypeRegistryHandler(new IdentityHashMap<>());
 		KubeJSPlugins.forEachPlugin(handler, KubeJSPlugin::registerBuilderTypes);
+		KubeJSPlugins.forEachPlugin(handler, KubeJSPlugin::registerServerRegistries);
 		return handler.map;
 	});
 
@@ -66,7 +67,7 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 	}
 
 	@Override
-	public <T> void serverRegistry(ResourceKey<Registry<T>> registry, Codec<T> directCodec, TypeInfo typeInfo) {
+	public <T> void register(ResourceKey<Registry<T>> registry, Codec<T> directCodec, TypeInfo typeInfo) {
 		var info = map.computeIfAbsent(registry, k -> new Info<>());
 		info.directCodec = (Codec) directCodec;
 		info.typeInfo = typeInfo == null ? TypeInfo.NONE : typeInfo;
