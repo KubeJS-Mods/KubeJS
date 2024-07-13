@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.rhino.NativeJavaMap;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -218,6 +219,10 @@ public interface DataComponentWrapper {
 	static DataComponentPredicate readPredicate(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
 		var map = reader.canRead() ? readMap(registryOps, reader) : DataComponentMap.EMPTY;
 		return map.isEmpty() ? DataComponentPredicate.EMPTY : DataComponentPredicate.allOf(map);
+	}
+
+	static boolean filter(Object from, TypeInfo target) {
+		return from == null || from instanceof DataComponentMap || from instanceof DataComponentPatch || from instanceof Map || from instanceof NativeJavaMap || from instanceof String s && (s.isEmpty() || s.charAt(0) == '[');
 	}
 
 	static DataComponentMap mapOf(RegistryAccessContainer registries, Object o) {

@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.SimpleRecipeComponent;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.RecordTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -37,7 +37,7 @@ public record ChancedItem(ItemStack item, FloatProvider chance) {
 		if (from instanceof ItemStack is) {
 			return new ChancedItem(is, DEFAULT_CHANCE);
 		} else if (from instanceof CharSequence) {
-			return new ChancedItem(ItemStackJS.wrap(((KubeJSContext) cx).getRegistries(), from), DEFAULT_CHANCE);
+			return new ChancedItem(ItemStackJS.wrap(RegistryAccessContainer.of(cx), from), DEFAULT_CHANCE);
 		} else {
 			return (ChancedItem) TYPE_INFO.wrap(cx, from, TYPE_INFO);
 		}

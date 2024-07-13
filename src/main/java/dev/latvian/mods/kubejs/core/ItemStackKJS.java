@@ -7,8 +7,8 @@ import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ID;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -62,7 +62,7 @@ public interface ItemStackKJS extends
 			return kjs$equalsIgnoringCount(s);
 		}
 
-		return kjs$equalsIgnoringCount(ItemStackJS.wrap(((KubeJSContext) cx).getRegistries(), o));
+		return kjs$equalsIgnoringCount(ItemStackJS.wrap(RegistryAccessContainer.of(cx), o));
 	}
 
 	default boolean kjs$equalsIgnoringCount(ItemStack stack) {
@@ -130,8 +130,8 @@ public interface ItemStackKJS extends
 		return is;
 	}
 
-	default String kjs$getComponentString(KubeJSContext cx) {
-		return DataComponentWrapper.patchToString(new StringBuilder(), cx.getRegistries().nbt(), kjs$self().getComponentsPatch()).toString();
+	default String kjs$getComponentString(Context cx) {
+		return DataComponentWrapper.patchToString(new StringBuilder(), RegistryAccessContainer.of(cx).nbt(), kjs$self().getComponentsPatch()).toString();
 	}
 
 	@ReturnsSelf(copy = true)
@@ -202,11 +202,11 @@ public interface ItemStackKJS extends
 
 	@Override
 	default String toStringJS(Context cx) {
-		return kjs$toItemString0(((KubeJSContext) cx).getRegistries().nbt());
+		return kjs$toItemString0(RegistryAccessContainer.of(cx).nbt());
 	}
 
-	default String kjs$toItemString(KubeJSContext cx) {
-		return kjs$toItemString0(cx.getRegistries().nbt());
+	default String kjs$toItemString(Context cx) {
+		return kjs$toItemString0(RegistryAccessContainer.of(cx).nbt());
 	}
 
 	default String kjs$toItemString0(DynamicOps<Tag> dynamicOps) {
@@ -266,7 +266,7 @@ public interface ItemStackKJS extends
 	@Override
 	default Object replaceThisWith(Context cx, Object with) {
 		var t = kjs$self();
-		var r = ItemStackJS.wrap(((KubeJSContext) cx).getRegistries(), with);
+		var r = ItemStackJS.wrap(RegistryAccessContainer.of(cx), with);
 
 		if (!ItemStack.isSameItemSameComponents(t, r)) {
 			r.setCount(t.getCount());

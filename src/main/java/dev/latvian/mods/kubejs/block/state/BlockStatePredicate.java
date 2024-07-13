@@ -7,11 +7,11 @@ import dev.latvian.mods.kubejs.level.ruletest.AlwaysFalseRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.AnyMatchRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.InvertRuleTest;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatch;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.Util;
@@ -132,7 +132,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		}
 
 		return Optional.ofNullable(NBTUtils.toTagCompound(cx, o))
-			.map(tag -> RuleTest.CODEC.parse(((KubeJSContext) cx).getRegistries().nbt(), tag))
+			.map(tag -> RuleTest.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), tag))
 			.flatMap(DataResult::result)
 			.or(() -> Optional.ofNullable(of(o).asRuleTest()))
 			.orElseThrow(() -> new IllegalArgumentException("Could not parse valid rule test from " + o + "!"));

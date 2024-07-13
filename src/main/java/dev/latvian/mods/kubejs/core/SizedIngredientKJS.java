@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
@@ -14,7 +14,7 @@ public interface SizedIngredientKJS extends Replaceable, IngredientSupplierKJS {
 
 	@Override
 	default Object replaceThisWith(Context cx, Object with) {
-		var ingredient = IngredientJS.wrap(((KubeJSContext) cx).getRegistries(), with);
+		var ingredient = IngredientJS.wrap(RegistryAccessContainer.of(cx), with);
 
 		if (!ingredient.equals(kjs$self().ingredient())) {
 			return new SizedIngredient(ingredient, kjs$self().count());

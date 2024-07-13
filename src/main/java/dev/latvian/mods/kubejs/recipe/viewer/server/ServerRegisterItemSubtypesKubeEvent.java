@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.recipe.viewer.server;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.viewer.RegisterSubtypesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.viewer.SubtypeInterpreter;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.component.DataComponentType;
 
@@ -23,6 +23,6 @@ public class ServerRegisterItemSubtypesKubeEvent implements RegisterSubtypesKube
 
 	@Override
 	public void useComponents(Context cx, Object filter, List<DataComponentType<?>> components) {
-		list.add(new ItemData.DataComponentSubtypes(IngredientJS.wrap(((KubeJSContext) cx).getRegistries(), filter), components));
+		list.add(new ItemData.DataComponentSubtypes(IngredientJS.wrap(RegistryAccessContainer.of(cx), filter), components));
 	}
 }

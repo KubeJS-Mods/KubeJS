@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.script;
 
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -17,7 +18,7 @@ public record CodecTypeWrapper<T>(Class<T> target, Codec<T> codec, T defaultValu
 		} else if (target.asClass().isInstance(o)) {
 			return Cast.to(o);
 		} else {
-			return ((KubeJSContext) cx).getRegistries().decode(cx, codec, o);
+			return RegistryAccessContainer.of(cx).decode(cx, codec, o);
 		}
 	}
 }

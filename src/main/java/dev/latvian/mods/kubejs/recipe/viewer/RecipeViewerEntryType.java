@@ -6,8 +6,8 @@ import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.Lazy;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.registries.Registries;
@@ -40,7 +40,7 @@ public class RecipeViewerEntryType {
 	) {
 		@Override
 		public Object wrapEntry(Context cx, Object from) {
-			return ItemStackJS.wrap(((KubeJSContext) cx).getRegistries(), from);
+			return ItemStackJS.wrap(RegistryAccessContainer.of(cx), from);
 		}
 
 		@Override
@@ -61,12 +61,12 @@ public class RecipeViewerEntryType {
 	) {
 		@Override
 		public Object wrapEntry(Context cx, Object from) {
-			return FluidWrapper.wrap(((KubeJSContext) cx).getRegistries(), from);
+			return FluidWrapper.wrap(RegistryAccessContainer.of(cx), from);
 		}
 
 		@Override
 		public Object wrapPredicate(Context cx, Object from) {
-			return FluidWrapper.wrapIngredient(((KubeJSContext) cx).getRegistries(), from);
+			return FluidWrapper.wrapIngredient(RegistryAccessContainer.of(cx), from);
 		}
 
 		@Override

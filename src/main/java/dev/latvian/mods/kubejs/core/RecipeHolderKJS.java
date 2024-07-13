@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -75,7 +76,7 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	@Override
 	default boolean hasOutput(Context cx, ReplacementMatchInfo match) {
 		if (match.match() instanceof ItemMatch m) {
-			var result = kjs$getRecipe().getResultItem(((KubeJSContext) cx).getRegistries().access());
+			var result = kjs$getRecipe().getResultItem(RegistryAccessContainer.of(cx).access());
 			//noinspection ConstantValue
 			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.matches(cx, result, match.exact());
 		}

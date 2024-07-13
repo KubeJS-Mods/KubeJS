@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.match;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
@@ -25,7 +25,7 @@ public interface ReplacementMatch {
 			return new SingleFluidMatch(fs);
 		}
 
-		var in = IngredientJS.wrap(((KubeJSContext) cx).getRegistries(), o);
+		var in = IngredientJS.wrap(RegistryAccessContainer.of(cx), o);
 
 		if (in.isEmpty()) {
 			return NONE;

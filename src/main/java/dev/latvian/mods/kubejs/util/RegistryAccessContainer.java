@@ -8,6 +8,7 @@ import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.bindings.RegistryWrapper;
 import dev.latvian.mods.kubejs.recipe.CachedItemTagLookup;
 import dev.latvian.mods.kubejs.recipe.CachedTagLookup;
+import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -34,6 +35,10 @@ public final class RegistryAccessContainer {
 	// Still necessary because STARTUP and CLIENT scripts need to know about registries
 	@ApiStatus.Internal
 	public static RegistryAccessContainer current = BUILTIN;
+
+	public static RegistryAccessContainer of(Context cx) {
+		return cx instanceof KubeJSContext kcx ? kcx.getRegistries() : current;
+	}
 
 	private final RegistryAccess.Frozen access;
 	private final RegistryOps<Tag> nbt;

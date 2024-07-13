@@ -7,8 +7,8 @@ import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.kubejs.registry.RegistryType;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ID;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
@@ -53,7 +53,7 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 			} else if (from instanceof Item) {
 				return (T) from;
 			} else {
-				return (T) ItemStackJS.wrap(((KubeJSContext) cx).getRegistries(), from).getItem();
+				return (T) ItemStackJS.wrap(RegistryAccessContainer.of(cx), from).getItem();
 			}
 		} else if (registry == BuiltInRegistries.FLUID) {
 			if (from instanceof FluidStack fs) {
@@ -61,7 +61,7 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 			} else if (from instanceof Fluid) {
 				return (T) from;
 			} else {
-				return (T) FluidWrapper.wrap(((KubeJSContext) cx).getRegistries(), from).getFluid();
+				return (T) FluidWrapper.wrap(RegistryAccessContainer.of(cx), from).getFluid();
 			}
 		} else {
 			if (regType != null && regType.baseClass().isInstance(from)) {

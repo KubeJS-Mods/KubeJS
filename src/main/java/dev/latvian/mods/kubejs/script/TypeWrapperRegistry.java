@@ -51,7 +51,7 @@ public class TypeWrapperRegistry {
 	}
 
 	public <T> void register(Class<T> target, RegistriesFromFunction<T> factory) {
-		typeWrappers.register(target, (cx, from, t) -> factory.apply(((KubeJSContext) cx).getRegistries(), from));
+		typeWrappers.register(target, (cx, from, t) -> factory.apply(RegistryAccessContainer.of(cx), from));
 	}
 
 	public <T> void register(Class<T> target, TypeWrapperValidator validator, DirectTypeWrapperFactory<T> factory) {

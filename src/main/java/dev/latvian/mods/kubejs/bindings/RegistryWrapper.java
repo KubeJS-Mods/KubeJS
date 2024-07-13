@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey) implements Iterable<T> {
 	public static RegistryWrapper<?> of(Context cx, ResourceLocation id) {
-		return ((KubeJSContext) cx).getRegistries().wrapRegistry(id);
+		return RegistryAccessContainer.of(cx).wrapRegistry(id);
 	}
 
 	public T get(ResourceLocation id) {

@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import dev.latvian.mods.kubejs.fluid.FluidLike;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -36,7 +36,7 @@ public interface FluidStackKJS extends Replaceable, FluidLike {
 	@Override
 	default Object replaceThisWith(Context cx, Object with) {
 		var t = kjs$self();
-		var r = FluidWrapper.wrap(((KubeJSContext) cx).getRegistries(), with);
+		var r = FluidWrapper.wrap(RegistryAccessContainer.of(cx), with);
 
 		if (!FluidStack.isSameFluidSameComponents(t, r)) {
 			r.setAmount(t.getAmount());

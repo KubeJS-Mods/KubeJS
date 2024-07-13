@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.viewer.server;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.viewer.AddInformationKubeEvent;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.network.chat.Component;
 
@@ -17,6 +17,6 @@ public class ServerAddItemInformationKubeEvent implements AddInformationKubeEven
 
 	@Override
 	public void add(Context cx, Object filter, List<Component> info) {
-		list.add(new ItemData.Info(IngredientJS.wrap(((KubeJSContext) cx).getRegistries(), filter), info));
+		list.add(new ItemData.Info(IngredientJS.wrap(RegistryAccessContainer.of(cx), filter), info));
 	}
 }

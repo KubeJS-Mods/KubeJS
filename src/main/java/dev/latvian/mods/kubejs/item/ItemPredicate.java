@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -35,7 +35,7 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 				}
 			}
 
-			var in = IngredientJS.wrap(((KubeJSContext) cx).getRegistries(), from);
+			var in = IngredientJS.wrap(RegistryAccessContainer.of(cx), from);
 
 			if (in.isEmpty()) {
 				return NONE;

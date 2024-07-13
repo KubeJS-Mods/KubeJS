@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.NBTUtils;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.BlockPos;
@@ -58,7 +58,7 @@ public interface KubeJSTypeWrappers {
 				}
 			}
 
-			var decoded = IntProvider.CODEC.parse(((KubeJSContext) cx).getRegistries().nbt(), NBTUtils.toTagCompound(cx, m)).result();
+			var decoded = IntProvider.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), NBTUtils.toTagCompound(cx, m)).result();
 			if (decoded.isPresent()) {
 				return decoded.get();
 			}
@@ -90,7 +90,7 @@ public interface KubeJSTypeWrappers {
 				}
 			}
 
-			var decoded = FloatProvider.CODEC.parse(((KubeJSContext) cx).getRegistries().nbt(), NBTUtils.toTagCompound(cx, m)).result();
+			var decoded = FloatProvider.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), NBTUtils.toTagCompound(cx, m)).result();
 
 			if (decoded.isPresent()) {
 				return decoded.get();
