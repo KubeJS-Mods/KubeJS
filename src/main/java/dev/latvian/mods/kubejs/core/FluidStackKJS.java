@@ -2,13 +2,15 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.fluid.FluidLike;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
+import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 
-public interface FluidStackKJS extends Replaceable, FluidLike {
+public interface FluidStackKJS extends Replaceable, FluidLike, FluidMatch {
 	default FluidStack kjs$self() {
 		return (FluidStack) (Object) this;
 	}
@@ -44,5 +46,15 @@ public interface FluidStackKJS extends Replaceable, FluidLike {
 		}
 
 		return this;
+	}
+
+	@Override
+	default boolean matches(Context cx, FluidStack s, boolean exact) {
+		return kjs$self().getFluid() == s.getFluid();
+	}
+
+	@Override
+	default boolean matches(Context cx, FluidIngredient ingredient, boolean exact) {
+		return ingredient.test(kjs$self());
 	}
 }

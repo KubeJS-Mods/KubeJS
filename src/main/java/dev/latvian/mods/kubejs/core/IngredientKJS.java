@@ -1,10 +1,13 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.WithCodec;
@@ -18,7 +21,7 @@ import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 @RemapPrefixForJS("kjs$")
-public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec {
+public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, ItemMatch {
 	default Ingredient kjs$self() {
 		throw new NoMixinException();
 	}
@@ -77,5 +80,47 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec {
 		}
 
 		return this;
+	}
+
+	@Override
+	default boolean matches(Context cx, ItemStack item, boolean exact) {
+		if (item.isEmpty()) {
+			return false;
+		} else if (exact) {
+			var stacks = kjs$getStacks();
+			return stacks.size() == 1 && ItemStack.isSameItemSameComponents(stacks.getFirst(), item);
+		} else {
+			return test(item);
+		}
+	}
+
+	@Override
+	default boolean matches(Context cx, Ingredient in, boolean exact) {
+		if (in == Ingredient.EMPTY) {
+			return false;
+		}
+
+		if (exact) {
+			var t1 = IngredientWrapper.tagKeyOf(kjs$self());
+			var t2 = IngredientWrapper.tagKeyOf(in);
+
+			if (t1 != null && t2 != null) {
+				return t1 == t2;
+			} else {
+				return equals(in);
+			}
+		}
+
+		try {
+			for (var stack : in.getItems()) {
+				if (test(stack)) {
+					return true;
+				}
+			}
+		} catch (Exception ex) {
+			throw new KubeRuntimeException("Failed to test ingredient " + in, ex);
+		}
+
+		return false;
 	}
 }

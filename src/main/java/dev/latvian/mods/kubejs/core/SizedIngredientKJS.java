@@ -1,13 +1,15 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
-public interface SizedIngredientKJS extends Replaceable, IngredientSupplierKJS {
+public interface SizedIngredientKJS extends Replaceable, IngredientSupplierKJS, ItemMatch {
 	default SizedIngredient kjs$self() {
 		return (SizedIngredient) (Object) this;
 	}
@@ -26,5 +28,15 @@ public interface SizedIngredientKJS extends Replaceable, IngredientSupplierKJS {
 	@Override
 	default Ingredient kjs$asIngredient() {
 		return kjs$self().ingredient();
+	}
+
+	@Override
+	default boolean matches(Context cx, ItemStack item, boolean exact) {
+		return kjs$self().ingredient().matches(cx, item, exact);
+	}
+
+	@Override
+	default boolean matches(Context cx, Ingredient in, boolean exact) {
+		return kjs$self().ingredient().matches(cx, in, exact);
 	}
 }

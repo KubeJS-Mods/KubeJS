@@ -3,8 +3,6 @@ package dev.latvian.mods.kubejs.recipe.match;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 
 public interface ReplacementMatch {
 	ReplacementMatch NONE = new ReplacementMatch() {
@@ -19,20 +17,9 @@ public interface ReplacementMatch {
 			return NONE;
 		} else if (o instanceof ReplacementMatch m) {
 			return m;
-		} else if (o instanceof FluidIngredient fi) {
-			return new FluidIngredientMatch(fi);
-		} else if (o instanceof FluidStack fs) {
-			return new SingleFluidMatch(fs);
+		} else {
+			var in = IngredientJS.wrap(RegistryAccessContainer.of(cx), o);
+			return in.isEmpty() ? NONE : in;
 		}
-
-		var in = IngredientJS.wrap(RegistryAccessContainer.of(cx), o);
-
-		if (in.isEmpty()) {
-			return NONE;
-		} else if (in.getItems().length == 1) {
-			return new SingleItemMatch(in.getItems()[0]);
-		}
-
-		return new IngredientMatch(in);
 	}
 }

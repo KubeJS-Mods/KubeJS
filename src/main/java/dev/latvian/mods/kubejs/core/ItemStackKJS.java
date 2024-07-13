@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
@@ -33,6 +34,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
@@ -49,6 +51,7 @@ public interface ItemStackKJS extends
 	ToStringJS,
 	Replaceable,
 	MutableDataComponentHolderKJS,
+	ItemMatch,
 	RegistryObjectKJS<Item> {
 	default ItemStack kjs$self() {
 		return (ItemStack) this;
@@ -274,5 +277,20 @@ public interface ItemStackKJS extends
 		}
 
 		return this;
+	}
+
+	@Override
+	default boolean matches(Context cx, ItemStack s, boolean exact) {
+		return kjs$self().getItem() == s.getItem();
+	}
+
+	@Override
+	default boolean matches(Context cx, Ingredient in, boolean exact) {
+		return in.test(kjs$self());
+	}
+
+	@Override
+	default boolean matches(Context cx, ItemLike itemLike, boolean exact) {
+		return kjs$self().getItem() == itemLike.asItem();
 	}
 }

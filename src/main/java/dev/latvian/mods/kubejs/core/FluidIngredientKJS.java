@@ -1,24 +1,27 @@
-package dev.latvian.mods.kubejs.recipe.match;
+package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 
-public record FluidIngredientMatch(FluidIngredient ingredient) implements FluidMatch {
+@RemapPrefixForJS("kjs$")
+public interface FluidIngredientKJS extends FluidMatch {
 	@Override
-	public boolean matches(Context cx, FluidStack s, boolean exact) {
-		return !s.isEmpty() && ingredient.test(s);
+	default boolean matches(Context cx, FluidStack s, boolean exact) {
+		return !s.isEmpty() && ((FluidIngredient) this).test(s);
 	}
 
 	@Override
-	public boolean matches(Context cx, FluidIngredient in, boolean exact) {
+	default boolean matches(Context cx, FluidIngredient in, boolean exact) {
 		if (in == FluidIngredient.empty()) {
 			return false;
 		}
 
 		try {
-			for (var stack : ingredient.getStacks()) {
+			for (var stack : ((FluidIngredient) this).getStacks()) {
 				if (in.test(stack)) {
 					return true;
 				}
@@ -28,10 +31,5 @@ public record FluidIngredientMatch(FluidIngredient ingredient) implements FluidM
 		}
 
 		return false;
-	}
-
-	@Override
-	public String toString() {
-		return ingredient.toString();
 	}
 }
