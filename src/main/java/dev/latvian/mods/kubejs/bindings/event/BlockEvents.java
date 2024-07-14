@@ -6,6 +6,8 @@ import dev.latvian.mods.kubejs.block.BlockLeftClickedKubeEvent;
 import dev.latvian.mods.kubejs.block.BlockModificationKubeEvent;
 import dev.latvian.mods.kubejs.block.BlockPlacedKubeEvent;
 import dev.latvian.mods.kubejs.block.BlockRightClickedKubeEvent;
+import dev.latvian.mods.kubejs.block.BlockStartedFallingKubeEvent;
+import dev.latvian.mods.kubejs.block.BlockStoppedFallingKubeEvent;
 import dev.latvian.mods.kubejs.block.DetectorBlockKubeEvent;
 import dev.latvian.mods.kubejs.block.FarmlandTrampledKubeEvent;
 import dev.latvian.mods.kubejs.block.RandomTickKubeEvent;
@@ -34,4 +36,6 @@ public interface BlockEvents {
 	TargetedEventHandler<ResourceKey<Block>> FARMLAND_TRAMPLED = GROUP.common("farmlandTrampled", () -> FarmlandTrampledKubeEvent.class).hasResult().supportsTarget(TARGET);
 	TargetedEventHandler<ResourceKey<Block>> RANDOM_TICK = GROUP.server("randomTick", () -> RandomTickKubeEvent.class).hasResult().requiredTarget(TARGET);
 	TargetedEventHandler<ResourceKey<Block>> BLOCK_ENTITY_TICK = GROUP.common("blockEntityTick", () -> BlockEntityTickKubeEvent.class).requiredTarget(TARGET);
+	TargetedEventHandler<ResourceKey<Block>> STARTED_FALLING = GROUP.common("startedFalling", () -> BlockStartedFallingKubeEvent.class).hasResult().supportsTarget(TARGET);
+	TargetedEventHandler<ResourceKey<Block>> STOPPED_FALLING = GROUP.common("stoppedFalling", () -> BlockStoppedFallingKubeEvent.class).supportsTarget(TARGET);
 }

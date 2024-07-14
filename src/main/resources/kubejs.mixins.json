@@ -21,6 +21,7 @@
 		"DyeColorMixin",
 		"EntityMixin",
 		"EntityTypeMixin",
+		"FallingBlockEntityMixin",
 		"FireworkRocketEntityMixin",
 		"FluidIngredientMixin",
 		"FluidMixin",
