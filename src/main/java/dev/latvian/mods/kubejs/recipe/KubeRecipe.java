@@ -80,7 +80,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 					v.write();
 				}
 			} else if (!v.key.optional()) {
-				throw new MissingComponentException(v.key.name, v.key, valueMap.keySet());
+				throw new MissingComponentException(v.key.name, v.key, valueMap.keySet()).source(sourceLine);
 			}
 		}
 	}
@@ -89,7 +89,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		for (var v : valueMap.holders) {
 			if (v.shouldWrite()) {
 				if (v.value == null) {
-					throw new KubeRuntimeException("Value not set for " + v.key + " in recipe " + this);
+					throw new KubeRuntimeException("Value not set for " + v.key + " in recipe " + this).source(sourceLine);
 				}
 
 				v.key.component.writeToJson(this, Cast.to(v), json);
@@ -101,7 +101,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		var v = valueMap.getHolder(key);
 
 		if (v == null) {
-			throw new MissingComponentException(key.name, key, valueMap.keySet());
+			throw new MissingComponentException(key.name, key, valueMap.keySet()).source(sourceLine);
 		}
 
 		return Cast.to(v.value);
@@ -111,7 +111,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		RecipeComponentValue<T> v = Cast.to(valueMap.getHolder(key));
 
 		if (v == null) {
-			throw new MissingComponentException(key.name, key, valueMap.keySet());
+			throw new MissingComponentException(key.name, key, valueMap.keySet()).source(sourceLine);
 		}
 
 		v.value = value;
@@ -131,7 +131,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			}
 		}
 
-		throw new MissingComponentException(key, null, valueMap.keySet());
+		throw new MissingComponentException(key, null, valueMap.keySet()).source(sourceLine);
 	}
 
 	// intended for use by scripts
@@ -147,7 +147,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			}
 		}
 
-		throw new MissingComponentException(key, null, valueMap.keySet());
+		throw new MissingComponentException(key, null, valueMap.keySet()).source(sourceLine);
 	}
 
 	public void initValues(boolean created) {
@@ -162,7 +162,6 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				for (var v : valueMap.holders) {
 					if (v.key.alwaysWrite || !v.key.optional()) {
 						if (v.key.alwaysWrite) {
-							// FIXME? Not sure why read() was called here v.value = Cast.to(v.key.component.read(this, v.key.optional.getDefaultValue(type.schemaType)));
 							v.value = Cast.to(v.key.optional.getDefaultValue(type.schemaType));
 						}
 
@@ -189,7 +188,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			var e = v.checkEmpty();
 
 			if (!e.isEmpty()) {
-				throw new KubeRuntimeException(e);
+				throw new KubeRuntimeException(e).source(sourceLine);
 			}
 		}
 	}

@@ -18,7 +18,7 @@ public class FluidStackComponent implements RecipeComponent<FluidStack> {
 
 	@Override
 	public Codec<FluidStack> codec() {
-		return FluidStack.CODEC;
+		return FluidStack.OPTIONAL_CODEC;
 	}
 
 	@Override
