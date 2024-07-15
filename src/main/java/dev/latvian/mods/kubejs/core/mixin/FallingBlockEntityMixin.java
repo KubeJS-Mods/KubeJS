@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.block.BlockStartedFallingKubeEvent;
 import dev.latvian.mods.kubejs.block.BlockStoppedFallingKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.level.Level;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -38,5 +40,11 @@ public class FallingBlockEntityMixin {
 		if (!entity.level().isClientSide() && BlockEvents.STOPPED_FALLING.hasListeners(blockState.kjs$getKey())) {
 			BlockEvents.STOPPED_FALLING.post(ScriptType.SERVER, blockState.kjs$getKey(), new BlockStoppedFallingKubeEvent(entity.level(), pos, blockState, entity, fallSpeed, replacedState));
 		}
+	}
+
+	@Unique
+	@RemapForJS("setBlockState")
+	public void kjs$setBlockState(BlockState state) {
+		this.blockState = state;
 	}
 }

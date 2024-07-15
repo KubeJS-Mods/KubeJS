@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -32,8 +33,8 @@ public record BlockComponent() implements RecipeComponent<Block> {
 		return switch (from) {
 			case Block b -> b;
 			case BlockState s -> s.getBlock();
-			case JsonPrimitive json -> BlockWrapper.parseBlockState(json.getAsString()).getBlock();
-			case null, default -> BlockWrapper.parseBlockState(String.valueOf(from)).getBlock();
+			case JsonPrimitive json -> BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), json.getAsString()).getBlock();
+			case null, default -> BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), String.valueOf(from)).getBlock();
 		};
 	}
 

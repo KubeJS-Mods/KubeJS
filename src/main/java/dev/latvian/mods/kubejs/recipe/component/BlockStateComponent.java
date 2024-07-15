@@ -11,6 +11,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.MapJS;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.level.block.Block;
@@ -38,11 +39,11 @@ public record BlockStateComponent(boolean preferObjectForm) implements RecipeCom
 		return switch (from) {
 			case BlockState s -> s;
 			case Block b -> b.defaultBlockState();
-			case JsonPrimitive json -> BlockWrapper.parseBlockState(json.getAsString());
+			case JsonPrimitive json -> BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), json.getAsString());
 			case null, default -> {
 				Map<?, ?> map = MapJS.of(from);
 				if (map == null) {
-					yield BlockWrapper.parseBlockState(String.valueOf(from));
+					yield BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), String.valueOf(from));
 				} else {
 					// this is formatted like so:
 					// { Name: "blockid", Properties: {Property: "value"}}

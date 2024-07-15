@@ -53,7 +53,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		return null;
 	}
 
-	static BlockStatePredicate fromString(String s) {
+	static BlockStatePredicate fromString(RegistryAccessContainer registries, String s) {
 		if (s.equals("*")) {
 			return Simple.ALL;
 		} else if (s.equals("-")) {
@@ -61,7 +61,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		} else if (s.startsWith("#")) {
 			return new TagMatch(Tags.block(ResourceLocation.parse(s.substring(1))));
 		} else if (s.indexOf('[') != -1) {
-			var state = BlockWrapper.parseBlockState(s);
+			var state = BlockWrapper.parseBlockState(registries, s);
 
 			if (state != Blocks.AIR.defaultBlockState()) {
 				return new StateMatch(state);
@@ -77,7 +77,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		return Simple.NONE;
 	}
 
-	static BlockStatePredicate of(Object o) {
+	static BlockStatePredicate of(RegistryAccessContainer registries, Object o) {
 		if (o == null || o == Simple.ALL) {
 			return Simple.ALL;
 		} else if (o == Simple.NONE) {
@@ -91,7 +91,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			var predicates = new ArrayList<BlockStatePredicate>();
 
 			for (var o1 : list) {
-				var p = of(o1);
+				var p = of(registries, o1);
 				if (p == Simple.ALL) {
 					return Simple.ALL;
 				} else if (p != Simple.NONE) {
@@ -111,17 +111,17 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			var predicates = new ArrayList<BlockStatePredicate>();
 
 			if (map.get("or") != null) {
-				predicates.add(of(map.get("or")));
+				predicates.add(of(registries, map.get("or")));
 			}
 
 			if (map.get("not") != null) {
-				predicates.add(new NotMatch(of(map.get("not"))));
+				predicates.add(new NotMatch(of(registries, map.get("not"))));
 			}
 
 			return new AndMatch(predicates);
 		}
 
-		return ofSingle(o);
+		return ofSingle(registries, o);
 	}
 
 	static RuleTest ruleTestOf(Context cx, Object o) {
@@ -131,15 +131,17 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			return bsp.asRuleTest();
 		}
 
+		RegistryAccessContainer registries = RegistryAccessContainer.of(cx);
+
 		return Optional.ofNullable(NBTUtils.toTagCompound(cx, o))
-			.map(tag -> RuleTest.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), tag))
+			.map(tag -> RuleTest.CODEC.parse(registries.nbt(), tag))
 			.flatMap(DataResult::result)
-			.or(() -> Optional.ofNullable(of(o).asRuleTest()))
+			.or(() -> Optional.ofNullable(of(registries, o).asRuleTest()))
 			.orElseThrow(() -> new IllegalArgumentException("Could not parse valid rule test from " + o + "!"));
 	}
 
 	@SuppressWarnings("unchecked")
-	private static BlockStatePredicate ofSingle(Object o) {
+	private static BlockStatePredicate ofSingle(RegistryAccessContainer registries, Object o) {
 		if (o instanceof BlockStatePredicate bsp) {
 			return bsp;
 		} else if (o instanceof Block block) {
@@ -151,7 +153,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		}
 
 		var pattern = RegExpKJS.wrap(o);
-		return pattern == null ? BlockStatePredicate.fromString(o.toString()) : new RegexMatch(pattern);
+		return pattern == null ? BlockStatePredicate.fromString(registries, o.toString()) : new RegexMatch(pattern);
 	}
 
 	default Collection<BlockState> getBlockStates() {

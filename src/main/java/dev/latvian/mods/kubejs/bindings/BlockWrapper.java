@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.RecordTypeInfo;
@@ -12,6 +13,7 @@ import net.minecraft.Util;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -120,13 +122,13 @@ public class BlockWrapper {
 		return ALL_STATE_CACHE;
 	}
 
-	public static BlockState parseBlockState(String string) {
+	public static BlockState parseBlockState(RegistryAccessContainer registries, String string) {
 		if (string.isEmpty()) {
 			return Blocks.AIR.defaultBlockState();
 		}
 
 		try {
-			return BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), string, false).blockState();
+			return BlockStateParser.parseForBlock(registries.access().lookupOrThrow(Registries.BLOCK), string, false).blockState();
 		} catch (Exception ex) {
 			return Blocks.AIR.defaultBlockState();
 		}
@@ -152,10 +154,12 @@ public class BlockWrapper {
 	}
 
 	@Info("Parses a block state from the input string. May throw for invalid inputs!")
-	static BlockState parseBlockState(Object o) {
-		if (o instanceof BlockState bs) {
-			return bs;
-		}
-		return o == null ? Blocks.AIR.defaultBlockState() : BlockWrapper.parseBlockState(o.toString());
+	public static BlockState wrapBlockState(RegistryAccessContainer registries, Object o) {
+		return switch (o) {
+			case null -> Blocks.AIR.defaultBlockState();
+			case BlockState bs -> bs;
+			case Block block -> block.defaultBlockState();
+			default -> parseBlockState(registries, o.toString());
+		};
 	}
 }

@@ -196,6 +196,7 @@ import net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterList;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.dimension.DimensionType;
@@ -556,6 +557,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		// FIXME registry.register(Enchantment.Cost.class, EnchantmentBuilder::costOf);
 		registry.registerEnumFromStringCodec(ArmorItem.Type.class, ArmorItem.Type.CODEC);
 		registry.register(BlockSetType.class, BlockWrapper::setTypeOf);
+		registry.register(BlockState.class, BlockWrapper::wrapBlockState);
 		registry.register(ItemAbility.class, ItemWrapper::itemAbilityOf);
 
 		// KubeJS //

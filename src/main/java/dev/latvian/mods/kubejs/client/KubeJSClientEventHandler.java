@@ -167,21 +167,30 @@ public class KubeJSClientEventHandler {
 		}
 
 		if (staticItemTooltips == null) {
-			staticItemTooltips = new IdentityHashMap<>();
-			ItemEvents.TOOLTIP.post(ScriptType.CLIENT, new ItemTooltipKubeEvent(staticItemTooltips));
+			var staticItemTooltips0 = new IdentityHashMap<Item, List<ItemTooltipKubeEvent.StaticTooltipHandler>>();
+			ItemEvents.TOOLTIP.post(ScriptType.CLIENT, new ItemTooltipKubeEvent(staticItemTooltips0));
+			staticItemTooltips = staticItemTooltips0;
 		}
 
 		try {
-			for (var handler : staticItemTooltips.getOrDefault(Items.AIR, List.of())) {
-				handler.tooltip(stack, advanced, lines);
+			var handlers = staticItemTooltips.get(Items.AIR);
+
+			if (handlers != null && !handlers.isEmpty()) {
+				for (var handler : handlers) {
+					handler.tooltip(stack, advanced, lines);
+				}
 			}
 		} catch (Exception ex) {
 			ConsoleJS.CLIENT.error("Error while gathering tooltip for " + stack, ex);
 		}
 
 		try {
-			for (var handler : staticItemTooltips.getOrDefault(stack.getItem(), List.of())) {
-				handler.tooltip(stack, advanced, lines);
+			var handlers = staticItemTooltips.get(stack.getItem());
+
+			if (handlers != null && !handlers.isEmpty()) {
+				for (var handler : handlers) {
+					handler.tooltip(stack, advanced, lines);
+				}
 			}
 		} catch (Exception ex) {
 			ConsoleJS.CLIENT.error("Error while gathering tooltip for " + stack, ex);
