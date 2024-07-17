@@ -36,7 +36,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.neoforged.fml.loading.FMLLoader;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
@@ -505,7 +504,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			return new RecipeHolder<>(getOrCreateId(), originalRecipe.getValue());
 		}
 
-		return RecipeHelper.fromJson(type.event.registries.json(), getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json, !FMLLoader.isProduction());
+		return RecipeHelper.fromJson(type.event.registries.json(), getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json, DevProperties.get().logErroringParsedRecipes);
 	}
 
 	@Nullable
@@ -514,7 +513,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			originalRecipe = new MutableObject<>();
 			try {
 				// todo: this sucks
-				originalRecipe.setValue(RecipeHelper.fromJson(type.event.registries.json(), type.schemaType.getSerializer(), getOrCreateId(), json, !FMLLoader.isProduction()).value());
+				var holder = RecipeHelper.fromJson(type.event.registries.json(), type.schemaType.getSerializer(), getOrCreateId(), json, DevProperties.get().logErroringParsedRecipes);
+
+				if (holder != null) {
+					originalRecipe.setValue(holder.value());
+				}
 			} catch (Throwable e) {
 				ConsoleJS.SERVER.error("Could not create recipe from json for " + this, e);
 			}

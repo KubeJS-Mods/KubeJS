@@ -22,8 +22,14 @@ public class UnknownKubeRecipe extends KubeRecipe {
 
 	@Override
 	public boolean hasInput(Context cx, ReplacementMatchInfo match) {
-		if (CommonProperties.get().matchJsonRecipes && match.match() instanceof ItemMatch m && getOriginalRecipe() != null) {
-			var arr = getOriginalRecipe().getIngredients();
+		if (CommonProperties.get().matchJsonRecipes && match.match() instanceof ItemMatch m) {
+			var original = getOriginalRecipe();
+
+			if (original == null) {
+				return false;
+			}
+
+			var arr = original.getIngredients();
 
 			//noinspection ConstantValue
 			if (arr == null || arr.isEmpty()) {
@@ -47,8 +53,14 @@ public class UnknownKubeRecipe extends KubeRecipe {
 
 	@Override
 	public boolean hasOutput(Context cx, ReplacementMatchInfo match) {
-		if (CommonProperties.get().matchJsonRecipes && match.match() instanceof ItemMatch m && getOriginalRecipe() != null) {
-			var result = getOriginalRecipe().getResultItem(type.event.registries.access());
+		if (CommonProperties.get().matchJsonRecipes && match.match() instanceof ItemMatch m) {
+			var original = getOriginalRecipe();
+
+			if (original == null) {
+				return false;
+			}
+
+			var result = original.getResultItem(type.event.registries.access());
 			//noinspection ConstantValue
 			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.matches(cx, result, match.exact());
 		}

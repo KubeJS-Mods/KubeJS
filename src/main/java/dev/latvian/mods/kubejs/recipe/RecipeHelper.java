@@ -39,12 +39,16 @@ public interface RecipeHelper {
 		try {
 			var recipe = codec.decode(ops, map.get());
 
-			if (recipe.error().isPresent()) {
+			if (recipe.isSuccess()) {
+				return new RecipeHolder<>(id, recipe.getOrThrow());
+			} else if (recipe.error().isPresent()) {
 				if (errors) {
 					ConsoleJS.SERVER.error("Error parsing recipe " + id + ": " + recipe.error().get().message());
 				}
-			} else if (recipe.isSuccess()) {
-				return new RecipeHolder<>(id, recipe.getOrThrow());
+			} else {
+				if (errors) {
+					ConsoleJS.SERVER.error("Error parsing recipe " + id + ": Unknown");
+				}
 			}
 		} catch (Exception e) {
 			if (errors) {
