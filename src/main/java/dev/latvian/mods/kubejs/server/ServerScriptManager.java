@@ -40,6 +40,7 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -227,7 +228,7 @@ public class ServerScriptManager extends ScriptManager {
 		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
 
 		if (ServerEvents.RECIPES.hasListeners()) {
-			new RecipesKubeEvent(this).post(recipeManager, map);
+			new RecipesKubeEvent(this).post(recipeManager, new HashMap<>(map));
 			result = true;
 		}
 

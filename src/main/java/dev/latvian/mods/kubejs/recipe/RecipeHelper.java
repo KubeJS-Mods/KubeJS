@@ -40,7 +40,8 @@ public interface RecipeHelper {
 			var recipe = codec.decode(ops, map.get());
 
 			if (recipe.isSuccess()) {
-				return new RecipeHolder<>(id, recipe.getOrThrow());
+				var r = recipe.getOrThrow();
+				return r == null ? null : new RecipeHolder<>(id, r);
 			} else if (recipe.error().isPresent()) {
 				if (errors) {
 					ConsoleJS.SERVER.error("Error parsing recipe " + id + ": " + recipe.error().get().message());

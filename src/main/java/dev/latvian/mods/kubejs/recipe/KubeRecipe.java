@@ -527,23 +527,27 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	public ItemStack getOriginalRecipeResult() {
-		if (getOriginalRecipe() == null) {
+		var original = getOriginalRecipe();
+
+		if (original == null) {
 			ConsoleJS.SERVER.warn("Original recipe is null - could not get result");
 			return ItemStack.EMPTY;
 		}
 
-		var result = getOriginalRecipe().getResultItem(type.event.registries.access());
+		var result = original.getResultItem(type.event.registries.access());
 		//noinspection ConstantValue
 		return result == null ? ItemStack.EMPTY : result;
 	}
 
 	public List<Ingredient> getOriginalRecipeIngredients() {
-		if (getOriginalRecipe() == null) {
+		var original = getOriginalRecipe();
+
+		if (original == null) {
 			ConsoleJS.SERVER.warn("Original recipe is null - could not get ingredients");
 			return List.of();
 		}
 
-		return List.copyOf(getOriginalRecipe().getIngredients());
+		return List.copyOf(original.getIngredients());
 	}
 
 	public KubeRecipe ingredientAction(SlotFilter filter, IngredientAction action) {

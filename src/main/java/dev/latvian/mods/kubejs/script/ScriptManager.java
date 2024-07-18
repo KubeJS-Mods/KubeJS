@@ -52,6 +52,7 @@ public class ScriptManager {
 		KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::beforeScriptsLoaded);
 		loadFromDirectory();
 		load();
+		KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::afterScriptsLoaded);
 	}
 
 	public void loadPackFromDirectory(Path path, String name, boolean exampleFile) {

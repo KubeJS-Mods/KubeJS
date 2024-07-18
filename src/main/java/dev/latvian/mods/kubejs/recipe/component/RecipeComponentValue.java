@@ -32,7 +32,7 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 	}
 
 	public boolean matches(Context cx, KubeRecipe recipe, ReplacementMatchInfo match) {
-		return value != null && key.component.matches(cx, recipe, value, match);
+		return value != null && (match.componentType().isEmpty() || key.component.equals(match.componentType().get())) && key.component.matches(cx, recipe, value, match);
 	}
 
 	public boolean replace(Context cx, KubeRecipe recipe, ReplacementMatchInfo match, Object with) {

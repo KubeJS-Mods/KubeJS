@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.plugin;
 
+import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
@@ -109,10 +110,14 @@ public interface KubeJSPlugin {
 	default void generateLang(LangKubeEvent event) {
 	}
 
+	@Deprecated
 	default void clearCaches() {
 	}
 
 	default void exportServerData(DataExport export) {
+	}
+
+	default void beforeRecipeLoading(RecipesKubeEvent event, RecipeManagerKJS manager, Map<ResourceLocation, JsonElement> recipeJsons) {
 	}
 
 	/**
@@ -122,5 +127,8 @@ public interface KubeJSPlugin {
 	}
 
 	default void beforeScriptsLoaded(ScriptManager manager) {
+	}
+
+	default void afterScriptsLoaded(ScriptManager manager) {
 	}
 }

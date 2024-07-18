@@ -229,6 +229,8 @@ public class RecipesKubeEvent implements KubeEvent {
 
 		var timer = Stopwatch.createStarted();
 
+		KubeJSPlugins.forEachPlugin(p -> p.beforeRecipeLoading(this, recipeManager, datapackRecipeMap));
+
 		for (var entry : datapackRecipeMap.entrySet()) {
 			var recipeId = entry.getKey();
 
@@ -267,8 +269,9 @@ public class RecipesKubeEvent implements KubeEvent {
 				originalRecipes.put(recipeId, recipe);
 
 				if (ConsoleJS.SERVER.shouldPrintDebug()) {
-					var originalRecipe = recipe.getOriginalRecipe();
-					if (originalRecipe == null || SpecialRecipeSerializerManager.INSTANCE.isSpecial(originalRecipe)) {
+					var original = recipe.getOriginalRecipe();
+
+					if (original == null || SpecialRecipeSerializerManager.INSTANCE.isSpecial(original)) {
 						ConsoleJS.SERVER.debug("Loaded recipe " + recipeIdAndType + ": <dynamic>");
 					} else {
 						ConsoleJS.SERVER.debug("Loaded recipe " + recipeIdAndType + ": " + recipe.getFromToString());
@@ -428,15 +431,13 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 	}
 
-	public Stream<KubeRecipe> recipeStream(Context cx, RecipeFilter filter, boolean parallel) {
+	public Stream<KubeRecipe> recipeStream(Context cx, RecipeFilter filter) {
 		if (filter == ConstantFilter.FALSE) {
 			return Stream.empty();
 		} else if (filter instanceof IDFilter id) {
 			var r = originalRecipes.get(id.id);
 			return r == null || r.removed ? Stream.empty() : Stream.of(r);
 		}
-
-		boolean actuallyParallel = parallel && CommonProperties.get().allowAsyncStreams;
 
 		exit:
 		if (filter instanceof OrFilter or) {
@@ -450,23 +451,18 @@ public class RecipesKubeEvent implements KubeEvent {
 				}
 			}
 
-			return (actuallyParallel ? or.list.parallelStream() : or.list.stream()).map(idf -> originalRecipes.get(((IDFilter) idf).id)).filter(RECIPE_NOT_REMOVED);
+			return or.list.stream().map(idf -> originalRecipes.get(((IDFilter) idf).id)).filter(RECIPE_NOT_REMOVED);
 		}
 
-		return (actuallyParallel ? originalRecipes.values().parallelStream() : originalRecipes.values().stream()).filter(new RecipeStreamFilter(cx, filter));
-	}
-
-	private void forEachRecipeAsync(Context cx, RecipeFilter filter, Consumer<KubeRecipe> consumer) {
-		var stream = recipeStream(cx, filter, true);
-		stream.forEach(consumer);
+		return originalRecipes.values().stream().filter(new RecipeStreamFilter(cx, filter));
 	}
 
 	private <T> T reduceRecipesAsync(Context cx, RecipeFilter filter, Function<Stream<KubeRecipe>, T> function) {
-		return function.apply(recipeStream(cx, filter, true));
+		return function.apply(recipeStream(cx, filter));
 	}
 
 	public void forEachRecipe(Context cx, RecipeFilter filter, Consumer<KubeRecipe> consumer) {
-		recipeStream(cx, filter, false).forEach(consumer);
+		recipeStream(cx, filter).forEach(consumer);
 	}
 
 	public int countRecipes(Context cx, RecipeFilter filter) {
@@ -493,14 +489,14 @@ public class RecipesKubeEvent implements KubeEvent {
 				r.remove();
 			}
 		} else {
-			forEachRecipeAsync(cx, filter, KubeRecipe::remove);
+			forEachRecipe(cx, filter, KubeRecipe::remove);
 		}
 	}
 
 	public void replaceInput(Context cx, RecipeFilter filter, ReplacementMatchInfo match, Object with) {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": IN " + match + " -> " + with) : "";
 
-		forEachRecipeAsync(cx, filter, r -> {
+		forEachRecipe(cx, filter, r -> {
 			if (r.replaceInput(cx, match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);
@@ -514,7 +510,7 @@ public class RecipesKubeEvent implements KubeEvent {
 	public void replaceOutput(Context cx, RecipeFilter filter, ReplacementMatchInfo match, Object with) {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": OUT " + match + " -> " + with) : "";
 
-		forEachRecipeAsync(cx, filter, r -> {
+		forEachRecipe(cx, filter, r -> {
 			if (r.replaceOutput(cx, match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);
@@ -618,6 +614,6 @@ public class RecipesKubeEvent implements KubeEvent {
 	}
 
 	public void stage(Context cx, RecipeFilter filter, String stage) {
-		forEachRecipeAsync(cx, filter, r -> r.stage(stage));
+		forEachRecipe(cx, filter, r -> r.stage(stage));
 	}
 }

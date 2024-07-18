@@ -686,6 +686,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public void clearCaches() {
 		ItemStackJS.CACHED_ITEM_MAP.forget();
 		ItemStackJS.CACHED_ITEM_LIST.forget();
