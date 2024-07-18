@@ -29,6 +29,6 @@ public record ReplacementMatchInfo(ReplacementMatch match, boolean exact, Option
 
 	@Override
 	public String toString() {
-		return exact ? "{exact: true, match: " + match + "}" : String.valueOf(match);
+		return (exact || componentType.isPresent()) ? "{exact: " + exact + ", componentType: " + componentType.orElse(null) + ", match: " + match + "}" : String.valueOf(match);
 	}
 }

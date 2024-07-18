@@ -482,7 +482,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			if (recipeIngredientActions != null && !recipeIngredientActions.isEmpty()) {
 				try {
 					json.add(KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, IngredientActionHolder.LIST_CODEC.encodeStart(type.event.registries.json(), recipeIngredientActions).getOrThrow());
-				} catch (Exception ex) {
+				} catch (Throwable ex) {
 					ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to encode " + KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, ex).source(sourceLine), RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
 				}
 			}
@@ -497,10 +497,15 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				var o = new JsonObject();
 				o.addProperty("stage", json.get(KubeJSCraftingRecipe.STAGE_KEY).getAsString());
 				o.add("recipe", json);
-				var recipe = type.event.registries.decodeJson(type.event.stageSerializer.codec(), o);
-				return new RecipeHolder<>(id, recipe);
+
+				try {
+					var recipe = type.event.registries.decodeJson(type.event.stageSerializer.codec(), o);
+					return recipe == null ? null : new RecipeHolder<>(id, recipe);
+				} catch (Throwable ex) {
+					ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to decode " + id + " from json " + o, ex).source(sourceLine), RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
+				}
 			}
-		} else if (originalRecipe != null) {
+		} else if (originalRecipe != null && originalRecipe.getValue() != null) {
 			return new RecipeHolder<>(getOrCreateId(), originalRecipe.getValue());
 		}
 

@@ -380,6 +380,7 @@ public class RecipesKubeEvent implements KubeEvent {
 	private RecipeHolder<?> createRecipe(KubeRecipe r) {
 		try {
 			var rec = r.createRecipe();
+
 			var path = r.kjs$getMod() + "/" + r.getPath();
 
 			if (!r.removed && DataExport.export != null) {
@@ -388,6 +389,11 @@ public class RecipesKubeEvent implements KubeEvent {
 				if (r.newRecipe) {
 					DataExport.export.addJson("added_recipes/%s.json".formatted(path), r.json);
 				}
+			}
+
+			//noinspection ConstantValue
+			if (rec == null || rec.value() == null) {
+				return null;
 			}
 
 			return rec;
