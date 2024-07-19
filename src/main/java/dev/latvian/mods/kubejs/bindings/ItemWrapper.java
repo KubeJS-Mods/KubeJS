@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.bindings;
 
 import com.google.gson.JsonObject;
-import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.serialization.MapCodec;
@@ -96,7 +95,7 @@ public interface ItemWrapper {
 
 	static ItemStack playerHead(String name) {
 		var stack = new ItemStack(Items.PLAYER_HEAD);
-		stack.set(DataComponents.PROFILE, new ResolvableProfile(new GameProfile(Util.NIL_UUID, name)));
+		stack.set(DataComponents.PROFILE, new ResolvableProfile(Optional.of(name), Optional.empty(), new PropertyMap()));
 		return stack;
 	}
 
