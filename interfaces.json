@@ -1,0 +1,83 @@
+{
+	"net/minecraft/server/MinecraftServer": [
+		"dev/latvian/mods/kubejs/core/MinecraftServerKJS"
+	],
+	"net/minecraft/client/Minecraft": [
+		"dev/latvian/mods/kubejs/core/MinecraftClientKJS"
+	],
+	"net/minecraft/world/level/block/Block": [
+		"dev/latvian/mods/kubejs/core/BlockKJS"
+	],
+	"net/minecraft/world/level/block/state/BlockBehaviour": [
+		"dev/latvian/mods/kubejs/core/BlockBehaviourKJS"
+	],
+	"net/minecraft/world/level/block/state/BlockState": [
+		"dev/latvian/mods/kubejs/core/BlockStateKJS"
+	],
+	"net/minecraft/world/item/Item": [
+		"dev/latvian/mods/kubejs/core/ItemKJS"
+	],
+	"net/minecraft/world/item/ItemStack": [
+		"dev/latvian/mods/kubejs/core/ItemStackKJS"
+	],
+	"net/minecraft/network/chat/MutableComponent": [
+		"dev/latvian/mods/kubejs/core/ComponentKJS"
+	],
+	"net/minecraft/world/level/Level": [
+		"dev/latvian/mods/kubejs/core/LevelKJS"
+	],
+	"net/minecraft/client/multiplayer/ClientLevel": [
+		"dev/latvian/mods/kubejs/core/ClientLevelKJS"
+	],
+	"net/minecraft/server/level/ServerLevel": [
+		"dev/latvian/mods/kubejs/core/ServerLevelKJS"
+	],
+	"net/minecraft/world/entity/player/Player": [
+		"dev/latvian/mods/kubejs/core/PlayerKJS"
+	],
+	"net/minecraft/client/player/AbstractClientPlayer": [
+		"dev/latvian/mods/kubejs/core/ClientPlayerKJS"
+	],
+	"net/minecraft/server/level/ServerPlayer": [
+		"dev/latvian/mods/kubejs/core/ServerPlayerKJS"
+	],
+	"net/minecraft/world/entity/Entity": [
+		"dev/latvian/mods/kubejs/core/EntityKJS"
+	],
+	"net/minecraft/world/entity/LivingEntity": [
+		"dev/latvian/mods/kubejs/core/LivingEntityKJS"
+	],
+	"net/minecraft/world/item/crafting/Ingredient": [
+		"dev/latvian/mods/kubejs/core/IngredientKJS"
+	],
+	"net/minecraft/world/entity/item/ItemEntity": [
+		"dev/latvian/mods/kubejs/core/ItemEntityKJS"
+	],
+	"net/minecraft/world/entity/decoration/ItemFrame": [
+		"dev/latvian/mods/kubejs/core/ItemFrameEntityKJS"
+	],
+	"net/minecraft/world/Container": [
+		"dev/latvian/mods/kubejs/core/ContainerKJS"
+	],
+	"net/minecraft/world/item/crafting/RecipeHolder": [
+		"dev/latvian/mods/kubejs/core/RecipeHolderKJS"
+	],
+	"net/minecraft/server/ReloadableServerResources": [
+		"dev/latvian/mods/kubejs/core/ReloadableServerResourcesKJS"
+	],
+	"net/minecraft/world/item/crafting/RecipeManager": [
+		"dev/latvian/mods/kubejs/core/RecipeManagerKJS"
+	],
+	"net/minecraft/tags/TagManager": [
+		"dev/latvian/mods/kubejs/core/TagManagerKJS"
+	],
+	"net/minecraft/world/level/material/Fluid": [
+		"dev/latvian/mods/kubejs/core/FluidKJS"
+	],
+	"net/minecraft/world/inventory/MenuType": [
+		"dev/latvian/mods/kubejs/core/MenuTypeKJS"
+	],
+	"net/minecraft/world/entity/EntityType": [
+		"dev/latvian/mods/kubejs/core/EntityTypeKJS"
+	]
+}
