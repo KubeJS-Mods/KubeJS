@@ -35,6 +35,9 @@ public class CommonProperties extends BaseProperties {
 	public boolean ignoreCustomUniqueRecipeIds;
 	public boolean startupErrorGUI;
 	public String startupErrorReportUrl;
+	public boolean removeSlotLimit;
+	public int defaultMaxStackSize;
+	public boolean customStackSizeText;
 	public JsonElement creativeModeTabIcon;
 	public JsonElement creativeModeTabName;
 
@@ -54,9 +57,13 @@ public class CommonProperties extends BaseProperties {
 		ignoreCustomUniqueRecipeIds = get("ignore_custom_unique_recipe_ids", false);
 		startupErrorGUI = get("startup_error_gui", true);
 		startupErrorReportUrl = get("startup_error_report_url", "");
+		removeSlotLimit = get("remove_slot_limit", false);
+		defaultMaxStackSize = Math.max(0, Math.min(1_000_000_000, get("default_max_stack_size", 0)));
+		customStackSizeText = get("custom_stack_size_text", true);
 
 		creativeModeTabIcon = get("creative_mode_tab_icon", new JsonObject());
 		creativeModeTabName = get("creative_mode_tab_name", JsonNull.INSTANCE);
+
 	}
 
 	public void setPackMode(String s) {
@@ -71,5 +78,13 @@ public class CommonProperties extends BaseProperties {
 		}
 
 		return TextIcons.NAME;
+	}
+
+	public int getMaxSlotSize(int original) {
+		return removeSlotLimit ? 1_000_000_000 : original;
+	}
+
+	public int getMaxStackSize(int original) {
+		return defaultMaxStackSize == 0 ? original : defaultMaxStackSize;
 	}
 }

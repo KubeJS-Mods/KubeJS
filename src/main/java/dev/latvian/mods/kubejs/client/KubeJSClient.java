@@ -15,11 +15,15 @@ import dev.latvian.mods.kubejs.script.data.VirtualAssetPack;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -179,5 +183,40 @@ public class KubeJSClient extends KubeJSCommon {
 
 	public static void resizePostChains(int width, int height) {
 		KubedexHighlight.INSTANCE.resizePostChains(width, height);
+	}
+
+	private static final char[] POWER = {'K', 'M', 'B', 'T'};
+
+	public static String formatNumber(int count) {
+		if (Screen.hasAltDown()) {
+			return String.format("%,d", count);
+		}
+
+		int index = 0;
+
+		if (count > 9999) {
+			while (count / 1000 != 0) {
+				count /= 1000;
+				index++;
+			}
+		}
+
+		if (index > 0) {
+			return count + String.valueOf(POWER[index - 1]);
+		} else {
+			return String.valueOf(count);
+		}
+	}
+
+	public static int drawStackSize(GuiGraphics graphics, Font font, int size, int x, int y, int color, boolean dropShadow) {
+		var str = formatNumber(size);
+		float scale = str.length() >= 4 ? 0.5F : str.length() == 3 ? 0.75F : 1F;
+		graphics.pose().pushPose();
+		graphics.pose().translate(x + 16F, y + 16F, 0F);
+		graphics.pose().scale(scale, scale, 1F);
+		int w = font.width(str);
+		int s = graphics.drawString(font, str, -w, -8F, color, dropShadow);
+		graphics.pose().popPose();
+		return Mth.ceil(s * scale);
 	}
 }
