@@ -34,6 +34,8 @@ public class ClientProperties extends BaseProperties {
 	// public int menuInnerBackgroundBrightness;
 	// public float menuBackgroundScale;
 	public boolean blurScaledPackIcon;
+	public boolean customStackSizeText;
+	public boolean shrinkStackSizeText;
 
 	private ClientProperties() {
 		super(KubeJSPaths.CLIENT_PROPERTIES, "KubeJS Client Properties");
@@ -54,6 +56,8 @@ public class ClientProperties extends BaseProperties {
 		// menuInnerBackgroundBrightness = Mth.clamp(get("menuInnerBackgroundBrightness", 32), 0, 255);
 		// menuBackgroundScale = (float) Mth.clamp(get("menuBackgroundScale", 32D), 0.0625D, 1024D);
 		blurScaledPackIcon = get("blur_scaled_pack_icon", true);
+		customStackSizeText = get("custom_stack_size_text", true);
+		shrinkStackSizeText = get("shrink_stack_size_text", true);
 	}
 
 	/*

@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
 import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,7 +20,7 @@ public abstract class GuiGraphicsMixin {
 
 	@Inject(method = "renderItemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)I", shift = At.Shift.BEFORE))
 	private void kjs$beforeDrawSize(Font font, ItemStack stack, int x, int y, String text, CallbackInfo ci) {
-		if (text == null && CommonProperties.get().removeSlotLimit && CommonProperties.get().customStackSizeText && stack.getCount() > 1) {
+		if (text == null && CommonProperties.get().removeSlotLimit && ClientProperties.get().customStackSizeText && stack.getCount() > 1) {
 			kjs$itemSize[0] = stack.getCount();
 			kjs$itemSize[1] = x;
 			kjs$itemSize[2] = y;

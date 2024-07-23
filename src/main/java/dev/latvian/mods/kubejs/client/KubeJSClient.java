@@ -210,12 +210,12 @@ public class KubeJSClient extends KubeJSCommon {
 
 	public static int drawStackSize(GuiGraphics graphics, Font font, int size, int x, int y, int color, boolean dropShadow) {
 		var str = formatNumber(size);
-		float scale = str.length() >= 4 ? 0.5F : str.length() == 3 ? 0.75F : 1F;
-		graphics.pose().pushPose();
-		graphics.pose().translate(x + 16F, y + 16F, 0F);
-		graphics.pose().scale(scale, scale, 1F);
 		int w = font.width(str);
-		int s = graphics.drawString(font, str, -w, -8F, color, dropShadow);
+		float scale = ClientProperties.get().shrinkStackSizeText ? (str.length() >= 4 ? 0.5F : str.length() == 3 ? 0.75F : 1F) : 1F;
+		graphics.pose().pushPose();
+		graphics.pose().translate((int) (x + 16F - (w - 1F) * scale), (int) (y + 16F - 7F * scale), 0F);
+		graphics.pose().scale(scale, scale, 1F);
+		int s = graphics.drawString(font, str, 0F, 0F, color, dropShadow);
 		graphics.pose().popPose();
 		return Mth.ceil(s * scale);
 	}

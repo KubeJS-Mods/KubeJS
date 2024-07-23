@@ -37,7 +37,6 @@ public class CommonProperties extends BaseProperties {
 	public String startupErrorReportUrl;
 	public boolean removeSlotLimit;
 	public int defaultMaxStackSize;
-	public boolean customStackSizeText;
 	public JsonElement creativeModeTabIcon;
 	public JsonElement creativeModeTabName;
 
@@ -59,7 +58,6 @@ public class CommonProperties extends BaseProperties {
 		startupErrorReportUrl = get("startup_error_report_url", "");
 		removeSlotLimit = get("remove_slot_limit", false);
 		defaultMaxStackSize = Math.max(0, Math.min(1_000_000_000, get("default_max_stack_size", 0)));
-		customStackSizeText = get("custom_stack_size_text", true);
 
 		creativeModeTabIcon = get("creative_mode_tab_icon", new JsonObject());
 		creativeModeTabName = get("creative_mode_tab_name", JsonNull.INSTANCE);
