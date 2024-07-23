@@ -25,7 +25,7 @@ public interface KubeJSNet {
 	CustomPacketPayload.Type<RequestInventoryKubedexPayload> REQUEST_INVENTORY_KUBEDEX = type("request_inventory_kubedex");
 	CustomPacketPayload.Type<RequestBlockKubedexPayload> REQUEST_BLOCK_KUBEDEX = type("request_block_kubedex");
 	CustomPacketPayload.Type<RequestEntityKubedexPayload> REQUEST_ENTITY_KUBEDEX = type("request_entity_kubedex");
-	CustomPacketPayload.Type<SyncRecipeViewerDataPayload> SYNC_RECIPE_VIEWER = type("sync_recipe_viewer");
+	CustomPacketPayload.Type<SyncServerDataPayload> SYNC_SERVER_DATA = type("sync_server_data");
 	CustomPacketPayload.Type<SetActivePostShaderPayload> SET_ACTIVE_POST_SHADER = type("set_active_post_shader");
 
 	@SubscribeEvent
@@ -47,7 +47,7 @@ public interface KubeJSNet {
 		reg.playToServer(REQUEST_INVENTORY_KUBEDEX, RequestInventoryKubedexPayload.STREAM_CODEC, RequestInventoryKubedexPayload::handle);
 		reg.playToServer(REQUEST_BLOCK_KUBEDEX, RequestBlockKubedexPayload.STREAM_CODEC, RequestBlockKubedexPayload::handle);
 		reg.playToServer(REQUEST_ENTITY_KUBEDEX, RequestEntityKubedexPayload.STREAM_CODEC, RequestEntityKubedexPayload::handle);
-		reg.playToClient(SYNC_RECIPE_VIEWER, SyncRecipeViewerDataPayload.STREAM_CODEC, SyncRecipeViewerDataPayload::handle);
+		reg.playToClient(SYNC_SERVER_DATA, SyncServerDataPayload.STREAM_CODEC, SyncServerDataPayload::handle);
 		reg.playToClient(SET_ACTIVE_POST_SHADER, SetActivePostShaderPayload.STREAM_CODEC, SetActivePostShaderPayload::handle);
 	}
 }

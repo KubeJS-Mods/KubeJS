@@ -6,10 +6,11 @@ import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiInfoRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
+import dev.latvian.mods.kubejs.client.KubeSessionData;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
-import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerData;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -20,7 +21,8 @@ import java.util.Set;
 public class KubeJSEMIPlugin implements EmiPlugin {
 	@Override
 	public void register(EmiRegistry registry) {
-		var remote = RecipeViewerData.remote;
+		var sessionData = KubeSessionData.of(Minecraft.getInstance());
+		var remote = sessionData == null ? null : sessionData.recipeViewerData;
 
 		if (remote != null) {
 			var removedCategories = Set.copyOf(remote.removedCategories());

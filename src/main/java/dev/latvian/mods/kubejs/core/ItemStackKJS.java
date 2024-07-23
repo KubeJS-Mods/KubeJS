@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.core;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
-import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
@@ -25,7 +24,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -246,10 +244,6 @@ public interface ItemStackKJS extends
 	@Override
 	default Codec<ItemStack> getCodec(Context cx) {
 		return ItemStack.CODEC;
-	}
-
-	default ChancedItem kjs$withChance(FloatProvider chance) {
-		return new ChancedItem(kjs$self(), chance);
 	}
 
 	@ReturnsSelf(copy = true)

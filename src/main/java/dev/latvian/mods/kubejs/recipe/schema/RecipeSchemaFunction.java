@@ -8,6 +8,7 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -77,6 +78,16 @@ public interface RecipeSchemaFunction {
 			for (var entry : map.entrySet()) {
 				recipe.setValue(entry.getKey(), Cast.to(entry.getValue()));
 			}
+		}
+	}
+
+	record AddToListFunction<T>(RecipeKey<List<T>> key) implements RecipeSchemaFunction {
+		@Override
+		public void execute(Context cx, KubeRecipe recipe, Object[] args) {
+			var value = recipe.getValue(key);
+			var list = value == null ? new ArrayList<T>() : new ArrayList<>(value);
+			list.addAll(key.component.wrap(cx, recipe, args));
+			recipe.setValue(key, list);
 		}
 	}
 }

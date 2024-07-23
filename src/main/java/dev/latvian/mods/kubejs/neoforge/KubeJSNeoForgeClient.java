@@ -20,9 +20,11 @@ import dev.latvian.mods.kubejs.gui.KubeJSMenus;
 import dev.latvian.mods.kubejs.gui.KubeJSScreen;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemModelPropertiesKubeEvent;
+import dev.latvian.mods.kubejs.item.ModifyItemTooltipsKubeEvent;
 import dev.latvian.mods.kubejs.kubedex.KubedexHighlight;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.tooltip.ItemTooltipData;
 import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -45,6 +47,8 @@ import net.neoforged.neoforge.event.AddPackFindersEvent;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class KubeJSNeoForgeClient {
@@ -93,6 +97,10 @@ public class KubeJSNeoForgeClient {
 				}
 			}
 		}
+
+		var list = new ArrayList<ItemTooltipData>();
+		ItemEvents.MODIFY_TOOLTIPS.post(ScriptType.CLIENT, new ModifyItemTooltipsKubeEvent(list::add));
+		KubeJSClient.clientItemTooltips = List.copyOf(list);
 	}
 
 	@SubscribeEvent

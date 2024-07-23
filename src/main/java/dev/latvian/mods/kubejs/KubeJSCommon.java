@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs;
 
+import dev.latvian.mods.kubejs.net.KubeServerData;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
@@ -57,5 +58,8 @@ public class KubeJSCommon {
 		} else {
 			runnable.run();
 		}
+	}
+
+	public void updateServerData(KubeServerData data) {
 	}
 }

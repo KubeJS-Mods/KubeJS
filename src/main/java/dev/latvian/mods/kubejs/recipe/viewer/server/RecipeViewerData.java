@@ -28,8 +28,6 @@ public record RecipeViewerData(
 		RecipeViewerData::new
 	);
 
-	public static RecipeViewerData remote = null;
-
 	@Nullable
 	public static RecipeViewerData collect() {
 		var removedCategories = new HashSet<ResourceLocation>();

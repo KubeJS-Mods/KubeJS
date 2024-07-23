@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.player;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
-import dev.latvian.mods.kubejs.net.SyncRecipeViewerDataPayload;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.resources.ResourceKey;
@@ -22,13 +21,11 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.Optional;
-
 @EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSPlayerEventHandler {
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void datapackSync(OnDatapackSyncEvent event) {
-		var payload = new SyncRecipeViewerDataPayload(Optional.ofNullable(event.getPlayerList().getServer().getServerResources().managers().kjs$getServerScriptManager().recipeViewerData));
+		var payload = event.getPlayerList().getServer().getServerResources().managers().kjs$getServerScriptManager().serverData;
 		event.getRelevantPlayers().forEach(player -> PacketDistributor.sendToPlayer(player, payload));
 	}
 

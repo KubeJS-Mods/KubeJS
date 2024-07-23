@@ -41,5 +41,6 @@ public class RecordDefaults {
 		add(DataComponentPredicate.class, DataComponentPredicate.EMPTY);
 		add(EntityPredicate.LocationWrapper.class, new EntityPredicate.LocationWrapper(Optional.empty(), Optional.empty(), Optional.empty()));
 		add(GameTypePredicate.class, GameTypePredicate.ANY);
+		add(Tristate.class, Tristate.DEFAULT);
 	}
 }

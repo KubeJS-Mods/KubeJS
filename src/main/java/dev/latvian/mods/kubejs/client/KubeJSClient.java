@@ -3,8 +3,11 @@ package dev.latvian.mods.kubejs.client;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
+import dev.latvian.mods.kubejs.item.ModifyItemTooltipsKubeEvent;
 import dev.latvian.mods.kubejs.kubedex.KubedexHighlight;
+import dev.latvian.mods.kubejs.net.KubeServerData;
 import dev.latvian.mods.kubejs.net.NetworkKubeEvent;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -12,6 +15,7 @@ import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
 import dev.latvian.mods.kubejs.script.data.VirtualAssetPack;
+import dev.latvian.mods.kubejs.tooltip.ItemTooltipData;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -36,6 +40,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +51,7 @@ public class KubeJSClient extends KubeJSCommon {
 	public static final ResourceLocation RECIPE_BUTTON_TEXTURE = ResourceLocation.parse("textures/gui/recipe_button.png");
 
 	public static final Map<GeneratedDataStage, VirtualAssetPack> CLIENT_PACKS = new EnumMap<>(GeneratedDataStage.class);
+	public static List<ItemTooltipData> clientItemTooltips = List.of();
 
 	static {
 		for (var stage : GeneratedDataStage.values()) {
@@ -59,8 +65,10 @@ public class KubeJSClient extends KubeJSCommon {
 	}
 
 	public static void reloadClientScripts() {
-		KubeJSClientEventHandler.staticItemTooltips = null;
 		KubeJS.getClientScriptManager().reload();
+		var list = new ArrayList<ItemTooltipData>();
+		ItemEvents.MODIFY_TOOLTIPS.post(ScriptType.CLIENT, new ModifyItemTooltipsKubeEvent(list::add));
+		clientItemTooltips = List.copyOf(list);
 	}
 
 	public static void copyDefaultOptionsFile(File optionsFile) {
@@ -174,6 +182,15 @@ public class KubeJSClient extends KubeJSCommon {
 			mc.execute(runnable);
 		} else {
 			runnable.run();
+		}
+	}
+
+	@Override
+	public void updateServerData(KubeServerData data) {
+		var sessionData = KubeSessionData.of(Minecraft.getInstance());
+
+		if (sessionData != null) {
+			sessionData.sync(data);
 		}
 	}
 

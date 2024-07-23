@@ -187,25 +187,38 @@ public class JsonRecipeSchemaLoader {
 					// schema.constructors(constructors.toArray(new RecipeConstructor[0]));
 
 					for (var entry : functionMap.entrySet()) {
+						var funcName = entry.getKey();
 						var funcJson = entry.getValue().json;
 
 						if (funcJson.has("set")) {
 							Map<RecipeKey<?>, Object> map = new HashMap<>(1);
 
 							for (var entry1 : funcJson.getAsJsonObject("set").entrySet()) {
-								var key = keyMap.get(entry1.getKey());
+								var keyName = entry1.getKey();
+								var key = keyMap.get(keyName);
 
 								if (key != null) {
 									map.put(key, key.codec.decode(jsonOps, entry1.getValue()).getOrThrow().getFirst());
 								} else {
-									throw new NullPointerException("Key '" + entry1.getKey() + "' not found in function '" + entry1.getKey() + "' of recipe schema '" + id + "'");
+									throw new NullPointerException("Key '" + keyName + "' not found in function '" + funcName + "' of recipe schema '" + id + "'");
 								}
 							}
 
 							if (map.size() == 1) {
-								schema.function(entry.getKey(), new RecipeSchemaFunction.SetFunction(map.keySet().iterator().next(), map.values().iterator().next()));
+								schema.function(funcName, new RecipeSchemaFunction.SetFunction(map.keySet().iterator().next(), map.values().iterator().next()));
 							} else if (!map.isEmpty()) {
-								schema.function(entry.getKey(), new RecipeSchemaFunction.SetManyFunction(map));
+								schema.function(funcName, new RecipeSchemaFunction.SetManyFunction(map));
+							}
+						}
+
+						if (funcJson.has("add_to_list")) {
+							var keyName = funcJson.get("add_to_list").getAsString();
+							var key = keyMap.get(keyName);
+
+							if (key != null) {
+								schema.function(funcName, new RecipeSchemaFunction.AddToListFunction<>((RecipeKey) key));
+							} else {
+								throw new NullPointerException("Key '" + keyName + "' not found in function '" + funcName + "' of recipe schema '" + id + "'");
 							}
 						}
 					}

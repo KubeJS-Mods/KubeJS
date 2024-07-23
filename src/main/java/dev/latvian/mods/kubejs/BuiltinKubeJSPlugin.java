@@ -59,7 +59,6 @@ import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.fluid.ThickFluidBuilder;
 import dev.latvian.mods.kubejs.fluid.ThinFluidBuilder;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
-import dev.latvian.mods.kubejs.item.ChancedItem;
 import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -148,6 +147,7 @@ import dev.latvian.mods.kubejs.util.RotationAxis;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.kubejs.util.SlotFilter;
 import dev.latvian.mods.kubejs.util.TimeJS;
+import dev.latvian.mods.kubejs.util.Tristate;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
 import dev.latvian.mods.rhino.type.RecordTypeInfo;
@@ -484,7 +484,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		bindings.add("FluidAmounts", FluidAmounts.class);
 		bindings.add("Notification", NotificationToastData.class);
 		bindings.add("SizedIngredient", SizedIngredientWrapper.class);
-		bindings.add("ChancedItem", ChancedItem.class);
 		bindings.add("ParticleOptions", ParticleOptionsWrapper.class);
 		bindings.add("Registry", RegistryWrapper.class);
 
@@ -592,7 +591,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ParticleOptions.class, ParticleOptionsWrapper::wrap);
 		registry.register(ItemTintFunction.class, ItemTintFunction::of);
 		registry.register(BlockTintFunction.class, BlockTintFunction::of);
-		registry.register(ChancedItem.class, ChancedItem::wrap);
+		registry.register(Tristate.class, Tristate::wrap);
 
 		// components //
 		registry.register(Component.class, TextWrapper::of);
@@ -647,8 +646,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		registry.register(SizedFluidIngredientComponent.FLAT);
 		registry.register(SizedFluidIngredientComponent.NESTED);
-
-		registry.register(ChancedItem.RECIPE_COMPONENT);
 
 		registry.register(BlockComponent.BLOCK);
 

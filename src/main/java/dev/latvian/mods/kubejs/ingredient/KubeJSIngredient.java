@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.ingredient;
 
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
@@ -18,6 +19,6 @@ public interface KubeJSIngredient extends ICustomIngredient, Predicate<ItemStack
 
 	@Override
 	default boolean isSimple() {
-		return true;
+		return CommonProperties.get().serverOnly;
 	}
 }

@@ -262,6 +262,10 @@ public class RecipeSchema {
 		return function(name, new RecipeSchemaFunction.SetFunction<>(key, value));
 	}
 
+	public <T> RecipeSchema addToListOpFunction(String name, RecipeKey<List<T>> key) {
+		return function(name, new RecipeSchemaFunction.AddToListFunction<>(key));
+	}
+
 	public <T> RecipeKey<T> getKey(String id) {
 		for (var key : keys) {
 			if (key.name.equals(id)) {

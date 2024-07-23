@@ -6,10 +6,14 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
-import dev.latvian.mods.kubejs.item.ItemTooltipKubeEvent;
+import dev.latvian.mods.kubejs.item.DynamicItemTooltipsKubeEvent;
 import dev.latvian.mods.kubejs.kubedex.KubedexHighlight;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.tooltip.ItemTooltipData;
+import dev.latvian.mods.kubejs.tooltip.TooltipRequirements;
+import dev.latvian.mods.kubejs.tooltip.action.DynamicTooltipAction;
+import dev.latvian.mods.kubejs.util.Tristate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
@@ -26,8 +30,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -45,15 +47,10 @@ import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT)
 public class KubeJSClientEventHandler {
-	public static Map<Item, List<ItemTooltipKubeEvent.StaticTooltipHandler>> staticItemTooltips = null;
-
 	@SubscribeEvent
 	public static void debugInfo(CustomizeGuiOverlayEvent.DebugText event) {
 		var mc = Minecraft.getInstance();
@@ -84,18 +81,82 @@ public class KubeJSClientEventHandler {
 		}
 	}
 
-	@SubscribeEvent
+	public static boolean testRequirements(Minecraft mc, DynamicItemTooltipsKubeEvent event, TooltipRequirements r) {
+		if (!r.advanced().test(event.advanced)) {
+			return false;
+		}
+
+		if (!r.creative().test(event.creative)) {
+			return false;
+		}
+
+		if (!r.shift().test(event.shift)) {
+			return false;
+		}
+
+		if (!r.ctrl().test(event.ctrl)) {
+			return false;
+		}
+
+		if (!r.alt().test(event.alt)) {
+			return false;
+		}
+
+		if (!r.stages().isEmpty()) {
+			var stages = mc.player.kjs$getStages();
+
+			for (var entry : r.stages().entrySet()) {
+				if (entry.getValue() != Tristate.DEFAULT && !entry.getValue().test(stages.has(entry.getKey()))) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	private static void handleItemTooltips(Minecraft mc, ItemTooltipData tooltip, DynamicItemTooltipsKubeEvent event) {
+		if ((tooltip.filter().isEmpty() || tooltip.filter().get().test(event.item)) && (tooltip.requirements().isEmpty() || testRequirements(mc, event, tooltip.requirements().get()))) {
+			for (var action : tooltip.actions()) {
+				if (action instanceof DynamicTooltipAction dynamic) {
+					try {
+						ItemEvents.DYNAMIC_TOOLTIPS.post(ScriptType.CLIENT, dynamic.id(), event);
+					} catch (Exception ex) {
+						ConsoleJS.CLIENT.error("Item " + event.item.kjs$getId() + " dynamic tooltip error", ex);
+					}
+				} else {
+					action.apply(event.lines);
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void onItemTooltip(ItemTooltipEvent event) {
-		var mc = Minecraft.getInstance();
 		var stack = event.getItemStack();
-		var lines = event.getToolTip();
-		var flag = event.getFlags();
 
 		if (stack.isEmpty()) {
 			return;
 		}
 
-		var advanced = flag.isAdvanced();
+		var mc = Minecraft.getInstance();
+		var lines = event.getToolTip();
+		var flags = event.getFlags();
+		var sessionData = KubeSessionData.of(mc);
+
+		var dynamicEvent = new DynamicItemTooltipsKubeEvent(stack, flags, lines, sessionData == null);
+
+		for (var tooltip : KubeJSClient.clientItemTooltips) {
+			handleItemTooltips(mc, tooltip, dynamicEvent);
+		}
+
+		if (sessionData != null) {
+			for (var tooltip : sessionData.itemTooltips) {
+				handleItemTooltips(mc, tooltip, dynamicEvent);
+			}
+		}
+
+		var advanced = flags.isAdvanced();
 
 		if (mc.level != null && advanced && ClientProperties.get().showComponents && Screen.hasAltDown()) {
 			var components = BuiltInRegistries.DATA_COMPONENT_TYPE;
@@ -164,36 +225,6 @@ public class KubeJSClientEventHandler {
 			for (var instance : tempTagNames.values()) {
 				lines.add(instance.toText());
 			}
-		}
-
-		if (staticItemTooltips == null) {
-			var staticItemTooltips0 = new IdentityHashMap<Item, List<ItemTooltipKubeEvent.StaticTooltipHandler>>();
-			ItemEvents.TOOLTIP.post(ScriptType.CLIENT, new ItemTooltipKubeEvent(staticItemTooltips0));
-			staticItemTooltips = staticItemTooltips0;
-		}
-
-		try {
-			var handlers = staticItemTooltips.get(Items.AIR);
-
-			if (handlers != null && !handlers.isEmpty()) {
-				for (var handler : handlers) {
-					handler.tooltip(stack, advanced, lines);
-				}
-			}
-		} catch (Exception ex) {
-			ConsoleJS.CLIENT.error("Error while gathering tooltip for " + stack, ex);
-		}
-
-		try {
-			var handlers = staticItemTooltips.get(stack.getItem());
-
-			if (handlers != null && !handlers.isEmpty()) {
-				for (var handler : handlers) {
-					handler.tooltip(stack, advanced, lines);
-				}
-			}
-		} catch (Exception ex) {
-			ConsoleJS.CLIENT.error("Error while gathering tooltip for " + stack, ex);
 		}
 	}
 

@@ -1,10 +1,9 @@
 package dev.latvian.mods.kubejs.core;
 
-import net.minecraft.resources.ResourceLocation;
-import org.apache.commons.lang3.mutable.Mutable;
+import dev.latvian.mods.kubejs.client.KubeSessionData;
 
 public interface ClientPacketListenerKJS {
-	default Mutable<ResourceLocation> kjs$activePostShader() {
+	default KubeSessionData kjs$sessionData() {
 		throw new NoMixinException();
 	}
 }

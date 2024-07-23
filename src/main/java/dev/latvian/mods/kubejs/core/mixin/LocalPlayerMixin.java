@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
 import com.mojang.authlib.GameProfile;
-import dev.latvian.mods.kubejs.core.ClientPacketListenerKJS;
+import dev.latvian.mods.kubejs.client.KubeSessionData;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -45,7 +45,11 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayerMixin {
 
 	@Override
 	public void kjs$setActivePostShader(@Nullable ResourceLocation id) {
-		((ClientPacketListenerKJS) connection).kjs$activePostShader().setValue(id);
-		minecraft.gameRenderer.checkEntityPostEffect(minecraft.options.getCameraType().isFirstPerson() ? minecraft.getCameraEntity() : null);
+		var sessionData = KubeSessionData.of(connection);
+
+		if (sessionData != null) {
+			sessionData.activePostShader = id;
+			minecraft.gameRenderer.checkEntityPostEffect(minecraft.options.getCameraType().isFirstPerson() ? minecraft.getCameraEntity() : null);
+		}
 	}
 }

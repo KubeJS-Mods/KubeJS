@@ -7,13 +7,14 @@ import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.net.KubeServerData;
+import dev.latvian.mods.kubejs.net.SyncServerDataPayload;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
-import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerData;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
@@ -87,7 +88,7 @@ public class ServerScriptManager extends ScriptManager {
 
 	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
 	public final RecipeSchemaStorage recipeSchemaStorage;
-	public RecipeViewerData recipeViewerData;
+	public SyncServerDataPayload serverData;
 	public final VirtualDataPack internalDataPack;
 	public final VirtualDataPack registriesDataPack;
 	public final Map<GeneratedDataStage, VirtualDataPack> virtualPacks;
@@ -97,7 +98,7 @@ public class ServerScriptManager extends ScriptManager {
 		super(ScriptType.SERVER);
 		this.preTagEvents = new ConcurrentHashMap<>();
 		this.recipeSchemaStorage = new RecipeSchemaStorage();
-		this.recipeViewerData = null;
+		this.serverData = null;
 
 		this.internalDataPack = new VirtualDataPack(GeneratedDataStage.INTERNAL);
 		this.registriesDataPack = new VirtualDataPack(GeneratedDataStage.REGISTRIES);
@@ -202,7 +203,7 @@ public class ServerScriptManager extends ScriptManager {
 			pack.reset();
 		}
 
-		recipeViewerData = null;
+		serverData = null;
 
 		super.reload();
 
@@ -232,7 +233,7 @@ public class ServerScriptManager extends ScriptManager {
 			result = true;
 		}
 
-		recipeViewerData = RecipeViewerData.collect();
+		serverData = new SyncServerDataPayload(KubeServerData.collect());
 		RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.setValue(null);
 		return result;
 	}

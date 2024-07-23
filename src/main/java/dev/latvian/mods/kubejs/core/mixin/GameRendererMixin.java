@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
-import dev.latvian.mods.kubejs.core.ClientPacketListenerKJS;
+import dev.latvian.mods.kubejs.client.KubeSessionData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
@@ -29,12 +29,14 @@ public abstract class GameRendererMixin {
 
 	@Inject(method = "checkEntityPostEffect", at = @At("HEAD"), cancellable = true)
 	private void kjs$checkEntityPostEffect(CallbackInfo ci) {
-		if (minecraft.getConnection() instanceof ClientPacketListenerKJS connection && connection.kjs$activePostShader().getValue() != null) {
+		var data = KubeSessionData.of(minecraft);
+
+		if (data != null && data.activePostShader != null) {
 			if (postEffect != null) {
 				postEffect.close();
 			}
 
-			loadEffect(connection.kjs$activePostShader().getValue());
+			loadEffect(data.activePostShader);
 			ci.cancel();
 		}
 	}
