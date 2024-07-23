@@ -135,6 +135,7 @@ import dev.latvian.mods.kubejs.util.FluidAmounts;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.JsonUtils;
+import dev.latvian.mods.kubejs.util.KubeResourceLocation;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
@@ -532,6 +533,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(Duration.class, TimeJS::durationOf);
 
 		registry.register(ResourceLocation.class, ID::mc);
+		registry.register(KubeResourceLocation.class, KubeResourceLocation::wrap);
 		registry.register(CompoundTag.class, (from, target) -> NBTUtils.isTagCompound(from), NBTUtils::toTagCompound);
 		registry.register(CollectionTag.class, (from, target) -> NBTUtils.isTagCollection(from), NBTUtils::toTagCollection);
 		registry.register(ListTag.class, (from, target) -> NBTUtils.isTagCollection(from), NBTUtils::toTagList);

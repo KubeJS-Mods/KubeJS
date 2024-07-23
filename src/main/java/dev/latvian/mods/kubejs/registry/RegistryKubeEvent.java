@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
-import dev.latvian.mods.kubejs.util.ID;
+import dev.latvian.mods.kubejs.util.KubeResourceLocation;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -26,7 +26,7 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 		this.created = new LinkedList<>();
 	}
 
-	public BuilderBase<? extends T> create(Context cx, String id, String type) {
+	public BuilderBase<? extends T> create(Context cx, KubeResourceLocation id, String type) {
 		var sourceLine = SourceLine.of(cx);
 		var t = builderInfo.namedType(type);
 
@@ -34,7 +34,7 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 			throw new KubeRuntimeException("Unknown type '" + type + "' for object '" + id + "'!").source(sourceLine);
 		}
 
-		var b = t.factory().createBuilder(ID.kjs(id));
+		var b = t.factory().createBuilder(id.wrapped());
 
 		if (b == null) {
 			throw new KubeRuntimeException("Unknown type '" + type + "' for object '" + id + "'!").source(sourceLine);
@@ -50,7 +50,7 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 		return b;
 	}
 
-	public BuilderBase<? extends T> create(Context cx, String id) {
+	public BuilderBase<? extends T> create(Context cx, KubeResourceLocation id) {
 		var sourceLine = SourceLine.of(cx);
 		var t = builderInfo.defaultType();
 
@@ -58,7 +58,7 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 			throw new KubeRuntimeException("Registry '" + registryKey.location() + "' doesn't have a default type registered!").source(sourceLine);
 		}
 
-		var b = t.factory().createBuilder(ID.kjs(id));
+		var b = t.factory().createBuilder(id.wrapped());
 
 		if (b == null) {
 			throw new KubeRuntimeException("Unknown type '" + t.type() + "' for object '" + id + "'!").source(sourceLine);
@@ -72,15 +72,14 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 		return b;
 	}
 
-	public CustomBuilderObject createCustom(Context cx, String id, Supplier<Object> object) {
+	public CustomBuilderObject createCustom(Context cx, KubeResourceLocation id, Supplier<Object> object) {
 		var sourceLine = SourceLine.of(cx);
 
 		if (object == null) {
 			throw new KubeRuntimeException("Tried to register a null object with id: " + id).source(sourceLine);
 		}
 
-		var rl = ID.kjs(id);
-		var b = new CustomBuilderObject(rl, object);
+		var b = new CustomBuilderObject(id.wrapped(), object);
 		b.sourceLine = sourceLine;
 		b.registryKey = registryKey;
 		addBuilder(b);

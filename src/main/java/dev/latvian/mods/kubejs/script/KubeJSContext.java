@@ -17,7 +17,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 
 import java.lang.reflect.AccessibleObject;
@@ -74,10 +73,6 @@ public class KubeJSContext extends Context {
 		}
 
 		return super.wrapAsJavaObject(scope, javaObject, target);
-	}
-
-	private static boolean isKey(Object from) {
-		return from instanceof CharSequence || from instanceof ResourceLocation || from instanceof ResourceKey<?>;
 	}
 
 	@Override
@@ -154,7 +149,7 @@ public class KubeJSContext extends Context {
 			throw throwAsScriptRuntimeEx(new IllegalAccessException("Reflection access denied"), this);
 		} else if (from instanceof Holder<?> holder && c.isInstance(holder.value())) {
 			return holder.value();
-		} else if (isKey(from)) {
+		} else if (ID.isKey(from)) {
 			var reg = RegistryType.lookup(target);
 
 			if (reg != null) {

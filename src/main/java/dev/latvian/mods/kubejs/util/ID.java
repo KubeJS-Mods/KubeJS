@@ -87,4 +87,8 @@ public interface ID {
 	static ResourceLocation kjs(@Nullable Object o) {
 		return of(o, true);
 	}
+
+	static boolean isKey(Object from) {
+		return from instanceof CharSequence || from instanceof ResourceLocation || from instanceof ResourceKey<?>;
+	}
 }

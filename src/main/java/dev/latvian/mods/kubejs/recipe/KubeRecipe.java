@@ -22,6 +22,7 @@ import dev.latvian.mods.kubejs.recipe.special.KubeJSCraftingRecipe;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.KubeResourceLocation;
 import dev.latvian.mods.kubejs.util.SlotFilter;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
@@ -196,8 +197,8 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		changed = true;
 	}
 
-	public KubeRecipe id(ResourceLocation id) {
-		this.id = id;
+	public KubeRecipe id(KubeResourceLocation id) {
+		this.id = id.wrapped();
 		save();
 		return this;
 	}
