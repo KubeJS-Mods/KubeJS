@@ -24,6 +24,7 @@ import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.AttachedData;
+import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
@@ -130,5 +131,11 @@ public interface KubeJSPlugin {
 	}
 
 	default void afterScriptsLoaded(ScriptManager manager) {
+	}
+
+	/**
+	 * Called by Platform.breakpoint('abc', ...) from scripts, only used for debugging
+	 */
+	default void breakpoint(Context cx, Object[] args) {
 	}
 }

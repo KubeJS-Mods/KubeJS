@@ -1,6 +1,9 @@
 package dev.latvian.mods.kubejs.script;
 
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
+import dev.latvian.mods.rhino.Context;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
@@ -139,11 +142,16 @@ public class PlatformWrapper {
 		return DatagenModLoader.isRunningDataGen();
 	}
 
-	public static void breakpoint(Object... args) {
+	public static void breakpoint(Context cx, Object... args) {
 		KubeJS.LOGGER.info(Arrays.stream(args).map(String::valueOf).collect(Collectors.joining(", ")));
+		KubeJSPlugins.forEachPlugin(p -> p.breakpoint(cx, args));
 	}
 
 	public static String getCurrentThreadName() {
 		return Thread.currentThread().getName();
+	}
+
+	public static String getPackMode() {
+		return CommonProperties.get().packMode;
 	}
 }

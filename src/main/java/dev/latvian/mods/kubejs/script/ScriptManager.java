@@ -67,12 +67,12 @@ public class ScriptManager {
 				scriptType.console.error("Failed to create script directory", ex);
 			}
 
-			try (var out = Files.newOutputStream(path.resolve("example.js"))) {
+			try (var out = Files.newOutputStream(path.resolve("main.js"))) {
 				out.write(("""
 					// Visit the wiki for more info - https://kubejs.com/
 					console.info('Hello, World! (Loaded\s""" + name + " example script)')\n\n").getBytes(StandardCharsets.UTF_8));
 			} catch (Exception ex) {
-				scriptType.console.error("Failed to write example.js", ex);
+				scriptType.console.error("Failed to write main.js", ex);
 			}
 		}
 
