@@ -2,7 +2,9 @@ package dev.latvian.mods.kubejs.registry;
 
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.bus.api.EventPriority;
@@ -19,6 +21,8 @@ public class RegistryEventHandler {
 	}
 
 	private static <T> void handleRegistryEvent(ResourceKey<Registry<T>> registryKey, RegisterEvent event) {
+		StartupEvents.REGISTRY.post(ScriptType.STARTUP, (ResourceKey) registryKey, new RegistryKubeEvent<>(registryKey));
+
 		var objStorage = RegistryObjectStorage.of(registryKey);
 
 		if (objStorage.objects.isEmpty()) {

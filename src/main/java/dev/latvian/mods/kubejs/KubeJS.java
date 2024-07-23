@@ -15,7 +15,6 @@ import dev.latvian.mods.kubejs.level.ruletest.KubeJSRuleTests;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
-import dev.latvian.mods.kubejs.registry.RegistryKubeEvent;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
@@ -30,7 +29,6 @@ import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
 import dev.latvian.mods.kubejs.util.RecordDefaults;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.api.distmarker.Dist;
@@ -158,10 +156,6 @@ public class KubeJS {
 		}
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::initStartup);
-
-		for (var key : StartupEvents.REGISTRY.findUniqueExtraIds(ScriptType.STARTUP)) {
-			StartupEvents.REGISTRY.post(new RegistryKubeEvent<>((ResourceKey) key), key);
-		}
 
 		if (dist.isClient()) {
 			KubeFileResourcePack.scanForInvalidFiles("kubejs/assets/", KubeJSPaths.ASSETS);
