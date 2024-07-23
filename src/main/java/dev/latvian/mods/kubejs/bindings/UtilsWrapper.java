@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.CreativeModeTab;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,13 +29,13 @@ import java.util.regex.Pattern;
 @Info("A collection of utilities")
 public interface UtilsWrapper {
 	@Info("Get a Random, for generating random numbers. Note this will always return the same Random instance")
-	static Random getRandom() {
+	static RandomSource getRandom() {
 		return UtilsJS.RANDOM;
 	}
 
 	@Info("Get a new random with the specified seed")
-	static Random newRandom(long seed) {
-		return new Random(seed);
+	static RandomSource newRandom(long seed) {
+		return RandomSource.create(seed);
 	}
 
 	@Info("Get an immutable empty list")

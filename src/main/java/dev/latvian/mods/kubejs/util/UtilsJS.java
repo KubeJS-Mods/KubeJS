@@ -24,6 +24,7 @@ import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.CreativeModeTab;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +49,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public class UtilsJS {
-	public static final Random RANDOM = new Random();
+	public static final RandomSource RANDOM = RandomSource.create();
 	public static final ResourceLocation AIR_LOCATION = ResourceLocation.parse("minecraft:air");
 	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[:_/]");
 	public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in", "and", "or", "but", "for"));
