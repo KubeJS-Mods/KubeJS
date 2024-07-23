@@ -8,9 +8,10 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -59,6 +60,22 @@ public interface HolderWrapper {
 
 		var registry = cx.lookupRegistry(param, from);
 
+		var simpleHolders = wrapSimpleSet(registry, from);
+		if (simpleHolders != null) {
+			return simpleHolders;
+		}
+
+		if (from instanceof Iterable<?>) {
+			var holder = (List) cx.jsToJava(from, TypeInfo.RAW_LIST.withParams(HOLDER.withParams(param)));
+			return HolderSet.direct(holder);
+		} else {
+			var holder = wrap(cx, from, param);
+			return HolderSet.direct(holder);
+		}
+	}
+
+	@Nullable
+	static <T> HolderSet<T> wrapSimpleSet(Registry<T> registry, Object from) {
 		var regex = RegExpKJS.wrap(from);
 
 		if (regex != null) {
@@ -73,17 +90,11 @@ public interface HolderWrapper {
 			} else if (s.charAt(0) == '@') {
 				return new NamespaceHolderSet<>(registry.asLookup(), s.substring(1));
 			} else if (s.charAt(0) == '#') {
-				var tagKey = TagKey.create((ResourceKey) registry.key(), ResourceLocation.parse(s.substring(1)));
+				var tagKey = TagKey.create(registry.key(), ResourceLocation.parse(s.substring(1)));
 				return registry.getOrCreateTag(tagKey);
 			}
 		}
 
-		if (from instanceof Iterable<?>) {
-			var holder = (List) cx.jsToJava(from, TypeInfo.RAW_LIST.withParams(HOLDER.withParams(param)));
-			return HolderSet.direct(holder);
-		} else {
-			var holder = wrap(cx, from, param);
-			return HolderSet.direct(holder);
-		}
+		return null;
 	}
 }
