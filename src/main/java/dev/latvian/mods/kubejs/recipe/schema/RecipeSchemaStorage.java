@@ -215,15 +215,21 @@ public class RecipeSchemaStorage {
 		while (reader.canRead() && reader.peek() == '[') {
 			reader.skip();
 			reader.skipWhitespace();
-			boolean self = reader.canRead() && reader.peek() == '?';
+			boolean conditional = reader.canRead() && reader.peek() == '?';
 
-			if (self) {
+			if (conditional) {
 				reader.skip();
 				reader.skipWhitespace();
 			}
 
 			reader.expect(']');
-			component = self ? component.asListOrSelf() : component.asList();
+
+			if (reader.canRead() && reader.peek() == '?') {
+				reader.skip();
+				component = conditional ? component.asConditionalListOrSelf() : component.asListOrSelf();
+			} else {
+				component = conditional ? component.asConditionalList() : component.asList();
+			}
 		}
 
 		return component;

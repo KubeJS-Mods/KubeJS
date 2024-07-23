@@ -203,11 +203,19 @@ public interface RecipeComponent<T> {
 	}
 
 	default RecipeComponent<List<T>> asList() {
-		return ListRecipeComponent.create(this, false);
+		return ListRecipeComponent.create(this, false, false);
 	}
 
 	default RecipeComponent<List<T>> asListOrSelf() {
-		return ListRecipeComponent.create(this, true);
+		return ListRecipeComponent.create(this, true, false);
+	}
+
+	default RecipeComponent<List<T>> asConditionalList() {
+		return ListRecipeComponent.create(this, false, true);
+	}
+
+	default RecipeComponent<List<T>> asConditionalListOrSelf() {
+		return ListRecipeComponent.create(this, true, true);
 	}
 
 	default RecipeComponent<T> orSelf() {

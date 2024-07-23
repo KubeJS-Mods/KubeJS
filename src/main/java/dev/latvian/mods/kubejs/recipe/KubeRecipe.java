@@ -97,6 +97,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		}
 	}
 
+	@Nullable
 	public <T> T getValue(RecipeKey<T> key) {
 		var v = valueMap.getHolder(key);
 
@@ -160,11 +161,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 
 			if (created) {
 				for (var v : valueMap.holders) {
-					if (v.key.alwaysWrite || !v.key.optional()) {
-						if (v.key.alwaysWrite) {
-							v.value = Cast.to(v.key.optional.getDefaultValue(type.schemaType));
-						}
+					if (v.key.optional()) {
+						v.value = Cast.to(v.key.optional.getDefaultValue(type.schemaType));
+					}
 
+					if (v.key.alwaysWrite) {
 						v.write();
 					}
 				}

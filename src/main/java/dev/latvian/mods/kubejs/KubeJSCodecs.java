@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
@@ -64,8 +65,13 @@ public interface KubeJSCodecs {
 		return toJsonOrThrow(gen, NumberProviders.CODEC);
 	}
 
-	// TODO: Check if this is correct
 	static <T> Codec<List<T>> listOfOrSelf(Codec<T> codec) {
-		return Codec.withAlternative(codec.listOf(), codec.xmap(List::of, List::getFirst));
+		return listOfOrSelf(codec.listOf(), codec);
+	}
+
+	// TODO: Check if this is correct
+	static <T> Codec<List<T>> listOfOrSelf(Codec<List<T>> listCodec, Codec<T> codec) {
+		return Codec.either(listCodec, codec).xmap(either -> either.map(Function.identity(), List::of), Either::left);
+		// return Codec.withAlternative(listCodec, codec.xmap(List::of, List::getFirst));
 	}
 }

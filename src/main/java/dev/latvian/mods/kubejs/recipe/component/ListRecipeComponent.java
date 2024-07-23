@@ -7,21 +7,24 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWriteSelf, TypeInfo listTypeInfo, Codec<List<T>> listCodec) implements RecipeComponent<List<T>> {
-	static <L> ListRecipeComponent<L> create(RecipeComponent<L> component, boolean canWriteSelf) {
+public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWriteSelf, TypeInfo listTypeInfo, Codec<List<T>> listCodec, boolean conditional) implements RecipeComponent<List<T>> {
+	static <L> ListRecipeComponent<L> create(RecipeComponent<L> component, boolean canWriteSelf, boolean conditional) {
 		var typeInfo = component.typeInfo();
 		var codec = component.codec();
+		var listCodec = conditional ? NeoForgeExtraCodecs.listWithOptionalElements(ConditionalOps.createConditionalCodec(codec)) : codec.listOf();
 
 		if (canWriteSelf) {
-			return new ListRecipeComponent<>(component, true, TypeInfo.RAW_LIST.withParams(typeInfo).or(typeInfo), KubeJSCodecs.listOfOrSelf(codec));
+			return new ListRecipeComponent<>(component, true, TypeInfo.RAW_LIST.withParams(typeInfo).or(typeInfo), KubeJSCodecs.listOfOrSelf(listCodec, codec), conditional);
 		} else {
-			return new ListRecipeComponent<>(component, false, TypeInfo.RAW_LIST.withParams(typeInfo), codec.listOf());
+			return new ListRecipeComponent<>(component, false, TypeInfo.RAW_LIST.withParams(typeInfo), listCodec, conditional);
 		}
 	}
 
@@ -141,7 +144,7 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 
 	@Override
 	public String toString() {
-		return component + (canWriteSelf ? "[?]" : "[]");
+		return component + (canWriteSelf ? "[?]" : "[]") + (conditional ? "?" : "");
 	}
 
 	@Override
