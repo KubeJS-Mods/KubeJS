@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
@@ -43,12 +42,8 @@ public class ItemStackComponent implements RecipeComponent<ItemStack> {
 	}
 
 	@Override
-	public String checkEmpty(RecipeKey<ItemStack> key, ItemStack value) {
-		if (value.isEmpty()) {
-			return "ItemStack '" + key.name + "' can't be empty!";
-		}
-
-		return "";
+	public boolean isEmpty(ItemStack value) {
+		return value.isEmpty();
 	}
 
 	@Override

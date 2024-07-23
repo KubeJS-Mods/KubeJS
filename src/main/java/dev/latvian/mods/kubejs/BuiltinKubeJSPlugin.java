@@ -105,6 +105,7 @@ import dev.latvian.mods.kubejs.recipe.component.RegistryComponent;
 import dev.latvian.mods.kubejs.recipe.component.SizedFluidIngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.SizedIngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringComponent;
+import dev.latvian.mods.kubejs.recipe.component.StringGridComponent;
 import dev.latvian.mods.kubejs.recipe.component.TagKeyComponent;
 import dev.latvian.mods.kubejs.recipe.component.TimeComponent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
@@ -624,6 +625,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(StringComponent.NON_BLANK);
 		registry.register(StringComponent.ID);
 		registry.register(CharacterComponent.CHARACTER);
+		registry.register(StringGridComponent.STRING_GRID);
 
 		registry.register("int", NumberComponent.INT_FACTORY);
 		registry.register("long", NumberComponent.LONG_FACTORY);

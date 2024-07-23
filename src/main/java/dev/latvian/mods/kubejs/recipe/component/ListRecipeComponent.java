@@ -143,4 +143,9 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 	public String toString() {
 		return component + (canWriteSelf ? "[?]" : "[]");
 	}
+
+	@Override
+	public boolean isEmpty(List<T> value) {
+		return value.isEmpty();
+	}
 }

@@ -45,6 +45,11 @@ public record StringComponent(String name, Codec<String> stringCodec) implements
 	}
 
 	@Override
+	public boolean isEmpty(String value) {
+		return value.isEmpty();
+	}
+
+	@Override
 	public String toString() {
 		return name;
 	}

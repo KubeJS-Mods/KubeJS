@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
@@ -45,12 +44,8 @@ public class SizedIngredientComponent implements RecipeComponent<SizedIngredient
 	}
 
 	@Override
-	public String checkEmpty(RecipeKey<SizedIngredient> key, SizedIngredient value) {
-		if (value.ingredient().isEmpty()) {
-			return "SizedIngredient '" + key.name + "' can't be empty!";
-		}
-
-		return "";
+	public boolean isEmpty(SizedIngredient value) {
+		return value.count() <= 0 || value.ingredient().isEmpty();
 	}
 
 	@Override

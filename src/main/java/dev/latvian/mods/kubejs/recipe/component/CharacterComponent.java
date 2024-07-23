@@ -17,4 +17,9 @@ public class CharacterComponent extends SimpleRecipeComponent<Character> {
 	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
 		return from instanceof Character || from instanceof CharSequence || from instanceof JsonPrimitive json && json.isString();
 	}
+
+	@Override
+	public boolean isEmpty(Character value) {
+		return value == '\0';
+	}
 }

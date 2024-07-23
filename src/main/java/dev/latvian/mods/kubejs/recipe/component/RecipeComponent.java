@@ -187,7 +187,15 @@ public interface RecipeComponent<T> {
 	 * @return An error message, or an empty string if the value is valid
 	 */
 	default String checkEmpty(RecipeKey<T> key, T value) {
+		if (isEmpty(value)) {
+			return "Value of '" + key.name + "' (" + this + ") can't be empty!";
+		}
+
 		return "";
+	}
+
+	default boolean isEmpty(T value) {
+		return false;
 	}
 
 	default void buildUniqueId(UniqueIdBuilder builder, T value) {

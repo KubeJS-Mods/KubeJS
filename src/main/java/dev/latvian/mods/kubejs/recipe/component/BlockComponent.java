@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
@@ -44,12 +43,8 @@ public record BlockComponent() implements RecipeComponent<Block> {
 	}
 
 	@Override
-	public String checkEmpty(RecipeKey<Block> key, Block value) {
-		if (value == Blocks.AIR) {
-			return "Block '" + key.name + "' can't be empty!";
-		}
-
-		return "";
+	public boolean isEmpty(Block value) {
+		return value == Blocks.AIR;
 	}
 
 	@Override

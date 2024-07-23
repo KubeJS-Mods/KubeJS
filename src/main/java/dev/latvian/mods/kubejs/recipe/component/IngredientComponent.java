@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.TinyMap;
@@ -76,12 +75,8 @@ public class IngredientComponent implements RecipeComponent<Ingredient> {
 	}
 
 	@Override
-	public String checkEmpty(RecipeKey<Ingredient> key, Ingredient value) {
-		if (value.isEmpty()) {
-			return "Ingredient '" + key.name + "' can't be empty!";
-		}
-
-		return "";
+	public boolean isEmpty(Ingredient value) {
+		return value.isEmpty();
 	}
 
 	@Override

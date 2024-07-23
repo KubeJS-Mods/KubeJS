@@ -34,4 +34,9 @@ public record PairRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B>
 	public String toString() {
 		return "pair<" + a + ", " + b + ">";
 	}
+
+	@Override
+	public boolean isEmpty(Pair<A, B> value) {
+		return a.isEmpty(value.getFirst()) && b.isEmpty(value.getSecond());
+	}
 }

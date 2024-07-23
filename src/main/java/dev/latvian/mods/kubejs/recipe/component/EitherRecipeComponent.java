@@ -79,6 +79,11 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeCompone
 	}
 
 	@Override
+	public boolean isEmpty(Either<H, L> value) {
+		return value.map(high::isEmpty, low::isEmpty);
+	}
+
+	@Override
 	public String toString() {
 		return "either<" + high + ", " + low + ">";
 	}

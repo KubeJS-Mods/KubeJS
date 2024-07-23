@@ -44,6 +44,11 @@ public record TimeComponent(String name, long scale, Codec<TickDuration> codec) 
 	}
 
 	@Override
+	public boolean isEmpty(TickDuration value) {
+		return value.ticks() <= 0L;
+	}
+
+	@Override
 	public String toString() {
 		return name;
 	}

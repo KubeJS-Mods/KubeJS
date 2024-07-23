@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
@@ -46,12 +45,8 @@ public class SizedFluidIngredientComponent implements RecipeComponent<SizedFluid
 	}
 
 	@Override
-	public String checkEmpty(RecipeKey<SizedFluidIngredient> key, SizedFluidIngredient value) {
-		if (value.ingredient().isEmpty()) {
-			return "SizedIngredient '" + key.name + "' can't be empty!";
-		}
-
-		return "";
+	public boolean isEmpty(SizedFluidIngredient value) {
+		return value.amount() <= 0 || value.ingredient().isEmpty();
 	}
 
 	@Override

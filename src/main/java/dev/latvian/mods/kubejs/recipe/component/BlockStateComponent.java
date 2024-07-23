@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -61,12 +60,8 @@ public record BlockStateComponent(boolean preferObjectForm) implements RecipeCom
 	}
 
 	@Override
-	public String checkEmpty(RecipeKey<BlockState> key, BlockState value) {
-		if (value.getBlock() == Blocks.AIR) {
-			return "Block '" + key.name + "' can't be empty!";
-		}
-
-		return "";
+	public boolean isEmpty(BlockState value) {
+		return value.getBlock() == Blocks.AIR;
 	}
 
 	@Override

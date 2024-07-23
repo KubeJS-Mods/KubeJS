@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.kubejs.util.TinyMap;
@@ -75,12 +74,8 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public String checkEmpty(RecipeKey<TinyMap<K, V>> key, TinyMap<K, V> value) {
-		if (value.isEmpty()) {
-			return "Map '" + key.name + "' can't be empty!";
-		}
-
-		return "";
+	public boolean isEmpty(TinyMap<K, V> value) {
+		return value.isEmpty();
 	}
 
 	@Override

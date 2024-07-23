@@ -54,6 +54,11 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
+	default boolean isEmpty(T value) {
+		return parentComponent().isEmpty(value);
+	}
+
+	@Override
 	default void buildUniqueId(UniqueIdBuilder builder, T value) {
 		parentComponent().buildUniqueId(builder, value);
 	}

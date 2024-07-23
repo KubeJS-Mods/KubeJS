@@ -209,6 +209,11 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<RecipeCompone
 	}
 
 	@Override
+	public boolean isEmpty(Map<Key, Value> value) {
+		return keys.isEmpty();
+	}
+
+	@Override
 	public String toString() {
 		return keys.stream().map(Key::toString).collect(Collectors.joining(", ", "{", "}"));
 	}

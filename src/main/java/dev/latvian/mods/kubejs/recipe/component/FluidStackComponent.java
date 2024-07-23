@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
@@ -37,12 +36,8 @@ public class FluidStackComponent implements RecipeComponent<FluidStack> {
 	}
 
 	@Override
-	public String checkEmpty(RecipeKey<FluidStack> key, FluidStack value) {
-		if (value.isEmpty()) {
-			return "FluidStack '" + key.name + "' can't be empty!";
-		}
-
-		return "";
+	public boolean isEmpty(FluidStack value) {
+		return value.isEmpty();
 	}
 
 	@Override
