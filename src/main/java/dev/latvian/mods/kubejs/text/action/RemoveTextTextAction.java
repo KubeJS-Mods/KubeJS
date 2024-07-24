@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.tooltip.action;
+package dev.latvian.mods.kubejs.text.action;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
@@ -6,8 +6,8 @@ import net.minecraft.network.chat.ComponentSerialization;
 
 import java.util.List;
 
-public record RemoveTextTooltipAction(Component match) implements TooltipAction {
-	public static final TooltipActionType<RemoveTextTooltipAction> TYPE = new TooltipActionType<>(4, ComponentSerialization.STREAM_CODEC.map(RemoveTextTooltipAction::new, RemoveTextTooltipAction::match));
+public record RemoveTextTextAction(Component match) implements TextAction {
+	public static final TooltipActionType<RemoveTextTextAction> TYPE = new TooltipActionType<>(4, ComponentSerialization.STREAM_CODEC.map(RemoveTextTextAction::new, RemoveTextTextAction::match));
 
 	@Override
 	public TooltipActionType<?> type() {
@@ -15,8 +15,8 @@ public record RemoveTextTooltipAction(Component match) implements TooltipAction 
 	}
 
 	@Override
-	public void apply(List<Component> tooltip) {
-		tooltip.removeIf(component -> RemoveTextTooltipAction.equals(component, match.getContents()));
+	public void apply(List<Component> lines) {
+		lines.removeIf(component -> RemoveTextTextAction.equals(component, match.getContents()));
 	}
 
 	private static boolean equals(Component c, ComponentContents contents) {

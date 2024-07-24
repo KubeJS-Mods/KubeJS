@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.tooltip;
+package dev.latvian.mods.kubejs.text.tooltip;
 
 import dev.latvian.mods.kubejs.util.Tristate;
 import net.minecraft.network.RegistryFriendlyByteBuf;

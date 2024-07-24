@@ -24,7 +24,7 @@ import dev.latvian.mods.kubejs.item.ModifyItemTooltipsKubeEvent;
 import dev.latvian.mods.kubejs.kubedex.KubedexHighlight;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.tooltip.ItemTooltipData;
+import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;
 import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;

@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.item.ModifyItemTooltipsKubeEvent;
 import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerData;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.tooltip.ItemTooltipData;
+import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

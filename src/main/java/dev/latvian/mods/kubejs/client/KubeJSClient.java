@@ -15,7 +15,7 @@ import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
 import dev.latvian.mods.kubejs.script.data.VirtualAssetPack;
-import dev.latvian.mods.kubejs.tooltip.ItemTooltipData;
+import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;

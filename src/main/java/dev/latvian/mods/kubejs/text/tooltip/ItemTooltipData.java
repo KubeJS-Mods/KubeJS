@@ -1,6 +1,6 @@
-package dev.latvian.mods.kubejs.tooltip;
+package dev.latvian.mods.kubejs.text.tooltip;
 
-import dev.latvian.mods.kubejs.tooltip.action.TooltipAction;
+import dev.latvian.mods.kubejs.text.action.TextAction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -12,12 +12,12 @@ import java.util.Optional;
 public record ItemTooltipData(
 	Optional<Ingredient> filter,
 	Optional<TooltipRequirements> requirements,
-	List<TooltipAction> actions
+	List<TextAction> actions
 ) {
 	public static final StreamCodec<RegistryFriendlyByteBuf, ItemTooltipData> STREAM_CODEC = StreamCodec.composite(
 		ByteBufCodecs.optional(Ingredient.CONTENTS_STREAM_CODEC), ItemTooltipData::filter,
 		ByteBufCodecs.optional(TooltipRequirements.STREAM_CODEC), ItemTooltipData::requirements,
-		TooltipAction.STREAM_CODEC.apply(ByteBufCodecs.list()), ItemTooltipData::actions,
+		TextAction.STREAM_CODEC.apply(ByteBufCodecs.list()), ItemTooltipData::actions,
 		ItemTooltipData::new
 	);
 }

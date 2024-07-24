@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
-import dev.latvian.mods.kubejs.tooltip.ItemTooltipData;
-import dev.latvian.mods.kubejs.tooltip.TooltipActionBuilder;
-import dev.latvian.mods.kubejs.tooltip.TooltipRequirements;
+import dev.latvian.mods.kubejs.text.action.TextActionBuilder;
+import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;
+import dev.latvian.mods.kubejs.text.tooltip.TooltipRequirements;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
@@ -19,29 +19,33 @@ public class ModifyItemTooltipsKubeEvent implements KubeEvent {
 		this.callback = callback;
 	}
 
-	private void modify(@Nullable Ingredient filter, Optional<TooltipRequirements> requirements, Consumer<TooltipActionBuilder> consumer) {
-		var builder = new TooltipActionBuilder();
+	private void modify(@Nullable Ingredient filter, Optional<TooltipRequirements> requirements, Consumer<TextActionBuilder> consumer) {
+		var builder = new TextActionBuilder();
 		consumer.accept(builder);
 		callback.accept(new ItemTooltipData(filter == null || filter.isEmpty() || filter.kjs$isWildcard() ? Optional.empty() : Optional.of(filter), requirements, List.copyOf(builder.actions)));
 	}
 
-	public void modify(Ingredient filter, TooltipRequirements requirements, Consumer<TooltipActionBuilder> consumer) {
+	public void modify(Ingredient filter, TooltipRequirements requirements, Consumer<TextActionBuilder> consumer) {
 		modify(filter, Optional.ofNullable(requirements), consumer);
 	}
 
-	public void modify(Ingredient filter, Consumer<TooltipActionBuilder> consumer) {
+	public void modify(Ingredient filter, Consumer<TextActionBuilder> consumer) {
 		modify(filter, Optional.empty(), consumer);
 	}
 
-	public void modifyAll(TooltipRequirements requirements, Consumer<TooltipActionBuilder> consumer) {
+	public void modifyAll(TooltipRequirements requirements, Consumer<TextActionBuilder> consumer) {
 		modify(null, Optional.ofNullable(requirements), consumer);
 	}
 
-	public void modifyAll(Consumer<TooltipActionBuilder> consumer) {
+	public void modifyAll(Consumer<TextActionBuilder> consumer) {
 		modify(null, Optional.empty(), consumer);
 	}
 
 	public void add(Ingredient filter, List<Component> text) {
 		modify(filter, builder -> builder.add(text));
+	}
+
+	public void add(Ingredient filter, TooltipRequirements requirements, List<Component> text) {
+		modify(filter, requirements, builder -> builder.add(text));
 	}
 }

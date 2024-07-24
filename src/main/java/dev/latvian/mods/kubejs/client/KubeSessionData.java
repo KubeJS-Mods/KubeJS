@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.core.ClientPacketListenerKJS;
 import dev.latvian.mods.kubejs.net.KubeServerData;
 import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerData;
 import dev.latvian.mods.kubejs.recipe.viewer.server.RemoteRecipeViewerDataUpdatedEvent;
-import dev.latvian.mods.kubejs.tooltip.ItemTooltipData;
+import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.resources.ResourceLocation;

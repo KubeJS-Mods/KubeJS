@@ -10,9 +10,9 @@ import dev.latvian.mods.kubejs.item.DynamicItemTooltipsKubeEvent;
 import dev.latvian.mods.kubejs.kubedex.KubedexHighlight;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.tooltip.ItemTooltipData;
-import dev.latvian.mods.kubejs.tooltip.TooltipRequirements;
-import dev.latvian.mods.kubejs.tooltip.action.DynamicTooltipAction;
+import dev.latvian.mods.kubejs.text.action.DynamicTextAction;
+import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;
+import dev.latvian.mods.kubejs.text.tooltip.TooltipRequirements;
 import dev.latvian.mods.kubejs.util.Tristate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
@@ -118,7 +118,7 @@ public class KubeJSClientEventHandler {
 	private static void handleItemTooltips(Minecraft mc, ItemTooltipData tooltip, DynamicItemTooltipsKubeEvent event) {
 		if ((tooltip.filter().isEmpty() || tooltip.filter().get().test(event.item)) && (tooltip.requirements().isEmpty() || testRequirements(mc, event, tooltip.requirements().get()))) {
 			for (var action : tooltip.actions()) {
-				if (action instanceof DynamicTooltipAction dynamic) {
+				if (action instanceof DynamicTextAction dynamic) {
 					try {
 						ItemEvents.DYNAMIC_TOOLTIPS.post(ScriptType.CLIENT, dynamic.id(), event);
 					} catch (Exception ex) {
