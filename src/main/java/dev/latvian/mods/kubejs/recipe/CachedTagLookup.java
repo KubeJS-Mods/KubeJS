@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe;
 
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -121,5 +122,22 @@ public class CachedTagLookup<T> {
 		}
 
 		return valueToKey.getOrDefault(value, Set.of());
+	}
+
+	public Map<TagKey<T>, List<Holder<T>>> bindingMap() {
+		var k2v = keyToValue();
+		var map = new IdentityHashMap<TagKey<T>, List<Holder<T>>>(k2v.size());
+
+		for (var entry : k2v.entrySet()) {
+			var list = new ArrayList<Holder<T>>(entry.getValue().size());
+
+			for (var value : entry.getValue()) {
+				list.add(registry.wrapAsHolder(value));
+			}
+
+			map.put(entry.getKey(), list);
+		}
+
+		return map;
 	}
 }

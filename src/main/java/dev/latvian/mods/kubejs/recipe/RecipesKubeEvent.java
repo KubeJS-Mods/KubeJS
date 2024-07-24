@@ -43,7 +43,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -69,8 +68,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RecipesKubeEvent implements KubeEvent {
-	public static final MutableObject<CachedItemTagLookup> TEMP_ITEM_TAG_LOOKUP = new MutableObject<>(null);
-
 	public static final Pattern POST_SKIP_ERROR = Pattern.compile("dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesKubeEvent\\.post");
 	public static final Pattern CREATE_RECIPE_SKIP_ERROR = Pattern.compile("dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesKubeEvent\\.createRecipe");
 	private static final Predicate<KubeRecipe> RECIPE_NOT_REMOVED = r -> r != null && !r.removed;

@@ -8,7 +8,6 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
-import dev.latvian.mods.kubejs.ingredient.TagIngredient;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -157,7 +156,8 @@ public interface ItemStackJS {
 
 				return stack;
 			} else if (map.containsKey("tag")) {
-				var stack = new TagIngredient(registries.cachedItemTags, ItemTags.create(ID.mc(map.get("tag")))).toVanilla().kjs$getFirst();
+				// var stack = new TagIngredient(registries.cachedItemTags, ItemTags.create(ID.mc(map.get("tag")))).toVanilla().kjs$getFirst();
+				var stack = Ingredient.of(ItemTags.create(ID.mc(map.get("tag")))).kjs$getFirst();
 
 				if (map.containsKey("count")) {
 					stack.setCount(UtilsJS.parseInt(map.get("count"), 1));

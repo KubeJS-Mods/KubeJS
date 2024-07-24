@@ -222,7 +222,11 @@ public class ServerScriptManager extends ScriptManager {
 		}
 
 		boolean result = false;
-		RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.setValue(getRegistries().cachedItemTags);
+
+		for (var entry : getRegistries().cachedRegistryTags.values()) {
+			entry.getLeft().bindTags((Map) entry.getRight().bindingMap());
+		}
+
 		recipeSchemaStorage.fireEvents(getRegistries(), resourceManager);
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
@@ -234,7 +238,6 @@ public class ServerScriptManager extends ScriptManager {
 		}
 
 		serverData = new SyncServerDataPayload(KubeServerData.collect());
-		RecipesKubeEvent.TEMP_ITEM_TAG_LOOKUP.setValue(null);
 		return result;
 	}
 

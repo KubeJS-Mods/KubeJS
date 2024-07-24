@@ -13,12 +13,15 @@ import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import org.jetbrains.annotations.Nullable;
 
 @RemapPrefixForJS("kjs$")
 public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, ItemMatch {
@@ -122,5 +125,14 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 		}
 
 		return false;
+	}
+
+	@Nullable
+	default TagKey<Item> kjs$getTagKey() {
+		return IngredientWrapper.tagKeyOf(kjs$self());
+	}
+
+	default boolean kjs$containsAnyTag() {
+		return IngredientWrapper.containsAnyTag(kjs$self());
 	}
 }

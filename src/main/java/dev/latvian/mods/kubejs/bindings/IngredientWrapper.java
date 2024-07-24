@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import dev.latvian.mods.kubejs.ingredient.TagIngredient;
 import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.tags.TagKey;
@@ -43,10 +42,22 @@ public interface IngredientWrapper {
 	static TagKey<Item> tagKeyOf(Ingredient in) {
 		if (!in.isCustom() && in.getValues().length == 1 && in.getValues()[0] instanceof Ingredient.TagValue value) {
 			return value.tag();
-		} else if (in.getCustomIngredient() instanceof TagIngredient tin) {
-			return tin.tagKey;
 		} else {
 			return null;
 		}
+	}
+
+	static boolean containsAnyTag(Ingredient in) {
+		if (in.isCustom()) {
+			return false;
+		}
+
+		for (var value : in.getValues()) {
+			if (value instanceof Ingredient.TagValue) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

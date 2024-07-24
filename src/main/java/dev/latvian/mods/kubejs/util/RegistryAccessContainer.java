@@ -21,11 +21,14 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.world.damagesource.DamageSources;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,9 +49,10 @@ public final class RegistryAccessContainer {
 	private final RegistryOps<Object> java;
 	private DamageSources damageSources;
 	private final Map<String, ItemStack> itemStackParseCache;
+	public Map<ResourceKey<?>, Pair<Registry<?>, CachedTagLookup<?>>> cachedRegistryTags;
 	public CachedItemTagLookup cachedItemTags;
-	public CachedTagLookup<Item> cachedBlockTags;
-	public CachedTagLookup<Item> cachedFluidTags;
+	public CachedTagLookup<Block> cachedBlockTags;
+	public CachedTagLookup<Fluid> cachedFluidTags;
 	private Map<ResourceLocation, RegistryWrapper> cachedRegistryWrappers;
 
 	public RegistryAccessContainer(RegistryAccess.Frozen access) {
@@ -58,6 +62,7 @@ public final class RegistryAccessContainer {
 		this.java = access.createSerializationContext(JavaOps.INSTANCE);
 		this.damageSources = null;
 		this.itemStackParseCache = new HashMap<>();
+		this.cachedRegistryTags = new IdentityHashMap<>();
 	}
 
 	public RegistryAccess.Frozen access() {
@@ -94,10 +99,15 @@ public final class RegistryAccessContainer {
 
 		if (key1 == Registries.ITEM) {
 			cachedItemTags = Cast.to(new CachedItemTagLookup((Registry) registry, map));
+			cachedRegistryTags.put(key1, Pair.of(registry, cachedItemTags));
 		} else if (key1 == Registries.BLOCK) {
 			cachedBlockTags = Cast.to(new CachedTagLookup<>(registry, map));
+			cachedRegistryTags.put(key1, Pair.of(registry, cachedBlockTags));
 		} else if (key1 == Registries.FLUID) {
 			cachedFluidTags = Cast.to(new CachedTagLookup<>(registry, map));
+			cachedRegistryTags.put(key1, Pair.of(registry, cachedFluidTags));
+		} else {
+			cachedRegistryTags.put(key1, Pair.of(registry, new CachedTagLookup<>(registry, map)));
 		}
 	}
 

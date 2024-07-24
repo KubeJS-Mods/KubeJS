@@ -13,7 +13,6 @@ import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
 import dev.latvian.mods.kubejs.ingredient.CreativeTabIngredient;
 import dev.latvian.mods.kubejs.ingredient.NamespaceIngredient;
 import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
-import dev.latvian.mods.kubejs.ingredient.TagIngredient;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.MapJS;
@@ -145,7 +144,8 @@ public interface IngredientJS {
 			}
 			case '#' -> {
 				reader.skip();
-				yield new TagIngredient(registries.cachedItemTags, ItemTags.create(ResourceLocation.read(reader))).toVanilla();
+				// yield new TagIngredient(registries.cachedItemTags, ItemTags.create(ResourceLocation.read(reader))).toVanilla();
+				yield Ingredient.of(ItemTags.create(ResourceLocation.read(reader)));
 			}
 			case '@' -> {
 				reader.skip();

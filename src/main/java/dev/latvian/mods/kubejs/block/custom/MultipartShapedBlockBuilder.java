@@ -30,8 +30,6 @@ public abstract class MultipartShapedBlockBuilder extends ShapedBlockBuilder {
 				generator.itemModel(itemBuilder.id, this::generateItemModelJson);
 			}
 		}
-
-
 	}
 
 	protected abstract void generateMultipartBlockStateJson(MultipartBlockStateGenerator bs);
