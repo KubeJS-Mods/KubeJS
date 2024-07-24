@@ -97,6 +97,10 @@ public final class RegistryAccessContainer {
 	public <T> void cacheTags(Registry<T> registry, Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
 		var key1 = (ResourceKey) registry.key();
 
+		if (key1 == null) {
+			return;
+		}
+
 		if (key1 == Registries.ITEM) {
 			cachedItemTags = Cast.to(new CachedItemTagLookup((Registry) registry, map));
 			cachedRegistryTags.put(key1, Pair.of(registry, cachedItemTags));
