@@ -48,4 +48,9 @@ public final class RegistryObjectStorage<T> implements Iterable<BuilderBase<? ex
 	public Iterator<BuilderBase<? extends T>> iterator() {
 		return objects.values().iterator();
 	}
+
+	@Override
+	public String toString() {
+		return key.location().toString();
+	}
 }

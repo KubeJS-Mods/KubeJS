@@ -81,7 +81,7 @@ public interface TagLoaderKJS<T> {
 		kjs$resources.kjs$getServerScriptManager().getRegistries().cacheTags(reg, map);
 
 		if (DataExport.export != null) {
-			var loc = "tags/" + objStorage.key.location() + "/";
+			var loc = "tags/" + objStorage + "/";
 
 			for (var entry : map.entrySet()) {
 				var list = new ArrayList<String>();
