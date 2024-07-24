@@ -184,7 +184,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		var table = generateLootTable();
 
 		if (table != null) {
-			generator.json(newID("loot_tables/blocks/", ""), LootTable.CODEC.encodeStart(JsonOps.INSTANCE, new Holder.Direct<>(table)).getOrThrow());
+			generator.json(newID("loot_table/blocks/", ""), LootTable.CODEC.encodeStart(JsonOps.INSTANCE, new Holder.Direct<>(table)).getOrThrow());
 		}
 	}
 

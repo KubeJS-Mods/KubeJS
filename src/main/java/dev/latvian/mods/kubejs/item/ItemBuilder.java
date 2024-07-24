@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
-import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -116,10 +115,6 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 		}
 
 		return obj;
-	}
-
-	@Override
-	public void generateDataJsons(KubeDataGenerator generator) {
 	}
 
 	@Override
