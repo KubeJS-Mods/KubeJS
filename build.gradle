@@ -18,7 +18,14 @@ base.archivesBaseName = project.archives_base_name
 
 neoForge {
 	version = project.neoforge_version
-	interfaceInjectionData = files("interfaces.json")
+	accessTransformers {
+		publish(project.file('src/main/resources/META-INF/accesstransformer.cfg'))
+	}
+
+	interfaceInjectionData {
+		from(file('interfaces.json'))
+		publish(file('interfaces.json'))
+	}
 
 	runs {
 		configureEach {

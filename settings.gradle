@@ -3,15 +3,6 @@ pluginManagement {
 		gradlePluginPortal()
 		mavenCentral()
 		maven { url "https://maven.creeperhost.net/" }
-		// maven { url "https://maven.architectury.dev/" }
-		maven { url "https://maven.minecraftforge.net/" }
-		maven {
-			name = "NeoForged"
-			url = 'https://maven.neoforged.net/releases'
-			content {
-				includeGroup "net.neoforged"
-			}
-		}
 	}
 }
 
