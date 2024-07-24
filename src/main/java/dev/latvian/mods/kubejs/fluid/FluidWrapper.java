@@ -173,19 +173,7 @@ public interface FluidWrapper {
 			return FluidStack.EMPTY;
 		}
 
-		int amount = 1;
-
-		if (reader.canRead() && StringReader.isAllowedNumber(reader.peek())) {
-			amount = Mth.ceil(reader.readDouble());
-			reader.skipWhitespace();
-			reader.expect('x');
-			reader.skipWhitespace();
-
-			if (amount < 1) {
-				throw new IllegalArgumentException("Item count smaller than 1 is not allowed!");
-			}
-		}
-
+		int amount = readFluidAmount(reader);
 		var fluidId = ResourceLocation.read(reader);
 		var fluidStack = new FluidStack(BuiltInRegistries.FLUID.get(fluidId), amount);
 
@@ -278,9 +266,12 @@ public interface FluidWrapper {
 			return EMPTY_SIZED;
 		}
 
-		int amount = FluidType.BUCKET_VOLUME;
+		int amount = readFluidAmount(reader);
+		return new SizedFluidIngredient(readIngredient(registryOps, reader), amount);
+	}
 
-		if (StringReader.isAllowedNumber(reader.peek())) {
+	static int readFluidAmount(StringReader reader) throws CommandSyntaxException {
+		if (reader.canRead() && StringReader.isAllowedNumber(reader.peek())) {
 			var amountd = reader.readDouble();
 			reader.skipWhitespace();
 
@@ -296,15 +287,17 @@ public interface FluidWrapper {
 				amountd = amountd / reader.readDouble();
 			}
 
-			amount = Mth.ceil(amountd);
+			int amount = Mth.ceil(amountd);
 			reader.expect('x');
 			reader.skipWhitespace();
 
 			if (amount < 1) {
-				throw new IllegalArgumentException("SizedFluidIngredient amount smaller than 1 is not allowed!");
+				throw new IllegalArgumentException("Fluid amount smaller than 1 is not allowed!");
 			}
+
+			return amount;
 		}
 
-		return new SizedFluidIngredient(readIngredient(registryOps, reader), amount);
+		return FluidType.BUCKET_VOLUME;
 	}
 }
