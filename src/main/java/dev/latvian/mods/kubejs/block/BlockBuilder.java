@@ -180,7 +180,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Override
-	public void generateDataJsons(KubeDataGenerator generator) {
+	public void generateData(KubeDataGenerator generator) {
 		var table = generateLootTable();
 
 		if (table != null) {
@@ -226,7 +226,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	@Override
-	public void generateAssetJsons(KubeAssetGenerator generator) {
+	public void generateAssets(KubeAssetGenerator generator) {
 		if (blockstateJson != null) {
 			generator.json(newID("blockstates/", ""), blockstateJson);
 		} else {

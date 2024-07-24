@@ -20,7 +20,7 @@ public class FluidBucketItemBuilder extends ItemBuilder {
 	}
 
 	@Override
-	public void generateAssetJsons(KubeAssetGenerator generator) {
+	public void generateAssets(KubeAssetGenerator generator) {
 		if (modelJson != null) {
 			generator.json(KubeAssetGenerator.asItemModelLocation(id), modelJson);
 			return;

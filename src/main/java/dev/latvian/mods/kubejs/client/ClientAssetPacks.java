@@ -56,7 +56,7 @@ public class ClientAssetPacks {
 		internalAssetPack.reset();
 
 		for (var builder : RegistryObjectStorage.ALL_BUILDERS) {
-			builder.generateAssetJsons(internalAssetPack);
+			builder.generateAssets(internalAssetPack);
 		}
 
 		KubeJSPlugins.forEachPlugin(internalAssetPack, KubeJSPlugin::generateAssets);

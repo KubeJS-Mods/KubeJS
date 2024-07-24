@@ -29,7 +29,7 @@ public class FluidBlockBuilder extends BlockBuilder {
 	}
 
 	@Override
-	public void generateAssetJsons(KubeAssetGenerator generator) {
+	public void generateAssets(KubeAssetGenerator generator) {
 		generator.blockState(id, m -> m.simpleVariant("", id.getNamespace() + ":block/" + id.getPath()));
 		generator.blockModel(id, m -> {
 			m.parent("");

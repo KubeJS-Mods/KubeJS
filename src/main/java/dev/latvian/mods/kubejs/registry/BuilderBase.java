@@ -127,11 +127,11 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	}
 
 	@HideFromJS
-	public void generateDataJsons(KubeDataGenerator generator) {
+	public void generateData(KubeDataGenerator generator) {
 	}
 
 	@HideFromJS
-	public void generateAssetJsons(KubeAssetGenerator generator) {
+	public void generateAssets(KubeAssetGenerator generator) {
 	}
 
 	public String getBuilderTranslationKey() {

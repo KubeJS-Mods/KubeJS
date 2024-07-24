@@ -137,7 +137,7 @@ public class ServerScriptManager extends ScriptManager {
 	@Override
 	public void loadAdditional() {
 		for (var builder : RegistryObjectStorage.ALL_BUILDERS) {
-			builder.generateDataJsons(internalDataPack);
+			builder.generateData(internalDataPack);
 		}
 
 		KubeJSPlugins.forEachPlugin(internalDataPack, KubeJSPlugin::generateData);

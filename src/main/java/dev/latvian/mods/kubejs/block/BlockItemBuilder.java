@@ -24,6 +24,6 @@ public class BlockItemBuilder extends ItemBuilder {
 	}
 
 	@Override
-	public void generateAssetJsons(KubeAssetGenerator generator) {
+	public void generateAssets(KubeAssetGenerator generator) {
 	}
 }

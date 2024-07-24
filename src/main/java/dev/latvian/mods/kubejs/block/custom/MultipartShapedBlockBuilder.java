@@ -10,7 +10,7 @@ public abstract class MultipartShapedBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	public void generateAssetJsons(KubeAssetGenerator generator) {
+	public void generateAssets(KubeAssetGenerator generator) {
 		if (blockstateJson != null) {
 			generator.json(newID("blockstates/", ""), blockstateJson);
 		} else {

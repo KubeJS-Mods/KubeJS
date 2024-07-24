@@ -51,7 +51,7 @@ public class SeedItemBuilder extends BlockItemBuilder {
 	}
 
 	@Override
-	public void generateAssetJsons(KubeAssetGenerator generator) {
+	public void generateAssets(KubeAssetGenerator generator) {
 		if (modelJson != null) {
 			generator.json(KubeAssetGenerator.asItemModelLocation(id), modelJson);
 			return;

@@ -118,7 +118,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	@Override
-	public void generateAssetJsons(KubeAssetGenerator generator) {
+	public void generateAssets(KubeAssetGenerator generator) {
 		if (modelJson != null) {
 			generator.json(KubeAssetGenerator.asItemModelLocation(id), modelJson);
 			return;
@@ -131,7 +131,7 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 				m.parent("minecraft:item/generated");
 			}
 
-			if (textureJson.size() == 0) {
+			if (textureJson.isEmpty()) {
 				texture(newID("item/", "").toString());
 			}
 
