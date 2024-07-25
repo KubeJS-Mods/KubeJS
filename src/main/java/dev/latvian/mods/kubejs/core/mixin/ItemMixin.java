@@ -174,6 +174,10 @@ public abstract class ItemMixin implements ItemKJS {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.nameGetter != null) {
 			ci.setReturnValue(kjs$itemBuilder.nameGetter.apply(itemStack));
 		}
+
+		if (kjs$itemBuilder != null && kjs$itemBuilder.displayName != null && kjs$itemBuilder.formattedDisplayName) {
+			ci.setReturnValue(kjs$itemBuilder.displayName);
+		}
 	}
 
 	@Inject(method = "use", at = @At("HEAD"), cancellable = true)

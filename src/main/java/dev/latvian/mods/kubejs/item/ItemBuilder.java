@@ -43,7 +43,7 @@ import java.util.function.ToIntFunction;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 @ReturnsSelf
-public abstract class ItemBuilder extends BuilderBase<Item> {
+public class ItemBuilder extends BuilderBase<Item> {
 	public record HurtEnemyContext(ItemStack getItem, LivingEntity getTarget, LivingEntity getAttacker) {
 	}
 
@@ -104,6 +104,11 @@ public abstract class ItemBuilder extends BuilderBase<Item> {
 
 		tool = null;
 		itemAttributeModifiers = null;
+	}
+
+	@Override
+	public Item createObject() {
+		return new Item(createItemProperties());
 	}
 
 	@Override

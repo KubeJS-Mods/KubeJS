@@ -50,7 +50,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedHashMap;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT)
-public class KubeJSClientEventHandler {
+public class KubeJSGameClientEventHandler {
 	@SubscribeEvent
 	public static void debugInfo(CustomizeGuiOverlayEvent.DebugText event) {
 		var mc = Minecraft.getInstance();
@@ -371,7 +371,7 @@ public class KubeJSClientEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void openScreenEvent(ScreenEvent.Opening event) {
-		var s = KubeJSClientEventHandler.setScreen(event.getScreen());
+		var s = KubeJSGameClientEventHandler.setScreen(event.getScreen());
 
 		if (s != null && event.getScreen() != s) {
 			event.setNewScreen(s);

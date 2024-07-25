@@ -244,11 +244,7 @@ public class RecipeSchema {
 		r.json = json;
 		r.newRecipe = id == null;
 		r.initValues(id == null);
-
-		if (id != null && DevProperties.get().logRecipeDebug) {
-			r.originalJson = (JsonObject) JsonUtils.copy(json);
-		}
-
+		r.originalJson = json == null || id == null ? null : (JsonObject) JsonUtils.copy(json);
 		r.deserialize(false);
 		return r;
 	}

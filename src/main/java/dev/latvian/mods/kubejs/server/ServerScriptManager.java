@@ -166,6 +166,10 @@ public class ServerScriptManager extends ScriptManager {
 				}
 
 				for (var b : builders) {
+					b.generateData(registriesDataPack);
+				}
+
+				for (var b : builders) {
 					if (b.registryKey == null) {
 						ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to register object '" + b.id + "' - unknown registry").source(b.sourceLine));
 						continue;

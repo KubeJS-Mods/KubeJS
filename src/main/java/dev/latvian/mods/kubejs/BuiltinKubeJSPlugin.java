@@ -59,6 +59,7 @@ import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.fluid.ThickFluidBuilder;
 import dev.latvian.mods.kubejs.fluid.ThinFluidBuilder;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
+import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
@@ -67,7 +68,6 @@ import dev.latvian.mods.kubejs.item.ItemToolTiers;
 import dev.latvian.mods.kubejs.item.JukeboxSongBuilder;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabBuilder;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
-import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
 import dev.latvian.mods.kubejs.item.custom.DiggerItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.ShearsItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SmithingTemplateItemBuilder;
@@ -271,7 +271,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 			reg.add("carpet", CarpetBlockBuilder.class, CarpetBlockBuilder::new);
 		});
 
-		registry.addDefault(Registries.ITEM, BasicItemJS.Builder.class, BasicItemJS.Builder::new);
+		registry.addDefault(Registries.ITEM, ItemBuilder.class, ItemBuilder::new);
 
 		registry.of(Registries.ITEM, reg -> {
 			reg.add("sword", SwordItemBuilder.class, SwordItemBuilder::new);

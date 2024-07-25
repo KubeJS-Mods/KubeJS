@@ -186,12 +186,12 @@ public interface KubeJSTypeWrappers {
 	static Path pathOf(Object o) {
 		try {
 			if (o instanceof Path) {
-				return KubeJS.verifyFilePath((Path) o);
+				return KubeJSPaths.verifyFilePath((Path) o);
 			} else if (o == null || o.toString().isEmpty()) {
 				return null;
 			}
 
-			return KubeJS.verifyFilePath(KubeJSPaths.GAMEDIR.resolve(o.toString()));
+			return KubeJSPaths.verifyFilePath(KubeJSPaths.GAMEDIR.resolve(o.toString()));
 		} catch (Exception ex) {
 			return null;
 		}
@@ -201,12 +201,12 @@ public interface KubeJSTypeWrappers {
 	static File fileOf(Object o) {
 		try {
 			if (o instanceof File) {
-				return KubeJS.verifyFilePath(((File) o).toPath()).toFile();
+				return KubeJSPaths.verifyFilePath(((File) o).toPath()).toFile();
 			} else if (o == null || o.toString().isEmpty()) {
 				return null;
 			}
 
-			return KubeJS.verifyFilePath(KubeJSPaths.GAMEDIR.resolve(o.toString())).toFile();
+			return KubeJSPaths.verifyFilePath(KubeJSPaths.GAMEDIR.resolve(o.toString())).toFile();
 		} catch (Exception ex) {
 			return null;
 		}

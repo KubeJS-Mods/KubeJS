@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
-import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.item.custom.BasicItemJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -15,9 +13,9 @@ import net.neoforged.neoforge.common.SpecialPlantable;
 import org.jetbrains.annotations.Nullable;
 
 public class SeedItemBuilder extends BlockItemBuilder {
-	public static class SeedItemJS extends BasicItemJS implements SpecialPlantable {
-		public SeedItemJS(ItemBuilder p) {
-			super(p);
+	public static class SeedItemJS extends Item implements SpecialPlantable {
+		public SeedItemJS(SeedItemBuilder b) {
+			super(b.createItemProperties());
 		}
 
 		@Override
@@ -46,7 +44,6 @@ public class SeedItemBuilder extends BlockItemBuilder {
 
 	@Override
 	public Item createObject() {
-		// return new ItemNameBlockItem(blockBuilder.get(), createItemProperties());
 		return new SeedItemJS(this);
 	}
 

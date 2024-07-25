@@ -8,8 +8,11 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.LogType;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -55,6 +58,26 @@ public class ScriptManager {
 		KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::afterScriptsLoaded);
 	}
 
+	public void collectScripts(ScriptPack pack, Path dir, String path) {
+		if (!path.isEmpty() && !path.endsWith("/")) {
+			path += "/";
+		}
+
+		final var pathPrefix = path;
+
+		try {
+			for (var file : Files.walk(dir, 10, FileVisitOption.FOLLOW_LINKS).filter(Files::isRegularFile).toList()) {
+				var fileName = dir.relativize(file).toString().replace(File.separatorChar, '/');
+
+				if (fileName.endsWith(".js") || fileName.endsWith(".ts") && !fileName.endsWith(".d.ts")) {
+					pack.info.scripts.add(new ScriptFileInfo(pack.info, file, pathPrefix + fileName));
+				}
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	public void loadPackFromDirectory(Path path, String name, boolean exampleFile) {
 		if (Files.notExists(path)) {
 			if (!exampleFile) {
@@ -79,7 +102,7 @@ public class ScriptManager {
 		var pack = new ScriptPack(this, new ScriptPackInfo(path.getFileName().toString(), ""));
 
 		if (Files.exists(path)) {
-			KubeJS.loadScripts(pack, path, "");
+			collectScripts(pack, path, "");
 
 			for (var fileInfo : pack.info.scripts) {
 				loadFile(pack, fileInfo);

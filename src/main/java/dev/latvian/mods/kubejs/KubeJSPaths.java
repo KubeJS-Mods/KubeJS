@@ -4,6 +4,7 @@ import net.minecraft.server.packs.PackType;
 import net.neoforged.fml.loading.FMLPaths;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -57,5 +58,13 @@ public interface KubeJSPaths {
 
 	static Path getLocalDevProperties() {
 		return CommonProperties.get().saveDevPropertiesInConfig ? CONFIG_DEV_PROPERTIES : LOCAL_DEV_PROPERTIES;
+	}
+
+	static Path verifyFilePath(Path path) throws IOException {
+		if (!path.normalize().toAbsolutePath().startsWith(GAMEDIR)) {
+			throw new IOException("You can't access files outside Minecraft directory!");
+		}
+
+		return path;
 	}
 }

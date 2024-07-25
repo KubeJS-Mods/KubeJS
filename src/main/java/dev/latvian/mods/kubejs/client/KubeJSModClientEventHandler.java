@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.neoforge;
+package dev.latvian.mods.kubejs.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -6,13 +6,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
-import dev.latvian.mods.kubejs.client.BlockEntityRendererRegistryKubeEvent;
-import dev.latvian.mods.kubejs.client.BlockTintFunctionWrapper;
-import dev.latvian.mods.kubejs.client.EntityRendererRegistryKubeEvent;
-import dev.latvian.mods.kubejs.client.ItemTintFunctionWrapper;
-import dev.latvian.mods.kubejs.client.KubeJSClient;
-import dev.latvian.mods.kubejs.client.KubeJSResourcePackFinder;
-import dev.latvian.mods.kubejs.client.MenuScreenRegistryKubeEvent;
 import dev.latvian.mods.kubejs.fluid.FluidBlockBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
@@ -51,11 +44,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
-public class KubeJSNeoForgeClient {
+public class KubeJSModClientEventHandler {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void setupClient(FMLClientSetupEvent event) {
 		KubeJS.PROXY = new KubeJSClient();
-		event.enqueueWork(KubeJSNeoForgeClient::setupClient0);
+		event.enqueueWork(KubeJSModClientEventHandler::setupClient0);
 	}
 
 	@SubscribeEvent
