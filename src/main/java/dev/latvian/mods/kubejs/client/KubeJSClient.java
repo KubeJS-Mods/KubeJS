@@ -82,7 +82,6 @@ public class KubeJSClient extends KubeJSCommon {
 					printwriter.println("version:" + SharedConstants.getCurrentVersion().getDataVersion().getVersion());
 					printwriter.print(Files.readString(defOptions));
 					printwriter.close();
-					Files.copy(defOptions, optionsFile.toPath());
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
