@@ -158,7 +158,7 @@ public class KubeJSGameClientEventHandler {
 
 		var advanced = flags.isAdvanced();
 
-		if (mc.level != null && advanced && ClientProperties.get().showComponents && Screen.hasAltDown()) {
+		if (mc.level != null && advanced && ClientProperties.get().showComponents && dynamicEvent.alt) {
 			var components = BuiltInRegistries.DATA_COMPONENT_TYPE;
 			var ops = mc.level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
 
@@ -184,7 +184,7 @@ public class KubeJSGameClientEventHandler {
 				}
 			}
 
-			if (Screen.hasShiftDown()) {
+			if (dynamicEvent.shift) {
 				for (var type : stack.getPrototype()) {
 					var id = components.getKey(type.type());
 
@@ -198,7 +198,7 @@ public class KubeJSGameClientEventHandler {
 					}
 				}
 			}
-		} else if (advanced && ClientProperties.get().showTagNames && Screen.hasShiftDown()) {
+		} else if (advanced && ClientProperties.get().showTagNames && dynamicEvent.shift) {
 			var tempTagNames = new LinkedHashMap<ResourceLocation, TagInstance>();
 			TagInstance.Type.ITEM.append(tempTagNames, stack.getItem().builtInRegistryHolder().tags());
 

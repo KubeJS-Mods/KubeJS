@@ -8,8 +8,8 @@ import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.Context;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,7 +29,7 @@ public class RecipeConstructor {
 
 	public <T> RecipeConstructor override(RecipeKey<T> key, RecipeOptional<T> value) {
 		if (overrides.isEmpty()) {
-			overrides = new IdentityHashMap<>(1);
+			overrides = new Reference2ObjectOpenHashMap<>(1);
 		}
 
 		overrides.put(key, value);

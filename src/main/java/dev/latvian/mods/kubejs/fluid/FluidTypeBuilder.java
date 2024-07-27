@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.block.BlockRenderType;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -12,13 +11,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.pathfinder.PathType;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
 
 @ReturnsSelf
 public class FluidTypeBuilder extends BuilderBase<FluidType> {
@@ -29,42 +25,13 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 			super(builder.properties);
 			this.builder = builder;
 		}
-
-		@Override
-		public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
-			consumer.accept(new IClientFluidTypeExtensions() {
-				@Override
-				public ResourceLocation getStillTexture() {
-					return builder.stillTexture;
-				}
-
-				@Override
-				public ResourceLocation getFlowingTexture() {
-					return builder.flowingTexture;
-				}
-
-				@Override
-				public ResourceLocation getOverlayTexture() {
-					return builder.blockOverlayTexture;
-				}
-
-				@Override
-				@Nullable
-				public ResourceLocation getRenderOverlayTexture(Minecraft mc) {
-					return builder.screenOverlayTexture;
-				}
-
-				@Override
-				public int getTintColor() {
-					return builder.tint == null ? 0xFFFFFFFF : builder.tint.getArgbJS();
-				}
-			});
-		}
 	}
 
 	public transient FluidType.Properties properties;
 	public transient ResourceLocation stillTexture;
 	public transient ResourceLocation flowingTexture;
+	public transient ResourceLocation actualStillTexture;
+	public transient ResourceLocation actualFlowingTexture;
 	public transient ResourceLocation screenOverlayTexture;
 	public transient ResourceLocation blockOverlayTexture;
 	public transient Color tint;
@@ -75,6 +42,8 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 		this.properties = FluidType.Properties.create();
 		this.stillTexture = newID("block/", "_still");
 		this.flowingTexture = newID("block/", "_flow");
+		this.actualStillTexture = newID("block/generated/", "_still");
+		this.actualFlowingTexture = newID("block/generated/", "_flow");
 		this.tint = null;
 		this.renderType = BlockRenderType.SOLID;
 

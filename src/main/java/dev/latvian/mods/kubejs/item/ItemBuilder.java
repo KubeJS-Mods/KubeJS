@@ -136,7 +136,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 				m.parent("minecraft:item/generated");
 			}
 
-			if (textureJson.isEmpty()) {
+			if (textureJson.size() == 0) {
 				texture(newID("item/", "").toString());
 			}
 

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe;
 
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class CachedTagLookup<T> {
+	public record Entry<T>(ResourceKey<T> key, Registry<T> registry, CachedTagLookup<T> lookup) {
+	}
+
 	record SortingEntry(List<TagLoader.EntryWithSource> entries) implements DependencySorter.Entry<ResourceLocation> {
 		@Override
 		public void visitRequiredDependencies(Consumer<ResourceLocation> visitor) {
@@ -88,7 +91,7 @@ public class CachedTagLookup<T> {
 	private Map<TagKey<T>, Set<T>> keyToValue() {
 		if (keyToValue == null) {
 			var map = build(originalMap);
-			keyToValue = new IdentityHashMap<>(map.size());
+			keyToValue = new Reference2ObjectOpenHashMap<>(map.size());
 
 			for (var entry : map.entrySet()) {
 				var k = TagKey.create(registry.key(), entry.getKey());
@@ -112,7 +115,7 @@ public class CachedTagLookup<T> {
 
 	public Set<TagKey<T>> keys(T value) {
 		if (valueToKey == null) {
-			valueToKey = new IdentityHashMap<>();
+			valueToKey = new Reference2ObjectOpenHashMap<>();
 
 			for (var entry : keyToValue().entrySet()) {
 				for (var v : entry.getValue()) {
@@ -126,7 +129,7 @@ public class CachedTagLookup<T> {
 
 	public Map<TagKey<T>, List<Holder<T>>> bindingMap() {
 		var k2v = keyToValue();
-		var map = new IdentityHashMap<TagKey<T>, List<Holder<T>>>(k2v.size());
+		var map = new Reference2ObjectOpenHashMap<TagKey<T>, List<Holder<T>>>(k2v.size());
 
 		for (var entry : k2v.entrySet()) {
 			var list = new ArrayList<Holder<T>>(entry.getValue().size());

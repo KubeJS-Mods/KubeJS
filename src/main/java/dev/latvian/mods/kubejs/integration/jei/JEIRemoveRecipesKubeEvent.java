@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.recipe.viewer.RemoveRecipesKubeEvent;
 import dev.latvian.mods.rhino.Context;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.resources.ResourceLocation;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,7 +28,7 @@ public class JEIRemoveRecipesKubeEvent implements RemoveRecipesKubeEvent {
 		this.recipeManager = recipeManager;
 		this.categories = (Map) categories;
 		this.removedGlobal = new HashSet<>();
-		this.removed = new IdentityHashMap<>();
+		this.removed = new Reference2ObjectOpenHashMap<>();
 	}
 
 	@Override

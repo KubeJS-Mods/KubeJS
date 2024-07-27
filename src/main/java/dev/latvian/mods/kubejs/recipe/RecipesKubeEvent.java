@@ -36,6 +36,7 @@ import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -50,7 +51,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -558,7 +558,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	private void printTypes(Predicate<RecipeSchemaType> predicate) {
 		int t = 0;
-		var map = new IdentityHashMap<RecipeSchema, Set<ResourceLocation>>();
+		var map = new Reference2ObjectOpenHashMap<RecipeSchema, Set<ResourceLocation>>();
 
 		for (var ns : recipeSchemaStorage.namespaces.values()) {
 			for (var type : ns.values()) {

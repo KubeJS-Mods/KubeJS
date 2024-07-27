@@ -7,8 +7,8 @@ import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBlockBuilder;
-import dev.latvian.mods.kubejs.fluid.FluidBucketItemBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
+import dev.latvian.mods.kubejs.fluid.FluidTypeBuilder;
 import dev.latvian.mods.kubejs.gui.KubeJSMenus;
 import dev.latvian.mods.kubejs.gui.KubeJSScreen;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
@@ -20,9 +20,11 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;
 import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -34,9 +36,12 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
@@ -111,10 +116,6 @@ public class KubeJSModClientEventHandler {
 			if (builder instanceof ItemBuilder b && b.tint != null) {
 				event.register(new ItemTintFunctionWrapper(b.tint), b.get());
 			}
-
-			if (builder instanceof FluidBucketItemBuilder b && (b.fluidBuilder.bucketTint != null || b.fluidBuilder.fluidType.tint != null)) {
-				event.register((stack, index) -> index == 1 ? (b.fluidBuilder.bucketTint == null ? b.fluidBuilder.fluidType.tint : b.fluidBuilder.bucketTint).getArgbJS() : 0xFFFFFFFF, b.get());
-			}
 		}
 	}
 
@@ -138,5 +139,35 @@ public class KubeJSModClientEventHandler {
 	@SubscribeEvent
 	public static void registerCoreShaders(RegisterShadersEvent event) throws IOException {
 		event.registerShader(new ShaderInstance(event.getResourceProvider(), ID.mc("kubejs/rendertype_highlight"), DefaultVertexFormat.POSITION_COLOR), s -> KubedexHighlight.INSTANCE.highlightShader = s);
+	}
+
+	@SubscribeEvent
+	public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+		for (var builder : RegistryObjectStorage.FLUID_TYPE) {
+			if (builder instanceof FluidTypeBuilder b) {
+				event.registerFluidType(new IClientFluidTypeExtensions() {
+					@Override
+					public ResourceLocation getStillTexture() {
+						return b.actualStillTexture;
+					}
+
+					@Override
+					public ResourceLocation getFlowingTexture() {
+						return b.actualFlowingTexture;
+					}
+
+					@Override
+					public ResourceLocation getOverlayTexture() {
+						return b.blockOverlayTexture;
+					}
+
+					@Override
+					@Nullable
+					public ResourceLocation getRenderOverlayTexture(Minecraft mc) {
+						return b.screenOverlayTexture;
+					}
+				}, b.get());
+			}
+		}
 	}
 }

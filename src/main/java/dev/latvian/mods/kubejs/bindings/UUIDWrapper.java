@@ -4,9 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-/**
- * @author LatvianModder
- */
 public interface UUIDWrapper {
 	static String toString(@Nullable UUID id) {
 		if (id != null) {

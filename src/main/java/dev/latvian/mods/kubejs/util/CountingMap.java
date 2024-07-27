@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-/**
- * @author LatvianModder
- */
 public class CountingMap {
 	private final Object2LongOpenHashMap<Object> map;
 

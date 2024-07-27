@@ -4,9 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * @author LatvianModder
- */
 public interface AABBWrapper {
 	AABB EMPTY = new AABB(0D, 0D, 0D, 0D, 0D, 0D);
 	AABB CUBE = new AABB(0D, 0D, 0D, 1D, 1D, 1D);

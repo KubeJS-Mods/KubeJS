@@ -4,11 +4,15 @@ import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 
 public interface KubeResourceGenerator extends KubeEvent {
 	void add(GeneratedData data);
+
+	@Nullable
+	GeneratedData getGenerated(ResourceLocation id);
 
 	default void text(ResourceLocation id, String content) {
 		add(new GeneratedData(id, () -> content.getBytes(StandardCharsets.UTF_8)));

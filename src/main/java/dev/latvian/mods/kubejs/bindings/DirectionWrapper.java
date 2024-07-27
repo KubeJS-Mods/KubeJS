@@ -8,9 +8,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * @author LatvianModder
- */
 public interface DirectionWrapper {
 	Direction down = Direction.DOWN;
 	Direction up = Direction.UP;

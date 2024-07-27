@@ -12,19 +12,15 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author Prunoideae
- */
 @ReturnsSelf
-public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
-
+public class MobEffectBuilder extends BuilderBase<MobEffect> {
 	@FunctionalInterface
-	public interface EffectTickCallback {
-		void applyEffectTick(LivingEntity livingEntity, int level);
+	public interface EffectEntityCallback {
+		void applyEffectTick(LivingEntity entity, int level);
 	}
 
 	public transient MobEffectCategory category;
-	public transient EffectTickCallback effectTick;
+	public transient EffectEntityCallback effectTick;
 	public transient Map<ResourceLocation, MobEffect.AttributeTemplate> attributeModifiers;
 	public transient int color;
 	public transient boolean instant;
@@ -34,7 +30,12 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 		category = MobEffectCategory.NEUTRAL;
 		color = 0xFFFFFF;
 		effectTick = null;
-		attributeModifiers = new HashMap<>();
+		attributeModifiers = new HashMap<>(0);
+	}
+
+	@Override
+	public MobEffect createObject() {
+		return new BasicMobEffect(this);
 	}
 
 	@Override
@@ -42,8 +43,8 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 		return "effect";
 	}
 
-	public MobEffectBuilder modifyAttribute(ResourceLocation attribute, ResourceLocation id, double d, AttributeModifier.Operation operation) {
-		attributeModifiers.put(attribute, new MobEffect.AttributeTemplate(id, d, operation));
+	public MobEffectBuilder modifyAttribute(ResourceLocation attribute, ResourceLocation id, double amount, AttributeModifier.Operation operation) {
+		attributeModifiers.put(attribute, new MobEffect.AttributeTemplate(id, amount, operation));
 		return this;
 	}
 
@@ -60,7 +61,7 @@ public abstract class MobEffectBuilder extends BuilderBase<MobEffect> {
 		return category(MobEffectCategory.BENEFICIAL);
 	}
 
-	public MobEffectBuilder effectTick(EffectTickCallback effectTick) {
+	public MobEffectBuilder effectTick(EffectEntityCallback effectTick) {
 		this.effectTick = effectTick;
 		return this;
 	}

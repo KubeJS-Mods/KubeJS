@@ -73,8 +73,8 @@ import dev.latvian.mods.kubejs.item.custom.ShearsItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SmithingTemplateItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.kubejs.misc.BasicMobEffect;
 import dev.latvian.mods.kubejs.misc.CustomStatBuilder;
+import dev.latvian.mods.kubejs.misc.MobEffectBuilder;
 import dev.latvian.mods.kubejs.misc.PaintingVariantBuilder;
 import dev.latvian.mods.kubejs.misc.ParticleTypeBuilder;
 import dev.latvian.mods.kubejs.misc.PoiTypeBuilder;
@@ -296,7 +296,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		});
 
 		registry.addDefault(NeoForgeRegistries.Keys.FLUID_TYPES, FluidTypeBuilder.class, FluidTypeBuilder::new);
-		registry.addDefault(Registries.MOB_EFFECT, BasicMobEffect.Builder.class, BasicMobEffect.Builder::new);
+		registry.addDefault(Registries.MOB_EFFECT, MobEffectBuilder.class, MobEffectBuilder::new);
 		registry.addDefault(Registries.POTION, PotionBuilder.class, PotionBuilder::new);
 		registry.addDefault(Registries.PARTICLE_TYPE, ParticleTypeBuilder.class, ParticleTypeBuilder::new);
 		registry.addDefault(Registries.CUSTOM_STAT, CustomStatBuilder.class, CustomStatBuilder::new);

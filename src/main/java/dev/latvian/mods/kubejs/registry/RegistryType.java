@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.registry;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -12,14 +13,13 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
 public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, TypeInfo type) {
-	private static final Map<ResourceKey<?>, RegistryType<?>> KEY_MAP = new IdentityHashMap<>();
+	private static final Map<ResourceKey<?>, RegistryType<?>> KEY_MAP = new Reference2ObjectOpenHashMap<>();
 	private static final Map<TypeInfo, RegistryType<?>> TYPE_MAP = new HashMap<>();
-	private static final Map<Class<?>, List<RegistryType<?>>> CLASS_MAP = new IdentityHashMap<>();
+	private static final Map<Class<?>, List<RegistryType<?>>> CLASS_MAP = new Reference2ObjectOpenHashMap<>();
 
 	// This is cursed, but it's better than manually registering every type
 	public static synchronized void init() {

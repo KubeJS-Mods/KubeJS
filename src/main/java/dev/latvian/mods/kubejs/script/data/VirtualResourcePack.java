@@ -64,6 +64,12 @@ public class VirtualResourcePack extends AbstractPackResources implements KubeRe
 		}
 	}
 
+	@Override
+	@Nullable
+	public GeneratedData getGenerated(ResourceLocation id) {
+		return locationToData.get(id);
+	}
+
 	@Nullable
 	@Override
 	public IoSupplier<InputStream> getRootResource(String... path) {

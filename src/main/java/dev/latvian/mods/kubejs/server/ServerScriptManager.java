@@ -29,6 +29,7 @@ import dev.latvian.mods.kubejs.script.data.VirtualDataPack;
 import dev.latvian.mods.kubejs.server.tag.PreTagKubeEvent;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -42,7 +43,6 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -150,7 +150,7 @@ public class ServerScriptManager extends ScriptManager {
 
 				var ops = RegistryAccessContainer.current.json();
 
-				var codecs = new IdentityHashMap<ResourceKey<?>, Codec<?>>();
+				var codecs = new Reference2ObjectOpenHashMap<ResourceKey<?>, Codec<?>>();
 
 				for (var reg : DataPackRegistriesHooks.getDataPackRegistries()) {
 					var key = (ResourceKey) reg.key();
@@ -228,7 +228,11 @@ public class ServerScriptManager extends ScriptManager {
 		boolean result = false;
 
 		for (var entry : getRegistries().cachedRegistryTags.values()) {
-			entry.getLeft().bindTags((Map) entry.getRight().bindingMap());
+			if (entry.registry() == null || entry.lookup() == null) {
+				continue;
+			}
+
+			entry.registry().bindTags((Map) entry.lookup().bindingMap());
 		}
 
 		recipeSchemaStorage.fireEvents(getRegistries(), resourceManager);

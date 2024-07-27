@@ -18,10 +18,6 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 		return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "models/item/" + id.getPath());
 	}
 
-	default void addLang(String key, String value) {
-		ConsoleJS.CLIENT.error("Use ClientEvents.lang('en_us', event => { event.add(key, value) }) instead!");
-	}
-
 	default LoadedTexture loadTexture(ResourceLocation id) {
 		return LoadedTexture.load(id);
 	}

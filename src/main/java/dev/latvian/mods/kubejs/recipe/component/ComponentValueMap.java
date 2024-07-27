@@ -4,10 +4,9 @@ import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.rhino.Context;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
-import java.util.IdentityHashMap;
-
-public class ComponentValueMap extends IdentityHashMap<RecipeKey<?>, Object> {
+public class ComponentValueMap extends Reference2ObjectOpenHashMap<RecipeKey<?>, Object> {
 	public ComponentValueMap(int init) {
 		super(init);
 	}

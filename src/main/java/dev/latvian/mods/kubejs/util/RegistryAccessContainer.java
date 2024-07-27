@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JavaOps;
@@ -8,8 +9,11 @@ import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.bindings.RegistryWrapper;
 import dev.latvian.mods.kubejs.recipe.CachedItemTagLookup;
 import dev.latvian.mods.kubejs.recipe.CachedTagLookup;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
+import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.rhino.Context;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -24,11 +28,10 @@ import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +52,7 @@ public final class RegistryAccessContainer {
 	private final RegistryOps<Object> java;
 	private DamageSources damageSources;
 	private final Map<String, ItemStack> itemStackParseCache;
-	public Map<ResourceKey<?>, Pair<Registry<?>, CachedTagLookup<?>>> cachedRegistryTags;
+	public final Map<ResourceKey<?>, CachedTagLookup.Entry<?>> cachedRegistryTags;
 	public CachedItemTagLookup cachedItemTags;
 	public CachedTagLookup<Block> cachedBlockTags;
 	public CachedTagLookup<Fluid> cachedFluidTags;
@@ -62,7 +65,7 @@ public final class RegistryAccessContainer {
 		this.java = access.createSerializationContext(JavaOps.INSTANCE);
 		this.damageSources = null;
 		this.itemStackParseCache = new HashMap<>();
-		this.cachedRegistryTags = new IdentityHashMap<>();
+		this.cachedRegistryTags = new Reference2ObjectOpenHashMap<>();
 	}
 
 	public RegistryAccess.Frozen access() {
@@ -94,24 +97,49 @@ public final class RegistryAccessContainer {
 	}
 
 	// Currently this is the best way I can think of to have tags available at the time of recipe loading
-	public <T> void cacheTags(Registry<T> registry, Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
-		var key1 = (ResourceKey) registry.key();
+	public synchronized <T> void cacheTags(Registry<T> registry, Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
+		var key1 = registry == null ? null : (ResourceKey) registry.key();
 
 		if (key1 == null) {
 			return;
 		}
 
-		if (key1 == Registries.ITEM) {
-			cachedItemTags = Cast.to(new CachedItemTagLookup((Registry) registry, map));
-			cachedRegistryTags.put(key1, Pair.of(registry, cachedItemTags));
-		} else if (key1 == Registries.BLOCK) {
-			cachedBlockTags = Cast.to(new CachedTagLookup<>(registry, map));
-			cachedRegistryTags.put(key1, Pair.of(registry, cachedBlockTags));
-		} else if (key1 == Registries.FLUID) {
-			cachedFluidTags = Cast.to(new CachedTagLookup<>(registry, map));
-			cachedRegistryTags.put(key1, Pair.of(registry, cachedFluidTags));
-		} else {
-			cachedRegistryTags.put(key1, Pair.of(registry, new CachedTagLookup<>(registry, map)));
+		try {
+			if (key1 == Registries.ITEM) {
+				cachedItemTags = Cast.to(new CachedItemTagLookup((Registry) registry, map));
+				cachedRegistryTags.put(key1, new CachedTagLookup.Entry(key1, registry, cachedItemTags));
+			} else if (key1 == Registries.BLOCK) {
+				cachedBlockTags = Cast.to(new CachedTagLookup<>(registry, map));
+				cachedRegistryTags.put(key1, new CachedTagLookup.Entry(key1, registry, cachedBlockTags));
+			} else if (key1 == Registries.FLUID) {
+				cachedFluidTags = Cast.to(new CachedTagLookup<>(registry, map));
+				cachedRegistryTags.put(key1, new CachedTagLookup.Entry(key1, registry, cachedFluidTags));
+			} else {
+				cachedRegistryTags.put(key1, new CachedTagLookup.Entry(key1, registry, new CachedTagLookup<>(registry, map)));
+			}
+		} catch (Exception ex) {
+			ConsoleJS.SERVER.error("Error caching tags for " + key1, ex);
+		}
+
+		if (DataExport.export != null) {
+			var loc = "tags/" + key1.location() + "/";
+
+			for (var entry : map.entrySet()) {
+				var list = new ArrayList<String>();
+
+				for (var e : entry.getValue()) {
+					list.add(e.entry().toString());
+				}
+
+				list.sort(String.CASE_INSENSITIVE_ORDER);
+				var arr = new JsonArray();
+
+				for (var e : list) {
+					arr.add(e);
+				}
+
+				DataExport.export.addJson(loc + entry.getKey() + ".json", arr);
+			}
 		}
 	}
 

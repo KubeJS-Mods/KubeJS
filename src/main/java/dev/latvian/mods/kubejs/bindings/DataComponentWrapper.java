@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.NativeJavaMap;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentPredicate;
@@ -28,7 +29,6 @@ import net.minecraft.world.item.component.CustomData;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.util.IdentityHashMap;
 import java.util.Map;
 
 public interface DataComponentWrapper {
@@ -36,7 +36,7 @@ public interface DataComponentWrapper {
 	Dynamic2CommandExceptionType ERROR_MALFORMED_COMPONENT = new Dynamic2CommandExceptionType((object, object2) -> Component.translatableEscape("arguments.item.component.malformed", object, object2));
 	SimpleCommandExceptionType ERROR_EXPECTED_COMPONENT = new SimpleCommandExceptionType(Component.translatable("arguments.item.component.expected"));
 	Lazy<Map<DataComponentType<?>, TypeInfo>> TYPE_INFOS = Lazy.of(() -> {
-		var map = new IdentityHashMap<DataComponentType<?>, TypeInfo>();
+		var map = new Reference2ObjectOpenHashMap<DataComponentType<?>, TypeInfo>();
 
 		try {
 			for (var field : DataComponents.class.getDeclaredFields()) {

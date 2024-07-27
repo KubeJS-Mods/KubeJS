@@ -8,12 +8,12 @@ import dev.latvian.mods.kubejs.recipe.component.ComponentRole;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -117,7 +117,7 @@ public class JsonRecipeSchemaLoader {
 					var functionMap = new HashMap<String, FunctionBuilder>();
 					gatherFunctions(functionMap);
 
-					var keyOverrides = new IdentityHashMap<RecipeKey<?>, RecipeOptional<?>>(overrideKeys == null ? 0 : overrideKeys.size());
+					var keyOverrides = new Reference2ObjectOpenHashMap<RecipeKey<?>, RecipeOptional<?>>(overrideKeys == null ? 0 : overrideKeys.size());
 
 					if (overrideKeys != null) {
 						for (var entry : overrideKeys.entrySet()) {
@@ -163,7 +163,7 @@ public class JsonRecipeSchemaLoader {
 							var constructor = new RecipeConstructor(cKeys.toArray(new RecipeKey[0]));
 
 							if (!c.overrides.isEmpty()) {
-								constructor.overrides = new IdentityHashMap<>(c.overrides.size());
+								constructor.overrides = new Reference2ObjectOpenHashMap<>(c.overrides.size());
 
 								for (var entry : c.overrides.entrySet()) {
 									var key = keyMap.get(entry.getKey());

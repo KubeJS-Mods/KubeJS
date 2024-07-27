@@ -1,8 +1,10 @@
 package dev.latvian.mods.kubejs.fluid;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockRenderType;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.color.SimpleColor;
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
@@ -19,8 +21,6 @@ import java.util.function.Supplier;
 @ReturnsSelf
 public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public static final Color WATER_COLOR = new SimpleColor(0xFF3F76E4);
-
-	public transient Color bucketTint = null;
 
 	public transient int slopeFindDistance = 4;
 	public transient int levelDecreasePerBlock = 1;
@@ -103,11 +103,6 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		return this;
 	}
 
-	public FluidBuilder bucketTint(Color c) {
-		this.bucketTint = c;
-		return this;
-	}
-
 	public FluidBuilder stillTexture(ResourceLocation id) {
 		fluidType.stillTexture = id;
 		return this;
@@ -155,5 +150,51 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public FluidBuilder noBlock() {
 		this.block = null;
 		return this;
+	}
+
+	@Override
+	public void generateAssets(KubeAssetGenerator generator) {
+		var stillTexture = generator.loadTexture(fluidType.stillTexture);
+
+		if (stillTexture != null) {
+			generator.texture(fluidType.actualStillTexture, stillTexture.tint(fluidType.tint));
+		}
+
+		var flowingTexture = generator.loadTexture(fluidType.flowingTexture);
+
+		if (flowingTexture != null) {
+			generator.texture(fluidType.actualFlowingTexture, flowingTexture.tint(fluidType.tint));
+		}
+
+		generator.blockState(id, m -> m.simpleVariant("", id.getNamespace() + ":block/" + id.getPath()));
+		generator.blockModel(id, m -> {
+			m.parent("");
+			m.texture("particle", fluidType.actualStillTexture.toString());
+		});
+
+		if (bucketItem != null) {
+			if (bucketItem.modelJson != null) {
+				generator.json(KubeAssetGenerator.asItemModelLocation(id), bucketItem.modelJson);
+				return;
+			}
+
+			var fluidPath = newID("item/generated/", "_bucket_fluid");
+
+			generator.mask(fluidPath, KubeJS.id("item/bucket_mask"), fluidType.actualStillTexture);
+
+			generator.itemModel(bucketItem.id, m -> {
+				if (!bucketItem.parentModel.isEmpty()) {
+					m.parent(bucketItem.parentModel);
+				} else {
+					m.parent("kubejs:item/generated_bucket");
+				}
+
+				m.texture("bucket_fluid", fluidPath);
+
+				if (bucketItem.textureJson.size() > 0) {
+					m.textures(bucketItem.textureJson);
+				}
+			});
+		}
 	}
 }

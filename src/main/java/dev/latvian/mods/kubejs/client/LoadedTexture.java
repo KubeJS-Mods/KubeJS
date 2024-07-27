@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.color.Color;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
@@ -128,5 +129,39 @@ public class LoadedTexture {
 		bg.drawImage(source, 0, 0, null);
 		bg.dispose();
 		return new LoadedTexture(dst, mcmeta);
+	}
+
+	public LoadedTexture tint(@Nullable Color tint) {
+		if (tint == null) {
+			return this;
+		}
+
+		int argb = tint.getArgbJS();
+		float l = ((argb >> 24) & 0xFF) / 255F;
+
+		if (l <= 0F) {
+			return this;
+		} else if (l > 1F) {
+			l = 1F;
+		}
+
+		float tr = ((argb >> 16) & 0xFF) / 255F;
+		float tg = ((argb >> 8) & 0xFF) / 255F;
+		float tb = (argb & 0xFF) / 255F;
+
+		int[] result = new int[pixels.length];
+
+		for (int i = 0; i < pixels.length; i++) {
+			float pr = ((pixels[i] >> 16) & 0xFF) / 255F;
+			float pg = ((pixels[i] >> 8) & 0xFF) / 255F;
+			float pb = (pixels[i] & 0xFF) / 255F;
+
+			result[i] = (pixels[i] & 0xFF000000)
+				| ((int) (Mth.lerp(l, pr, pr * tr) * 255F) << 16)
+				| ((int) (Mth.lerp(l, pg, pg * tg) * 255F) << 8)
+				| (int) (Mth.lerp(l, pb, pb * tb) * 255F);
+		}
+
+		return new LoadedTexture(width, height, result, mcmeta);
 	}
 }

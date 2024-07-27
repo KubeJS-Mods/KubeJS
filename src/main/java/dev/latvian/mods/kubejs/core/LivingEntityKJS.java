@@ -256,18 +256,18 @@ public interface LivingEntityKJS extends EntityKJS {
 		}
 	}
 
-	default void kjs$modifyAttribute(Holder<Attribute> attribute, ResourceLocation identifier, double d, AttributeModifier.Operation operation) {
+	default void kjs$modifyAttribute(Holder<Attribute> attribute, ResourceLocation id, double amount, AttributeModifier.Operation operation) {
 		AttributeInstance instance = kjs$self().getAttribute(attribute);
 		if (instance != null) {
-			instance.removeModifier(identifier);
-			instance.addTransientModifier(new AttributeModifier(identifier, d, operation));
+			instance.removeModifier(id);
+			instance.addTransientModifier(new AttributeModifier(id, amount, operation));
 		}
 	}
 
-	default void kjs$removeAttribute(Holder<Attribute> attribute, ResourceLocation identifier) {
+	default void kjs$removeAttribute(Holder<Attribute> attribute, ResourceLocation id) {
 		AttributeInstance instance = kjs$self().getAttribute(attribute);
 		if (instance != null) {
-			instance.removeModifier(identifier);
+			instance.removeModifier(id);
 		}
 	}
 

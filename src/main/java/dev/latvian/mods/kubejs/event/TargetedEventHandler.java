@@ -6,11 +6,11 @@ import dev.latvian.mods.kubejs.script.ScriptTypePredicate;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -108,7 +108,7 @@ public class TargetedEventHandler<E> extends EventHandler {
 		}
 
 		if (extraEventContainers == null) {
-			extraEventContainers = target.identity ? new IdentityHashMap<>() : new HashMap<>();
+			extraEventContainers = target.identity ? new Reference2ObjectOpenHashMap<>() : new HashMap<>();
 		}
 
 		var map = extraEventContainers.get(extraId);

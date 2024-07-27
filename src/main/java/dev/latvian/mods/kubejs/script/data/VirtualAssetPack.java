@@ -19,7 +19,16 @@ public class VirtualAssetPack extends VirtualResourcePack implements KubeAssetGe
 
 	@Override
 	public LoadedTexture loadTexture(ResourceLocation id) {
-		return loadedTextures.computeIfAbsent(id, LoadedTexture::load);
+		return loadedTextures.computeIfAbsent(id, KubeAssetGenerator.super::loadTexture);
+	}
+
+	@Override
+	public void texture(ResourceLocation target, LoadedTexture texture) {
+		KubeAssetGenerator.super.texture(target, texture);
+
+		if (texture.width > 0 && texture.height > 0) {
+			loadedTextures.put(target, texture);
+		}
 	}
 
 	@Override

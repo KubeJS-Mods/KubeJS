@@ -1,11 +1,9 @@
 package dev.latvian.mods.kubejs.core;
 
-import com.google.gson.JsonArray;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
-import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.tag.TagEventFilter;
 import dev.latvian.mods.kubejs.server.tag.TagKubeEvent;
 import dev.latvian.mods.kubejs.server.tag.TagWrapper;
@@ -15,7 +13,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagLoader;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -79,27 +76,6 @@ public interface TagLoaderKJS<T> {
 		}
 
 		kjs$resources.kjs$getServerScriptManager().getRegistries().cacheTags(reg, map);
-
-		if (DataExport.export != null) {
-			var loc = "tags/" + objStorage + "/";
-
-			for (var entry : map.entrySet()) {
-				var list = new ArrayList<String>();
-
-				for (var e : entry.getValue()) {
-					list.add(e.entry().toString());
-				}
-
-				list.sort(String.CASE_INSENSITIVE_ORDER);
-				var arr = new JsonArray();
-
-				for (var e : list) {
-					arr.add(e);
-				}
-
-				DataExport.export.addJson(loc + entry.getKey() + ".json", arr);
-			}
-		}
 	}
 
 	void kjs$init(ReloadableServerResourcesKJS resources, Registry<T> registry);
