@@ -45,6 +45,7 @@ public class CachedTagLookup<T> {
 
 	public final Registry<T> registry;
 	public final Map<ResourceLocation, List<TagLoader.EntryWithSource>> originalMap;
+	private Map<ResourceLocation, Collection<Holder<T>>> tagMap;
 	private Map<TagKey<T>, Set<T>> keyToValue;
 	private Map<T, Set<TagKey<T>>> valueToKey;
 
@@ -88,7 +89,7 @@ public class CachedTagLookup<T> {
 		return map;
 	}
 
-	private Map<TagKey<T>, Set<T>> keyToValue() {
+	public Map<TagKey<T>, Set<T>> keyToValue() {
 		if (keyToValue == null) {
 			var map = build(originalMap);
 			keyToValue = new Reference2ObjectOpenHashMap<>(map.size());
@@ -142,5 +143,26 @@ public class CachedTagLookup<T> {
 		}
 
 		return map;
+	}
+
+	public Map<ResourceLocation, Collection<Holder<T>>> tagMap() {
+		if (tagMap == null) {
+			tagMap = new HashMap<>();
+			var k2v = keyToValue();
+
+			for (var entry : k2v.entrySet()) {
+				var list = new ArrayList<Holder<T>>(entry.getValue().size());
+
+				for (var value : entry.getValue()) {
+					list.add(registry.wrapAsHolder(value));
+				}
+
+				tagMap.put(entry.getKey().location(), list);
+			}
+
+			tagMap = Map.copyOf(tagMap);
+		}
+
+		return tagMap;
 	}
 }

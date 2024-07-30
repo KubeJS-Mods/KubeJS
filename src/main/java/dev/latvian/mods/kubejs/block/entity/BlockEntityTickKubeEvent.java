@@ -5,9 +5,9 @@ import dev.latvian.mods.kubejs.level.KubeLevelEvent;
 import net.minecraft.world.level.Level;
 
 public class BlockEntityTickKubeEvent implements KubeLevelEvent {
-	private final BlockEntityJS entity;
+	private final KubeBlockEntity entity;
 
-	public BlockEntityTickKubeEvent(BlockEntityJS entity) {
+	public BlockEntityTickKubeEvent(KubeBlockEntity entity) {
 		this.entity = entity;
 	}
 

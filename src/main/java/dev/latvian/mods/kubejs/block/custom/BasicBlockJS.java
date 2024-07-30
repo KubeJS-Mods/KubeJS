@@ -13,7 +13,7 @@ import dev.latvian.mods.kubejs.block.callbacks.BlockStateRotateCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.EntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.EntitySteppedOnBlockCallbackJS;
-import dev.latvian.mods.kubejs.block.entity.BlockEntityJS;
+import dev.latvian.mods.kubejs.block.entity.KubeBlockEntity;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.BlockPos;
@@ -338,7 +338,7 @@ public class BasicBlockJS extends Block implements SimpleWaterloggedBlock {
 	@Override
 	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean bl) {
 		if (!state.is(newState.getBlock())) {
-			if (level.getBlockEntity(pos) instanceof BlockEntityJS entity) {
+			if (level.getBlockEntity(pos) instanceof KubeBlockEntity entity) {
 				if (level instanceof ServerLevel) {
 					for (var attachment : entity.attachments) {
 						attachment.onRemove(newState);
@@ -354,7 +354,7 @@ public class BasicBlockJS extends Block implements SimpleWaterloggedBlock {
 
 	@Override
 	public void setPlacedBy(Level level, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
-		if (livingEntity != null && !level.isClientSide() && level.getBlockEntity(blockPos) instanceof BlockEntityJS e) {
+		if (livingEntity != null && !level.isClientSide() && level.getBlockEntity(blockPos) instanceof KubeBlockEntity e) {
 			e.placerId = livingEntity.getUUID();
 		}
 	}

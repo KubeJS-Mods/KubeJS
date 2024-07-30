@@ -38,12 +38,14 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -120,6 +122,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	public final RecipeSchemaStorage recipeSchemaStorage;
 	public final RegistryAccessContainer registries;
+	public final RegistryOps<JsonElement> jsonOps;
 	public final Map<ResourceLocation, KubeRecipe> originalRecipes;
 	public final Collection<KubeRecipe> addedRecipes;
 	private final BinaryOperator<RecipeHolder<?>> mergeOriginal, mergeAdded;
@@ -146,6 +149,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		ConsoleJS.SERVER.info("Initializing recipe event...");
 		this.recipeSchemaStorage = manager.recipeSchemaStorage;
 		this.registries = manager.getRegistries();
+		this.jsonOps = new ConditionalOps<>(registries.json(), registries);
 		this.originalRecipes = new HashMap<>();
 		this.addedRecipes = new ConcurrentLinkedQueue<>();
 		this.recipeFunctions = new HashMap<>();
@@ -235,7 +239,7 @@ public class RecipesKubeEvent implements KubeEvent {
 				continue; //Forge: filter anything beginning with "_" as it's used for metadata.
 			}
 
-			var jsonResult = RecipeHelper.validate(registries.json(), entry.getValue());
+			var jsonResult = RecipeHelper.validate(jsonOps, entry.getValue());
 
 			if (jsonResult.error().isPresent()) {
 				var error = jsonResult.error().get();

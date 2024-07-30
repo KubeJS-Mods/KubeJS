@@ -11,7 +11,7 @@ public interface BlockEntityAttachment {
 	BlockEntityAttachment[] EMPTY_ARRAY = new BlockEntityAttachment[0];
 
 	interface Factory {
-		BlockEntityAttachment create(BlockEntityJS entity);
+		BlockEntityAttachment create(KubeBlockEntity entity);
 	}
 
 	interface FactoryProvider {

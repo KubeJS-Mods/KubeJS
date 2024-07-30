@@ -101,7 +101,7 @@ public class BlockEntityInfo {
 
 	public void rightClickOpensInventory() {
 		blockBuilder.rightClick = e -> {
-			if (e.getBlock().getEntity() instanceof BlockEntityJS entity && entity.inventory != null) {
+			if (e.getBlock().getEntity() instanceof KubeBlockEntity entity && entity.inventory != null) {
 				((ServerPlayerKJS) e.getPlayer()).kjs$openInventoryGUI(entity.inventory, blockBuilder.get().getName());
 			}
 		};
@@ -109,15 +109,15 @@ public class BlockEntityInfo {
 
 	@HideFromJS
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return new BlockEntityJS(pos, state, this);
+		return new KubeBlockEntity(pos, state, this);
 	}
 
 	@HideFromJS
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level) {
 		if (level.isClientSide()) {
-			return clientTicking ? (BlockEntityTicker) BlockEntityJS.TICKER : null;
+			return clientTicking ? (BlockEntityTicker) KubeBlockEntity.TICKER : null;
 		} else {
-			return serverTicking ? (BlockEntityTicker) BlockEntityJS.TICKER : null;
+			return serverTicking ? (BlockEntityTicker) KubeBlockEntity.TICKER : null;
 		}
 	}
 

@@ -56,6 +56,7 @@
 		"SizedIngredientMixin",
 		"StringRepresentableMixin",
 		"StringTagMixin",
+		"TagEmptyConditionMixin",
 		"TagLoaderMixin",
 		"TagManagerMixin",
 		"TextColorMixin",

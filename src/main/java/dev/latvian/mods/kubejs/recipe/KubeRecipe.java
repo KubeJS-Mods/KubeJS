@@ -511,7 +511,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			return new RecipeHolder<>(getOrCreateId(), originalRecipe.getValue());
 		}
 
-		return RecipeHelper.fromJson(type.event.registries.json(), getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json, DevProperties.get().logErroringParsedRecipes);
+		return RecipeHelper.fromJson(type.event.jsonOps, getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json, DevProperties.get().logErroringParsedRecipes);
 	}
 
 	@Nullable
@@ -519,7 +519,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		if (originalRecipe == null) {
 			originalRecipe = new MutableObject<>();
 			try {
-				var holder = RecipeHelper.fromJson(type.event.registries.json(), type.schemaType.getSerializer(), getOrCreateId(), originalJson, DevProperties.get().logErroringParsedRecipes);
+				var holder = RecipeHelper.fromJson(type.event.jsonOps, type.schemaType.getSerializer(), getOrCreateId(), originalJson, DevProperties.get().logErroringParsedRecipes);
 
 				if (holder != null) {
 					originalRecipe.setValue(holder.value());

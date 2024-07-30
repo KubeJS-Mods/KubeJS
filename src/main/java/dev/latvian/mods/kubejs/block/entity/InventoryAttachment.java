@@ -35,16 +35,16 @@ public class InventoryAttachment extends SimpleContainer implements BlockEntityA
 
 	private record InventoryAttachmentFactory(int width, int height, @Nullable ItemPredicate inputFilter) implements Factory {
 		@Override
-		public BlockEntityAttachment create(BlockEntityJS entity) {
+		public BlockEntityAttachment create(KubeBlockEntity entity) {
 			return new InventoryAttachment(entity, width, height, inputFilter);
 		}
 	}
 
 	public final int width, height;
-	public final BlockEntityJS blockEntity;
+	public final KubeBlockEntity blockEntity;
 	public final ItemPredicate inputFilter;
 
-	public InventoryAttachment(BlockEntityJS blockEntity, int width, int height, @Nullable ItemPredicate inputFilter) {
+	public InventoryAttachment(KubeBlockEntity blockEntity, int width, int height, @Nullable ItemPredicate inputFilter) {
 		super(width * height);
 		this.width = width;
 		this.height = height;

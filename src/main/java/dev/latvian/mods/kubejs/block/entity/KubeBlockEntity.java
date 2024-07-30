@@ -21,8 +21,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class BlockEntityJS extends BlockEntity {
-	public static final BlockEntityTicker<BlockEntityJS> TICKER = (level, pos, state, entity) -> entity.tick();
+public class KubeBlockEntity extends BlockEntity {
+	public static final BlockEntityTicker<KubeBlockEntity> TICKER = (level, pos, state, entity) -> entity.tick();
 
 	public final BlockEntityInfo info;
 	public final ResourceKey<Block> blockKey;
@@ -35,7 +35,7 @@ public class BlockEntityJS extends BlockEntity {
 	public UUID placerId;
 	private BlockEntityTickKubeEvent tickEvent;
 
-	public BlockEntityJS(BlockPos blockPos, BlockState blockState, BlockEntityInfo entityInfo) {
+	public KubeBlockEntity(BlockPos blockPos, BlockState blockState, BlockEntityInfo entityInfo) {
 		super(entityInfo.entityType, blockPos, blockState);
 		this.info = entityInfo;
 		this.blockKey = blockState.kjs$getKey();
