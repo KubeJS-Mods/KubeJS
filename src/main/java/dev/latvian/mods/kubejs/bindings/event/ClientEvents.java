@@ -18,7 +18,6 @@ import net.minecraft.resources.ResourceLocation;
 public interface ClientEvents {
 	EventGroup GROUP = EventGroup.of("ClientEvents");
 
-	// add low assets
 	TargetedEventHandler<GeneratedDataStage> GENERATE_ASSETS = GROUP.client("generateAssets", () -> KubeAssetGenerator.class).requiredTarget(GeneratedDataStage.TARGET);
 	EventHandler BLOCK_ENTITY_RENDERER_REGISTRY = GROUP.startup("blockEntityRendererRegistry", () -> BlockEntityRendererRegistryKubeEvent.class);
 	EventHandler ENTITY_RENDERER_REGISTRY = GROUP.startup("entityRendererRegistry", () -> EntityRendererRegistryKubeEvent.class);
