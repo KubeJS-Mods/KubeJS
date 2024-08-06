@@ -20,7 +20,7 @@ public record RequestInventoryKubedexPayload(List<Integer> slots, List<ItemStack
 
 	@Override
 	public Type<?> type() {
-		return KubeJSNet.REQUEST_INVENTORY_KUBEDEX;
+		return KubeJSNet.Kubedex.REQUEST_INVENTORY;
 	}
 
 	public void handle(IPayloadContext ctx) {

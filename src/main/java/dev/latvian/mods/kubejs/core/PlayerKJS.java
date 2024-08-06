@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import com.mojang.authlib.GameProfile;
 import dev.latvian.mods.kubejs.item.ItemHandlerUtils;
+import dev.latvian.mods.kubejs.kgui.action.KGUIActions;
 import dev.latvian.mods.kubejs.player.KubeJSInventoryListener;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.stages.Stages;
@@ -178,5 +179,9 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 
 	default void kjs$notify(Component title, @Nullable Component text) {
 		kjs$notify(NotificationToastData.ofTitle(title, text));
+	}
+
+	default KGUIActions kjs$getKgui() {
+		throw new NoMixinException();
 	}
 }

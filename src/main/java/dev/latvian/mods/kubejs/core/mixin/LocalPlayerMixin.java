@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import com.mojang.authlib.GameProfile;
 import dev.latvian.mods.kubejs.client.KubeSessionData;
+import dev.latvian.mods.kubejs.kgui.action.ClientKGUIActions;
+import dev.latvian.mods.kubejs.kgui.action.KGUIActions;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -14,9 +16,15 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+
+import java.util.Map;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin extends AbstractClientPlayerMixin {
+	@Unique
+	private KGUIActions kjs$kguiActions;
+
 	public LocalPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
 		super(level, blockPos, f, gameProfile);
 	}
@@ -51,5 +59,15 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayerMixin {
 			sessionData.activePostShader = id;
 			minecraft.gameRenderer.checkEntityPostEffect(minecraft.options.getCameraType().isFirstPerson() ? minecraft.getCameraEntity() : null);
 		}
+	}
+
+	@Override
+	public KGUIActions kjs$getKgui() {
+		if (kjs$kguiActions == null) {
+			// kjs$kguiActions = new ClientKGUIActions(connection, Objects.requireNonNull(KubeSessionData.of(connection)).kgui);
+			kjs$kguiActions = new ClientKGUIActions(connection, Map.of());
+		}
+
+		return kjs$kguiActions;
 	}
 }

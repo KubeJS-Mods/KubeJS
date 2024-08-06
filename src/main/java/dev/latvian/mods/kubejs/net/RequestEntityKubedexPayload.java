@@ -16,7 +16,7 @@ public record RequestEntityKubedexPayload(int entityId) implements CustomPacketP
 
 	@Override
 	public Type<?> type() {
-		return KubeJSNet.REQUEST_ENTITY_KUBEDEX;
+		return KubeJSNet.Kubedex.REQUEST_ENTITY;
 	}
 
 	public void handle(IPayloadContext ctx) {

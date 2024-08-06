@@ -24,6 +24,7 @@ import dev.latvian.mods.kubejs.bindings.UtilsWrapper;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.bindings.event.EntityEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
+import dev.latvian.mods.kubejs.bindings.event.KGUIEvents;
 import dev.latvian.mods.kubejs.bindings.event.LevelEvents;
 import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
 import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
@@ -352,6 +353,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(EntityEvents.GROUP);
 		registry.register(PlayerEvents.GROUP);
 		registry.register(RecipeViewerEvents.GROUP);
+		registry.register(KGUIEvents.GROUP);
 	}
 
 	@Override

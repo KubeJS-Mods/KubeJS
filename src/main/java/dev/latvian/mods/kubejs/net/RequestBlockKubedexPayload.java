@@ -16,7 +16,7 @@ public record RequestBlockKubedexPayload(BlockPos pos) implements CustomPacketPa
 
 	@Override
 	public Type<?> type() {
-		return KubeJSNet.REQUEST_BLOCK_KUBEDEX;
+		return KubeJSNet.Kubedex.REQUEST_BLOCK;
 	}
 
 	public void handle(IPayloadContext ctx) {

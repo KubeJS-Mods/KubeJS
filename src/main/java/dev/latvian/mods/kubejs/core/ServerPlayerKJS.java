@@ -153,7 +153,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 		PacketDistributor.sendToPlayer(kjs$self(), new NotificationPayload(builder));
 	}
 
-	default void kjs$openGUI(Consumer<KubeJSGUI> gui) {
+	default void kjs$openChestGUI(Consumer<KubeJSGUI> gui) {
 		var data = new KubeJSGUI();
 		gui.accept(data);
 
@@ -171,7 +171,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	}
 
 	default void kjs$openInventoryGUI(InventoryKJS inventory, Component title) {
-		kjs$openGUI(gui -> {
+		kjs$openChestGUI(gui -> {
 			gui.title = title;
 			gui.setInventory(inventory);
 		});
