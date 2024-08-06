@@ -70,6 +70,9 @@ public class KubeJSContext extends Context {
 		if (javaObject instanceof AccessibleObject) {
 			getConsole().error("Reflection access denied");
 			return Undefined.SCRIPTABLE_INSTANCE;
+		} else if (javaObject instanceof ClassLoader) {
+			getConsole().error("ClassLoader access denied");
+			return Undefined.SCRIPTABLE_INSTANCE;
 		}
 
 		return super.wrapAsJavaObject(scope, javaObject, target);
@@ -147,6 +150,8 @@ public class KubeJSContext extends Context {
 			return TagKey.create(registryType.key(), id);
 		} else if (AccessibleObject.class.isAssignableFrom(c)) {
 			throw throwAsScriptRuntimeEx(new IllegalAccessException("Reflection access denied"), this);
+		} else if (ClassLoader.class.isAssignableFrom(c)) {
+			throw throwAsScriptRuntimeEx(new IllegalAccessException("ClassLoader access denied"), this);
 		} else if (from instanceof Holder<?> holder && c.isInstance(holder.value())) {
 			return holder.value();
 		} else if (ID.isKey(from)) {

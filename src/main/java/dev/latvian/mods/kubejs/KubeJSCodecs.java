@@ -8,9 +8,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.Utf8String;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
@@ -24,6 +27,19 @@ public interface KubeJSCodecs {
 	Codec<Character> CHARACTER = Codec.STRING.xmap(str -> str.charAt(0), Object::toString);
 
 	StreamCodec<? super RegistryFriendlyByteBuf, IntProvider> INT_PROVIDER_STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(IntProvider.CODEC);
+
+	StreamCodec<ByteBuf, ResourceLocation> KUBEJS_ID_STREAM_CODEC = new StreamCodec<>() {
+		@Override
+		public ResourceLocation decode(ByteBuf buf) {
+			var str = Utf8String.read(buf, Short.MAX_VALUE);
+			return str.indexOf(':') == -1 ? KubeJS.id(str) : ResourceLocation.parse(str);
+		}
+
+		@Override
+		public void encode(ByteBuf buf, ResourceLocation value) {
+			Utf8String.write(buf, value.getNamespace().equals(KubeJS.MOD_ID) ? value.getPath() : value.toString(), Short.MAX_VALUE);
+		}
+	};
 
 	static <E> Codec<E> stringResolverCodec(Function<E, String> toStringFunction, Function<String, E> fromStringFunction) {
 		return Codec.STRING.flatXmap(str -> Optional.ofNullable(fromStringFunction.apply(str))

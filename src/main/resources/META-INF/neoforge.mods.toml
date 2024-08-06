@@ -20,7 +20,7 @@ displayTest = "NONE"
 [[dependencies.kubejs]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.0.86-beta,)"
+versionRange = "[21.0.148,)"
 ordering = "NONE"
 side = "BOTH"
 

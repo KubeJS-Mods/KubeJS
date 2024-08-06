@@ -1,20 +1,23 @@
 package dev.latvian.mods.kubejs.bindings;
 
 import dev.latvian.mods.kubejs.KubeJS;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 
 public interface TextIcons {
 	ResourceLocation FONT = KubeJS.id("icons");
-	Component NAME = Component.empty().append(icons("K.").kjs$white()).append(Component.literal(KubeJS.MOD_NAME));
+	Style STYLE = Style.EMPTY.withFont(FONT).applyFormat(ChatFormatting.WHITE);
+	Component NAME = Component.empty().append(icons("K.")).append(Component.literal(KubeJS.MOD_NAME));
 
 	static MutableComponent icon(MutableComponent character) {
-		return character.kjs$font(FONT);
+		return character.setStyle(STYLE);
 	}
 
 	static MutableComponent icons(String characters) {
-		return Component.literal(characters).kjs$font(FONT);
+		return Component.literal(characters).setStyle(STYLE);
 	}
 
 	static MutableComponent smallSpace() {
