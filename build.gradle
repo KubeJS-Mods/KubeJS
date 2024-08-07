@@ -124,6 +124,17 @@ dependencies {
 	compileOnly("mezz.jei:jei-1.21-neoforge:$jei_version")
 	compileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version")
 	compileOnly("dev.emi:emi-neoforge:$emi_version:api")
+
+	/*
+	jarJar(implementation 'org.java-websocket:Java-WebSocket') {
+		version {
+			strictly '[1.5,)'
+			prefer "$java_websocket_version"
+		}
+	}
+
+	additionalRuntimeClasspath("org.java-websocket:Java-WebSocket:$java_websocket_version")
+	*/
 }
 
 processResources {

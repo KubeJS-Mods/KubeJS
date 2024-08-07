@@ -70,6 +70,10 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 		kjs$self().updateTitle();
 	}
 
+	default String kjs$getTitle() {
+		throw new NoMixinException();
+	}
+
 	default String kjs$getCurrentWorldName() {
 		var server = kjs$self().getCurrentServer();
 		return server == null ? "Singleplayer" : server.name;

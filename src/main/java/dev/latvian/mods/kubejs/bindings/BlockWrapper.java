@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.rhino.Context;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -161,5 +163,23 @@ public class BlockWrapper {
 			case Block block -> block.defaultBlockState();
 			default -> parseBlockState(registries, o.toString());
 		};
+	}
+
+	public static BlockState withProperties(BlockState state, Map<?, ?> properties) {
+		var pmap = new HashMap<String, Property<?>>();
+
+		for (var property : state.getProperties()) {
+			pmap.put(property.getName(), property);
+		}
+
+		for (var entry : properties.entrySet()) {
+			var property = pmap.get(String.valueOf(entry.getKey()));
+
+			if (property != null) {
+				state = state.setValue(property, Cast.to(property.getValue(String.valueOf(entry.getValue())).orElseThrow()));
+			}
+		}
+
+		return state;
 	}
 }

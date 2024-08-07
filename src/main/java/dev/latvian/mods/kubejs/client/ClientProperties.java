@@ -22,6 +22,8 @@ public class ClientProperties extends BaseProperties {
 	// private static final ColourScheme.Colour DEFAULT_FOREGROUND_COLOR = new ColourScheme.Colour(236, 239, 244); // #ECEFF4
 
 	public String windowTitle;
+	public int localServerHttpPort;
+	// public int localServerWsPort;
 	public boolean showTagNames;
 	public boolean showComponents;
 	public boolean disableRecipeBook;
@@ -44,6 +46,8 @@ public class ClientProperties extends BaseProperties {
 	@Override
 	protected void load() {
 		windowTitle = get("window_title", "");
+		localServerHttpPort = get("local_server_http_port", 61423);
+		// localServerWsPort = get("local_server_ws_port", 61433);
 		showTagNames = get("show_tag_names", true);
 		showComponents = get("show_components", true);
 		disableRecipeBook = get("disable_recipe_book", false);

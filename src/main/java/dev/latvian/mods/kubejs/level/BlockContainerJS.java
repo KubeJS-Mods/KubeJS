@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.level;
 
+import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.util.Cast;
@@ -152,7 +153,9 @@ public class BlockContainerJS implements SpecialEquality {
 		var state = block.defaultBlockState();
 
 		if (!properties.isEmpty() && state.getBlock() != Blocks.AIR) {
-			Map<String, Property<?>> pmap = new HashMap<>();
+			state = BlockWrapper.withProperties(state, properties);
+
+			var pmap = new HashMap<String, Property<?>>();
 
 			for (var property : state.getProperties()) {
 				pmap.put(property.getName(), property);

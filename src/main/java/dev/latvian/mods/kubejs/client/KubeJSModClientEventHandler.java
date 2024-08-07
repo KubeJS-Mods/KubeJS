@@ -16,9 +16,11 @@ import dev.latvian.mods.kubejs.item.ItemModelPropertiesKubeEvent;
 import dev.latvian.mods.kubejs.item.ModifyItemTooltipsKubeEvent;
 import dev.latvian.mods.kubejs.kubedex.KubedexHighlight;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
+import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;
 import dev.latvian.mods.kubejs.util.ID;
+import dev.latvian.mods.kubejs.web.KubeJSLocalWebServer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -99,6 +101,10 @@ public class KubeJSModClientEventHandler {
 		var list = new ArrayList<ItemTooltipData>();
 		ItemEvents.MODIFY_TOOLTIPS.post(ScriptType.CLIENT, new ModifyItemTooltipsKubeEvent(list::add));
 		KubeJSClient.clientItemTooltips = List.copyOf(list);
+
+		if (!PlatformWrapper.isGeneratingData()) {
+			KubeJSLocalWebServer.start();
+		}
 	}
 
 	@SubscribeEvent

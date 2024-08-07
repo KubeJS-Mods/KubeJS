@@ -45,6 +45,14 @@ public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 		}
 	}
 
+	@Shadow
+	protected abstract String createTitle();
+
+	@Override
+	public String kjs$getTitle() {
+		return createTitle();
+	}
+
 	@ModifyExpressionValue(
 		method = {"reloadResourcePacks(ZLnet/minecraft/client/Minecraft$GameLoadCookie;)Ljava/util/concurrent/CompletableFuture;", "<init>"},
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/repository/PackRepository;openAllSelected()Ljava/util/List;")

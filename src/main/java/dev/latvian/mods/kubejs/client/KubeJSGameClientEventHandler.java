@@ -245,6 +245,30 @@ public class KubeJSGameClientEventHandler {
 		if (mc.screen == null) {
 			KubedexHighlight.INSTANCE.afterEverything(mc, event.getGuiGraphics(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
 		}
+
+		/*
+		if (PlatformWrapper.isDevelopmentEnvironment()) {
+			var fb = ImageGenerator.FB_CACHE.get(128);
+
+			if (fb != null) {
+				var graphics = event.getGuiGraphics();
+				graphics.pose().pushPose();
+				graphics.pose().translate(event.getGuiGraphics().guiWidth() - 66F - 3F, 4F, 0F);
+				graphics.fill(0, 0, 66, 66, 0xFF000000);
+				graphics.fill(1, 1, 65, 65, 0xFF222222);
+				RenderSystem.setShader(GameRenderer::getPositionTexShader);
+				RenderSystem.setShaderTexture(0, fb.getColorTextureId());
+				var m = graphics.pose().last().pose();
+				var builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+				builder.addVertex(m, 1F, 1F, 10F).setUv(0F, 1F);
+				builder.addVertex(m, 1F, 65F, 10F).setUv(0F, 0F);
+				builder.addVertex(m, 65F, 65F, 10F).setUv(1F, 0F);
+				builder.addVertex(m, 65F, 1F, 10F).setUv(1F, 1F);
+				BufferUploader.drawWithShader(builder.buildOrThrow());
+				graphics.pose().popPose();
+			}
+		}
+		*/
 	}
 
 	@SubscribeEvent
