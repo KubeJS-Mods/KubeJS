@@ -61,6 +61,8 @@ public class ClientAssetPacks {
 
 		KubeJSPlugins.forEachPlugin(internalAssetPack, KubeJSPlugin::generateAssets);
 
+		internalAssetPack.buildSounds();
+
 		var langMap = new HashMap<LangKubeEvent.Key, String>();
 		var langEvents = new HashMap<String, LangKubeEvent>();
 		var enUsLangEvent = langEvents.computeIfAbsent("en_us", s -> new LangKubeEvent(s, langMap));
