@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
+import dev.latvian.mods.kubejs.component.MutableDataComponentHolderFunctions;
 import dev.latvian.mods.kubejs.fluid.FluidLike;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
@@ -10,7 +11,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 
-public interface FluidStackKJS extends Replaceable, FluidLike, FluidMatch {
+public interface FluidStackKJS extends Replaceable, FluidLike, FluidMatch, MutableDataComponentHolderFunctions {
 	default FluidStack kjs$self() {
 		return (FluidStack) (Object) this;
 	}

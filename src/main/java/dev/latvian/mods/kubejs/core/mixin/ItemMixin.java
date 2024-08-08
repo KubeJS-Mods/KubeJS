@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.core.mixin;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
@@ -109,8 +110,9 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Override
-	public <T> void kjs$overrideComponent(DataComponentType<T> type, T value) {
-		DataComponentMap.Builder builder = DataComponentMap.builder().addAll(this.components);
+	@HideFromJS
+	public <T> void kjs$overrideComponent(DataComponentType<T> type, @Nullable T value) {
+		var builder = DataComponentMap.builder().addAll(this.components);
 		builder.set(type, value);
 		this.components = Item.Properties.COMPONENT_INTERNER.intern(Item.Properties.validateComponents(builder.build()));
 	}

@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.fluid;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
-import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
+import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;

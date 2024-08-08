@@ -1,7 +1,8 @@
 package dev.latvian.mods.kubejs.web.http;
 
 import com.sun.net.httpserver.HttpExchange;
-import dev.latvian.mods.kubejs.web.LocalWebServer;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.kubejs.web.LocalHTTPServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
@@ -10,8 +11,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-public record HTTPContext(Map<String, String> variables, Map<String, String> query, String[] path) {
-	public static HTTPContext of(LocalWebServer.PathHandler handler, HttpExchange exchange, String[] path) {
+public record HTTPContext(RegistryAccessContainer registries, Map<String, String> variables, Map<String, String> query, String[] path) {
+	public static HTTPContext of(LocalHTTPServer.PathHandler handler, HttpExchange exchange, RegistryAccessContainer registries, String[] path) {
 		var query = exchange.getRequestURI().getQuery();
 		var variableMap = handler.path().variables() == 0 ? Map.<String, String>of() : new HashMap<String, String>(handler.path().variables());
 		var queryMap = query == null ? Map.<String, String>of() : new HashMap<String, String>(2);
@@ -37,7 +38,7 @@ public record HTTPContext(Map<String, String> variables, Map<String, String> que
 			}
 		}
 
-		return new HTTPContext(variableMap, queryMap, path);
+		return new HTTPContext(registries, variableMap, queryMap, path);
 	}
 
 	public void runInRenderThread(Runnable task) {

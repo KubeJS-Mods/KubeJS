@@ -1,12 +1,18 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.component.ComponentFunctions;
+import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
 import dev.latvian.mods.kubejs.event.KubeEvent;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.rhino.util.HideFromJS;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.Util;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TieredItem;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -17,28 +23,34 @@ public class ItemModificationKubeEvent implements KubeEvent {
 
 	@Info("""
 		Modifies items matching the given ingredient.
-					
+		
 		**NOTE**: tag ingredients are not supported at this time.
 		""")
 	public void modify(ItemPredicate in, Consumer<ItemModifications> c) {
 		in.kjs$getItemTypes().stream().map(ItemModifications::new).forEach(c);
 	}
 
-	public record ItemModifications(Item item) {
-		public void setBurnTime(int i) {
-			// FuelRegistry.register(i, (Item) this);
+	@RemapPrefixForJS("kjs$")
+	public record ItemModifications(Item item) implements ItemComponentFunctions {
+		@Override
+		public DataComponentMap kjs$getComponentMap() {
+			return item.components();
 		}
 
-		public <T> void overrideComponent(DataComponentType<T> type, T value) {
+		@Override
+		@HideFromJS
+		public <T> ComponentFunctions kjs$override(DataComponentType<T> type, @Nullable T value) {
 			item.kjs$overrideComponent(type, value);
+			return this;
+		}
+
+		public void setBurnTime(int i) {
+			ConsoleJS.STARTUP.error("Setting item burn time is currently not supported");
+			// FuelRegistry.register(i, (Item) this);
 		}
 
 		public void setCraftingRemainder(Item item) {
 			this.item.kjs$setCraftingRemainder(item);
-		}
-
-		public void setMaxStackSize(int size) {
-			overrideComponent(DataComponents.MAX_STACK_SIZE, size);
 		}
 
 		public void setTier(Consumer<MutableToolTier> c) {

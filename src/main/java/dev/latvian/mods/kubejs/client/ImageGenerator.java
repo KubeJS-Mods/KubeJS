@@ -10,8 +10,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import com.mojang.brigadier.StringReader;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
-import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.web.http.HTTPContext;
 import dev.latvian.mods.kubejs.web.http.HTTPResponse;
 import dev.latvian.mods.kubejs.web.http.SimpleHTTPResponse;
@@ -135,7 +134,7 @@ public class ImageGenerator {
 
 	public static HTTPResponse item(HTTPContext ctx) throws Exception {
 		var stack = BuiltInRegistries.ITEM.get(ctx.id()).getDefaultInstance();
-		stack.applyComponents(DataComponentWrapper.readPatch(RegistryAccessContainer.BUILTIN.nbt(), new StringReader(ctx.query().getOrDefault("components", ""))));
+		stack.applyComponents(DataComponentWrapper.readPatch(ctx.registries().nbt(), new StringReader(ctx.query().getOrDefault("components", ""))));
 
 		if (stack.isEmpty()) {
 			return HTTPResponse.NOT_FOUND;
@@ -161,7 +160,7 @@ public class ImageGenerator {
 
 	public static HTTPResponse fluid(HTTPContext ctx) throws Exception {
 		var stack = new FluidStack(BuiltInRegistries.FLUID.get(ctx.id()), FluidType.BUCKET_VOLUME);
-		stack.applyComponents(DataComponentWrapper.readPatch(RegistryAccessContainer.BUILTIN.nbt(), new StringReader(ctx.query().getOrDefault("components", ""))));
+		stack.applyComponents(DataComponentWrapper.readPatch(ctx.registries().nbt(), new StringReader(ctx.query().getOrDefault("components", ""))));
 
 		if (stack.isEmpty()) {
 			return HTTPResponse.NOT_FOUND;

@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.web;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.web.http.HTTPContext;
 import dev.latvian.mods.kubejs.web.http.HTTPHandler;
 import dev.latvian.mods.kubejs.web.http.HTTPMethod;
@@ -78,7 +79,7 @@ public class LocalWebServer implements WebServerRegistry, HttpHandler {
 			if (path.isBlank()) {
 				if (method == HTTPMethod.GET) {
 					if (homepageHandler != null) {
-						homepageHandler.handler().handle(HTTPContext.of(homepageHandler, exchange, new String[0])).respond(exchange);
+						homepageHandler.handler().handle(HTTPContext.of(homepageHandler, exchange, RegistryAccessContainer.current, new String[0])).respond(exchange);
 					} else {
 						HTTPResponse.OK.respond(exchange);
 					}
@@ -95,7 +96,7 @@ public class LocalWebServer implements WebServerRegistry, HttpHandler {
 				var p = handler.path().matches(pathParts);
 
 				if (p != null) {
-					handler.handler().handle(HTTPContext.of(handler, exchange, p)).respond(exchange);
+					handler.handler().handle(HTTPContext.of(handler, exchange, RegistryAccessContainer.current, p)).respond(exchange);
 					return;
 				}
 			}

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Registry;
@@ -44,7 +45,8 @@ public interface ItemKJS extends IngredientSupplierKJS, RegistryObjectKJS<Item> 
 		throw new NoMixinException();
 	}
 
-	default <T> void kjs$overrideComponent(DataComponentType<T> type, T value) {
+	@HideFromJS
+	default <T> void kjs$overrideComponent(DataComponentType<T> type, @Nullable T value) {
 		throw new NoMixinException();
 	}
 

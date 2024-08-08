@@ -2,7 +2,8 @@ package dev.latvian.mods.kubejs.core;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
-import dev.latvian.mods.kubejs.bindings.DataComponentWrapper;
+import dev.latvian.mods.kubejs.component.DataComponentWrapper;
+import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
@@ -48,7 +49,7 @@ public interface ItemStackKJS extends
 	IngredientSupplierKJS,
 	ToStringJS,
 	Replaceable,
-	MutableDataComponentHolderKJS,
+	ItemComponentFunctions,
 	ItemMatch,
 	RegistryObjectKJS<Item> {
 	default ItemStack kjs$self() {
@@ -124,26 +125,15 @@ public interface ItemStackKJS extends
 		return is;
 	}
 
-	@ReturnsSelf
-	default ItemStack kjs$resetComponents() {
-		var is = kjs$self();
-		is.applyComponents(is.getPrototype());
-		return is;
-	}
-
+	@Override
 	default String kjs$getComponentString(Context cx) {
 		return DataComponentWrapper.patchToString(new StringBuilder(), RegistryAccessContainer.of(cx).nbt(), kjs$self().getComponentsPatch()).toString();
 	}
 
 	@ReturnsSelf(copy = true)
 	default ItemStack kjs$withCustomName(@Nullable Component name) {
-		return (ItemStack) kjs$self().copy().kjs$setCustomName(name);
-	}
-
-	@ReturnsSelf
-	default ItemStack kjs$setRepairCost(int repairCost) {
-		var is = kjs$self();
-		is.set(DataComponents.REPAIR_COST, repairCost);
+		var is = kjs$self().copy();
+		is.kjs$setCustomName(name);
 		return is;
 	}
 
