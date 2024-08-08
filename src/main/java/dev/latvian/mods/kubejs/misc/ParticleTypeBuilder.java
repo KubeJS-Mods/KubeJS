@@ -56,6 +56,11 @@ public class ParticleTypeBuilder extends BuilderBase<ParticleType<?>> {
 		return this;
 	}
 
+	public ParticleTypeBuilder texture(String texture) {
+		assetGen = g -> g.texture(texture);
+		return this;
+	}
+
 	@Override
 	public void generateAssets(KubeAssetGenerator generator) {
 		generator.particle(id, assetGen);

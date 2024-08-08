@@ -7,12 +7,18 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.SimpleAnimatedParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 public class KubeAnimatedParticle extends SimpleAnimatedParticle {
 
 	private Float2IntFunction lightColorFunction;
+	@Nullable
+	private Consumer<KubeAnimatedParticle> onTick;
 
-	protected KubeAnimatedParticle(ClientLevel level, double x, double y, double z, SpriteSet sprites) {
+	public KubeAnimatedParticle(ClientLevel level, double x, double y, double z, SpriteSet sprites) {
 		super(level, x, y, z, sprites, 0.0125F);
 		setLifetime(20);
 		setSpriteFromAge(sprites);
@@ -51,6 +57,14 @@ public class KubeAnimatedParticle extends SimpleAnimatedParticle {
 		lightColorFunction = function;
 	}
 
+	public void onTick(@Nullable Consumer<KubeAnimatedParticle> tick) {
+		onTick = tick;
+	}
+
+	public void setSpeed(Vec3 speed) {
+		setParticleSpeed(speed.x(), speed.y(), speed.z());
+	}
+
 	// Getters for protected values
 
 	public ClientLevel getLevel() {	return level; }
@@ -66,5 +80,13 @@ public class KubeAnimatedParticle extends SimpleAnimatedParticle {
 	@Override
 	public int getLightColor(float partialTick) {
 		return lightColorFunction.get(partialTick);
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+		if (onTick != null) {
+			onTick.accept(this);
+		}
 	}
 }

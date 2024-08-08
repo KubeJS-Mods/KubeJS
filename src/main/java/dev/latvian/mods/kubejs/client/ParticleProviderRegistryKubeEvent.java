@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.client;
 
-import dev.latvian.mods.kubejs.event.KubeEvent;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleEngine;
@@ -12,7 +11,7 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
 import java.util.function.Consumer;
 
-public class ParticleProviderRegistryKubeEvent implements KubeEvent {
+public class ParticleProviderRegistryKubeEvent implements ClientKubeEvent {
 
 	private final RegisterParticleProvidersEvent parent;
 
