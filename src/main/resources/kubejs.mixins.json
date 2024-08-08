@@ -33,6 +33,7 @@
 		"ItemEntityMixin",
 		"ItemFrameEntityMixin",
 		"ItemMixin",
+		"ItemStackHandlerMixin",
 		"ItemStackMixin",
 		"LevelMixin",
 		"LivingEntityMixin",
