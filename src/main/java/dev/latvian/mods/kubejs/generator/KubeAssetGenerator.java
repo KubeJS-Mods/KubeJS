@@ -3,8 +3,11 @@ package dev.latvian.mods.kubejs.generator;
 import dev.latvian.mods.kubejs.client.LoadedTexture;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
+import dev.latvian.mods.kubejs.client.ParticleGenerator;
+import dev.latvian.mods.kubejs.client.SoundsGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import net.minecraft.Util;
@@ -129,5 +132,19 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 
 		texture(target, in);
 		return true;
+	}
+
+	default void particle(ResourceLocation id, Consumer<ParticleGenerator> consumer) {
+		json(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "particle/" + id.getPath()), Util.make(new ParticleGenerator(), consumer).toJson());
+	}
+
+	default void sounds(String namespace, Consumer<SoundsGenerator> consumer) {}
+
+	default void buildSounds() {}
+
+	@Override
+	default void afterPosted(EventResult result) {
+		KubeResourceGenerator.super.afterPosted(result);
+		buildSounds();
 	}
 }
