@@ -135,7 +135,7 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 	}
 
 	default void particle(ResourceLocation id, Consumer<ParticleGenerator> consumer) {
-		json(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "particle/" + id.getPath()), Util.make(new ParticleGenerator(), consumer).toJson());
+		json(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "particles/" + id.getPath()), Util.make(new ParticleGenerator(), consumer).toJson());
 	}
 
 	default void sounds(String namespace, Consumer<SoundsGenerator> consumer) {}

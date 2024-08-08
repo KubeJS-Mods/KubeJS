@@ -8,11 +8,11 @@ import net.minecraft.client.particle.SimpleAnimatedParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.util.RandomSource;
 
-public class kubeAnimatedParticle extends SimpleAnimatedParticle {
+public class KubeAnimatedParticle extends SimpleAnimatedParticle {
 
 	private Float2IntFunction lightColorFunction;
 
-	protected kubeAnimatedParticle(ClientLevel level, double x, double y, double z, SpriteSet sprites) {
+	protected KubeAnimatedParticle(ClientLevel level, double x, double y, double z, SpriteSet sprites) {
 		super(level, x, y, z, sprites, 0.0125F);
 		setLifetime(20);
 		setSpriteFromAge(sprites);
