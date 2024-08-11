@@ -7,6 +7,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
+import dev.latvian.mods.kubejs.error.EmptyRecipeComponentException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.Cast;
@@ -209,8 +210,29 @@ public class RecipeComponentBuilder implements RecipeComponent<Map<RecipeCompone
 	}
 
 	@Override
+	public void validate(Map<Key, Value> value) {
+		if (value.isEmpty()) {
+			throw new EmptyRecipeComponentException(this);
+		}
+
+		for (var entry : value.values()) {
+			entry.key.component.validate(Cast.to(entry.value));
+		}
+	}
+
+	@Override
 	public boolean isEmpty(Map<Key, Value> value) {
-		return keys.isEmpty();
+		if (keys.isEmpty()) {
+			return true;
+		}
+
+		for (var entry : value.values()) {
+			if (entry.key.component.isEmpty(Cast.to(entry.value))) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Override

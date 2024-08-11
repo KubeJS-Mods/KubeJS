@@ -90,6 +90,7 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.recipe.component.BlockComponent;
 import dev.latvian.mods.kubejs.recipe.component.BlockStateComponent;
+import dev.latvian.mods.kubejs.recipe.component.BookCategoryComponent;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
 import dev.latvian.mods.kubejs.recipe.component.CharacterComponent;
 import dev.latvian.mods.kubejs.recipe.component.EitherRecipeComponent;
@@ -665,6 +666,9 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(TagKeyComponent.ENTITY_TYPE);
 		registry.register(TagKeyComponent.BIOME);
 		registry.register(NestedRecipeComponent.RECIPE);
+
+		registry.register(BookCategoryComponent.CRAFTING_BOOK_CATEGORY);
+		registry.register(BookCategoryComponent.COOKING_BOOK_CATEGORY);
 
 		registry.register("tag", TagKeyComponent.FACTORY);
 		registry.register("registry_element", RegistryComponent.FACTORY);

@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.error.EmptyRecipeComponentValueException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
@@ -117,7 +117,7 @@ public interface RecipeComponent<T> {
 		var encoded = cv.key.codec.encodeStart(recipe.type.event.registries.json(), cv.value);
 
 		if (encoded.error().isPresent()) {
-			ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to encode " + cv.key.name + " for " + recipe.id + " from " + cv.value + ": " + encoded.error().get().message()).source(recipe.sourceLine), RecipesKubeEvent.POST_SKIP_ERROR);
+			ConsoleJS.SERVER.error("Failed to encode " + cv.key.name + " for " + recipe.id + " from " + cv.value + ": " + encoded.error().get().message(), recipe.sourceLine, null, RecipesKubeEvent.POST_SKIP_ERROR);
 		} else if (encoded.isSuccess()) {
 			var e = encoded.getOrThrow();
 			json.add(cv.key.name, e);
@@ -177,21 +177,10 @@ public interface RecipeComponent<T> {
 		return original instanceof Replaceable r && matches(cx, recipe, original, match) ? wrap(cx, recipe, r.replaceThisWith(cx, with)) : original;
 	}
 
-	/**
-	 * This method may be used by some components to validate that the value read
-	 * from the input is valid / not empty. If the value is empty, this method should
-	 * return a string describing the error, otherwise it should return an empty string.
-	 *
-	 * @param key   The key of the component that was read
-	 * @param value The value read from the input
-	 * @return An error message, or an empty string if the value is valid
-	 */
-	default String checkEmpty(RecipeKey<T> key, T value) {
+	default void validate(T value) {
 		if (isEmpty(value)) {
-			return "Value of '" + key.name + "' (" + this + ") can't be empty!";
+			throw new EmptyRecipeComponentValueException(this);
 		}
-
-		return "";
 	}
 
 	default boolean isEmpty(T value) {

@@ -36,6 +36,12 @@ public record PairRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B>
 	}
 
 	@Override
+	public void validate(Pair<A, B> value) {
+		a.validate(value.getFirst());
+		b.validate(value.getSecond());
+	}
+
+	@Override
 	public boolean isEmpty(Pair<A, B> value) {
 		return a.isEmpty(value.getFirst()) && b.isEmpty(value.getSecond());
 	}

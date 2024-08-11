@@ -10,6 +10,12 @@
 			"name": "ingredients",
 			"role": "input",
 			"type": "unwrapped_ingredient_list"
+		},
+		{
+			"name": "category",
+			"role": "other",
+			"type": "crafting_book_category",
+			"optional": "misc"
 		}
 	],
 	"unique": ["result"]

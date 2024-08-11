@@ -59,6 +59,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	private MutableObject<Recipe<?>> originalRecipe = null;
 	public JsonObject json = null;
 	public boolean changed = false;
+	public boolean creationError = false;
 
 	protected List<IngredientActionHolder> recipeIngredientActions;
 
@@ -72,7 +73,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			try {
 				v.key.component.readFromJson(this, Cast.to(v), json);
 			} catch (Exception ex) {
-				ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to read " + v.key + " from recipe " + this, ex).source(sourceLine), RecipesKubeEvent.POST_SKIP_ERROR);
+				ConsoleJS.SERVER.error("Failed to read " + v.key + " from recipe " + this, sourceLine, ex, RecipesKubeEvent.POST_SKIP_ERROR);
 			}
 
 			if (v.value != null) {
@@ -186,11 +187,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	 */
 	public void afterLoaded() {
 		for (var v : valueMap.holders) {
-			var e = v.checkEmpty();
-
-			if (!e.isEmpty()) {
-				throw new KubeRuntimeException(e).source(sourceLine);
-			}
+			v.validate(sourceLine);
 		}
 	}
 
@@ -485,7 +482,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				try {
 					json.add(KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, IngredientActionHolder.LIST_CODEC.encodeStart(type.event.registries.json(), recipeIngredientActions).getOrThrow());
 				} catch (Throwable ex) {
-					ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to encode " + KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, ex).source(sourceLine), RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
+					ConsoleJS.SERVER.error("Failed to encode " + KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, sourceLine, ex, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
 				}
 			}
 
@@ -504,7 +501,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 					var recipe = type.event.registries.decodeJson(type.event.stageSerializer.codec(), o);
 					return recipe == null ? null : new RecipeHolder<>(id, recipe);
 				} catch (Throwable ex) {
-					ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to decode " + id + " from json " + o, ex).source(sourceLine), RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
+					ConsoleJS.SERVER.error("Failed to decode " + id + " from json " + o, sourceLine, ex, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
 				}
 			}
 		} else if (originalRecipe != null && originalRecipe.getValue() != null) {

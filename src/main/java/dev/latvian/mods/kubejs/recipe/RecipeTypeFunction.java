@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
@@ -35,18 +36,23 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 
 	@Override
 	public KubeRecipe call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args0) {
+		var sourceLine = SourceLine.of(cx);
+
 		try {
-			return createRecipe(cx, args0);
-		} catch (KubeRuntimeException rex) {
-			var recipe = new ErroredKubeRecipe(event, "Failed to create recipe for type '%s'".formatted(idString), rex, SKIP_ERROR);
-			recipe.sourceLine = rex.sourceLine;
-			return recipe;
+			return createRecipe(cx, sourceLine, args0);
+		} catch (Throwable cause) {
+			var r = schemaType.schema.recipeFactory.create(this, sourceLine);
+			r.creationError = true;
+			event.failedCount.incrementAndGet();
+			ConsoleJS.SERVER.error("Failed to create a '" + idString + "' recipe from args " + Arrays.toString(args0), sourceLine, cause, SKIP_ERROR);
+			r.json = new JsonObject();
+			r.json.addProperty("type", idString);
+			r.newRecipe = true;
+			return r;
 		}
 	}
 
-	public KubeRecipe createRecipe(Context cx, Object[] args) {
-		var sourceLine = SourceLine.of(cx);
-
+	public KubeRecipe createRecipe(Context cx, SourceLine sourceLine, Object[] args) {
 		try {
 			for (int i = 0; i < args.length; i++) {
 				args[i] = Wrapper.unwrapped(args[i]);

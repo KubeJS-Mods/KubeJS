@@ -237,9 +237,7 @@ public class RecipeSchema {
 	}
 
 	public KubeRecipe deserialize(SourceLine sourceLine, RecipeTypeFunction type, @Nullable ResourceLocation id, JsonObject json) {
-		var r = recipeFactory.create();
-		r.sourceLine = sourceLine;
-		r.type = type;
+		var r = recipeFactory.create(type, sourceLine);
 		r.id = id;
 		r.json = json;
 		r.newRecipe = id == null;

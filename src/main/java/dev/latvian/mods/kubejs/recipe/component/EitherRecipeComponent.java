@@ -79,6 +79,17 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeCompone
 	}
 
 	@Override
+	public void validate(Either<H, L> value) {
+		var left = value.left();
+
+		if (left.isEmpty()) {
+			high.validate(left.get());
+		} else {
+			low.validate(value.right().get());
+		}
+	}
+
+	@Override
 	public boolean isEmpty(Either<H, L> value) {
 		return value.map(high::isEmpty, low::isEmpty);
 	}

@@ -1,5 +1,13 @@
 {
 	"hidden": true,
+	"keys": [
+		{
+			"name": "category",
+			"role": "other",
+			"type": "crafting_book_category",
+			"optional": "misc"
+		}
+	],
 	"constructors": [
 		{
 			"keys": []

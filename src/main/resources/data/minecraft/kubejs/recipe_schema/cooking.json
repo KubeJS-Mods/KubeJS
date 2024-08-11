@@ -23,6 +23,12 @@
 			"type": "ticks",
 			"function_names": ["cookingTime", "cookingtime"],
 			"optional": 200
+		},
+		{
+			"name": "category",
+			"role": "other",
+			"type": "cooking_book_category",
+			"optional": "misc"
 		}
 	],
 	"unique": ["result"]

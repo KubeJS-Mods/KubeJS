@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.error.EmptyRecipeComponentException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
@@ -74,8 +75,29 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
+	public void validate(TinyMap<K, V> value) {
+		if (value.isEmpty()) {
+			throw new EmptyRecipeComponentException(this);
+		}
+
+		for (var entry : value.entries()) {
+			component.validate(entry.value());
+		}
+	}
+
+	@Override
 	public boolean isEmpty(TinyMap<K, V> value) {
-		return value.isEmpty();
+		if (value.isEmpty()) {
+			return true;
+		}
+
+		for (var entry : value.entries()) {
+			if (component.isEmpty(entry.value())) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Override

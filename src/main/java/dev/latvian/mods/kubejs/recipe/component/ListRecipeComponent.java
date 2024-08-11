@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonArray;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
+import dev.latvian.mods.kubejs.error.EmptyRecipeComponentException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
@@ -148,7 +149,28 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 	}
 
 	@Override
+	public void validate(List<T> value) {
+		if (value.isEmpty()) {
+			throw new EmptyRecipeComponentException(this);
+		}
+
+		for (var v : value) {
+			component.validate(v);
+		}
+	}
+
+	@Override
 	public boolean isEmpty(List<T> value) {
-		return value.isEmpty();
+		if (value.isEmpty()) {
+			return true;
+		}
+
+		for (var v : value) {
+			if (component.isEmpty(v)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

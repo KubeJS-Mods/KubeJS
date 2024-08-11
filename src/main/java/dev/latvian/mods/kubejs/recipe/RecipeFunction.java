@@ -57,10 +57,6 @@ public class RecipeFunction extends NativeJavaObject {
 
 	@Override
 	public Object get(Context cx, String name, Scriptable start) {
-		if (recipe instanceof ErroredKubeRecipe errored) {
-			return errored.dummyFunction;
-		}
-
 		var s = super.get(cx, name, start);
 
 		if (s == Scriptable.NOT_FOUND) {

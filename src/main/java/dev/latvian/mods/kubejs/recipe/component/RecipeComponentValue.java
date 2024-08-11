@@ -1,8 +1,11 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
+import dev.latvian.mods.kubejs.error.InvalidRecipeComponentException;
+import dev.latvian.mods.kubejs.error.MissingRequiredValueException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.Context;
 
@@ -91,7 +94,19 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 		return Objects.hash(key, value);
 	}
 
-	public String checkEmpty() {
-		return key.allowEmpty ? "" : value != null ? key.component.checkEmpty(key, value) : key.optional() ? "" : ("Value of '" + key.name + "' can't be null!");
+	public void validate(SourceLine sourceLine) {
+		if (key.allowEmpty) {
+			return;
+		}
+
+		if (value != null) {
+			try {
+				key.component.validate(value);
+			} catch (Throwable cause) {
+				throw new InvalidRecipeComponentException(this, cause).source(sourceLine);
+			}
+		} else if (!key.optional()) {
+			throw new InvalidRecipeComponentException(this, new MissingRequiredValueException()).source(sourceLine);
+		}
 	}
 }

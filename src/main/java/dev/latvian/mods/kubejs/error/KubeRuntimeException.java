@@ -18,8 +18,24 @@ public class KubeRuntimeException extends RuntimeException implements MutedError
 
 	@Override
 	public String toString() {
-		String message = getLocalizedMessage();
-		return message != null && !message.isEmpty() ? message : getClass().getName();
+		var sb = new StringBuilder();
+
+		var message = getLocalizedMessage();
+
+		if (message != null) {
+			sb.append(message);
+		} else {
+			sb.append(getClass().getName());
+		}
+
+		var c = getCause();
+
+		while (c != null) {
+			sb.append(" - ").append(c);
+			c = c.getCause();
+		}
+
+		return sb.toString();
 	}
 
 	public KubeRuntimeException source(SourceLine sourceLine) {

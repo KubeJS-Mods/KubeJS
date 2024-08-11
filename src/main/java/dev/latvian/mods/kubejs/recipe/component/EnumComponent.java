@@ -8,7 +8,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.RemappedEnumConstant;
 import net.minecraft.util.StringRepresentable;
 
-public record EnumComponent<T extends Enum<T> & StringRepresentable>(EnumTypeInfo enumTypeInfo, Codec<T> codec) implements RecipeComponent<T> {
+public record EnumComponent<T extends Enum<T> & StringRepresentable>(String customName, EnumTypeInfo enumTypeInfo, Codec<T> codec) implements RecipeComponent<T> {
 	public static final RecipeComponentFactory FACTORY = (registries, storage, reader) -> {
 		reader.skipWhitespace();
 		reader.expect('<');
@@ -29,7 +29,7 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(EnumTypeInf
 				throw new KubeRuntimeException("Class " + clazz.getTypeName() + " is not an enum!");
 			}
 
-			return new EnumComponent(enumTypeInfo, Codec.STRING.xmap(s -> {
+			return new EnumComponent("", enumTypeInfo, Codec.STRING.xmap(s -> {
 				for (var c : enumTypeInfo.enumConstants()) {
 					if (c instanceof RemappedEnumConstant r && r.getRemappedEnumConstantName().equalsIgnoreCase(s)) {
 						return c;
@@ -44,6 +44,10 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(EnumTypeInf
 			throw new KubeRuntimeException("Error loading class " + cname + " for EnumComponent", ex);
 		}
 	};
+
+	public static <T extends Enum<T> & StringRepresentable> EnumComponent<T> of(String customName, Class<T> enumClass, Codec<T> codec) {
+		return new EnumComponent<>(customName, (EnumTypeInfo) TypeInfo.of(enumClass), codec);
+	}
 
 	@Override
 	public Codec<T> codec() {
@@ -68,6 +72,6 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(EnumTypeInf
 
 	@Override
 	public String toString() {
-		return "enum<" + enumTypeInfo.asClass().getName() + ">";
+		return customName.isEmpty() ? ("enum<" + enumTypeInfo.asClass().getName() + ">") : customName;
 	}
 }

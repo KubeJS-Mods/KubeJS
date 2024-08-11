@@ -22,7 +22,9 @@ public interface CreativeTabContentSupplier {
 			}
 
 			if (items.isEmpty()) {
-				output.accept((ItemStack) Items.PAPER.getDefaultInstance().kjs$setCustomName(Component.literal("Use .content(showRestrictedItems => ['kubejs:example']) to add more items!")));
+				var is = Items.PAPER.getDefaultInstance();
+				is.kjs$setCustomName(Component.literal("Use .content(showRestrictedItems => ['kubejs:example']) to add more items!"));
+				output.accept(is);
 			} else {
 				for (var item : items) {
 					output.accept(item);

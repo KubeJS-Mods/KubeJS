@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
@@ -76,7 +77,25 @@ public class IngredientComponent implements RecipeComponent<Ingredient> {
 
 	@Override
 	public boolean isEmpty(Ingredient value) {
-		return value.isEmpty();
+		if (value.isEmpty()) {
+			return true;
+		}
+
+		var stacks = value.getItems();
+
+		if (stacks.length == 0) {
+			return true;
+		}
+
+		int count = 0;
+
+		for (var stack : stacks) {
+			if (!stack.isEmpty() && stack.getItem() != Items.BARRIER) {
+				count++;
+			}
+		}
+
+		return count == 0;
 	}
 
 	@Override
