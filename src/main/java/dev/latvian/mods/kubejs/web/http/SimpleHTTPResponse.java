@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.util.JsonUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
+import java.util.function.Supplier;
 
 public record SimpleHTTPResponse(int status, @Nullable byte[] body, String contentType) implements HTTPResponse {
 	public static SimpleHTTPResponse text(int status, String body) {
@@ -17,5 +18,9 @@ public record SimpleHTTPResponse(int status, @Nullable byte[] body, String conte
 
 	public static SimpleHTTPResponse json(int status, JsonElement json) {
 		return new SimpleHTTPResponse(status, JsonUtils.GSON.toJson(json).getBytes(StandardCharsets.UTF_8), "application/json; charset=utf-8");
+	}
+
+	public static SimpleHTTPResponse lazyJson(Supplier<JsonElement> json) {
+		return json(200, json.get());
 	}
 }

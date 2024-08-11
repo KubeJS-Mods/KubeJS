@@ -41,6 +41,7 @@ public interface KubeJSPaths {
 	Path CONFIG = dir(DIRECTORY.resolve("config"));
 	Path COMMON_PROPERTIES = CONFIG.resolve("common.json");
 	Path CLIENT_PROPERTIES = CONFIG.resolve("client.json");
+	Path WEB_SERVER_PROPERTIES = CONFIG.resolve("web_server.json");
 	Path CONFIG_DEV_PROPERTIES = CONFIG.resolve("dev.json");
 	Path PACKICON = CONFIG.resolve("packicon.png");
 	Path README = DIRECTORY.resolve("README.txt");

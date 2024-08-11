@@ -14,10 +14,12 @@ public enum LogType {
 	public static final LogType[] VALUES = values();
 
 	public final String name;
+	public final String id;
 	public final BiConsumer<Logger, String> callback;
 
 	LogType(String name, BiConsumer<Logger, String> callback) {
 		this.name = name;
+		this.id = name.toLowerCase();
 		this.callback = callback;
 	}
 }

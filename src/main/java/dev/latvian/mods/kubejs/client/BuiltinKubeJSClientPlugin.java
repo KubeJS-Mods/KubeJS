@@ -2,11 +2,13 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
+import dev.latvian.mods.kubejs.client.web.KubeJSWeb;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
+import dev.latvian.mods.kubejs.web.KJSHTTPContext;
 import dev.latvian.mods.kubejs.web.WebServerRegistry;
 import net.minecraft.client.Minecraft;
 import net.neoforged.fml.ModList;
@@ -32,13 +34,8 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	public void registerLocalWebServer(WebServerRegistry registry) {
-		registry.get("img/{size}/item/{namespace}/<path>", ImageGenerator::item);
-		registry.get("img/{size}/block/{namespace}/<path>", ImageGenerator::block);
-		registry.get("img/{size}/fluid/{namespace}/<path>", ImageGenerator::fluid);
-		registry.get("img/{size}/item-tag/{namespace}/<path>", ImageGenerator::itemTag);
-		registry.get("img/{size}/block-tag/{namespace}/<path>", ImageGenerator::blockTag);
-		registry.get("img/{size}/fluid-tag/{namespace}/<path>", ImageGenerator::fluidTag);
+	public void registerLocalWebServer(WebServerRegistry<KJSHTTPContext> registry) {
+		KubeJSWeb.register(registry);
 	}
 
 	@Override

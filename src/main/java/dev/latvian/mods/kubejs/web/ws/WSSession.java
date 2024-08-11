@@ -1,4 +1,8 @@
 package dev.latvian.mods.kubejs.web.ws;
 
-public interface WSSession {
+import com.google.gson.JsonElement;
+
+public class WSSession {
+	public void onEvent(String event, JsonElement payload) {
+	}
 }

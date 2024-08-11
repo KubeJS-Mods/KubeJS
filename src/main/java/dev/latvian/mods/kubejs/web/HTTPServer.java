@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.web;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.web.http.HTTPContext;
 import dev.latvian.mods.kubejs.web.http.HTTPHandler;
 import dev.latvian.mods.kubejs.web.http.HTTPMethod;
@@ -11,35 +11,41 @@ import dev.latvian.mods.kubejs.web.http.HTTPResponse;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.function.Supplier;
 
-public class LocalWebServer implements WebServerRegistry, HttpHandler {
-	public record PathHandler(HTTPMethod method, CompiledPath path, HTTPHandler handler) {
+public class HTTPServer<CTX extends HTTPContext> implements HttpHandler {
+	public record PathHandler<CTX extends HTTPContext>(HTTPMethod method, CompiledPath path, HTTPHandler<CTX> handler) {
 	}
 
-	public HttpServer server;
-	private final Map<HTTPMethod, List<PathHandler>> handlers;
-	private PathHandler homepageHandler;
+	private final Supplier<CTX> contextFactory;
+	private final Map<HTTPMethod, List<PathHandler<CTX>>> handlers;
+	private HttpServer server;
+	private PathHandler<CTX> homepageHandler;
 
-	public LocalWebServer() {
+	public HTTPServer(Supplier<CTX> contextFactory) {
+		this.contextFactory = contextFactory;
 		this.handlers = new EnumMap<>(HTTPMethod.class);
 	}
 
-	public void setHomepageHandler(HTTPHandler handler) {
-		homepageHandler = new PathHandler(HTTPMethod.GET, CompiledPath.EMPTY, handler);
+	public void setHomepageHandler(HTTPHandler<CTX> handler) {
+		homepageHandler = new PathHandler<>(HTTPMethod.GET, CompiledPath.EMPTY, handler);
 	}
 
-	public boolean start(int port, @Nullable Executor executor) {
+	public boolean start(InetAddress address, int port, @Nullable Executor executor) {
 		int portOffset = 0;
 
 		while (true) {
 			try {
-				server = HttpServer.create(new InetSocketAddress(port + portOffset), 0);
+				server = HttpServer.create(new InetSocketAddress(address, port + portOffset), 0);
 				break;
 			} catch (IOException ex) {
 				portOffset++;
@@ -56,10 +62,13 @@ public class LocalWebServer implements WebServerRegistry, HttpHandler {
 		return true;
 	}
 
-	@Override
-	public void http(HTTPMethod method, String path, HTTPHandler handler) {
+	public InetSocketAddress getAddress() {
+		return server.getAddress();
+	}
+
+	public void addHandler(HTTPMethod method, String path, HTTPHandler<CTX> handler) {
 		var compiledPath = CompiledPath.compile(path);
-		handlers.computeIfAbsent(method, k -> new ArrayList<>()).add(new PathHandler(method, compiledPath, handler));
+		handlers.computeIfAbsent(method, k -> new ArrayList<>()).add(new PathHandler<>(method, compiledPath, handler));
 	}
 
 	@Override
@@ -79,7 +88,9 @@ public class LocalWebServer implements WebServerRegistry, HttpHandler {
 			if (path.isBlank()) {
 				if (method == HTTPMethod.GET) {
 					if (homepageHandler != null) {
-						homepageHandler.handler().handle(HTTPContext.of(homepageHandler, exchange, RegistryAccessContainer.current, new String[0])).respond(exchange);
+						var ctx = contextFactory.get();
+						ctx.init(homepageHandler.path, exchange);
+						homepageHandler.handler().handle(ctx).respond(exchange);
 					} else {
 						HTTPResponse.OK.respond(exchange);
 					}
@@ -96,7 +107,11 @@ public class LocalWebServer implements WebServerRegistry, HttpHandler {
 				var p = handler.path().matches(pathParts);
 
 				if (p != null) {
-					handler.handler().handle(HTTPContext.of(handler, exchange, RegistryAccessContainer.current, p)).respond(exchange);
+					var ctx = contextFactory.get();
+					ctx.setPath(p);
+					ctx.setBody(streamLazy(exchange.getRequestBody()));
+					ctx.init(handler.path, exchange);
+					handler.handler().handle(ctx).respond(exchange);
 					return;
 				}
 			}
@@ -106,6 +121,16 @@ public class LocalWebServer implements WebServerRegistry, HttpHandler {
 			ex.printStackTrace();
 			exchange.sendResponseHeaders(500, -1L);
 		}
+	}
+
+	private static Lazy<String> streamLazy(InputStream stream) {
+		return Lazy.of(() -> {
+			try {
+				return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+			} catch (Exception ex) {
+				return "";
+			}
+		});
 	}
 
 	public void stopNow() {

@@ -9,6 +9,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 public interface ID {
 	ResourceLocation UNKNOWN = ResourceLocation.fromNamespaceAndPath("unknown", "unknown");
 
@@ -90,5 +93,9 @@ public interface ID {
 
 	static boolean isKey(Object from) {
 		return from instanceof CharSequence || from instanceof ResourceLocation || from instanceof ResourceKey<?>;
+	}
+
+	static String url(ResourceLocation id) {
+		return URLEncoder.encode(id.getNamespace(), StandardCharsets.UTF_8) + "/" + URLEncoder.encode(id.getPath(), StandardCharsets.UTF_8);
 	}
 }

@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs.script;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.util.LogType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -121,5 +123,30 @@ public class ConsoleLine {
 	@Override
 	public String toString() {
 		return getText();
+	}
+
+	public JsonObject toJson() {
+		var json = new JsonObject();
+		json.addProperty("type", type.id);
+		json.addProperty("message", getText());
+		json.addProperty("timestamp", timestamp);
+		var sls = new JsonArray();
+		json.add("source_lines", sls);
+
+		for (var l : sourceLines) {
+			var sourceLine = new JsonObject();
+			sourceLine.addProperty("source", l.source());
+			sourceLine.addProperty("line", l.line());
+			sls.add(sourceLine);
+		}
+
+		var st = new JsonArray();
+		json.add("stack_trace", st);
+
+		for (var s : stackTrace) {
+			st.add(s);
+		}
+
+		return json;
 	}
 }

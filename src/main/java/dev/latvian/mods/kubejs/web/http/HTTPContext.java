@@ -1,55 +1,71 @@
 package dev.latvian.mods.kubejs.web.http;
 
 import com.sun.net.httpserver.HttpExchange;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
-import dev.latvian.mods.kubejs.web.LocalHTTPServer;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import dev.latvian.mods.kubejs.web.CompiledPath;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-public record HTTPContext(RegistryAccessContainer registries, Map<String, String> variables, Map<String, String> query, String[] path) {
-	public static HTTPContext of(LocalHTTPServer.PathHandler handler, HttpExchange exchange, RegistryAccessContainer registries, String[] path) {
-		var query = exchange.getRequestURI().getQuery();
-		var variableMap = handler.path().variables() == 0 ? Map.<String, String>of() : new HashMap<String, String>(handler.path().variables());
-		var queryMap = query == null ? Map.<String, String>of() : new HashMap<String, String>(2);
+public class HTTPContext {
+	public static final Supplier<String> NO_BODY = () -> "";
 
-		if (handler.path().variables() > 0) {
-			for (var i = 0; i < handler.path().parts().length; i++) {
-				var part = handler.path().parts()[i];
+	private String[] path = new String[0];
+	private Map<String, String> variables = Map.of();
+	private Map<String, String> query = Map.of();
+	private Supplier<String> body = NO_BODY;
+
+	public void setPath(String[] path) {
+		this.path = path;
+	}
+
+	public void setBody(Supplier<String> body) {
+		this.body = body;
+	}
+
+	public void init(CompiledPath compiledPath, HttpExchange exchange) {
+		if (compiledPath.variables() > 0) {
+			this.variables = new HashMap<>(compiledPath.variables());
+
+			for (var i = 0; i < compiledPath.parts().length; i++) {
+				var part = compiledPath.parts()[i];
 
 				if (part.variable()) {
-					variableMap.put(part.name(), path[i]);
+					variables.put(part.name(), path[i]);
 				}
 			}
 		}
 
-		if (query != null) {
-			for (String param : query.split("&")) {
-				String[] entry = param.split("=", 2);
+		var queryStr = exchange.getRequestURI().getQuery();
+
+		if (queryStr != null) {
+			this.query = new HashMap<>(2);
+
+			for (String param : queryStr.split("&")) {
+				var entry = param.split("=", 2);
+
 				if (entry.length > 1) {
-					queryMap.put(entry[0], entry[1]);
+					query.put(entry[0], entry[1]);
 				} else {
-					queryMap.put(entry[0], "");
+					query.put(entry[0], "");
 				}
 			}
 		}
-
-		return new HTTPContext(registries, variableMap, queryMap, path);
 	}
 
-	public void runInRenderThread(Runnable task) {
-		Minecraft.getInstance().executeBlocking(task);
+	public Map<String, String> variables() {
+		return variables;
 	}
 
-	public <T> T supplyInRenderThread(Supplier<T> task) {
-		return CompletableFuture.supplyAsync(task, Minecraft.getInstance()).join();
+	public Map<String, String> query() {
+		return query;
 	}
 
-	public ResourceLocation id() {
-		return ResourceLocation.fromNamespaceAndPath(variables.get("namespace"), variables.get("path"));
+	public String[] path() {
+		return path;
+	}
+
+	public String body() {
+		return body.get();
 	}
 }

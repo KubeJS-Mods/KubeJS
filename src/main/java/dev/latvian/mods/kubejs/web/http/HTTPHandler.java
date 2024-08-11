@@ -1,5 +1,5 @@
 package dev.latvian.mods.kubejs.web.http;
 
-public interface HTTPHandler {
-	HTTPResponse handle(HTTPContext ctx) throws Exception;
+public interface HTTPHandler<CTX extends HTTPContext> {
+	HTTPResponse handle(CTX ctx) throws Exception;
 }

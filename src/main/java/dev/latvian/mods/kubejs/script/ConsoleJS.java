@@ -10,6 +10,9 @@ import dev.latvian.mods.kubejs.util.StackTraceCollector;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
+import dev.latvian.mods.kubejs.web.KJSHTTPContext;
+import dev.latvian.mods.kubejs.web.http.HTTPResponse;
+import dev.latvian.mods.kubejs.web.ws.WSHandler;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.ContextFactory;
 import dev.latvian.mods.rhino.EcmaError;
@@ -73,6 +76,7 @@ public class ConsoleJS {
 	private final List<String> writeQueue;
 	private final Calendar calendar;
 	public WeakReference<ContextFactory> contextFactory;
+	public WSHandler wsBroadcaster;
 
 	public ConsoleJS(ScriptType m, Logger log) {
 		this.scriptType = m;
@@ -157,7 +161,7 @@ public class ConsoleJS {
 		});
 	}
 
-	private ConsoleLine line(LogType type, Object object, @Nullable Throwable error) {
+	private ConsoleLine line(LogType type, SourceLine sourceLine, Object object, @Nullable Throwable error) {
 		var o = UtilsJS.wrap(object, JSObjectType.ANY);
 
 		if (o instanceof Component c) {
@@ -168,6 +172,8 @@ public class ConsoleJS {
 		var line = new ConsoleLine(this, timestamp, o == null || o.getClass().isPrimitive() || o instanceof Boolean || o instanceof String || o instanceof Number || o instanceof WrappedJS ? String.valueOf(o) : (o + " [" + o.getClass().getName() + "]"));
 		line.type = type;
 		line.group = group;
+
+		line.withSourceLine(sourceLine);
 
 		if (error instanceof KubeRuntimeException ex) {
 			line.withSourceLine(ex.sourceLine);
@@ -222,9 +228,9 @@ public class ConsoleJS {
 		return line;
 	}
 
-	private ConsoleLine log(LogType type, @Nullable Throwable error, Object message) {
+	private ConsoleLine log(LogType type, SourceLine sourceLine, @Nullable Throwable error, Object message) {
 		if (shouldPrint()) {
-			var line = line(type, message, error);
+			var line = line(type, sourceLine, message, error);
 			type.callback.accept(logger, line.getText());
 
 			if (capturingErrors) {
@@ -237,6 +243,10 @@ public class ConsoleJS {
 
 			if (writeToFile) {
 				writeToFile(type, line.timestamp, line.getText());
+
+				if (wsBroadcaster != null) {
+					wsBroadcaster.broadcast(type.id, line::toJson);
+				}
 			}
 
 			return line;
@@ -307,7 +317,7 @@ public class ConsoleJS {
 	}
 
 	public ConsoleLine info(Object message) {
-		return log(LogType.INFO, null, message);
+		return log(LogType.INFO, SourceLine.UNKNOWN, null, message);
 	}
 
 	public ConsoleLine infof(String message, Object... args) {
@@ -315,12 +325,16 @@ public class ConsoleJS {
 	}
 
 	public ConsoleLine warn(Object message) {
-		return log(LogType.WARN, null, message);
+		return log(LogType.WARN, SourceLine.UNKNOWN, null, message);
 	}
 
 	public ConsoleLine warn(String message, Throwable error, @Nullable Pattern exitPattern) {
+		return warn(message, SourceLine.UNKNOWN, error, exitPattern);
+	}
+
+	public ConsoleLine warn(String message, SourceLine sourceLine, Throwable error, @Nullable Pattern exitPattern) {
 		if (shouldPrint()) {
-			var l = log(LogType.WARN, error, message.isEmpty() ? error.getMessage() : (message + ": " + error.getMessage()));
+			var l = log(LogType.WARN, sourceLine, error, message.isEmpty() ? error.getMessage() : (message + ": " + error.getMessage()));
 			handleError(l, error, exitPattern, !capturingErrors);
 			return l;
 		}
@@ -337,12 +351,16 @@ public class ConsoleJS {
 	}
 
 	public ConsoleLine error(Object message) {
-		return log(LogType.ERROR, null, message);
+		return log(LogType.ERROR, SourceLine.UNKNOWN, null, message);
 	}
 
 	public ConsoleLine error(String message, Throwable error, @Nullable Pattern exitPattern) {
+		return error(message, SourceLine.UNKNOWN, error, exitPattern);
+	}
+
+	public ConsoleLine error(String message, SourceLine sourceLine, Throwable error, @Nullable Pattern exitPattern) {
 		if (shouldPrint()) {
-			var l = log(LogType.ERROR, error, message.isEmpty() ? error.getMessage() : (message + ": " + error.getMessage()));
+			var l = log(LogType.ERROR, sourceLine, error, message.isEmpty() ? error.getMessage() : (message + ": " + error.getMessage()));
 			handleError(l, error, exitPattern, true);
 			return l;
 		}
@@ -364,7 +382,7 @@ public class ConsoleJS {
 
 	public ConsoleLine debug(Object message) {
 		if (shouldPrintDebug()) {
-			return log(LogType.DEBUG, null, message);
+			return log(LogType.DEBUG, SourceLine.UNKNOWN, null, message);
 		}
 
 		return null;
@@ -583,5 +601,13 @@ public class ConsoleJS {
 		public int compareTo(VarFunc o) {
 			return name.compareToIgnoreCase(o.name);
 		}
+	}
+
+	public HTTPResponse getErrorsResponse(KJSHTTPContext ctx) {
+		return HTTPResponse.NO_CONTENT;
+	}
+
+	public HTTPResponse getWarningsResponse(KJSHTTPContext ctx) {
+		return HTTPResponse.NO_CONTENT;
 	}
 }
