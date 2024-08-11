@@ -8,5 +8,8 @@ public class InvalidRecipeComponentException extends KubeRuntimeException {
 	public InvalidRecipeComponentException(RecipeComponentValue<?> h, Throwable cause) {
 		super("Invalid component '" + h.key.name + "' (" + h.key.component + ")", cause);
 		this.componentValueHolder = h;
+
+		customData("key_name", h.key.name);
+		customData("key_component", h.key.component.toString());
 	}
 }

@@ -11,7 +11,6 @@ import dev.latvian.mods.kubejs.web.http.SimpleHTTPResponse;
 import dev.latvian.mods.kubejs.web.ws.WSHandler;
 import dev.latvian.mods.kubejs.web.ws.WSSessionFactory;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.client.Minecraft;
 import net.neoforged.fml.ModList;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +30,7 @@ public record KubeJSLocalWebServer(HTTPServer<KJSHTTPContext> http) implements W
 	public static void start() {
 		if (instance == null) {
 			try {
-				var address = Inet4Address.getByName(WebServerProperties.get().isPublic ? "0.0.0.0" : "127.0.0.1");
+				var address = Inet4Address.getByName(WebServerProperties.get().publicAddress.isEmpty() ? "127.0.0.1" : "0.0.0.0");
 
 				var http = new HTTPServer<>(KJSHTTPContext::new);
 				// var ws = new WSServer(address, ClientProperties.get().localServerWsPort);
@@ -61,12 +60,12 @@ public record KubeJSLocalWebServer(HTTPServer<KJSHTTPContext> http) implements W
 
 	@Override
 	public WSHandler ws(String path, WSSessionFactory factory) {
-		return null;
+		return WSHandler.EMPTY;
 	}
 
 	private static HTTPResponse homepage(HTTPContext ctx) {
 		var list = new ArrayList<String>();
-		list.add("KubeJS Local Web Server [" + Minecraft.getInstance().getGameProfile().getName() + ", " + Minecraft.getInstance().kjs$getTitle() + "]");
+		list.add("KubeJS Local Web Server [" + KubeJS.PROXY.getWebServerWindowTitle() + "]");
 		list.add("");
 
 		list.add("Loaded Plugins:");

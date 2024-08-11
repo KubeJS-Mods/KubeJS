@@ -62,4 +62,8 @@ public class KubeJSCommon {
 
 	public void updateServerData(KubeServerData data) {
 	}
+
+	public String getWebServerWindowTitle() {
+		return "Dedicated Server";
+	}
 }

@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.web.http.HTTPHandler;
 import dev.latvian.mods.kubejs.web.http.HTTPMethod;
 import dev.latvian.mods.kubejs.web.http.HTTPResponse;
 import dev.latvian.mods.kubejs.web.ws.WSHandler;
+import dev.latvian.mods.kubejs.web.ws.WSSession;
 import dev.latvian.mods.kubejs.web.ws.WSSessionFactory;
 
 import java.util.function.Consumer;
@@ -13,6 +14,10 @@ public interface WebServerRegistry<CTX extends HTTPContext> {
 	void http(HTTPMethod method, String path, HTTPHandler<CTX> handler);
 
 	WSHandler ws(String path, WSSessionFactory factory);
+
+	default WSHandler ws(String path) {
+		return ws(path, WSSession::new);
+	}
 
 	default void get(String path, HTTPHandler<CTX> handler) {
 		http(HTTPMethod.GET, path, handler);

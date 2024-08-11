@@ -13,6 +13,7 @@ public class HTTPContext {
 	private String[] path = new String[0];
 	private Map<String, String> variables = Map.of();
 	private Map<String, String> query = Map.of();
+	private final Map<String, String> headers = Map.of();
 	private Supplier<String> body = NO_BODY;
 
 	public void setPath(String[] path) {
@@ -59,6 +60,10 @@ public class HTTPContext {
 
 	public Map<String, String> query() {
 		return query;
+	}
+
+	public String header(String name) {
+		return "";
 	}
 
 	public String[] path() {

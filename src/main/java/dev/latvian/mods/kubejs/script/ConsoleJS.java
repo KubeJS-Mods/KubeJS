@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.script;
 
+import com.google.gson.JsonArray;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
@@ -12,6 +13,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.kubejs.web.KJSHTTPContext;
 import dev.latvian.mods.kubejs.web.http.HTTPResponse;
+import dev.latvian.mods.kubejs.web.http.SimpleHTTPResponse;
 import dev.latvian.mods.kubejs.web.ws.WSHandler;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.ContextFactory;
@@ -176,7 +178,7 @@ public class ConsoleJS {
 		line.withSourceLine(sourceLine);
 
 		if (error instanceof KubeRuntimeException ex) {
-			line.withSourceLine(ex.sourceLine);
+			ex.apply(line);
 		}
 
 		if (error instanceof RhinoException ex) {
@@ -604,10 +606,26 @@ public class ConsoleJS {
 	}
 
 	public HTTPResponse getErrorsResponse(KJSHTTPContext ctx) {
-		return HTTPResponse.NO_CONTENT;
+		return SimpleHTTPResponse.lazyJson(() -> {
+			var json = new JsonArray();
+
+			for (var error : errors) {
+				json.add(error.toJson());
+			}
+
+			return json;
+		});
 	}
 
 	public HTTPResponse getWarningsResponse(KJSHTTPContext ctx) {
-		return HTTPResponse.NO_CONTENT;
+		return SimpleHTTPResponse.lazyJson(() -> {
+			var json = new JsonArray();
+
+			for (var error : warnings) {
+				json.add(error.toJson());
+			}
+
+			return json;
+		});
 	}
 }

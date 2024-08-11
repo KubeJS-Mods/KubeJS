@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.client.web;
+package dev.latvian.mods.kubejs.web.local.client;
 
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.NativeImage;
@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
-import com.mojang.brigadier.StringReader;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.UUIDWrapper;
@@ -44,24 +43,36 @@ public class ImageGenerator {
 
 	public static final Int2ObjectMap<TextureTarget> FB_CACHE = new Int2ObjectArrayMap<>();
 
-	private static HTTPResponse renderCanvas(KJSHTTPContext ctx, int canvasSize, String cacheId, Consumer<RenderImage> render) {
+	private static HTTPResponse renderCanvas(KJSHTTPContext ctx, int canvasSize, StringBuilder cacheId, Consumer<RenderImage> render) {
 		int size = Integer.parseInt(ctx.variables().get("size"));
 
 		if (size < 1 || size > 1024) {
 			return SimpleHTTPResponse.text(400, "Invalid size, must be [1, 1024]");
 		}
 
-		var bytes = ctx.supplyInRenderThread(() -> {
-			var cacheUUID = UUIDWrapper.toString(UUID.nameUUIDFromBytes((cacheId + canvasSize).getBytes(StandardCharsets.UTF_8))) + ".png";
-			var cachePath = KubeJSPaths.dir(KubeJSPaths.LOCAL_CACHE.resolve("web/img/" + cacheUUID.substring(0, 2))).resolve(cacheUUID);
+		if (!cacheId.isEmpty()) {
+			cacheId.append(size);
+		}
 
-			if (Files.exists(cachePath)) {
-				try {
-					return Files.readAllBytes(cachePath);
-				} catch (IOException ignore) {
+		if (cacheId.isEmpty() && ctx.header("Accept").equals("text/plain")) {
+			return SimpleHTTPResponse.NOT_FOUND;
+		}
+
+		var cacheUUID = cacheId.isEmpty() ? null : UUIDWrapper.toString(UUID.nameUUIDFromBytes(cacheId.toString().getBytes(StandardCharsets.UTF_8)));
+		var cachePath = cacheUUID == null ? null : KubeJSPaths.dir(KubeJSPaths.LOCAL_WEB_IMG_CACHE.resolve(cacheUUID.substring(0, 2))).resolve(cacheUUID + ".png");
+
+		if (cachePath != null && Files.exists(cachePath)) {
+			try {
+				if (ctx.header("Accept").equals("text/plain")) {
+					return SimpleHTTPResponse.text(200, cacheUUID);
 				}
-			}
 
+				return new SimpleHTTPResponse(200, Files.readAllBytes(cachePath), "image/png").withHeader("X-KubeJS-Cache-Key", cacheUUID);
+			} catch (IOException ignore) {
+			}
+		}
+
+		var bytes = ctx.supplyInRenderThread(() -> {
 			var target = FB_CACHE.get(size);
 
 			if (target == null) {
@@ -92,14 +103,7 @@ public class ImageGenerator {
 			try (var image = new NativeImage(size, size, false)) {
 				image.downloadTexture(0, false);
 				image.flipY();
-				var result = image.asByteArray();
-
-				try {
-					Files.write(cachePath, result);
-				} catch (Exception ignore) {
-				}
-
-				return result;
+				return image.asByteArray();
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				return null;
@@ -112,18 +116,37 @@ public class ImageGenerator {
 			}
 		});
 
-		return new SimpleHTTPResponse(200, bytes, "image/png");
+		if (cachePath != null) {
+			try {
+				Files.write(cachePath, bytes);
+			} catch (Exception ignore) {
+			}
+		}
+
+		if (ctx.header("Accept").equals("text/plain")) {
+			if (cachePath == null) {
+				return SimpleHTTPResponse.NOT_FOUND;
+			}
+
+			return SimpleHTTPResponse.text(200, cacheUUID);
+		}
+
+		return new SimpleHTTPResponse(200, bytes, "image/png").withHeader("X-KubeJS-Cache-Key", cacheUUID);
 	}
 
 	public static HTTPResponse item(KJSHTTPContext ctx) throws Exception {
 		var stack = BuiltInRegistries.ITEM.get(ctx.id()).getDefaultInstance();
-		stack.applyComponents(DataComponentWrapper.readPatch(ctx.registries().nbt(), new StringReader(ctx.query().getOrDefault("components", ""))));
+		stack.applyComponents(ctx.queryAsPatch(ctx.registries().nbt()));
 
 		if (stack.isEmpty()) {
 			return HTTPResponse.NOT_FOUND;
 		}
 
-		return renderCanvas(ctx, 16, stack.kjs$getId() + stack.getComponents(), render -> {
+		var sb = new StringBuilder();
+		sb.append(stack.kjs$getId());
+		DataComponentWrapper.writeVisualComponentsForCache(sb, ctx.registries().nbt(), stack.getComponents());
+
+		return renderCanvas(ctx, 16, sb, render -> {
 			render.graphics.renderFakeItem(stack, 0, 0, 0);
 			render.graphics.renderItemDecorations(render.mc.font, stack, 0, 0);
 		});
@@ -136,14 +159,22 @@ public class ImageGenerator {
 			return HTTPResponse.NOT_FOUND;
 		}
 
-		return renderCanvas(ctx, 16, "", render -> {
+		var sb = new StringBuilder();
+		sb.append(state.kjs$getId());
+
+		for (var entry : ctx.query().entrySet()) {
+			sb.append(entry.getKey());
+			sb.append(entry.getValue());
+		}
+
+		return renderCanvas(ctx, 16, sb, render -> {
 			render.graphics.fill(0, 0, 16, 16, 0xFFFF00FF);
 		});
 	}
 
 	public static HTTPResponse fluid(KJSHTTPContext ctx) throws Exception {
 		var stack = new FluidStack(BuiltInRegistries.FLUID.get(ctx.id()), FluidType.BUCKET_VOLUME);
-		stack.applyComponents(DataComponentWrapper.readPatch(ctx.registries().nbt(), new StringReader(ctx.query().getOrDefault("components", ""))));
+		stack.applyComponents(ctx.queryAsPatch(ctx.registries().nbt()));
 
 		if (stack.isEmpty()) {
 			return HTTPResponse.NOT_FOUND;
@@ -157,7 +188,11 @@ public class ImageGenerator {
 		int g = (tint >> 8) & 0xFF;
 		int b = tint & 0xFF;
 
-		return renderCanvas(ctx, 16, "", render -> {
+		var sb = new StringBuilder();
+		sb.append(stack.getFluid().kjs$getId());
+		DataComponentWrapper.writeVisualComponentsForCache(sb, ctx.registries().nbt(), stack.getComponents());
+
+		return renderCanvas(ctx, 16, sb, render -> {
 			var s = render.mc.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(still);
 			RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
 			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
@@ -174,7 +209,7 @@ public class ImageGenerator {
 	public static HTTPResponse itemTag(KJSHTTPContext ctx) throws Exception {
 		var tagKey = ItemTags.create(ctx.id());
 
-		return renderCanvas(ctx, 16, "", render -> {
+		return renderCanvas(ctx, 16, new StringBuilder(), render -> {
 			// render.graphics.fill(0, 0, 16, 16, 0xFFFF00FF);
 			render.graphics.renderFakeItem(Items.NAME_TAG.getDefaultInstance(), 0, 0, 0);
 		});
@@ -183,7 +218,7 @@ public class ImageGenerator {
 	public static HTTPResponse blockTag(KJSHTTPContext ctx) throws Exception {
 		var tagKey = BlockTags.create(ctx.id());
 
-		return renderCanvas(ctx, 16, "", render -> {
+		return renderCanvas(ctx, 16, new StringBuilder(), render -> {
 			// render.graphics.fill(0, 0, 16, 16, 0xFFFF00FF);
 			render.graphics.renderFakeItem(Items.NAME_TAG.getDefaultInstance(), 0, 0, 0);
 		});
@@ -192,7 +227,7 @@ public class ImageGenerator {
 	public static HTTPResponse fluidTag(KJSHTTPContext ctx) throws Exception {
 		var tagKey = FluidTags.create(ctx.id());
 
-		return renderCanvas(ctx, 16, "", render -> {
+		return renderCanvas(ctx, 16, new StringBuilder(), render -> {
 			// render.graphics.fill(0, 0, 16, 16, 0xFFFF00FF);
 			render.graphics.renderFakeItem(Items.NAME_TAG.getDefaultInstance(), 0, 0, 0);
 		});

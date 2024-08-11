@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.client.web;
+package dev.latvian.mods.kubejs.web.local;
 
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.script.ConsoleJS;

@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.script;
 
+import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.ClassFilter;
@@ -7,6 +8,7 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.LogType;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 
 import java.io.File;
 import java.io.IOException;
@@ -185,13 +187,24 @@ public class ScriptManager {
 		}
 
 		loadAdditional();
-		scriptType.console.info("Loaded " + i + "/" + t + " KubeJS " + scriptType.name + " scripts in " + (System.currentTimeMillis() - startAll) / 1000D + " s with " + scriptType.console.errors.size() + " errors and " + scriptType.console.warnings.size() + " warnings");
+		long ms = System.currentTimeMillis() - startAll;
+
+		scriptType.console.info("Loaded " + i + "/" + t + " KubeJS " + scriptType.name + " scripts in " + ms / 1000D + " s with " + scriptType.console.errors.size() + " errors and " + scriptType.console.warnings.size() + " warnings");
 		canListenEvents = false;
 
 		if (!watchingFiles.isEmpty() && DevProperties.get().reloadOnFileSave) {
 			scriptType.fileWatcherThread = new KubeJSFileWatcherThread(scriptType, watchingFiles.toArray(new ScriptFile[0]), this::fullReload);
 			scriptType.fileWatcherThread.start();
 		}
+
+		var broadcast = new JsonObject();
+		broadcast.addProperty("type", scriptType.name);
+		broadcast.addProperty("total", t);
+		broadcast.addProperty("successful", i);
+		broadcast.addProperty("errors", scriptType.console.errors.size());
+		broadcast.addProperty("warnings", scriptType.console.warnings.size());
+		broadcast.addProperty("time", ms);
+		KubeJSWeb.UPDATES.broadcast("scripts_reloaded", broadcast);
 	}
 
 	public void loadAdditional() {

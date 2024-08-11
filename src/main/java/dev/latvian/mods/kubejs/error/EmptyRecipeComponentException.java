@@ -8,5 +8,7 @@ public class EmptyRecipeComponentException extends KubeRuntimeException {
 	public EmptyRecipeComponentException(RecipeComponent<?> component) {
 		super("Component '" + component + "' is not allowed to be empty!");
 		this.component = component;
+
+		customData("invalid_component", component.toString());
 	}
 }

@@ -20,18 +20,16 @@ public class WebServerProperties extends BaseProperties {
 
 	public boolean enabled;
 	public int port;
-	public boolean isPublic;
 	public String publicAddress;
 
 	private WebServerProperties() {
-		super(KubeJSPaths.CLIENT_PROPERTIES, "KubeJS Web Server Properties");
+		super(KubeJSPaths.WEB_SERVER_PROPERTIES, "KubeJS Web Server Properties");
 	}
 
 	@Override
 	protected void load() {
 		enabled = get("enabled", true);
 		port = get("port", 61423);
-		isPublic = get("public", false);
 		publicAddress = get("public_address", "");
 	}
 }

@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
-import dev.latvian.mods.kubejs.client.web.KubeJSWeb;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
@@ -10,6 +9,7 @@ import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.kubejs.web.KJSHTTPContext;
 import dev.latvian.mods.kubejs.web.WebServerRegistry;
+import dev.latvian.mods.kubejs.web.local.client.KubeJSClientWeb;
 import net.minecraft.client.Minecraft;
 import net.neoforged.fml.ModList;
 
@@ -35,7 +35,7 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 
 	@Override
 	public void registerLocalWebServer(WebServerRegistry<KJSHTTPContext> registry) {
-		KubeJSWeb.register(registry);
+		KubeJSClientWeb.register(registry);
 	}
 
 	@Override

@@ -29,7 +29,9 @@ import net.minecraft.world.item.component.CustomData;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public interface DataComponentWrapper {
 	DynamicCommandExceptionType ERROR_UNKNOWN_COMPONENT = new DynamicCommandExceptionType((object) -> Component.translatableEscape("arguments.item.component.unknown", object));
@@ -56,6 +58,32 @@ public interface DataComponentWrapper {
 
 		KubeJSPlugins.forEachPlugin(map::put, KubeJSPlugin::registerDataComponentTypeDescriptions);
 		return Map.copyOf(map);
+	});
+
+	Lazy<Set<DataComponentType<?>>> VISUAL_DIFFERENCE = Lazy.of(() -> {
+		var set = new HashSet<DataComponentType<?>>();
+
+		set.add(DataComponents.DAMAGE);
+		set.add(DataComponents.MAX_DAMAGE);
+		set.add(DataComponents.ENCHANTMENTS);
+		set.add(DataComponents.STORED_ENCHANTMENTS);
+		set.add(DataComponents.CUSTOM_MODEL_DATA);
+		set.add(DataComponents.ENCHANTMENT_GLINT_OVERRIDE);
+		set.add(DataComponents.DYED_COLOR);
+		set.add(DataComponents.MAP_COLOR);
+		set.add(DataComponents.POTION_CONTENTS);
+		set.add(DataComponents.TRIM);
+		set.add(DataComponents.ENTITY_DATA);
+		set.add(DataComponents.BLOCK_ENTITY_DATA);
+		set.add(DataComponents.FIREWORK_EXPLOSION);
+		set.add(DataComponents.FIREWORKS);
+		set.add(DataComponents.PROFILE);
+		set.add(DataComponents.BANNER_PATTERNS);
+		set.add(DataComponents.BASE_COLOR);
+		set.add(DataComponents.POT_DECORATIONS);
+		set.add(DataComponents.BLOCK_STATE);
+
+		return set;
 	});
 
 	static TypeInfo getTypeInfo(DataComponentType<?> type) {
@@ -291,5 +319,24 @@ public interface DataComponentWrapper {
 
 		builder.append(']');
 		return builder;
+	}
+
+	static void writeVisualComponentsForCache(StringBuilder builder, DynamicOps<?> ops, DataComponentMap map) {
+		for (var entry : map) {
+			if (DataComponentWrapper.VISUAL_DIFFERENCE.get().contains(entry.type())) {
+				builder.append(BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(entry.type()));
+
+				if (entry.type().codec() != null) {
+					if (entry.value() instanceof CharSequence || entry.value() instanceof Number || entry.value() instanceof Boolean || entry.value() instanceof Tag) {
+						builder.append(entry.value());
+					} else {
+						var str = entry.type().codec().encodeStart(ops, Cast.to(entry.value())).result().map(Object::toString).orElse("");
+						builder.append(str.isEmpty() ? entry.value() : str);
+					}
+				} else {
+					builder.append(entry.value());
+				}
+			}
+		}
 	}
 }

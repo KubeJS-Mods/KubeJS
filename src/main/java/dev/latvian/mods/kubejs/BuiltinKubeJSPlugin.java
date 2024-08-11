@@ -152,6 +152,9 @@ import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.Tristate;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
+import dev.latvian.mods.kubejs.web.KJSHTTPContext;
+import dev.latvian.mods.kubejs.web.WebServerRegistry;
+import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import dev.latvian.mods.rhino.type.RecordTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.commands.arguments.selector.EntitySelector;
@@ -703,5 +706,10 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	@Override
 	public void registerDataComponentTypeDescriptions(DataComponentTypeInfoRegistry registry) {
 		// DataComponents.ATTRIBUTE_MODIFIERS
+	}
+
+	@Override
+	public void registerLocalWebServer(WebServerRegistry<KJSHTTPContext> registry) {
+		KubeJSWeb.register(registry);
 	}
 }

@@ -193,6 +193,12 @@ public class KubeJSClient extends KubeJSCommon {
 		}
 	}
 
+	@Override
+	public String getWebServerWindowTitle() {
+		var mc = Minecraft.getInstance();
+		return mc.getGameProfile().getName() + ", " + mc.kjs$getTitle();
+	}
+
 	public static void loadPostChains(Minecraft mc) {
 		KubedexHighlight.INSTANCE.loadPostChains(mc);
 	}

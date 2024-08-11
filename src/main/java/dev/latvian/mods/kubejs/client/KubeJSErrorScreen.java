@@ -239,7 +239,7 @@ public class KubeJSErrorScreen extends Screen {
 					var lines = new ArrayList<FormattedCharSequence>();
 
 					for (var line : line.sourceLines) {
-						lines.add(Component.literal(line.toString()).getVisualOrderText());
+						lines.add(Component.empty().append(Component.literal(line.source()).kjs$gray()).append("#" + line.line()).getVisualOrderText());
 					}
 
 					errorList.screen.setTooltipForNextRenderPass(lines);

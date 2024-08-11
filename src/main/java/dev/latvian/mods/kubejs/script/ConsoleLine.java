@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.script;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.util.LogType;
 import net.minecraft.network.FriendlyByteBuf;
@@ -49,6 +50,7 @@ public class ConsoleLine {
 	public Path externalFile = null;
 	public List<String> stackTrace = List.of();
 	private String cachedText;
+	private JsonObject customData;
 
 	public ConsoleLine(ConsoleJS console, long timestamp, String message) {
 		this.console = console;
@@ -125,19 +127,42 @@ public class ConsoleLine {
 		return getText();
 	}
 
+	public ConsoleLine customData(String key, JsonElement data, boolean override) {
+		if (customData == null) {
+			customData = new JsonObject();
+		}
+
+		if (override || !customData.has(key)) {
+			customData.add(key, data);
+		}
+
+		return this;
+	}
+
 	public JsonObject toJson() {
 		var json = new JsonObject();
 		json.addProperty("type", type.id);
 		json.addProperty("message", getText());
 		json.addProperty("timestamp", timestamp);
-		var sls = new JsonArray();
-		json.add("source_lines", sls);
+
+		if (customData != null) {
+			json.add("custom_data", customData);
+		}
+
+		var ssls = new JsonArray();
+		var asls = new JsonArray();
+		json.add("script_source_lines", ssls);
+		json.add("all_source_lines", asls);
 
 		for (var l : sourceLines) {
 			var sourceLine = new JsonObject();
 			sourceLine.addProperty("source", l.source());
 			sourceLine.addProperty("line", l.line());
-			sls.add(sourceLine);
+			asls.add(sourceLine);
+
+			if (l.source().endsWith(".js")) {
+				ssls.add(sourceLine);
+			}
 		}
 
 		var st = new JsonArray();
