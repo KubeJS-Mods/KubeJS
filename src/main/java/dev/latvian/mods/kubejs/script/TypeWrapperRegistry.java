@@ -7,13 +7,16 @@ import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.wrap.DirectTypeWrapperFactory;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperValidator;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraft.util.StringRepresentable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class TypeWrapperRegistry {
 	public interface ContextFromFunction<T> extends BiFunction<Context, Object, T> {
@@ -95,5 +98,18 @@ public class TypeWrapperRegistry {
 
 	public <T> void registerMapCodec(Class<T> target, MapCodec<T> codec) {
 		registerMapCodec(target, codec, null);
+	}
+
+	public <F, T> void registerAlias(Class<T> target, Class<F> from, Function<F, T> converter) {
+		registerAlias(target, TypeInfo.of(from), converter);
+	}
+
+	public <F, T> void registerAlias(Class<T> target, TypeInfo from, @Nullable Function<F, T> converter) {
+		if (converter != null) {
+			typeWrappers.register(target, (cx, f, typeInfo) -> {
+				var o1 = cx.jsToJava(f, from);
+				return o1 == null ? null : Cast.to(converter.apply(Cast.to(o1)));
+			});
+		}
 	}
 }

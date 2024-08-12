@@ -20,6 +20,12 @@ public record ItemToolTierRegistryKubeEvent(Map<String, Tier> tiers) implements 
 		tiers.put(id, t);
 	}
 
+	public void addBasedOnExisting(String id, String existing, Consumer<MutableToolTier> tier) {
+		var t = new MutableToolTier(tiers.getOrDefault(existing, Tiers.IRON));
+		tier.accept(t);
+		tiers.put(id, t);
+	}
+
 	public void addExisting(String id, Tier tier) {
 		tiers.put(id, tier);
 	}

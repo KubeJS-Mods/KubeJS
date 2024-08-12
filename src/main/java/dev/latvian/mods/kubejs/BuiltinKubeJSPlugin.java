@@ -177,8 +177,10 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.Unit;
 import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.world.LockCode;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.MobCategory;
@@ -192,6 +194,9 @@ import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.armortrim.TrimMaterial;
 import net.minecraft.world.item.armortrim.TrimPattern;
+import net.minecraft.world.item.component.BlockItemStateProperties;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -608,6 +613,13 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		// codecs
 		registry.registerCodec(Fireworks.class, Fireworks.CODEC);
+
+		// alias
+		registry.registerAlias(Unit.class, TypeInfo.NONE, o -> Unit.INSTANCE);
+		registry.registerAlias(CustomData.class, CompoundTag.class, CustomData::of);
+		registry.registerAlias(CustomModelData.class, TypeInfo.PRIMITIVE_INT, CustomModelData::new);
+		registry.registerAlias(LockCode.class, TypeInfo.STRING, LockCode::new);
+		registry.registerAlias(BlockItemStateProperties.class, TypeInfo.RAW_MAP.withParams(TypeInfo.STRING, TypeInfo.STRING), BlockItemStateProperties::new);
 	}
 
 	@Override

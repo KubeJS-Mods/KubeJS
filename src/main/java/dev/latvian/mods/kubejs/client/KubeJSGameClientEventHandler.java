@@ -222,8 +222,8 @@ public class KubeJSGameClientEventHandler {
 				}
 			}
 
-			for (var instance : tempTagNames.values()) {
-				lines.add(instance.toText());
+			if (!tempTagNames.isEmpty()) {
+				tempTagNames.values().stream().sorted().map(TagInstance::toText).forEach(lines::add);
 			}
 		}
 	}

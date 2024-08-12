@@ -5,13 +5,14 @@ import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class TagInstance {
+public class TagInstance implements Comparable<TagInstance> {
 	public enum Type {
 		BLOCK('B'),
 		ITEM('J'),
@@ -49,5 +50,10 @@ public class TagInstance {
 			.append(TextIcons.icon(Component.literal("T.")))
 			.append(TextWrapper.darkGray(Component.literal("#" + tag)))
 			.append(TextIcons.icon(Component.literal(sb.toString())));
+	}
+
+	@Override
+	public int compareTo(@NotNull TagInstance o) {
+		return tag.compareNamespaced(o.tag);
 	}
 }
