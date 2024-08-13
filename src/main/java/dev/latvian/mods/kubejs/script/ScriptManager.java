@@ -197,14 +197,19 @@ public class ScriptManager {
 			scriptType.fileWatcherThread.start();
 		}
 
-		var broadcast = new JsonObject();
-		broadcast.addProperty("type", scriptType.name);
-		broadcast.addProperty("total", t);
-		broadcast.addProperty("successful", i);
-		broadcast.addProperty("errors", scriptType.console.errors.size());
-		broadcast.addProperty("warnings", scriptType.console.warnings.size());
-		broadcast.addProperty("time", ms);
-		KubeJSWeb.UPDATES.broadcast("scripts_reloaded", broadcast);
+		int t1 = t;
+		int i1 = i;
+
+		KubeJSWeb.broadcastUpdate("scripts_reloaded", () -> {
+			var broadcast = new JsonObject();
+			broadcast.addProperty("type", scriptType.name);
+			broadcast.addProperty("total", t1);
+			broadcast.addProperty("successful", i1);
+			broadcast.addProperty("errors", scriptType.console.errors.size());
+			broadcast.addProperty("warnings", scriptType.console.warnings.size());
+			broadcast.addProperty("time", ms);
+			return broadcast;
+		});
 	}
 
 	public void loadAdditional() {

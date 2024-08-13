@@ -8,13 +8,13 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
+import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
+import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.UUIDWrapper;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
-import dev.latvian.mods.kubejs.web.KJSHTTPContext;
-import dev.latvian.mods.kubejs.web.http.HTTPResponse;
-import dev.latvian.mods.kubejs.web.http.SimpleHTTPResponse;
+import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.Minecraft;
@@ -31,7 +31,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import org.joml.Matrix4f;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.UUID;
@@ -43,11 +42,11 @@ public class ImageGenerator {
 
 	public static final Int2ObjectMap<TextureTarget> FB_CACHE = new Int2ObjectArrayMap<>();
 
-	private static HTTPResponse renderCanvas(KJSHTTPContext ctx, int canvasSize, StringBuilder cacheId, Consumer<RenderImage> render) {
+	private static HTTPResponse renderCanvas(KJSHTTPRequest ctx, int canvasSize, StringBuilder cacheId, Consumer<RenderImage> render) {
 		int size = Integer.parseInt(ctx.variables().get("size"));
 
 		if (size < 1 || size > 1024) {
-			return SimpleHTTPResponse.text(400, "Invalid size, must be [1, 1024]");
+			return HTTPStatus.BAD_REQUEST.text("Invalid size, must be [1, 1024]");
 		}
 
 		if (!cacheId.isEmpty()) {
@@ -55,21 +54,18 @@ public class ImageGenerator {
 		}
 
 		if (cacheId.isEmpty() && ctx.header("Accept").equals("text/plain")) {
-			return SimpleHTTPResponse.NOT_FOUND;
+			return HTTPStatus.NOT_FOUND;
 		}
 
 		var cacheUUID = cacheId.isEmpty() ? null : UUIDWrapper.toString(UUID.nameUUIDFromBytes(cacheId.toString().getBytes(StandardCharsets.UTF_8)));
 		var cachePath = cacheUUID == null ? null : KubeJSPaths.dir(KubeJSPaths.LOCAL_WEB_IMG_CACHE.resolve(cacheUUID.substring(0, 2))).resolve(cacheUUID + ".png");
 
 		if (cachePath != null && Files.exists(cachePath)) {
-			try {
-				if (ctx.header("Accept").equals("text/plain")) {
-					return SimpleHTTPResponse.text(200, cacheUUID);
-				}
-
-				return new SimpleHTTPResponse(200, Files.readAllBytes(cachePath), "image/png").withHeader("X-KubeJS-Cache-Key", cacheUUID);
-			} catch (IOException ignore) {
+			if (ctx.header("Accept").equals("text/plain")) {
+				return HTTPResponse.ok().text(cacheUUID);
 			}
+
+			return HTTPResponse.ok().content(cachePath).header("X-KubeJS-Cache-Key", cacheUUID);
 		}
 
 		var bytes = ctx.supplyInRenderThread(() -> {
@@ -125,21 +121,21 @@ public class ImageGenerator {
 
 		if (ctx.header("Accept").equals("text/plain")) {
 			if (cachePath == null) {
-				return SimpleHTTPResponse.NOT_FOUND;
+				return HTTPStatus.NOT_FOUND;
 			}
 
-			return SimpleHTTPResponse.text(200, cacheUUID);
+			return HTTPResponse.ok().text(cacheUUID);
 		}
 
-		return new SimpleHTTPResponse(200, bytes, "image/png").withHeader("X-KubeJS-Cache-Key", cacheUUID);
+		return HTTPResponse.ok().content(bytes, "image/png").header("X-KubeJS-Cache-Key", cacheUUID);
 	}
 
-	public static HTTPResponse item(KJSHTTPContext ctx) throws Exception {
+	public static HTTPResponse item(KJSHTTPRequest ctx) throws Exception {
 		var stack = BuiltInRegistries.ITEM.get(ctx.id()).getDefaultInstance();
 		stack.applyComponents(ctx.queryAsPatch(ctx.registries().nbt()));
 
 		if (stack.isEmpty()) {
-			return HTTPResponse.NOT_FOUND;
+			return HTTPStatus.NOT_FOUND;
 		}
 
 		var sb = new StringBuilder();
@@ -152,11 +148,11 @@ public class ImageGenerator {
 		});
 	}
 
-	public static HTTPResponse block(KJSHTTPContext ctx) throws Exception {
+	public static HTTPResponse block(KJSHTTPRequest ctx) throws Exception {
 		var state = BlockWrapper.withProperties(BuiltInRegistries.BLOCK.get(ctx.id()).defaultBlockState(), ctx.query());
 
 		if (state.isEmpty()) {
-			return HTTPResponse.NOT_FOUND;
+			return HTTPStatus.NOT_FOUND;
 		}
 
 		var sb = new StringBuilder();
@@ -172,12 +168,12 @@ public class ImageGenerator {
 		});
 	}
 
-	public static HTTPResponse fluid(KJSHTTPContext ctx) throws Exception {
+	public static HTTPResponse fluid(KJSHTTPRequest ctx) throws Exception {
 		var stack = new FluidStack(BuiltInRegistries.FLUID.get(ctx.id()), FluidType.BUCKET_VOLUME);
 		stack.applyComponents(ctx.queryAsPatch(ctx.registries().nbt()));
 
 		if (stack.isEmpty()) {
-			return HTTPResponse.NOT_FOUND;
+			return HTTPStatus.NOT_FOUND;
 		}
 
 		var fluidInfo = IClientFluidTypeExtensions.of(stack.getFluid());
@@ -206,7 +202,7 @@ public class ImageGenerator {
 		});
 	}
 
-	public static HTTPResponse itemTag(KJSHTTPContext ctx) throws Exception {
+	public static HTTPResponse itemTag(KJSHTTPRequest ctx) throws Exception {
 		var tagKey = ItemTags.create(ctx.id());
 
 		return renderCanvas(ctx, 16, new StringBuilder(), render -> {
@@ -215,7 +211,7 @@ public class ImageGenerator {
 		});
 	}
 
-	public static HTTPResponse blockTag(KJSHTTPContext ctx) throws Exception {
+	public static HTTPResponse blockTag(KJSHTTPRequest ctx) throws Exception {
 		var tagKey = BlockTags.create(ctx.id());
 
 		return renderCanvas(ctx, 16, new StringBuilder(), render -> {
@@ -224,7 +220,7 @@ public class ImageGenerator {
 		});
 	}
 
-	public static HTTPResponse fluidTag(KJSHTTPContext ctx) throws Exception {
+	public static HTTPResponse fluidTag(KJSHTTPRequest ctx) throws Exception {
 		var tagKey = FluidTags.create(ctx.id());
 
 		return renderCanvas(ctx, 16, new StringBuilder(), render -> {

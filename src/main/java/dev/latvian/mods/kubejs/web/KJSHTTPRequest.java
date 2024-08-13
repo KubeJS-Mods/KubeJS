@@ -3,9 +3,9 @@ package dev.latvian.mods.kubejs.web;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
+import dev.latvian.apps.tinyserver.http.HTTPRequest;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
-import dev.latvian.mods.kubejs.web.http.HTTPContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-public class KJSHTTPContext extends HTTPContext {
+public class KJSHTTPRequest extends HTTPRequest {
 	public RegistryAccessContainer registries() {
 		return RegistryAccessContainer.current;
 	}

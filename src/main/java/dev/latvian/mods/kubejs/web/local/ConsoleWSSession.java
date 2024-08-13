@@ -2,9 +2,9 @@ package dev.latvian.mods.kubejs.web.local;
 
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
-import dev.latvian.mods.kubejs.web.ws.WSSession;
+import dev.latvian.mods.kubejs.web.KJSWSSession;
 
-public class ConsoleWSSession extends WSSession {
+public class ConsoleWSSession extends KJSWSSession {
 	public final ConsoleJS console;
 
 	public ConsoleWSSession(ConsoleJS console) {

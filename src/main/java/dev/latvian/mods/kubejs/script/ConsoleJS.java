@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.script;
 
-import com.google.gson.JsonArray;
+import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
+import dev.latvian.apps.tinyserver.ws.WSHandler;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
@@ -11,10 +12,10 @@ import dev.latvian.mods.kubejs.util.StackTraceCollector;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
-import dev.latvian.mods.kubejs.web.KJSHTTPContext;
-import dev.latvian.mods.kubejs.web.http.HTTPResponse;
-import dev.latvian.mods.kubejs.web.http.SimpleHTTPResponse;
-import dev.latvian.mods.kubejs.web.ws.WSHandler;
+import dev.latvian.mods.kubejs.web.JsonContent;
+import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
+import dev.latvian.mods.kubejs.web.KJSWSSession;
+import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.ContextFactory;
 import dev.latvian.mods.rhino.EcmaError;
@@ -78,7 +79,7 @@ public class ConsoleJS {
 	private final List<String> writeQueue;
 	private final Calendar calendar;
 	public WeakReference<ContextFactory> contextFactory;
-	public WSHandler wsBroadcaster;
+	public WSHandler<KJSHTTPRequest, KJSWSSession> wsBroadcaster;
 
 	public ConsoleJS(ScriptType m, Logger log) {
 		this.scriptType = m;
@@ -247,7 +248,7 @@ public class ConsoleJS {
 				writeToFile(type, line.timestamp, line.getText());
 
 				if (wsBroadcaster != null) {
-					wsBroadcaster.broadcast(type.id, line::toJson);
+					KubeJSWeb.broadcastEvent(wsBroadcaster, type.id, line);
 				}
 			}
 
@@ -605,27 +606,19 @@ public class ConsoleJS {
 		}
 	}
 
-	public HTTPResponse getErrorsResponse(KJSHTTPContext ctx) {
-		return SimpleHTTPResponse.lazyJson(() -> {
-			var json = new JsonArray();
-
+	public HTTPResponse getErrorsResponse(KJSHTTPRequest ctx) {
+		return HTTPResponse.ok().content(JsonContent.array(json -> {
 			for (var error : errors) {
 				json.add(error.toJson());
 			}
-
-			return json;
-		});
+		}));
 	}
 
-	public HTTPResponse getWarningsResponse(KJSHTTPContext ctx) {
-		return SimpleHTTPResponse.lazyJson(() -> {
-			var json = new JsonArray();
-
+	public HTTPResponse getWarningsResponse(KJSHTTPRequest ctx) {
+		return HTTPResponse.ok().content(JsonContent.array(json -> {
 			for (var error : warnings) {
 				json.add(error.toJson());
 			}
-
-			return json;
-		});
+		}));
 	}
 }

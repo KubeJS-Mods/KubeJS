@@ -88,6 +88,7 @@ repositories {
 		url "https://maven.latvian.dev/releases"
 		content {
 			includeGroup "dev.latvian.mods"
+			includeGroup "dev.latvian.apps"
 		}
 	}
 
@@ -125,16 +126,14 @@ dependencies {
 	compileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version")
 	compileOnly("dev.emi:emi-neoforge:$emi_version:api")
 
-	/*
-	jarJar(implementation 'org.java-websocket:Java-WebSocket') {
+	jarJar(implementation 'dev.latvian.apps:tiny-java-server') {
 		version {
-			strictly '[1.5,)'
-			prefer "$java_websocket_version"
+			strictly '[1.0,)'
+			prefer "$tiny_server_version"
 		}
 	}
 
-	additionalRuntimeClasspath("org.java-websocket:Java-WebSocket:$java_websocket_version")
-	*/
+	additionalRuntimeClasspath("dev.latvian.apps:tiny-java-server:$tiny_server_version")
 }
 
 processResources {

@@ -12,8 +12,9 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
-public class ConsoleLine {
+public class ConsoleLine implements Supplier<JsonElement> {
 	public static final ConsoleLine[] EMPTY_ARRAY = new ConsoleLine[0];
 
 	public static final StreamCodec<FriendlyByteBuf, ConsoleLine> STREAM_CODEC = new StreamCodec<>() {
@@ -173,5 +174,10 @@ public class ConsoleLine {
 		}
 
 		return json;
+	}
+
+	@Override
+	public JsonElement get() {
+		return toJson();
 	}
 }

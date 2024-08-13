@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import dev.latvian.apps.tinyserver.ServerRegistry;
 import dev.latvian.mods.kubejs.bindings.AABBWrapper;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.ColorWrapper;
@@ -152,8 +153,7 @@ import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.Tristate;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
-import dev.latvian.mods.kubejs.web.KJSHTTPContext;
-import dev.latvian.mods.kubejs.web.WebServerRegistry;
+import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import dev.latvian.mods.rhino.type.RecordTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -721,7 +721,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	public void registerLocalWebServer(WebServerRegistry<KJSHTTPContext> registry) {
+	public void registerLocalWebServer(ServerRegistry<KJSHTTPRequest> registry) {
 		KubeJSWeb.register(registry);
 	}
 }

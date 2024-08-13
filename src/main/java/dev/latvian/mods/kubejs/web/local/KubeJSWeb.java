@@ -1,24 +1,48 @@
 package dev.latvian.mods.kubejs.web.local;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import dev.latvian.apps.tinyserver.ServerRegistry;
+import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
+import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
+import dev.latvian.apps.tinyserver.ws.WSHandler;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.kubejs.web.KJSHTTPContext;
-import dev.latvian.mods.kubejs.web.WebServerRegistry;
-import dev.latvian.mods.kubejs.web.http.HTTPResponse;
-import dev.latvian.mods.kubejs.web.http.SimpleHTTPResponse;
-import dev.latvian.mods.kubejs.web.ws.WSHandler;
+import dev.latvian.mods.kubejs.util.RegExpKJS;
+import dev.latvian.mods.kubejs.web.JsonContent;
+import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
+import dev.latvian.mods.kubejs.web.KJSWSSession;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class KubeJSWeb {
-	public static WSHandler UPDATES = WSHandler.EMPTY;
+	public static WSHandler<KJSHTTPRequest, KJSWSSession> UPDATES = WSHandler.empty();
 
-	public static void addScriptTypeEndpoints(WebServerRegistry<KJSHTTPContext> registry, ScriptType s) {
+	public static void broadcastEvent(WSHandler<KJSHTTPRequest, KJSWSSession> ws, String event, Supplier<JsonElement> payload) {
+		ws.broadcastText(() -> {
+			var json = new JsonObject();
+			json.addProperty("event", event);
+
+			var p = payload == null ? null : payload.get();
+
+			if (p != null && !p.isJsonNull()) {
+				json.add("payload", p);
+			}
+
+			return json.toString();
+		});
+	}
+
+	public static void broadcastUpdate(String event, Supplier<JsonElement> payload) {
+		broadcastEvent(UPDATES, event, payload);
+	}
+
+	public static void addScriptTypeEndpoints(ServerRegistry<KJSHTTPRequest> registry, ScriptType s) {
 		var path = "api/console/" + s.name;
 
 		s.console.wsBroadcaster = registry.ws(path + "/stream", () -> new ConsoleWSSession(s.console));
@@ -30,8 +54,8 @@ public class KubeJSWeb {
 		registry.get(path + "/warnings", s.console::getWarningsResponse);
 	}
 
-	public static void register(WebServerRegistry<KJSHTTPContext> registry) {
-		UPDATES = registry.ws("updates");
+	public static void register(ServerRegistry<KJSHTTPRequest> registry) {
+		UPDATES = registry.ws("updates", KJSWSSession::new);
 
 		addScriptTypeEndpoints(registry, ScriptType.STARTUP);
 		addScriptTypeEndpoints(registry, ScriptType.SERVER);
@@ -41,6 +65,7 @@ public class KubeJSWeb {
 
 		registry.get("api/registries", KubeJSWeb::getRegistriesResponse); // List of all registries
 		registry.get("api/registries/{namespace}/{path}/keys", KubeJSWeb::getRegistryKeysResponse); // List of all IDs in registry
+		registry.get("api/registries/{namespace}/{path}/match/{regex}", KubeJSWeb::getRegistryMatchResponse); // List of RegEx matched IDs in registry
 
 		registry.get("api/tags/{namespace}/{path}", KubeJSWeb::getTagsResponse); // List of all tags in registry
 		registry.get("api/tags/{namespace}/{path}/values/{tag-namespace}/{tag-path}", KubeJSWeb::getTagValuesResponse); // List of all values in a tag
@@ -55,99 +80,103 @@ public class KubeJSWeb {
 		}
 	}
 
-	private static HTTPResponse getRegistriesResponse(KJSHTTPContext ctx) {
-		return SimpleHTTPResponse.lazyJson(() -> {
-			var json = new JsonArray();
-
+	private static HTTPResponse getRegistriesResponse(KJSHTTPRequest ctx) {
+		return HTTPResponse.ok().content(JsonContent.array(json -> {
 			for (var registry : ctx.registries().access().registries().toList()) {
 				json.add(registry.key().location().toString());
 			}
-
-			return json;
-		});
+		}));
 	}
 
-	private static HTTPResponse getRegistryKeysResponse(KJSHTTPContext ctx) {
+	private static HTTPResponse getRegistryKeysResponse(KJSHTTPRequest ctx) {
 		var registry = ctx.registries().access().registry(ResourceKey.createRegistryKey(ctx.id()));
 
 		if (registry.isEmpty()) {
-			return HTTPResponse.NOT_FOUND;
+			return HTTPStatus.NOT_FOUND;
 		}
 
-		return SimpleHTTPResponse.lazyJson(() -> {
-			var json = new JsonArray();
-
+		return HTTPResponse.ok().content(JsonContent.array(json -> {
 			for (var key : registry.get().keySet()) {
 				json.add(key.toString());
 			}
-
-			return json;
-		});
+		}));
 	}
 
-	private static HTTPResponse getTagsResponse(KJSHTTPContext ctx) {
+	private static HTTPResponse getRegistryMatchResponse(KJSHTTPRequest ctx) {
 		var registry = ctx.registries().access().registry(ResourceKey.createRegistryKey(ctx.id()));
 
 		if (registry.isEmpty()) {
-			return HTTPResponse.NOT_FOUND;
+			return HTTPStatus.NOT_FOUND;
 		}
 
-		return SimpleHTTPResponse.lazyJson(() -> {
-			var json = new JsonArray();
+		var regex = RegExpKJS.ofString(ctx.variables().get("regex"));
 
+		if (regex == null) {
+			return HTTPStatus.BAD_REQUEST;
+		}
+
+		return HTTPResponse.ok().content(JsonContent.array(json -> {
+			for (var key : registry.get().keySet()) {
+				var k = key.toString();
+
+				if (regex.matcher(k).find()) {
+					json.add(k);
+				}
+			}
+		}));
+	}
+
+	private static HTTPResponse getTagsResponse(KJSHTTPRequest ctx) {
+		var registry = ctx.registries().access().registry(ResourceKey.createRegistryKey(ctx.id()));
+
+		if (registry.isEmpty()) {
+			return HTTPStatus.NOT_FOUND;
+		}
+
+		return HTTPResponse.ok().content(JsonContent.array(json -> {
 			for (var tag : registry.get().getTagNames().map(TagKey::location).toList()) {
 				json.add(tag.toString());
 			}
-
-			return json;
-		});
+		}));
 	}
 
-	private static HTTPResponse getTagValuesResponse(KJSHTTPContext ctx) {
+	private static HTTPResponse getTagValuesResponse(KJSHTTPRequest ctx) {
 		var registry = ctx.registries().access().registry(ResourceKey.createRegistryKey(ctx.id()));
 
 		if (registry.isEmpty()) {
-			return HTTPResponse.NOT_FOUND;
+			return HTTPStatus.NOT_FOUND;
 		}
 
 		var tagKey = registry.get().getTag(TagKey.create(registry.get().key(), ctx.id("tag-namespace", "tag-path")));
 
 		if (tagKey.isEmpty()) {
-			return HTTPResponse.NOT_FOUND;
+			return HTTPStatus.NOT_FOUND;
 		}
 
-		return SimpleHTTPResponse.lazyJson(() -> {
-			var json = new JsonArray();
-
+		return HTTPResponse.ok().content(JsonContent.array(json -> {
 			for (var key : tagKey.get().stream().map(Holder::unwrapKey).filter(Optional::isPresent).map(Optional::get).map(ResourceKey::location).toList()) {
 				json.add(key.toString());
 			}
-
-			return json;
-		});
+		}));
 	}
 
-	private static HTTPResponse getTagKeysResponse(KJSHTTPContext ctx) {
+	private static HTTPResponse getTagKeysResponse(KJSHTTPRequest ctx) {
 		var registry = ctx.registries().access().registry(ResourceKey.createRegistryKey(ctx.id()));
 
 		if (registry.isEmpty()) {
-			return HTTPResponse.NOT_FOUND;
+			return HTTPStatus.NOT_FOUND;
 		}
 
 		var value = registry.get().getHolder(ctx.id("value-namespace", "value-path"));
 
 		if (value.isEmpty()) {
-			return HTTPResponse.NOT_FOUND;
+			return HTTPStatus.NOT_FOUND;
 		}
 
-		return SimpleHTTPResponse.lazyJson(() -> {
-			var json = new JsonArray();
-
+		return HTTPResponse.ok().content(JsonContent.array(json -> {
 			for (var key : value.get().tags().map(TagKey::location).toList()) {
 				json.add(key.toString());
 			}
-
-			return json;
-		});
+		}));
 	}
 }
