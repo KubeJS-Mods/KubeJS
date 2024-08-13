@@ -11,6 +11,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -46,11 +47,7 @@ public interface HolderWrapper {
 
 		var holder = registry.getHolder(id);
 
-		if (holder.isEmpty()) {
-			throw Context.reportRuntimeError("Can't interpret '" + from + "' as Holder: entry not found", cx);
-		}
-
-		return holder.get();
+		return holder.isEmpty() ? DeferredHolder.create(registry.key(), id) : holder.get();
 	}
 
 	static HolderSet<?> wrapSet(KubeJSContext cx, Object from, TypeInfo param) {
