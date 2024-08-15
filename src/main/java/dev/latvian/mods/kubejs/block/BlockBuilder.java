@@ -68,6 +68,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	private static final BlockBehaviour.StatePredicate ALWAYS_FALSE_STATE_PREDICATE = (blockState, blockGetter, blockPos) -> false;
 	private static final BlockBehaviour.StateArgumentPredicate<?> ALWAYS_FALSE_STATE_ARG_PREDICATE = (blockState, blockGetter, blockPos, type) -> false;
 
+	public transient Block copyPropertiesFrom;
 	public transient SoundType soundType;
 	public transient Function<BlockState, MapColor> mapColorFn;
 	public transient float hardness;
@@ -112,8 +113,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	public BlockBuilder(ResourceLocation i) {
 		super(i);
-		soundType = SoundType.WOOD;
-		mapColorFn = MapColorHelper.NONE;
+		soundType = null;
+		mapColorFn = null;
 		hardness = 1.5F;
 		resistance = 3F;
 		lightLevel = 0F;
@@ -309,6 +310,11 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 
 		return true;
+	}
+
+	public BlockBuilder copyPropertiesFrom(Block block) {
+		copyPropertiesFrom = block;
+		return this;
 	}
 
 	@Info("Sets the block's sound type. Defaults to wood.")
@@ -804,9 +810,15 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	public Block.Properties createProperties() {
-		var properties = new KubeJSBlockProperties(this);
-		properties.sound(soundType);
-		properties.mapColor(mapColorFn);
+		var properties = new KubeJSBlockProperties(this, copyPropertiesFrom);
+
+		if (soundType != null) {
+			properties.sound(soundType);
+		}
+
+		if (mapColorFn != null) {
+			properties.mapColor(mapColorFn);
+		}
 
 		if (resistance >= 0F) {
 			properties.strength(hardness, resistance);
@@ -814,7 +826,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 			properties.strength(hardness);
 		}
 
-		properties.lightLevel(state -> (int) (lightLevel * 15F));
+		if (lightLevel > 0F) {
+			properties.lightLevel(state -> (int) (lightLevel * 15F));
+		}
 
 		if (noCollision) {
 			properties.noCollission();
