@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Info(value = """
 	Invoked when a player right clicks with an item **without targeting anything**.
-			
+	
 	Not to be confused with `BlockEvents.rightClick` or `ItemEvents.entityInteracted`.
 	"""
 )

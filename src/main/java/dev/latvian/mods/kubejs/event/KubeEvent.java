@@ -28,7 +28,7 @@ public interface KubeEvent {
 
 	@Info("""
 		Cancels the event with default exit value. Execution will be stopped **immediately**.
-					
+		
 		`cancel` denotes a `false` outcome.
 		""")
 	default Object cancel(Context cx) throws EventExit {
@@ -37,7 +37,7 @@ public interface KubeEvent {
 
 	@Info("""
 		Stops the event with default exit value. Execution will be stopped **immediately**.
-					
+		
 		`success` denotes a `true` outcome.
 		""")
 	default Object success(Context cx) throws EventExit {
@@ -46,7 +46,7 @@ public interface KubeEvent {
 
 	@Info("""
 		Stops the event with default exit value. Execution will be stopped **immediately**.
-					
+		
 		`exit` denotes a `default` outcome.
 		""")
 	default Object exit(Context cx) throws EventExit {
@@ -55,7 +55,7 @@ public interface KubeEvent {
 
 	@Info("""
 		Cancels the event with the given exit value. Execution will be stopped **immediately**.
-					
+		
 		`cancel` denotes a `false` outcome.
 		""")
 	default Object cancel(Context cx, @Nullable Object value) throws EventExit {
@@ -64,7 +64,7 @@ public interface KubeEvent {
 
 	@Info("""
 		Stops the event with the given exit value. Execution will be stopped **immediately**.
-					
+		
 		`success` denotes a `true` outcome.
 		""")
 	default Object success(Context cx, @Nullable Object value) throws EventExit {
@@ -73,7 +73,7 @@ public interface KubeEvent {
 
 	@Info("""
 		Stops the event with the given exit value. Execution will be stopped **immediately**.
-					
+		
 		`exit` denotes a `default` outcome.
 		""")
 	default Object exit(Context cx, @Nullable Object value) throws EventExit {

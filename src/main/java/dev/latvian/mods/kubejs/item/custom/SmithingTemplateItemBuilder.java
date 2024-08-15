@@ -44,7 +44,7 @@ public class SmithingTemplateItemBuilder extends ItemBuilder {
 		Sets the description text that shows in the item tooltip to describe what it can be applied to.
 		Using 'Armor' or 'Diamond Equipment' will use the vanilla language keys so it is translated into other languages automatically.
 		THIS IS PURELY VISUAL
-				
+		
 		If you wish to apply non standard formatting (like change the colour) set the `ingredientsText` field.
 		""")
 	public SmithingTemplateItemBuilder appliesTo(String text) {
@@ -61,7 +61,7 @@ public class SmithingTemplateItemBuilder extends ItemBuilder {
 		Sets the description text that shows in the item tooltip to describe what ingredients can be added.
 		Using 'Ingots & Crystals' or 'Netherite Ingot' will use the vanilla language keys so it is translated into other languages automatically.
 		THIS IS PURELY VISUAL
-				
+		
 		If you wish to apply non standard formatting (like change the colour) set the `ingredientsText` field.
 		""")
 	public SmithingTemplateItemBuilder ingredients(String text) {
@@ -77,7 +77,7 @@ public class SmithingTemplateItemBuilder extends ItemBuilder {
 	@Info("""
 		Sets the description text that shows when you hover over the base item slot when this item is put in smithing table as a template.
 		Using 'Add a piece of armor' or 'Add diamond armor, weapon, or tool' will use the vanilla language keys so it is translated into other languages automatically.
-				
+		
 		If you wish to apply non standard formatting (like change the colour) set the `appliesToSlotDescriptionText` field.
 		""")
 	public SmithingTemplateItemBuilder appliesToSlotDescription(String text) {
@@ -93,7 +93,7 @@ public class SmithingTemplateItemBuilder extends ItemBuilder {
 	@Info("""
 		Sets the description text that shows when you hover over the ingredient slot when this item is put in smithing table as a template.
 		Using 'Add ingot or crystal' or 'Add Netherite Ingot' will use the vanilla language keys so it is translated into other languages automatically.
-				
+		
 		If you wish to apply non standard formatting (like change the colour) set the `ingredientSlotDescriptionText` field.
 		""")
 	public SmithingTemplateItemBuilder ingredientsSlotDescription(String text) {
@@ -246,7 +246,7 @@ public class SmithingTemplateItemBuilder extends ItemBuilder {
 	@Info("""
 		Sets the name for this smithing template.
 		Note that the normal display name for all smithing templates is the same and cannot be changed, this instead sets the name in the tooltip (see vanilla smithing templates for what this looks like).
-			
+		
 		This will be overridden by a lang file if it exists.
 		""")
 	public SmithingTemplateItemBuilder displayName(Component name) {

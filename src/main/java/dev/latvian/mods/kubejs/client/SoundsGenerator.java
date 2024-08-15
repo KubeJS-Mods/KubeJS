@@ -49,7 +49,9 @@ public class SoundsGenerator {
 			return this;
 		}
 
-		public SoundGen replace() { return replace(true); }
+		public SoundGen replace() {
+			return replace(true);
+		}
 
 		public SoundGen subtitle(@Nullable String subtitle) {
 			this.subtitle = subtitle;
@@ -130,7 +132,9 @@ public class SoundsGenerator {
 			return complex();
 		}
 
-		public SoundInstance stream() { return stream(true); }
+		public SoundInstance stream() {
+			return stream(true);
+		}
 
 		public SoundInstance attenuationDistance(int i) {
 			attenuationDistance = i;
@@ -142,7 +146,9 @@ public class SoundsGenerator {
 			return complex();
 		}
 
-		public SoundInstance preload() { return preload(true); }
+		public SoundInstance preload() {
+			return preload(true);
+		}
 
 		public SoundInstance asReferenceToEvent() {
 			isEventReference = true;
@@ -151,11 +157,11 @@ public class SoundsGenerator {
 
 		public JsonElement toJson() {
 			if (!complex) {
-				return new JsonPrimitive(fileLocation.toString());
+				return new JsonPrimitive(fileLocation);
 			}
 
 			final JsonObject json = new JsonObject();
-			json.addProperty("name", fileLocation.toString());
+			json.addProperty("name", fileLocation);
 			json.addProperty("volume", volume);
 			json.addProperty("pitch", pitch);
 			json.addProperty("weight", weight);

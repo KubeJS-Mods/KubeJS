@@ -32,9 +32,9 @@ public abstract class HandheldItemBuilder extends ItemBuilder {
 
 	@Info("""
 		Sets the base attack damage of the tool. Different tools have different baselines.
-					
+		
 		For example, a sword has a baseline of 3, while an axe has a baseline of 6.
-					
+		
 		The actual damage is the sum of the baseline and the attackDamageBonus from tier.
 		""")
 	public HandheldItemBuilder attackDamageBaseline(float f) {
@@ -44,9 +44,9 @@ public abstract class HandheldItemBuilder extends ItemBuilder {
 
 	@Info("""
 		Sets the base attack speed of the tool. Different tools have different baselines.
-					
+		
 		For example, a sword has a baseline of -2.4, while an axe has a baseline of -3.1.
-					
+		
 		The actual speed is the sum of the baseline and the speed from tier + 4 (bare hand).
 		""")
 	public HandheldItemBuilder speedBaseline(float f) {

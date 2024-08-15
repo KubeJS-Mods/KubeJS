@@ -86,7 +86,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 
 	@Info("""
 		Sets the display name for this object, e.g. `Stone`.
-
+		
 		This will be overridden by a lang file if it exists.
 		""")
 	public BuilderBase<T> displayName(Component name) {

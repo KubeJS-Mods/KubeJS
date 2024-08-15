@@ -25,15 +25,16 @@ public class ParticleProviderRegistryKubeEvent implements ClientKubeEvent {
 
 	public <T extends ParticleOptions> void register(ParticleType<T> type, Consumer<KubeAnimatedParticle> particle) {
 		parent.registerSpriteSet(type, set -> (type1, level, x, y, z, xSpeed, ySpeed, zSpeed) -> {
-				var kube = new KubeAnimatedParticle(level, x, y, z, set);
-				kube.setParticleSpeed(xSpeed, ySpeed, zSpeed);
-				particle.accept(kube);
-				return kube;
+			var kube = new KubeAnimatedParticle(level, x, y, z, set);
+			kube.setParticleSpeed(xSpeed, ySpeed, zSpeed);
+			particle.accept(kube);
+			return kube;
 		});
 	}
 
 	public <T extends ParticleOptions> void register(ParticleType<T> type) {
-		register(type, p -> {});
+		register(type, p -> {
+		});
 	}
 
 	public <T extends ParticleOptions> void registerSpecial(ParticleType<T> type, ParticleProvider<T> provider) {
@@ -44,6 +45,7 @@ public class ParticleProviderRegistryKubeEvent implements ClientKubeEvent {
 	public interface SpriteSetParticleProvider<T extends ParticleOptions> extends ParticleEngine.SpriteParticleRegistration<T> {
 		Particle create(T type, ClientLevel clientLevel, double x, double y, double z, SpriteSet sprites, double xSpeed, double ySpeed, double zSpeed);
 
+		@Override
 		default ParticleProvider<T> create(SpriteSet sprites) {
 			return (type, level, x, y, z, xSpeed, ySpeed, zSpeed) -> create(type, level, x, y, z, sprites, xSpeed, ySpeed, zSpeed);
 		}

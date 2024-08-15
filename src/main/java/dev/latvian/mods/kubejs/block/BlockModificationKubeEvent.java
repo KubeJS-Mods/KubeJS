@@ -12,7 +12,7 @@ public class BlockModificationKubeEvent implements KubeEvent {
 
 	@Info("""
 		Modifies blocks that match the given predicate.
-					
+		
 		**NOTE**: tag predicates are not supported at this time.
 		""")
 	public void modify(BlockStatePredicate predicate, Consumer<BlockModifications> c) {

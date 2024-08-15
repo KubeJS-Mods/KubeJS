@@ -60,7 +60,7 @@ public class CropBlockBuilder extends BlockBuilder {
 
 		@Info("""
 			Describe the shape of the crop at a specific age.
-							
+			
 			min/max coordinates are double values between 0 and 16.
 			""")
 		public ShapeBuilder shape(int age, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {

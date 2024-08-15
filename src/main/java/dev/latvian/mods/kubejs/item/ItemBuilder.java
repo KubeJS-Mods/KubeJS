@@ -184,7 +184,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	@Info("""
 		Adds subtypes to the item. The function should return a collection of item stacks, each with a different subtype.
-					
+		
 		Each subtype will appear as a separate item in JEI and the creative inventory.
 		""")
 	public ItemBuilder subtypes(Function<ItemStack, Collection<ItemStack>> fn) {
@@ -270,7 +270,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	@Info("""
 		Determines the width of the item's durability bar. Defaulted to vanilla behavior.
-					
+		
 		The function should return a value between 0 and 13 (max width of the bar).
 		""")
 	public ItemBuilder barWidth(ToIntFunction<ItemStack> barWidth) {
@@ -324,7 +324,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	@Info("""
 		The duration when the item is used.
-					
+		
 		For example, when eating food, this is the time it takes to eat the food.
 		This can change the eating speed, or be used for other things (like making a custom bow).
 		""")
@@ -335,7 +335,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	@Info("""
 		Determines if player will start using the item.
-					
+		
 		For example, when eating food, returning true will make the player start eating the food.
 		""")
 	public ItemBuilder use(UseCallback use) {
@@ -345,9 +345,9 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	@Info("""
 		When players finish using the item.
-					
+		
 		This is called only when `useDuration` ticks have passed.
-					
+		
 		For example, when eating food, this is called when the player has finished eating the food, so hunger is restored.
 		""")
 	public ItemBuilder finishUsing(FinishUsingCallback finishUsing) {
@@ -357,9 +357,9 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	@Info("""
 		When players did not finish using the item but released the right mouse button halfway through.
-					
+		
 		An example is the bow, where the arrow is shot when the player releases the right mouse button.
-					
+		
 		To ensure the bow won't finish using, Minecraft sets the `useDuration` to a very high number (1h).
 		""")
 	public ItemBuilder releaseUsing(ReleaseUsingCallback releaseUsing) {
@@ -369,7 +369,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	@Info("""
 		Gets called when the item is used to hurt an entity.
-				
+		
 		For example, when using a sword to hit a mob, this is called.
 		""")
 	public ItemBuilder hurtEnemy(Predicate<HurtEnemyContext> context) {

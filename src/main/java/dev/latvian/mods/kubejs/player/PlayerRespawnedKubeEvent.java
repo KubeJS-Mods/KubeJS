@@ -5,7 +5,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 @Info("""
 	Invoked when a player respawns.
-			
+	
 	The reason of respawn can be either death or returning from the end.
 	""")
 public class PlayerRespawnedKubeEvent implements KubePlayerEvent {

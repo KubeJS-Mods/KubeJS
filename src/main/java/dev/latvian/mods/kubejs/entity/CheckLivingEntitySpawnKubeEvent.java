@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Info("""
 	Invoked before an entity is spawned into the world.
-			
+	
 	Only entities from a `BaseSpawner` or world generation will trigger this event.
 	""")
 public class CheckLivingEntitySpawnKubeEvent implements KubeLivingEntityEvent {

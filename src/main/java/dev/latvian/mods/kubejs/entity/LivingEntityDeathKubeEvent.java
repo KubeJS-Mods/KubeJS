@@ -6,7 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 @Info("""
 	Invoked before a living entity dies.
-			
+	
 	**NOTE**: You need to set hp to > 0 besides cancelling the event to prevent the entity from dying.
 	""")
 public class LivingEntityDeathKubeEvent implements KubeLivingEntityEvent {

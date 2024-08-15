@@ -110,7 +110,7 @@ public class FoodBuilder {
 
 	@Info("""
 		Sets a callback that is called when the food is eaten.
-					
+		
 		Note: This is currently not having effect in `ItemEvents.modification`,
 		as firing this callback requires an `ItemBuilder` instance in the `Item`.
 		""")

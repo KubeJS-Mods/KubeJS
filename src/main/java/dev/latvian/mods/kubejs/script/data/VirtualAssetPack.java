@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.script.data;
 
 import dev.latvian.mods.kubejs.client.LoadedTexture;
 import dev.latvian.mods.kubejs.client.SoundsGenerator;
-import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.Util;

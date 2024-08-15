@@ -168,7 +168,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	@Override
 	@Info("""
 		Sets the display name for this object, e.g. `Stone`.
-
+		
 		This will be overridden by a lang file if it exists.
 		""")
 	public BuilderBase<Block> displayName(Component name) {
@@ -311,11 +311,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return true;
 	}
 
-	public BlockBuilder material(String material) {
-		ConsoleJS.STARTUP.warn("blockBuilder.material(string) is no longer supported! Use .soundType(SoundType) and .mapColor(MapColor) instead!");
-		return this;
-	}
-
 	@Info("Sets the block's sound type. Defaults to wood.")
 	public BlockBuilder soundType(SoundType m) {
 		if (m == null || m == SoundType.EMPTY) {
@@ -376,7 +371,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Info("""
 		Sets the hardness of the block. Defaults to 1.5.
-					
+		
 		Setting this to -1 will make the block unbreakable like bedrock.
 		""")
 	public BlockBuilder hardness(float h) {
@@ -616,9 +611,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Info("""
 		Set how fast you can walk on the block.
-					
+		
 		Any value above 1 will make you walk insanely fast as your speed is multiplied by this value each tick.
-					
+		
 		Recommended values are between 0.1 and 1, useful for mimicking soul sand or ice.
 		""")
 	public BlockBuilder speedFactor(float f) {
@@ -772,7 +767,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Info("""
 		Add a blockstate property to the block.
-					
+		
 		For example, facing, lit, etc.
 		""")
 	public BlockBuilder property(Property<?> property) {
@@ -809,8 +804,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	public Block.Properties createProperties() {
-		// FIXME: Implement all the other ex-Material properties
-		//var properties = BlockBehaviour.Properties.of();
 		var properties = new KubeJSBlockProperties(this);
 		properties.sound(soundType);
 		properties.mapColor(mapColorFn);

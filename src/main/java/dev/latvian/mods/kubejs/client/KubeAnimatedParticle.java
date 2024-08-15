@@ -67,15 +67,41 @@ public class KubeAnimatedParticle extends SimpleAnimatedParticle {
 
 	// Getters for protected values
 
-	public ClientLevel getLevel() {	return level; }
-	public double getX() { return x; }
-	public double getY() { return y; }
-	public double getZ() { return z; }
-	public double getXSpeed() { return xd; }
-	public double getYSpeed() { return yd; }
-	public double getZSpeed() { return zd; }
-	public SpriteSet getSpriteSet() { return sprites; }
-	public RandomSource getRandom() { return random; }
+	public ClientLevel getLevel() {
+		return level;
+	}
+
+	public double getX() {
+		return x;
+	}
+
+	public double getY() {
+		return y;
+	}
+
+	public double getZ() {
+		return z;
+	}
+
+	public double getXSpeed() {
+		return xd;
+	}
+
+	public double getYSpeed() {
+		return yd;
+	}
+
+	public double getZSpeed() {
+		return zd;
+	}
+
+	public SpriteSet getSpriteSet() {
+		return sprites;
+	}
+
+	public RandomSource getRandom() {
+		return random;
+	}
 
 	@Override
 	public int getLightColor(float partialTick) {

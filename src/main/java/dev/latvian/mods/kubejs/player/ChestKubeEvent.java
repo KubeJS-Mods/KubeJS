@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Info("""
 	Invoked when a player opens a chest.
-			
+	
 	Same as `PlayerEvents.inventoryOpened`, but only for chests.
 	""")
 public class ChestKubeEvent extends InventoryKubeEvent {

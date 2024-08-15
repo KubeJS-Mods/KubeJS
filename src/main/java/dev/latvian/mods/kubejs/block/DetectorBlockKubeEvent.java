@@ -8,7 +8,7 @@ import net.minecraft.world.level.Level;
 
 @Info(value = """
 	Invoked when a detector block registered in KubeJS receives a block update.
-			
+	
 	`Powered`/`Unpowered` event will be fired when the detector block is powered/unpowered.
 	""")
 public class DetectorBlockKubeEvent implements KubeLevelEvent {
