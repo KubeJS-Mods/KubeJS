@@ -57,8 +57,8 @@ neoForge {
 	}
 
 	parchment {
-		minecraftVersion = minecraft_version
-		mappingsVersion = parchment_version
+		minecraftVersion = parchment_mc_version
+		mappingsVersion = parchment_mapping_version
 	}
 }
 
@@ -168,7 +168,8 @@ unifiedPublishing {
 	project {
 		releaseType = "${ENV.RELEASE_TYPE ?: 'release'}"
 		gameVersions = [
-				rootProject.minecraft_version
+				rootProject.minecraft_version,
+				'1.20'
 		]
 		gameLoaders = ["neoforge"]
 		displayName = "$mod_name NeoForge $project.version"
