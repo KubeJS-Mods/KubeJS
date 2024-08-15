@@ -132,10 +132,10 @@ public class KubeJSContext extends Context {
 				return k;
 			}
 
-			var registry = lookupRegistry(target.param(0), from);
+			var registryType = lookupRegistryType(target.param(0), from);
 			var id = ID.mc(from);
 
-			return ResourceKey.create(registry.key(), id);
+			return ResourceKey.create(registryType.key(), id);
 		} else if (c == Holder.class) {
 			return HolderWrapper.wrap(this, from, target.param(0));
 		} else if (c == HolderSet.class) {
