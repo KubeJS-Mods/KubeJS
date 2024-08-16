@@ -15,6 +15,7 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.type.TypeUtils;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
@@ -406,5 +407,15 @@ public class UtilsJS {
 
 	public static <T> T makeFunctionProxy(Context cx, TypeInfo targetClass, BaseFunction function) {
 		return Cast.to(cx.createInterfaceAdapter(targetClass, function));
+	}
+
+	@Nullable
+	@HideFromJS
+	public static Class<?> tryLoadClass(String className){
+		Class<?> clazz = null;
+		try {
+			clazz = Class.forName(className);
+		} catch (Exception ignored) {}
+		return clazz;
 	}
 }
