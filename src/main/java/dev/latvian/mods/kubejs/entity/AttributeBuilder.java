@@ -91,11 +91,14 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 			throw new IllegalArgumentException("Not possible to create a Boolean or Ranged Attribute. Use bool() or range() methods.");
 		}
 
-		var attribute = Either.unwrap(defaultValue.mapBoth(
+		return Either.unwrap(defaultValue.mapBoth(
 			l -> new RangedAttribute(this.getBuilderTranslationKey(), l.defaultValue, l.min, l.max),
 			r -> new BooleanAttribute(this.getBuilderTranslationKey(), r))
 		);
+	}
 
+	@Override
+	public Attribute transformObject(Attribute attribute) {
 		if (syncable) {
 			attribute.setSyncable(true);
 		}
@@ -103,14 +106,10 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 		if (sentiment != null) {
 			attribute.setSentiment(sentiment);
 		}
-		return attribute;
-	}
 
-	@Override
-	public Attribute transformObject(Attribute obj) {
 		if (predicateList.isEmpty()) {
 			predicateList.add(Predicates.alwaysTrue());
 		}
-		return obj;
+		return attribute;
 	}
 }
