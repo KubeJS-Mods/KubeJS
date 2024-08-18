@@ -147,7 +147,7 @@ public class ImageGenerator {
 			return HTTPStatus.NOT_FOUND;
 		}
 
-		return renderCanvas(req, 16, "item", CachedComponentObject.of(stack.getItem(), stack.getComponentsPatch()).cacheKey(), render -> {
+		return renderCanvas(req, 16, "item", CachedComponentObject.ofItemStack(stack, true).cacheKey(), render -> {
 			render.graphics.renderFakeItem(stack, 0, 0, 0);
 			render.graphics.renderItemDecorations(render.mc.font, stack, 0, 0);
 		});
@@ -225,7 +225,7 @@ public class ImageGenerator {
 		int g = (tint >> 8) & 0xFF;
 		int b = tint & 0xFF;
 
-		return renderCanvas(req, 16, "fluid", CachedComponentObject.of(stack.getFluid(), stack.getComponentsPatch()).cacheKey(), render -> {
+		return renderCanvas(req, 16, "fluid", CachedComponentObject.ofFluidStack(stack, true).cacheKey(), render -> {
 			var s = render.mc.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(still);
 			RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
 			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);

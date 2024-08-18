@@ -21,6 +21,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.Map;
+
 @RemapPrefixForJS("kjs$")
 public interface BlockStateKJS extends RegistryObjectKJS<Block>, Replaceable {
 	@Override
@@ -73,10 +75,8 @@ public interface BlockStateKJS extends RegistryObjectKJS<Block>, Replaceable {
 		return with instanceof BlockState state ? state : with instanceof Block block ? block.defaultBlockState() : cx.jsToJava(with, BlockWrapper.STATE_TYPE_INFO);
 	}
 
-	default String getWebIconURL(int size) {
+	default String kjs$getWebIconURL(int size) {
 		var url = "/img/" + size + "/block/" + ID.url(kjs$getIdLocation());
-
-
-		return KubeJSLocalWebServer.getURL(url);
+		return KubeJSLocalWebServer.getURL(url, Map.of());
 	}
 }

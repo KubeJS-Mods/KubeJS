@@ -8,34 +8,35 @@ import dev.latvian.apps.tinyserver.ServerRegistry;
 import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
 import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.bindings.UUIDWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.CachedComponentObject;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.web.JsonContent;
 import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
+import dev.latvian.mods.kubejs.web.KubeJSLocalWebServer;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class KubeJSClientWeb {
-	public static final Lazy<Map<UUID, CachedComponentObject<Item>>> CACHED_ITEM_SEARCH = Lazy.of(() -> {
-		var map = new HashMap<UUID, CachedComponentObject<Item>>();
+	public static final Lazy<Map<UUID, CachedComponentObject<Item, ItemStack>>> CACHED_ITEM_SEARCH = Lazy.of(() -> {
+		var map = new LinkedHashMap<UUID, CachedComponentObject<Item, ItemStack>>();
 
 		for (var stack : BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.SEARCH).getSearchTabDisplayItems()) {
-
 			var patch = stack.getComponentsPatch();
-
-			if (!patch.isEmpty()) {
-				map.put(UUID.randomUUID(), new CachedComponentObject<>(UUID.randomUUID(), stack.getItem(), patch));
-			}
+			map.put(UUID.randomUUID(), new CachedComponentObject<>(UUID.randomUUID(), stack.getItem(), stack, patch));
 		}
 
 		return map;
@@ -66,15 +67,20 @@ public class KubeJSClientWeb {
 	}
 
 	private static HTTPResponse getItemsResponse(KJSHTTPRequest req) {
-		return HTTPResponse.ok().content(JsonContent.array(json -> {
-			var ops = Minecraft.getInstance().level == null ? req.registries().json() : Minecraft.getInstance().level.registryAccess().createSerializationContext(JsonOps.INSTANCE);
+		return HTTPResponse.ok().content(JsonContent.object(json -> {
+			var jsonOps = Minecraft.getInstance().level == null ? req.registries().json() : Minecraft.getInstance().level.registryAccess().createSerializationContext(JsonOps.INSTANCE);
+			var nbtOps = Minecraft.getInstance().level == null ? req.registries().nbt() : Minecraft.getInstance().level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+			var results = new JsonArray();
+			var iconPathRoot = KubeJSLocalWebServer.instance().url() + "/img/64/item/";
 
-			for (var stack : BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.SEARCH).getSearchTabDisplayItems()) {
+			for (var item : CACHED_ITEM_SEARCH.get().values()) {
 				var o = new JsonObject();
-				o.addProperty("id", stack.kjs$getId());
-				o.addProperty("name", stack.getHoverName().getString());
+				o.addProperty("cache_key", UUIDWrapper.toString(item.cacheKey()));
+				o.addProperty("id", item.value().kjs$getId());
+				o.addProperty("name", item.stack().getHoverName().getString());
+				o.addProperty("icon_path", item.stack().kjs$getWebIconURL(nbtOps, 64).substring(iconPathRoot.length()));
 
-				var patch = stack.getComponentsPatch();
+				var patch = item.components();
 
 				if (!patch.isEmpty()) {
 					var p = new JsonObject();
@@ -86,18 +92,21 @@ public class KubeJSClientWeb {
 							if (entry.getValue().isEmpty()) {
 								p.add(key, JsonNull.INSTANCE);
 							} else if (entry.getKey().codec() != null) {
-								p.add(key, entry.getKey().codec().encodeStart(ops, Cast.to(entry.getValue().get())).getOrThrow());
+								p.add(key, entry.getKey().codec().encodeStart(jsonOps, Cast.to(entry.getValue().get())).getOrThrow());
 							}
 						}
 
-						o.add("patch", p);
+						o.add("components", p);
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
 				}
 
-				json.add(o);
+				results.add(o);
 			}
+
+			json.addProperty("icon_path_root", iconPathRoot);
+			json.add("results", results);
 		}));
 	}
 

@@ -16,7 +16,10 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import net.neoforged.fml.ModList;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Map;
 
 public record KubeJSLocalWebServer(HTTPServer<KJSHTTPRequest> server, String url) implements ServerRegistry<KJSHTTPRequest> {
 	private static KubeJSLocalWebServer instance;
@@ -26,8 +29,20 @@ public record KubeJSLocalWebServer(HTTPServer<KJSHTTPRequest> server, String url
 		return instance;
 	}
 
-	public static String getURL(String path) {
-		return instance == null ? "" : instance.url + path;
+	public static String getURL(String path, Map<String, String> query) {
+		if (instance == null) {
+			return "";
+		}
+
+		var url = new StringBuilder(instance.url + path);
+		boolean first = true;
+
+		for (var entry : query.entrySet()) {
+			url.append(first ? '?' : '&').append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8)).append('=').append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+			first = false;
+		}
+
+		return url.toString();
 	}
 
 	@HideFromJS

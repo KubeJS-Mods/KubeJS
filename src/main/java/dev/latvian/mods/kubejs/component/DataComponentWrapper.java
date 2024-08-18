@@ -28,9 +28,6 @@ import net.minecraft.world.item.component.CustomData;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -102,6 +99,11 @@ public interface DataComponentWrapper {
 
 	static DataComponentMap readMap(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
 		reader.skipWhitespace();
+
+		if (!reader.canRead()) {
+			return DataComponentMap.EMPTY;
+		}
+
 		DataComponentMap.Builder builder = null;
 
 		if (reader.canRead() && reader.peek() == '[') {
@@ -156,6 +158,11 @@ public interface DataComponentWrapper {
 
 	static DataComponentPatch readPatch(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
 		reader.skipWhitespace();
+
+		if (!reader.canRead()) {
+			return DataComponentPatch.EMPTY;
+		}
+
 		DataComponentPatch.Builder builder = null;
 
 		if (reader.canRead() && reader.peek() == '[') {
@@ -263,11 +270,27 @@ public interface DataComponentWrapper {
 		}
 	}
 
+	static DataComponentMap mapOrEmptyOf(DynamicOps<Tag> ops, Object o) {
+		try {
+			return readMap(ops, new StringReader(o.toString()));
+		} catch (CommandSyntaxException ex) {
+			return DataComponentMap.EMPTY;
+		}
+	}
+
 	static DataComponentPatch patchOf(DynamicOps<Tag> ops, Object o) {
 		try {
 			return readPatch(ops, new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
 			throw new RuntimeException("Error parsing DataComponentPatch from " + o, ex);
+		}
+	}
+
+	static DataComponentPatch patchOrEmptyOf(DynamicOps<Tag> ops, Object o) {
+		try {
+			return readPatch(ops, new StringReader(o.toString()));
+		} catch (CommandSyntaxException ex) {
+			return DataComponentPatch.EMPTY;
 		}
 	}
 
@@ -323,20 +346,23 @@ public interface DataComponentWrapper {
 		return builder;
 	}
 
-	static String urlEncodePatch(DynamicOps<Tag> ops, DataComponentPatch patch) {
-		var sb = patchToString(new StringBuilder(), ops, patch);
-		return URLEncoder.encode(sb.substring(1, sb.length() - 1), StandardCharsets.UTF_8);
-	}
-
-	static DataComponentPatch urlDecodePatch(DynamicOps<Tag> ops, String s) {
-		if (s.isEmpty()) {
+	static DataComponentPatch visualPatch(DataComponentPatch patch) {
+		if (patch.isEmpty()) {
 			return DataComponentPatch.EMPTY;
 		}
 
-		try {
-			return readPatch(ops, new StringReader("[" + URLDecoder.decode(s, StandardCharsets.UTF_8) + "]"));
-		} catch (Exception ex) {
-			return DataComponentPatch.EMPTY;
+		var builder = DataComponentPatch.builder();
+
+		for (var entry : patch.entrySet()) {
+			if (VISUAL_DIFFERENCE.get().contains(entry.getKey())) {
+				if (entry.getValue().isPresent()) {
+					builder.set(entry.getKey(), Cast.to(entry.getValue().get()));
+				} else {
+					builder.remove(entry.getKey());
+				}
+			}
 		}
+
+		return builder.build();
 	}
 }

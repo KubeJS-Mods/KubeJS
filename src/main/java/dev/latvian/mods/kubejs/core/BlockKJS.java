@@ -60,8 +60,4 @@ public interface BlockKJS extends BlockBuilderProvider, RegistryObjectKJS<Block>
 	default Object replaceThisWith(Context cx, Object with) {
 		return with instanceof Block block ? block : with instanceof BlockState state ? state.getBlock() : cx.jsToJava(with, BlockWrapper.TYPE_INFO);
 	}
-
-	default String getWebIconURL(int size) {
-		return this instanceof Block block ? block.defaultBlockState().getWebIconURL(size) : "";
-	}
 }

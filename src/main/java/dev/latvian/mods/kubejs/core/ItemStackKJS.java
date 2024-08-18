@@ -279,13 +279,9 @@ public interface ItemStackKJS extends
 		return kjs$self().getItem() == itemLike.asItem();
 	}
 
-	default String getWebIconURL(DynamicOps<Tag> ops, int size) {
+	default String kjs$getWebIconURL(DynamicOps<Tag> ops, int size) {
 		var url = "/img/" + size + "/item/" + ID.url(kjs$getIdLocation());
-
-		if (!kjs$self().isComponentsPatchEmpty()) {
-			url += "?components=" + DataComponentWrapper.urlEncodePatch(ops, kjs$self().getComponentsPatch());
-		}
-
-		return KubeJSLocalWebServer.getURL(url);
+		var c = DataComponentWrapper.patchToString(new StringBuilder(), ops, DataComponentWrapper.visualPatch(kjs$self().getComponentsPatch())).toString();
+		return KubeJSLocalWebServer.getURL(url, c.equals("[]") ? Map.of() : Map.of("components", c.substring(1, c.length() - 1)));
 	}
 }

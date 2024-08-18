@@ -25,6 +25,8 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 
+import java.util.Map;
+
 public interface FluidStackKJS extends
 	Replaceable,
 	SpecialEquality,
@@ -143,13 +145,9 @@ public interface FluidStackKJS extends
 		return ingredient.test(kjs$self());
 	}
 
-	default String getWebIconURL(DynamicOps<Tag> ops, int size) {
+	default String kjs$getWebIconURL(DynamicOps<Tag> ops, int size) {
 		var url = "/img/" + size + "/fluid/" + ID.url(kjs$getIdLocation());
-
-		if (!kjs$self().isComponentsPatchEmpty()) {
-			url += "?components=" + DataComponentWrapper.urlEncodePatch(ops, kjs$self().getComponentsPatch());
-		}
-
-		return KubeJSLocalWebServer.getURL(url);
+		var c = DataComponentWrapper.patchToString(new StringBuilder(), ops, DataComponentWrapper.visualPatch(kjs$self().getComponentsPatch())).toString();
+		return KubeJSLocalWebServer.getURL(url, c.equals("[]") ? Map.of() : Map.of("components", c.substring(1, c.length() - 1)));
 	}
 }
