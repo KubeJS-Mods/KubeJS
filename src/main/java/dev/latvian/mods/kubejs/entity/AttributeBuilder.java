@@ -19,6 +19,9 @@ import java.util.function.Predicate;
 @SuppressWarnings("unused")
 @ReturnsSelf
 public class AttributeBuilder extends BuilderBase<Attribute> {
+	public record Range(double defaultValue, double min, double max) {
+	}
+
 	private final List<Predicate<EntityType<?>>> predicateList = new ArrayList<>();
 	private Either<Range, Boolean> defaultValue;
 	private boolean syncable = true;
@@ -46,6 +49,14 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 	public AttributeBuilder sentiment(Attribute.Sentiment sentiment) {
 		this.sentiment = sentiment;
 		return this;
+	}
+
+	public AttributeBuilder negativeSentiment() {
+		return sentiment(Attribute.Sentiment.NEGATIVE);
+	}
+
+	public AttributeBuilder neutralSentiment() {
+		return sentiment(Attribute.Sentiment.NEUTRAL);
 	}
 
 	public AttributeBuilder attachTo(Predicate<EntityType<?>> entityType) {
@@ -78,23 +89,24 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 		if (defaultValue == null) {
 			throw new IllegalArgumentException("Not possible to create a Boolean or Ranged Attribute. Use bool() or range() methods.");
 		}
-		Either<Attribute,Attribute> either = defaultValue.mapBoth(
+
+		var attribute = Either.unwrap(defaultValue.mapBoth(
 			l -> new RangedAttribute(this.id.toLanguageKey(), l.defaultValue, l.min, l.max),
-			r -> new BooleanAttribute(this.id.toLanguageKey(), r));
-		Attribute attribute = Either.unwrap(either);
+			r -> new BooleanAttribute(this.id.toLanguageKey(), r))
+		);
 
 		if (syncable) {
 			attribute.setSyncable(true);
 		}
+
 		if (sentiment != null) {
 			attribute.setSentiment(sentiment);
 		}
+
 		if (predicateList.isEmpty()) {
 			predicateList.add(Predicates.alwaysTrue());
 		}
-		return attribute;
-	}
 
-	record Range(double defaultValue, double min, double max) {
+		return attribute;
 	}
 }
