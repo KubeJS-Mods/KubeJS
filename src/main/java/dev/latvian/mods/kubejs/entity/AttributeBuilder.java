@@ -13,6 +13,7 @@ import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.neoforged.neoforge.common.BooleanAttribute;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -22,10 +23,10 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 	public record Range(double defaultValue, double min, double max) {
 	}
 
-	private final List<Predicate<EntityType<?>>> predicateList = new ArrayList<>();
-	private Either<Range, Boolean> defaultValue;
-	private boolean syncable = true;
-	private Attribute.Sentiment sentiment;
+	public final List<Predicate<EntityType<?>>> predicateList = new ArrayList<>();
+	public Either<Range, Boolean> defaultValue;
+	public boolean syncable = true;
+	public Attribute.Sentiment sentiment;
 
 	public AttributeBuilder(ResourceLocation id) {
 		super(id);
@@ -81,7 +82,7 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 
 	@HideFromJS
 	public List<Predicate<EntityType<?>>> getPredicateList() {
-		return predicateList;
+		return Collections.unmodifiableList(predicateList);
 	}
 
 	@Override
@@ -90,11 +91,14 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 			throw new IllegalArgumentException("Not possible to create a Boolean or Ranged Attribute. Use bool() or range() methods.");
 		}
 
-		var attribute = Either.unwrap(defaultValue.mapBoth(
-			l -> new RangedAttribute(this.id.toLanguageKey(), l.defaultValue, l.min, l.max),
-			r -> new BooleanAttribute(this.id.toLanguageKey(), r))
+		return Either.unwrap(defaultValue.mapBoth(
+			l -> new RangedAttribute(this.getBuilderTranslationKey(), l.defaultValue, l.min, l.max),
+			r -> new BooleanAttribute(this.getBuilderTranslationKey(), r))
 		);
+	}
 
+	@Override
+	public Attribute transformObject(Attribute attribute) {
 		if (syncable) {
 			attribute.setSyncable(true);
 		}
@@ -106,7 +110,6 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 		if (predicateList.isEmpty()) {
 			predicateList.add(Predicates.alwaysTrue());
 		}
-
 		return attribute;
 	}
 }
