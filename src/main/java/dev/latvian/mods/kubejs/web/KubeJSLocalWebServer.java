@@ -18,12 +18,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
-public record KubeJSLocalWebServer(HTTPServer<KJSHTTPRequest> server) implements ServerRegistry<KJSHTTPRequest> {
+public record KubeJSLocalWebServer(HTTPServer<KJSHTTPRequest> server, String url) implements ServerRegistry<KJSHTTPRequest> {
 	private static KubeJSLocalWebServer instance;
 
 	@Nullable
 	public static KubeJSLocalWebServer instance() {
 		return instance;
+	}
+
+	public static String getURL(String path) {
+		return instance == null ? "" : instance.url + path;
 	}
 
 	@HideFromJS
@@ -32,8 +36,7 @@ public record KubeJSLocalWebServer(HTTPServer<KJSHTTPRequest> server) implements
 			try {
 				var server = new HTTPServer<>(KJSHTTPRequest::new);
 				// var ws = new WSServer(address, ClientProperties.get().localServerWsPort);
-				var s = new KubeJSLocalWebServer(server);
-				KubeJSPlugins.forEachPlugin(s, KubeJSPlugin::registerLocalWebServer);
+				KubeJSPlugins.forEachPlugin(server, KubeJSPlugin::registerLocalWebServer);
 				server.get("/", KubeJSLocalWebServer::homepage);
 
 				server.setDaemon(true);
@@ -42,12 +45,13 @@ public record KubeJSLocalWebServer(HTTPServer<KJSHTTPRequest> server) implements
 				server.setPort(WebServerProperties.get().port);
 				server.setMaxPortShift(10);
 
-				KubeJS.LOGGER.info("Started the local web server at http://localhost:" + server.start());
-				instance = s;
+				var url = "http://localhost:" + server.start();
+				KubeJS.LOGGER.info("Started the local web server at " + url);
+				instance = new KubeJSLocalWebServer(server, url);
 			} catch (BindFailedException ex) {
 				KubeJS.LOGGER.warn("Failed to start the local web server - all ports occupied");
 			} catch (Exception ex) {
-				KubeJS.LOGGER.warn("Failed to start the local web server - error");
+				KubeJS.LOGGER.warn("Failed to start the local web server - unexpected error");
 				ex.printStackTrace();
 			}
 		}
@@ -63,7 +67,7 @@ public record KubeJSLocalWebServer(HTTPServer<KJSHTTPRequest> server) implements
 		return server.ws(s, wsSessionFactory);
 	}
 
-	private static HTTPResponse homepage(KJSHTTPRequest ctx) {
+	private static HTTPResponse homepage(KJSHTTPRequest req) {
 		var list = new ArrayList<String>();
 		list.add("KubeJS Local Web Server [" + KubeJS.PROXY.getWebServerWindowTitle() + "]");
 		list.add("");
@@ -82,10 +86,5 @@ public record KubeJSLocalWebServer(HTTPServer<KJSHTTPRequest> server) implements
 		}
 
 		return HTTPResponse.ok().text(list);
-	}
-
-	public void stopNow() {
-		server.stop();
-		KubeJS.LOGGER.info("Stopped the local web server");
 	}
 }

@@ -550,8 +550,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ListTag.class, (from, target) -> NBTUtils.isTagCollection(from), NBTUtils::toTagList);
 		registry.register(Tag.class, NBTUtils::toTag);
 		registry.register(DataComponentType.class, DataComponentWrapper::wrapType);
-		registry.register(DataComponentMap.class, DataComponentWrapper::filter, (cx, from, target) -> DataComponentWrapper.mapOf(RegistryAccessContainer.of(cx), from));
-		registry.register(DataComponentPatch.class, DataComponentWrapper::filter, (cx, from, target) -> DataComponentWrapper.patchOf(RegistryAccessContainer.of(cx), from));
+		registry.register(DataComponentMap.class, DataComponentWrapper::filter, (cx, from, target) -> DataComponentWrapper.mapOf(RegistryAccessContainer.of(cx).nbt(), from));
+		registry.register(DataComponentPatch.class, DataComponentWrapper::filter, (cx, from, target) -> DataComponentWrapper.patchOf(RegistryAccessContainer.of(cx).nbt(), from));
 
 		registry.register(BlockPos.class, KubeJSTypeWrappers::blockPosOf);
 		registry.register(Vec3.class, KubeJSTypeWrappers::vec3Of);

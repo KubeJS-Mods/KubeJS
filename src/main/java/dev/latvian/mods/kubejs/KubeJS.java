@@ -111,7 +111,7 @@ public class KubeJS {
 		}
 
 		LOGGER.info("Loading vanilla registries...");
-		RegistryType.init();
+		RegistryType.Scanner.init();
 
 		var pluginTimer = Stopwatch.createStarted();
 		LOGGER.info("Looking for KubeJS plugins...");

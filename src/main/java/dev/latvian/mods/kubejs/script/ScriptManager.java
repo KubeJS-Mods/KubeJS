@@ -46,6 +46,15 @@ public class ScriptManager {
 	public void reload() {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clearCaches);
 
+		long start = System.currentTimeMillis();
+
+		KubeJSWeb.broadcastUpdate("before_scripts_loaded", () -> {
+			var broadcast = new JsonObject();
+			broadcast.addProperty("type", scriptType.name);
+			broadcast.addProperty("time", start);
+			return broadcast;
+		});
+
 		unload();
 		scriptType.console.writeToFile(LogType.INIT, "KubeJS " + KubeJS.VERSION + "; MC " + KubeJS.MC_VERSION_NUMBER + " NeoForge");
 		scriptType.console.writeToFile(LogType.INIT, "Loaded plugins:");
@@ -56,7 +65,7 @@ public class ScriptManager {
 
 		KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::beforeScriptsLoaded);
 		loadFromDirectory();
-		load();
+		load(start);
 		KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::afterScriptsLoaded);
 	}
 
@@ -139,9 +148,7 @@ public class ScriptManager {
 		return classFilter.isAllowed(name);
 	}
 
-	private void load() {
-		var startAll = System.currentTimeMillis();
-
+	private void load(long startAll) {
 		contextFactory = new KubeJSContextFactory(this);
 		scriptType.console.contextFactory = new WeakReference<>(contextFactory);
 
@@ -187,7 +194,8 @@ public class ScriptManager {
 		}
 
 		loadAdditional();
-		long ms = System.currentTimeMillis() - startAll;
+		long end = System.currentTimeMillis();
+		long ms = end - startAll;
 
 		scriptType.console.info("Loaded " + i + "/" + t + " KubeJS " + scriptType.name + " scripts in " + ms / 1000D + " s with " + scriptType.console.errors.size() + " errors and " + scriptType.console.warnings.size() + " warnings");
 		canListenEvents = false;
@@ -200,14 +208,15 @@ public class ScriptManager {
 		int t1 = t;
 		int i1 = i;
 
-		KubeJSWeb.broadcastUpdate("scripts_reloaded", () -> {
+		KubeJSWeb.broadcastUpdate("after_scripts_loaded", () -> {
 			var broadcast = new JsonObject();
 			broadcast.addProperty("type", scriptType.name);
 			broadcast.addProperty("total", t1);
 			broadcast.addProperty("successful", i1);
 			broadcast.addProperty("errors", scriptType.console.errors.size());
 			broadcast.addProperty("warnings", scriptType.console.warnings.size());
-			broadcast.addProperty("time", ms);
+			broadcast.addProperty("time", end);
+			broadcast.addProperty("duration", ms);
 			return broadcast;
 		});
 	}

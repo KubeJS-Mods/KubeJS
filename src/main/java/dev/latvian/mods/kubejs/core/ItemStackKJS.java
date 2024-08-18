@@ -11,6 +11,7 @@ import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.WithCodec;
+import dev.latvian.mods.kubejs.web.KubeJSLocalWebServer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
@@ -109,6 +110,11 @@ public interface ItemStackKJS extends
 		return kjs$self().getItem().kjs$getId();
 	}
 
+	@Override
+	default String kjs$getMod() {
+		return kjs$self().getItem().kjs$getMod();
+	}
+
 	@Nullable
 	default Block kjs$getBlock() {
 		return kjs$self().getItem() instanceof BlockItem bi ? bi.getBlock() : null;
@@ -164,11 +170,6 @@ public interface ItemStackKJS extends
 		});
 
 		return is;
-	}
-
-	@Override
-	default String kjs$getMod() {
-		return kjs$self().getItem().kjs$getMod();
 	}
 
 	default boolean kjs$areItemsEqual(ItemStack other) {
@@ -276,5 +277,15 @@ public interface ItemStackKJS extends
 	@Override
 	default boolean matches(Context cx, ItemLike itemLike, boolean exact) {
 		return kjs$self().getItem() == itemLike.asItem();
+	}
+
+	default String getWebIconURL(DynamicOps<Tag> ops, int size) {
+		var url = "/img/" + size + "/item/" + ID.url(kjs$getIdLocation());
+
+		if (!kjs$self().isComponentsPatchEmpty()) {
+			url += "?components=" + DataComponentWrapper.urlEncodePatch(ops, kjs$self().getComponentsPatch());
+		}
+
+		return KubeJSLocalWebServer.getURL(url);
 	}
 }

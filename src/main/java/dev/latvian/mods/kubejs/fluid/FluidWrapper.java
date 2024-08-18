@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPredicate;
@@ -35,6 +36,7 @@ public interface FluidWrapper {
 
 	SizedFluidIngredient EMPTY_SIZED = new SizedFluidIngredient(FluidIngredient.empty(), FluidType.BUCKET_VOLUME);
 
+	@HideFromJS
 	static FluidStack wrap(RegistryAccessContainer registries, Object o) {
 		if (o == null || o == FluidStack.EMPTY || o == Fluids.EMPTY || o == EmptyFluidIngredient.INSTANCE) {
 			return FluidStack.EMPTY;
@@ -51,6 +53,11 @@ public interface FluidWrapper {
 		}
 	}
 
+	static FluidIngredient ingredientOf(FluidIngredient of) {
+		return of;
+	}
+
+	@HideFromJS
 	static FluidIngredient wrapIngredient(RegistryAccessContainer registries, Object o) {
 		if (o == null || o == FluidStack.EMPTY || o == Fluids.EMPTY || o == EmptyFluidIngredient.INSTANCE) {
 			return EmptyFluidIngredient.INSTANCE;
@@ -67,6 +74,11 @@ public interface FluidWrapper {
 		}
 	}
 
+	static SizedFluidIngredient sizedIngredientOf(SizedFluidIngredient of) {
+		return of;
+	}
+
+	@HideFromJS
 	static SizedFluidIngredient wrapSizedIngredient(RegistryAccessContainer registries, Object o) {
 		if (o == null || o == FluidStack.EMPTY || o == Fluids.EMPTY || o == EmptyFluidIngredient.INSTANCE) {
 			return EMPTY_SIZED;

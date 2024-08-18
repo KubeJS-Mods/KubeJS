@@ -12,8 +12,8 @@ public class ConsoleWSSession extends KJSWSSession {
 	}
 
 	@Override
-	public void onEvent(String event, JsonElement payload) {
-		switch (event) {
+	public void onEvent(String type, JsonElement payload) {
+		switch (type) {
 			case "info" -> console.info(payload.getAsString());
 			case "warn" -> console.warn(payload.getAsString());
 			case "error" -> console.error(payload.getAsString());

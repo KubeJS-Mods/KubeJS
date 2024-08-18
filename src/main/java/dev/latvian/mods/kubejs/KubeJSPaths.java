@@ -46,8 +46,6 @@ public interface KubeJSPaths {
 	Path PACKICON = CONFIG.resolve("packicon.png");
 	Path README = DIRECTORY.resolve("README.txt");
 	Path LOCAL = dir(GAMEDIR.resolve("local").resolve("kubejs"));
-	Path LOCAL_CACHE = dir(LOCAL.resolve("cache"));
-	Path LOCAL_WEB_IMG_CACHE = dir(LOCAL_CACHE.resolve("web/img"));
 	Path LOCAL_DEV_PROPERTIES = LOCAL.resolve("dev.json");
 	Path EXPORT = dir(LOCAL.resolve("export"));
 	Path EXPORTED_PACKS = dir(LOCAL.resolve("exported_packs"));

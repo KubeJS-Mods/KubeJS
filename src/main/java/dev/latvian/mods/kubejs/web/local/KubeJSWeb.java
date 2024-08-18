@@ -26,7 +26,7 @@ public class KubeJSWeb {
 	public static void broadcastEvent(WSHandler<KJSHTTPRequest, KJSWSSession> ws, String event, Supplier<JsonElement> payload) {
 		ws.broadcastText(() -> {
 			var json = new JsonObject();
-			json.addProperty("event", event);
+			json.addProperty("type", event);
 
 			var p = payload == null ? null : payload.get();
 
@@ -38,12 +38,12 @@ public class KubeJSWeb {
 		});
 	}
 
-	public static void broadcastUpdate(String event, Supplier<JsonElement> payload) {
-		broadcastEvent(UPDATES, event, payload);
+	public static void broadcastUpdate(String type, Supplier<JsonElement> payload) {
+		broadcastEvent(UPDATES, type, payload);
 	}
 
-	public static void addScriptTypeEndpoints(ServerRegistry<KJSHTTPRequest> registry, ScriptType s) {
-		var path = "api/console/" + s.name;
+	public static void addScriptTypeEndpoints(ServerRegistry<KJSHTTPRequest> registry, ScriptType s, Runnable reload) {
+		var path = "/api/console/" + s.name;
 
 		s.console.wsBroadcaster = registry.ws(path + "/stream", () -> new ConsoleWSSession(s.console));
 
@@ -52,24 +52,23 @@ public class KubeJSWeb {
 		registry.acceptPostString(path + "/error", s.console::error);
 		registry.get(path + "/errors", s.console::getErrorsResponse);
 		registry.get(path + "/warnings", s.console::getWarningsResponse);
+
+		registry.acceptPostTask("/api/reload/" + s.name, reload);
 	}
 
 	public static void register(ServerRegistry<KJSHTTPRequest> registry) {
-		UPDATES = registry.ws("updates", KJSWSSession::new);
+		UPDATES = registry.ws("/api/updates", KJSWSSession::new);
 
-		addScriptTypeEndpoints(registry, ScriptType.STARTUP);
-		addScriptTypeEndpoints(registry, ScriptType.SERVER);
+		addScriptTypeEndpoints(registry, ScriptType.STARTUP, KubeJS.getStartupScriptManager()::reload);
+		addScriptTypeEndpoints(registry, ScriptType.SERVER, KubeJSWeb::reloadInternalServer);
 
-		registry.acceptPostTask("api/reload/startup", KubeJS.getStartupScriptManager()::reload);
-		registry.acceptPostTask("api/reload/server", KubeJSWeb::reloadInternalServer);
+		registry.get("/api/registries", KubeJSWeb::getRegistriesResponse); // List of all registries
+		registry.get("/api/registries/{namespace}/{path}/keys", KubeJSWeb::getRegistryKeysResponse); // List of all IDs in registry
+		registry.get("/api/registries/{namespace}/{path}/match/{regex}", KubeJSWeb::getRegistryMatchResponse); // List of RegEx matched IDs in registry
 
-		registry.get("api/registries", KubeJSWeb::getRegistriesResponse); // List of all registries
-		registry.get("api/registries/{namespace}/{path}/keys", KubeJSWeb::getRegistryKeysResponse); // List of all IDs in registry
-		registry.get("api/registries/{namespace}/{path}/match/{regex}", KubeJSWeb::getRegistryMatchResponse); // List of RegEx matched IDs in registry
-
-		registry.get("api/tags/{namespace}/{path}", KubeJSWeb::getTagsResponse); // List of all tags in registry
-		registry.get("api/tags/{namespace}/{path}/values/{tag-namespace}/{tag-path}", KubeJSWeb::getTagValuesResponse); // List of all values in a tag
-		registry.get("api/tags/{namespace}/{path}/keys/{value-namespace}/{value-path}", KubeJSWeb::getTagKeysResponse); // List of all tags for a value
+		registry.get("/api/tags/{namespace}/{path}", KubeJSWeb::getTagsResponse); // List of all tags in registry
+		registry.get("/api/tags/{namespace}/{path}/values/{tag-namespace}/{tag-path}", KubeJSWeb::getTagValuesResponse); // List of all values in a tag
+		registry.get("/api/tags/{namespace}/{path}/keys/{value-namespace}/{value-path}", KubeJSWeb::getTagKeysResponse); // List of all tags for a value
 	}
 
 	private static void reloadInternalServer() {
@@ -80,16 +79,16 @@ public class KubeJSWeb {
 		}
 	}
 
-	private static HTTPResponse getRegistriesResponse(KJSHTTPRequest ctx) {
+	private static HTTPResponse getRegistriesResponse(KJSHTTPRequest req) {
 		return HTTPResponse.ok().content(JsonContent.array(json -> {
-			for (var registry : ctx.registries().access().registries().toList()) {
+			for (var registry : req.registries().access().registries().toList()) {
 				json.add(registry.key().location().toString());
 			}
 		}));
 	}
 
-	private static HTTPResponse getRegistryKeysResponse(KJSHTTPRequest ctx) {
-		var registry = ctx.registries().access().registry(ResourceKey.createRegistryKey(ctx.id()));
+	private static HTTPResponse getRegistryKeysResponse(KJSHTTPRequest req) {
+		var registry = req.registries().access().registry(ResourceKey.createRegistryKey(req.id()));
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
@@ -102,14 +101,14 @@ public class KubeJSWeb {
 		}));
 	}
 
-	private static HTTPResponse getRegistryMatchResponse(KJSHTTPRequest ctx) {
-		var registry = ctx.registries().access().registry(ResourceKey.createRegistryKey(ctx.id()));
+	private static HTTPResponse getRegistryMatchResponse(KJSHTTPRequest req) {
+		var registry = req.registries().access().registry(ResourceKey.createRegistryKey(req.id()));
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
 		}
 
-		var regex = RegExpKJS.ofString(ctx.variables().get("regex"));
+		var regex = RegExpKJS.ofString(req.variables().get("regex"));
 
 		if (regex == null) {
 			return HTTPStatus.BAD_REQUEST;
@@ -126,8 +125,8 @@ public class KubeJSWeb {
 		}));
 	}
 
-	private static HTTPResponse getTagsResponse(KJSHTTPRequest ctx) {
-		var registry = ctx.registries().access().registry(ResourceKey.createRegistryKey(ctx.id()));
+	private static HTTPResponse getTagsResponse(KJSHTTPRequest req) {
+		var registry = req.registries().access().registry(ResourceKey.createRegistryKey(req.id()));
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
@@ -140,14 +139,14 @@ public class KubeJSWeb {
 		}));
 	}
 
-	private static HTTPResponse getTagValuesResponse(KJSHTTPRequest ctx) {
-		var registry = ctx.registries().access().registry(ResourceKey.createRegistryKey(ctx.id()));
+	private static HTTPResponse getTagValuesResponse(KJSHTTPRequest req) {
+		var registry = req.registries().access().registry(ResourceKey.createRegistryKey(req.id()));
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
 		}
 
-		var tagKey = registry.get().getTag(TagKey.create(registry.get().key(), ctx.id("tag-namespace", "tag-path")));
+		var tagKey = registry.get().getTag(TagKey.create(registry.get().key(), req.id("tag-namespace", "tag-path")));
 
 		if (tagKey.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
@@ -160,14 +159,14 @@ public class KubeJSWeb {
 		}));
 	}
 
-	private static HTTPResponse getTagKeysResponse(KJSHTTPRequest ctx) {
-		var registry = ctx.registries().access().registry(ResourceKey.createRegistryKey(ctx.id()));
+	private static HTTPResponse getTagKeysResponse(KJSHTTPRequest req) {
+		var registry = req.registries().access().registry(ResourceKey.createRegistryKey(req.id()));
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
 		}
 
-		var value = registry.get().getHolder(ctx.id("value-namespace", "value-path"));
+		var value = registry.get().getHolder(req.id("value-namespace", "value-path"));
 
 		if (value.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;

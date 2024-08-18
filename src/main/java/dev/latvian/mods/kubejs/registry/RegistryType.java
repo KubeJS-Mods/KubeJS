@@ -9,7 +9,7 @@ import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.jetbrains.annotations.Nullable;
@@ -28,11 +28,6 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 	private static final Map<ResourceKey<?>, RegistryType<?>> KEY_MAP = new Reference2ObjectOpenHashMap<>();
 	private static final Map<TypeInfo, RegistryType<?>> TYPE_MAP = new HashMap<>();
 	private static final Map<Class<?>, List<RegistryType<?>>> CLASS_MAP = new Reference2ObjectOpenHashMap<>();
-
-	// This is cursed, but it's better than manually registering every type
-	public static synchronized void init() {
-		Scanner.processClass(Stream.of(Registries.class, NeoForgeRegistries.Keys.class));
-	}
 
 	public static synchronized <T> void register(ResourceKey<Registry<T>> key, TypeInfo type) {
 		var t = new RegistryType<>(key, type.asClass(), type);
@@ -65,7 +60,7 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 		return (List<RegistryType<?>>) of(type);
 	}
 
-	private static synchronized Object of(Object obj){
+	private static synchronized Object of(Object obj) {
 		Scanner.startIfNotFrozen();
 		return switch (obj) {
 			case ResourceKey key -> KEY_MAP.get(key);
@@ -103,64 +98,60 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 			set.add(ResourceKey.class);
 			set.add(Registry.class);
 			var registrar = UtilsJS.tryLoadClass("dev.architectury.registry.registries.Registrar");
-			if (registrar != null) set.add(registrar);
+			if (registrar != null) {
+				set.add(registrar);
+			}
 			return set;
 		});
+
 		private static final Set<String> CLASSES_TO_SCAN = new HashSet<>();
-		private static final Set<String> MODULES_TO_SKIP = Set.of("java.base","neoforge","fml_loader","kubejs");
+		private static final Set<String> MODULES_TO_SKIP = Set.of("java.base", "neoforge", "fml_loader", "kubejs");
 		private static final Set<String> NAMESPACES_TO_SKIP = Set.of("neoforge", "minecraft");
 
 		private static boolean frozen = false;
 
-		private static synchronized void startIfNotFrozen(){
-			if (isFrozen()) return;
+		public static synchronized void init() {
+			processClass(Stream.of(Registries.class, NeoForgeRegistries.Keys.class));
+		}
+
+		private static synchronized void startIfNotFrozen() {
+			if (frozen) {
+				return;
+			}
+
 			frozen = true;
 			var startTime = Util.getNanos();
-			Stream<Class<?>> classStream = CLASSES_TO_SCAN.stream().map(UtilsJS::tryLoadClass);
-			processClass(classStream);
+			processClass(CLASSES_TO_SCAN.stream().map(UtilsJS::tryLoadClass));
 			CLASSES_TO_SCAN.clear();
-			KubeJS.LOGGER.debug("Took {} ms to discover registry classes.", (int)((Util.getNanos() - startTime)/1_000_000));
+			KubeJS.LOGGER.debug("Took {} ms to discover registry classes.", (int) ((Util.getNanos() - startTime) / 1_000_000));
 		}
 
-		public static synchronized boolean isFrozen(){
-			return frozen;
-		}
-
-		public static synchronized boolean shouldSkipModule(String moduleName){
-			return MODULES_TO_SKIP.contains(moduleName);
-		}
-
-		public static synchronized boolean shouldSkipNamespace(String namespace){
-			return NAMESPACES_TO_SKIP.contains(namespace);
-		}
-
-		public static synchronized void add(String className){
-				CLASSES_TO_SCAN.add(className);
-		}
-
-		public static synchronized boolean contains(String className){
-			return CLASSES_TO_SCAN.contains(className);
-		}
-
-		private static synchronized void processClass(Stream<Class<?>> classStream){
+		private static void processClass(Stream<Class<?>> classStream) {
 			classStream.map(Class::getDeclaredFields)
 				.flatMap(Stream::of)
 				.forEach(field -> {
 					try {
-						if (!VALID_TYPES.get().contains(field.getType())) return;
-						if (!Modifier.isPublic(field.getModifiers())) field.setAccessible(true);
+						if (!VALID_TYPES.get().contains(field.getType())) {
+							return;
+						}
+
+						if (!Modifier.isPublic(field.getModifiers())) {
+							field.setAccessible(true);
+						}
+
 						var value = field.get(null);
+
 						if (value instanceof ResourceKey<?> key) {
 							if (field.getGenericType() instanceof ParameterizedType t1
 								&& t1.getActualTypeArguments()[0] instanceof ParameterizedType t2) {
 								processKey(key, t2, false);
 							}
 						} else if (value instanceof Registry<?> registry) {
-							if (field.getGenericType() instanceof ParameterizedType t1){
+							if (field.getGenericType() instanceof ParameterizedType t1) {
 								processKey(registry.key(), t1, true);
 							}
-						} else if (field.getType().getName().equals("dev.architectury.registry.registries.Registrar")){
-							if (field.getGenericType() instanceof ParameterizedType t1){
+						} else if (field.getType().getName().equals("dev.architectury.registry.registries.Registrar")) {
+							if (field.getGenericType() instanceof ParameterizedType t1) {
 								var method = value.getClass().getDeclaredMethod("key");
 								processKey((ResourceKey) method.invoke(value), t1, true);
 							}
@@ -171,11 +162,46 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 				});
 		}
 
-		private static synchronized void processKey(ResourceKey key, ParameterizedType paramType, boolean checkIfContains){
-			if (checkIfContains && RegistryType.ofKey(key) != null) return;
+		private static void processKey(ResourceKey key, ParameterizedType paramType, boolean checkIfContains) {
+			if (checkIfContains && RegistryType.ofKey(key) != null) {
+				return;
+			}
 			var type = paramType.getActualTypeArguments()[0];
 			var typeInfo = TypeInfo.of(type);
 			register(key, typeInfo);
+		}
+
+		public static synchronized void scan(ResourceLocation registryName, ResourceLocation location) {
+			if (frozen) {
+				return;
+			}
+
+			if (!registryName.equals(Registries.ROOT_REGISTRY_NAME)) {
+				return;
+			}
+
+			if (NAMESPACES_TO_SKIP.contains(location.getNamespace())) {
+				return;
+			}
+
+			var startTime = Util.getNanos();
+			var stack = Thread.currentThread().getStackTrace();
+
+			for (var stackTraceElement : stack) {
+				if (MODULES_TO_SKIP.contains(stackTraceElement.getModuleName())) {
+					continue;
+				}
+
+				var className = stackTraceElement.getClassName();
+
+				if (CLASSES_TO_SCAN.contains(className)) {
+					continue;
+				}
+
+				CLASSES_TO_SCAN.add(className);
+			}
+
+			KubeJS.LOGGER.debug("Took {} ms to grab stacktrace classes.", (int) ((Util.getNanos() - startTime) / 1_000_000));
 		}
 	}
 }

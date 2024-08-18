@@ -1,16 +1,13 @@
 package dev.latvian.mods.kubejs.web;
 
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.apps.tinyserver.http.HTTPRequest;
-import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.concurrent.CompletableFuture;
@@ -37,25 +34,7 @@ public class KJSHTTPRequest extends HTTPRequest {
 		return id("namespace", "path");
 	}
 
-	public DataComponentPatch queryAsPatch(DynamicOps<Tag> ops) throws CommandSyntaxException {
-		if (query().isEmpty()) {
-			return DataComponentPatch.EMPTY;
-		}
-
-		var builder = DataComponentPatch.builder();
-
-		for (var entry : query().entrySet()) {
-			var dataComponentType = BuiltInRegistries.DATA_COMPONENT_TYPE.get(ResourceLocation.parse(entry.getKey()));
-
-			if (dataComponentType != null && !dataComponentType.isTransient()) {
-				var dataResult = dataComponentType.codecOrThrow().parse(ops, new TagParser(new StringReader(entry.getValue())).readValue());
-
-				if (dataResult.isSuccess() && dataResult.result().isPresent()) {
-					builder.set(dataComponentType, Cast.to(dataResult.result().get()));
-				}
-			}
-		}
-
-		return builder.build();
+	public DataComponentPatch components(DynamicOps<Tag> ops) throws CommandSyntaxException {
+		return DataComponentWrapper.urlDecodePatch(ops, query().getOrDefault("components", ""));
 	}
 }

@@ -25,6 +25,10 @@ public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey
 		return RegistryAccessContainer.of(cx).wrapRegistry(id);
 	}
 
+	public static RegistryAccessContainer access() {
+		return RegistryAccessContainer.current;
+	}
+
 	public T get(ResourceLocation id) {
 		return registry.get(id);
 	}

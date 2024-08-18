@@ -5,6 +5,8 @@ import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.block.RandomTickKubeEvent;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.ID;
+import dev.latvian.mods.kubejs.web.KubeJSLocalWebServer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
@@ -69,5 +71,12 @@ public interface BlockStateKJS extends RegistryObjectKJS<Block>, Replaceable {
 	@Override
 	default Object replaceThisWith(Context cx, Object with) {
 		return with instanceof BlockState state ? state : with instanceof Block block ? block.defaultBlockState() : cx.jsToJava(with, BlockWrapper.STATE_TYPE_INFO);
+	}
+
+	default String getWebIconURL(int size) {
+		var url = "/img/" + size + "/block/" + ID.url(kjs$getIdLocation());
+
+
+		return KubeJSLocalWebServer.getURL(url);
 	}
 }

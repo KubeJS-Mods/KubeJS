@@ -11,12 +11,12 @@ public class KJSWSSession extends WSSession<KJSHTTPRequest> {
 		if (message.startsWith("{") && message.endsWith("}")) {
 			var json = JsonUtils.fromString(message).getAsJsonObject();
 
-			if (json.has("event")) {
-				onEvent(json.get("event").getAsString(), json.has("payload") ? json.get("payload") : JsonNull.INSTANCE);
+			if (json.has("type")) {
+				onEvent(json.get("type").getAsString(), json.has("payload") ? json.get("payload") : JsonNull.INSTANCE);
 			}
 		}
 	}
 
-	public void onEvent(String event, JsonElement payload) {
+	public void onEvent(String type, JsonElement payload) {
 	}
 }

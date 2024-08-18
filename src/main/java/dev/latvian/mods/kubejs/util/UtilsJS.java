@@ -411,11 +411,11 @@ public class UtilsJS {
 
 	@Nullable
 	@HideFromJS
-	public static Class<?> tryLoadClass(String className){
-		Class<?> clazz = null;
+	public static Class<?> tryLoadClass(String className) {
 		try {
-			clazz = Class.forName(className);
-		} catch (Exception ignored) {}
-		return clazz;
+			return Class.forName(className);
+		} catch (Exception ignored) {
+			return null;
+		}
 	}
 }

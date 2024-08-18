@@ -1,19 +1,98 @@
 package dev.latvian.mods.kubejs.core;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
+import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.component.MutableDataComponentHolderFunctions;
 import dev.latvian.mods.kubejs.fluid.FluidLike;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.kubejs.util.WithCodec;
+import dev.latvian.mods.kubejs.web.KubeJSLocalWebServer;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.util.SpecialEquality;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 
-public interface FluidStackKJS extends Replaceable, FluidLike, FluidMatch, MutableDataComponentHolderFunctions {
+public interface FluidStackKJS extends
+	Replaceable,
+	SpecialEquality,
+	WithCodec,
+	FluidLike,
+	FluidMatch,
+	MutableDataComponentHolderFunctions,
+	RegistryObjectKJS<Fluid> {
 	default FluidStack kjs$self() {
 		return (FluidStack) (Object) this;
+	}
+
+	@Override
+	default boolean specialEquals(Context cx, Object o, boolean shallow) {
+		if (o instanceof CharSequence) {
+			return kjs$getId().equals(ID.string(o.toString()));
+		} else if (o instanceof FluidStack s) {
+			return kjs$equalsIgnoringCount(s);
+		}
+
+		return kjs$equalsIgnoringCount(FluidWrapper.wrap(RegistryAccessContainer.of(cx), o));
+	}
+
+	default boolean kjs$equalsIgnoringCount(FluidStack stack) {
+		var self = kjs$self();
+
+		if (self == stack) {
+			return true;
+		} else if (self.isEmpty()) {
+			return stack.isEmpty();
+		}
+
+		return FluidStack.isSameFluidSameComponents(self, stack);
+	}
+
+	@Override
+	default ResourceKey<Registry<Fluid>> kjs$getRegistryId() {
+		return Registries.FLUID;
+	}
+
+	@Override
+	default Registry<Fluid> kjs$getRegistry() {
+		return BuiltInRegistries.FLUID;
+	}
+
+	@Override
+	default ResourceLocation kjs$getIdLocation() {
+		return kjs$self().getFluid().kjs$getIdLocation();
+	}
+
+	@Override
+	default Holder<Fluid> kjs$asHolder() {
+		return kjs$self().getFluid().kjs$asHolder();
+	}
+
+	@Override
+	default ResourceKey<Fluid> kjs$getKey() {
+		return kjs$self().getFluid().kjs$getKey();
+	}
+
+	@Override
+	default String kjs$getId() {
+		return kjs$self().getFluid().kjs$getId();
+	}
+
+	@Override
+	default String kjs$getMod() {
+		return kjs$self().getFluid().kjs$getMod();
 	}
 
 	@Override
@@ -37,6 +116,11 @@ public interface FluidStackKJS extends Replaceable, FluidLike, FluidMatch, Mutab
 	}
 
 	@Override
+	default Codec<?> getCodec(Context cx) {
+		return FluidStack.CODEC;
+	}
+
+	@Override
 	default Object replaceThisWith(Context cx, Object with) {
 		var t = kjs$self();
 		var r = FluidWrapper.wrap(RegistryAccessContainer.of(cx), with);
@@ -57,5 +141,15 @@ public interface FluidStackKJS extends Replaceable, FluidLike, FluidMatch, Mutab
 	@Override
 	default boolean matches(Context cx, FluidIngredient ingredient, boolean exact) {
 		return ingredient.test(kjs$self());
+	}
+
+	default String getWebIconURL(DynamicOps<Tag> ops, int size) {
+		var url = "/img/" + size + "/fluid/" + ID.url(kjs$getIdLocation());
+
+		if (!kjs$self().isComponentsPatchEmpty()) {
+			url += "?components=" + DataComponentWrapper.urlEncodePatch(ops, kjs$self().getComponentsPatch());
+		}
+
+		return KubeJSLocalWebServer.getURL(url);
 	}
 }

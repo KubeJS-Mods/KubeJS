@@ -11,7 +11,6 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Lazy;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.NativeJavaMap;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
@@ -29,6 +28,9 @@ import net.minecraft.world.item.component.CustomData;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -253,23 +255,23 @@ public interface DataComponentWrapper {
 		return from == null || from instanceof DataComponentMap || from instanceof DataComponentPatch || from instanceof Map || from instanceof NativeJavaMap || from instanceof String s && (s.isEmpty() || s.charAt(0) == '[');
 	}
 
-	static DataComponentMap mapOf(RegistryAccessContainer registries, Object o) {
+	static DataComponentMap mapOf(DynamicOps<Tag> ops, Object o) {
 		try {
-			return readMap(registries.nbt(), new StringReader(o.toString()));
+			return readMap(ops, new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
 			throw new RuntimeException("Error parsing DataComponentMap from " + o, ex);
 		}
 	}
 
-	static DataComponentPatch patchOf(RegistryAccessContainer registries, Object o) {
+	static DataComponentPatch patchOf(DynamicOps<Tag> ops, Object o) {
 		try {
-			return readPatch(registries.nbt(), new StringReader(o.toString()));
+			return readPatch(ops, new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
 			throw new RuntimeException("Error parsing DataComponentPatch from " + o, ex);
 		}
 	}
 
-	static StringBuilder mapToString(StringBuilder builder, DynamicOps<Tag> dynamicOps, DataComponentMap map) {
+	static StringBuilder mapToString(StringBuilder builder, DynamicOps<Tag> ops, DataComponentMap map) {
 		builder.append('[');
 
 		boolean first = true;
@@ -282,7 +284,7 @@ public interface DataComponentWrapper {
 			}
 
 			var id = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(comp.type());
-			var optional = comp.encodeValue(dynamicOps).result();
+			var optional = comp.encodeValue(ops).result();
 
 			if (id != null && !optional.isEmpty()) {
 				builder.append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).append('=').append(optional.get());
@@ -293,7 +295,7 @@ public interface DataComponentWrapper {
 		return builder;
 	}
 
-	static StringBuilder patchToString(StringBuilder builder, DynamicOps<Tag> dynamicOps, DataComponentPatch patch) {
+	static StringBuilder patchToString(StringBuilder builder, DynamicOps<Tag> ops, DataComponentPatch patch) {
 		builder.append('[');
 
 		boolean first = true;
@@ -309,7 +311,7 @@ public interface DataComponentWrapper {
 
 			if (id != null) {
 				if (comp.getValue().isPresent()) {
-					var value = comp.getKey().codecOrThrow().encodeStart(dynamicOps, Cast.to(comp.getValue().get())).result().get();
+					var value = comp.getKey().codecOrThrow().encodeStart(ops, Cast.to(comp.getValue().get())).result().get();
 					builder.append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).append('=').append(value);
 				} else {
 					builder.append('!').append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString());
@@ -321,22 +323,20 @@ public interface DataComponentWrapper {
 		return builder;
 	}
 
-	static void writeVisualComponentsForCache(StringBuilder builder, DynamicOps<?> ops, DataComponentMap map) {
-		for (var entry : map) {
-			if (DataComponentWrapper.VISUAL_DIFFERENCE.get().contains(entry.type())) {
-				builder.append(BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(entry.type()));
+	static String urlEncodePatch(DynamicOps<Tag> ops, DataComponentPatch patch) {
+		var sb = patchToString(new StringBuilder(), ops, patch);
+		return URLEncoder.encode(sb.substring(1, sb.length() - 1), StandardCharsets.UTF_8);
+	}
 
-				if (entry.type().codec() != null) {
-					if (entry.value() instanceof CharSequence || entry.value() instanceof Number || entry.value() instanceof Boolean || entry.value() instanceof Tag) {
-						builder.append(entry.value());
-					} else {
-						var str = entry.type().codec().encodeStart(ops, Cast.to(entry.value())).result().map(Object::toString).orElse("");
-						builder.append(str.isEmpty() ? entry.value() : str);
-					}
-				} else {
-					builder.append(entry.value());
-				}
-			}
+	static DataComponentPatch urlDecodePatch(DynamicOps<Tag> ops, String s) {
+		if (s.isEmpty()) {
+			return DataComponentPatch.EMPTY;
+		}
+
+		try {
+			return readPatch(ops, new StringReader("[" + URLDecoder.decode(s, StandardCharsets.UTF_8) + "]"));
+		} catch (Exception ex) {
+			return DataComponentPatch.EMPTY;
 		}
 	}
 }

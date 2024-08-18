@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
@@ -37,6 +38,7 @@ public interface SizedIngredientWrapper {
 		return SizedIngredient.of(tag, count);
 	}
 
+	@HideFromJS
 	static SizedIngredient wrap(RegistryAccessContainer registries, Object from) {
 		if (from instanceof SizedIngredient s) {
 			return s;
@@ -57,6 +59,7 @@ public interface SizedIngredientWrapper {
 		return IngredientJS.wrap(registries, from).kjs$asStack();
 	}
 
+	@HideFromJS
 	static SizedIngredient read(RegistryAccessContainer registries, StringReader reader) throws CommandSyntaxException {
 		int count = 1;
 
