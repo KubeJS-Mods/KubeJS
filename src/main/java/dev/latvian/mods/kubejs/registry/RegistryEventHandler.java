@@ -34,7 +34,7 @@ public class RegistryEventHandler {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void registerEntityAttributes(EntityAttributeModificationEvent event) {
 		var objStorage = RegistryObjectStorage.of(Registries.ATTRIBUTE);
-		List<Pair<Predicate<EntityType<?>>, Holder<Attribute>>> predicatePair = objStorage.objects.values().stream().map(AttributeBuilder.class::cast).flatMap(b -> b.getPredicateList().stream().map(p -> Pair.of(p, BuiltInRegistries.ATTRIBUTE.wrapAsHolder(b.get())))).toList();
+		List<Pair<Predicate<EntityType<?>>, Holder<Attribute>>> predicatePair = objStorage.objects.values().stream().filter(AttributeBuilder.class::isInstance).map(AttributeBuilder.class::cast).flatMap(b -> b.getPredicateList().stream().map(p -> Pair.of(p, BuiltInRegistries.ATTRIBUTE.wrapAsHolder(b.get())))).toList();
 
 		event.getTypes().forEach(type -> predicatePair.stream().filter(p -> p.first.test(type)).forEach(p -> event.add(type, p.second)));
 	}
