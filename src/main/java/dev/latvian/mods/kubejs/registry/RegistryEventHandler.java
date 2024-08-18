@@ -1,16 +1,27 @@
 package dev.latvian.mods.kubejs.registry;
 
+import com.ibm.icu.impl.Pair;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
+import dev.latvian.mods.kubejs.entity.AttributeBuilder;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
+
+import java.util.List;
+import java.util.function.Predicate;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class RegistryEventHandler {
@@ -18,6 +29,14 @@ public class RegistryEventHandler {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void registerAll(RegisterEvent event) {
 		handleRegistryEvent((ResourceKey) event.getRegistryKey(), event);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOW)
+	public static void registerEntityAttributes(EntityAttributeModificationEvent event) {
+		var objStorage = RegistryObjectStorage.of(Registries.ATTRIBUTE);
+		List<Pair<Predicate<EntityType<?>>, Holder<Attribute>>> predicatePair = objStorage.objects.values().stream().map(AttributeBuilder.class::cast).flatMap(b -> b.getPredicateList().stream().map(p -> Pair.of(p, BuiltInRegistries.ATTRIBUTE.wrapAsHolder(b.get())))).toList();
+
+		event.getTypes().forEach(type -> predicatePair.stream().filter(p -> p.first.test(type)).forEach(p -> event.add(type, p.second)));
 	}
 
 	private static <T> void handleRegistryEvent(ResourceKey<Registry<T>> registryKey, RegisterEvent event) {

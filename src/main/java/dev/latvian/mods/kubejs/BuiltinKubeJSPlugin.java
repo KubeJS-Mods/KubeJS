@@ -52,6 +52,7 @@ import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.color.Color;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
+import dev.latvian.mods.kubejs.entity.AttributeBuilder;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.event.EventGroupWrapper;
 import dev.latvian.mods.kubejs.event.EventGroups;
@@ -319,6 +320,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		// FIXME registry.addDefault(Registries.ENCHANTMENT, EnchantmentBuilder.class, EnchantmentBuilder::new);
 		registry.addDefault(Registries.PAINTING_VARIANT, PaintingVariantBuilder.class, PaintingVariantBuilder::new);
 		registry.addDefault(Registries.JUKEBOX_SONG, JukeboxSongBuilder.class, JukeboxSongBuilder::new);
+		registry.addDefault(Registries.ATTRIBUTE, AttributeBuilder.class, AttributeBuilder::new);
 	}
 
 	@Override
