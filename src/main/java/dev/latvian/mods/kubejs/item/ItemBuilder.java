@@ -9,10 +9,10 @@ import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -79,6 +79,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	public transient Tool tool;
 	public transient ItemAttributeModifiers itemAttributeModifiers;
+	public transient boolean canRepair;
 
 	public ItemBuilder(ResourceLocation i) {
 		super(i);
@@ -104,6 +105,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 		tool = null;
 		itemAttributeModifiers = null;
+		canRepair = true;
 	}
 
 	@Override
@@ -377,13 +379,18 @@ public class ItemBuilder extends BuilderBase<Item> {
 		return this;
 	}
 
-	public ItemBuilder jukeboxPlayable(Holder<JukeboxSong> song, boolean showInTooltip) {
+	public ItemBuilder jukeboxPlayable(ResourceKey<JukeboxSong> song, boolean showInTooltip) {
 		this.jukeboxPlayable = new JukeboxPlayable(new EitherHolder<>(song), showInTooltip);
 		return this;
 	}
 
-	public ItemBuilder jukeboxPlayable(Holder<JukeboxSong> song) {
+	public ItemBuilder jukeboxPlayable(ResourceKey<JukeboxSong> song) {
 		return jukeboxPlayable(song, true);
+	}
+
+	public ItemBuilder disableRepair() {
+		this.canRepair = false;
+		return this;
 	}
 
 	@FunctionalInterface
@@ -455,6 +462,10 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 		if (jukeboxPlayable != null) {
 			properties.component(DataComponents.JUKEBOX_PLAYABLE, jukeboxPlayable);
+		}
+
+		if (!canRepair) {
+			properties.setNoRepair();
 		}
 
 		return properties;
