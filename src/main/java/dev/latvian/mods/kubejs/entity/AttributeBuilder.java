@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.entity;
 
 import com.google.common.base.Predicates;
+import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
@@ -19,8 +20,7 @@ import java.util.function.Predicate;
 @ReturnsSelf
 public class AttributeBuilder extends BuilderBase<Attribute> {
 	private final List<Predicate<EntityType<?>>> predicateList = new ArrayList<>();
-	private Range range;
-	private Boolean bool;
+	private Either<Range, Boolean> defaultValue;
 	private boolean syncable = true;
 	private Attribute.Sentiment sentiment;
 
@@ -29,12 +29,12 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 	}
 
 	public AttributeBuilder bool(boolean defaultValue) {
-		this.bool = defaultValue;
+		this.defaultValue = Either.right(defaultValue);
 		return this;
 	}
 
 	public AttributeBuilder range(double defaultValue, double min, double max) {
-		this.range = new Range(defaultValue, min, max);
+		this.defaultValue = Either.left(new Range(defaultValue, min, max));
 		return this;
 	}
 
@@ -75,16 +75,14 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 
 	@Override
 	public Attribute createObject() {
-		Attribute attribute = null;
-		if (bool != null) {
-			attribute = new BooleanAttribute(this.id.toLanguageKey(), bool);
-		}
-		if (range != null) {
-			attribute = new RangedAttribute(this.id.toLanguageKey(), range.defaultValue, range.min, range.max);
-		}
-		if (attribute == null) {
+		if (defaultValue == null) {
 			throw new IllegalArgumentException("Not possible to create a Boolean or Ranged Attribute. Use bool() or range() methods.");
 		}
+		Either<Attribute,Attribute> either = defaultValue.mapBoth(
+			l -> new RangedAttribute(this.id.toLanguageKey(), l.defaultValue, l.min, l.max),
+			r -> new BooleanAttribute(this.id.toLanguageKey(), r));
+		Attribute attribute = Either.unwrap(either);
+
 		if (syncable) {
 			attribute.setSyncable(true);
 		}
