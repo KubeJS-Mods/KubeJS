@@ -22,10 +22,10 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 	public record Range(double defaultValue, double min, double max) {
 	}
 
-	private final List<Predicate<EntityType<?>>> predicateList = new ArrayList<>();
-	private Either<Range, Boolean> defaultValue;
-	private boolean syncable = true;
-	private Attribute.Sentiment sentiment;
+	public final List<Predicate<EntityType<?>>> predicateList = new ArrayList<>();
+	public Either<Range, Boolean> defaultValue;
+	public boolean syncable = true;
+	public Attribute.Sentiment sentiment;
 
 	public AttributeBuilder(ResourceLocation id) {
 		super(id);
@@ -91,8 +91,8 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 		}
 
 		var attribute = Either.unwrap(defaultValue.mapBoth(
-			l -> new RangedAttribute(this.id.toLanguageKey(), l.defaultValue, l.min, l.max),
-			r -> new BooleanAttribute(this.id.toLanguageKey(), r))
+			l -> new RangedAttribute(this.getBuilderTranslationKey(), l.defaultValue, l.min, l.max),
+			r -> new BooleanAttribute(this.getBuilderTranslationKey(), r))
 		);
 
 		if (syncable) {
