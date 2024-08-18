@@ -13,6 +13,7 @@ import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.neoforged.neoforge.common.BooleanAttribute;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -81,7 +82,7 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 
 	@HideFromJS
 	public List<Predicate<EntityType<?>>> getPredicateList() {
-		return predicateList;
+		return Collections.unmodifiableList(predicateList);
 	}
 
 	@Override
@@ -102,11 +103,14 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 		if (sentiment != null) {
 			attribute.setSentiment(sentiment);
 		}
+		return attribute;
+	}
 
+	@Override
+	public Attribute transformObject(Attribute obj) {
 		if (predicateList.isEmpty()) {
 			predicateList.add(Predicates.alwaysTrue());
 		}
-
-		return attribute;
+		return obj;
 	}
 }
