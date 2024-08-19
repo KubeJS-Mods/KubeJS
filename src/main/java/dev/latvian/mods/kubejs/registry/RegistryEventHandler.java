@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.registry;
 
-import com.ibm.icu.impl.Pair;
+import com.mojang.datafixers.util.Pair;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
@@ -36,7 +36,7 @@ public class RegistryEventHandler {
 		var objStorage = RegistryObjectStorage.of(Registries.ATTRIBUTE);
 		List<Pair<Predicate<EntityType<?>>, Holder<Attribute>>> predicatePair = objStorage.objects.values().stream().filter(AttributeBuilder.class::isInstance).map(AttributeBuilder.class::cast).flatMap(b -> b.getPredicateList().stream().map(p -> Pair.of(p, BuiltInRegistries.ATTRIBUTE.wrapAsHolder(b.get())))).toList();
 
-		event.getTypes().forEach(type -> predicatePair.stream().filter(p -> p.first.test(type)).forEach(p -> event.add(type, p.second)));
+		event.getTypes().forEach(type -> predicatePair.stream().filter(p -> p.getFirst().test(type)).forEach(p -> event.add(type, p.getSecond())));
 	}
 
 	private static <T> void handleRegistryEvent(ResourceKey<Registry<T>> registryKey, RegisterEvent event) {
