@@ -7,16 +7,21 @@ import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
 import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
 import dev.latvian.apps.tinyserver.ws.WSHandler;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.web.JsonContent;
 import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
 import dev.latvian.mods.kubejs.web.KJSWSSession;
+import dev.latvian.mods.kubejs.web.LocalWebServer;
+import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
+import net.neoforged.fml.ModList;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -56,11 +61,16 @@ public class KubeJSWeb {
 		registry.acceptPostTask("/api/reload/" + s.name, reload);
 	}
 
-	public static void register(ServerRegistry<KJSHTTPRequest> registry) {
+	public static void register(LocalWebServerRegistry registry) {
 		UPDATES = registry.ws("/api/updates", KJSWSSession::new);
 
 		addScriptTypeEndpoints(registry, ScriptType.STARTUP, KubeJS.getStartupScriptManager()::reload);
 		addScriptTypeEndpoints(registry, ScriptType.SERVER, KubeJSWeb::reloadInternalServer);
+
+		registry.get("/", KubeJSWeb::getHomepage);
+		registry.get("/api", KubeJSWeb::getApi);
+		registry.get("/api/mods", KubeJSWeb::getMods);
+		registry.get("/api/mods", KubeJSWeb::getMods);
 
 		registry.get("/api/registries", KubeJSWeb::getRegistriesResponse); // List of all registries
 		registry.get("/api/registries/{namespace}/{path}/keys", KubeJSWeb::getRegistryKeysResponse); // List of all IDs in registry
@@ -77,6 +87,47 @@ public class KubeJSWeb {
 		if (mc.player != null) {
 			mc.player.kjs$runCommand("/reload");
 		}
+	}
+
+	private static HTTPResponse getHomepage(KJSHTTPRequest req) {
+		var list = new ArrayList<String>();
+		list.add("KubeJS Local Web Server [" + KubeJS.PROXY.getWebServerWindowTitle() + "]");
+		list.add("");
+
+		list.add("Loaded Plugins:");
+
+		for (var plugin : KubeJSPlugins.getAll()) {
+			list.add("- " + plugin.getClass().getName());
+		}
+
+		list.add("");
+		list.add("Loaded Mods:");
+
+		for (var mod : ModList.get().getSortedMods()) {
+			list.add("- " + mod.getModInfo().getDisplayName() + " (" + mod.getModId() + " - " + mod.getModInfo().getVersion() + ")");
+		}
+
+		return HTTPResponse.ok().text(list);
+	}
+
+	private static HTTPResponse getApi(KJSHTTPRequest req) {
+		return HTTPResponse.ok().content(JsonContent.array(json -> {
+			for (var endpoint : LocalWebServer.instance().endpoints()) {
+				json.add(endpoint.method() + " " + endpoint.path());
+			}
+		}));
+	}
+
+	private static HTTPResponse getMods(KJSHTTPRequest req) {
+		return HTTPResponse.ok().content(JsonContent.array(json -> {
+			for (var mod : ModList.get().getSortedMods()) {
+				var o = new JsonObject();
+				o.addProperty("id", mod.getModId());
+				o.addProperty("name", mod.getModInfo().getDisplayName());
+				o.addProperty("version", mod.getModInfo().getVersion().toString());
+				json.add(o);
+			}
+		}));
 	}
 
 	private static HTTPResponse getRegistriesResponse(KJSHTTPRequest req) {
@@ -108,7 +159,7 @@ public class KubeJSWeb {
 			return HTTPStatus.NOT_FOUND;
 		}
 
-		var regex = RegExpKJS.ofString(req.variables().get("regex"));
+		var regex = RegExpKJS.ofString(req.variable("regex"));
 
 		if (regex == null) {
 			return HTTPStatus.BAD_REQUEST;

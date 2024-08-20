@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.web.local.client;
 
+import com.madgag.gif.fmsware.AnimatedGifEncoder;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
@@ -9,13 +10,19 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
+import dev.latvian.apps.tinyserver.content.ResponseContent;
 import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
+import dev.latvian.apps.tinyserver.http.response.HTTPResponseBuilder;
 import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.bindings.UUIDWrapper;
+import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.util.CachedComponentObject;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
+import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.Minecraft;
@@ -27,12 +34,19 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -42,8 +56,15 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import java.nio.charset.StandardCharsets;
+import javax.imageio.ImageIO;
+import java.awt.Color;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -54,17 +75,27 @@ public class ImageGenerator {
 		new Vector3f(0.625F, 0.625F, 0.625F)
 	);
 
+	public static final ResourceLocation STAR_TEXTURE = KubeJS.id("textures/misc/star.png");
+
 	private record RenderImage(Minecraft mc, GuiGraphics graphics, int size) {
+	}
+
+	private record BodyKey(byte[] bytes) {
+		@Override
+		public int hashCode() {
+			return Arrays.hashCode(bytes);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return this == o || o instanceof BodyKey k && Arrays.equals(bytes, k.bytes);
+		}
 	}
 
 	public static final Int2ObjectMap<TextureTarget> FB_CACHE = new Int2ObjectArrayMap<>();
 
-	private static HTTPResponse renderCanvas(KJSHTTPRequest req, int canvasSize, String dir, StringBuilder cacheId, Consumer<RenderImage> render) {
-		return renderCanvas(req, canvasSize, dir, cacheId.isEmpty() ? null : UUID.nameUUIDFromBytes(cacheId.toString().getBytes(StandardCharsets.UTF_8)), render);
-	}
-
 	private static HTTPResponse renderCanvas(KJSHTTPRequest req, int canvasSize, String dir, @Nullable UUID cacheUUID, Consumer<RenderImage> render) {
-		int size = Integer.parseInt(req.variables().get("size"));
+		int size = Integer.parseInt(req.variable("size"));
 
 		if (size < 1 || size > 1024) {
 			return HTTPStatus.BAD_REQUEST.text("Invalid size, must be [1, 1024]");
@@ -77,7 +108,7 @@ public class ImageGenerator {
 			return HTTPResponse.ok().content(cachePath).header("X-KubeJS-Cache-Key", cacheUUIDStr);
 		}
 
-		var bytes = req.supplyInRenderThread(() -> {
+		var bytes = req.supplyInMainThread(() -> {
 			var target = FB_CACHE.get(size);
 
 			if (target == null) {
@@ -128,47 +159,120 @@ public class ImageGenerator {
 			}
 		}
 
-		if (req.header("Accept").equals("text/plain")) {
-			if (cachePath == null) {
-				return HTTPStatus.NOT_FOUND;
-			}
+		return HTTPResponse.ok().content(bytes, "image/png").header("X-KubeJS-Cache-Key", cacheUUIDStr);
+	}
 
-			return HTTPResponse.ok().text(cacheUUIDStr);
+	private static HTTPResponse renderAnimated(KJSHTTPRequest req, String dir, @Nullable UUID cacheUUID, List<HTTPResponse> responses) throws Exception {
+		int size = Integer.parseInt(req.variable("size"));
+
+		if (size < 1 || size > 1024) {
+			return HTTPStatus.BAD_REQUEST.text("Invalid size, must be [1, 1024]");
 		}
 
-		return HTTPResponse.ok().content(bytes, "image/png").header("X-KubeJS-Cache-Key", cacheUUIDStr);
+		var cacheUUIDStr = cacheUUID == null || req.query().containsKey("uncached") ? null : UUIDWrapper.toString(cacheUUID);
+		var cachePath = cacheUUIDStr == null ? null : KubeJSPaths.dir(KubeJSPaths.LOCAL.resolve("cache/web/img/" + dir + "/" + cacheUUIDStr.substring(0, 2))).resolve(cacheUUIDStr + "_" + size + ".gif");
+
+		if (cachePath != null && Files.exists(cachePath)) {
+			return HTTPResponse.ok().content(cachePath).header("X-KubeJS-Cache-Key", cacheUUIDStr);
+		}
+
+		var outputStream = new ByteArrayOutputStream();
+		var encoder = new AnimatedGifEncoder();
+		encoder.start(outputStream);
+		encoder.setSize(size, size);
+		var backgroundColor = new Color(43, 51, 51, 255);
+		encoder.setBackground(backgroundColor);
+		encoder.setTransparent(backgroundColor, true);
+
+		encoder.setRepeat(0);
+		encoder.setDelay(1000);
+
+		var bodyKeys = new HashSet<BodyKey>();
+
+		req.runInMainThread(() -> {
+			for (var response : responses) {
+				try {
+					var content = new ContentGrabber();
+					response.build(content);
+
+					if (content.body != null && bodyKeys.add(new BodyKey(content.body))) {
+						encoder.addFrame(ImageIO.read(new ByteArrayInputStream(content.body)));
+					}
+				} catch (Exception ignore) {
+				}
+			}
+		});
+
+		encoder.finish();
+
+		var bytes = outputStream.toByteArray();
+
+		if (cachePath != null) {
+			try {
+				Files.write(cachePath, bytes);
+			} catch (Exception ignore) {
+			}
+		}
+
+		return HTTPResponse.ok().content(bytes, "image/gif");
 	}
 
 	public static HTTPResponse item(KJSHTTPRequest req) throws Exception {
 		var stack = BuiltInRegistries.ITEM.get(req.id()).getDefaultInstance();
 		stack.applyComponents(req.components(req.registries().nbt()));
+		return renderItem(req, stack, req.query().containsKey("star"));
+	}
 
+	private static HTTPResponse renderItem(KJSHTTPRequest req, ItemStack stack, boolean star) throws Exception {
 		if (stack.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
 		}
 
-		return renderCanvas(req, 16, "item", CachedComponentObject.ofItemStack(stack, true).cacheKey(), render -> {
+		var buf = new FriendlyByteBuf(Unpooled.buffer());
+		CachedComponentObject.writeCacheKey(buf, stack.getItem(), DataComponentWrapper.visualPatch(stack.getComponentsPatch()));
+		buf.writeBoolean(star);
+
+		return renderCanvas(req, 16, "item", UUID.nameUUIDFromBytes(buf.array()), render -> {
 			render.graphics.renderFakeItem(stack, 0, 0, 0);
 			render.graphics.renderItemDecorations(render.mc.font, stack, 0, 0);
+
+			if (star) {
+				RenderSystem.enableBlend();
+				RenderSystem.defaultBlendFunc();
+				render.graphics.blit(STAR_TEXTURE, 0, 0, 300, 0F, 0F, 6, 6, 6, 6);
+			}
 		});
 	}
 
 	public static HTTPResponse block(KJSHTTPRequest req) throws Exception {
 		var state = BlockWrapper.withProperties(BuiltInRegistries.BLOCK.get(req.id()).defaultBlockState(), req.query());
+		return renderBlock(req, state, req.query().containsKey("star"));
+	}
 
+	private static HTTPResponse renderBlock(KJSHTTPRequest req, BlockState state, boolean star) throws Exception {
 		if (state.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
 		}
 
-		var sb = new StringBuilder();
-		sb.append(state.kjs$getId());
+		var buf = new FriendlyByteBuf(Unpooled.buffer());
+		buf.writeUtf(state.kjs$getId());
+		buf.writeVarInt(state.getBlock().getStateDefinition().getProperties().size());
 
-		for (var entry : req.query().entrySet()) {
-			sb.append(entry.getKey());
-			sb.append(entry.getValue());
+		for (var p : state.getProperties()) {
+			buf.writeUtf(p.getName());
+
+			if (p instanceof BooleanProperty p1) {
+				buf.writeBoolean(state.getValue(p1));
+			} else if (p instanceof IntegerProperty p1) {
+				buf.writeVarInt(Cast.to(state.getValue(p1)));
+			} else {
+				buf.writeUtf(p.getName(Cast.to(state.getValue(p))));
+			}
 		}
 
-		return renderCanvas(req, 16, "block", sb, render -> {
+		buf.writeBoolean(star);
+
+		return renderCanvas(req, 16, "block", UUID.nameUUIDFromBytes(buf.array()), render -> {
 			var model = render.mc.getBlockRenderer().getBlockModel(state);
 			var pose = render.graphics.pose();
 			pose.pushPose();
@@ -206,13 +310,22 @@ public class ImageGenerator {
 			}
 
 			render.graphics.pose().popPose();
+
+			if (star) {
+				RenderSystem.enableBlend();
+				RenderSystem.defaultBlendFunc();
+				render.graphics.blit(STAR_TEXTURE, 0, 0, 300, 0F, 0F, 6, 6, 6, 6);
+			}
 		});
 	}
 
 	public static HTTPResponse fluid(KJSHTTPRequest req) throws Exception {
 		var stack = new FluidStack(BuiltInRegistries.FLUID.get(req.id()), FluidType.BUCKET_VOLUME);
 		stack.applyComponents(req.components(req.registries().nbt()));
+		return renderFluid(req, stack, req.query().containsKey("star"));
+	}
 
+	public static HTTPResponse renderFluid(KJSHTTPRequest req, FluidStack stack, boolean star) throws Exception {
 		if (stack.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
 		}
@@ -225,7 +338,11 @@ public class ImageGenerator {
 		int g = (tint >> 8) & 0xFF;
 		int b = tint & 0xFF;
 
-		return renderCanvas(req, 16, "fluid", CachedComponentObject.ofFluidStack(stack, true).cacheKey(), render -> {
+		var buf = new FriendlyByteBuf(Unpooled.buffer());
+		CachedComponentObject.writeCacheKey(buf, stack.getFluid(), DataComponentWrapper.visualPatch(stack.getComponentsPatch()));
+		buf.writeBoolean(star);
+
+		return renderCanvas(req, 16, "fluid", UUID.nameUUIDFromBytes(buf.array()), render -> {
 			var s = render.mc.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(still);
 			RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
 			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
@@ -236,33 +353,97 @@ public class ImageGenerator {
 			builder.addVertex(m, 16F, 16F, 0F).setUv(s.getU1(), s.getV0()).setColor(r, g, b, a);
 			builder.addVertex(m, 16F, 0F, 0F).setUv(s.getU1(), s.getV1()).setColor(r, g, b, a);
 			BufferUploader.drawWithShader(builder.buildOrThrow());
+
+			if (star) {
+				RenderSystem.enableBlend();
+				RenderSystem.defaultBlendFunc();
+				render.graphics.blit(STAR_TEXTURE, 0, 0, 300, 0F, 0F, 6, 6, 6, 6);
+			}
 		});
 	}
 
 	public static HTTPResponse itemTag(KJSHTTPRequest req) throws Exception {
-		var tagKey = ItemTags.create(req.id());
+		var tag = BuiltInRegistries.ITEM.getTag(ItemTags.create(req.id()));
 
-		return renderCanvas(req, 16, "item_tag", new StringBuilder(), render -> {
-			// render.graphics.fill(0, 0, 16, 16, 0xFFFF00FF);
-			render.graphics.renderFakeItem(Items.NAME_TAG.getDefaultInstance(), 0, 0, 0);
-		});
+		if (tag.isEmpty()) {
+			return HTTPStatus.NOT_FOUND;
+		}
+
+		var buf = new FriendlyByteBuf(Unpooled.buffer());
+		var list = new ArrayList<HTTPResponse>();
+
+		for (var holder : tag.get()) {
+			buf.writeUtf(holder.value().kjs$getId());
+			list.add(renderItem(req, holder.value().getDefaultInstance(), true));
+		}
+
+		return renderAnimated(req, "item_tag", UUID.nameUUIDFromBytes(buf.array()), list);
 	}
 
 	public static HTTPResponse blockTag(KJSHTTPRequest req) throws Exception {
-		var tagKey = BlockTags.create(req.id());
+		var tag = BuiltInRegistries.BLOCK.getTag(BlockTags.create(req.id()));
 
-		return renderCanvas(req, 16, "block_tag", new StringBuilder(), render -> {
-			// render.graphics.fill(0, 0, 16, 16, 0xFFFF00FF);
-			render.graphics.renderFakeItem(Items.NAME_TAG.getDefaultInstance(), 0, 0, 0);
-		});
+		if (tag.isEmpty()) {
+			return HTTPStatus.NOT_FOUND;
+		}
+
+		var buf = new FriendlyByteBuf(Unpooled.buffer());
+		var list = new ArrayList<HTTPResponse>();
+
+		for (var holder : tag.get()) {
+			buf.writeUtf(holder.value().kjs$getId());
+
+			var item = holder.value().asItem();
+
+			if (item != Items.AIR) {
+				list.add(renderItem(req, item.getDefaultInstance(), true));
+			} else {
+				list.add(renderBlock(req, holder.value().defaultBlockState(), true));
+			}
+		}
+
+		return renderAnimated(req, "block_tag", UUID.nameUUIDFromBytes(buf.array()), list);
 	}
 
 	public static HTTPResponse fluidTag(KJSHTTPRequest req) throws Exception {
-		var tagKey = FluidTags.create(req.id());
+		var tag = BuiltInRegistries.FLUID.getTag(FluidTags.create(req.id()));
 
-		return renderCanvas(req, 16, "fluid_tag", new StringBuilder(), render -> {
-			// render.graphics.fill(0, 0, 16, 16, 0xFFFF00FF);
-			render.graphics.renderFakeItem(Items.NAME_TAG.getDefaultInstance(), 0, 0, 0);
-		});
+		if (tag.isEmpty()) {
+			return HTTPStatus.NOT_FOUND;
+		}
+
+		var buf = new FriendlyByteBuf(Unpooled.buffer());
+		var list = new ArrayList<HTTPResponse>();
+
+		for (var holder : tag.get()) {
+			buf.writeUtf(holder.value().kjs$getId());
+			list.add(renderFluid(req, new FluidStack(holder, FluidType.BUCKET_VOLUME), true));
+		}
+
+		return renderAnimated(req, "fluid_tag", UUID.nameUUIDFromBytes(buf.array()), list);
+	}
+
+	private static class ContentGrabber extends HTTPResponseBuilder {
+		private byte[] body = null;
+
+		@Override
+		public void setBody(ResponseContent body) {
+			try {
+				var out = new ByteArrayOutputStream();
+				body.write(out);
+				this.body = out.toByteArray();
+			} catch (Exception ex) {
+
+			}
+		}
+	}
+
+	public static HTTPResponse testGIF(KJSHTTPRequest req) throws Exception {
+		return renderAnimated(req, "test", null, List.of(
+			renderItem(req, Items.RED_STAINED_GLASS.getDefaultInstance(), true),
+			renderItem(req, Items.CARROT.getDefaultInstance(), true),
+			renderBlock(req, Blocks.NETHER_PORTAL.defaultBlockState(), true),
+			renderFluid(req, new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME), true)
+		));
 	}
 }

@@ -5,31 +5,35 @@ import com.mojang.serialization.DynamicOps;
 import dev.latvian.apps.tinyserver.http.HTTPRequest;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.thread.BlockableEventLoop;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public class KJSHTTPRequest extends HTTPRequest {
+	public BlockableEventLoop<?> eventLoop;
+
 	public RegistryAccessContainer registries() {
 		return RegistryAccessContainer.current;
 	}
 
-	public void runInRenderThread(Runnable task) {
-		Minecraft.getInstance().executeBlocking(task);
+	public void runInMainThread(Runnable task) {
+		eventLoop.executeBlocking(task);
 	}
 
-	public <T> T supplyInRenderThread(Supplier<T> task) {
-		return CompletableFuture.supplyAsync(task, Minecraft.getInstance()).join();
+	public <T> T supplyInMainThread(Supplier<T> task) {
+		return CompletableFuture.supplyAsync(task, eventLoop).join();
 	}
 
 	public ResourceLocation id(String ns, String path) {
-		return ResourceLocation.fromNamespaceAndPath(variables().get(ns), variables().get(path));
+		return ResourceLocation.fromNamespaceAndPath(variable(ns), variable(path));
 	}
 
+	@Nullable
 	public ResourceLocation id() {
 		return id("namespace", "path");
 	}

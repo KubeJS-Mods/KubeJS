@@ -14,7 +14,6 @@ public class KeepAction implements IngredientAction {
 
 	@Override
 	public ItemStack transform(ItemStack old, int index, CraftingInput input) {
-		old.setCount(1);
 		return old;
 	}
 }

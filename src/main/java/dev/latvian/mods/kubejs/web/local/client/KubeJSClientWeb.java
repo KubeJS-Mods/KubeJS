@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.web.local.client;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.serialization.JsonOps;
-import dev.latvian.apps.tinyserver.ServerRegistry;
 import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
 import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
 import dev.latvian.mods.kubejs.KubeJS;
@@ -15,7 +15,8 @@ import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.web.JsonContent;
 import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
-import dev.latvian.mods.kubejs.web.KubeJSLocalWebServer;
+import dev.latvian.mods.kubejs.web.LocalWebServer;
+import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -48,7 +49,7 @@ public class KubeJSClientWeb {
 		return map;
 	});
 
-	public static void register(ServerRegistry<KJSHTTPRequest> registry) {
+	public static void register(LocalWebServerRegistry registry) {
 		KubeJSWeb.addScriptTypeEndpoints(registry, ScriptType.CLIENT, KubeJS.getClientScriptManager()::reload);
 
 		registry.get("/api/client/search/items", KubeJSClientWeb::getItemsResponse);
@@ -58,12 +59,35 @@ public class KubeJSClientWeb {
 		registry.get("/api/client/assets/list/<prefix>", KubeJSClientWeb::getAssetList);
 		registry.get("/api/client/assets/get/{namespace}/<path>", KubeJSClientWeb::getAssetContent);
 
+		registry.get("/img/screenshot", KubeJSClientWeb::getScreenshot);
+
 		registry.get("/img/{size}/item/{namespace}/{path}", ImageGenerator::item);
 		registry.get("/img/{size}/block/{namespace}/{path}", ImageGenerator::block);
 		registry.get("/img/{size}/fluid/{namespace}/{path}", ImageGenerator::fluid);
 		registry.get("/img/{size}/item-tag/{namespace}/{path}", ImageGenerator::itemTag);
 		registry.get("/img/{size}/block-tag/{namespace}/{path}", ImageGenerator::blockTag);
 		registry.get("/img/{size}/fluid-tag/{namespace}/{path}", ImageGenerator::fluidTag);
+		registry.get("/img/{size}/test-gif", ImageGenerator::testGIF);
+	}
+
+	private static HTTPResponse getScreenshot(KJSHTTPRequest req) {
+		var bytes = req.supplyInMainThread(() -> {
+			var mc = Minecraft.getInstance();
+			mc.getMainRenderTarget().bindRead();
+
+			try (var image = new NativeImage(mc.getWindow().getWidth(), mc.getWindow().getHeight(), false)) {
+				image.downloadTexture(0, true);
+				image.flipY();
+				return image.asByteArray();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				return null;
+			} finally {
+				mc.getMainRenderTarget().unbindRead();
+			}
+		});
+
+		return HTTPResponse.ok().content(bytes, "image/png");
 	}
 
 	private static HTTPResponse getItemsResponse(KJSHTTPRequest req) {
@@ -71,7 +95,7 @@ public class KubeJSClientWeb {
 			var jsonOps = Minecraft.getInstance().level == null ? req.registries().json() : Minecraft.getInstance().level.registryAccess().createSerializationContext(JsonOps.INSTANCE);
 			var nbtOps = Minecraft.getInstance().level == null ? req.registries().nbt() : Minecraft.getInstance().level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
 			var results = new JsonArray();
-			var iconPathRoot = KubeJSLocalWebServer.instance().url() + "/img/64/item/";
+			var iconPathRoot = LocalWebServer.instance().url() + "/img/64/item/";
 
 			for (var item : CACHED_ITEM_SEARCH.get().values()) {
 				var o = new JsonObject();
@@ -133,7 +157,7 @@ public class KubeJSClientWeb {
 	}
 
 	private static HTTPResponse getAssetList(KJSHTTPRequest req) {
-		var prefix = req.variables().get("prefix");
+		var prefix = req.variable("prefix");
 
 		if (prefix.isEmpty()) {
 			return HTTPStatus.BAD_REQUEST;

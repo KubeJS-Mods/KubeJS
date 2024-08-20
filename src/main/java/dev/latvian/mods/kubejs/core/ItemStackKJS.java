@@ -11,7 +11,7 @@ import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.WithCodec;
-import dev.latvian.mods.kubejs.web.KubeJSLocalWebServer;
+import dev.latvian.mods.kubejs.web.LocalWebServer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
@@ -282,6 +282,6 @@ public interface ItemStackKJS extends
 	default String kjs$getWebIconURL(DynamicOps<Tag> ops, int size) {
 		var url = "/img/" + size + "/item/" + ID.url(kjs$getIdLocation());
 		var c = DataComponentWrapper.patchToString(new StringBuilder(), ops, DataComponentWrapper.visualPatch(kjs$self().getComponentsPatch())).toString();
-		return KubeJSLocalWebServer.getURL(url, c.equals("[]") ? Map.of() : Map.of("components", c.substring(1, c.length() - 1)));
+		return LocalWebServer.getURL(url, c.equals("[]") ? Map.of() : Map.of("components", c.substring(1, c.length() - 1)));
 	}
 }

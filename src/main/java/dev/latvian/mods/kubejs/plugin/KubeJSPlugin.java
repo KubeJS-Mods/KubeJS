@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.plugin;
 
 import com.google.gson.JsonElement;
-import dev.latvian.apps.tinyserver.ServerRegistry;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
@@ -25,7 +24,7 @@ import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.AttachedData;
-import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
+import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -95,7 +94,7 @@ public interface KubeJSPlugin {
 	default void registerDataComponentTypeDescriptions(DataComponentTypeInfoRegistry registry) {
 	}
 
-	default void registerLocalWebServer(ServerRegistry<KJSHTTPRequest> registry) {
+	default void registerLocalWebServer(LocalWebServerRegistry registry) {
 	}
 
 	default void attachServerData(AttachedData<MinecraftServer> event) {

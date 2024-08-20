@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.block.RandomTickKubeEvent;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ID;
-import dev.latvian.mods.kubejs.web.KubeJSLocalWebServer;
+import dev.latvian.mods.kubejs.web.LocalWebServer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
@@ -77,6 +77,6 @@ public interface BlockStateKJS extends RegistryObjectKJS<Block>, Replaceable {
 
 	default String kjs$getWebIconURL(int size) {
 		var url = "/img/" + size + "/block/" + ID.url(kjs$getIdLocation());
-		return KubeJSLocalWebServer.getURL(url, Map.of());
+		return LocalWebServer.getURL(url, Map.of());
 	}
 }

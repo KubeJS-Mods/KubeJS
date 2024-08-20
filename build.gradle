@@ -134,6 +134,15 @@ dependencies {
 	}
 
 	additionalRuntimeClasspath("dev.latvian.apps:tiny-java-server:$tiny_server_version")
+
+	jarJar(implementation 'com.madgag:animated-gif-lib') {
+		version {
+			strictly '[1.4,)'
+			prefer '1.4'
+		}
+	}
+
+	additionalRuntimeClasspath("com.madgag:animated-gif-lib:1.4")
 }
 
 processResources {

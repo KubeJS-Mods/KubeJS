@@ -14,8 +14,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import java.util.UUID;
 
 public record CachedComponentObject<T extends RegistryObjectKJS<T>, S>(UUID cacheKey, T value, S stack, DataComponentPatch components) {
-	public static <T extends RegistryObjectKJS<T>, S> CachedComponentObject<T, S> of(T value, S stack, DataComponentPatch components) {
-		var buf = new FriendlyByteBuf(Unpooled.buffer());
+	public static <T extends RegistryObjectKJS<T>> void writeCacheKey(FriendlyByteBuf buf, T value, DataComponentPatch components) {
 		buf.writeUtf(value.kjs$getId());
 		buf.writeVarInt(components.size());
 
@@ -29,7 +28,11 @@ public record CachedComponentObject<T extends RegistryObjectKJS<T>, S>(UUID cach
 				buf.writeVarInt(entry.getValue().get().hashCode());
 			}
 		}
+	}
 
+	public static <T extends RegistryObjectKJS<T>, S> CachedComponentObject<T, S> of(T value, S stack, DataComponentPatch components) {
+		var buf = new FriendlyByteBuf(Unpooled.buffer());
+		writeCacheKey(buf, value, components);
 		return new CachedComponentObject<>(UUID.nameUUIDFromBytes(buf.array()), value, stack, components);
 	}
 

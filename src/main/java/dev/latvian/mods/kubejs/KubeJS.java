@@ -20,8 +20,6 @@ import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
 import dev.latvian.mods.kubejs.util.RecordDefaults;
-import dev.latvian.mods.kubejs.web.KubeJSLocalWebServer;
-import dev.latvian.mods.kubejs.web.WebServerProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -161,9 +159,5 @@ public class KubeJS {
 
 		StartupEvents.INIT.post(ScriptType.STARTUP, KubeStartupEvent.BASIC);
 		// KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);
-
-		if (!datagen && WebServerProperties.get().enabled && (dist == Dist.CLIENT || !WebServerProperties.get().publicAddress.isEmpty())) {
-			KubeJSLocalWebServer.start();
-		}
 	}
 }
