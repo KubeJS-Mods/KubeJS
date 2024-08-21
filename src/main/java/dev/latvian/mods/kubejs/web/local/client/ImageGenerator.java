@@ -44,7 +44,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.biome.Biomes;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -194,9 +193,11 @@ public class ImageGenerator {
 				Files.write(cachePath, bytes);
 			} catch (Exception ignore) {
 			}
+
+			return HTTPResponse.ok().content(bytes, "image/png").header("X-KubeJS-Cache-Key", cacheUUIDStr);
 		}
 
-		return HTTPResponse.ok().content(bytes, "image/png").header("X-KubeJS-Cache-Key", cacheUUIDStr);
+		return HTTPResponse.ok().content(bytes, "image/png");
 	}
 
 	private static HTTPResponse renderAnimated(KJSHTTPRequest req, String dir, @Nullable ByteBuf cacheBuf, List<HTTPResponse> responses) throws Exception {
@@ -252,6 +253,8 @@ public class ImageGenerator {
 				Files.write(cachePath, bytes);
 			} catch (Exception ignore) {
 			}
+
+			return HTTPResponse.ok().content(bytes, "image/gif").header("X-KubeJS-Cache-Key", cacheUUIDStr);
 		}
 
 		return HTTPResponse.ok().content(bytes, "image/gif");
@@ -454,14 +457,5 @@ public class ImageGenerator {
 
 			}
 		}
-	}
-
-	public static HTTPResponse testGIF(KJSHTTPRequest req) throws Exception {
-		return renderAnimated(req, "test", null, List.of(
-			renderItem(req, Items.RED_STAINED_GLASS.getDefaultInstance(), true),
-			renderItem(req, Items.CARROT.getDefaultInstance(), true),
-			renderBlock(req, Blocks.NETHER_PORTAL.defaultBlockState(), true),
-			renderFluid(req, new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME), true)
-		));
 	}
 }

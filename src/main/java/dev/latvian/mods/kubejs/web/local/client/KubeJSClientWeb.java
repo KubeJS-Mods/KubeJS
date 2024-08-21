@@ -67,7 +67,6 @@ public class KubeJSClientWeb {
 		registry.get("/img/{size}/item-tag/{namespace}/{path}", ImageGenerator::itemTag);
 		registry.get("/img/{size}/block-tag/{namespace}/{path}", ImageGenerator::blockTag);
 		registry.get("/img/{size}/fluid-tag/{namespace}/{path}", ImageGenerator::fluidTag);
-		registry.get("/img/{size}/test-gif", ImageGenerator::testGIF);
 	}
 
 	private static HTTPResponse getScreenshot(KJSHTTPRequest req) {
