@@ -70,7 +70,6 @@ public class KubeJSWeb {
 		registry.get("/", KubeJSWeb::getHomepage);
 		registry.get("/api", KubeJSWeb::getApi);
 		registry.get("/api/mods", KubeJSWeb::getMods);
-		registry.get("/api/mods", KubeJSWeb::getMods);
 
 		registry.get("/api/registries", KubeJSWeb::getRegistriesResponse); // List of all registries
 		registry.get("/api/registries/{namespace}/{path}/keys", KubeJSWeb::getRegistryKeysResponse); // List of all IDs in registry

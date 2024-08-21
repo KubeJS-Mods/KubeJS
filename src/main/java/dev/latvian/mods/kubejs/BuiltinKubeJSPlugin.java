@@ -44,6 +44,7 @@ import dev.latvian.mods.kubejs.block.custom.HorizontalDirectionalBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.PressurePlateBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.SlabBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.StairBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.TrapdoorBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
 import dev.latvian.mods.kubejs.block.entity.InventoryAttachment;
@@ -279,6 +280,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 			reg.add("crop", CropBlockBuilder.class, CropBlockBuilder::new);
 			reg.add("cardinal", HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);
 			reg.add("carpet", CarpetBlockBuilder.class, CarpetBlockBuilder::new);
+			reg.add("trapdoor", TrapdoorBlockBuilder.class, TrapdoorBlockBuilder::new);
 		});
 
 		registry.addDefault(Registries.ITEM, ItemBuilder.class, ItemBuilder::new);
