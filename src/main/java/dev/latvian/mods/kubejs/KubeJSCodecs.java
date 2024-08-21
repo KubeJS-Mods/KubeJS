@@ -1,12 +1,14 @@
 package dev.latvian.mods.kubejs;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -18,6 +20,7 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +41,23 @@ public interface KubeJSCodecs {
 		@Override
 		public void encode(ByteBuf buf, ResourceLocation value) {
 			Utf8String.write(buf, value.getNamespace().equals(KubeJS.MOD_ID) ? value.getPath() : value.toString(), Short.MAX_VALUE);
+		}
+	};
+
+	StreamCodec<ByteBuf, JsonElement> JSON_ELEMENT_STREAM_CODEC = new StreamCodec<>() {
+		@Override
+		public JsonElement decode(ByteBuf buffer) {
+			var str = Utf8String.read(buffer, Integer.MAX_VALUE);
+			return str.isEmpty() || str.equals("null") ? JsonNull.INSTANCE : JsonUtils.fromString(str);
+		}
+
+		@Override
+		public void encode(ByteBuf buffer, @Nullable JsonElement value) {
+			if (value == null || value.isJsonNull()) {
+				Utf8String.write(buffer, "", Integer.MAX_VALUE);
+			} else {
+				Utf8String.write(buffer, JsonUtils.toString(value), Integer.MAX_VALUE);
+			}
 		}
 	};
 

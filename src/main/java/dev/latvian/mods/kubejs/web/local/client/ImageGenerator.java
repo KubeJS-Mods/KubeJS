@@ -125,7 +125,7 @@ public class ImageGenerator {
 		var cachePath = cacheUUIDStr == null ? null : KubeJSPaths.dir(KubeJSPaths.LOCAL.resolve("cache/web/img/" + dir + "/" + cacheUUIDStr.substring(0, 2))).resolve(cacheUUIDStr + "_" + size + ".png");
 
 		if (cachePath != null && Files.exists(cachePath)) {
-			return HTTPResponse.ok().content(cachePath).header("X-KubeJS-Cache-Key", cacheUUIDStr);
+			return HTTPResponse.ok().content(cachePath).header("X-KubeJS-Cache-Key", cacheUUIDStr).header("X-KubeJS-Cache-Path", KubeJSPaths.GAMEDIR.relativize(cachePath).toString().replace('\\', '/'));
 		}
 
 		var bytes = req.supplyInMainThread(() -> {
@@ -194,7 +194,7 @@ public class ImageGenerator {
 			} catch (Exception ignore) {
 			}
 
-			return HTTPResponse.ok().content(bytes, "image/png").header("X-KubeJS-Cache-Key", cacheUUIDStr);
+			return HTTPResponse.ok().content(bytes, "image/png").header("X-KubeJS-Cache-Key", cacheUUIDStr).header("X-KubeJS-Cache-Path", KubeJSPaths.GAMEDIR.relativize(cachePath).toString().replace('\\', '/'));
 		}
 
 		return HTTPResponse.ok().content(bytes, "image/png");
@@ -215,7 +215,7 @@ public class ImageGenerator {
 		var cachePath = cacheUUIDStr == null ? null : KubeJSPaths.dir(KubeJSPaths.LOCAL.resolve("cache/web/img/" + dir + "/" + cacheUUIDStr.substring(0, 2))).resolve(cacheUUIDStr + "_" + size + ".gif");
 
 		if (cachePath != null && Files.exists(cachePath)) {
-			return HTTPResponse.ok().content(cachePath).header("X-KubeJS-Cache-Key", cacheUUIDStr);
+			return HTTPResponse.ok().content(cachePath).header("X-KubeJS-Cache-Key", cacheUUIDStr).header("X-KubeJS-Cache-Path", KubeJSPaths.GAMEDIR.relativize(cachePath).toString().replace('\\', '/'));
 		}
 
 		var outputStream = new ByteArrayOutputStream();
@@ -254,7 +254,7 @@ public class ImageGenerator {
 			} catch (Exception ignore) {
 			}
 
-			return HTTPResponse.ok().content(bytes, "image/gif").header("X-KubeJS-Cache-Key", cacheUUIDStr);
+			return HTTPResponse.ok().content(bytes, "image/gif").header("X-KubeJS-Cache-Key", cacheUUIDStr).header("X-KubeJS-Cache-Path", KubeJSPaths.GAMEDIR.relativize(cachePath).toString().replace('\\', '/'));
 		}
 
 		return HTTPResponse.ok().content(bytes, "image/gif");

@@ -12,6 +12,8 @@ public interface KubeJSNet {
 		return new CustomPacketPayload.Type<>(KubeJS.id(id));
 	}
 
+	CustomPacketPayload.Type<WebServerUpdateJSONPayload> WEB_SERVER_JSON_UPDATE = type("web_server_json_update");
+	CustomPacketPayload.Type<WebServerUpdateNBTPayload> WEB_SERVER_NBT_UPDATE = type("web_server_nbt_update");
 	CustomPacketPayload.Type<SendDataFromClientPayload> SEND_DATA_FROM_CLIENT = type("send_data_from_client");
 	CustomPacketPayload.Type<SendDataFromServerPayload> SEND_DATA_FROM_SERVER = type("send_data_from_server");
 	CustomPacketPayload.Type<AddStagePayload> ADD_STAGE = type("add_stage");
@@ -35,8 +37,8 @@ public interface KubeJSNet {
 	static void register(RegisterPayloadHandlersEvent event) {
 		var reg = event.registrar("1");
 
-		// PacketDistributor.sendToClient(player, packet)
-
+		reg.playToClient(WEB_SERVER_JSON_UPDATE, WebServerUpdateJSONPayload.STREAM_CODEC, WebServerUpdateJSONPayload::handle);
+		reg.playToClient(WEB_SERVER_NBT_UPDATE, WebServerUpdateNBTPayload.STREAM_CODEC, WebServerUpdateNBTPayload::handle);
 		reg.playToServer(SEND_DATA_FROM_CLIENT, SendDataFromClientPayload.STREAM_CODEC, SendDataFromClientPayload::handle);
 		reg.playToClient(SEND_DATA_FROM_SERVER, SendDataFromServerPayload.STREAM_CODEC, SendDataFromServerPayload::handle);
 		reg.playToClient(ADD_STAGE, AddStagePayload.STREAM_CODEC, AddStagePayload::handle);
