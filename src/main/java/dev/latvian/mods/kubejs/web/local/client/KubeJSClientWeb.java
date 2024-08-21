@@ -52,9 +52,9 @@ public class KubeJSClientWeb {
 	public static void register(LocalWebServerRegistry registry) {
 		KubeJSWeb.addScriptTypeEndpoints(registry, ScriptType.CLIENT, KubeJS.getClientScriptManager()::reload);
 
-		registry.get("/api/client/search/items", KubeJSClientWeb::getItemsResponse);
-		registry.get("/api/client/search/blocks", KubeJSClientWeb::getBlocksResponse);
-		registry.get("/api/client/search/fluids", KubeJSClientWeb::getFluidsResponse);
+		registry.get("/api/client/search/items", KubeJSClientWeb::getSearchItems);
+		registry.get("/api/client/search/blocks", KubeJSClientWeb::getSearchBlocks);
+		registry.get("/api/client/search/fluids", KubeJSClientWeb::getSearchFluids);
 
 		registry.get("/api/client/assets/list/<prefix>", KubeJSClientWeb::getAssetList);
 		registry.get("/api/client/assets/get/{namespace}/<path>", KubeJSClientWeb::getAssetContent);
@@ -90,7 +90,7 @@ public class KubeJSClientWeb {
 		return HTTPResponse.ok().content(bytes, "image/png");
 	}
 
-	private static HTTPResponse getItemsResponse(KJSHTTPRequest req) {
+	private static HTTPResponse getSearchItems(KJSHTTPRequest req) {
 		return HTTPResponse.ok().content(JsonContent.object(json -> {
 			var jsonOps = Minecraft.getInstance().level == null ? req.registries().json() : Minecraft.getInstance().level.registryAccess().createSerializationContext(JsonOps.INSTANCE);
 			var nbtOps = Minecraft.getInstance().level == null ? req.registries().nbt() : Minecraft.getInstance().level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
@@ -126,6 +126,16 @@ public class KubeJSClientWeb {
 					}
 				}
 
+				var tags = new JsonArray();
+
+				for (var t : item.value().builtInRegistryHolder().tags().toList()) {
+					tags.add(t.location().toString());
+				}
+
+				if (!tags.isEmpty()) {
+					o.add("tags", tags);
+				}
+
 				results.add(o);
 			}
 
@@ -134,23 +144,45 @@ public class KubeJSClientWeb {
 		}));
 	}
 
-	private static HTTPResponse getBlocksResponse(KJSHTTPRequest req) {
+	private static HTTPResponse getSearchBlocks(KJSHTTPRequest req) {
 		return HTTPResponse.ok().content(JsonContent.array(json -> {
 			for (var block : BuiltInRegistries.BLOCK) {
 				var o = new JsonObject();
 				o.addProperty("id", block.kjs$getId());
 				o.addProperty("name", Component.translatable(block.getDescriptionId()).getString());
+
+				var tags = new JsonArray();
+
+				for (var t : block.builtInRegistryHolder().tags().toList()) {
+					tags.add(t.location().toString());
+				}
+
+				if (!tags.isEmpty()) {
+					o.add("tags", tags);
+				}
+
 				json.add(o);
 			}
 		}));
 	}
 
-	private static HTTPResponse getFluidsResponse(KJSHTTPRequest req) {
+	private static HTTPResponse getSearchFluids(KJSHTTPRequest req) {
 		return HTTPResponse.ok().content(JsonContent.array(json -> {
 			for (var fluid : BuiltInRegistries.FLUID) {
 				var o = new JsonObject();
 				o.addProperty("id", fluid.kjs$getId());
 				o.addProperty("name", fluid.getFluidType().getDescription().getString());
+
+				var tags = new JsonArray();
+
+				for (var t : fluid.builtInRegistryHolder().tags().toList()) {
+					tags.add(t.location().toString());
+				}
+
+				if (!tags.isEmpty()) {
+					o.add("tags", tags);
+				}
+
 				json.add(o);
 			}
 		}));
