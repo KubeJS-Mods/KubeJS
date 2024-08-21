@@ -37,6 +37,7 @@ import dev.latvian.mods.kubejs.block.custom.BasicBlockJS;
 import dev.latvian.mods.kubejs.block.custom.ButtonBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.CarpetBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.CropBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.DoorBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FallingBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FenceBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FenceGateBlockBuilder;
@@ -280,6 +281,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 			reg.add("crop", CropBlockBuilder.class, CropBlockBuilder::new);
 			reg.add("cardinal", HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);
 			reg.add("carpet", CarpetBlockBuilder.class, CarpetBlockBuilder::new);
+			reg.add("door", DoorBlockBuilder.class, DoorBlockBuilder::new);
 			reg.add("trapdoor", TrapdoorBlockBuilder.class, TrapdoorBlockBuilder::new);
 		});
 
