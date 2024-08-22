@@ -1,10 +1,12 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.BlockRenderType;
+import dev.latvian.mods.kubejs.block.drop.BlockDrops;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
+import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -14,6 +16,15 @@ import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoorHingeSide;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
+import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
 import java.util.List;
 import java.util.Map;
@@ -155,6 +166,41 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 				m.texture("bottom", bottomTexture);
 			});
 		}
+	}
+
+	@Override
+	public LootTable generateLootTable() {
+		var blockDrops = drops == null ? BlockDrops.createDefault(get().asItem().getDefaultInstance()) : drops.get();
+
+		if (blockDrops.items().length == 0) {
+			return null;
+		}
+
+		var pool = new LootPool.Builder();
+
+		if (blockDrops.rolls() != null) {
+			pool.setRolls(blockDrops.rolls());
+		}
+
+		pool.when(ExplosionCondition.survivesExplosion());
+
+		for (var drop : blockDrops.items()) {
+			var item = LootItem.lootTableItem(drop.getItem());
+
+			item.when(new LootItemBlockStatePropertyCondition.Builder(get()).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(DoorBlock.HALF, DoubleBlockHalf.LOWER)));
+
+			if (drop.getCount() > 1) {
+				item.apply(SetItemCountFunction.setCount(ConstantValue.exactly(drop.getCount())));
+			}
+
+			if (!drop.isComponentsPatchEmpty()) {
+				item.apply(LootItemConditionalFunction.simpleBuilder(c -> new SetComponentsFunction(c, drop.getComponentsPatch())));
+			}
+
+			pool.add(item);
+		}
+
+		return new LootTable.Builder().withPool(pool).build();
 	}
 
 	@Override
