@@ -116,6 +116,13 @@ repositories {
 			includeGroup "dev.emi"
 		}
 	}
+
+	maven {
+		url 'https://jitpack.io'
+		content {
+			includeGroup "com.github.rtyley"
+		}
+	}
 }
 
 dependencies {
@@ -126,23 +133,19 @@ dependencies {
 	compileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version")
 	compileOnly("dev.emi:emi-neoforge:$emi_version:api")
 
-	jarJar(implementation 'dev.latvian.apps:tiny-java-server') {
+	additionalRuntimeClasspath(jarJar(implementation('dev.latvian.apps:tiny-java-server'))) {
 		version {
-			strictly '[1.0,)'
+			strictly "[$tiny_server_version,)"
 			prefer "$tiny_server_version"
 		}
 	}
 
-	additionalRuntimeClasspath("dev.latvian.apps:tiny-java-server:$tiny_server_version")
-
-	jarJar(implementation 'com.madgag:animated-gif-lib') {
+	additionalRuntimeClasspath(jarJar(implementation("com.github.rtyley:animated-gif-lib-for-java"))) {
 		version {
-			strictly '[1.4,)'
-			prefer '1.4'
+			strictly "[animated-gif-lib-$gif_lib_version,)"
+			prefer "animated-gif-lib-$gif_lib_version"
 		}
 	}
-
-	additionalRuntimeClasspath("com.madgag:animated-gif-lib:1.4")
 }
 
 processResources {
