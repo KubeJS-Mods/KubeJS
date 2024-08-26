@@ -15,11 +15,11 @@ import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
 import dev.latvian.mods.kubejs.web.KJSWSSession;
 import dev.latvian.mods.kubejs.web.LocalWebServer;
 import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -81,10 +81,10 @@ public class KubeJSWeb {
 	}
 
 	private static void reloadInternalServer() {
-		var mc = Minecraft.getInstance();
+		var server = ServerLifecycleHooks.getCurrentServer();
 
-		if (mc.player != null) {
-			mc.player.kjs$runCommand("/reload");
+		if (server != null) {
+			server.kjs$runCommand("/reload");
 		}
 	}
 

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
 import com.mojang.authlib.GameProfile;
-import dev.latvian.mods.kubejs.client.KubeSessionData;
+import dev.latvian.mods.kubejs.core.LocalClientPlayerKJS;
 import dev.latvian.mods.kubejs.kgui.action.ClientKGUIActions;
 import dev.latvian.mods.kubejs.kgui.action.KGUIActions;
 import dev.latvian.mods.rhino.util.RemapForJS;
@@ -9,19 +9,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.StatsCounter;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.Map;
 
 @Mixin(LocalPlayer.class)
-public abstract class LocalPlayerMixin extends AbstractClientPlayerMixin {
+public abstract class LocalPlayerMixin extends AbstractClientPlayerMixin implements LocalClientPlayerKJS {
 	@Unique
 	private KGUIActions kjs$kguiActions;
 
@@ -42,24 +41,8 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayerMixin {
 	protected Minecraft minecraft;
 
 	@Override
-	public void kjs$runCommand(String command) {
-		connection.sendCommand(command);
-	}
-
-	@Override
-	public void kjs$runCommandSilent(String command) {
-		connection.sendCommand(command);
-	}
-
-	@Override
-	public void kjs$setActivePostShader(@Nullable ResourceLocation id) {
-		var sessionData = KubeSessionData.of(connection);
-
-		if (sessionData != null) {
-			sessionData.activePostShader = id;
-			minecraft.gameRenderer.checkEntityPostEffect(minecraft.options.getCameraType().isFirstPerson() ? minecraft.getCameraEntity() : null);
-		}
-	}
+	@Accessor("minecraft")
+	public abstract Minecraft kjs$getMinecraft();
 
 	@Override
 	public KGUIActions kjs$getKgui() {
