@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block.custom;
 
+import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
-import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -16,41 +16,36 @@ import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.List;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToIntFunction;
-
 public class BasicCropBlockJS extends CropBlock {
-	private final int age;
-	private final ItemBuilder seedItem;
-	private final List<VoxelShape> shapeByAge;
-	private final boolean dropSeed;
-	private final ToDoubleFunction<RandomTickCallbackJS> growSpeedCallback;
-	private final ToIntFunction<RandomTickCallbackJS> fertilizerCallback;
-	private final CropBlockBuilder.SurviveCallback surviveCallback;
+	private final CropBlockBuilder builder;
+	private IntegerProperty ageProperty;
 
 	public BasicCropBlockJS(CropBlockBuilder builder) {
 		super(builder.createProperties().sound(SoundType.CROP).randomTicks());
-		age = builder.age;
-		seedItem = builder.itemBuilder;
-		shapeByAge = builder.shapeByAge;
-		dropSeed = builder.dropSeed;
-		growSpeedCallback = builder.growSpeedCallback;
-		fertilizerCallback = builder.fertilizerCallback;
-		surviveCallback = builder.surviveCallback;
+		this.builder = builder;
+	}
+
+	@Override
+	public IntegerProperty getAgeProperty() {
+		if (ageProperty == null) {
+			ageProperty = IntegerProperty.create("age", 0, ((CropBlockBuilder) ((KubeJSBlockProperties) properties).blockBuilder).age);
+		}
+
+		return ageProperty;
 	}
 
 	@Override
 	public int getMaxAge() {
-		return age;
+		return builder.age;
 	}
 
 	@Override
 	protected ItemLike getBaseSeedId() {
-		return dropSeed ? seedItem.get() : Items.AIR;
+		return builder.itemBuilder != null ? builder.itemBuilder.get() : Items.AIR;
 	}
 
 	@Override
@@ -60,12 +55,12 @@ public class BasicCropBlockJS extends CropBlock {
 
 	@Override
 	public VoxelShape getShape(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos, CollisionContext collisionContext) {
-		return shapeByAge.get(blockState.getValue(this.getAgeProperty()));
+		return builder.shapeByAge.get(blockState.getValue(this.getAgeProperty()));
 	}
 
 	@Override
 	public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource random) {
-		double f = growSpeedCallback == null ? -1 : growSpeedCallback.applyAsDouble(new RandomTickCallbackJS(new BlockContainerJS(serverLevel, blockPos), random));
+		double f = builder.growSpeedCallback == null ? -1 : builder.growSpeedCallback.applyAsDouble(new RandomTickCallbackJS(new BlockContainerJS(serverLevel, blockPos), random));
 		int age = this.getAge(blockState);
 		if (age < this.getMaxAge()) {
 			if (f < 0) {
@@ -79,10 +74,10 @@ public class BasicCropBlockJS extends CropBlock {
 
 	@Override
 	public void growCrops(Level level, BlockPos blockPos, BlockState blockState) {
-		if (fertilizerCallback == null) {
+		if (builder.fertilizerCallback == null) {
 			super.growCrops(level, blockPos, blockState);
 		} else {
-			int effect = fertilizerCallback.applyAsInt(new RandomTickCallbackJS(new BlockContainerJS(level, blockPos), level.random));
+			int effect = builder.fertilizerCallback.applyAsInt(new RandomTickCallbackJS(new BlockContainerJS(level, blockPos), level.random));
 			if (effect > 0) {
 				level.setBlock(blockPos, this.getStateForAge(Integer.min(getAge(blockState) + effect, getMaxAge())), 2);
 			}
@@ -91,8 +86,6 @@ public class BasicCropBlockJS extends CropBlock {
 
 	@Override
 	public boolean canSurvive(BlockState blockState, LevelReader levelReader, BlockPos blockPos) {
-		return surviveCallback != null ?
-			surviveCallback.survive(blockState, levelReader, blockPos) :
-			super.canSurvive(blockState, levelReader, blockPos);
+		return builder.surviveCallback != null ? builder.surviveCallback.survive(blockState, levelReader, blockPos) : super.canSurvive(blockState, levelReader, blockPos);
 	}
 }
