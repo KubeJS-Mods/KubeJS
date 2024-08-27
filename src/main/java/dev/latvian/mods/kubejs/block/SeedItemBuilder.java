@@ -1,35 +1,41 @@
 package dev.latvian.mods.kubejs.block;
 
+import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.block.custom.BasicCropBlockJS;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemNameBlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.neoforged.neoforge.common.SpecialPlantable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SeedItemBuilder extends BlockItemBuilder {
-	public static class SeedItemJS extends Item implements SpecialPlantable {
+	public static class SeedItemJS extends ItemNameBlockItem implements SpecialPlantable {
 		public SeedItemJS(SeedItemBuilder b) {
-			super(b.createItemProperties());
+			super(b.blockBuilder.get(), b.createItemProperties());
 		}
 
 		@Override
-		public boolean canPlacePlantAtPosition(ItemStack stack, LevelReader level, BlockPos pos, @Nullable Direction direction) {
-			return false;
+		public boolean canPlacePlantAtPosition(@NotNull ItemStack stack, @NotNull LevelReader level, @NotNull BlockPos pos, @Nullable Direction direction) {
+			BasicCropBlockJS cropBlock = (BasicCropBlockJS) getBlock();
+			return cropBlock.canSurvive(cropBlock.defaultBlockState(), level, pos);
 		}
 
 		@Override
-		public void spawnPlantAtPosition(ItemStack stack, LevelAccessor level, BlockPos pos, @Nullable Direction direction) {
+		public void spawnPlantAtPosition(@NotNull ItemStack stack, LevelAccessor level, @NotNull BlockPos pos, @Nullable Direction direction) {
+			level.setBlock(pos, getBlock().defaultBlockState(), 2);
 		}
 
 		@Override
-		public boolean villagerCanPlantItem(Villager villager) {
-			return false;
+		public boolean villagerCanPlantItem(@NotNull Villager villager) {
+			return true;
 		}
 	}
 

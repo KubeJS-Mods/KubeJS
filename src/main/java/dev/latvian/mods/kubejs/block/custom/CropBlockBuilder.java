@@ -11,20 +11,38 @@ import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
+import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.Nullable;
@@ -60,12 +78,61 @@ public class CropBlockBuilder extends BlockBuilder {
 
 		@Info("""
 			Describe the shape of the crop at a specific age.
-			
+						
 			min/max coordinates are double values between 0 and 16.
 			""")
 		public ShapeBuilder shape(int age, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
 			shapes.set(age, Block.box(minX, minY, minZ, maxX, maxY, maxZ));
 			return this;
+		}
+
+		@Info("Makes the block to have a box like wheat for each stage.")
+		public ShapeBuilder wheat() {
+			shapes.clear();
+			shapes.addAll(List.of(new VoxelShape[]{
+				Block.box(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 6.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 10.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 12.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 14.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)
+			}));
+			return this;
+		}
+
+		@Info("Makes the block to have a box like carrot for each stage.")
+		public ShapeBuilder carrot() {
+			shapes.clear();
+			shapes.addAll(List.of(new VoxelShape[]{
+				Block.box(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 3.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 5.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 6.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 7.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 9.0, 16.0)
+			}));
+			return this;
+		}
+
+		@Info("Makes the block to have a box like beetroot for each stage.")
+		public ShapeBuilder beetroot() {
+			shapes.clear();
+			shapes.addAll(List.of(new VoxelShape[]{
+				Block.box(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 6.0, 16.0),
+				Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0)
+			}));
+			return this;
+		}
+
+		@Info("Makes the block to have a box like potato for each stage.")
+		public ShapeBuilder potato() {
+			return carrot();
 		}
 
 		public List<VoxelShape> getShapes() {
@@ -80,7 +147,7 @@ public class CropBlockBuilder extends BlockBuilder {
 	public transient ToIntFunction<RandomTickCallbackJS> fertilizerCallback;
 	public transient SurviveCallback surviveCallback;
 
-	public transient List<Pair<Object, Double>> outputs;
+	public transient List<Pair<Item, NumberProvider>> outputs;
 
 	public CropBlockBuilder(ResourceLocation i) {
 		super(i);
@@ -110,14 +177,14 @@ public class CropBlockBuilder extends BlockBuilder {
 		tagItem(CROP_ITEM_TAGS);
 	}
 
-	@Info("Add a crop output with a 100% chance.")
-	public CropBlockBuilder crop(Object output) {
-		crop(output, 1.0);
+	@Info("Add a crop output with exactly one output.")
+	public CropBlockBuilder crop(Item output) {
+		crop(output, ConstantValue.exactly(1.0f));
 		return this;
 	}
 
-	@Info("Add a crop output with a specific chance.")
-	public CropBlockBuilder crop(Object output, double chance) {
+	@Info("Add a crop output with a specific amount.")
+	public CropBlockBuilder crop(Item output, NumberProvider chance) {
 		outputs.add(new Pair<>(output, chance));
 		return this;
 	}
@@ -157,6 +224,11 @@ public class CropBlockBuilder extends BlockBuilder {
 		}
 	}
 
+	public CropBlockBuilder farmersCanPlant() {
+		this.tagItem(new ResourceLocation[]{ResourceLocation.fromNamespaceAndPath("minecraft", "villager_plantable_seeds")});
+		return this;
+	}
+
 	public CropBlockBuilder bonemeal(ToIntFunction<RandomTickCallbackJS> bonemealCallback) {
 		this.fertilizerCallback = bonemealCallback;
 		return this;
@@ -179,54 +251,34 @@ public class CropBlockBuilder extends BlockBuilder {
 	}
 
 	// FIXME
+	// TODO: Get lookup for enchantments here to apply fortune bonus
 	@Override
 	@Nullable
 	public LootTable generateLootTable() {
-		if (drops != null) {
-			return super.generateLootTable();
+		LootItemCondition.Builder mature = LootItemBlockStatePropertyCondition.hasBlockStateProperties(this.get())
+			.setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(CropBlock.AGE, age));
+
+		var builder = LootTable.lootTable();
+		for (Pair<Item, NumberProvider> output : outputs) {
+			var cropItem = LootItem.lootTableItem(output.getFirst())
+				.apply(SetItemCountFunction.setCount(output.getSecond()))
+				.when(mature);
+			builder.withPool(LootPool.lootPool().add(cropItem));
 		}
 
-		/*
-		var condition = new JsonObject();
-			condition.addProperty("condition", "minecraft:block_state_property");
-			condition.addProperty("block", this.newID("", "").toString());
-			var properties = new JsonObject();
-			properties.addProperty("age", String.valueOf(this.age));
-			condition.add("properties", properties);
+		if (dropSeed) {
+			var pool = LootPool.lootPool()
+				.add(
+					LootItem.lootTableItem(itemBuilder.get())
+						.when(mature)
+						.otherwise(LootItem.lootTableItem(itemBuilder.get()))
+				);
+			builder.withPool(pool);
+		}
 
-			var function = new JsonObject();
-			function.addProperty("function", "minecraft:apply_bonus");
-			function.addProperty("enchantment", "minecraft:fortune");
-			function.addProperty("formula", "minecraft:binomial_with_bonus_count");
-			var parameters = new JsonObject();
-			parameters.addProperty("extra", 3);
-			parameters.addProperty("probability", 0.5714286); //Same as vanilla
-			function.add("parameters", parameters);
-
-			if (dropSeed) {
-				loot.addPool(bonuses -> {
-					bonuses.rolls = ConstantValue.exactly(1.0f);
-					bonuses.bonusRolls = ConstantValue.exactly(0.0f);
-					bonuses.addItem(new ItemStack(itemBuilder.get()))
-						.addCondition(condition)
-						.addFunction(function);
-					bonuses.addItem(new ItemStack(itemBuilder.get()));
-				});
-			}
-
-			for (var output : outputs) {
-				loot.addPool(crops -> {
-					crops.rolls = ConstantValue.exactly(1.0f);
-					crops.bonusRolls = ConstantValue.exactly(0.0f);
-					crops.addItem(ItemStackJS.of(output.getFirst()))
-						.addCondition(condition)
-						.randomChance(output.getSecond());
-				});
-			}
-		 */
-
-		return null;
+		return builder.build();
 	}
+
 
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
