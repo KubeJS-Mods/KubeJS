@@ -11,7 +11,7 @@
 	"downloads": [
 		{
 			"name": "Download",
-			"url": "https://maven.saps.dev/releases/dev/latvian/mods/kubejs-neoforge/{version}/kubejs-neoforge-{version}.jar"
+			"url": "https://maven.latvian.dev/releases/dev/latvian/mods/kubejs-neoforge/{version}/kubejs-neoforge-{version}.jar"
 		}
 	]
 }

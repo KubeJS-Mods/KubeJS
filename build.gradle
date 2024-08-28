@@ -81,7 +81,11 @@ repositories {
 	}
 
 	maven {
-		url "https://maven.architectury.dev/"
+		name = 'ParchmentMC'
+		url = 'https://maven.parchmentmc.org'
+		content {
+			includeGroup "org.parchmentmc.data"
+		}
 	}
 
 	maven {
@@ -93,19 +97,15 @@ repositories {
 	}
 
 	maven {
+		url "https://maven.architectury.dev/"
+	}
+
+	maven {
 		url "https://maven.blamejared.com"
 		content {
 			includeGroup "mezz.jei"
 			includeGroup "net.darkhax.bookshelf"
 			includeGroup "net.darkhax.gamestages"
-		}
-	}
-
-	maven {
-		name = 'ParchmentMC'
-		url = 'https://maven.parchmentmc.org'
-		content {
-			includeGroup "org.parchmentmc.data"
 		}
 	}
 
@@ -129,7 +129,7 @@ dependencies {
 	api("dev.latvian.mods:rhino:$rhino_version") { transitive(false) }
 
 	compileOnly("dev.architectury:architectury-neoforge:$architectury_version")
-	compileOnly("mezz.jei:jei-1.21-neoforge:$jei_version")
+	compileOnly("mezz.jei:jei-1.21.1-neoforge:$jei_version")
 	compileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version")
 	compileOnly("dev.emi:emi-neoforge:$emi_version:api")
 
@@ -176,6 +176,37 @@ jar {
 	}
 }
 
+publishing {
+	publications {
+		mavenNeoForge(MavenPublication) {
+			artifactId = archives_base_name
+			from components.java
+		}
+	}
+
+	repositories {
+		if (ENV.MAVEN_TOKEN) {
+			maven {
+				url "https://maven.latvian.dev/releases"
+				credentials {
+					username = "lat"
+					password = "${ENV.MAVEN_TOKEN}"
+				}
+			}
+		}
+
+		if (ENV.SAPS_TOKEN) {
+			maven {
+				url "https://maven.saps.dev/releases"
+				credentials {
+					username = "latvian"
+					password = "${ENV.SAPS_TOKEN}"
+				}
+			}
+		}
+	}
+}
+
 unifiedPublishing {
 	project {
 		releaseType = "${ENV.RELEASE_TYPE ?: 'release'}"
@@ -207,37 +238,6 @@ unifiedPublishing {
 				token = ENV.MODRINTH_TOKEN
 				id = project.modrinth_id
 				version = "$project.version+$project.name"
-			}
-		}
-	}
-}
-
-publishing {
-	publications {
-		mavenNeoForge(MavenPublication) {
-			artifactId = archives_base_name
-			from components.java
-		}
-	}
-
-	repositories {
-		if (ENV.MAVEN_TOKEN) {
-			maven {
-				url "https://maven.latvian.dev/releases"
-				credentials {
-					username = "lat"
-					password = "${ENV.MAVEN_TOKEN}"
-				}
-			}
-		}
-
-		if (ENV.SAPS_TOKEN) {
-			maven {
-				url "https://maven.saps.dev/releases"
-				credentials {
-					username = "latvian"
-					password = "${ENV.SAPS_TOKEN}"
-				}
 			}
 		}
 	}
