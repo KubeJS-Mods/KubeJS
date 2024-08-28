@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[2,)"
-issueTrackerURL = "https://kubejs.com/support?source=kubejs&mc=2006&loader=neoforge"
+issueTrackerURL = "https://kubejs.com/support?source=kubejs&mc=2101&loader=neoforge"
 license = "GNU LGPLv3"
 
 [[mods]]

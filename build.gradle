@@ -210,14 +210,10 @@ publishing {
 unifiedPublishing {
 	project {
 		releaseType = "${ENV.RELEASE_TYPE ?: 'release'}"
-		gameVersions = [
-				rootProject.minecraft_version,
-				'1.21'
-		]
+		gameVersions = Arrays.asList(rootProject.supported_versions.split(', '))
 		gameLoaders = ["neoforge"]
 		displayName = "$mod_name NeoForge $project.version"
 		changelog = "https://kubejs.com/changelog?mc=${project.minecraft_version}"
-		// FIXME this is a guess, it was loom's remapJar
 		mainPublication jar
 
 		relations {

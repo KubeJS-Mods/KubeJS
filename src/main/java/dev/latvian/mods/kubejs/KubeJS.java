@@ -42,8 +42,8 @@ public class KubeJS {
 	public static final String MOD_ID = "kubejs";
 	public static final String MOD_NAME = "KubeJS";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
-	public static final int MC_VERSION_NUMBER = 2006;
-	public static final String MC_VERSION_STRING = "1.20.6";
+	public static final int MC_VERSION_NUMBER = 2101;
+	public static final String MC_VERSION_STRING = "1.21.1";
 	public static String QUERY;
 	public static String VERSION = "0";
 
