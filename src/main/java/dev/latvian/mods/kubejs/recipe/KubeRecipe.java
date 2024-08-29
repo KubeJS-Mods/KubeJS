@@ -399,7 +399,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public ResourceLocation getOrCreateId() {
 		if (id == null) {
 			var js = getSerializationTypeFunction();
-			var ids = CommonProperties.get().ignoreCustomUniqueRecipeIds ? null : js.schemaType.schema.uniqueIdFunction.apply(this);
+			var ids = CommonProperties.get().ignoreCustomUniqueRecipeIds ? null : js.schemaType.schema.buildUniqueId(this);
 
 			var prefix = js.id.getNamespace() + ":kjs/";
 

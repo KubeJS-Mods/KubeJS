@@ -1,6 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
@@ -71,5 +74,29 @@ public class RecipeConstructor {
 		for (var entry : schemaType.schema.keyOverrides.entrySet()) {
 			recipe.setValue(entry.getKey(), Cast.to(entry.getValue().getDefaultValue(schemaType)));
 		}
+	}
+
+	public JsonObject toJson(RecipeSchemaType type, DynamicOps<JsonElement> ops) {
+		var json = new JsonObject();
+
+		var k = new JsonArray(keys.size());
+
+		for (var key : keys) {
+			k.add(key.name);
+		}
+
+		json.add("keys", k);
+
+		if (!overrides.isEmpty()) {
+			var o = new JsonObject();
+
+			for (var entry : overrides.entrySet()) {
+				o.add(entry.getKey().name, entry.getKey().codec.encodeStart(ops, Cast.to(entry.getValue().getDefaultValue(type))).getOrThrow());
+			}
+
+			json.add("overrides", o);
+		}
+
+		return json;
 	}
 }

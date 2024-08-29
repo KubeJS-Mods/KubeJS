@@ -13,7 +13,7 @@
 		{
 			"name": "experience",
 			"role": "output",
-			"type": "float",
+			"type": "float<0.0,max>",
 			"function_names": ["xp", "experience"],
 			"optional": 0.0
 		},
@@ -26,7 +26,6 @@
 		},
 		{
 			"name": "category",
-			"role": "other",
 			"type": "cooking_book_category",
 			"optional": "misc"
 		}

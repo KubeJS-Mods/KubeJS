@@ -128,6 +128,21 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		return range(min(), max);
 	}
 
+	default String toString(String name, T min, T max) {
+		var mn = min();
+		var mx = max();
+
+		if (min.equals(mn) && max.equals(mx)) {
+			return name;
+		} else if (min.equals(mn)) {
+			return name + "<min," + mx + ">";
+		} else if (max.equals(mx)) {
+			return name + "<" + mn + ",max>";
+		} else {
+			return name + "<" + mn + "," + mx + ">";
+		}
+	}
+
 	record IntRange(Integer min, Integer max, Codec<Integer> codec) implements NumberComponent<IntRange, Integer> {
 		@Override
 		public Codec<Integer> codec() {
@@ -151,7 +166,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 
 		@Override
 		public String toString() {
-			return "int";
+			return toString("int", Integer.MIN_VALUE, Integer.MAX_VALUE);
 		}
 	}
 
@@ -180,7 +195,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 
 		@Override
 		public String toString() {
-			return "long";
+			return toString("long", Long.MIN_VALUE, Long.MAX_VALUE);
 		}
 	}
 
@@ -207,7 +222,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 
 		@Override
 		public String toString() {
-			return "float";
+			return toString("float", Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
 		}
 	}
 
@@ -234,7 +249,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 
 		@Override
 		public String toString() {
-			return "double";
+			return toString("double", Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 		}
 	}
 }

@@ -48,7 +48,8 @@ public class RecipeSchema {
 	private int outputCount;
 	private int minRequiredArguments;
 	private Int2ObjectMap<RecipeConstructor> constructors;
-	public Function<KubeRecipe, String> uniqueIdFunction;
+	private boolean constructorsGenerated;
+	private List<RecipeKey<?>> uniqueIds;
 	boolean hidden;
 
 	/**
@@ -102,7 +103,7 @@ public class RecipeSchema {
 			minRequiredArguments = includedKeys.size();
 		}
 
-		this.uniqueIdFunction = DEFAULT_UNIQUE_ID_FUNCTION;
+		this.uniqueIds = List.of();
 		this.hidden = false;
 	}
 
@@ -144,13 +145,22 @@ public class RecipeSchema {
 		return constructor(new RecipeConstructor(keys));
 	}
 
-	public RecipeSchema uniqueId(Function<KubeRecipe, String> uniqueIdFunction) {
-		this.uniqueIdFunction = uniqueIdFunction;
+	public RecipeSchema uniqueId(RecipeKey<?> key) {
+		uniqueIds = List.of(key);
 		return this;
 	}
 
-	public RecipeSchema uniqueId(RecipeKey<?> key) {
-		return uniqueId(r -> {
+	public RecipeSchema uniqueIds(SequencedCollection<RecipeKey<?>> keys) {
+		uniqueIds = List.copyOf(keys);
+		return this;
+	}
+
+	@Nullable
+	public String buildUniqueId(KubeRecipe r) {
+		if (uniqueIds.isEmpty()) {
+			return null;
+		} else if (uniqueIds.size() == 1) {
+			var key = uniqueIds.getFirst();
 			var value = r.getValue(key);
 
 			if (value != null) {
@@ -160,17 +170,7 @@ public class RecipeSchema {
 			}
 
 			return null;
-		});
-	}
-
-	public RecipeSchema uniqueIds(SequencedCollection<RecipeKey<?>> keys) {
-		if (keys.isEmpty()) {
-			return uniqueId(DEFAULT_UNIQUE_ID_FUNCTION);
-		} else if (keys.size() == 1) {
-			return uniqueId(keys.getFirst());
-		}
-
-		return uniqueId(r -> {
+		} else {
 			var sb = new StringBuilder();
 			var builder = new UniqueIdBuilder(new StringBuilder());
 			boolean first = true;
@@ -195,11 +195,12 @@ public class RecipeSchema {
 			}
 
 			return sb.isEmpty() ? null : sb.toString();
-		});
+		}
 	}
 
 	public Int2ObjectMap<RecipeConstructor> constructors() {
 		if (constructors == null) {
+			constructorsGenerated = true;
 			constructors = includedKeys.isEmpty() ? new Int2ObjectArrayMap<>() : new Int2ObjectArrayMap<>(includedKeys.size() - minRequiredArguments + 1);
 			boolean dev = DevProperties.get().logRecipeDebug;
 
@@ -220,6 +221,10 @@ public class RecipeSchema {
 		return constructors;
 	}
 
+	public List<RecipeKey<?>> uniqueIds() {
+		return uniqueIds;
+	}
+
 	public int minRequiredArguments() {
 		return minRequiredArguments;
 	}
@@ -234,6 +239,11 @@ public class RecipeSchema {
 
 	public boolean isHidden() {
 		return hidden;
+	}
+
+	public boolean constructorsGenerated() {
+		constructors();
+		return constructorsGenerated;
 	}
 
 	public KubeRecipe deserialize(SourceLine sourceLine, RecipeTypeFunction type, @Nullable ResourceLocation id, JsonObject json) {

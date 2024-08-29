@@ -1,12 +1,15 @@
 package dev.latvian.mods.kubejs.command;
 
 import com.google.common.base.Predicate;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
@@ -15,20 +18,24 @@ import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.net.DisplayClientErrorsPayload;
 import dev.latvian.mods.kubejs.net.DisplayServerErrorsPayload;
 import dev.latvian.mods.kubejs.net.ReloadStartupScriptsPayload;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.server.BasicCommandKubeEvent;
 import dev.latvian.mods.kubejs.server.DataExport;
+import dev.latvian.mods.kubejs.util.JsonUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -227,6 +234,13 @@ public class KubeJSCommands {
 				.requires(spOrOP)
 				.then(Commands.argument("code", StringArgumentType.greedyString())
 					.executes(ctx -> eval(ctx.getSource(), StringArgumentType.getString(ctx, "code")))
+				)
+			);
+
+			cmd.then(Commands.literal("generate-recipe-schema-json")
+				.requires(spOrOP)
+				.then(Commands.argument("recipe-type", ResourceKeyArgument.key(Registries.RECIPE_SERIALIZER))
+					.executes(ctx -> generateRecipeSchemaJson(ctx.getSource(), ctx.getArgument("recipe-type", ResourceKey.class)))
 				)
 			);
 		}
@@ -546,6 +560,51 @@ public class KubeJSCommands {
 	private static int eval(CommandSourceStack source, String code) {
 		var cx = (KubeJSContext) source.getServer().getServerResources().managers().kjs$getServerScriptManager().contextFactory.enter();
 		cx.evaluateString(cx.topLevelScope, code, "eval", 1, null);
+		return 1;
+	}
+
+	private static int generateRecipeSchemaJson(CommandSourceStack source, ResourceKey<?> id) {
+		var storage = source.getServer().getServerResources().managers().kjs$getServerScriptManager().recipeSchemaStorage;
+		var schemaType = storage.namespace(id.location().getNamespace()).get(id.location().getPath());
+		var ops = source.getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE);
+
+		if (schemaType != null) {
+			var schema = schemaType.schema;
+			var json = new JsonObject();
+			var keys = new JsonArray();
+			json.add("keys", keys);
+
+			for (var key : schema.keys) {
+				keys.add(key.toJson(schemaType, ops));
+			}
+
+			if (!schema.uniqueIds().isEmpty()) {
+				var a = new JsonArray();
+
+				for (var key : schema.uniqueIds()) {
+					a.add(key.name);
+				}
+
+				if (!a.isEmpty()) {
+					json.add("unique", a);
+				}
+			}
+
+			if (!schema.constructorsGenerated()) {
+				var a = new JsonArray();
+
+				for (var c : schema.constructors().values()) {
+					a.add(c.toJson(schemaType, ops));
+				}
+
+				if (!a.isEmpty()) {
+					json.add("constructors", a);
+				}
+			}
+
+			ConsoleJS.SERVER.info("JSON of " + id.location() + ": (May be inaccurate!)\n" + JsonUtils.toPrettyString(json));
+		}
+
 		return 1;
 	}
 }
