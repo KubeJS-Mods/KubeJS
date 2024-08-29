@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.item;
 import dev.latvian.mods.kubejs.component.ComponentFunctions;
 import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
 import dev.latvian.mods.kubejs.event.KubeEvent;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.Util;
@@ -14,13 +14,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TieredItem;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @Info("""
 	Invoked after all items are registered to modify them.
 	""")
 public class ItemModificationKubeEvent implements KubeEvent {
-
 	@Info("""
 		Modifies items matching the given ingredient.
 		
@@ -32,6 +33,9 @@ public class ItemModificationKubeEvent implements KubeEvent {
 
 	@RemapPrefixForJS("kjs$")
 	public record ItemModifications(Item item) implements ItemComponentFunctions {
+		@HideFromJS
+		public static final Map<Item, Long> BURN_TIME_OVERRIDES = new IdentityHashMap<>();
+
 		@Override
 		public DataComponentMap kjs$getComponentMap() {
 			return item.components();
@@ -44,9 +48,8 @@ public class ItemModificationKubeEvent implements KubeEvent {
 			return this;
 		}
 
-		public void setBurnTime(int i) {
-			ConsoleJS.STARTUP.error("Setting item burn time is currently not supported");
-			// FuelRegistry.register(i, (Item) this);
+		public void setBurnTime(TickDuration i) {
+			BURN_TIME_OVERRIDES.put(item, i.ticks());
 		}
 
 		public void setCraftingRemainder(Item item) {

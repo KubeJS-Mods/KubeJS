@@ -1,12 +1,15 @@
 package dev.latvian.mods.kubejs.server;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.item.ItemBuilder;
+import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
 import dev.latvian.mods.kubejs.net.KubeServerData;
 import dev.latvian.mods.kubejs.net.SyncServerDataPayload;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
@@ -141,6 +144,30 @@ public class ServerScriptManager extends ScriptManager {
 		}
 
 		KubeJSPlugins.forEachPlugin(internalDataPack, KubeJSPlugin::generateData);
+
+		var furnaceFuelsJson = new JsonObject();
+
+		for (var entry : ItemModificationKubeEvent.ItemModifications.BURN_TIME_OVERRIDES.entrySet()) {
+			var json = new JsonObject();
+			json.addProperty("burn_time", entry.getValue());
+			furnaceFuelsJson.add(entry.getKey().kjs$getId(), json);
+		}
+
+		for (var item : RegistryObjectStorage.ITEM) {
+			long b = ((ItemBuilder) item).burnTime;
+
+			if (b > 0L) {
+				var json = new JsonObject();
+				json.addProperty("burn_time", b);
+				furnaceFuelsJson.add(item.id.toString(), json);
+			}
+		}
+
+		if (!furnaceFuelsJson.isEmpty()) {
+			var json = new JsonObject();
+			json.add("values", furnaceFuelsJson);
+			internalDataPack.json(ResourceLocation.fromNamespaceAndPath("neoforge", "data_maps/item/furnace_fuels.json"), json);
+		}
 
 		if (firstLoad) {
 			firstLoad = false;

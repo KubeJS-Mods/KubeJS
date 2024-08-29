@@ -18,6 +18,14 @@ public record TickDuration(long ticks) implements TemporalAmount {
 
 	public static final TypeInfo TYPE_INFO = TypeInfo.of(TickDuration.class); // TypeInfo.NUMBER.or(TypeInfo.STRING)
 
+	public static TickDuration wrap(Object from) {
+		if (from instanceof Number n) {
+			return new TickDuration(n.longValue());
+		} else {
+			return new TickDuration(TimeJS.durationOf(from).toMillis() / 50L);
+		}
+	}
+
 	@Override
 	public long get(TemporalUnit unit) {
 		if (unit == TickTemporalUnit.INSTANCE) {

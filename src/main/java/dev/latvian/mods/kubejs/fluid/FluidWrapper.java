@@ -15,7 +15,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -185,9 +184,9 @@ public interface FluidWrapper {
 			return FluidStack.EMPTY;
 		}
 
-		int amount = readFluidAmount(reader);
+		long amount = readFluidAmount(reader);
 		var fluidId = ResourceLocation.read(reader);
-		var fluidStack = new FluidStack(BuiltInRegistries.FLUID.get(fluidId), amount);
+		var fluidStack = new FluidStack(BuiltInRegistries.FLUID.get(fluidId), (int) amount);
 
 		var next = reader.canRead() ? reader.peek() : 0;
 
@@ -278,11 +277,11 @@ public interface FluidWrapper {
 			return EMPTY_SIZED;
 		}
 
-		int amount = readFluidAmount(reader);
-		return new SizedFluidIngredient(readIngredient(registryOps, reader), amount);
+		long amount = readFluidAmount(reader);
+		return new SizedFluidIngredient(readIngredient(registryOps, reader), (int) amount);
 	}
 
-	static int readFluidAmount(StringReader reader) throws CommandSyntaxException {
+	static long readFluidAmount(StringReader reader) throws CommandSyntaxException {
 		if (reader.canRead() && StringReader.isAllowedNumber(reader.peek())) {
 			var amountd = reader.readDouble();
 			reader.skipWhitespace();
@@ -299,11 +298,11 @@ public interface FluidWrapper {
 				amountd = amountd / reader.readDouble();
 			}
 
-			int amount = Mth.ceil(amountd);
+			long amount = (long) amountd;
 			reader.expect('x');
 			reader.skipWhitespace();
 
-			if (amount < 1) {
+			if (amount < 1L) {
 				throw new IllegalArgumentException("Fluid amount smaller than 1 is not allowed!");
 			}
 

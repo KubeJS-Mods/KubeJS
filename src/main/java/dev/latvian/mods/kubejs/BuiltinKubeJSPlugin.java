@@ -151,6 +151,7 @@ import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.RotationAxis;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.kubejs.util.SlotFilter;
+import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.Tristate;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -547,6 +548,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(File.class, KubeJSTypeWrappers::fileOf);
 		registry.register(TemporalAmount.class, TimeJS::temporalAmountOf);
 		registry.register(Duration.class, TimeJS::durationOf);
+		registry.register(TickDuration.class, TickDuration::wrap);
 
 		registry.register(ResourceLocation.class, ID::mc);
 		registry.register(KubeResourceLocation.class, KubeResourceLocation::wrap);

@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -50,7 +51,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 	public transient Map<Object, Object> components;
 	public transient int maxStackSize;
 	public transient int maxDamage;
-	public transient int burnTime;
+	public transient long burnTime;
 	private ResourceLocation containerItem;
 	public transient Function<ItemStack, Collection<ItemStack>> subtypes;
 	public transient Rarity rarity;
@@ -85,7 +86,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 		super(i);
 		maxStackSize = -1;
 		maxDamage = 0;
-		burnTime = 0;
+		burnTime = 0L;
 		containerItem = null;
 		subtypes = null;
 		rarity = null;
@@ -116,11 +117,6 @@ public class ItemBuilder extends BuilderBase<Item> {
 	@Override
 	public Item transformObject(Item obj) {
 		obj.kjs$setItemBuilder(this);
-
-		if (burnTime > 0) {
-			// FIXME: FuelRegistry.register(burnTime, obj);
-		}
-
 		return obj;
 	}
 
@@ -173,8 +169,8 @@ public class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	@Info("Sets the item's burn time. Default is 0 (Not a fuel).")
-	public ItemBuilder burnTime(int v) {
-		burnTime = v;
+	public ItemBuilder burnTime(TickDuration v) {
+		burnTime = v.ticks();
 		return this;
 	}
 
