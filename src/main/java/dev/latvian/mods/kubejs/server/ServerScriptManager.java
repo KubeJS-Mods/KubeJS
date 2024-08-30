@@ -163,7 +163,7 @@ public class ServerScriptManager extends ScriptManager {
 			}
 		}
 
-		if (!furnaceFuelsJson.isEmpty()) {
+		if (furnaceFuelsJson.size() > 0) {
 			var json = new JsonObject();
 			json.add("values", furnaceFuelsJson);
 			internalDataPack.json(ResourceLocation.fromNamespaceAndPath("neoforge", "data_maps/item/furnace_fuels.json"), json);
