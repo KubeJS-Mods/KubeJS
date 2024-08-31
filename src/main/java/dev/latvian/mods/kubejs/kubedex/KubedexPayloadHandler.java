@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.kubedex;
 
+import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.net.WebServerUpdateNBTPayload;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.OrderedCompoundTag;
@@ -9,16 +10,35 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class KubedexPayloadHandler {
+	private static ListTag sortedTagList(Stream<? extends TagKey<?>> stream) {
+		return stream
+			.map(TagKey::location)
+			.sorted(ResourceLocation::compareNamespaced)
+			.map(ResourceLocation::toString)
+			.map(StringTag::valueOf)
+			.collect(ListTag::new, ListTag::add, ListTag::addAll);
+	}
+
 	public static void block(ServerPlayer player, BlockPos pos) {
 		var registries = player.server.registryAccess();
 		var blockState = player.level().getBlockState(pos);
@@ -61,7 +81,7 @@ public class KubedexPayloadHandler {
 				}
 			}
 
-			PacketDistributor.sendToPlayer(player, new WebServerUpdateNBTPayload("highlight/block", Optional.of(payload)));
+			PacketDistributor.sendToPlayer(player, new WebServerUpdateNBTPayload("highlight/block", "highlight", Optional.of(payload)));
 		}
 	}
 
@@ -87,7 +107,7 @@ public class KubedexPayloadHandler {
 				payload.put("data", new CompoundTag());
 			}
 
-			PacketDistributor.sendToPlayer(player, new WebServerUpdateNBTPayload("highlight/entity", Optional.of(payload)));
+			PacketDistributor.sendToPlayer(player, new WebServerUpdateNBTPayload("highlight/entity", "highlight", Optional.of(payload)));
 		}
 	}
 
@@ -113,9 +133,55 @@ public class KubedexPayloadHandler {
 		var payload = new ListTag();
 
 		for (var stack : stacks) {
-			payload.add(ItemStack.CODEC.encodeStart(ops, stack).result().get());
+			var tag = new OrderedCompoundTag();
+			tag.putString("string", stack.kjs$toItemString0(ops));
+			tag.put("item", ItemStack.CODEC.encodeStart(ops, stack).result().get());
+			tag.put("name", ComponentSerialization.FLAT_CODEC.encodeStart(ops, stack.getHoverName()).getOrThrow());
+			tag.putString("icon", stack.kjs$getWebIconURL(ops, 64).toString());
+
+			var patch = stack.getComponentsPatch();
+
+			if (!patch.isEmpty()) {
+				tag.putString("component_string", DataComponentWrapper.patchToString(new StringBuilder(), ops, patch).toString());
+			}
+
+			var itemTagList = sortedTagList(stack.getItemHolder().tags());
+
+			if (!itemTagList.isEmpty()) {
+				tag.put("tags", itemTagList);
+			}
+
+			if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() != Blocks.AIR) {
+				var blockTagList = sortedTagList(blockItem.getBlock().builtInRegistryHolder().tags());
+
+				if (!blockTagList.isEmpty()) {
+					tag.put("block_tags", blockTagList);
+				}
+			}
+
+			if (stack.getItem() instanceof BucketItem bucket && bucket.content != Fluids.EMPTY) {
+				var fluidTagList = sortedTagList(bucket.content.builtInRegistryHolder().tags());
+
+				if (!fluidTagList.isEmpty()) {
+					tag.put("fluid_tags", fluidTagList);
+				}
+			}
+
+			if (stack.getItem() instanceof SpawnEggItem egg) {
+				var entityType = egg.getType(stack);
+
+				if (entityType != null) {
+					var entityTagList = sortedTagList(entityType.builtInRegistryHolder().tags());
+
+					if (!entityTagList.isEmpty()) {
+						tag.put("entity_tags", entityTagList);
+					}
+				}
+			}
+
+			payload.add(tag);
 		}
 
-		PacketDistributor.sendToPlayer(player, new WebServerUpdateNBTPayload("highlight/items", Optional.of(payload)));
+		PacketDistributor.sendToPlayer(player, new WebServerUpdateNBTPayload("highlight/items", "highlight", Optional.of(payload)));
 	}
 }

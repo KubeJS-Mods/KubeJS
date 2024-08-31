@@ -5,8 +5,10 @@ import com.google.gson.JsonObject;
 import dev.latvian.apps.tinyserver.ServerRegistry;
 import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
 import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
+import dev.latvian.apps.tinyserver.ws.Frame;
 import dev.latvian.apps.tinyserver.ws.WSHandler;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
@@ -19,32 +21,63 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 public class KubeJSWeb {
 	public static WSHandler<KJSHTTPRequest, KJSWSSession> UPDATES = WSHandler.empty();
 
-	public static void broadcastEvent(WSHandler<KJSHTTPRequest, KJSWSSession> ws, String event, Supplier<JsonElement> payload) {
-		ws.broadcastText(() -> {
-			var json = new JsonObject();
-			json.addProperty("type", event);
+	private static final Map<String, Path> BROWSE = Map.of(
+		"assets", KubeJSPaths.ASSETS,
+		"data", KubeJSPaths.DATA,
+		"startup_scripts", KubeJSPaths.STARTUP_SCRIPTS,
+		"client_scripts", KubeJSPaths.CLIENT_SCRIPTS,
+		"server_scripts", KubeJSPaths.SERVER_SCRIPTS,
+		"logs", FMLPaths.GAMEDIR.get().resolve("logs")
+	);
 
-			var p = payload == null ? null : payload.get();
+	public static int broadcastEvent(WSHandler<?, ?> handler, String event, String requiredTag, Supplier<JsonElement> payload) {
+		if (handler.sessions().isEmpty()) {
+			return 0;
+		}
 
-			if (p != null && !p.isJsonNull()) {
-				json.add("payload", p);
+		Frame frame = null;
+		int count = 0;
+
+		for (var s : handler.sessions().values()) {
+			if (!requiredTag.isEmpty() && s instanceof KJSWSSession ks && !ks.info.tags().contains(requiredTag)) {
+				continue;
 			}
 
-			return json.toString();
-		});
+			if (frame == null) {
+				var json = new JsonObject();
+				json.addProperty("type", event);
+
+				var p = payload == null ? null : payload.get();
+
+				if (p != null && !p.isJsonNull()) {
+					json.add("payload", p);
+				}
+
+				frame = Frame.text(json.toString());
+			}
+
+			s.send(frame);
+			count++;
+		}
+
+		return count;
 	}
 
-	public static void broadcastUpdate(String type, Supplier<JsonElement> payload) {
-		broadcastEvent(UPDATES, type, payload);
+	public static int broadcastUpdate(String type, String requiredTag, Supplier<JsonElement> payload) {
+		return broadcastEvent(UPDATES, type, requiredTag, payload);
 	}
 
 	public static void addScriptTypeEndpoints(ServerRegistry<KJSHTTPRequest> registry, ScriptType s, Runnable reload) {
@@ -70,6 +103,10 @@ public class KubeJSWeb {
 		registry.get("/", KubeJSWeb::getHomepage);
 		registry.get("/api", KubeJSWeb::getApi);
 		registry.get("/api/mods", KubeJSWeb::getMods);
+
+		registry.get("/api/browse", KubeJSWeb::getBrowse);
+		registry.get("/api/browse/{directory}", KubeJSWeb::getBrowseDir);
+		registry.get("/api/browse/{directory}/<file>", KubeJSWeb::getBrowseFile);
 
 		registry.get("/api/registries", KubeJSWeb::getRegistriesResponse); // List of all registries
 		registry.get("/api/registries/{namespace}/{path}/keys", KubeJSWeb::getRegistryKeysResponse); // List of all IDs in registry
@@ -127,6 +164,61 @@ public class KubeJSWeb {
 				json.add(o);
 			}
 		}));
+	}
+
+	private static HTTPResponse getBrowse(KJSHTTPRequest req) {
+		return HTTPResponse.ok().content(JsonContent.array(json -> BROWSE.keySet().forEach(json::add)));
+	}
+
+	private static HTTPResponse getBrowseDir(KJSHTTPRequest req) {
+		var dirName = req.variable("directory");
+		var dir = BROWSE.get(dirName);
+
+		if (dir == null) {
+			return HTTPStatus.NOT_FOUND;
+		}
+
+		return HTTPResponse.ok().content(JsonContent.array(json -> {
+			try {
+				if (Files.exists(dir)) {
+					for (var file : Files.walk(dir).filter(Files::isRegularFile).filter(Files::isReadable).toList()) {
+						var fileName = file.getFileName().toString();
+
+						if (fileName.endsWith(".gz") && dirName.equals("logs")) {
+							continue;
+						}
+
+						var o = new JsonObject();
+						o.addProperty("path", dir.relativize(file).toString().replace('\\', '/'));
+						o.addProperty("name", fileName);
+						o.addProperty("modified", Files.getLastModifiedTime(file).toMillis());
+						json.add(o);
+					}
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}));
+	}
+
+	private static HTTPResponse getBrowseFile(KJSHTTPRequest req) {
+		var dir = BROWSE.get(req.variable("directory"));
+
+		if (dir == null) {
+			return HTTPStatus.NOT_FOUND;
+		}
+
+		var file = dir.resolve(req.variable("file"));
+
+		if (Files.notExists(file)) {
+			return HTTPStatus.NOT_FOUND;
+		} else if (!Files.isRegularFile(file)) {
+			return HTTPStatus.BAD_REQUEST;
+		} else if (!Files.isReadable(file) || !file.startsWith(dir)) {
+			return HTTPStatus.FORBIDDEN;
+		} else {
+			return HTTPResponse.ok().content(file);
+		}
 	}
 
 	private static HTTPResponse getRegistriesResponse(KJSHTTPRequest req) {

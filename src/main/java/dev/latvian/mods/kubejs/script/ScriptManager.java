@@ -48,7 +48,7 @@ public class ScriptManager {
 
 		long start = System.currentTimeMillis();
 
-		KubeJSWeb.broadcastUpdate("before_scripts_loaded", () -> {
+		KubeJSWeb.broadcastUpdate("before_scripts_loaded", "", () -> {
 			var broadcast = new JsonObject();
 			broadcast.addProperty("type", scriptType.name);
 			broadcast.addProperty("time", start);
@@ -208,7 +208,7 @@ public class ScriptManager {
 		int t1 = t;
 		int i1 = i;
 
-		KubeJSWeb.broadcastUpdate("after_scripts_loaded", () -> {
+		KubeJSWeb.broadcastUpdate("after_scripts_loaded", "", () -> {
 			var broadcast = new JsonObject();
 			broadcast.addProperty("type", scriptType.name);
 			broadcast.addProperty("total", t1);

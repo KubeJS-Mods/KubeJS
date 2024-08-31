@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.block.RandomTickKubeEvent;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ID;
-import dev.latvian.mods.kubejs.web.LocalWebServer;
+import dev.latvian.mods.kubejs.web.RelativeURL;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
@@ -20,8 +20,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.Map;
 
 @RemapPrefixForJS("kjs$")
 public interface BlockStateKJS extends RegistryObjectKJS<Block>, Replaceable {
@@ -75,8 +73,7 @@ public interface BlockStateKJS extends RegistryObjectKJS<Block>, Replaceable {
 		return with instanceof BlockState state ? state : with instanceof Block block ? block.defaultBlockState() : cx.jsToJava(with, BlockWrapper.STATE_TYPE_INFO);
 	}
 
-	default String kjs$getWebIconURL(int size) {
-		var url = "/img/" + size + "/block/" + ID.url(kjs$getIdLocation());
-		return LocalWebServer.getURL(url, Map.of());
+	default RelativeURL kjs$getWebIconURL(int size) {
+		return new RelativeURL("/img/" + size + "/block/" + ID.url(kjs$getIdLocation()));
 	}
 }

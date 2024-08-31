@@ -61,4 +61,8 @@ public interface ItemKJS extends IngredientSupplierKJS, RegistryObjectKJS<Item> 
 	default ItemStackKey kjs$getTypeItemStackKey() {
 		throw new NoMixinException();
 	}
+
+	default void kjs$setCanRepair(boolean repairable) {
+		throw new NoMixinException();
+	}
 }

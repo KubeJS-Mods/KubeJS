@@ -248,7 +248,7 @@ public class ConsoleJS {
 				writeToFile(type, line.timestamp, line.getText());
 
 				if (wsBroadcaster != null) {
-					KubeJSWeb.broadcastEvent(wsBroadcaster, type.id, line);
+					KubeJSWeb.broadcastEvent(wsBroadcaster, type.id, "", line);
 				}
 			}
 

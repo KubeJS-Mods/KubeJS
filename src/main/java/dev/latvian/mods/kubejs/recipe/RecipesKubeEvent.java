@@ -466,7 +466,15 @@ public class RecipesKubeEvent implements KubeEvent {
 	}
 
 	public void forEachRecipe(Context cx, RecipeFilter filter, Consumer<KubeRecipe> consumer) {
-		recipeStream(cx, filter).forEach(consumer);
+		if (filter instanceof IDFilter id) {
+			var r = originalRecipes.get(id.id);
+
+			if (r != null && !r.removed) {
+				consumer.accept(r);
+			}
+		} else {
+			recipeStream(cx, filter).forEach(consumer);
+		}
 	}
 
 	public int countRecipes(Context cx, RecipeFilter filter) {
@@ -486,15 +494,7 @@ public class RecipesKubeEvent implements KubeEvent {
 	}
 
 	public void remove(Context cx, RecipeFilter filter) {
-		if (filter instanceof IDFilter id) {
-			var r = originalRecipes.get(id.id);
-
-			if (r != null) {
-				r.remove();
-			}
-		} else {
-			forEachRecipe(cx, filter, KubeRecipe::remove);
-		}
+		forEachRecipe(cx, filter, KubeRecipe::remove);
 	}
 
 	public void replaceInput(Context cx, RecipeFilter filter, ReplacementMatchInfo match, Object with) {

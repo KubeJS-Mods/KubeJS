@@ -10,9 +10,10 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.Nullable;
 
-public record WebServerUpdateJSONPayload(String event, @Nullable JsonElement payload) implements CustomPacketPayload {
+public record WebServerUpdateJSONPayload(String event, String requiredTag, @Nullable JsonElement payload) implements CustomPacketPayload {
 	public static final StreamCodec<ByteBuf, WebServerUpdateJSONPayload> STREAM_CODEC = StreamCodec.composite(
 		ByteBufCodecs.STRING_UTF8, WebServerUpdateJSONPayload::event,
+		ByteBufCodecs.STRING_UTF8, WebServerUpdateJSONPayload::requiredTag,
 		KubeJSCodecs.JSON_ELEMENT_STREAM_CODEC, WebServerUpdateJSONPayload::payload,
 		WebServerUpdateJSONPayload::new
 	);
@@ -23,6 +24,6 @@ public record WebServerUpdateJSONPayload(String event, @Nullable JsonElement pay
 	}
 
 	public void handle(IPayloadContext ctx) {
-		KubeJSWeb.broadcastUpdate("server/" + event, () -> payload);
+		KubeJSWeb.broadcastUpdate("server/" + event, requiredTag, () -> payload);
 	}
 }

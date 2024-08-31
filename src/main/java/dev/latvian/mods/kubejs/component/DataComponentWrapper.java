@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
@@ -300,18 +301,21 @@ public interface DataComponentWrapper {
 		boolean first = true;
 
 		for (var comp : map) {
+			var id = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(comp.type());
+			var codec = comp.type().codec();
+
+			if (id == null || codec == null) {
+				continue;
+			}
+
 			if (first) {
 				first = false;
 			} else {
 				builder.append(',');
 			}
 
-			var id = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(comp.type());
-			var optional = comp.encodeValue(ops).result();
-
-			if (id != null && !optional.isEmpty()) {
-				builder.append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).append('=').append(optional.get());
-			}
+			var value = codec == Codec.BOOL ? comp.value() : codec.encodeStart(ops, Cast.to(comp.value())).getOrThrow();
+			builder.append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).append('=').append(value);
 		}
 
 		builder.append(']');
@@ -324,21 +328,24 @@ public interface DataComponentWrapper {
 		boolean first = true;
 
 		for (var comp : patch.entrySet()) {
+			var id = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(comp.getKey());
+			var codec = comp.getKey().codec();
+
+			if (id == null || codec == null) {
+				continue;
+			}
+
 			if (first) {
 				first = false;
 			} else {
 				builder.append(',');
 			}
 
-			var id = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(comp.getKey());
-
-			if (id != null) {
-				if (comp.getValue().isPresent()) {
-					var value = comp.getKey().codecOrThrow().encodeStart(ops, Cast.to(comp.getValue().get())).result().get();
-					builder.append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).append('=').append(value);
-				} else {
-					builder.append('!').append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString());
-				}
+			if (comp.getValue().isPresent()) {
+				var value = codec == Codec.BOOL ? comp.getValue().get() : codec.encodeStart(ops, Cast.to(comp.getValue().get())).result().get();
+				builder.append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).append('=').append(value);
+			} else {
+				builder.append('!').append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString());
 			}
 		}
 

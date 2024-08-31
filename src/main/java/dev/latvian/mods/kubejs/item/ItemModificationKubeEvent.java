@@ -67,5 +67,9 @@ public class ItemModificationKubeEvent implements KubeEvent {
 		public void setNameKey(String key) {
 			item.kjs$setNameKey(key);
 		}
+
+		public void disableRepair() {
+			item.kjs$setCanRepair(false);
+		}
 	}
 }

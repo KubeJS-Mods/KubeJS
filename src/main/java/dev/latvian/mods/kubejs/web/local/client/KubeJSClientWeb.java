@@ -19,9 +19,11 @@ import dev.latvian.mods.kubejs.web.LocalWebServer;
 import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -51,6 +53,9 @@ public class KubeJSClientWeb {
 
 	public static void register(LocalWebServerRegistry registry) {
 		KubeJSWeb.addScriptTypeEndpoints(registry, ScriptType.CLIENT, KubeJS.getClientScriptManager()::reload);
+
+		registry.get("/api/client/translate/{key}", KubeJSClientWeb::getTranslate);
+		registry.get("/api/client/component-string/{json}", KubeJSClientWeb::getComponentString);
 
 		registry.get("/api/client/search/items", KubeJSClientWeb::getSearchItems);
 		registry.get("/api/client/search/blocks", KubeJSClientWeb::getSearchBlocks);
@@ -89,6 +94,14 @@ public class KubeJSClientWeb {
 		return HTTPResponse.ok().content(bytes, "image/png");
 	}
 
+	private static HTTPResponse getTranslate(KJSHTTPRequest req) {
+		return HTTPResponse.ok().text(I18n.get(req.variable("key")));
+	}
+
+	private static HTTPResponse getComponentString(KJSHTTPRequest req) {
+		return HTTPResponse.ok().text(ComponentSerialization.FLAT_CODEC.decode(req.registries().java(), req.variable("json")).getOrThrow().getFirst().getString());
+	}
+
 	private static HTTPResponse getSearchItems(KJSHTTPRequest req) {
 		return HTTPResponse.ok().content(JsonContent.object(json -> {
 			var jsonOps = Minecraft.getInstance().level == null ? req.registries().json() : Minecraft.getInstance().level.registryAccess().createSerializationContext(JsonOps.INSTANCE);
@@ -101,7 +114,7 @@ public class KubeJSClientWeb {
 				o.addProperty("cache_key", UUIDWrapper.toString(item.cacheKey()));
 				o.addProperty("id", item.value().kjs$getId());
 				o.addProperty("name", item.stack().getHoverName().getString());
-				o.addProperty("icon_path", item.stack().kjs$getWebIconURL(nbtOps, 64).substring(iconPathRoot.length()));
+				o.addProperty("icon_path", item.stack().kjs$getWebIconURL(nbtOps, 64).fullString().substring(iconPathRoot.length()));
 
 				var patch = item.components();
 

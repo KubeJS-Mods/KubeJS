@@ -238,4 +238,9 @@ public abstract class ItemMixin implements ItemKJS {
 
 		return kjs$typeItemStackKey;
 	}
+
+	@Override
+	@Accessor("canRepair")
+	@Mutable
+	public abstract void kjs$setCanRepair(boolean repairable);
 }
