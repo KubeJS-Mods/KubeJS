@@ -377,20 +377,35 @@ public class RecipesEventJS extends EventJS {
 		var recipesByName = new HashMap<ResourceLocation, Recipe<?>>(originalRecipes.size() + addedRecipes.size());
 
 		try {
-			recipesByName.putAll(runInParallel(() -> originalRecipes.values().parallelStream()
-				.filter(RECIPE_NOT_REMOVED)
-				.map(this::createRecipe)
-				.filter(RECIPE_NON_NULL)
-				.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, MERGE_ORIGINAL))));
+			if (CommonProperties.get().allowAsyncStreams) {
+				recipesByName.putAll(runInParallel(() -> originalRecipes.values().parallelStream()
+					.filter(RECIPE_NOT_REMOVED)
+					.map(this::createRecipe)
+					.filter(RECIPE_NON_NULL)
+					.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, MERGE_ORIGINAL))));
+			} else {
+				recipesByName.putAll(originalRecipes.values().stream()
+					.filter(RECIPE_NOT_REMOVED)
+					.map(this::createRecipe)
+					.filter(RECIPE_NON_NULL)
+					.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, MERGE_ORIGINAL)));
+			}
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating datapack recipes", ex, SKIP_ERROR);
 		}
 
 		try {
-			recipesByName.putAll(runInParallel(() -> addedRecipes.parallelStream()
-				.map(this::createRecipe)
-				.filter(RECIPE_NON_NULL)
-				.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, MERGE_ADDED))));
+			if (CommonProperties.get().allowAsyncStreams) {
+				recipesByName.putAll(runInParallel(() -> addedRecipes.parallelStream()
+					.map(this::createRecipe)
+					.filter(RECIPE_NON_NULL)
+					.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, MERGE_ADDED))));
+			} else {
+				recipesByName.putAll(addedRecipes.stream()
+					.map(this::createRecipe)
+					.filter(RECIPE_NON_NULL)
+					.collect(Collectors.toConcurrentMap(RECIPE_ID, RECIPE_IDENTITY, MERGE_ADDED)));
+			}
 		} catch (Throwable ex) {
 			ConsoleJS.SERVER.error("Error creating script recipes", ex, SKIP_ERROR);
 		}
