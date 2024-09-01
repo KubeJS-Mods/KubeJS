@@ -553,7 +553,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			r.afterLoaded();
 			return addRecipe(r, true);
 		} catch (Throwable cause) {
-			var r = type.schemaType.schema.recipeFactory.create(type, sourceLine);
+			var r = type.schemaType.schema.recipeFactory.create(type, sourceLine, true);
 			r.creationError = true;
 			ConsoleJS.SERVER.error("Failed to create custom recipe from json " + JsonUtils.toString(json), sourceLine, cause, POST_SKIP_ERROR);
 			r.json = json;

@@ -563,9 +563,9 @@ public class ConsoleJS {
 	public Component errorsComponent(String command) {
 		return Component.empty()
 			.append(TextIcons.error())
-			.append(Component.literal(" KubeJS errors found [" + errors.size() + "]! Click here for more info").kjs$red())
+			.append(Component.literal(" KubeJS errors found [" + errors.size() + "]!").kjs$red())
 			.kjs$clickRunCommand(command)
-			.kjs$hover(Component.literal("Click to show"));
+			.kjs$hover(Component.literal("Click to show more info"));
 	}
 
 	private static final class VarFunc implements Comparable<VarFunc> {

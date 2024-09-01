@@ -54,7 +54,7 @@ public class RecipeConstructor {
 	}
 
 	public KubeRecipe create(Context cx, SourceLine sourceLine, RecipeTypeFunction type, RecipeSchemaType schemaType, ComponentValueMap from) {
-		var r = schemaType.schema.recipeFactory.create(type, sourceLine);
+		var r = schemaType.schema.recipeFactory.create(type, sourceLine, true);
 		r.json = new JsonObject();
 		r.json.addProperty("type", type.idString);
 		r.newRecipe = true;

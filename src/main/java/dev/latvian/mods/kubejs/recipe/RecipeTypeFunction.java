@@ -41,7 +41,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 		try {
 			return createRecipe(cx, sourceLine, args0);
 		} catch (Throwable cause) {
-			var r = schemaType.schema.recipeFactory.create(this, sourceLine);
+			var r = schemaType.schema.recipeFactory.create(this, sourceLine, true);
 			r.creationError = true;
 			event.failedCount.incrementAndGet();
 			ConsoleJS.SERVER.error("Failed to create a '" + idString + "' recipe from args " + Arrays.toString(args0), sourceLine, cause, SKIP_ERROR);

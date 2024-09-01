@@ -152,15 +152,15 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		throw new MissingComponentException(key, null, valueMap.keySet()).source(sourceLine);
 	}
 
-	public void initValues(boolean created) {
-		if (created) {
+	public void initValues(boolean save) {
+		if (save) {
 			save();
 		}
 
 		if (!type.schemaType.schema.keys.isEmpty()) {
 			valueMap = new RecipeComponentValueMap(type.schemaType.schema.keys);
 
-			if (created) {
+			if (save) {
 				for (var v : valueMap.holders) {
 					if (v.key.optional()) {
 						v.value = Cast.to(v.key.optional.getDefaultValue(type.schemaType));

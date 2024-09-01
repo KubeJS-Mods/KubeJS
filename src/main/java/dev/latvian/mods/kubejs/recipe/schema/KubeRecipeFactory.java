@@ -16,11 +16,11 @@ public record KubeRecipeFactory(ResourceLocation id, TypeInfo recipeType, Suppli
 		this(id, TypeInfo.of(recipeType), factory);
 	}
 
-	public KubeRecipe create(RecipeTypeFunction type, SourceLine sourceLine) {
+	public KubeRecipe create(RecipeTypeFunction type, SourceLine sourceLine, boolean save) {
 		var r = factory.get();
 		r.sourceLine = sourceLine;
 		r.type = type;
-		r.initValues(true);
+		r.initValues(save);
 		return r;
 	}
 }
