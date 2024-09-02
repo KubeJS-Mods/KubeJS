@@ -3,7 +3,9 @@ package dev.latvian.mods.kubejs.client;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +16,7 @@ public class VariantBlockStateGenerator {
 		private String key;
 		private final List<Model> models = new ArrayList<>();
 
-		public Model model(String s) {
+		public Model model(ResourceLocation s) {
 			var model = new Model();
 			model.model(s);
 			models.add(model);
@@ -37,12 +39,12 @@ public class VariantBlockStateGenerator {
 	}
 
 	public static class Model {
-		private String model = "broken";
+		private ResourceLocation model = ID.UNKNOWN;
 		private int x = 0;
 		private int y = 0;
 		private boolean uvlock = false;
 
-		public Model model(String s) {
+		public Model model(ResourceLocation s) {
 			model = s;
 			return this;
 		}
@@ -64,7 +66,7 @@ public class VariantBlockStateGenerator {
 
 		public JsonObject toJson() {
 			var json = new JsonObject();
-			json.addProperty("model", model);
+			json.addProperty("model", model.toString());
 
 			if (x != 0) {
 				json.addProperty("x", x);
@@ -93,11 +95,11 @@ public class VariantBlockStateGenerator {
 
 	@HideFromJS
 	@Deprecated
-	public void variant(String key, String model) {
+	public void variant(String key, ResourceLocation model) {
 		simpleVariant(key, model);
 	}
 
-	public void simpleVariant(String key, String model) {
+	public void simpleVariant(String key, ResourceLocation model) {
 		variant(key, v -> v.model(model));
 	}
 

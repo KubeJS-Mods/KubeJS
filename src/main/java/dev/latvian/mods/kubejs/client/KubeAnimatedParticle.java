@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.client;
 
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.typings.Info;
 import it.unimi.dsi.fastutil.floats.Float2IntFunction;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -34,14 +34,14 @@ public class KubeAnimatedParticle extends SimpleAnimatedParticle {
 		friction = f;
 	}
 
-	public void setColor(Color color, boolean alpha) {
-		setColor(color.getRgbJS());
+	public void setColor(KubeColor color, boolean alpha) {
+		setColor(color.kjs$getRGB());
 		if (alpha) {
-			setAlpha((color.getArgbJS() >>> 24) / 255F);
+			setAlpha((color.kjs$getARGB() >>> 24) / 255F);
 		}
 	}
 
-	public void setColor(Color color) {
+	public void setColor(KubeColor color) {
 		setColor(color, false);
 	}
 

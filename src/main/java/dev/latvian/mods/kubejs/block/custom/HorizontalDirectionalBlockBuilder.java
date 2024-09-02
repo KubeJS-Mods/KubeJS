@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -44,7 +45,7 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		var modelLocation = model.isEmpty() ? newID("block/", "").toString() : model;
+		var modelLocation = model == null ? id.withPath(ID.BLOCK) : model;
 		bs.variant("facing=north", v -> v.model(modelLocation));
 		bs.variant("facing=east", v -> v.model(modelLocation).y(90));
 		bs.variant("facing=south", v -> v.model(modelLocation).y(180));
@@ -54,16 +55,16 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 	@Override
 	protected void generateBlockModelJsons(KubeAssetGenerator gen) {
 		gen.blockModel(id, mg -> {
-			var side = getTextureOrDefault("side", newID("block/", "").toString());
+			var side = getTextureOrDefault("side", id.withPath(ID.BLOCK).toString());
 
 			mg.texture("side", side);
 			mg.texture("front", getTextureOrDefault("front", newID("block/", "_front").toString()));
 			mg.texture("particle", getTextureOrDefault("particle", side));
 			mg.texture("top", getTextureOrDefault("top", side));
 
-			if (textures.has("bottom")) {
+			if (textures.containsKey("bottom")) {
 				mg.parent("block/orientable_with_bottom");
-				mg.texture("bottom", textures.get("bottom").getAsString());
+				mg.texture("bottom", textures.get("bottom"));
 			} else {
 				mg.parent("minecraft:block/orientable");
 			}
@@ -72,7 +73,7 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 
 	@Override
 	protected void generateItemModelJson(ModelGenerator m) {
-		m.parent(model.isEmpty() ? newID("block/", "").toString() : model);
+		m.parent(model == null ? newID("block/", "") : model);
 	}
 
 	@Override
@@ -83,7 +84,7 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 	}
 
 	private String getTextureOrDefault(String name, String defaultTexture) {
-		return textures.has(name) ? textures.get(name).getAsString() : defaultTexture;
+		return textures.getOrDefault(name, defaultTexture);
 	}
 
 	@Override
@@ -152,13 +153,13 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 
 		@Nullable
 		@Override
-		public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-			return blockBuilder.blockEntityInfo.createBlockEntity(blockPos, blockState);
+		public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+			return blockBuilder.blockEntityInfo.createBlockEntity(pos, state);
 		}
 
 		@Nullable
 		@Override
-		public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
+		public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
 			return blockBuilder.blockEntityInfo.getTicker(level);
 		}
 	}

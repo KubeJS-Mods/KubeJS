@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.component;
 
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -67,8 +67,8 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 		kjs$override(DataComponents.TOOL, tool);
 	}
 
-	default void kjs$setMapItemColor(Color color) {
-		kjs$override(DataComponents.MAP_COLOR, new MapItemColor(color.getRgbJS()));
+	default void kjs$setMapItemColor(KubeColor color) {
+		kjs$override(DataComponents.MAP_COLOR, new MapItemColor(color.kjs$getRGB()));
 	}
 
 	default void kjs$setChargedProjectiles(List<ItemStack> items) {

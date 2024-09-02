@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.bindings.ColorWrapper;
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
@@ -20,11 +20,11 @@ import java.util.List;
 public interface ItemTintFunction {
 	TypeInfo TYPE_INFO = TypeInfo.of(ItemTintFunction.class);
 
-	Color getColor(ItemStack stack, int index);
+	KubeColor getColor(ItemStack stack, int index);
 
-	record Fixed(Color color) implements ItemTintFunction {
+	record Fixed(KubeColor color) implements ItemTintFunction {
 		@Override
-		public Color getColor(ItemStack stack, int index) {
+		public KubeColor getColor(ItemStack stack, int index) {
 			return color;
 		}
 	}
@@ -33,7 +33,7 @@ public interface ItemTintFunction {
 		public final Int2ObjectMap<ItemTintFunction> map = new Int2ObjectArrayMap<>(1);
 
 		@Override
-		public Color getColor(ItemStack stack, int index) {
+		public KubeColor getColor(ItemStack stack, int index) {
 			var f = map.get(index);
 			return f == null ? null : f.getColor(stack, index);
 		}

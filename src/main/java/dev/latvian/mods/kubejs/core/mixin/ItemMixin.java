@@ -153,7 +153,7 @@ public abstract class ItemMixin implements ItemKJS {
 	@Inject(method = "getBarColor", at = @At("HEAD"), cancellable = true)
 	private void getBarColor(ItemStack stack, CallbackInfoReturnable<Integer> ci) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.barColor != null) {
-			ci.setReturnValue(kjs$itemBuilder.barColor.apply(stack).getRgbJS());
+			ci.setReturnValue(kjs$itemBuilder.barColor.apply(stack).kjs$getRGB());
 		}
 	}
 

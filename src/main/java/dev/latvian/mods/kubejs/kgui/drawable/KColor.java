@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.kgui.drawable;
 
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.color.SimpleColorWithAlpha;
 
-public record KColor(Color color) implements KDrawable {
+public record KColor(KubeColor color) implements KDrawable {
 	public static KColor of(int col) {
 		return new KColor(new SimpleColorWithAlpha(col));
 	}
@@ -15,7 +15,7 @@ public record KColor(Color color) implements KDrawable {
 	@Override
 	public void draw(KDrawContext ctx, int x, int y, int w, int h) {
 		if (w > 0 && h > 0) {
-			ctx.graphics().fill(x, y, x + w, y + h, color.getArgbJS());
+			ctx.graphics().fill(x, y, x + w, y + h, color.kjs$getARGB());
 		}
 	}
 }

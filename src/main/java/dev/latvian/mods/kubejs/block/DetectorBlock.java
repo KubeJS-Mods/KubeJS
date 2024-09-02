@@ -17,6 +17,9 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 public class DetectorBlock extends Block {
 	@ReturnsSelf
 	public static class Builder extends BlockBuilder {
+		private static final ResourceLocation OFF_MODEL = KubeJS.id("block/detector");
+		private static final ResourceLocation ON_MODEL = KubeJS.id("block/detector_on");
+
 		public transient String detectorId;
 
 		public Builder(ResourceLocation i) {
@@ -48,8 +51,8 @@ public class DetectorBlock extends Block {
 		@Override
 		public void generateAssets(KubeAssetGenerator generator) {
 			generator.blockState(id, bs -> {
-				bs.simpleVariant("powered=false", "kubejs:block/detector");
-				bs.simpleVariant("powered=true", "kubejs:block/detector_on");
+				bs.simpleVariant("powered=false", OFF_MODEL);
+				bs.simpleVariant("powered=true", ON_MODEL);
 			});
 
 			generator.itemModel(id, m -> m.parent(KubeJS.MOD_ID + ":block/detector"));

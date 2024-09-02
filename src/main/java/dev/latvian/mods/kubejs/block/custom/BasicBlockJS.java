@@ -76,13 +76,13 @@ public class BasicBlockJS extends Block implements SimpleWaterloggedBlock {
 
 		@Nullable
 		@Override
-		public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-			return blockBuilder.blockEntityInfo.createBlockEntity(blockPos, blockState);
+		public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+			return blockBuilder.blockEntityInfo.createBlockEntity(pos, state);
 		}
 
 		@Nullable
 		@Override
-		public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
+		public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
 			return blockBuilder.blockEntityInfo.getTicker(level);
 		}
 	}

@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.component;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
@@ -165,12 +165,12 @@ public interface ComponentFunctions {
 		kjs$override(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, override);
 	}
 
-	default void kjs$setDyedColor(Color color) {
-		kjs$override(DataComponents.DYED_COLOR, new DyedItemColor(color.getRgbJS(), false));
+	default void kjs$setDyedColor(KubeColor color) {
+		kjs$override(DataComponents.DYED_COLOR, new DyedItemColor(color.kjs$getRGB(), false));
 	}
 
-	default void kjs$setDyedColorWithTooltip(Color color) {
-		kjs$override(DataComponents.DYED_COLOR, new DyedItemColor(color.getRgbJS(), true));
+	default void kjs$setDyedColorWithTooltip(KubeColor color) {
+		kjs$override(DataComponents.DYED_COLOR, new DyedItemColor(color.kjs$getRGB(), true));
 	}
 
 	default void kjs$setPotionContents(PotionContents contents) {

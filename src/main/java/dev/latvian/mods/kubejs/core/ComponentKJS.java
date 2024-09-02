@@ -4,7 +4,7 @@ import com.google.common.collect.Iterators;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.Context;
@@ -144,8 +144,8 @@ public interface ComponentKJS extends Component, WithCodec, WrappedJS {
 	// endregion ChatFormatting extensions
 
 	// region Style extensions
-	default MutableComponent kjs$color(@Nullable Color c) {
-		var col = c == null ? null : c.createTextColorJS();
+	default MutableComponent kjs$color(@Nullable KubeColor c) {
+		var col = c == null ? null : c.kjs$createTextColor();
 		return kjs$self().setStyle(getStyle().withColor(col));
 	}
 

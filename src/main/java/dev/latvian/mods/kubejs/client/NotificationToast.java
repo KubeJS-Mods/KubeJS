@@ -102,17 +102,17 @@ public class NotificationToast implements Toast {
 		int w = width();
 		int h = height();
 
-		int oc = notification.outlineColor().getRgbJS();
+		int oc = notification.outlineColor().kjs$getRGB();
 		int ocr = FastColor.ARGB32.red(oc);
 		int ocg = FastColor.ARGB32.green(oc);
 		int ocb = FastColor.ARGB32.blue(oc);
 
-		int bc = notification.borderColor().getRgbJS();
+		int bc = notification.borderColor().kjs$getRGB();
 		int bcr = FastColor.ARGB32.red(bc);
 		int bcg = FastColor.ARGB32.green(bc);
 		int bcb = FastColor.ARGB32.blue(bc);
 
-		int bgc = notification.backgroundColor().getRgbJS();
+		int bgc = notification.backgroundColor().kjs$getRGB();
 		int bgcr = FastColor.ARGB32.red(bgc);
 		int bgcg = FastColor.ARGB32.green(bgc);
 		int bgcb = FastColor.ARGB32.blue(bgc);

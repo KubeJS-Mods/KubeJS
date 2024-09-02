@@ -50,7 +50,7 @@ import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
 import dev.latvian.mods.kubejs.block.entity.InventoryAttachment;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
 import dev.latvian.mods.kubejs.entity.AttributeBuilder;
@@ -180,6 +180,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.Unit;
 import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.util.valueproviders.IntProvider;
@@ -579,6 +580,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(BlockSetType.class, BlockWrapper::setTypeOf);
 		registry.register(BlockState.class, BlockWrapper::wrapBlockState);
 		registry.register(ItemAbility.class, ItemWrapper::itemAbilityOf);
+		registry.register(ColorRGBA.class, ColorWrapper::colorRGBAOf);
 
 		// KubeJS //
 		registry.register(Map.class, MapJS::of);
@@ -614,7 +616,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		// components //
 		registry.register(Component.class, TextWrapper::of);
 		registry.register(MutableComponent.class, TextWrapper::of);
-		registry.register(Color.class, ColorWrapper::of);
+		registry.register(KubeColor.class, ColorWrapper::of);
 		registry.register(TextColor.class, ColorWrapper::textColorOf);
 		registry.register(ClickEvent.class, TextWrapper::clickEventOf);
 

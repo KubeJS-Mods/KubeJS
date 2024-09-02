@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.item.custom;
 
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
@@ -28,7 +29,7 @@ public class ShearsItemBuilder extends ItemBuilder {
 	public ShearsItemBuilder(ResourceLocation i) {
 		super(i);
 		speedBaseline(5f);
-		parentModel("minecraft:item/handheld");
+		parentModel(KubeAssetGenerator.HANDHELD_ITEM_MODEL);
 		unstackable();
 		tag(SHEAR_TAGS);
 		tool = ShearsItem.createToolProperties();

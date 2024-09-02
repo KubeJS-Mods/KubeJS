@@ -42,6 +42,7 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -124,6 +125,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	public final RecipeSchemaStorage recipeSchemaStorage;
 	public final RegistryAccessContainer registries;
+	public final ResourceManager resourceManager;
 	public final RegistryOps<JsonElement> jsonOps;
 	public final Map<ResourceLocation, KubeRecipe> originalRecipes;
 	public final Collection<KubeRecipe> addedRecipes;
@@ -147,10 +149,11 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	final RecipeSerializer<?> stageSerializer;
 
-	public RecipesKubeEvent(ServerScriptManager manager) {
+	public RecipesKubeEvent(ServerScriptManager manager, ResourceManager resourceManager) {
 		ConsoleJS.SERVER.info("Initializing recipe event...");
 		this.recipeSchemaStorage = manager.recipeSchemaStorage;
 		this.registries = manager.getRegistries();
+		this.resourceManager = resourceManager;
 		this.jsonOps = new ConditionalOps<>(registries.json(), registries);
 		this.originalRecipes = new HashMap<>();
 		this.addedRecipes = new ConcurrentLinkedQueue<>();

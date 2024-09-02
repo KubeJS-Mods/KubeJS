@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.color;
 
 import net.minecraft.network.chat.TextColor;
 
-public class SimpleColorWithAlpha implements Color {
+public class SimpleColorWithAlpha implements KubeColor {
 	private final int value;
 	private TextColor textColor;
 
@@ -11,14 +11,14 @@ public class SimpleColorWithAlpha implements Color {
 	}
 
 	@Override
-	public int getArgbJS() {
+	public int kjs$getARGB() {
 		return value;
 	}
 
 	@Override
-	public TextColor createTextColorJS() {
+	public TextColor kjs$createTextColor() {
 		if (textColor == null) {
-			textColor = TextColor.fromRgb(getRgbJS());
+			textColor = TextColor.fromRgb(kjs$getRGB());
 		}
 
 		return textColor;
@@ -26,6 +26,6 @@ public class SimpleColorWithAlpha implements Color {
 
 	@Override
 	public String toString() {
-		return getHexJS();
+		return kjs$toHexString();
 	}
 }

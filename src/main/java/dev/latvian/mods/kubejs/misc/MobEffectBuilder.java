@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.misc;
 
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
@@ -66,8 +66,8 @@ public class MobEffectBuilder extends BuilderBase<MobEffect> {
 		return this;
 	}
 
-	public MobEffectBuilder color(Color col) {
-		color = col.getRgbJS();
+	public MobEffectBuilder color(KubeColor col) {
+		color = col.kjs$getRGB();
 		return this;
 	}
 

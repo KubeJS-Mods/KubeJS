@@ -67,7 +67,7 @@ public class BlockWrapper {
 		if (facingMap == null) {
 			facingMap = new HashMap<>(6);
 
-			for (var facing : Direction.values()) {
+			for (var facing : DirectionWrapper.VALUES) {
 				facingMap.put(facing.getSerializedName(), facing);
 			}
 		}

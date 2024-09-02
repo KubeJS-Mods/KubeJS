@@ -45,8 +45,8 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		var mod0 = newID("block/", "").toString();
-		var mod1 = newID("block/", "_pressed").toString();
+		var mod0 = newID("block/", "");
+		var mod1 = newID("block/", "_pressed");
 
 		bs.variant("face=ceiling,facing=east,powered=false", v -> v.model(mod0).x(180).y(270));
 		bs.variant("face=ceiling,facing=east,powered=true", v -> v.model(mod1).x(180).y(270));
@@ -76,7 +76,7 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
-		var texture = textures.get("texture").getAsString();
+		var texture = textures.get("texture");
 
 		generator.blockModel(id, m -> {
 			m.parent("minecraft:block/button");
@@ -92,6 +92,6 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 	@Override
 	protected void generateItemModelJson(ModelGenerator m) {
 		m.parent("minecraft:block/button_inventory");
-		m.texture("texture", textures.get("texture").getAsString());
+		m.texture("texture", textures.get("texture"));
 	}
 }

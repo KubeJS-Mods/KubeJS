@@ -8,6 +8,6 @@ public record ItemTintFunctionWrapper(ItemTintFunction function) implements Item
 	@Override
 	public int getColor(ItemStack stack, int index) {
 		var c = function.getColor(stack, index);
-		return c == null ? 0xFFFFFFFF : c.getArgbJS();
+		return c == null ? 0xFFFFFFFF : c.kjs$getARGB();
 	}
 }

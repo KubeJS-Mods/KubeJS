@@ -46,9 +46,9 @@ public class TrapdoorBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		var modelOpen = newID("block/", "_open").toString();
-		var modelBottom = newID("block/", "_bottom").toString();
-		var modelTop = newID("block/", "_top").toString();
+		var modelOpen = newID("block/", "_open");
+		var modelBottom = newID("block/", "_bottom");
+		var modelTop = newID("block/", "_top");
 
 		var halfValues = Half.values();
 		var openValues = List.of(Boolean.TRUE, Boolean.FALSE);
@@ -76,7 +76,7 @@ public class TrapdoorBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
-		var texture = textures.get("texture").getAsString();
+		var texture = textures.get("texture");
 
 		generator.blockModel(newID("", "_bottom"), m -> {
 			m.parent("minecraft:block/template_trapdoor_bottom");
@@ -96,6 +96,6 @@ public class TrapdoorBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateItemModelJson(ModelGenerator m) {
-		m.parent(newID("block/", "_bottom").toString());
+		m.parent(newID("block/", "_bottom"));
 	}
 }

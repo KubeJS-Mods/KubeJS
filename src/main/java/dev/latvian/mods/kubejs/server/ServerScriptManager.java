@@ -268,7 +268,7 @@ public class ServerScriptManager extends ScriptManager {
 		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
 
 		if (ServerEvents.RECIPES.hasListeners()) {
-			new RecipesKubeEvent(this).post(recipeManager, new HashMap<>(map));
+			new RecipesKubeEvent(this, resourceManager).post(recipeManager, new HashMap<>(map));
 			result = true;
 		}
 

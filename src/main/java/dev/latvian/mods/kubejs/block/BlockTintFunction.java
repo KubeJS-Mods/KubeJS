@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.bindings.ColorWrapper;
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.kubejs.color.SimpleColorWithAlpha;
 import dev.latvian.mods.rhino.BaseFunction;
@@ -26,11 +26,11 @@ import java.util.List;
 public interface BlockTintFunction {
 	TypeInfo TYPE_INFO = TypeInfo.of(BlockTintFunction.class);
 
-	Color getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index);
+	KubeColor getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index);
 
-	record Fixed(Color color) implements BlockTintFunction {
+	record Fixed(KubeColor color) implements BlockTintFunction {
 		@Override
-		public Color getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
+		public KubeColor getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
 			return color;
 		}
 	}
@@ -39,20 +39,20 @@ public interface BlockTintFunction {
 		public final Int2ObjectMap<BlockTintFunction> map = new Int2ObjectArrayMap<>(1);
 
 		@Override
-		public Color getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
+		public KubeColor getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
 			var f = map.get(index);
 			return f == null ? null : f.getColor(state, level, pos, index);
 		}
 	}
 
 	BlockTintFunction GRASS = (s, l, p, i) -> new SimpleColor(l == null || p == null ? GrassColor.get(0.5, 1.0) : BiomeColors.getAverageGrassColor(l, p));
-	Color DEFAULT_FOLIAGE_COLOR = new SimpleColor(FoliageColor.getDefaultColor());
+	KubeColor DEFAULT_FOLIAGE_COLOR = new SimpleColor(FoliageColor.getDefaultColor());
 	BlockTintFunction FOLIAGE = (s, l, p, i) -> l == null || p == null ? DEFAULT_FOLIAGE_COLOR : new SimpleColor(BiomeColors.getAverageFoliageColor(l, p));
 	Fixed EVERGREEN_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.getEvergreenColor()));
 	Fixed BIRCH_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.getBirchColor()));
 	Fixed MANGROVE_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.getMangroveColor()));
 	BlockTintFunction WATER = (s, l, p, i) -> l == null || p == null ? null : new SimpleColorWithAlpha(BiomeColors.getAverageWaterColor(l, p));
-	Color[] REDSTONE_COLORS = new Color[16];
+	KubeColor[] REDSTONE_COLORS = new KubeColor[16];
 	BlockTintFunction REDSTONE = (state, level, pos, index) -> {
 		if (REDSTONE_COLORS[0] == null) {
 			for (int i = 0; i < REDSTONE_COLORS.length; i++) {

@@ -6,10 +6,11 @@ import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
 import dev.latvian.mods.kubejs.client.ParticleGenerator;
 import dev.latvian.mods.kubejs.client.SoundsGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
+import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 
@@ -17,9 +18,10 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public interface KubeAssetGenerator extends KubeResourceGenerator {
-	static ResourceLocation asItemModelLocation(ResourceLocation id) {
-		return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "models/item/" + id.getPath());
-	}
+	ResourceLocation GENERATED_ITEM_MODEL = ResourceLocation.withDefaultNamespace("item/generated");
+	ResourceLocation HANDHELD_ITEM_MODEL = ResourceLocation.withDefaultNamespace("item/handheld");
+	ResourceLocation CUBE_BLOCK_MODEL = ResourceLocation.withDefaultNamespace("block/cube");
+	ResourceLocation CUBE_ALL_BLOCK_MODEL = ResourceLocation.withDefaultNamespace("block/cube_all");
 
 	default LoadedTexture loadTexture(ResourceLocation id) {
 		return LoadedTexture.load(id);
@@ -27,35 +29,35 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 
 	default void blockState(ResourceLocation id, Consumer<VariantBlockStateGenerator> consumer) {
 		var gen = Util.make(new VariantBlockStateGenerator(), consumer);
-		json(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
+		json(id.withPath(ID.BLOCKSTATE), gen.toJson());
 	}
 
 	default void multipartState(ResourceLocation id, Consumer<MultipartBlockStateGenerator> consumer) {
 		var gen = Util.make(new MultipartBlockStateGenerator(), consumer);
-		json(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "blockstates/" + id.getPath()), gen.toJson());
+		json(id.withPath(ID.BLOCKSTATE), gen.toJson());
 	}
 
 	default void blockModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
 		var gen = Util.make(new ModelGenerator(), consumer);
-		json(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "models/block/" + id.getPath()), gen.toJson());
+		json(id.withPath(ID.BLOCK_MODEL), gen.toJson());
 	}
 
 	default void itemModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
 		var gen = Util.make(new ModelGenerator(), consumer);
-		json(asItemModelLocation(id), gen.toJson());
+		json(id.withPath(ID.ITEM_MODEL), gen.toJson());
 	}
 
 	default void defaultItemModel(ResourceLocation id) {
 		itemModel(id, model -> {
-			model.parent("minecraft:item/generated");
-			model.texture("layer0", id.getNamespace() + ":item/" + id.getPath());
+			model.parent(GENERATED_ITEM_MODEL);
+			model.texture("layer0", id.withPath(ID.ITEM).toString());
 		});
 	}
 
 	default void defaultHandheldItemModel(ResourceLocation id) {
 		itemModel(id, model -> {
-			model.parent("minecraft:item/handheld");
-			model.texture("layer0", id.getNamespace() + ":item/" + id.getPath());
+			model.parent(HANDHELD_ITEM_MODEL);
+			model.texture("layer0", id.withPath(ID.ITEM).toString());
 		});
 	}
 
@@ -65,14 +67,14 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 			return;
 		}
 
-		add(new GeneratedData(ResourceLocation.fromNamespaceAndPath(target.getNamespace(), "textures/" + target.getPath() + ".png"), texture::toBytes));
+		add(new GeneratedData(target.withPath(ID.PNG_TEXTURE), texture::toBytes));
 
 		if (texture.mcmeta != null) {
-			add(new GeneratedData(ResourceLocation.fromNamespaceAndPath(target.getNamespace(), "textures/" + target.getPath() + ".png.mcmeta"), () -> texture.mcmeta));
+			add(new GeneratedData(target.withPath(ID.PNG_TEXTURE_MCMETA), () -> texture.mcmeta));
 		}
 	}
 
-	default void stencil(ResourceLocation target, ResourceLocation stencil, Map<Color, Color> colors) {
+	default void stencil(ResourceLocation target, ResourceLocation stencil, Map<KubeColor, KubeColor> colors) {
 		var stencilTexture = loadTexture(stencil);
 
 		if (stencilTexture.width == 0 || stencilTexture.height == 0) {
@@ -135,7 +137,7 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 	}
 
 	default void particle(ResourceLocation id, Consumer<ParticleGenerator> consumer) {
-		json(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "particles/" + id.getPath()), Util.make(new ParticleGenerator(), consumer).toJson());
+		json(id.withPath(ID.PARTICLE), Util.make(new ParticleGenerator(), consumer).toJson());
 	}
 
 	default void sounds(String namespace, Consumer<SoundsGenerator> consumer) {

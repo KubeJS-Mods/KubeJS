@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.item.custom;
 
+import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.MutableToolTier;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -21,7 +22,7 @@ public abstract class HandheldItemBuilder extends ItemBuilder {
 		toolTier = new MutableToolTier(Tiers.IRON);
 		attackDamageBaseline = d;
 		speedBaseline = s;
-		parentModel("minecraft:item/handheld");
+		parentModel(KubeAssetGenerator.HANDHELD_ITEM_MODEL);
 		unstackable();
 	}
 

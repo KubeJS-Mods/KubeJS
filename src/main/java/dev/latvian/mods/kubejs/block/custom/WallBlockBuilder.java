@@ -25,9 +25,9 @@ public class WallBlockBuilder extends MultipartShapedBlockBuilder {
 
 	@Override
 	protected void generateMultipartBlockStateJson(MultipartBlockStateGenerator bs) {
-		var modPost = newID("block/", "_post").toString();
-		var modSide = newID("block/", "_side").toString();
-		var modSideTall = newID("block/", "_side_tall").toString();
+		var modPost = newID("block/", "_post");
+		var modSide = newID("block/", "_side");
+		var modSideTall = newID("block/", "_side_tall");
 
 		bs.part("up=true", modPost);
 		bs.part("north=low", p -> p.model(modSide).uvlock());
@@ -43,12 +43,12 @@ public class WallBlockBuilder extends MultipartShapedBlockBuilder {
 	@Override
 	protected void generateItemModelJson(ModelGenerator m) {
 		m.parent("minecraft:block/wall_inventory");
-		m.texture("wall", textures.get("texture").getAsString());
+		m.texture("wall", textures.get("texture"));
 	}
 
 	@Override
 	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
-		var texture = textures.get("texture").getAsString();
+		var texture = textures.get("texture");
 
 		generator.blockModel(newID("", "_post"), m -> {
 			m.parent("minecraft:block/template_wall_post");

@@ -27,8 +27,8 @@ public class FenceBlockBuilder extends MultipartShapedBlockBuilder {
 
 	@Override
 	protected void generateMultipartBlockStateJson(MultipartBlockStateGenerator bs) {
-		var modPost = newID("block/", "_post").toString();
-		var modSide = newID("block/", "_side").toString();
+		var modPost = newID("block/", "_post");
+		var modSide = newID("block/", "_side");
 
 		bs.part("", modPost);
 		bs.part("north=true", p -> p.model(modSide).uvlock());
@@ -40,12 +40,12 @@ public class FenceBlockBuilder extends MultipartShapedBlockBuilder {
 	@Override
 	protected void generateItemModelJson(ModelGenerator m) {
 		m.parent("minecraft:block/fence_inventory");
-		m.texture("texture", textures.get("texture").getAsString());
+		m.texture("texture", textures.get("texture"));
 	}
 
 	@Override
 	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
-		var texture = textures.get("texture").getAsString();
+		var texture = textures.get("texture");
 
 		generator.blockModel(newID("", "_post"), m -> {
 			m.parent("minecraft:block/fence_post");

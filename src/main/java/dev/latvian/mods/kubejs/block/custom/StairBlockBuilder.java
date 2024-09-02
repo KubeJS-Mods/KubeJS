@@ -25,9 +25,9 @@ public class StairBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		var mod = newID("block/", "").toString();
-		var modInner = newID("block/", "_inner").toString();
-		var modOuter = newID("block/", "_outer").toString();
+		var mod = newID("block/", "");
+		var modInner = newID("block/", "_inner");
+		var modOuter = newID("block/", "_outer");
 
 		bs.variant("facing=east,half=bottom,shape=inner_left", v -> v.model(modInner).y(270).uvlock());
 		bs.variant("facing=east,half=bottom,shape=inner_right", v -> v.model(modInner));
@@ -73,7 +73,7 @@ public class StairBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
-		var texture = textures.get("texture").getAsString();
+		var texture = textures.get("texture");
 
 		generator.blockModel(id, m -> {
 			m.parent("minecraft:block/stairs");

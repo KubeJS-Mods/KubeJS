@@ -51,10 +51,10 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		var mod = newID("block/", "").toString();
-		var modOpen = newID("block/", "_open").toString();
-		var modWall = newID("block/", "_wall").toString();
-		var modWallOpen = newID("block/", "_wall_open").toString();
+		var mod = newID("block/", "");
+		var modOpen = newID("block/", "_open");
+		var modWall = newID("block/", "_wall");
+		var modWallOpen = newID("block/", "_wall_open");
 
 		bs.variant("facing=east,in_wall=false,open=false", v -> v.model(mod).y(270).uvlock());
 		bs.variant("facing=east,in_wall=false,open=true", v -> v.model(modOpen).y(270).uvlock());
@@ -76,7 +76,7 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
-		var texture = textures.get("texture").getAsString();
+		var texture = textures.get("texture");
 
 		generator.blockModel(id, m -> {
 			m.parent("minecraft:block/template_fence_gate");
@@ -102,6 +102,6 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 	@Override
 	protected void generateItemModelJson(ModelGenerator m) {
 		m.parent("minecraft:block/template_fence_gate");
-		m.texture("texture", textures.get("texture").getAsString());
+		m.texture("texture", textures.get("texture"));
 	}
 }

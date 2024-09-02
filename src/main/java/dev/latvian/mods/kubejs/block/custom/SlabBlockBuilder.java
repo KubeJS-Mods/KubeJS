@@ -25,14 +25,14 @@ public class SlabBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		bs.variant("type=double", v -> v.model(newID("block/", "_double").toString()));
-		bs.variant("type=bottom", v -> v.model(newID("block/", "_bottom").toString()));
-		bs.variant("type=top", v -> v.model(newID("block/", "_top").toString()));
+		bs.variant("type=double", v -> v.model(newID("block/", "_double")));
+		bs.variant("type=bottom", v -> v.model(newID("block/", "_bottom")));
+		bs.variant("type=top", v -> v.model(newID("block/", "_top")));
 	}
 
 	@Override
 	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
-		final var texture = textures.get("texture").getAsString();
+		var texture = textures.get("texture");
 
 		generator.blockModel(newID("", "_double"), m -> {
 			m.parent("minecraft:block/cube_all");
@@ -56,6 +56,6 @@ public class SlabBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateItemModelJson(ModelGenerator m) {
-		m.parent(newID("block/", "_bottom").toString());
+		m.parent(newID("block/", "_bottom"));
 	}
 }

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.fluid;
 
 import dev.latvian.mods.kubejs.block.BlockRenderType;
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.particles.ParticleOptions;
@@ -34,7 +34,7 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 	public transient ResourceLocation actualFlowingTexture;
 	public transient ResourceLocation screenOverlayTexture;
 	public transient ResourceLocation blockOverlayTexture;
-	public transient Color tint;
+	public transient KubeColor tint;
 	public transient BlockRenderType renderType;
 
 	public FluidTypeBuilder(ResourceLocation id) {
@@ -77,7 +77,7 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 		return this;
 	}
 
-	public FluidTypeBuilder tint(Color tint) {
+	public FluidTypeBuilder tint(KubeColor tint) {
 		this.tint = tint;
 		return this;
 	}

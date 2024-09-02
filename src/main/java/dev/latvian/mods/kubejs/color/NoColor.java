@@ -2,31 +2,31 @@ package dev.latvian.mods.kubejs.color;
 
 import net.minecraft.network.chat.TextColor;
 
-public final class NoColor implements Color {
+public final class NoColor implements KubeColor {
 	private static final TextColor TEXT_COLOR = TextColor.fromRgb(0);
 
 	@Override
-	public int getArgbJS() {
+	public int kjs$getARGB() {
 		return 0;
 	}
 
 	@Override
-	public int getRgbJS() {
+	public int kjs$getRGB() {
 		return 0;
 	}
 
 	@Override
-	public String getHexJS() {
+	public String kjs$toHexString() {
 		return "#00000000";
 	}
 
 	@Override
-	public String getSerializeJS() {
+	public String kjs$serialize() {
 		return "none";
 	}
 
 	@Override
-	public TextColor createTextColorJS() {
+	public TextColor kjs$createTextColor() {
 		return TEXT_COLOR;
 	}
 }

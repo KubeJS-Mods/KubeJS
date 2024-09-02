@@ -123,7 +123,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 			return id;
 		}
 
-		return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), pre + id.getPath() + post);
+		return id.withPath(pre + id.getPath() + post);
 	}
 
 	@HideFromJS

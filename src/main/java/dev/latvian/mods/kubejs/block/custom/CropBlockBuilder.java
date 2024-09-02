@@ -198,7 +198,7 @@ public class CropBlockBuilder extends BlockBuilder {
 	}
 
 	public CropBlockBuilder farmersCanPlant() {
-		this.tagItem(new ResourceLocation[]{ResourceLocation.fromNamespaceAndPath("minecraft", "villager_plantable_seeds")});
+		this.tagItem(new ResourceLocation[]{ResourceLocation.withDefaultNamespace("villager_plantable_seeds")});
 		return this;
 	}
 
@@ -255,7 +255,7 @@ public class CropBlockBuilder extends BlockBuilder {
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
 		for (int i = 0; i <= age; i++) {
-			bs.simpleVariant("age=" + i, model.isEmpty() ? (id.getNamespace() + ":block/" + id.getPath() + "/" + i) : model);
+			bs.simpleVariant("age=" + i, model == null ? id.withPath("block/" + id.getPath() + "/" + i) : model);
 		}
 	}
 
@@ -265,7 +265,7 @@ public class CropBlockBuilder extends BlockBuilder {
 			final int fi = i;
 			generator.blockModel(newID("", "/" + i), m -> {
 				m.parent("minecraft:block/crop");
-				m.texture("crop", textures.get(String.valueOf(fi)).getAsString());
+				m.texture("crop", textures.get(String.valueOf(fi)));
 			});
 		}
 

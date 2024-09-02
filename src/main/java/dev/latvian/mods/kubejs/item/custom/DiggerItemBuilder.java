@@ -34,9 +34,11 @@ public class DiggerItemBuilder extends HandheldItemBuilder {
 			Tags.Items.MINING_TOOL_TOOLS.location(),
 		};
 
+		public static final ResourceLocation PICKAXE_MODEL = ResourceLocation.withDefaultNamespace("item/iron_pickaxe");
+
 		public Pickaxe(ResourceLocation i) {
 			super(i, 1F, -2.8F, PickaxeItem::new);
-			parentModel = "minecraft:item/iron_pickaxe";
+			parentModel = PICKAXE_MODEL;
 			tag(PICKAXE_TAGS);
 		}
 	}
@@ -46,9 +48,11 @@ public class DiggerItemBuilder extends HandheldItemBuilder {
 			ItemTags.SHOVELS.location(),
 		};
 
+		public static final ResourceLocation SHOVEL_MODEL = ResourceLocation.withDefaultNamespace("item/iron_shovel");
+
 		public Shovel(ResourceLocation i) {
 			super(i, 1.5F, -3F, ShovelItem::new);
-			parentModel = "minecraft:item/iron_shovel";
+			parentModel = SHOVEL_MODEL;
 			tag(SHOVEL_TAGS);
 		}
 	}
@@ -58,9 +62,11 @@ public class DiggerItemBuilder extends HandheldItemBuilder {
 			ItemTags.AXES.location(),
 		};
 
+		public static final ResourceLocation AXE_MODEL = ResourceLocation.withDefaultNamespace("item/iron_axe");
+
 		public Axe(ResourceLocation i) {
 			super(i, 6F, -3.1F, AxeItem::new);
-			parentModel = "minecraft:item/iron_axe";
+			parentModel = AXE_MODEL;
 			tag(AXE_TAGS);
 		}
 	}
@@ -70,9 +76,11 @@ public class DiggerItemBuilder extends HandheldItemBuilder {
 			ItemTags.HOES.location(),
 		};
 
+		public static final ResourceLocation HOE_MODEL = ResourceLocation.withDefaultNamespace("item/iron_hoe");
+
 		public Hoe(ResourceLocation i) {
 			super(i, 0F, -3F, HoeItem::new);
-			parentModel = "minecraft:item/iron_hoe";
+			parentModel = HOE_MODEL;
 			tag(HOE_TAGS);
 		}
 	}

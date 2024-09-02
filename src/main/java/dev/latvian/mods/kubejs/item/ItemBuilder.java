@@ -2,12 +2,13 @@ package dev.latvian.mods.kubejs.item;
 
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.component.DataComponentType;
@@ -61,7 +62,7 @@ public class ItemBuilder extends BuilderBase<Item> {
 	@Nullable
 	public transient ItemTintFunction tint;
 	public transient FoodBuilder foodBuilder;
-	public transient Function<ItemStack, Color> barColor;
+	public transient Function<ItemStack, KubeColor> barColor;
 	public transient ToIntFunction<ItemStack> barWidth;
 	public transient NameCallback nameGetter;
 
@@ -73,9 +74,9 @@ public class ItemBuilder extends BuilderBase<Item> {
 	public transient Predicate<HurtEnemyContext> hurtEnemy;
 	public transient JukeboxPlayable jukeboxPlayable;
 
-	public String texture;
-	public String parentModel;
-	public JsonObject textureJson;
+	public ResourceLocation texture;
+	public ResourceLocation parentModel;
+	public Map<String, String> textures;
 	public JsonObject modelJson;
 
 	public transient Tool tool;
@@ -92,8 +93,8 @@ public class ItemBuilder extends BuilderBase<Item> {
 		rarity = null;
 		glow = false;
 		tooltip = new ArrayList<>();
-		textureJson = new JsonObject();
-		parentModel = "";
+		textures = new HashMap<>();
+		parentModel = null;
 		foodBuilder = null;
 		modelJson = null;
 		anim = null;
@@ -123,22 +124,18 @@ public class ItemBuilder extends BuilderBase<Item> {
 	@Override
 	public void generateAssets(KubeAssetGenerator generator) {
 		if (modelJson != null) {
-			generator.json(KubeAssetGenerator.asItemModelLocation(id), modelJson);
+			generator.json(id.withPath(ID.ITEM_MODEL), modelJson);
 			return;
 		}
 
 		generator.itemModel(id, m -> {
-			if (!parentModel.isEmpty()) {
-				m.parent(parentModel);
-			} else {
-				m.parent("minecraft:item/generated");
+			m.parent(parentModel != null ? parentModel : KubeAssetGenerator.GENERATED_ITEM_MODEL);
+
+			if (textures.isEmpty()) {
+				texture(id.withPath(ID.ITEM).toString());
 			}
 
-			if (textureJson.size() == 0) {
-				texture(newID("item/", "").toString());
-			}
-
-			m.textures(textureJson);
+			m.textures(textures);
 		});
 	}
 
@@ -232,19 +229,19 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	@Info("Sets the item's texture (layer0).")
 	public ItemBuilder texture(String tex) {
-		textureJson.addProperty("layer0", tex);
+		textures.put("layer0", tex);
 		return this;
 	}
 
 	@Info("Sets the item's texture by given key.")
 	public ItemBuilder texture(String key, String tex) {
-		textureJson.addProperty(key, tex);
+		textures.put(key, tex);
 		return this;
 	}
 
-	@Info("Directlys set the item's texture json.")
-	public ItemBuilder textureJson(JsonObject json) {
-		textureJson = json;
+	@Info("Directly set the item's texture json.")
+	public ItemBuilder textures(Map<String, String> tex) {
+		textures.putAll(tex);
 		return this;
 	}
 
@@ -255,13 +252,13 @@ public class ItemBuilder extends BuilderBase<Item> {
 	}
 
 	@Info("Sets the item's model (parent).")
-	public ItemBuilder parentModel(String m) {
+	public ItemBuilder parentModel(ResourceLocation m) {
 		parentModel = m;
 		return this;
 	}
 
 	@Info("Determines the color of the item's durability bar. Defaulted to vanilla behavior.")
-	public ItemBuilder barColor(Function<ItemStack, Color> barColor) {
+	public ItemBuilder barColor(Function<ItemStack, KubeColor> barColor) {
 		this.barColor = barColor;
 		return this;
 	}

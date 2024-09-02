@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.block.drop.BlockDrops;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.Direction;
@@ -64,22 +65,22 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 		var modelMap = Map.of(
 			DoubleBlockHalf.UPPER, Map.of(
 				DoorHingeSide.RIGHT, Map.of(
-					Boolean.FALSE, newID("block/", "_top_right").toString(),
-					Boolean.TRUE, newID("block/", "_top_right_open").toString()
+					Boolean.FALSE, newID("block/", "_top_right"),
+					Boolean.TRUE, newID("block/", "_top_right_open")
 				),
 				DoorHingeSide.LEFT, Map.of(
-					Boolean.FALSE, newID("block/", "_top_left").toString(),
-					Boolean.TRUE, newID("block/", "_top_left_open").toString()
+					Boolean.FALSE, newID("block/", "_top_left"),
+					Boolean.TRUE, newID("block/", "_top_left_open")
 				)
 			),
 			DoubleBlockHalf.LOWER, Map.of(
 				DoorHingeSide.RIGHT, Map.of(
-					Boolean.FALSE, newID("block/", "_bottom_right").toString(),
-					Boolean.TRUE, newID("block/", "_bottom_right_open").toString()
+					Boolean.FALSE, newID("block/", "_bottom_right"),
+					Boolean.TRUE, newID("block/", "_bottom_right_open")
 				),
 				DoorHingeSide.LEFT, Map.of(
-					Boolean.FALSE, newID("block/", "_bottom_left").toString(),
-					Boolean.TRUE, newID("block/", "_bottom_left_open").toString()
+					Boolean.FALSE, newID("block/", "_bottom_left"),
+					Boolean.TRUE, newID("block/", "_bottom_left_open")
 				)
 			)
 		);
@@ -147,8 +148,8 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
-		var topTexture = textures.get("top").getAsString();
-		var bottomTexture = textures.get("bottom").getAsString();
+		var topTexture = textures.get("top");
+		var bottomTexture = textures.get("bottom");
 
 		for (var type : List.of(
 			"top_right",
@@ -205,7 +206,7 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateItemModelJson(ModelGenerator m) {
-		m.parent("minecraft:item/generated");
-		m.texture("layer0", newID("item/", "").toString());
+		m.parent(KubeAssetGenerator.GENERATED_ITEM_MODEL);
+		m.texture("layer0", id.withPath(ID.ITEM).toString());
 	}
 }

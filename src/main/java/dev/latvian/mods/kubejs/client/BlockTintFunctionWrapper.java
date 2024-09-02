@@ -11,6 +11,6 @@ public record BlockTintFunctionWrapper(BlockTintFunction function) implements Bl
 	@Override
 	public int getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
 		var c = function.getColor(state, level, pos, index);
-		return c == null ? 0xFFFFFFFF : c.getArgbJS();
+		return c == null ? 0xFFFFFFFF : c.kjs$getARGB();
 	}
 }

@@ -11,9 +11,20 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.function.UnaryOperator;
 
 public interface ID {
 	ResourceLocation UNKNOWN = ResourceLocation.fromNamespaceAndPath("unknown", "unknown");
+	UnaryOperator<String> BLOCKSTATE = s -> "blockstates/" + s;
+	UnaryOperator<String> BLOCK = s -> "block/" + s;
+	UnaryOperator<String> ITEM = s -> "item/" + s;
+	UnaryOperator<String> MODEL = s -> "models/" + s;
+	UnaryOperator<String> BLOCK_MODEL = s -> "models/block/" + s;
+	UnaryOperator<String> ITEM_MODEL = s -> "models/item/" + s;
+	UnaryOperator<String> BLOCK_LOOT_TABLE = s -> "loot_table/blocks/" + s;
+	UnaryOperator<String> PNG_TEXTURE = s -> "textures/" + s + ".png";
+	UnaryOperator<String> PNG_TEXTURE_MCMETA = s -> "textures/" + s + ".png.mcmeta";
+	UnaryOperator<String> PARTICLE = s -> "particles/" + s;
 
 	static String string(@Nullable String id) {
 		if (id == null || id.isEmpty()) {

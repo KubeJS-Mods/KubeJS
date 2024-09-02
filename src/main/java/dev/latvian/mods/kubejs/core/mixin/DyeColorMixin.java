@@ -1,13 +1,13 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import net.minecraft.world.item.DyeColor;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(DyeColor.class)
-public abstract class DyeColorMixin implements Color {
+public abstract class DyeColorMixin implements KubeColor {
 	@Shadow
 	@Final
 	private int textColor;
@@ -17,17 +17,17 @@ public abstract class DyeColorMixin implements Color {
 	private int fireworkColor;
 
 	@Override
-	public int getArgbJS() {
+	public int kjs$getARGB() {
 		return 0xFF000000 | textColor;
 	}
 
 	@Override
-	public int getRgbJS() {
+	public int kjs$getRGB() {
 		return textColor;
 	}
 
 	@Override
-	public int getFireworkColorJS() {
+	public int kjs$getFireworkRGB() {
 		return fireworkColor;
 	}
 }

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -26,13 +27,13 @@ public class CarpetBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		var mod = newID("block/", "").toString();
+		var mod = id.withPath(ID.BLOCK);
 		bs.variant("", (v) -> v.model(mod));
 	}
 
 	@Override
 	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
-		var texture = textures.get("texture").getAsString();
+		var texture = textures.get("texture");
 
 		generator.blockModel(id, m -> {
 			m.parent("minecraft:block/carpet");

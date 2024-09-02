@@ -2,18 +2,21 @@ package dev.latvian.mods.kubejs.client;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.latvian.mods.kubejs.bindings.AABBWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class ModelGenerator {
 	public static class Element {
-		private AABB box = new AABB(0D, 0D, 0D, 1D, 1D, 1D);
+		private AABB box = AABBWrapper.CUBE;
 		private final JsonObject faces = new JsonObject();
 
 		public Element box(AABB b) {
@@ -103,19 +106,27 @@ public class ModelGenerator {
 		}
 	}
 
-	private String parent = "minecraft:block/cube";
-	private final JsonObject textures = new JsonObject();
+	private static final ResourceLocation CUBE = ResourceLocation.withDefaultNamespace("block/cube");
+
+	private ResourceLocation parent = CUBE;
+	private final Map<String, String> textures = new HashMap<>(1);
 	private final List<Element> elements = new ArrayList<>();
 
 	public JsonObject toJson() {
 		var json = new JsonObject();
 
-		if (!parent.isEmpty()) {
-			json.addProperty("parent", parent);
+		if (parent != null) {
+			json.addProperty("parent", parent.toString());
 		}
 
-		if (textures.size() > 0) {
-			json.add("textures", textures);
+		if (!textures.isEmpty()) {
+			var o = new JsonObject();
+
+			for (var entry : textures.entrySet()) {
+				o.addProperty(entry.getKey(), entry.getValue());
+			}
+
+			json.add("textures", o);
 		}
 
 		if (!elements.isEmpty()) {
@@ -131,23 +142,21 @@ public class ModelGenerator {
 		return json;
 	}
 
-	public void parent(String s) {
+	public void parent(ResourceLocation s) {
 		parent = s;
 	}
 
 	@HideFromJS
+	public void parent(String s) {
+		parent = ResourceLocation.parse(s);
+	}
+
 	public void texture(String name, String texture) {
-		textures.addProperty(name, texture);
+		textures.put(name, texture);
 	}
 
-	public void texture(String name, ResourceLocation texture) {
-		textures.addProperty(name, texture.toString());
-	}
-
-	public void textures(JsonObject json) {
-		for (var entry : json.entrySet()) {
-			textures.add(entry.getKey(), entry.getValue());
-		}
+	public void textures(Map<String, String> map) {
+		textures.putAll(map);
 	}
 
 	public void element(Consumer<Element> consumer) {

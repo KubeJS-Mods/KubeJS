@@ -11,9 +11,9 @@ public abstract class ShapedBlockBuilder extends BlockBuilder {
 		property(BlockStateProperties.WATERLOGGED);
 		texture("texture", "kubejs:block/detector");
 
-		for (String s : suffixes) {
+		for (var s : suffixes) {
 			if (id.getPath().endsWith(s)) {
-				texture("texture", id.getNamespace() + ":block/" + id.getPath().substring(0, id.getPath().length() - s.length()));
+				texture("texture", id.withPath("block/" + id.getPath().substring(0, id.getPath().length() - s.length())).toString());
 				break;
 			}
 		}

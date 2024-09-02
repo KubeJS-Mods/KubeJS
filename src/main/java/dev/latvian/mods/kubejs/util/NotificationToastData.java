@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.client.NotificationToast;
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.color.SimpleColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -23,23 +23,23 @@ public record NotificationToastData(
 	Component text,
 	IconKJS icon,
 	int iconSize,
-	Color outlineColor,
-	Color borderColor,
-	Color backgroundColor,
+	KubeColor outlineColor,
+	KubeColor borderColor,
+	KubeColor backgroundColor,
 	boolean textShadow
 ) {
 	public static final Duration DEFAULT_DURATION = Duration.ofSeconds(5L);
-	public static final Color DEFAULT_BORDER_COLOR = new SimpleColor(0x472954);
-	public static final Color DEFAULT_BACKGROUND_COLOR = new SimpleColor(0x241335);
+	public static final KubeColor DEFAULT_BORDER_COLOR = new SimpleColor(0x472954);
+	public static final KubeColor DEFAULT_BACKGROUND_COLOR = new SimpleColor(0x241335);
 
 	public static final MapCodec<NotificationToastData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		TimeJS.DURATION.optionalFieldOf("duration", DEFAULT_DURATION).forGetter(NotificationToastData::duration),
 		ComponentSerialization.CODEC.optionalFieldOf("text", Component.empty()).forGetter(NotificationToastData::text),
 		IconKJS.CODEC.optionalFieldOf("icon", IconKJS.NONE).forGetter(NotificationToastData::icon),
 		Codec.INT.optionalFieldOf("icon_size", 16).forGetter(NotificationToastData::iconSize),
-		Color.CODEC.optionalFieldOf("outline_color", SimpleColor.BLACK).forGetter(NotificationToastData::outlineColor),
-		Color.CODEC.optionalFieldOf("border_color", DEFAULT_BORDER_COLOR).forGetter(NotificationToastData::borderColor),
-		Color.CODEC.optionalFieldOf("background_color", DEFAULT_BACKGROUND_COLOR).forGetter(NotificationToastData::backgroundColor),
+		KubeColor.CODEC.optionalFieldOf("outline_color", SimpleColor.BLACK).forGetter(NotificationToastData::outlineColor),
+		KubeColor.CODEC.optionalFieldOf("border_color", DEFAULT_BORDER_COLOR).forGetter(NotificationToastData::borderColor),
+		KubeColor.CODEC.optionalFieldOf("background_color", DEFAULT_BACKGROUND_COLOR).forGetter(NotificationToastData::backgroundColor),
 		Codec.BOOL.optionalFieldOf("text_shadow", false).forGetter(NotificationToastData::textShadow)
 	).apply(instance, NotificationToastData::new));
 
@@ -50,9 +50,9 @@ public record NotificationToastData(
 			var text = ComponentSerialization.STREAM_CODEC.decode(buf);
 			var icon = IconKJS.STREAM_CODEC.decode(buf);
 			var iconSize = ByteBufCodecs.VAR_INT.decode(buf);
-			var outlineColor = Color.STREAM_CODEC.decode(buf);
-			var borderColor = Color.STREAM_CODEC.decode(buf);
-			var backgroundColor = Color.STREAM_CODEC.decode(buf);
+			var outlineColor = KubeColor.STREAM_CODEC.decode(buf);
+			var borderColor = KubeColor.STREAM_CODEC.decode(buf);
+			var backgroundColor = KubeColor.STREAM_CODEC.decode(buf);
 			var textShadow = ByteBufCodecs.BOOL.decode(buf);
 			return new NotificationToastData(duration, text, icon, iconSize, outlineColor, borderColor, backgroundColor, textShadow);
 		}
@@ -63,9 +63,9 @@ public record NotificationToastData(
 			ComponentSerialization.STREAM_CODEC.encode(buf, data.text());
 			IconKJS.STREAM_CODEC.encode(buf, data.icon());
 			ByteBufCodecs.VAR_INT.encode(buf, data.iconSize());
-			Color.STREAM_CODEC.encode(buf, data.outlineColor());
-			Color.STREAM_CODEC.encode(buf, data.borderColor());
-			Color.STREAM_CODEC.encode(buf, data.backgroundColor());
+			KubeColor.STREAM_CODEC.encode(buf, data.outlineColor());
+			KubeColor.STREAM_CODEC.encode(buf, data.borderColor());
+			KubeColor.STREAM_CODEC.encode(buf, data.backgroundColor());
 			ByteBufCodecs.BOOL.encode(buf, data.textShadow());
 		}
 	};

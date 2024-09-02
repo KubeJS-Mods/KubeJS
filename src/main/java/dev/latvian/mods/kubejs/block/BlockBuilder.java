@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.block;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.bindings.AABBWrapper;
+import dev.latvian.mods.kubejs.bindings.DirectionWrapper;
 import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockStateMirrorCallbackJS;
@@ -26,6 +28,7 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Direction;
@@ -55,8 +58,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -79,8 +84,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient boolean requiresTool;
 	public transient BlockRenderType renderType;
 	public transient BlockTintFunction tint;
-	public transient final JsonObject textures;
-	public transient String model;
+	public transient final Map<String, String> textures;
+	public transient ResourceLocation model;
 	public transient ItemBuilder itemBuilder;
 	public transient List<AABB> customShape;
 	public transient boolean noCollision;
@@ -122,9 +127,9 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		fullBlock = false;
 		requiresTool = false;
 		renderType = BlockRenderType.SOLID;
-		textures = new JsonObject();
-		textureAll(id.getNamespace() + ":block/" + id.getPath());
-		model = "";
+		textures = new HashMap<>(0);
+		textureAll(id.withPath("block/" + id.getPath()).toString());
+		model = null;
 		itemBuilder = getOrCreateItemBuilder();
 
 		if (itemBuilder instanceof BlockItemBuilder b) {
@@ -185,7 +190,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		var table = generateLootTable();
 
 		if (table != null) {
-			generator.json(newID("loot_table/blocks/", ""), LootTable.CODEC.encodeStart(JsonOps.INSTANCE, new Holder.Direct<>(table)).getOrThrow());
+			generator.json(id.withPath(ID.BLOCK_LOOT_TABLE), LootTable.CODEC.encodeStart(JsonOps.INSTANCE, new Holder.Direct<>(table)).getOrThrow());
 		}
 	}
 
@@ -229,13 +234,13 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	@Override
 	public void generateAssets(KubeAssetGenerator generator) {
 		if (blockstateJson != null) {
-			generator.json(newID("blockstates/", ""), blockstateJson);
+			generator.json(id.withPath(ID.BLOCKSTATE), blockstateJson);
 		} else {
 			generator.blockState(id, this::generateBlockStateJson);
 		}
 
 		if (modelJson != null) {
-			generator.json(newID("models/block/", ""), modelJson);
+			generator.json(id.withPath(ID.BLOCK_MODEL), modelJson);
 		} else {
 			// This is different because there can be multiple models, so we should let the block handle those
 			generateBlockModelJsons(generator);
@@ -243,7 +248,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 		if (itemBuilder != null) {
 			if (itemBuilder.modelJson != null) {
-				generator.json(newID("models/item/", ""), itemBuilder.modelJson);
+				generator.json(id.withPath(ID.ITEM_MODEL), itemBuilder.modelJson);
 			} else {
 				generator.itemModel(itemBuilder.id, this::generateItemModelJson);
 			}
@@ -252,22 +257,22 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	protected void generateItemModelJson(ModelGenerator m) {
-		if (!model.isEmpty()) {
+		if (model != null) {
 			m.parent(model);
 		} else {
-			m.parent(newID("block/", "").toString());
+			m.parent(id.withPath(ID.BLOCK));
 		}
 	}
 
 	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
 		generator.blockModel(id, mg -> {
-			var particle = textures.get("particle").getAsString();
+			var particle = textures.get("particle");
 
-			if (areAllTexturesEqual(textures, particle)) {
-				mg.parent("minecraft:block/cube_all");
+			if (areAllTexturesEqual(particle)) {
+				mg.parent(KubeAssetGenerator.CUBE_ALL_BLOCK_MODEL);
 				mg.texture("all", particle);
 			} else {
-				mg.parent("block/cube");
+				mg.parent(KubeAssetGenerator.CUBE_BLOCK_MODEL);
 				mg.textures(textures);
 			}
 
@@ -275,14 +280,14 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 				List<AABB> boxes = new ArrayList<>(customShape);
 
 				if (boxes.isEmpty()) {
-					boxes.add(new AABB(0D, 0D, 0D, 1D, 1D, 1D));
+					boxes.add(AABBWrapper.CUBE);
 				}
 
 				for (var box : boxes) {
 					mg.element(e -> {
 						e.box(box);
 
-						for (var direction : Direction.values()) {
+						for (var direction : DirectionWrapper.VALUES) {
 							e.face(direction, face -> {
 								face.tex("#" + direction.getSerializedName());
 								face.cull();
@@ -299,12 +304,12 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		bs.simpleVariant("", model.isEmpty() ? (id.getNamespace() + ":block/" + id.getPath()) : model);
+		bs.simpleVariant("", model == null ? id.withPath(ID.BLOCK) : model);
 	}
 
-	protected boolean areAllTexturesEqual(JsonObject tex, String t) {
-		for (var direction : Direction.values()) {
-			if (!tex.get(direction.getSerializedName()).getAsString().equals(t)) {
+	protected boolean areAllTexturesEqual(String t) {
+		for (var direction : DirectionWrapper.VALUES) {
+			if (!textures.get(direction.getSerializedName()).equals(t)) {
 				return false;
 			}
 		}
@@ -461,11 +466,11 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		Texture the block on all sides with the same texture.
 		""")
 	public BlockBuilder textureAll(String tex) {
-		for (var direction : Direction.values()) {
+		for (var direction : DirectionWrapper.VALUES) {
 			textureSide(direction, tex);
 		}
 
-		textures.addProperty("particle", tex);
+		textures.put("particle", tex);
 		return this;
 	}
 
@@ -480,14 +485,14 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		Texture a specific texture key of the block.
 		""")
 	public BlockBuilder texture(String id, String tex) {
-		textures.addProperty(id, tex);
+		textures.put(id, tex);
 		return this;
 	}
 
 	@Info("""
 		Set the block's model.
 		""")
-	public BlockBuilder model(String m) {
+	public BlockBuilder model(ResourceLocation m) {
 		model = m;
 		if (itemBuilder != null) {
 			itemBuilder.parentModel(m);

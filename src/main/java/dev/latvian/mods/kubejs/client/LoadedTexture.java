@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -90,7 +90,7 @@ public class LoadedTexture {
 		return new LoadedTexture(width, height, pixels.clone(), mcmeta);
 	}
 
-	public LoadedTexture remap(Map<Color, Color> remap) {
+	public LoadedTexture remap(Map<KubeColor, KubeColor> remap) {
 		if (remap.isEmpty()) {
 			return this;
 		}
@@ -100,7 +100,7 @@ public class LoadedTexture {
 		for (var entry : remap.entrySet()) {
 			var k = entry.getKey();
 			var v = entry.getValue();
-			colorMap.put(k.getArgbJS(), v.getArgbJS());
+			colorMap.put(k.kjs$getARGB(), v.kjs$getARGB());
 		}
 
 		int[] result = new int[pixels.length];
@@ -131,12 +131,12 @@ public class LoadedTexture {
 		return new LoadedTexture(dst, mcmeta);
 	}
 
-	public LoadedTexture tint(@Nullable Color tint) {
+	public LoadedTexture tint(@Nullable KubeColor tint) {
 		if (tint == null) {
 			return this;
 		}
 
-		int argb = tint.getArgbJS();
+		int argb = tint.kjs$getARGB();
 		float l = ((argb >> 24) & 0xFF) / 255F;
 
 		if (l <= 0F) {

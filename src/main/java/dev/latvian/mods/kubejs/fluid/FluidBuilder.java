@@ -2,11 +2,12 @@ package dev.latvian.mods.kubejs.fluid;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockRenderType;
-import dev.latvian.mods.kubejs.color.Color;
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -20,7 +21,7 @@ import java.util.function.Supplier;
 
 @ReturnsSelf
 public class FluidBuilder extends BuilderBase<FlowingFluid> {
-	public static final Color WATER_COLOR = new SimpleColor(0xFF3F76E4);
+	public static final KubeColor WATER_COLOR = new SimpleColor(0xFF3F76E4);
 
 	public transient int slopeFindDistance = 4;
 	public transient int levelDecreasePerBlock = 1;
@@ -98,7 +99,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		return this;
 	}
 
-	public FluidBuilder tint(Color c) {
+	public FluidBuilder tint(KubeColor c) {
 		fluidType.tint = c;
 		return this;
 	}
@@ -166,7 +167,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 			generator.texture(fluidType.actualFlowingTexture, flowingTexture.tint(fluidType.tint));
 		}
 
-		generator.blockState(id, m -> m.simpleVariant("", id.getNamespace() + ":block/" + id.getPath()));
+		generator.blockState(id, m -> m.simpleVariant("", id.withPath("block/" + id.getPath())));
 		generator.blockModel(id, m -> {
 			m.parent("");
 			m.texture("particle", fluidType.actualStillTexture.toString());
@@ -174,7 +175,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 
 		if (bucketItem != null) {
 			if (bucketItem.modelJson != null) {
-				generator.json(KubeAssetGenerator.asItemModelLocation(id), bucketItem.modelJson);
+				generator.json(id.withPath(ID.ITEM_MODEL), bucketItem.modelJson);
 				return;
 			}
 
@@ -183,16 +184,16 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 			generator.mask(fluidPath, KubeJS.id("item/bucket_mask"), fluidType.actualStillTexture);
 
 			generator.itemModel(bucketItem.id, m -> {
-				if (!bucketItem.parentModel.isEmpty()) {
+				if (bucketItem.parentModel != null) {
 					m.parent(bucketItem.parentModel);
 				} else {
 					m.parent("kubejs:item/generated_bucket");
 				}
 
-				m.texture("bucket_fluid", fluidPath);
+				m.texture("bucket_fluid", fluidPath.toString());
 
-				if (bucketItem.textureJson.size() > 0) {
-					m.textures(bucketItem.textureJson);
+				if (!bucketItem.textures.isEmpty()) {
+					m.textures(bucketItem.textures);
 				}
 			});
 		}

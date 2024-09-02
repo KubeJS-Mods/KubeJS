@@ -10,10 +10,12 @@ public class SwordItemBuilder extends HandheldItemBuilder {
 		ItemTags.SWORDS.location(),
 	};
 
+	public static final ResourceLocation SWORD_MODEL = ResourceLocation.withDefaultNamespace("item/iron_sword");
+
 	public SwordItemBuilder(ResourceLocation i) {
 		super(i, 3F, -2.4F);
 		itemAttributeModifiers = SwordItem.createAttributes(toolTier, attackDamageBaseline, speedBaseline);
-		parentModel = "minecraft:item/iron_sword";
+		parentModel = SWORD_MODEL;
 		tag(SWORD_TAGS);
 	}
 

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.client;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ public class MultipartBlockStateGenerator {
 		private String when;
 		private final List<VariantBlockStateGenerator.Model> apply = new ArrayList<>();
 
-		public VariantBlockStateGenerator.Model model(String s) {
+		public VariantBlockStateGenerator.Model model(ResourceLocation s) {
 			var model = new VariantBlockStateGenerator.Model();
 			model.model(s);
 			apply.add(model);
@@ -61,7 +62,7 @@ public class MultipartBlockStateGenerator {
 		multipart.add(v.toJson());
 	}
 
-	public void part(String when, String model) {
+	public void part(String when, ResourceLocation model) {
 		part(when, v -> v.model(model));
 	}
 
