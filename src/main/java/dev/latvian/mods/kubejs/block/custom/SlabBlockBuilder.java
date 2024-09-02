@@ -24,14 +24,14 @@ public class SlabBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+	protected void generateBlockState(VariantBlockStateGenerator bs) {
 		bs.variant("type=double", v -> v.model(newID("block/", "_double")));
 		bs.variant("type=bottom", v -> v.model(newID("block/", "_bottom")));
 		bs.variant("type=top", v -> v.model(newID("block/", "_top")));
 	}
 
 	@Override
-	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
+	protected void generateBlockModel(KubeAssetGenerator generator) {
 		var texture = textures.get("texture");
 
 		generator.blockModel(newID("", "_double"), m -> {
@@ -55,7 +55,7 @@ public class SlabBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateItemModelJson(ModelGenerator m) {
+	protected void generateItemModel(ModelGenerator m) {
 		m.parent(newID("block/", "_bottom"));
 	}
 }

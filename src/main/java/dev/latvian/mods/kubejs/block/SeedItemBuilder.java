@@ -55,11 +55,6 @@ public class SeedItemBuilder extends BlockItemBuilder {
 
 	@Override
 	public void generateAssets(KubeAssetGenerator generator) {
-		if (modelJson != null) {
-			generator.json(id.withPath(ID.ITEM_MODEL), modelJson);
-			return;
-		}
-
 		generator.itemModel(id, m -> {
 			m.parent(parentModel != null ? parentModel : KubeAssetGenerator.GENERATED_ITEM_MODEL);
 

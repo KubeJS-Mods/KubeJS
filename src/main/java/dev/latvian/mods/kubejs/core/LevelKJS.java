@@ -24,6 +24,7 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.UUID;
 
 @RemapPrefixForJS("kjs$")
 public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
@@ -137,5 +138,16 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
 	}
 
 	default void kjs$spawnParticles(ParticleOptions options, boolean overrideLimiter, double x, double y, double z, double vx, double vy, double vz, int count, double speed) {
+	}
+
+	@Nullable
+	default Entity kjs$getEntityByUUID(UUID id) {
+		for (var entity : kjs$getEntities()) {
+			if (entity.getUUID().equals(id)) {
+				return entity;
+			}
+		}
+
+		return null;
 	}
 }

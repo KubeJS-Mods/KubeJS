@@ -49,13 +49,13 @@ public class PressurePlateBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+	protected void generateBlockState(VariantBlockStateGenerator bs) {
 		bs.variant("powered=true", v -> v.model(newID("block/", "_down")));
 		bs.variant("powered=false", v -> v.model(newID("block/", "_up")));
 	}
 
 	@Override
-	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
+	protected void generateBlockModel(KubeAssetGenerator generator) {
 		var texture = textures.get("texture");
 
 		generator.blockModel(newID("", "_down"), m -> {
@@ -70,7 +70,7 @@ public class PressurePlateBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateItemModelJson(ModelGenerator m) {
+	protected void generateItemModel(ModelGenerator m) {
 		m.parent(newID("block/", "_up"));
 	}
 }

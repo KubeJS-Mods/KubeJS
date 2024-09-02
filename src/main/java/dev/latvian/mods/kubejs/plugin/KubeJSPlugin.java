@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.plugin;
 
 import com.google.gson.JsonElement;
-import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
+import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentRegistry;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
@@ -32,7 +32,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -82,7 +81,7 @@ public interface KubeJSPlugin {
 	default void registerRecipeSchemas(RecipeSchemaRegistry registry) {
 	}
 
-	default void registerBlockEntityAttachments(List<BlockEntityAttachmentType> types) {
+	default void registerBlockEntityAttachments(BlockEntityAttachmentRegistry registry) {
 	}
 
 	default void registerIngredientActionTypes(IngredientActionTypeRegistry registry) {

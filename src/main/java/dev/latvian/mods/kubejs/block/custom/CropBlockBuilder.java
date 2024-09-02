@@ -253,14 +253,14 @@ public class CropBlockBuilder extends BlockBuilder {
 
 
 	@Override
-	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+	protected void generateBlockState(VariantBlockStateGenerator bs) {
 		for (int i = 0; i <= age; i++) {
 			bs.simpleVariant("age=" + i, model == null ? id.withPath("block/" + id.getPath() + "/" + i) : model);
 		}
 	}
 
 	@Override
-	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
+	protected void generateBlockModel(KubeAssetGenerator generator) {
 		for (int i = 0; i <= age; i++) {
 			final int fi = i;
 			generator.blockModel(newID("", "/" + i), m -> {

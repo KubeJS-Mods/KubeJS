@@ -10,8 +10,9 @@ import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(value = IItemHandler.class, remap = false)
+@Mixin(IItemHandler.class)
 public interface IItemHandlerMixin extends InventoryKJS {
 	@Unique
 	default IItemHandler kjs$self() {
@@ -24,14 +25,12 @@ public interface IItemHandlerMixin extends InventoryKJS {
 	}
 
 	@Override
-	default int kjs$getSlots() {
-		return kjs$self().getSlots();
-	}
+	@Invoker("getSlots")
+	int kjs$getSlots();
 
 	@Override
-	default ItemStack kjs$getStackInSlot(int i) {
-		return kjs$self().getStackInSlot(i);
-	}
+	@Invoker("getStackInSlot")
+	ItemStack kjs$getStackInSlot(int i);
 
 	@Override
 	default void kjs$setStackInSlot(int slot, ItemStack stack) {
@@ -43,24 +42,20 @@ public interface IItemHandlerMixin extends InventoryKJS {
 	}
 
 	@Override
-	default ItemStack kjs$insertItem(int i, ItemStack itemStack, boolean b) {
-		return kjs$self().insertItem(i, itemStack, b);
-	}
+	@Invoker("insertItem")
+	ItemStack kjs$insertItem(int i, ItemStack itemStack, boolean b);
 
 	@Override
-	default ItemStack kjs$extractItem(int i, int i1, boolean b) {
-		return kjs$self().extractItem(i, i1, b);
-	}
+	@Invoker("extractItem")
+	ItemStack kjs$extractItem(int i, int i1, boolean b);
 
 	@Override
-	default int kjs$getSlotLimit(int i) {
-		return kjs$self().getSlotLimit(i);
-	}
+	@Invoker("getSlotLimit")
+	int kjs$getSlotLimit(int i);
 
 	@Override
-	default boolean kjs$isItemValid(int i, ItemStack itemStack) {
-		return kjs$self().isItemValid(i, itemStack);
-	}
+	@Invoker("isItemValid")
+	boolean kjs$isItemValid(int i, ItemStack itemStack);
 
 	@Override
 	default @Nullable BlockContainerJS kjs$getBlock(Level level) {

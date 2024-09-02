@@ -47,7 +47,8 @@ import dev.latvian.mods.kubejs.block.custom.SlabBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.StairBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.TrapdoorBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
-import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentType;
+import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentRegistry;
+import dev.latvian.mods.kubejs.block.entity.CustomCapabilityAttachment;
 import dev.latvian.mods.kubejs.block.entity.InventoryAttachment;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.color.KubeColor;
@@ -703,8 +704,9 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	public void registerBlockEntityAttachments(List<BlockEntityAttachmentType> types) {
-		types.add(InventoryAttachment.TYPE);
+	public void registerBlockEntityAttachments(BlockEntityAttachmentRegistry registry) {
+		registry.register(CustomCapabilityAttachment.TYPE);
+		registry.register(InventoryAttachment.TYPE);
 	}
 
 	@Override

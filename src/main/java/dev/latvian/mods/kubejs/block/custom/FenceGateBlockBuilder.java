@@ -50,7 +50,7 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+	protected void generateBlockState(VariantBlockStateGenerator bs) {
 		var mod = newID("block/", "");
 		var modOpen = newID("block/", "_open");
 		var modWall = newID("block/", "_wall");
@@ -75,7 +75,7 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
+	protected void generateBlockModel(KubeAssetGenerator generator) {
 		var texture = textures.get("texture");
 
 		generator.blockModel(id, m -> {
@@ -100,7 +100,7 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateItemModelJson(ModelGenerator m) {
+	protected void generateItemModel(ModelGenerator m) {
 		m.parent("minecraft:block/template_fence_gate");
 		m.texture("texture", textures.get("texture"));
 	}

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.item;
 
-import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
@@ -77,7 +76,6 @@ public class ItemBuilder extends BuilderBase<Item> {
 	public ResourceLocation texture;
 	public ResourceLocation parentModel;
 	public Map<String, String> textures;
-	public JsonObject modelJson;
 
 	public transient Tool tool;
 	public transient ItemAttributeModifiers itemAttributeModifiers;
@@ -96,7 +94,6 @@ public class ItemBuilder extends BuilderBase<Item> {
 		textures = new HashMap<>();
 		parentModel = null;
 		foodBuilder = null;
-		modelJson = null;
 		anim = null;
 		useDuration = null;
 		use = null;
@@ -123,11 +120,6 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	@Override
 	public void generateAssets(KubeAssetGenerator generator) {
-		if (modelJson != null) {
-			generator.json(id.withPath(ID.ITEM_MODEL), modelJson);
-			return;
-		}
-
 		generator.itemModel(id, m -> {
 			m.parent(parentModel != null ? parentModel : KubeAssetGenerator.GENERATED_ITEM_MODEL);
 
@@ -242,12 +234,6 @@ public class ItemBuilder extends BuilderBase<Item> {
 	@Info("Directly set the item's texture json.")
 	public ItemBuilder textures(Map<String, String> tex) {
 		textures.putAll(tex);
-		return this;
-	}
-
-	@Info("Directly set the item's model json.")
-	public ItemBuilder modelJson(JsonObject json) {
-		modelJson = json;
 		return this;
 	}
 

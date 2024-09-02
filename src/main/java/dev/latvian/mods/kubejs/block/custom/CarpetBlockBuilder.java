@@ -26,13 +26,13 @@ public class CarpetBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+	protected void generateBlockState(VariantBlockStateGenerator bs) {
 		var mod = id.withPath(ID.BLOCK);
 		bs.variant("", (v) -> v.model(mod));
 	}
 
 	@Override
-	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
+	protected void generateBlockModel(KubeAssetGenerator generator) {
 		var texture = textures.get("texture");
 
 		generator.blockModel(id, m -> {

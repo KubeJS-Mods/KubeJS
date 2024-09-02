@@ -1,32 +1,23 @@
 package dev.latvian.mods.kubejs.block.entity;
 
-import dev.latvian.mods.rhino.Context;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.Map;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import org.jetbrains.annotations.Nullable;
 
 public interface BlockEntityAttachment {
-	BlockEntityAttachment[] EMPTY_ARRAY = new BlockEntityAttachment[0];
-
-	interface Factory {
-		BlockEntityAttachment create(KubeBlockEntity entity);
+	default Object getExposedObject() {
+		return this;
 	}
 
-	interface FactoryProvider {
-		Factory createFactory(Context cx, Map<String, Object> map);
+	@Nullable
+	default <CAP, SRC> CAP getCapability(BlockCapability<CAP, SRC> capability) {
+		return null;
 	}
 
-	// TODO: Replace with Codec
-
-	default CompoundTag writeAttachment(HolderLookup.Provider registries) {
-		return new CompoundTag();
+	default void onRemove(ServerLevel level, KubeBlockEntity blockEntity, BlockState newState) {
 	}
 
-	default void readAttachment(HolderLookup.Provider registries, CompoundTag tag) {
-	}
-
-	default void onRemove(BlockState newState) {
+	default void tick() {
 	}
 }

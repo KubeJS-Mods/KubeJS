@@ -44,7 +44,7 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+	protected void generateBlockState(VariantBlockStateGenerator bs) {
 		var modelLocation = model == null ? id.withPath(ID.BLOCK) : model;
 		bs.variant("facing=north", v -> v.model(modelLocation));
 		bs.variant("facing=east", v -> v.model(modelLocation).y(90));
@@ -53,7 +53,7 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModelJsons(KubeAssetGenerator gen) {
+	protected void generateBlockModel(KubeAssetGenerator gen) {
 		gen.blockModel(id, mg -> {
 			var side = getTextureOrDefault("side", id.withPath(ID.BLOCK).toString());
 
@@ -72,7 +72,7 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 	}
 
 	@Override
-	protected void generateItemModelJson(ModelGenerator m) {
+	protected void generateItemModel(ModelGenerator m) {
 		m.parent(model == null ? newID("block/", "") : model);
 	}
 

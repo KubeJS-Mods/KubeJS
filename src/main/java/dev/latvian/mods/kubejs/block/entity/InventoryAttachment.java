@@ -1,70 +1,106 @@
 package dev.latvian.mods.kubejs.block.entity;
 
+import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
-import dev.latvian.mods.rhino.ScriptRuntime;
-import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
-import dev.latvian.mods.rhino.type.JSOptionalParam;
-import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
-public class InventoryAttachment extends SimpleContainer implements BlockEntityAttachment {
-	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType(
-		"inventory",
-		JSObjectTypeInfo.of(
-			new JSOptionalParam("xsize", TypeInfo.INT),
-			new JSOptionalParam("ysize", TypeInfo.INT),
-			new JSOptionalParam("inputFilter", IngredientJS.TYPE_INFO)
-		),
-		(cx, map) -> {
-			var width = ScriptRuntime.toInt32(cx, map.get("width"));
-			var height = ScriptRuntime.toInt32(cx, map.get("height"));
-			var inputFilter = map.containsKey("inputFilter") ? ItemPredicate.wrap(cx, map.get("inputFilter")) : null;
-			return new InventoryAttachmentFactory(width, height, inputFilter);
-		}
-	);
+import java.util.List;
+import java.util.Optional;
 
-	private record InventoryAttachmentFactory(int width, int height, @Nullable ItemPredicate inputFilter) implements Factory {
+public class InventoryAttachment implements BlockEntityAttachment, INBTSerializable<ListTag> {
+	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType("inventory", Factory.class);
+
+	public record Factory(int width, int height, Optional<ItemPredicate> inputFilter) implements BlockEntityAttachmentFactory {
 		@Override
 		public BlockEntityAttachment create(KubeBlockEntity entity) {
-			return new InventoryAttachment(entity, width, height, inputFilter);
+			return new InventoryAttachment(entity, width, height, inputFilter.orElse(null));
+		}
+
+		@Override
+		public List<BlockCapability<?, ?>> getCapabilities() {
+			return List.of(Capabilities.ItemHandler.BLOCK);
+		}
+	}
+
+	public static class ItemHandler extends ItemStackHandler implements InventoryKJS {
+		private final InventoryAttachment attachment;
+
+		public ItemHandler(InventoryAttachment attachment) {
+			super(attachment.width * attachment.height);
+			this.attachment = attachment;
+		}
+
+		public NonNullList<ItemStack> stacks() {
+			return stacks;
+		}
+
+		@Override
+		protected void onContentsChanged(int slot) {
+			attachment.blockEntity.save();
+		}
+
+		@Override
+		public boolean isItemValid(int slot, ItemStack stack) {
+			return (attachment.inputFilter == null || attachment.inputFilter.test(stack)) && super.isItemValid(slot, stack);
+		}
+
+		@Override
+		public int kjs$getWidth() {
+			return attachment.width;
+		}
+
+		@Override
+		public int kjs$getHeight() {
+			return attachment.height;
 		}
 	}
 
 	public final int width, height;
 	public final KubeBlockEntity blockEntity;
 	public final ItemPredicate inputFilter;
+	public final ItemHandler itemStackHandler;
 
 	public InventoryAttachment(KubeBlockEntity blockEntity, int width, int height, @Nullable ItemPredicate inputFilter) {
-		super(width * height);
 		this.width = width;
 		this.height = height;
 		this.blockEntity = blockEntity;
 		this.inputFilter = inputFilter;
+		this.itemStackHandler = new ItemHandler(this);
 	}
 
 	@Override
-	public void setChanged() {
-		super.setChanged();
-		blockEntity.save();
+	public Object getExposedObject() {
+		return itemStackHandler;
 	}
 
 	@Override
-	public CompoundTag writeAttachment(HolderLookup.Provider registries) {
-		var tag = new CompoundTag();
+	@Nullable
+	public <CAP, SRC> CAP getCapability(BlockCapability<CAP, SRC> capability) {
+		if (capability == Capabilities.ItemHandler.BLOCK) {
+			return (CAP) itemStackHandler;
+		}
+
+		return null;
+	}
+
+	@Override
+	public ListTag serializeNBT(HolderLookup.Provider registries) {
 		var list = new ListTag();
 
-		for (int i = 0; i < getContainerSize(); i++) {
-			var stack = getItem(i);
+		for (int i = 0; i < width * height; i++) {
+			var stack = itemStackHandler.stacks().get(i);
 
 			if (!stack.isEmpty()) {
 				var itemTag = (CompoundTag) stack.save(registries, new CompoundTag());
@@ -73,55 +109,25 @@ public class InventoryAttachment extends SimpleContainer implements BlockEntityA
 			}
 		}
 
-		tag.put("items", list);
-		return tag;
+		return list;
 	}
 
 	@Override
-	public void readAttachment(HolderLookup.Provider registries, CompoundTag tag) {
-		for (int i = 0; i < getContainerSize(); ++i) {
-			removeItemNoUpdate(i);
-		}
+	public void deserializeNBT(HolderLookup.Provider registries, ListTag list) {
+		itemStackHandler.setSize(width * height);
 
-		var list = tag.getList("items", Tag.TAG_COMPOUND);
-
-		for (int i = 0; i < list.size(); ++i) {
+		for (int i = 0; i < list.size(); i++) {
 			var itemTag = list.getCompound(i);
 			var slot = itemTag.getByte("slot");
 
-			if (slot >= 0 && slot < getContainerSize()) {
-				setItem(slot, ItemStack.parse(registries, itemTag).orElse(ItemStack.EMPTY));
+			if (slot >= 0 && slot < width * height) {
+				itemStackHandler.stacks().set(slot, ItemStack.parse(registries, itemTag).orElse(ItemStack.EMPTY));
 			}
 		}
 	}
 
 	@Override
-	public void onRemove(BlockState newState) {
-		Containers.dropContents(blockEntity.getLevel(), blockEntity.getBlockPos(), this);
-	}
-
-	@Override
-	public boolean canAddItem(ItemStack itemStack) {
-		return (inputFilter == null || inputFilter.test(itemStack)) && super.canAddItem(itemStack);
-	}
-
-	@Override
-	public boolean canPlaceItem(int i, ItemStack itemStack) {
-		return (inputFilter == null || inputFilter.test(itemStack)) && super.canPlaceItem(i, itemStack);
-	}
-
-	@Override
-	public boolean stillValid(Player player) {
-		return !blockEntity.isRemoved();
-	}
-
-	@Override
-	public int kjs$getWidth() {
-		return width;
-	}
-
-	@Override
-	public int kjs$getHeight() {
-		return height;
+	public void onRemove(ServerLevel level, KubeBlockEntity blockEntity, BlockState newState) {
+		Containers.dropContents(blockEntity.getLevel(), blockEntity.getBlockPos(), itemStackHandler.stacks());
 	}
 }

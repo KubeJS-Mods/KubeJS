@@ -23,7 +23,6 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 		super(i, "_button");
 		noCollision();
 		tagBoth(BUTTON_TAGS);
-		// tagBoth(BlockTags.WOODEN_BUTTONS.location());
 		behaviour = BlockSetType.OAK;
 		ticksToStayPressed = 30;
 	}
@@ -44,7 +43,7 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+	protected void generateBlockState(VariantBlockStateGenerator bs) {
 		var mod0 = newID("block/", "");
 		var mod1 = newID("block/", "_pressed");
 
@@ -75,7 +74,7 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
+	protected void generateBlockModel(KubeAssetGenerator generator) {
 		var texture = textures.get("texture");
 
 		generator.blockModel(id, m -> {
@@ -90,7 +89,7 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateItemModelJson(ModelGenerator m) {
+	protected void generateItemModel(ModelGenerator m) {
 		m.parent("minecraft:block/button_inventory");
 		m.texture("texture", textures.get("texture"));
 	}

@@ -8,7 +8,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WallBlock;
 
-public class WallBlockBuilder extends MultipartShapedBlockBuilder {
+public class WallBlockBuilder extends ShapedBlockBuilder {
 	public static final ResourceLocation[] WALL_TAGS = {
 		BlockTags.WALLS.location(),
 	};
@@ -24,7 +24,12 @@ public class WallBlockBuilder extends MultipartShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateMultipartBlockStateJson(MultipartBlockStateGenerator bs) {
+	protected boolean useMultipartBlockState() {
+		return true;
+	}
+
+	@Override
+	protected void generateMultipartBlockState(MultipartBlockStateGenerator bs) {
 		var modPost = newID("block/", "_post");
 		var modSide = newID("block/", "_side");
 		var modSideTall = newID("block/", "_side_tall");
@@ -41,13 +46,13 @@ public class WallBlockBuilder extends MultipartShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateItemModelJson(ModelGenerator m) {
+	protected void generateItemModel(ModelGenerator m) {
 		m.parent("minecraft:block/wall_inventory");
 		m.texture("wall", textures.get("texture"));
 	}
 
 	@Override
-	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
+	protected void generateBlockModel(KubeAssetGenerator generator) {
 		var texture = textures.get("texture");
 
 		generator.blockModel(newID("", "_post"), m -> {

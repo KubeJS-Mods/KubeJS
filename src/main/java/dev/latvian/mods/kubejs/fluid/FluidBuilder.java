@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -174,11 +173,6 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		});
 
 		if (bucketItem != null) {
-			if (bucketItem.modelJson != null) {
-				generator.json(id.withPath(ID.ITEM_MODEL), bucketItem.modelJson);
-				return;
-			}
-
 			var fluidPath = newID("item/generated/", "_bucket_fluid");
 
 			generator.mask(fluidPath, KubeJS.id("item/bucket_mask"), fluidType.actualStillTexture);

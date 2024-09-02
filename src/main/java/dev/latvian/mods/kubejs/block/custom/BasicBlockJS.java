@@ -339,9 +339,9 @@ public class BasicBlockJS extends Block implements SimpleWaterloggedBlock {
 	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean bl) {
 		if (!state.is(newState.getBlock())) {
 			if (level.getBlockEntity(pos) instanceof KubeBlockEntity entity) {
-				if (level instanceof ServerLevel) {
-					for (var attachment : entity.attachments) {
-						attachment.onRemove(newState);
+				if (level instanceof ServerLevel s) {
+					for (var entry : entity.attachmentArray) {
+						entry.attachment().onRemove(s, entity, newState);
 					}
 				}
 

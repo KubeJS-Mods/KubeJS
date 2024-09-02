@@ -1,25 +1,35 @@
 package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
+import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentInfo;
+import dev.latvian.mods.kubejs.block.entity.BlockEntityBuilder;
+import dev.latvian.mods.kubejs.block.entity.KubeBlockEntity;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallbackForge;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabKubeEvent;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
+import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -98,20 +108,26 @@ public class KubeJSModEventHandler {
 		});
 	}
 
-	/*
-	@SubscribeEvent(priority = EventPriority.HIGH)
-	public static void addPacksFirst(AddPackFindersEvent event) {
-		if (event.getPackType() == PackType.SERVER_DATA) {
-			// ServerScriptManager.addPacksFirst(event);
+	private record KubeEntityCapabilityProvider<CAP, SRC>(BlockCapability<CAP, SRC> capability, BlockEntityAttachmentInfo attachment) implements ICapabilityProvider<KubeBlockEntity, SRC, CAP> {
+		@Override
+		@Nullable
+		public CAP getCapability(KubeBlockEntity entity, SRC from) {
+			if (attachment.directions().isEmpty() || (from instanceof Direction d && attachment.directions().contains(d))) {
+				return entity.attachmentArray[attachment.index()].attachment().getCapability(capability);
+			}
+
+			return null;
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOW)
-	public static void addPacksLast(AddPackFindersEvent event) {
-		if (event.getPackType() == PackType.SERVER_DATA) {
-			// ServerScriptManager.addPacksLast(event);
+	@SubscribeEvent
+	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		for (var info : RegistryObjectStorage.BLOCK_ENTITY.objects.values().stream().map(b -> ((BlockEntityBuilder) b).info).toList()) {
+			for (var attachment : info.attachments.values()) {
+				for (var capability : attachment.factory().getCapabilities()) {
+					event.registerBlockEntity(capability, (BlockEntityType<KubeBlockEntity>) info.entityType, new KubeEntityCapabilityProvider(capability, attachment));
+				}
+			}
 		}
 	}
-
-	 */
 }

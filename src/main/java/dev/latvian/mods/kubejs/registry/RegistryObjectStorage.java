@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -36,6 +37,7 @@ public final class RegistryObjectStorage<T> implements Iterable<BuilderBase<? ex
 	public static final RegistryObjectStorage<Fluid> FLUID = of(Registries.FLUID);
 	public static final RegistryObjectStorage<Block> BLOCK = of(Registries.BLOCK);
 	public static final RegistryObjectStorage<Item> ITEM = of(Registries.ITEM);
+	public static final RegistryObjectStorage<BlockEntityType<?>> BLOCK_ENTITY = of(Registries.BLOCK_ENTITY_TYPE);
 	public static final RegistryObjectStorage<FluidType> FLUID_TYPE = of(NeoForgeRegistries.Keys.FLUID_TYPES);
 
 	public final ResourceKey<Registry<T>> key;

@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FenceBlock;
 import net.neoforged.neoforge.common.Tags;
 
-public class FenceBlockBuilder extends MultipartShapedBlockBuilder {
+public class FenceBlockBuilder extends ShapedBlockBuilder {
 	public static final ResourceLocation[] FENCE_TAGS = {
 		BlockTags.FENCES.location(),
 		Tags.Blocks.FENCES.location(),
@@ -26,7 +26,12 @@ public class FenceBlockBuilder extends MultipartShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateMultipartBlockStateJson(MultipartBlockStateGenerator bs) {
+	protected boolean useMultipartBlockState() {
+		return true;
+	}
+
+	@Override
+	protected void generateMultipartBlockState(MultipartBlockStateGenerator bs) {
 		var modPost = newID("block/", "_post");
 		var modSide = newID("block/", "_side");
 
@@ -38,13 +43,13 @@ public class FenceBlockBuilder extends MultipartShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateItemModelJson(ModelGenerator m) {
+	protected void generateItemModel(ModelGenerator m) {
 		m.parent("minecraft:block/fence_inventory");
 		m.texture("texture", textures.get("texture"));
 	}
 
 	@Override
-	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
+	protected void generateBlockModel(KubeAssetGenerator generator) {
 		var texture = textures.get("texture");
 
 		generator.blockModel(newID("", "_post"), m -> {

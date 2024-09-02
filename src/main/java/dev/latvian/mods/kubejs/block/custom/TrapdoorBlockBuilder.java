@@ -45,7 +45,7 @@ public class TrapdoorBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+	protected void generateBlockState(VariantBlockStateGenerator bs) {
 		var modelOpen = newID("block/", "_open");
 		var modelBottom = newID("block/", "_bottom");
 		var modelTop = newID("block/", "_top");
@@ -75,7 +75,7 @@ public class TrapdoorBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
+	protected void generateBlockModel(KubeAssetGenerator generator) {
 		var texture = textures.get("texture");
 
 		generator.blockModel(newID("", "_bottom"), m -> {
@@ -95,7 +95,7 @@ public class TrapdoorBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateItemModelJson(ModelGenerator m) {
+	protected void generateItemModel(ModelGenerator m) {
 		m.parent(newID("block/", "_bottom"));
 	}
 }

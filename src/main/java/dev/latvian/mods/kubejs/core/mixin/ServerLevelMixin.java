@@ -12,7 +12,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.UUID;
 
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelMixin implements ServerLevelKJS {
@@ -42,4 +44,9 @@ public abstract class ServerLevelMixin implements ServerLevelKJS {
 	@Shadow
 	@HideFromJS
 	public abstract LevelEntityGetter<Entity> getEntities();
+
+	@Shadow
+	@Nullable
+	@HideFromJS
+	public abstract Entity getEntity(UUID uniqueId);
 }

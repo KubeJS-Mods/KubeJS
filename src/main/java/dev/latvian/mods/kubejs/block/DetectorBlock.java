@@ -2,7 +2,8 @@ package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
-import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.client.ModelGenerator;
+import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -49,13 +50,14 @@ public class DetectorBlock extends Block {
 		}
 
 		@Override
-		public void generateAssets(KubeAssetGenerator generator) {
-			generator.blockState(id, bs -> {
-				bs.simpleVariant("powered=false", OFF_MODEL);
-				bs.simpleVariant("powered=true", ON_MODEL);
-			});
+		protected void generateBlockState(VariantBlockStateGenerator bs) {
+			bs.simpleVariant("powered=false", OFF_MODEL);
+			bs.simpleVariant("powered=true", ON_MODEL);
+		}
 
-			generator.itemModel(id, m -> m.parent(KubeJS.MOD_ID + ":block/detector"));
+		@Override
+		protected void generateItemModel(ModelGenerator m) {
+			m.parent(OFF_MODEL);
 		}
 	}
 

@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.bindings;
 import net.minecraft.core.Direction;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -22,4 +23,5 @@ public interface DirectionWrapper {
 	Direction EAST = Direction.EAST;
 	Direction[] VALUES = Direction.values();
 	Map<String, Direction> ALL = Map.copyOf(Arrays.stream(VALUES).collect(Collectors.toMap(Direction::getSerializedName, Function.identity())));
+	EnumSet<Direction> EMPTY_SET = EnumSet.noneOf(Direction.class);
 }

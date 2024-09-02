@@ -24,7 +24,7 @@ public class StairBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+	protected void generateBlockState(VariantBlockStateGenerator bs) {
 		var mod = newID("block/", "");
 		var modInner = newID("block/", "_inner");
 		var modOuter = newID("block/", "_outer");
@@ -72,7 +72,7 @@ public class StairBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
+	protected void generateBlockModel(KubeAssetGenerator generator) {
 		var texture = textures.get("texture");
 
 		generator.blockModel(id, m -> {

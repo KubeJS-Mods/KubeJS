@@ -61,7 +61,7 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
+	protected void generateBlockState(VariantBlockStateGenerator bs) {
 		var modelMap = Map.of(
 			DoubleBlockHalf.UPPER, Map.of(
 				DoorHingeSide.RIGHT, Map.of(
@@ -147,7 +147,7 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
+	protected void generateBlockModel(KubeAssetGenerator generator) {
 		var topTexture = textures.get("top");
 		var bottomTexture = textures.get("bottom");
 
@@ -205,7 +205,7 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateItemModelJson(ModelGenerator m) {
+	protected void generateItemModel(ModelGenerator m) {
 		m.parent(KubeAssetGenerator.GENERATED_ITEM_MODEL);
 		m.texture("layer0", id.withPath(ID.ITEM).toString());
 	}

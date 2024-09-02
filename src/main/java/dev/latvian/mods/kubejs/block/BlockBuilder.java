@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.block;
 
-import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.bindings.AABBWrapper;
 import dev.latvian.mods.kubejs.bindings.DirectionWrapper;
@@ -18,6 +17,7 @@ import dev.latvian.mods.kubejs.block.drop.BlockDrops;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityBuilder;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityInfo;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
+import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
@@ -95,8 +95,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient float jumpFactor = Float.NaN;
 	public Consumer<RandomTickCallbackJS> randomTickCallback;
 	public BlockDropSupplier drops;
-	public JsonObject blockstateJson;
-	public JsonObject modelJson;
 	public transient boolean noValidSpawns;
 	public transient boolean suffocating;
 	public transient boolean viewBlocking;
@@ -141,8 +139,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		notSolid = false;
 		randomTickCallback = null;
 		drops = null;
-		blockstateJson = null;
-		modelJson = null;
 		noValidSpawns = false;
 		suffocating = true;
 		viewBlocking = true;
@@ -233,38 +229,25 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Override
 	public void generateAssets(KubeAssetGenerator generator) {
-		if (blockstateJson != null) {
-			generator.json(id.withPath(ID.BLOCKSTATE), blockstateJson);
+		if (useMultipartBlockState()) {
+			generator.multipartState(id, this::generateMultipartBlockState);
 		} else {
-			generator.blockState(id, this::generateBlockStateJson);
+			generator.blockState(id, this::generateBlockState);
 		}
 
-		if (modelJson != null) {
-			generator.json(id.withPath(ID.BLOCK_MODEL), modelJson);
-		} else {
-			// This is different because there can be multiple models, so we should let the block handle those
-			generateBlockModelJsons(generator);
-		}
+		generateBlockModel(generator);
 
 		if (itemBuilder != null) {
-			if (itemBuilder.modelJson != null) {
-				generator.json(id.withPath(ID.ITEM_MODEL), itemBuilder.modelJson);
-			} else {
-				generator.itemModel(itemBuilder.id, this::generateItemModelJson);
-			}
+			generator.itemModel(itemBuilder.id, this::generateItemModel);
 		}
 
 	}
 
-	protected void generateItemModelJson(ModelGenerator m) {
-		if (model != null) {
-			m.parent(model);
-		} else {
-			m.parent(id.withPath(ID.BLOCK));
-		}
+	protected void generateItemModel(ModelGenerator m) {
+		m.parent(model != null ? model : id.withPath(ID.BLOCK));
 	}
 
-	protected void generateBlockModelJsons(KubeAssetGenerator generator) {
+	protected void generateBlockModel(KubeAssetGenerator generator) {
 		generator.blockModel(id, mg -> {
 			var particle = textures.get("particle");
 
@@ -303,8 +286,15 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		});
 	}
 
-	protected void generateBlockStateJson(VariantBlockStateGenerator bs) {
-		bs.simpleVariant("", model == null ? id.withPath(ID.BLOCK) : model);
+	protected boolean useMultipartBlockState() {
+		return false;
+	}
+
+	protected void generateBlockState(VariantBlockStateGenerator bs) {
+		bs.simpleVariant("", model != null ? model : id.withPath(ID.BLOCK));
+	}
+
+	protected void generateMultipartBlockState(MultipartBlockStateGenerator bs) {
 	}
 
 	protected boolean areAllTexturesEqual(String t) {
