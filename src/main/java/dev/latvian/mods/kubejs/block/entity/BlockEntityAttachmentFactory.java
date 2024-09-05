@@ -5,7 +5,7 @@ import net.neoforged.neoforge.capabilities.BlockCapability;
 import java.util.List;
 
 public interface BlockEntityAttachmentFactory {
-	BlockEntityAttachment create(KubeBlockEntity entity);
+	BlockEntityAttachment create(BlockEntityAttachmentInfo info, KubeBlockEntity entity);
 
 	default List<BlockCapability<?, ?>> getCapabilities() {
 		return List.of();

@@ -15,7 +15,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -52,8 +51,8 @@ public class KubeBlockEntity extends BlockEntity {
 			this.attachmentArray = new BlockEntityAttachmentHolder[entityInfo.attachments.size()];
 
 			for (var aInfo : entityInfo.attachments.values()) {
-				var f = aInfo.factory().create(this);
-				map.put(aInfo.id(), f.getExposedObject());
+				var f = aInfo.factory().create(aInfo, this);
+				map.put(aInfo.id(), f.getWrappedObject());
 				this.attachmentArray[aInfo.index()] = new BlockEntityAttachmentHolder(aInfo, f);
 			}
 
@@ -91,12 +90,10 @@ public class KubeBlockEntity extends BlockEntity {
 			var data = new CompoundTag();
 
 			for (var entry : attachmentArray) {
-				if (entry.attachment() instanceof INBTSerializable<?> s) {
-					var t = s.serializeNBT(registries);
+				var t = entry.attachment().serialize(registries);
 
-					if (t != null) {
-						data.put(entry.info().id(), t);
-					}
+				if (t != null) {
+					data.put(entry.info().id(), t);
 				}
 			}
 
@@ -116,13 +113,7 @@ public class KubeBlockEntity extends BlockEntity {
 			var data = tag.getCompound("attachments");
 
 			for (var entry : attachmentArray) {
-				if (entry.attachment() instanceof INBTSerializable s) {
-					var t = data.get(entry.info().id());
-
-					if (t != null) {
-						s.deserializeNBT(registries, t);
-					}
-				}
+				entry.attachment().deserialize(registries, data.get(entry.info().id()));
 			}
 		}
 	}
@@ -228,19 +219,21 @@ public class KubeBlockEntity extends BlockEntity {
 
 		if (!level.isClientSide && info.attachmentsTicking) {
 			for (var entry : attachmentArray) {
-				entry.attachment().tick();
+				entry.attachment().serverTick();
 			}
 		}
 
-		if (sync) {
-			level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 11);
-			save = true;
-			sync = false;
-		}
+		if ((sync || save) && level.getGameTime() % 20L == 0L) {
+			if (sync) {
+				level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 11);
+				save = true;
+				sync = false;
+			}
 
-		if (save) {
-			level.blockEntityChanged(worldPosition);
-			save = false;
+			if (save) {
+				level.blockEntityChanged(worldPosition);
+				save = false;
+			}
 		}
 	}
 

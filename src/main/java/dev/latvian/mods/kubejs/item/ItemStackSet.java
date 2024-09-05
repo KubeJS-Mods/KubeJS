@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class ItemStackSet implements Iterable<ItemStack> {
 	private final HashMap<ItemStackKey, ItemStack> map;
@@ -84,5 +85,9 @@ public class ItemStackSet implements Iterable<ItemStack> {
 
 	public ItemStack getFirst() {
 		return map.isEmpty() ? ItemStack.EMPTY : map.values().iterator().next();
+	}
+
+	public Stream<ItemStack> stream() {
+		return map.isEmpty() ? Stream.of() : map.values().stream();
 	}
 }

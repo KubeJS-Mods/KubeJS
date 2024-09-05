@@ -6,25 +6,25 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 
-public class InventoryAttachment implements BlockEntityAttachment, INBTSerializable<ListTag> {
+public class InventoryAttachment implements BlockEntityAttachment {
 	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType("inventory", Factory.class);
 
 	public record Factory(int width, int height, Optional<ItemPredicate> inputFilter) implements BlockEntityAttachmentFactory {
 		@Override
-		public BlockEntityAttachment create(KubeBlockEntity entity) {
+		public BlockEntityAttachment create(BlockEntityAttachmentInfo info, KubeBlockEntity entity) {
 			return new InventoryAttachment(entity, width, height, inputFilter.orElse(null));
 		}
 
@@ -34,10 +34,10 @@ public class InventoryAttachment implements BlockEntityAttachment, INBTSerializa
 		}
 	}
 
-	public static class ItemHandler extends ItemStackHandler implements InventoryKJS {
+	public static class Wrapped extends ItemStackHandler implements InventoryKJS {
 		private final InventoryAttachment attachment;
 
-		public ItemHandler(InventoryAttachment attachment) {
+		public Wrapped(InventoryAttachment attachment) {
 			super(attachment.width * attachment.height);
 			this.attachment = attachment;
 		}
@@ -70,37 +70,37 @@ public class InventoryAttachment implements BlockEntityAttachment, INBTSerializa
 	public final int width, height;
 	public final KubeBlockEntity blockEntity;
 	public final ItemPredicate inputFilter;
-	public final ItemHandler itemStackHandler;
+	public final Wrapped inventory;
 
 	public InventoryAttachment(KubeBlockEntity blockEntity, int width, int height, @Nullable ItemPredicate inputFilter) {
 		this.width = width;
 		this.height = height;
 		this.blockEntity = blockEntity;
 		this.inputFilter = inputFilter;
-		this.itemStackHandler = new ItemHandler(this);
+		this.inventory = new Wrapped(this);
 	}
 
 	@Override
-	public Object getExposedObject() {
-		return itemStackHandler;
+	public Object getWrappedObject() {
+		return inventory;
 	}
 
 	@Override
 	@Nullable
 	public <CAP, SRC> CAP getCapability(BlockCapability<CAP, SRC> capability) {
 		if (capability == Capabilities.ItemHandler.BLOCK) {
-			return (CAP) itemStackHandler;
+			return (CAP) inventory;
 		}
 
 		return null;
 	}
 
 	@Override
-	public ListTag serializeNBT(HolderLookup.Provider registries) {
+	public ListTag serialize(HolderLookup.Provider registries) {
 		var list = new ListTag();
 
 		for (int i = 0; i < width * height; i++) {
-			var stack = itemStackHandler.stacks().get(i);
+			var stack = inventory.stacks().get(i);
 
 			if (!stack.isEmpty()) {
 				var itemTag = (CompoundTag) stack.save(registries, new CompoundTag());
@@ -113,21 +113,23 @@ public class InventoryAttachment implements BlockEntityAttachment, INBTSerializa
 	}
 
 	@Override
-	public void deserializeNBT(HolderLookup.Provider registries, ListTag list) {
-		itemStackHandler.setSize(width * height);
+	public void deserialize(HolderLookup.Provider registries, Tag tag) {
+		inventory.setSize(width * height);
 
-		for (int i = 0; i < list.size(); i++) {
-			var itemTag = list.getCompound(i);
-			var slot = itemTag.getByte("slot");
+		if (tag instanceof ListTag list) {
+			for (int i = 0; i < list.size(); i++) {
+				var itemTag = list.getCompound(i);
+				var slot = itemTag.getByte("slot");
 
-			if (slot >= 0 && slot < width * height) {
-				itemStackHandler.stacks().set(slot, ItemStack.parse(registries, itemTag).orElse(ItemStack.EMPTY));
+				if (slot >= 0 && slot < width * height) {
+					inventory.stacks().set(slot, ItemStack.parse(registries, itemTag).orElse(ItemStack.EMPTY));
+				}
 			}
 		}
 	}
 
 	@Override
 	public void onRemove(ServerLevel level, KubeBlockEntity blockEntity, BlockState newState) {
-		Containers.dropContents(blockEntity.getLevel(), blockEntity.getBlockPos(), itemStackHandler.stacks());
+		Containers.dropContents(blockEntity.getLevel(), blockEntity.getBlockPos(), inventory.stacks());
 	}
 }

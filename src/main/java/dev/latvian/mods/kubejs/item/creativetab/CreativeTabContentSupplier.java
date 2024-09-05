@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.item.creativetab;
 
+import dev.latvian.mods.kubejs.item.ItemPredicate;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-import java.util.Arrays;
 import java.util.List;
 
 @FunctionalInterface
@@ -16,7 +16,7 @@ public interface CreativeTabContentSupplier {
 			List<ItemStack> items = List.of();
 
 			try {
-				items = Arrays.stream(supplier.getContent(itemDisplayParameters.hasPermissions())).filter(is -> !is.isEmpty()).toList();
+				items = supplier.getContent(itemDisplayParameters.hasPermissions()).kjs$getDisplayStacks().stream().filter(is -> !is.isEmpty()).toList();
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -33,7 +33,7 @@ public interface CreativeTabContentSupplier {
 		}
 	}
 
-	CreativeTabContentSupplier DEFAULT = showRestrictedItems -> new ItemStack[0];
+	CreativeTabContentSupplier DEFAULT = showRestrictedItems -> ItemPredicate.NONE;
 
-	ItemStack[] getContent(boolean showRestrictedItems);
+	ItemPredicate getContent(boolean showRestrictedItems);
 }

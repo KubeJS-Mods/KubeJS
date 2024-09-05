@@ -15,6 +15,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -93,6 +95,14 @@ public class BlockEntityInfo implements BlockEntityAttachmentHandler {
 		blockBuilder.rightClick = e -> {
 			if (e.getPlayer() instanceof ServerPlayerKJS p && e.getBlock().getEntity() instanceof KubeBlockEntity entity && entity.attachments.get(id) instanceof InventoryKJS inv) {
 				p.kjs$openInventoryGUI(inv, blockBuilder.get().getName());
+			}
+		};
+	}
+
+	public void rightClickFillsTank(String id) {
+		blockBuilder.rightClick = e -> {
+			if (e.getPlayer() instanceof ServerPlayerKJS && e.getBlock().getEntity() instanceof KubeBlockEntity entity && entity.attachments.get(id) instanceof IFluidHandler tank) {
+				FluidUtil.interactWithFluidHandler(e.getPlayer(), e.getHand(), tank);
 			}
 		};
 	}
