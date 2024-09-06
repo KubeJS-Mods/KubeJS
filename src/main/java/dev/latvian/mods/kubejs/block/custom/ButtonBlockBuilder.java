@@ -74,23 +74,21 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModel(KubeAssetGenerator generator) {
-		var texture = textures.get("texture");
-
+	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(id, m -> {
 			m.parent("minecraft:block/button");
-			m.texture("texture", texture);
+			m.texture("texture", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_pressed"), m -> {
 			m.parent("minecraft:block/button_pressed");
-			m.texture("texture", texture);
+			m.texture("texture", baseTexture);
 		});
 	}
 
 	@Override
 	protected void generateItemModel(ModelGenerator m) {
 		m.parent("minecraft:block/button_inventory");
-		m.texture("texture", textures.get("texture"));
+		m.texture("texture", baseTexture);
 	}
 }

@@ -75,33 +75,31 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModel(KubeAssetGenerator generator) {
-		var texture = textures.get("texture");
-
+	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(id, m -> {
 			m.parent("minecraft:block/template_fence_gate");
-			m.texture("texture", texture);
+			m.texture("texture", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_open"), m -> {
 			m.parent("minecraft:block/template_fence_gate_open");
-			m.texture("texture", texture);
+			m.texture("texture", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_wall"), m -> {
 			m.parent("minecraft:block/template_fence_gate_wall");
-			m.texture("texture", texture);
+			m.texture("texture", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_wall_open"), m -> {
 			m.parent("minecraft:block/template_fence_gate_wall_open");
-			m.texture("texture", texture);
+			m.texture("texture", baseTexture);
 		});
 	}
 
 	@Override
 	protected void generateItemModel(ModelGenerator m) {
 		m.parent("minecraft:block/template_fence_gate");
-		m.texture("texture", textures.get("texture"));
+		m.texture("texture", baseTexture);
 	}
 }

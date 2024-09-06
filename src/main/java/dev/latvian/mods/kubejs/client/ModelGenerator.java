@@ -7,6 +7,7 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,11 +19,6 @@ public class ModelGenerator {
 	public static class Element {
 		private AABB box = AABBWrapper.CUBE;
 		private final JsonObject faces = new JsonObject();
-
-		public Element box(AABB b) {
-			box = b;
-			return this;
-		}
 
 		public JsonObject toJson() {
 			var json = new JsonObject();
@@ -40,6 +36,11 @@ public class ModelGenerator {
 
 			json.add("faces", faces);
 			return json;
+		}
+
+		public Element box(AABB b) {
+			box = b;
+			return this;
 		}
 
 		public void face(Direction direction, Consumer<Face> consumer) {
@@ -142,13 +143,13 @@ public class ModelGenerator {
 		return json;
 	}
 
-	public void parent(ResourceLocation s) {
+	public void parent(@Nullable ResourceLocation s) {
 		parent = s;
 	}
 
 	@HideFromJS
 	public void parent(String s) {
-		parent = ResourceLocation.parse(s);
+		parent = s.isEmpty() ? null : ResourceLocation.parse(s);
 	}
 
 	public void texture(String name, String texture) {

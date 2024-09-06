@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
-import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.ModelledBuilderBase;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ID;
@@ -44,7 +44,7 @@ import java.util.function.ToIntFunction;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 @ReturnsSelf
-public class ItemBuilder extends BuilderBase<Item> {
+public class ItemBuilder extends ModelledBuilderBase<Item> {
 	public record HurtEnemyContext(ItemStack getItem, LivingEntity getTarget, LivingEntity getAttacker) {
 	}
 
@@ -73,38 +73,34 @@ public class ItemBuilder extends BuilderBase<Item> {
 	public transient Predicate<HurtEnemyContext> hurtEnemy;
 	public transient JukeboxPlayable jukeboxPlayable;
 
-	public ResourceLocation texture;
-	public ResourceLocation parentModel;
-	public Map<String, String> textures;
-
 	public transient Tool tool;
 	public transient ItemAttributeModifiers itemAttributeModifiers;
 	public transient boolean canRepair;
 
-	public ItemBuilder(ResourceLocation i) {
-		super(i);
-		maxStackSize = -1;
-		maxDamage = 0;
-		burnTime = 0L;
-		containerItem = null;
-		subtypes = null;
-		rarity = null;
-		glow = false;
-		tooltip = new ArrayList<>();
-		textures = new HashMap<>();
-		parentModel = null;
-		foodBuilder = null;
-		anim = null;
-		useDuration = null;
-		use = null;
-		finishUsing = null;
-		releaseUsing = null;
-		fireResistant = false;
-		hurtEnemy = null;
+	public ItemBuilder(ResourceLocation id) {
+		super(id);
+		this.baseTexture = id.withPath(ID.ITEM).toString();
 
-		tool = null;
-		itemAttributeModifiers = null;
-		canRepair = true;
+		this.maxStackSize = -1;
+		this.maxDamage = 0;
+		this.burnTime = 0L;
+		this.containerItem = null;
+		this.subtypes = null;
+		this.rarity = null;
+		this.glow = false;
+		this.tooltip = new ArrayList<>();
+		this.foodBuilder = null;
+		this.anim = null;
+		this.useDuration = null;
+		this.use = null;
+		this.finishUsing = null;
+		this.releaseUsing = null;
+		this.fireResistant = false;
+		this.hurtEnemy = null;
+
+		this.tool = null;
+		this.itemAttributeModifiers = null;
+		this.canRepair = true;
 	}
 
 	@Override
@@ -120,14 +116,23 @@ public class ItemBuilder extends BuilderBase<Item> {
 
 	@Override
 	public void generateAssets(KubeAssetGenerator generator) {
+		generateItemModels(generator);
+	}
+
+	protected void generateItemModels(KubeAssetGenerator generator) {
 		generator.itemModel(id, m -> {
+			if (modelGenerator != null) {
+				modelGenerator.accept(m);
+				return;
+			}
+
 			m.parent(parentModel != null ? parentModel : KubeAssetGenerator.GENERATED_ITEM_MODEL);
 
 			if (textures.isEmpty()) {
-				texture(id.withPath(ID.ITEM).toString());
+				m.texture("layer0", baseTexture);
+			} else {
+				m.textures(textures);
 			}
-
-			m.textures(textures);
 		});
 	}
 
@@ -216,30 +221,6 @@ public class ItemBuilder extends BuilderBase<Item> {
 	@Info("Colorizes item's texture of the given index. Useful for coloring items, like GT ores ore dusts.")
 	public ItemBuilder color(ItemTintFunction callback) {
 		tint = callback;
-		return this;
-	}
-
-	@Info("Sets the item's texture (layer0).")
-	public ItemBuilder texture(String tex) {
-		textures.put("layer0", tex);
-		return this;
-	}
-
-	@Info("Sets the item's texture by given key.")
-	public ItemBuilder texture(String key, String tex) {
-		textures.put(key, tex);
-		return this;
-	}
-
-	@Info("Directly set the item's texture json.")
-	public ItemBuilder textures(Map<String, String> tex) {
-		textures.putAll(tex);
-		return this;
-	}
-
-	@Info("Sets the item's model (parent).")
-	public ItemBuilder parentModel(ResourceLocation m) {
-		parentModel = m;
 		return this;
 	}
 

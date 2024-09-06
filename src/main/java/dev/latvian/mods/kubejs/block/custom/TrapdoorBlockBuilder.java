@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.BlockRenderType;
-import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -29,7 +29,7 @@ public class TrapdoorBlockBuilder extends ShapedBlockBuilder {
 		noValidSpawns(true);
 		notSolid();
 		tagBoth(TRAPDOOR_TAGS);
-		texture("texture", newID("block/", "").toString());
+		baseTexture = id.withPath(ID.BLOCK).toString();
 		hardness(3F);
 		behaviour = BlockSetType.OAK;
 	}
@@ -46,9 +46,9 @@ public class TrapdoorBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockState(VariantBlockStateGenerator bs) {
-		var modelOpen = newID("block/", "_open");
-		var modelBottom = newID("block/", "_bottom");
+		var modelBottom = id.withPath(ID.BLOCK);
 		var modelTop = newID("block/", "_top");
+		var modelOpen = newID("block/", "_open");
 
 		var halfValues = Half.values();
 		var openValues = List.of(Boolean.TRUE, Boolean.FALSE);
@@ -75,27 +75,20 @@ public class TrapdoorBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModel(KubeAssetGenerator generator) {
-		var texture = textures.get("texture");
-
-		generator.blockModel(newID("", "_bottom"), m -> {
+	protected void generateBlockModels(KubeAssetGenerator generator) {
+		generator.blockModel(id, m -> {
 			m.parent("minecraft:block/template_trapdoor_bottom");
-			m.texture("texture", texture);
+			m.texture("texture", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_top"), m -> {
 			m.parent("minecraft:block/template_trapdoor_top");
-			m.texture("texture", texture);
+			m.texture("texture", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_open"), m -> {
 			m.parent("minecraft:block/template_trapdoor_open");
-			m.texture("texture", texture);
+			m.texture("texture", baseTexture);
 		});
-	}
-
-	@Override
-	protected void generateItemModel(ModelGenerator m) {
-		m.parent(newID("block/", "_bottom"));
 	}
 }

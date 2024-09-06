@@ -8,6 +8,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WallBlock;
 
+// FIXME: fix connection
 public class WallBlockBuilder extends ShapedBlockBuilder {
 	public static final ResourceLocation[] WALL_TAGS = {
 		BlockTags.WALLS.location(),
@@ -48,27 +49,24 @@ public class WallBlockBuilder extends ShapedBlockBuilder {
 	@Override
 	protected void generateItemModel(ModelGenerator m) {
 		m.parent("minecraft:block/wall_inventory");
-		m.texture("wall", textures.get("texture"));
+		m.texture("wall", baseTexture);
 	}
 
 	@Override
-	protected void generateBlockModel(KubeAssetGenerator generator) {
-		var texture = textures.get("texture");
-
+	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(newID("", "_post"), m -> {
 			m.parent("minecraft:block/template_wall_post");
-			m.texture("wall", texture);
+			m.texture("wall", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_side"), m -> {
 			m.parent("minecraft:block/template_wall_side");
-			m.texture("wall", texture);
+			m.texture("wall", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_side_tall"), m -> {
 			m.parent("minecraft:block/template_wall_side_tall");
-			m.texture("wall", texture);
+			m.texture("wall", baseTexture);
 		});
 	}
-// FIXME: fix connection
 }

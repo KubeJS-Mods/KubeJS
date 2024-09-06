@@ -185,10 +185,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 				}
 
 				m.texture("bucket_fluid", fluidPath.toString());
-
-				if (!bucketItem.textures.isEmpty()) {
-					m.textures(bucketItem.textures);
-				}
+				m.textures(bucketItem.textures);
 			});
 		}
 	}

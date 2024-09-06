@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.block.entity;
 
 import dev.latvian.mods.kubejs.bindings.DirectionWrapper;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.EnergyStorage;
@@ -41,6 +42,21 @@ public class EnergyStorageAttachment implements BlockEntityAttachment {
 		public Wrapped(EnergyStorageAttachment attachment, int capacity, int maxReceive, int maxExtract) {
 			super(capacity, maxReceive, maxExtract);
 			this.attachment = attachment;
+		}
+
+		public void setEnergyStored(int energy) {
+			this.energy = Mth.clamp(energy, 0, capacity);
+		}
+
+		public int addEnergy(int add, boolean simulate) {
+			int energyReceived = Mth.clamp(this.capacity - this.energy, 0, add);
+
+			if (!simulate && energyReceived > 0) {
+				energy += energyReceived;
+				attachment.entity.save();
+			}
+
+			return energyReceived;
 		}
 
 		@Override
@@ -101,7 +117,7 @@ public class EnergyStorageAttachment implements BlockEntityAttachment {
 			for (var dir : autoOutputDirections) {
 				var c = Capabilities.EnergyStorage.BLOCK.getCapability(entity.getLevel(), entity.getBlockPos().relative(dir), null, null, dir.getOpposite());
 
-				if (c != null) {
+				if (c != null && c != energyStorage) {
 					list.add(c);
 				}
 			}

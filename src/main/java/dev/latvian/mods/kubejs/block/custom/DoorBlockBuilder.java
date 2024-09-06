@@ -44,8 +44,8 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 		noValidSpawns(true);
 		notSolid();
 		tagBoth(TRAPDOOR_TAGS);
-		texture("top", newID("block/", "_top").toString());
-		texture("bottom", newID("block/", "_bottom").toString());
+		textures.put("top", newID("block/", "_top").toString());
+		textures.put("bottom", newID("block/", "_bottom").toString());
 		hardness(3F);
 		behaviour = BlockSetType.OAK;
 	}
@@ -147,7 +147,7 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModel(KubeAssetGenerator generator) {
+	protected void generateBlockModels(KubeAssetGenerator generator) {
 		var topTexture = textures.get("top");
 		var bottomTexture = textures.get("bottom");
 

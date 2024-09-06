@@ -55,17 +55,15 @@ public class PressurePlateBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModel(KubeAssetGenerator generator) {
-		var texture = textures.get("texture");
-
+	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(newID("", "_down"), m -> {
 			m.parent("minecraft:block/pressure_plate_down");
-			m.texture("texture", texture);
+			m.texture("texture", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_up"), m -> {
 			m.parent("minecraft:block/pressure_plate_up");
-			m.texture("texture", texture);
+			m.texture("texture", baseTexture);
 		});
 	}
 

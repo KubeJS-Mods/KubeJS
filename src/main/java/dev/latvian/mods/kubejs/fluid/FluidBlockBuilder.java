@@ -29,9 +29,10 @@ public class FluidBlockBuilder extends BlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModel(KubeAssetGenerator generator) {
+	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(id, mg -> {
-			var particle = textures.get("particle");
+			mg.parent("");
+			mg.texture("particle", fluidBuilder.fluidType.stillTexture.toString());
 		});
 	}
 

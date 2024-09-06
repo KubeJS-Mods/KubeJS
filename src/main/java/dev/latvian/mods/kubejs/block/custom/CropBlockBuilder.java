@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockRenderType;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.block.SeedItemBuilder;
+import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -143,7 +144,7 @@ public class CropBlockBuilder extends BlockBuilder {
 		mapColor(MapColor.PLANT);
 
 		for (int a = 0; a <= age; a++) {
-			texture(String.valueOf(a), newID("block/", "/" + a).toString());
+			textures.put(String.valueOf(a), newID("block/", "/" + a).toString());
 		}
 
 		tagBlock(CROP_BLOCK_TAGS);
@@ -181,20 +182,13 @@ public class CropBlockBuilder extends BlockBuilder {
 		ShapeBuilder shapes = new ShapeBuilder(age);
 		builder.accept(shapes);
 		this.shapeByAge = shapes.getShapes();
-		for (int i = 0; i <= age; i++) {
-			texture(String.valueOf(i), newID("block/", "/" + i).toString());
-		}
-		return this;
-	}
+		textures.clear();
 
-	@Override
-	public BlockBuilder texture(String id, String tex) {
-		try {
-			int intId = (int) Double.parseDouble(id);
-			return super.texture(String.valueOf(intId), tex);
-		} catch (NumberFormatException e) {
-			return super.texture(id, tex);
+		for (int i = 0; i <= age; i++) {
+			textures.put(String.valueOf(i), newID("block/", "/" + i).toString());
 		}
+
+		return this;
 	}
 
 	public CropBlockBuilder farmersCanPlant() {
@@ -255,12 +249,12 @@ public class CropBlockBuilder extends BlockBuilder {
 	@Override
 	protected void generateBlockState(VariantBlockStateGenerator bs) {
 		for (int i = 0; i <= age; i++) {
-			bs.simpleVariant("age=" + i, model == null ? id.withPath("block/" + id.getPath() + "/" + i) : model);
+			bs.simpleVariant("age=" + i, parentModel == null ? id.withPath("block/" + id.getPath() + "/" + i) : parentModel);
 		}
 	}
 
 	@Override
-	protected void generateBlockModel(KubeAssetGenerator generator) {
+	protected void generateBlockModels(KubeAssetGenerator generator) {
 		for (int i = 0; i <= age; i++) {
 			final int fi = i;
 			generator.blockModel(newID("", "/" + i), m -> {
@@ -268,7 +262,12 @@ public class CropBlockBuilder extends BlockBuilder {
 				m.texture("crop", textures.get(String.valueOf(fi)));
 			});
 		}
+	}
 
+	@Override
+	protected void generateItemModel(ModelGenerator m) {
+		m.parent(KubeAssetGenerator.GENERATED_ITEM_MODEL);
+		m.texture("layer0", itemBuilder.baseTexture);
 	}
 
 	@Override

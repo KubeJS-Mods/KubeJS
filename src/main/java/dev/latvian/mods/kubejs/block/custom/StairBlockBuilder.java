@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
@@ -25,7 +26,7 @@ public class StairBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockState(VariantBlockStateGenerator bs) {
-		var mod = newID("block/", "");
+		var mod = id.withPath(ID.BLOCK);
 		var modInner = newID("block/", "_inner");
 		var modOuter = newID("block/", "_outer");
 
@@ -72,28 +73,26 @@ public class StairBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	protected void generateBlockModel(KubeAssetGenerator generator) {
-		var texture = textures.get("texture");
-
+	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(id, m -> {
 			m.parent("minecraft:block/stairs");
-			m.texture("bottom", texture);
-			m.texture("top", texture);
-			m.texture("side", texture);
+			m.texture("bottom", baseTexture);
+			m.texture("top", baseTexture);
+			m.texture("side", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_inner"), m -> {
 			m.parent("minecraft:block/inner_stairs");
-			m.texture("bottom", texture);
-			m.texture("top", texture);
-			m.texture("side", texture);
+			m.texture("bottom", baseTexture);
+			m.texture("top", baseTexture);
+			m.texture("side", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_outer"), m -> {
 			m.parent("minecraft:block/outer_stairs");
-			m.texture("bottom", texture);
-			m.texture("top", texture);
-			m.texture("side", texture);
+			m.texture("bottom", baseTexture);
+			m.texture("top", baseTexture);
+			m.texture("side", baseTexture);
 		});
 	}
 }

@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.block.custom;
 
-import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
@@ -12,6 +12,9 @@ public class SlabBlockBuilder extends ShapedBlockBuilder {
 	public static final ResourceLocation[] SLAB_TAGS = {
 		BlockTags.SLABS.location(),
 	};
+
+	private static final ResourceLocation SLAB_BOTTOM = ResourceLocation.withDefaultNamespace("block/slab");
+	private static final ResourceLocation SLAB_TOP = ResourceLocation.withDefaultNamespace("block/slab_top");
 
 	public SlabBlockBuilder(ResourceLocation i) {
 		super(i, "_slab");
@@ -25,37 +28,30 @@ public class SlabBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateBlockState(VariantBlockStateGenerator bs) {
-		bs.variant("type=double", v -> v.model(newID("block/", "_double")));
-		bs.variant("type=bottom", v -> v.model(newID("block/", "_bottom")));
+		bs.variant("type=bottom", v -> v.model(id.withPath(ID.BLOCK)));
 		bs.variant("type=top", v -> v.model(newID("block/", "_top")));
+		bs.variant("type=double", v -> v.model(newID("block/", "_double")));
 	}
 
 	@Override
-	protected void generateBlockModel(KubeAssetGenerator generator) {
-		var texture = textures.get("texture");
-
-		generator.blockModel(newID("", "_double"), m -> {
-			m.parent("minecraft:block/cube_all");
-			m.texture("all", texture);
-		});
-
-		generator.blockModel(newID("", "_bottom"), m -> {
-			m.parent("minecraft:block/slab");
-			m.texture("bottom", texture);
-			m.texture("top", texture);
-			m.texture("side", texture);
+	protected void generateBlockModels(KubeAssetGenerator generator) {
+		generator.blockModel(id, m -> {
+			m.parent(SLAB_BOTTOM);
+			m.texture("bottom", baseTexture);
+			m.texture("top", baseTexture);
+			m.texture("side", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_top"), m -> {
-			m.parent("minecraft:block/slab_top");
-			m.texture("bottom", texture);
-			m.texture("top", texture);
-			m.texture("side", texture);
+			m.parent(SLAB_TOP);
+			m.texture("bottom", baseTexture);
+			m.texture("top", baseTexture);
+			m.texture("side", baseTexture);
 		});
-	}
 
-	@Override
-	protected void generateItemModel(ModelGenerator m) {
-		m.parent(newID("block/", "_bottom"));
+		generator.blockModel(newID("", "_double"), m -> {
+			m.parent(KubeAssetGenerator.CUBE_ALL_BLOCK_MODEL);
+			m.texture("all", baseTexture);
+		});
 	}
 }

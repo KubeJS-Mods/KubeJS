@@ -18,8 +18,8 @@ public class ArmorItemBuilder extends ItemBuilder {
 			ItemTags.HEAD_ARMOR.location(),
 		};
 
-		public Helmet(ResourceLocation i) {
-			super(i, ArmorItem.Type.HELMET);
+		public Helmet(ResourceLocation id) {
+			super(id, ArmorItem.Type.HELMET);
 			tag(HELMET_TAGS);
 		}
 	}
@@ -29,8 +29,8 @@ public class ArmorItemBuilder extends ItemBuilder {
 			ItemTags.CHEST_ARMOR.location(),
 		};
 
-		public Chestplate(ResourceLocation i) {
-			super(i, ArmorItem.Type.CHESTPLATE);
+		public Chestplate(ResourceLocation id) {
+			super(id, ArmorItem.Type.CHESTPLATE);
 			tag(CHESTPLATE_TAGS);
 		}
 	}
@@ -40,8 +40,8 @@ public class ArmorItemBuilder extends ItemBuilder {
 			ItemTags.LEG_ARMOR.location(),
 		};
 
-		public Leggings(ResourceLocation i) {
-			super(i, ArmorItem.Type.LEGGINGS);
+		public Leggings(ResourceLocation id) {
+			super(id, ArmorItem.Type.LEGGINGS);
 			tag(LEGGING_TAGS);
 		}
 	}
@@ -51,8 +51,8 @@ public class ArmorItemBuilder extends ItemBuilder {
 			ItemTags.FOOT_ARMOR.location(),
 		};
 
-		public Boots(ResourceLocation i) {
-			super(i, ArmorItem.Type.BOOTS);
+		public Boots(ResourceLocation id) {
+			super(id, ArmorItem.Type.BOOTS);
 			tag(BOOT_TAGS);
 		}
 	}
@@ -62,8 +62,8 @@ public class ArmorItemBuilder extends ItemBuilder {
 		public AnimalArmorItem.BodyType bodyType;
 		public boolean overlay;
 
-		public AnimalArmor(ResourceLocation i) {
-			super(i, ArmorItem.Type.BODY);
+		public AnimalArmor(ResourceLocation id) {
+			super(id, ArmorItem.Type.BODY);
 			bodyType = AnimalArmorItem.BodyType.CANINE;
 			overlay = true;
 		}
@@ -87,8 +87,8 @@ public class ArmorItemBuilder extends ItemBuilder {
 	public final ArmorItem.Type armorType;
 	public Holder<ArmorMaterial> material;
 
-	protected ArmorItemBuilder(ResourceLocation i, ArmorItem.Type t) {
-		super(i);
+	protected ArmorItemBuilder(ResourceLocation id, ArmorItem.Type t) {
+		super(id);
 		armorType = t;
 		material = ArmorMaterials.IRON;
 		unstackable();

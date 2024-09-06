@@ -24,6 +24,7 @@ import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.registry.ModelledBuilderBase;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -31,7 +32,6 @@ import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -58,10 +58,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -69,7 +67,7 @@ import java.util.function.Predicate;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 @ReturnsSelf
-public abstract class BlockBuilder extends BuilderBase<Block> {
+public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	private static final BlockBehaviour.StatePredicate ALWAYS_FALSE_STATE_PREDICATE = (blockState, blockGetter, blockPos) -> false;
 	private static final BlockBehaviour.StateArgumentPredicate<?> ALWAYS_FALSE_STATE_ARG_PREDICATE = (blockState, blockGetter, blockPos, type) -> false;
 
@@ -84,8 +82,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient boolean requiresTool;
 	public transient BlockRenderType renderType;
 	public transient BlockTintFunction tint;
-	public transient final Map<String, String> textures;
-	public transient ResourceLocation model;
 	public transient ItemBuilder itemBuilder;
 	public transient List<AABB> customShape;
 	public transient boolean noCollision;
@@ -114,40 +110,39 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient Consumer<BlockRightClickedKubeEvent> rightClick;
 	public transient BlockEntityInfo blockEntityInfo;
 
-	public BlockBuilder(ResourceLocation i) {
-		super(i);
-		soundType = null;
-		mapColorFn = null;
-		hardness = 1.5F;
-		resistance = 3F;
-		lightLevel = 0F;
-		opaque = true;
-		fullBlock = false;
-		requiresTool = false;
-		renderType = BlockRenderType.SOLID;
-		textures = new HashMap<>(0);
-		textureAll(id.withPath("block/" + id.getPath()).toString());
-		model = null;
-		itemBuilder = getOrCreateItemBuilder();
+	public BlockBuilder(ResourceLocation id) {
+		super(id);
+		this.baseTexture = id.withPath(ID.BLOCK).toString();
+
+		this.soundType = null;
+		this.mapColorFn = null;
+		this.hardness = 1.5F;
+		this.resistance = 3F;
+		this.lightLevel = 0F;
+		this.opaque = true;
+		this.fullBlock = false;
+		this.requiresTool = false;
+		this.renderType = BlockRenderType.SOLID;
+		this.itemBuilder = getOrCreateItemBuilder();
 
 		if (itemBuilder instanceof BlockItemBuilder b) {
 			b.blockBuilder = this;
 		}
 
-		customShape = new ArrayList<>();
-		noCollision = false;
-		notSolid = false;
-		randomTickCallback = null;
-		drops = null;
-		noValidSpawns = false;
-		suffocating = true;
-		viewBlocking = true;
-		redstoneConductor = true;
-		transparent = false;
-		blockStateProperties = new HashSet<>();
-		defaultStateModification = null;
-		placementStateModification = null;
-		canBeReplacedFunction = null;
+		this.customShape = new ArrayList<>();
+		this.noCollision = false;
+		this.notSolid = false;
+		this.randomTickCallback = null;
+		this.drops = null;
+		this.noValidSpawns = false;
+		this.suffocating = true;
+		this.viewBlocking = true;
+		this.redstoneConductor = true;
+		this.transparent = false;
+		this.blockStateProperties = new HashSet<>();
+		this.defaultStateModification = null;
+		this.placementStateModification = null;
+		this.canBeReplacedFunction = null;
 	}
 
 	@Override
@@ -235,28 +230,29 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 			generator.blockState(id, this::generateBlockState);
 		}
 
-		generateBlockModel(generator);
+		generateBlockModels(generator);
 
 		if (itemBuilder != null) {
 			generator.itemModel(itemBuilder.id, this::generateItemModel);
 		}
-
 	}
 
-	protected void generateItemModel(ModelGenerator m) {
-		m.parent(model != null ? model : id.withPath(ID.BLOCK));
-	}
+	protected void generateBlockModels(KubeAssetGenerator generator) {
+		generator.blockModel(id, m -> {
+			if (modelGenerator != null) {
+				modelGenerator.accept(m);
+				return;
+			}
 
-	protected void generateBlockModel(KubeAssetGenerator generator) {
-		generator.blockModel(id, mg -> {
-			var particle = textures.get("particle");
-
-			if (areAllTexturesEqual(particle)) {
-				mg.parent(KubeAssetGenerator.CUBE_ALL_BLOCK_MODEL);
-				mg.texture("all", particle);
+			if (parentModel != null) {
+				m.parent(parentModel);
+				m.textures(textures);
+			} else if (textures.isEmpty()) {
+				m.parent(KubeAssetGenerator.CUBE_ALL_BLOCK_MODEL);
+				m.texture("all", baseTexture);
 			} else {
-				mg.parent(KubeAssetGenerator.CUBE_BLOCK_MODEL);
-				mg.textures(textures);
+				m.parent(KubeAssetGenerator.CUBE_BLOCK_MODEL);
+				m.textures(textures);
 			}
 
 			if (tint != null || !customShape.isEmpty()) {
@@ -267,7 +263,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 				}
 
 				for (var box : boxes) {
-					mg.element(e -> {
+					m.element(e -> {
 						e.box(box);
 
 						for (var direction : DirectionWrapper.VALUES) {
@@ -286,25 +282,19 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		});
 	}
 
+	protected void generateItemModel(ModelGenerator m) {
+		m.parent(id.withPath(ID.BLOCK));
+	}
+
 	protected boolean useMultipartBlockState() {
 		return false;
 	}
 
 	protected void generateBlockState(VariantBlockStateGenerator bs) {
-		bs.simpleVariant("", model != null ? model : id.withPath(ID.BLOCK));
+		bs.simpleVariant("", id.withPath(ID.BLOCK));
 	}
 
 	protected void generateMultipartBlockState(MultipartBlockStateGenerator bs) {
-	}
-
-	protected boolean areAllTexturesEqual(String t) {
-		for (var direction : DirectionWrapper.VALUES) {
-			if (!textures.get(direction.getSerializedName()).equals(t)) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	public BlockBuilder copyPropertiesFrom(Block block) {
@@ -449,44 +439,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		""")
 	public BlockBuilder color(BlockTintFunction color) {
 		tint = color;
-		return this;
-	}
-
-	@Info("""
-		Texture the block on all sides with the same texture.
-		""")
-	public BlockBuilder textureAll(String tex) {
-		for (var direction : DirectionWrapper.VALUES) {
-			textureSide(direction, tex);
-		}
-
-		textures.put("particle", tex);
-		return this;
-	}
-
-	@Info("""
-		Texture a specific side of the block.
-		""")
-	public BlockBuilder textureSide(Direction direction, String tex) {
-		return texture(direction.getSerializedName(), tex);
-	}
-
-	@Info("""
-		Texture a specific texture key of the block.
-		""")
-	public BlockBuilder texture(String id, String tex) {
-		textures.put(id, tex);
-		return this;
-	}
-
-	@Info("""
-		Set the block's model.
-		""")
-	public BlockBuilder model(ResourceLocation m) {
-		model = m;
-		if (itemBuilder != null) {
-			itemBuilder.parentModel(m);
-		}
 		return this;
 	}
 

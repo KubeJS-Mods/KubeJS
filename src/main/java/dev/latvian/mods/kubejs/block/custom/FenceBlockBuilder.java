@@ -45,20 +45,18 @@ public class FenceBlockBuilder extends ShapedBlockBuilder {
 	@Override
 	protected void generateItemModel(ModelGenerator m) {
 		m.parent("minecraft:block/fence_inventory");
-		m.texture("texture", textures.get("texture"));
+		m.texture("texture", baseTexture);
 	}
 
 	@Override
-	protected void generateBlockModel(KubeAssetGenerator generator) {
-		var texture = textures.get("texture");
-
+	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(newID("", "_post"), m -> {
 			m.parent("minecraft:block/fence_post");
-			m.texture("texture", texture);
+			m.texture("texture", baseTexture);
 		});
 		generator.blockModel(newID("", "_side"), m -> {
 			m.parent("minecraft:block/fence_side");
-			m.texture("texture", texture);
+			m.texture("texture", baseTexture);
 		});
 	}
 }

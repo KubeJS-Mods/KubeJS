@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.block.custom.BasicCropBlockJS;
-import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
-import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -51,18 +49,5 @@ public class SeedItemBuilder extends BlockItemBuilder {
 	@Override
 	public Item createObject() {
 		return new SeedItemJS(this);
-	}
-
-	@Override
-	public void generateAssets(KubeAssetGenerator generator) {
-		generator.itemModel(id, m -> {
-			m.parent(parentModel != null ? parentModel : KubeAssetGenerator.GENERATED_ITEM_MODEL);
-
-			if (textures.isEmpty()) {
-				texture(id.withPath(ID.ITEM).toString());
-			}
-
-			m.textures(textures);
-		});
 	}
 }

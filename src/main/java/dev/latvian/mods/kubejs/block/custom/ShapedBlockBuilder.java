@@ -9,19 +9,13 @@ public abstract class ShapedBlockBuilder extends BlockBuilder {
 		super(i);
 		notSolid();
 		property(BlockStateProperties.WATERLOGGED);
-		texture("texture", "kubejs:block/detector");
+		texture("kubejs:block/unknown");
 
 		for (var s : suffixes) {
 			if (id.getPath().endsWith(s)) {
-				texture("texture", id.withPath("block/" + id.getPath().substring(0, id.getPath().length() - s.length())).toString());
+				texture(id.withPath("block/" + id.getPath().substring(0, id.getPath().length() - s.length())).toString());
 				break;
 			}
 		}
-	}
-
-	@Override
-	public BlockBuilder textureAll(String tex) {
-		super.textureAll(tex);
-		return texture("texture", tex);
 	}
 }
