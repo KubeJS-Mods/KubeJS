@@ -131,7 +131,7 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 				.flatMap(Stream::of)
 				.forEach(field -> {
 					try {
-						if (!VALID_TYPES.get().contains(field.getType())) {
+						if (!VALID_TYPES.get().contains(field.getType()) || !Modifier.isStatic(field.getModifiers())) {
 							return;
 						}
 
