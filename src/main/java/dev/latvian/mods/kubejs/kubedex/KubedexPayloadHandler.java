@@ -30,6 +30,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class KubedexPayloadHandler {
+	public record SlotItem(ItemStack item, int slot) {
+	}
+
 	private static ListTag sortedTagList(Stream<? extends TagKey<?>> stream) {
 		return stream
 			.map(TagKey::location)
@@ -132,14 +135,18 @@ public class KubedexPayloadHandler {
 	}
 
 	public static void inventory(ServerPlayer player, List<Integer> slots, List<ItemStack> stacks, int flags) {
-		var allStacks = new LinkedHashSet<>(stacks);
+		var allStacks = new LinkedHashSet<SlotItem>();
+
+		for (var s : stacks) {
+			allStacks.add(new SlotItem(s, -1));
+		}
 
 		for (int s : slots) {
 			if (s >= 0 && s < player.getInventory().getContainerSize()) {
 				var item = player.getInventory().getItem(s);
 
 				if (!item.isEmpty()) {
-					allStacks.add(item);
+					allStacks.add(new SlotItem(item, s));
 				}
 			}
 		}
@@ -147,7 +154,7 @@ public class KubedexPayloadHandler {
 		itemStacks(player, allStacks, flags);
 	}
 
-	public static void itemStacks(ServerPlayer player, Collection<ItemStack> stacks, int flags) {
+	public static void itemStacks(ServerPlayer player, Collection<SlotItem> stacks, int flags) {
 		var ops = player.server.registryAccess().createSerializationContext(NbtOps.INSTANCE);
 
 		var payload = new CompoundTag();
@@ -155,12 +162,14 @@ public class KubedexPayloadHandler {
 
 		var payloadItems = new ListTag();
 
-		for (var stack : stacks) {
+		for (var slotStack : stacks) {
+			var stack = slotStack.item;
 			var tag = new OrderedCompoundTag();
 			tag.putString("string", stack.kjs$toItemString0(ops));
 			tag.put("item", ItemStack.CODEC.encodeStart(ops, stack).result().get());
 			tag.put("name", ComponentSerialization.FLAT_CODEC.encodeStart(ops, stack.getHoverName()).getOrThrow());
 			tag.putString("icon", stack.kjs$getWebIconURL(ops, 64).toString());
+			tag.putInt("slot", slotStack.slot);
 
 			var patch = stack.getComponentsPatch();
 

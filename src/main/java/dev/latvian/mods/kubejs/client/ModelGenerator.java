@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.bindings.AABBWrapper;
 import dev.latvian.mods.kubejs.bindings.DirectionWrapper;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
@@ -169,6 +170,7 @@ public class ModelGenerator {
 		parent = s;
 	}
 
+	@HideFromJS
 	public void texture(String name, String texture) {
 		textures.put(name, texture);
 	}

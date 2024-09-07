@@ -37,6 +37,15 @@ public class ClientAssetPacks {
 	}
 
 	public List<PackResources> inject(List<PackResources> original) {
+		try {
+			return inject0(original);
+		} catch (Throwable ex) {
+			ConsoleJS.CLIENT.error("Error while generating client assets", ex);
+			return original;
+		}
+	}
+
+	private List<PackResources> inject0(List<PackResources> original) {
 		var packs = new ArrayList<>(original);
 
 		var filePacks = new ArrayList<PackResources>();
