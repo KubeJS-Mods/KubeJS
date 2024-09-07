@@ -16,6 +16,7 @@ import net.minecraft.ReportedException;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -208,12 +209,20 @@ public class KubedexHighlight {
 		}
 	}
 
+	private int getFlags() {
+		int flags = 0;
+		flags |= Screen.hasShiftDown() ? 1 : 0;
+		flags |= Screen.hasControlDown() ? 2 : 0;
+		flags |= Screen.hasAltDown() ? 4 : 0;
+		return flags;
+	}
+
 	private void requestBlock(BlockPos pos) {
-		PacketDistributor.sendToServer(new RequestBlockKubedexPayload(pos));
+		PacketDistributor.sendToServer(new RequestBlockKubedexPayload(pos, getFlags()));
 	}
 
 	private void requestEntity(Entity entity) {
-		PacketDistributor.sendToServer(new RequestEntityKubedexPayload(entity.getId()));
+		PacketDistributor.sendToServer(new RequestEntityKubedexPayload(entity.getId(), getFlags()));
 	}
 
 	private void requestInventory(Set<Slot> slots) {
@@ -228,7 +237,7 @@ public class KubedexHighlight {
 			}
 		}
 
-		PacketDistributor.sendToServer(new RequestInventoryKubedexPayload(slotIds, stacks));
+		PacketDistributor.sendToServer(new RequestInventoryKubedexPayload(slotIds, stacks, getFlags()));
 	}
 
 	private void keyToggled(Minecraft mc, Mode newMode, boolean success) {

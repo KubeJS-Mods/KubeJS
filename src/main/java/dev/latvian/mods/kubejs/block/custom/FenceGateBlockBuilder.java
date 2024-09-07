@@ -18,6 +18,11 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 		Tags.Blocks.FENCE_GATES.location()
 	};
 
+	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/template_fence_gate");
+	private static final ResourceLocation OPEN_MODEL = ResourceLocation.withDefaultNamespace("block/template_fence_gate_open");
+	private static final ResourceLocation WALL_MODEL = ResourceLocation.withDefaultNamespace("block/template_fence_gate_wall");
+	private static final ResourceLocation OPEN_WALL_MODEL = ResourceLocation.withDefaultNamespace("block/template_fence_gate_wall_open");
+
 	public transient WoodType behaviour;
 
 	public FenceGateBlockBuilder(ResourceLocation i) {
@@ -77,29 +82,29 @@ public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 	@Override
 	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(id, m -> {
-			m.parent("minecraft:block/template_fence_gate");
+			m.parent(MODEL);
 			m.texture("texture", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_open"), m -> {
-			m.parent("minecraft:block/template_fence_gate_open");
+			m.parent(OPEN_MODEL);
 			m.texture("texture", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_wall"), m -> {
-			m.parent("minecraft:block/template_fence_gate_wall");
+			m.parent(WALL_MODEL);
 			m.texture("texture", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_wall_open"), m -> {
-			m.parent("minecraft:block/template_fence_gate_wall_open");
+			m.parent(OPEN_WALL_MODEL);
 			m.texture("texture", baseTexture);
 		});
 	}
 
 	@Override
 	protected void generateItemModel(ModelGenerator m) {
-		m.parent("minecraft:block/template_fence_gate");
+		m.parent(MODEL);
 		m.texture("texture", baseTexture);
 	}
 }

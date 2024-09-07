@@ -21,6 +21,10 @@ public class TrapdoorBlockBuilder extends ShapedBlockBuilder {
 		BlockTags.TRAPDOORS.location(),
 	};
 
+	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/template_trapdoor_bottom");
+	private static final ResourceLocation TOP_MODEL = ResourceLocation.withDefaultNamespace("block/template_trapdoor_top");
+	private static final ResourceLocation OPEN_MODEL = ResourceLocation.withDefaultNamespace("block/template_trapdoor_open");
+
 	public transient BlockSetType behaviour;
 
 	public TrapdoorBlockBuilder(ResourceLocation i) {
@@ -77,17 +81,17 @@ public class TrapdoorBlockBuilder extends ShapedBlockBuilder {
 	@Override
 	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(id, m -> {
-			m.parent("minecraft:block/template_trapdoor_bottom");
+			m.parent(MODEL);
 			m.texture("texture", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_top"), m -> {
-			m.parent("minecraft:block/template_trapdoor_top");
+			m.parent(TOP_MODEL);
 			m.texture("texture", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_open"), m -> {
-			m.parent("minecraft:block/template_trapdoor_open");
+			m.parent(OPEN_MODEL);
 			m.texture("texture", baseTexture);
 		});
 	}

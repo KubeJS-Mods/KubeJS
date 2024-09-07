@@ -14,6 +14,11 @@ public class WallBlockBuilder extends ShapedBlockBuilder {
 		BlockTags.WALLS.location(),
 	};
 
+	private static final ResourceLocation POST_MODEL = ResourceLocation.withDefaultNamespace("block/template_wall_post");
+	private static final ResourceLocation SIDE_MODEL = ResourceLocation.withDefaultNamespace("block/template_wall_side");
+	private static final ResourceLocation TALL_SIDE_MODEL = ResourceLocation.withDefaultNamespace("block/template_wall_side_tall");
+	private static final ResourceLocation INVENTORY_MODEL = ResourceLocation.withDefaultNamespace("block/wall_inventory");
+
 	public WallBlockBuilder(ResourceLocation i) {
 		super(i, "_wall");
 		tagBoth(WALL_TAGS);
@@ -48,24 +53,24 @@ public class WallBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateItemModel(ModelGenerator m) {
-		m.parent("minecraft:block/wall_inventory");
+		m.parent(INVENTORY_MODEL);
 		m.texture("wall", baseTexture);
 	}
 
 	@Override
 	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(newID("", "_post"), m -> {
-			m.parent("minecraft:block/template_wall_post");
+			m.parent(POST_MODEL);
 			m.texture("wall", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_side"), m -> {
-			m.parent("minecraft:block/template_wall_side");
+			m.parent(SIDE_MODEL);
 			m.texture("wall", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_side_tall"), m -> {
-			m.parent("minecraft:block/template_wall_side_tall");
+			m.parent(TALL_SIDE_MODEL);
 			m.texture("wall", baseTexture);
 		});
 	}

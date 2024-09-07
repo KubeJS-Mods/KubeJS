@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.block;
 
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.bindings.AABBWrapper;
-import dev.latvian.mods.kubejs.bindings.DirectionWrapper;
 import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockStateMirrorCallbackJS;
@@ -256,26 +255,20 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 			}
 
 			if (tint != null || !customShape.isEmpty()) {
-				List<AABB> boxes = new ArrayList<>(customShape);
-
-				if (boxes.isEmpty()) {
-					boxes.add(AABBWrapper.CUBE);
-				}
+				var boxes = customShape.isEmpty() ? List.of(AABBWrapper.CUBE) : customShape;
 
 				for (var box : boxes) {
 					m.element(e -> {
-						e.box(box);
+						e.size(box);
 
-						for (var direction : DirectionWrapper.VALUES) {
-							e.face(direction, face -> {
-								face.tex("#" + direction.getSerializedName());
-								face.cull();
+						e.allFaces(face -> {
+							face.tex("#" + face.side.getSerializedName());
+							face.cull();
 
-								if (tint != null) {
-									face.tintindex(0);
-								}
-							});
-						}
+							if (tint != null) {
+								face.tintindex(0);
+							}
+						});
 					});
 				}
 			}

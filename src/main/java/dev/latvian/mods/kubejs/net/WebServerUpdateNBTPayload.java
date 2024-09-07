@@ -4,7 +4,6 @@ import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -33,13 +32,13 @@ public record WebServerUpdateNBTPayload(String event, String requiredTag, Option
 		int count = KubeJSWeb.broadcastUpdate("server/" + event, requiredTag, () -> payload.map(tag -> NbtOps.INSTANCE.convertTo(JsonOps.INSTANCE, tag)).orElse(null));
 
 		if (count == 0 && event.equals("highlight/items")) {
-			for (var e : (CollectionTag<?>) payload.get()) {
+			for (var e : ((CompoundTag) payload.get()).getList("items", Tag.TAG_COMPOUND)) {
 				var t = (CompoundTag) e;
 				KubeJS.LOGGER.info("[Highlighted Item] " + t.getString("string"));
 
 				if (t.get("tags") instanceof ListTag l) {
 					for (var tag : l) {
-						KubeJS.LOGGER.info("[Highlighted Item] Item Tag: #" + tag.getAsString());
+						KubeJS.LOGGER.info("[Highlighted Item] - #" + tag.getAsString());
 					}
 				}
 			}

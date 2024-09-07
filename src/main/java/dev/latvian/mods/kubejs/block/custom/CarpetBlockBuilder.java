@@ -13,6 +13,8 @@ public class CarpetBlockBuilder extends ShapedBlockBuilder {
 		BlockTags.WOOL_CARPETS.location(),
 	};
 
+	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/carpet");
+
 	public CarpetBlockBuilder(ResourceLocation i) {
 		super(i, "_carpet");
 		tagBoth(CARPET_TAGS);
@@ -26,7 +28,7 @@ public class CarpetBlockBuilder extends ShapedBlockBuilder {
 	@Override
 	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(id, m -> {
-			m.parent("minecraft:block/carpet");
+			m.parent(MODEL);
 			m.texture("wool", baseTexture);
 		});
 	}

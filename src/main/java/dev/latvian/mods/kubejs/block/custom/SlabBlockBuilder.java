@@ -13,8 +13,8 @@ public class SlabBlockBuilder extends ShapedBlockBuilder {
 		BlockTags.SLABS.location(),
 	};
 
-	private static final ResourceLocation SLAB_BOTTOM = ResourceLocation.withDefaultNamespace("block/slab");
-	private static final ResourceLocation SLAB_TOP = ResourceLocation.withDefaultNamespace("block/slab_top");
+	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/slab");
+	private static final ResourceLocation TOP_MODEL = ResourceLocation.withDefaultNamespace("block/slab_top");
 
 	public SlabBlockBuilder(ResourceLocation i) {
 		super(i, "_slab");
@@ -36,14 +36,14 @@ public class SlabBlockBuilder extends ShapedBlockBuilder {
 	@Override
 	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(id, m -> {
-			m.parent(SLAB_BOTTOM);
+			m.parent(MODEL);
 			m.texture("bottom", baseTexture);
 			m.texture("top", baseTexture);
 			m.texture("side", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_top"), m -> {
-			m.parent(SLAB_TOP);
+			m.parent(TOP_MODEL);
 			m.texture("bottom", baseTexture);
 			m.texture("top", baseTexture);
 			m.texture("side", baseTexture);

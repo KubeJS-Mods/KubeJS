@@ -36,6 +36,17 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 		BlockTags.TRAPDOORS.location(),
 	};
 
+	private static final Map<String, ResourceLocation> MODELS = Map.of(
+		"top_right", ResourceLocation.withDefaultNamespace("block/door_top_right"),
+		"top_right_open", ResourceLocation.withDefaultNamespace("block/door_top_right_open"),
+		"top_left", ResourceLocation.withDefaultNamespace("block/door_top_left"),
+		"top_left_open", ResourceLocation.withDefaultNamespace("block/door_top_left_open"),
+		"bottom_right", ResourceLocation.withDefaultNamespace("block/door_bottom_right"),
+		"bottom_right_open", ResourceLocation.withDefaultNamespace("block/door_bottom_right_open"),
+		"bottom_left", ResourceLocation.withDefaultNamespace("block/door_bottom_left"),
+		"bottom_left_open", ResourceLocation.withDefaultNamespace("block/door_bottom_left_open")
+	);
+
 	public transient BlockSetType behaviour;
 
 	public DoorBlockBuilder(ResourceLocation i) {
@@ -151,18 +162,9 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 		var topTexture = textures.get("top");
 		var bottomTexture = textures.get("bottom");
 
-		for (var type : List.of(
-			"top_right",
-			"top_right_open",
-			"top_left",
-			"top_left_open",
-			"bottom_right",
-			"bottom_right_open",
-			"bottom_left",
-			"bottom_left_open"
-		)) {
-			generator.blockModel(newID("", "_" + type), m -> {
-				m.parent("minecraft:block/door_" + type);
+		for (var entry : MODELS.entrySet()) {
+			generator.blockModel(newID("", "_" + entry.getKey()), m -> {
+				m.parent(entry.getValue());
 				m.texture("top", topTexture);
 				m.texture("bottom", bottomTexture);
 			});

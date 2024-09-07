@@ -34,9 +34,10 @@ import java.util.List;
 import java.util.Map;
 
 @ReturnsSelf
+// Cardinal blocks that can face any horizontal direction (NSEW).
 public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
-
-	// Cardinal blocks that can face any horizontal direction (NSEW).
+	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/orientable");
+	private static final ResourceLocation BOTTOM_MODEL = ResourceLocation.withDefaultNamespace("block/orientable_with_bottom");
 
 	public HorizontalDirectionalBlockBuilder(ResourceLocation i) {
 		super(i);
@@ -62,10 +63,10 @@ public class HorizontalDirectionalBlockBuilder extends BlockBuilder {
 			mg.texture("top", textures.getOrDefault("top", side));
 
 			if (textures.containsKey("bottom")) {
-				mg.parent("block/orientable_with_bottom");
+				mg.parent(BOTTOM_MODEL);
 				mg.texture("bottom", textures.get("bottom"));
 			} else {
-				mg.parent("minecraft:block/orientable");
+				mg.parent(MODEL);
 			}
 
 			if (parentModel != null) {

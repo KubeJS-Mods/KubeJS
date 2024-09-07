@@ -16,6 +16,10 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 		BlockTags.BUTTONS.location(),
 	};
 
+	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/button");
+	private static final ResourceLocation PRESSED_MODEL = ResourceLocation.withDefaultNamespace("block/button_pressed");
+	private static final ResourceLocation INVENTORY_MODEL = ResourceLocation.withDefaultNamespace("block/button_inventory");
+
 	public transient BlockSetType behaviour;
 	public transient int ticksToStayPressed;
 
@@ -76,19 +80,19 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 	@Override
 	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(id, m -> {
-			m.parent("minecraft:block/button");
+			m.parent(MODEL);
 			m.texture("texture", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_pressed"), m -> {
-			m.parent("minecraft:block/button_pressed");
+			m.parent(PRESSED_MODEL);
 			m.texture("texture", baseTexture);
 		});
 	}
 
 	@Override
 	protected void generateItemModel(ModelGenerator m) {
-		m.parent("minecraft:block/button_inventory");
+		m.parent(INVENTORY_MODEL);
 		m.texture("texture", baseTexture);
 	}
 }

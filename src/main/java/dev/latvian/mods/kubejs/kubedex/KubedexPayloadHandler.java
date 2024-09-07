@@ -39,23 +39,35 @@ public class KubedexPayloadHandler {
 			.collect(ListTag::new, ListTag::add, ListTag::addAll);
 	}
 
-	public static void block(ServerPlayer player, BlockPos pos) {
+	private static CompoundTag flags(int flags) {
+		var tag = new OrderedCompoundTag();
+		tag.putBoolean("shift", (flags & 1) != 0);
+		tag.putBoolean("ctrl", (flags & 2) != 0);
+		tag.putBoolean("alt", (flags & 4) != 0);
+		return tag;
+	}
+
+	public static void block(ServerPlayer player, BlockPos pos, int flags) {
 		var registries = player.server.registryAccess();
 		var blockState = player.level().getBlockState(pos);
 
 		if (!blockState.isAir()) {
 			var payload = new OrderedCompoundTag();
-			payload.putString("id", blockState.getBlock().kjs$getId());
-			payload.putString("dimension", player.level().dimension().location().toString());
+			payload.put("flags", flags(flags));
+
+			var payloadBlock = new OrderedCompoundTag();
+
+			payloadBlock.putString("id", blockState.getBlock().kjs$getId());
+			payloadBlock.putString("dimension", player.level().dimension().location().toString());
 
 			var jpos = new OrderedCompoundTag();
-			payload.put("pos", jpos);
+			payloadBlock.put("pos", jpos);
 			jpos.putInt("x", pos.getX());
 			jpos.putInt("y", pos.getY());
 			jpos.putInt("z", pos.getZ());
 
 			var p = new CompoundTag();
-			payload.put("properties", p);
+			payloadBlock.put("properties", p);
 
 			for (var pk : blockState.getBlock().getStateDefinition().getProperties()) {
 				p.putString(pk.getName(), pk.getName(Cast.to(blockState.getValue(pk))));
@@ -65,7 +77,7 @@ public class KubedexPayloadHandler {
 
 			if (blockEntity != null) {
 				var ejson = new CompoundTag();
-				payload.put("block_entity", ejson);
+				payloadBlock.put("block_entity", ejson);
 				ejson.putString("id", BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntity.getType()).toString());
 
 				try {
@@ -81,37 +93,45 @@ public class KubedexPayloadHandler {
 				}
 			}
 
+			payload.put("block", payloadBlock);
+
 			PacketDistributor.sendToPlayer(player, new WebServerUpdateNBTPayload("highlight/block", "highlight", Optional.of(payload)));
 		}
 	}
 
-	public static void entity(ServerPlayer player, int entityId) {
+	public static void entity(ServerPlayer player, int entityId, int flags) {
 		var entity = player.level().getEntity(entityId);
 
 		if (entity != null) {
 			var payload = new OrderedCompoundTag();
-			payload.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
-			payload.putInt("network_id", entityId);
-			payload.putString("unique_id", entity.getUUID().toString());
-			payload.putString("dimension", player.level().dimension().location().toString());
+			payload.put("flags", flags(flags));
+
+			var payloadEntity = new OrderedCompoundTag();
+
+			payloadEntity.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
+			payloadEntity.putInt("network_id", entityId);
+			payloadEntity.putString("unique_id", entity.getUUID().toString());
+			payloadEntity.putString("dimension", player.level().dimension().location().toString());
 
 			var jpos = new OrderedCompoundTag();
-			payload.put("pos", jpos);
+			payloadEntity.put("pos", jpos);
 			jpos.putDouble("x", entity.position().x);
 			jpos.putDouble("y", entity.position().y);
 			jpos.putDouble("z", entity.position().z);
 
 			try {
-				payload.put("data", entity.saveWithoutId(new CompoundTag()));
+				payloadEntity.put("data", entity.saveWithoutId(new CompoundTag()));
 			} catch (Exception ex) {
-				payload.put("data", new CompoundTag());
+				payloadEntity.put("data", new CompoundTag());
 			}
+
+			payload.put("entity", payloadEntity);
 
 			PacketDistributor.sendToPlayer(player, new WebServerUpdateNBTPayload("highlight/entity", "highlight", Optional.of(payload)));
 		}
 	}
 
-	public static void inventory(ServerPlayer player, List<Integer> slots, List<ItemStack> stacks) {
+	public static void inventory(ServerPlayer player, List<Integer> slots, List<ItemStack> stacks, int flags) {
 		var allStacks = new LinkedHashSet<>(stacks);
 
 		for (int s : slots) {
@@ -124,13 +144,16 @@ public class KubedexPayloadHandler {
 			}
 		}
 
-		itemStacks(player, allStacks);
+		itemStacks(player, allStacks, flags);
 	}
 
-	public static void itemStacks(ServerPlayer player, Collection<ItemStack> stacks) {
+	public static void itemStacks(ServerPlayer player, Collection<ItemStack> stacks, int flags) {
 		var ops = player.server.registryAccess().createSerializationContext(NbtOps.INSTANCE);
 
-		var payload = new ListTag();
+		var payload = new CompoundTag();
+		payload.put("flags", flags(flags));
+
+		var payloadItems = new ListTag();
 
 		for (var stack : stacks) {
 			var tag = new OrderedCompoundTag();
@@ -179,8 +202,10 @@ public class KubedexPayloadHandler {
 				}
 			}
 
-			payload.add(tag);
+			payloadItems.add(tag);
 		}
+
+		payload.put("items", payloadItems);
 
 		PacketDistributor.sendToPlayer(player, new WebServerUpdateNBTPayload("highlight/items", "highlight", Optional.of(payload)));
 	}

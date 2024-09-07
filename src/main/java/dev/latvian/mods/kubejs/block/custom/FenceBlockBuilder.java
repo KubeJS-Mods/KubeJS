@@ -15,6 +15,10 @@ public class FenceBlockBuilder extends ShapedBlockBuilder {
 		Tags.Blocks.FENCES.location(),
 	};
 
+	private static final ResourceLocation SIDE_MODEL = ResourceLocation.withDefaultNamespace("block/fence_side");
+	private static final ResourceLocation POST_MODEL = ResourceLocation.withDefaultNamespace("block/fence_post");
+	private static final ResourceLocation INVENTORY_MODEL = ResourceLocation.withDefaultNamespace("block/fence_inventory");
+
 	public FenceBlockBuilder(ResourceLocation i) {
 		super(i, "_fence");
 		tagBoth(FENCE_TAGS);
@@ -44,18 +48,18 @@ public class FenceBlockBuilder extends ShapedBlockBuilder {
 
 	@Override
 	protected void generateItemModel(ModelGenerator m) {
-		m.parent("minecraft:block/fence_inventory");
+		m.parent(INVENTORY_MODEL);
 		m.texture("texture", baseTexture);
 	}
 
 	@Override
 	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(newID("", "_post"), m -> {
-			m.parent("minecraft:block/fence_post");
+			m.parent(POST_MODEL);
 			m.texture("texture", baseTexture);
 		});
 		generator.blockModel(newID("", "_side"), m -> {
-			m.parent("minecraft:block/fence_side");
+			m.parent(SIDE_MODEL);
 			m.texture("texture", baseTexture);
 		});
 	}

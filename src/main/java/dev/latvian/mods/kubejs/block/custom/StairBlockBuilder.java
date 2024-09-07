@@ -14,6 +14,10 @@ public class StairBlockBuilder extends ShapedBlockBuilder {
 		BlockTags.STAIRS.location(),
 	};
 
+	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/stairs");
+	private static final ResourceLocation INNER_MODEL = ResourceLocation.withDefaultNamespace("block/inner_stairs");
+	private static final ResourceLocation OUTER_MODEL = ResourceLocation.withDefaultNamespace("block/outer_stairs");
+
 	public StairBlockBuilder(ResourceLocation i) {
 		super(i, "_stairs");
 		tagBoth(STAIR_TAGS);
@@ -75,21 +79,21 @@ public class StairBlockBuilder extends ShapedBlockBuilder {
 	@Override
 	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(id, m -> {
-			m.parent("minecraft:block/stairs");
+			m.parent(MODEL);
 			m.texture("bottom", baseTexture);
 			m.texture("top", baseTexture);
 			m.texture("side", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_inner"), m -> {
-			m.parent("minecraft:block/inner_stairs");
+			m.parent(INNER_MODEL);
 			m.texture("bottom", baseTexture);
 			m.texture("top", baseTexture);
 			m.texture("side", baseTexture);
 		});
 
 		generator.blockModel(newID("", "_outer"), m -> {
-			m.parent("minecraft:block/outer_stairs");
+			m.parent(OUTER_MODEL);
 			m.texture("bottom", baseTexture);
 			m.texture("top", baseTexture);
 			m.texture("side", baseTexture);

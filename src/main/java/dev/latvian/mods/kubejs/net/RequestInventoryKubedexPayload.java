@@ -11,10 +11,11 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.List;
 
-public record RequestInventoryKubedexPayload(List<Integer> slots, List<ItemStack> stacks) implements CustomPacketPayload {
+public record RequestInventoryKubedexPayload(List<Integer> slots, List<ItemStack> stacks, int flags) implements CustomPacketPayload {
 	public static final StreamCodec<RegistryFriendlyByteBuf, RequestInventoryKubedexPayload> STREAM_CODEC = StreamCodec.composite(
 		ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()), RequestInventoryKubedexPayload::slots,
 		ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()), RequestInventoryKubedexPayload::stacks,
+		ByteBufCodecs.VAR_INT, RequestInventoryKubedexPayload::flags,
 		RequestInventoryKubedexPayload::new
 	);
 
@@ -25,7 +26,7 @@ public record RequestInventoryKubedexPayload(List<Integer> slots, List<ItemStack
 
 	public void handle(IPayloadContext ctx) {
 		if (ctx.player() instanceof ServerPlayer serverPlayer && serverPlayer.hasPermissions(2)) {
-			ctx.enqueueWork(() -> KubedexPayloadHandler.inventory(serverPlayer, slots, stacks));
+			ctx.enqueueWork(() -> KubedexPayloadHandler.inventory(serverPlayer, slots, stacks, flags));
 		}
 	}
 }

@@ -51,6 +51,8 @@ public class CropBlockBuilder extends BlockBuilder {
 		Tags.Items.SEEDS.location(),
 	};
 
+	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/crop");
+
 	@FunctionalInterface
 	public interface SurviveCallback {
 		boolean survive(BlockState state, LevelReader reader, BlockPos pos);
@@ -258,7 +260,7 @@ public class CropBlockBuilder extends BlockBuilder {
 		for (int i = 0; i <= age; i++) {
 			final int fi = i;
 			generator.blockModel(newID("", "/" + i), m -> {
-				m.parent("minecraft:block/crop");
+				m.parent(MODEL);
 				m.texture("crop", textures.get(String.valueOf(fi)));
 			});
 		}
