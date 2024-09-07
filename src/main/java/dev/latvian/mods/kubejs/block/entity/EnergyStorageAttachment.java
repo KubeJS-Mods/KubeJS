@@ -22,7 +22,7 @@ public class EnergyStorageAttachment implements BlockEntityAttachment {
 			int rx = Math.max(0, maxReceive.orElse(0));
 			int tx = Math.max(0, maxExtract.orElse(0));
 			int auto = Math.max(0, autoOutput.orElse(0));
-			return new EnergyStorageAttachment(entity, capacity, rx, tx, auto, (auto > 0 ? info.directions() : DirectionWrapper.EMPTY_SET).toArray(new Direction[0]));
+			return new EnergyStorageAttachment(entity, capacity, rx, tx, auto, auto > 0 ? info.directions().isEmpty() ? DirectionWrapper.VALUES : info.directions().toArray(new Direction[0]) : DirectionWrapper.NONE);
 		}
 
 		@Override
@@ -49,14 +49,38 @@ public class EnergyStorageAttachment implements BlockEntityAttachment {
 		}
 
 		public int addEnergy(int add, boolean simulate) {
-			int energyReceived = Mth.clamp(this.capacity - this.energy, 0, add);
+			int i = Mth.clamp(this.capacity - this.energy, 0, add);
 
-			if (!simulate && energyReceived > 0) {
-				energy += energyReceived;
+			if (!simulate && i > 0) {
+				energy += i;
 				attachment.entity.save();
 			}
 
-			return energyReceived;
+			return i;
+		}
+
+		public int removeEnergy(int remove, boolean simulate) {
+			int i = Math.max(energy, remove);
+
+			if (!simulate && i > 0) {
+				energy -= i;
+				attachment.entity.save();
+			}
+
+			return i;
+		}
+
+		public boolean useEnergy(int use, boolean simulate) {
+			if (energy >= use) {
+				if (!simulate) {
+					energy -= use;
+					attachment.entity.save();
+				}
+
+				return true;
+			}
+
+			return false;
 		}
 
 		@Override

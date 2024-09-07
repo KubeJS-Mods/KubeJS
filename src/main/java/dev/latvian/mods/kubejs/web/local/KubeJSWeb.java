@@ -23,6 +23,7 @@ import net.minecraft.tags.TagKey;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,8 +44,8 @@ public class KubeJSWeb {
 		"logs", FMLPaths.GAMEDIR.get().resolve("logs")
 	);
 
-	public static int broadcastEvent(WSHandler<?, ?> handler, String event, String requiredTag, Supplier<JsonElement> payload) {
-		if (handler.sessions().isEmpty()) {
+	public static int broadcastEvent(@Nullable WSHandler<?, ?> handler, String event, String requiredTag, @Nullable Supplier<JsonElement> payload) {
+		if (handler == null || handler.sessions().isEmpty()) {
 			return 0;
 		}
 

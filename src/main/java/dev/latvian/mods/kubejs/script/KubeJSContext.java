@@ -20,6 +20,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 
 import java.lang.reflect.AccessibleObject;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -229,5 +230,9 @@ public class KubeJSContext extends Context {
 		} else {
 			return loadJavaClass(String.valueOf(from), true).getClassObject();
 		}
+	}
+
+	public Map<String, Either<NativeJavaClass, Boolean>> getJavaClassCache() {
+		return javaClassCache == null ? Map.of() : Collections.unmodifiableMap(javaClassCache);
 	}
 }

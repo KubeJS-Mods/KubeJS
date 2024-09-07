@@ -266,8 +266,20 @@ public class KubeJSErrorScreen extends Screen {
 			}
 		}
 
+		private String fixSource(@Nullable String source) {
+			if (source != null && !source.isEmpty()) {
+				int c = source.indexOf(':');
+
+				if (c >= 0) {
+					return source.substring(c + 1);
+				}
+			}
+
+			return source;
+		}
+
 		public void open() {
-			var path = line.externalFile == null ? (line.sourceLines.isEmpty() || line.sourceLines.iterator().next().source().isEmpty() ? null : line.console.scriptType.path.resolve(line.sourceLines.iterator().next().source())) : line.externalFile;
+			var path = line.externalFile == null ? (line.sourceLines.isEmpty() || line.sourceLines.iterator().next().source().isEmpty() ? null : line.console.scriptType.path.resolve(fixSource(line.sourceLines.iterator().next().source()))) : line.externalFile;
 
 			if (path != null && Files.exists(path)) {
 				try {

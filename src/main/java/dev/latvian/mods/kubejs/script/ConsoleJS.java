@@ -155,6 +155,7 @@ public class ConsoleJS {
 	public synchronized void resetFile() {
 		errors.clear();
 		warnings.clear();
+		KubeJSWeb.broadcastEvent(wsBroadcaster, "clear", "", null);
 		scriptType.executor.execute(() -> {
 			try {
 				Files.write(logFile, List.of());
@@ -246,10 +247,7 @@ public class ConsoleJS {
 
 			if (writeToFile) {
 				writeToFile(type, line.timestamp, line.getText());
-
-				if (wsBroadcaster != null) {
-					KubeJSWeb.broadcastEvent(wsBroadcaster, type.id, "", line);
-				}
+				KubeJSWeb.broadcastEvent(wsBroadcaster, type.id, "", line);
 			}
 
 			return line;

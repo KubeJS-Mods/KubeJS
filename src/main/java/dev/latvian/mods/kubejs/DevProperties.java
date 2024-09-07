@@ -48,7 +48,7 @@ public class DevProperties extends BaseProperties {
 		logAddedRecipes = get("log_added_recipes", false);
 		logRemovedRecipes = get("log_removed_recipes", false);
 		logModifiedRecipes = get("log_modified_recipes", false);
-		logSkippedRecipes = get("log_skipped_recipes", false);
+		logSkippedRecipes = get("log_skipped_recipes", true);
 		logRecipeDebug = get("log_recipe_debug", false);
 		logSkippedTags = get("log_skipped_tags", false);
 		logErroringRecipes = get("log_erroring_recipes", true);

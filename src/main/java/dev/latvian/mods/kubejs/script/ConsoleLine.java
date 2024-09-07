@@ -96,7 +96,7 @@ public class ConsoleLine implements Supplier<JsonElement> {
 			line = 0;
 		}
 
-		return source.isEmpty() && line == 0 ? this : withSourceLine(new SourceLine(source, line));
+		return source.isEmpty() && line == 0 ? this : withSourceLine(SourceLine.of(source, line));
 	}
 
 	public ConsoleLine withSourceLine(SourceLine sourceLine) {
@@ -119,7 +119,7 @@ public class ConsoleLine implements Supplier<JsonElement> {
 
 	public ConsoleLine withExternalFile(Path path) {
 		externalFile = path;
-		sourceLines = Set.of(new SourceLine(path.getFileName().toString(), 0));
+		sourceLines = Set.of(SourceLine.of(path.getFileName().toString(), 0));
 		return this;
 	}
 

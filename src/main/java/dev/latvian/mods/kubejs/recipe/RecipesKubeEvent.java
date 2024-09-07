@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
@@ -47,6 +48,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import org.jetbrains.annotations.Nullable;
@@ -240,30 +242,75 @@ public class RecipesKubeEvent implements KubeEvent {
 		for (var entry : datapackRecipeMap.entrySet()) {
 			var recipeId = entry.getKey();
 
+			//Forge: filter anything beginning with "_" as it's used for metadata.
 			if (recipeId == null || recipeId.getPath().startsWith("_")) {
-				continue; //Forge: filter anything beginning with "_" as it's used for metadata.
-			}
-
-			var jsonResult = RecipeHelper.validate(jsonOps, entry.getValue());
-
-			if (jsonResult.error().isPresent()) {
-				var error = jsonResult.error().get();
-
 				if (DevProperties.get().logSkippedRecipes) {
-					ConsoleJS.SERVER.info("Skipping recipe %s, %s".formatted(recipeId, error.message()));
+					ConsoleJS.SERVER.info("Skipping recipe %s, filename starts with _".formatted(recipeId));
 				}
 
 				continue;
 			}
 
-			var json = jsonResult.getOrThrow(JsonParseException::new);
+			var originalJsonElement = entry.getValue();
+
+			if (!originalJsonElement.isJsonObject()) {
+				if (DevProperties.get().logSkippedRecipes) {
+					ConsoleJS.SERVER.warn("Skipping recipe %s, not a json object".formatted(recipeId));
+				} else {
+					RecipeManager.LOGGER.warn("Skipping recipe %s, not a json object".formatted(recipeId));
+				}
+
+				continue;
+			}
+
+			var originalJson = originalJsonElement.getAsJsonObject();
+
+			if (!originalJson.has("type")) {
+				if (DevProperties.get().logSkippedRecipes) {
+					ConsoleJS.SERVER.warn("Skipping recipe %s, not a json object".formatted(recipeId));
+				} else {
+					RecipeManager.LOGGER.warn("Skipping recipe %s, not a json object".formatted(recipeId));
+				}
+
+				continue;
+			}
+
+			var codec = ConditionalOps.createConditionalCodec(Codec.unit(originalJson));
+
+			var jsonResult = codec.parse(jsonOps, originalJson);
+
+			if (jsonResult.isError()) {
+				if (DevProperties.get().logSkippedRecipes) {
+					ConsoleJS.SERVER.error("Skipping recipe %s, error parsing conditions: %s".formatted(recipeId, jsonResult.error().get().message()));
+				} else {
+					RecipeManager.LOGGER.error("Skipping recipe %s, error parsing conditions: %s".formatted(recipeId, jsonResult.error().get().message()));
+				}
+
+				continue;
+			}
+
+			var result = jsonResult.result().get();
+
+			if (result.isEmpty()) {
+				if (DevProperties.get().logSkippedRecipes) {
+					ConsoleJS.SERVER.info("Skipping recipe %s, conditions not met".formatted(recipeId));
+				} else {
+					RecipeManager.LOGGER.info("Skipping recipe %s, conditions not met".formatted(recipeId));
+				}
+
+				continue;
+			}
+
+			var json = result.get();
 			var typeStr = GsonHelper.getAsString(json, "type");
 			var recipeIdAndType = recipeId + "[" + typeStr + "]";
 			var type = getRecipeFunction(typeStr);
 
 			if (type == null) {
 				if (DevProperties.get().logSkippedRecipes) {
-					ConsoleJS.SERVER.info("Skipping recipe " + recipeId + ", unknown type: " + typeStr);
+					ConsoleJS.SERVER.warn("Skipping recipe " + recipeId + ", unknown type: " + typeStr);
+				} else {
+					RecipeManager.LOGGER.warn("Skipping recipe " + recipeId + ", unknown type: " + typeStr);
 				}
 
 				continue;

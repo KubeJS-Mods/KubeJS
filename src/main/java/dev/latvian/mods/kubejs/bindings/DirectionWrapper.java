@@ -22,6 +22,8 @@ public interface DirectionWrapper {
 	Direction WEST = Direction.WEST;
 	Direction EAST = Direction.EAST;
 	Direction[] VALUES = Direction.values();
+	Direction[] NONE = new Direction[0];
 	Map<String, Direction> ALL = Map.copyOf(Arrays.stream(VALUES).collect(Collectors.toMap(Direction::getSerializedName, Function.identity())));
+	EnumSet<Direction> ALL_SET = EnumSet.allOf(Direction.class);
 	EnumSet<Direction> EMPTY_SET = EnumSet.noneOf(Direction.class);
 }

@@ -11,7 +11,7 @@ public record SourceLine(String source, int line) {
 		if ((source == null || source.isEmpty()) && line <= 0) {
 			return UNKNOWN;
 		} else {
-			return new SourceLine(source == null ? "" : source, Math.max(line, 0));
+			return new SourceLine(source == null || source.isEmpty() ? "" : source, Math.max(line, 0));
 		}
 	}
 
@@ -26,7 +26,7 @@ public record SourceLine(String source, int line) {
 
 		int[] lineP = {0};
 		var source = Context.getSourcePositionFromStack(cx, lineP);
-		return new SourceLine(source == null ? "" : source, lineP[0]);
+		return SourceLine.of(source, lineP[0]);
 	}
 
 	public boolean isUnknown() {
