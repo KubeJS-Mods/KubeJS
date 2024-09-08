@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
@@ -124,7 +125,7 @@ public class CropBlockBuilder extends BlockBuilder {
 	public transient ToIntFunction<RandomTickCallbackJS> fertilizerCallback;
 	public transient SurviveCallback surviveCallback;
 
-	public transient List<Pair<Item, NumberProvider>> outputs;
+	public transient List<Pair<Holder<Item>, NumberProvider>> outputs;
 
 	public CropBlockBuilder(ResourceLocation id) {
 		super(id);
@@ -160,13 +161,13 @@ public class CropBlockBuilder extends BlockBuilder {
 	}
 
 	@Info("Add a crop output with exactly one output.")
-	public CropBlockBuilder crop(Item output) {
+	public CropBlockBuilder crop(Holder<Item> output) {
 		crop(output, ConstantValue.exactly(1.0f));
 		return this;
 	}
 
 	@Info("Add a crop output with a specific amount.")
-	public CropBlockBuilder crop(Item output, NumberProvider chance) {
+	public CropBlockBuilder crop(Holder<Item> output, NumberProvider chance) {
 		outputs.add(new Pair<>(output, chance));
 		return this;
 	}
@@ -229,7 +230,10 @@ public class CropBlockBuilder extends BlockBuilder {
 
 		var builder = LootTable.lootTable();
 		for (var output : outputs) {
-			var cropItem = LootItem.lootTableItem(output.getFirst())
+			if (!output.getFirst().isBound()) {
+				continue;
+			}
+			var cropItem = LootItem.lootTableItem(output.getFirst().value())
 				.apply(SetItemCountFunction.setCount(output.getSecond()))
 				.when(mature);
 			builder.withPool(LootPool.lootPool().add(cropItem));
