@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.WithCodec;
@@ -18,7 +19,10 @@ import dev.latvian.mods.rhino.util.ReturnsSelf;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import dev.latvian.mods.rhino.util.ToStringJS;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -37,6 +41,7 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -229,7 +234,21 @@ public interface ItemStackKJS extends
 
 	@Override
 	default Ingredient kjs$asIngredient() {
-		return kjs$self().getItem().kjs$asIngredient();
+		var p = kjs$self().getComponentsPatch();
+
+		if (p.isEmpty()) {
+			return kjs$self().getItem().kjs$asIngredient();
+		}
+
+		var map = DataComponentMap.builder();
+
+		for (var entry : p.entrySet()) {
+			if (entry.getValue().isPresent()) {
+				map.set(entry.getKey(), Cast.to(entry.getValue().get()));
+			}
+		}
+
+		return new DataComponentIngredient(HolderSet.direct(kjs$asHolder()), DataComponentPredicate.allOf(map.build()), false).toVanilla();
 	}
 
 	@Override
