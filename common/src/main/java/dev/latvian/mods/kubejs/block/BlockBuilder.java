@@ -238,7 +238,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 				mg.textures(textures);
 			}
 
-			if (tint != null || customShape.isEmpty()) {
+			if (tint != null || !customShape.isEmpty()) {
 				List<AABB> boxes = new ArrayList<>(customShape);
 
 				if (boxes.isEmpty()) {
