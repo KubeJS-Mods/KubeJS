@@ -72,6 +72,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient String model;
 	public transient BlockItemBuilder itemBuilder;
 	public transient List<AABB> customShape;
+	public Consumer<ShapeOverrideCallbackJS> customShapeOverrideCallback;
 	public transient boolean noCollision;
 	public transient boolean notSolid;
 	public transient float slipperiness = Float.NaN;
@@ -237,7 +238,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 				mg.textures(textures);
 			}
 
-			if (tint != null || !customShape.isEmpty()) {
+			if (tint != null || customShape != null) {
 				List<AABB> boxes = new ArrayList<>(customShape);
 
 				if (boxes.isEmpty()) {
@@ -505,6 +506,12 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	@Info("Set the shape of the block.")
 	public BlockBuilder box(double x0, double y0, double z0, double x1, double y1, double z1) {
 		return box(x0, y0, z0, x1, y1, z1, true);
+	}
+
+	@Info("Crates a callback for the shape of the block. '.box' will set be used if not present.")
+	public BlockBuilder shape(@Nullable Consumer<ShapeOverrideCallbackJS> shapeOverrideCallback) {
+		this.customShapeOverrideCallback = shapeOverrideCallback;
+		return this;
 	}
 
 	public static VoxelShape createShape(List<AABB> boxes) {

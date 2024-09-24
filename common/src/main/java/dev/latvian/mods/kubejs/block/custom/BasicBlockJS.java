@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockRightClickedEventJS;
+import dev.latvian.mods.kubejs.block.ShapeOverrideCallbackJS;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
@@ -92,11 +93,13 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 
 	public final BlockBuilder blockBuilder;
 	public final VoxelShape shape;
+	public final Consumer<ShapeOverrideCallbackJS> shapeOverrideCallback;
 
 	public BasicBlockJS(BlockBuilder p) {
 		super(p.createProperties());
 		blockBuilder = p;
 		shape = BlockBuilder.createShape(p.customShape);
+		this.shapeOverrideCallback = p.customShapeOverrideCallback;
 
 		var blockState = stateDefinition.any();
 		if (blockBuilder.defaultStateModification != null) {
@@ -126,7 +129,10 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 	@Override
 	@Deprecated
 	public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-		return shape;
+		if(shapeOverrideCallback == null) return shape;
+		ShapeOverrideCallbackJS callback = new ShapeOverrideCallbackJS(state, context);
+		shapeOverrideCallback.accept(callback);
+		return BlockBuilder.createShape(callback.shape);
 	}
 
 	@Override
