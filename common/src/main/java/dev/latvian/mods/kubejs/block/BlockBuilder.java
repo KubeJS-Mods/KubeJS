@@ -43,9 +43,13 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -72,7 +76,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient String model;
 	public transient BlockItemBuilder itemBuilder;
 	public transient List<AABB> customShape;
-	public Consumer<ShapeOverrideCallbackJS> customShapeOverrideCallback;
+	public Map<Map<String, Object>, List<AABB>> shapeMap;
 	public transient boolean noCollision;
 	public transient boolean notSolid;
 	public transient float slipperiness = Float.NaN;
@@ -118,6 +122,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		itemBuilder = getOrCreateItemBuilder();
 		itemBuilder.blockBuilder = this;
 		customShape = new ArrayList<>();
+		shapeMap = new HashMap<>();
 		noCollision = false;
 		notSolid = false;
 		randomTickCallback = null;
@@ -508,9 +513,22 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return box(x0, y0, z0, x1, y1, z1, true);
 	}
 
+	@Info("Set the shape of the block.")
+	public BlockBuilder box(Map<String, Object> condition, double x0, double y0, double z0, double x1, double y1, double z1) {
+		return box(condition, x0, y0, z0, x1, y1, z1, true);
+	}
+
 	@Info("Crates a callback for the shape of the block. '.box' will set be used if not present.")
-	public BlockBuilder shape(@Nullable Consumer<ShapeOverrideCallbackJS> shapeOverrideCallback) {
-		this.customShapeOverrideCallback = shapeOverrideCallback;
+	public BlockBuilder box(Map<String, Object> condition, double x0, double y0, double z0, double x1, double y1, double z1, boolean scale16) {
+		System.out.println("condition: " + condition.entrySet());
+		List<AABB> cubes = shapeMap.getOrDefault(condition, new ArrayList<>());
+		System.out.println("box: " + shapeMap + " " + cubes);
+		if (scale16) {
+			cubes.add(new AABB(x0 / 16D, y0 / 16D, z0 / 16D, x1 / 16D, y1 / 16D, z1 / 16D));
+		} else {
+			cubes.add(new AABB(x0, y0, z0, x1, y1, z1));
+		}
+		shapeMap.put(condition, cubes);
 		return this;
 	}
 
@@ -839,5 +857,63 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 
 		return properties;
+	}
+
+	public Map<Map<String, Object>, VoxelShape> getShapeMap(Collection<Property<?>> properties) {
+		System.out.println("shape map: " + shapeMap);
+		final Map<Map<String, Object>, List<AABB>>[] cubeMap = new Map[]{new HashMap<>()};
+		properties.forEach(property -> {
+			if(cubeMap[0].isEmpty()) {
+				property.getPossibleValues().forEach(value -> {
+					Map<String, Object> propMap = new HashMap<>();
+					propMap.put(property.getName(), value);
+					cubeMap[0].put(propMap, new ArrayList<>());
+				});
+			}
+			else {
+				var oldMap = cubeMap[0];
+				cubeMap[0] = new HashMap<>();
+				oldMap.forEach((k,v) -> {
+					property.getPossibleValues().forEach(value -> {
+						Map<String, Object> propMap = k;
+						k.put(property.getName(), value);
+						cubeMap[0].put(propMap, v);
+					});
+				});
+			}
+		});
+		cubeMap[0].forEach((_k,_v) -> {
+			shapeMap.forEach((k,v) -> {
+				AtomicBoolean match = new AtomicBoolean(true);
+				k.forEach((K,V) -> {
+					if(!compareValue(V,_k.get(K))) match.set(false);
+				});
+				if(match.get()) _v.addAll(v);
+			});
+		});
+		System.out.println("cubeMap: " + cubeMap[0]);
+		final Map<Map<String, Object>, VoxelShape> voxelShapeMap = new HashMap<>();
+		cubeMap[0].forEach((k,v) -> {
+			voxelShapeMap.put(k,BlockBuilder.createShape(v));
+		});
+		System.out.println("voxelShapeMap: " + cubeMap[0] + " " + voxelShapeMap);
+		return voxelShapeMap;
+	}
+	private boolean compareValue(Object o1, Object o2) {
+		if(o1.getClass() == Double.class || o1.getClass() == Float.class || o1.getClass() == Integer.class) {
+			if(o2.getClass() == Double.class || o2.getClass() == Float.class || o2.getClass() == Integer.class) {
+				double d1 = 0;
+				double d2 = 0;
+				if(o1.getClass() == Double.class) d1 = (double) o1;
+				if(o1.getClass() == Float.class) d1 = (double)(float) o1;
+				if(o1.getClass() == Integer.class) d1 = (double)(int) o1;
+				if(o2.getClass() == Double.class) d2 = (double) o2;
+				if(o2.getClass() == Float.class) d2 = (double)(float) o2;
+				if(o2.getClass() == Integer.class) d2 = (double)(int) o2;
+				return d1 == d2;
+			}
+		}
+		else return o1.equals(o2);
+		return false;
 	}
 }

@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockRightClickedEventJS;
-import dev.latvian.mods.kubejs.block.ShapeOverrideCallbackJS;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
@@ -48,6 +47,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
@@ -58,7 +58,11 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBlock {
@@ -93,15 +97,15 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 
 	public final BlockBuilder blockBuilder;
 	public final VoxelShape shape;
-	public final Consumer<ShapeOverrideCallbackJS> shapeOverrideCallback;
+	public Map<Map<String, Object>, VoxelShape> shapeMap = new HashMap<>();
 
 	public BasicBlockJS(BlockBuilder p) {
 		super(p.createProperties());
 		blockBuilder = p;
 		shape = BlockBuilder.createShape(p.customShape);
-		this.shapeOverrideCallback = p.customShapeOverrideCallback;
 
 		var blockState = stateDefinition.any();
+		this.shapeMap = p.getShapeMap(blockState.getProperties());
 		if (blockBuilder.defaultStateModification != null) {
 			var callbackJS = new BlockStateModifyCallbackJS(blockState);
 			if (safeCallback(blockBuilder.defaultStateModification, callbackJS, "Error while creating default blockState for block " + p.id)) {
@@ -129,10 +133,24 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 	@Override
 	@Deprecated
 	public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-		if(shapeOverrideCallback == null) return shape;
-		ShapeOverrideCallbackJS callback = new ShapeOverrideCallbackJS(state, context);
-		shapeOverrideCallback.accept(callback);
-		return BlockBuilder.createShape(callback.shape);
+		Map<String, Object> blockPropertyValues = new HashMap<>();
+		state.getProperties().forEach((property) -> {
+			blockPropertyValues.put(property.getName(), state.getValue(property));
+		});
+		//final AtomicReference<VoxelShape> voxelShape = new AtomicReference<>();
+		/*System.out.println(shapeMap);
+		shapeMap.forEach((k,v) -> {
+			System.out.println("getShape: " + k + " " + blockPropertyValues);
+			AtomicBoolean match = new AtomicBoolean(true);
+			if(k != null) k.forEach((K,V) -> {
+				if(match.get() && compareValue(V, blockPropertyValues.get(K))) match.set(false);
+				System.out.println(V.getClass() + " " + blockPropertyValues.get(K).getClass());
+			});
+			if(match.get()) voxelShape.set(v);
+		});*/
+		var voxelShape = shapeMap.get(blockPropertyValues);
+		if(voxelShape.isEmpty()) return shape;
+		return voxelShape;
 	}
 
 	@Override
