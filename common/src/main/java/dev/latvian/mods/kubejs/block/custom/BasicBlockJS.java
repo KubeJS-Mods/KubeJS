@@ -137,17 +137,6 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 		state.getProperties().forEach((property) -> {
 			blockPropertyValues.put(property.getName(), state.getValue(property));
 		});
-		//final AtomicReference<VoxelShape> voxelShape = new AtomicReference<>();
-		/*System.out.println(shapeMap);
-		shapeMap.forEach((k,v) -> {
-			System.out.println("getShape: " + k + " " + blockPropertyValues);
-			AtomicBoolean match = new AtomicBoolean(true);
-			if(k != null) k.forEach((K,V) -> {
-				if(match.get() && compareValue(V, blockPropertyValues.get(K))) match.set(false);
-				System.out.println(V.getClass() + " " + blockPropertyValues.get(K).getClass());
-			});
-			if(match.get()) voxelShape.set(v);
-		});*/
 		var voxelShape = shapeMap.get(blockPropertyValues);
 		if(voxelShape.isEmpty()) return shape;
 		return voxelShape;

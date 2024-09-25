@@ -520,9 +520,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 
 	@Info("Crates a callback for the shape of the block. '.box' will set be used if not present.")
 	public BlockBuilder box(Map<String, Object> condition, double x0, double y0, double z0, double x1, double y1, double z1, boolean scale16) {
-		System.out.println("condition: " + condition.entrySet());
 		List<AABB> cubes = shapeMap.getOrDefault(condition, new ArrayList<>());
-		System.out.println("box: " + shapeMap + " " + cubes);
 		if (scale16) {
 			cubes.add(new AABB(x0 / 16D, y0 / 16D, z0 / 16D, x1 / 16D, y1 / 16D, z1 / 16D));
 		} else {
@@ -860,7 +858,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	public Map<Map<String, Object>, VoxelShape> getShapeMap(Collection<Property<?>> properties) {
-		System.out.println("shape map: " + shapeMap);
 		final Map<Map<String, Object>, List<AABB>>[] cubeMap = new Map[]{new HashMap<>()};
 		properties.forEach(property -> {
 			if(cubeMap[0].isEmpty()) {
@@ -891,12 +888,10 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 				if(match.get()) _v.addAll(v);
 			});
 		});
-		System.out.println("cubeMap: " + cubeMap[0]);
 		final Map<Map<String, Object>, VoxelShape> voxelShapeMap = new HashMap<>();
 		cubeMap[0].forEach((k,v) -> {
 			voxelShapeMap.put(k,BlockBuilder.createShape(v));
 		});
-		System.out.println("voxelShapeMap: " + cubeMap[0] + " " + voxelShapeMap);
 		return voxelShapeMap;
 	}
 	private boolean compareValue(Object o1, Object o2) {
