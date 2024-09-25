@@ -138,7 +138,7 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 			blockPropertyValues.put(property.getName(), state.getValue(property));
 		});
 		var voxelShape = shapeMap.get(blockPropertyValues);
-		if(voxelShape.isEmpty()) return shape;
+		if(voxelShape == null || voxelShape.isEmpty()) return shape;
 		return voxelShape;
 	}
 
