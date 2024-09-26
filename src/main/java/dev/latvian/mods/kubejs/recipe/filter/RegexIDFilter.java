@@ -14,7 +14,11 @@ public class RegexIDFilter implements RecipeFilter {
 	private final Pattern pattern;
 	private final ConcurrentHashMap<ResourceLocation, Boolean> matchCache = new ConcurrentHashMap<>();
 
-	private static final Interner<RegexIDFilter> INTERNER = Interners.newStrongInterner();
+	private static Interner<RegexIDFilter> INTERNER;
+
+	static {
+		clearInternCache();
+	}
 
 	private RegexIDFilter(Pattern i) {
 		pattern = i;
@@ -22,6 +26,10 @@ public class RegexIDFilter implements RecipeFilter {
 
 	public static RegexIDFilter of(Pattern i) {
 		return INTERNER.intern(new RegexIDFilter(i));
+	}
+
+	public static void clearInternCache() {
+		INTERNER = Interners.newStrongInterner();
 	}
 
 	@Override
