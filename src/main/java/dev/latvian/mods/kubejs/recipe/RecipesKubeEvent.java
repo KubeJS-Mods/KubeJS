@@ -19,6 +19,7 @@ import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.IDFilter;
 import dev.latvian.mods.kubejs.recipe.filter.OrFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
+import dev.latvian.mods.kubejs.recipe.filter.RegexIDFilter;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
@@ -428,6 +429,8 @@ public class RecipesKubeEvent implements KubeEvent {
 				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
 			}
 		}
+
+		RegexIDFilter.clearInternCache();
 	}
 
 	@Nullable
