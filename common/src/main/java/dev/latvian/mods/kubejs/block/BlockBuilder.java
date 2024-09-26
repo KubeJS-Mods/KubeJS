@@ -53,6 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class BlockBuilder extends BuilderBase<Block> {
@@ -858,9 +859,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	public Map<Map<String, Object>, VoxelShape> getShapeMap(Collection<Property<?>> properties) {
-		final Map<Map<String, Object>, List<AABB>>[] cubeMap = new Map[]{new HashMap<>()};
+		final Map<Map<String, Object>, List<AABB>>[] cubeMap = new Map[]{new HashMap<Map<String, Object>, List<AABB>>()};
 		properties.forEach(property -> {
-			System.out.println(property);
 			if(cubeMap[0].isEmpty()) {
 				property.getPossibleValues().forEach(value -> {
 					Map<String, Object> propMap = new HashMap<>();
@@ -873,7 +873,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 				cubeMap[0] = new HashMap<>();
 				oldMap.forEach((k,v) -> {
 					property.getPossibleValues().forEach(value -> {
-						System.out.println(value);
 						Map<String, Object> propMap = new HashMap<>(k);
 						propMap.put(property.getName(), value);
 						cubeMap[0].put(propMap, v);
@@ -881,20 +880,13 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 				});
 			}
 		});
-		System.out.println(cubeMap);
-		cubeMap[0].forEach((_k,_v) -> {
-			shapeMap.forEach((k,v) -> {
-				AtomicBoolean match = new AtomicBoolean(true);
-				k.forEach((K,V) -> {
-					if(!compareValue(V,_k.get(K))) match.set(false);
-				});
-				if(match.get()) _v.addAll(v);
+		cubeMap[0].forEach((cubeMapKey,cubeMapValue) -> {
+			shapeMap.forEach((shapeMapKey,shapeMapValue) -> {
+				if(shapeMapKey.entrySet().stream().allMatch(entry -> compareValue(entry.getValue(),cubeMapKey.get(entry.getKey())))) cubeMapValue.addAll(shapeMapValue);
 			});
 		});
 		final Map<Map<String, Object>, VoxelShape> voxelShapeMap = new HashMap<>();
-		cubeMap[0].forEach((k,v) -> {
-			voxelShapeMap.put(k,BlockBuilder.createShape(v));
-		});
+		cubeMap[0].forEach((cubeMapKey,cubeMapValue) -> voxelShapeMap.put(cubeMapKey,BlockBuilder.createShape(cubeMapValue)));
 		return voxelShapeMap;
 	}
 	private boolean compareValue(Object o1, Object o2) {

@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block.custom;
 
+import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockRightClickedEventJS;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
@@ -37,6 +38,7 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
