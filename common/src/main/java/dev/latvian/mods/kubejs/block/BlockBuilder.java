@@ -860,6 +860,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public Map<Map<String, Object>, VoxelShape> getShapeMap(Collection<Property<?>> properties) {
 		final Map<Map<String, Object>, List<AABB>>[] cubeMap = new Map[]{new HashMap<>()};
 		properties.forEach(property -> {
+			System.out.println(property);
 			if(cubeMap[0].isEmpty()) {
 				property.getPossibleValues().forEach(value -> {
 					Map<String, Object> propMap = new HashMap<>();
@@ -872,13 +873,15 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 				cubeMap[0] = new HashMap<>();
 				oldMap.forEach((k,v) -> {
 					property.getPossibleValues().forEach(value -> {
-						Map<String, Object> propMap = k;
-						k.put(property.getName(), value);
+						System.out.println(value);
+						Map<String, Object> propMap = new HashMap<>(k);
+						propMap.put(property.getName(), value);
 						cubeMap[0].put(propMap, v);
 					});
 				});
 			}
 		});
+		System.out.println(cubeMap);
 		cubeMap[0].forEach((_k,_v) -> {
 			shapeMap.forEach((k,v) -> {
 				AtomicBoolean match = new AtomicBoolean(true);
@@ -896,17 +899,8 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 	private boolean compareValue(Object o1, Object o2) {
 		if(o1.getClass() == Double.class || o1.getClass() == Float.class || o1.getClass() == Integer.class) {
-			if(o2.getClass() == Double.class || o2.getClass() == Float.class || o2.getClass() == Integer.class) {
-				double d1 = 0;
-				double d2 = 0;
-				if(o1.getClass() == Double.class) d1 = (double) o1;
-				if(o1.getClass() == Float.class) d1 = (double)(float) o1;
-				if(o1.getClass() == Integer.class) d1 = (double)(int) o1;
-				if(o2.getClass() == Double.class) d2 = (double) o2;
-				if(o2.getClass() == Float.class) d2 = (double)(float) o2;
-				if(o2.getClass() == Integer.class) d2 = (double)(int) o2;
-				return d1 == d2;
-			}
+			if(o2.getClass() == Double.class || o2.getClass() == Float.class || o2.getClass() == Integer.class)
+				return ((Number) o1).doubleValue() == ((Number) o2).doubleValue();
 		}
 		else return o1.equals(o2);
 		return false;
