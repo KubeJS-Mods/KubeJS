@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockRightClickedEventJS;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
+import dev.latvian.mods.kubejs.block.PickBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
@@ -32,6 +33,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
@@ -105,6 +107,7 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 		super(p.createProperties());
 		blockBuilder = p;
 		shape = BlockBuilder.createShape(p.customShape);
+
 
 		var blockState = stateDefinition.any();
 		this.shapeMap = p.getShapeMap(blockState.getProperties());
@@ -267,7 +270,7 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 			return SimpleWaterloggedBlock.super.pickupBlock(levelAccessor, blockPos, blockState);
 		}
 
-		return ItemStack.EMPTY;
+		return Items.STONE.getDefaultInstance();
 	}
 
 	@Override
@@ -382,5 +385,15 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 		if (livingEntity != null && !level.isClientSide() && level.getBlockEntity(blockPos) instanceof BlockEntityJS e) {
 			e.placerId = livingEntity.getUUID();
 		}
+	}
+
+	@Override
+	public ItemStack getCloneItemStack(BlockGetter blockGetter, BlockPos blockPos, BlockState blockState) {
+		if(blockBuilder.pickBlockCallback != null) {
+			var callback = new PickBlockCallbackJS(blockGetter, blockPos, blockState);
+			safeCallback(blockBuilder.pickBlockCallback, callback, "Error while getting pick block item ");
+			if(callback.item != null) return new ItemStack(callback.item);
+		}
+		return super.getCloneItemStack(blockGetter, blockPos, blockState);
 	}
 }
