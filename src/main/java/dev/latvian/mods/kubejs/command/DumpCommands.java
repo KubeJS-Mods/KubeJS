@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.command;
 
 import com.google.common.base.Strings;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.event.EventGroups;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
