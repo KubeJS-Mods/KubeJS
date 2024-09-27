@@ -515,23 +515,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		return box(x0, y0, z0, x1, y1, z1, true);
 	}
 
-	@Info("Set the shape of the block.")
-	public BlockBuilder box(Map<String, Object> condition, double x0, double y0, double z0, double x1, double y1, double z1) {
-		return box(condition, x0, y0, z0, x1, y1, z1, true);
-	}
-
-	@Info("Crates a callback for the shape of the block. '.box' will set be used if not present.")
-	public BlockBuilder box(Map<String, Object> condition, double x0, double y0, double z0, double x1, double y1, double z1, boolean scale16) {
-		List<AABB> cubes = shapeMap.getOrDefault(condition, new ArrayList<>());
-		if (scale16) {
-			cubes.add(new AABB(x0 / 16D, y0 / 16D, z0 / 16D, x1 / 16D, y1 / 16D, z1 / 16D));
-		} else {
-			cubes.add(new AABB(x0, y0, z0, x1, y1, z1));
-		}
-		shapeMap.put(condition, cubes);
-		return this;
-	}
-
 	public static VoxelShape createShape(List<AABB> boxes) {
 		if (boxes.isEmpty()) {
 			return Shapes.block();
@@ -868,45 +851,5 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		}
 
 		return properties;
-	}
-
-	public Map<Map<String, Object>, VoxelShape> getShapeMap(Collection<Property<?>> properties) {
-		final Map<Map<String, Object>, List<AABB>>[] cubeMap = new Map[]{new HashMap<Map<String, Object>, List<AABB>>()};
-		properties.forEach(property -> {
-			if(cubeMap[0].isEmpty()) {
-				property.getPossibleValues().forEach(value -> {
-					Map<String, Object> propMap = new HashMap<>();
-					propMap.put(property.getName(), value);
-					cubeMap[0].put(propMap, new ArrayList<>());
-				});
-			}
-			else {
-				var oldMap = cubeMap[0];
-				cubeMap[0] = new HashMap<>();
-				oldMap.forEach((k,v) -> {
-					property.getPossibleValues().forEach(value -> {
-						Map<String, Object> propMap = new HashMap<>(k);
-						propMap.put(property.getName(), value);
-						cubeMap[0].put(propMap, v);
-					});
-				});
-			}
-		});
-		cubeMap[0].forEach((cubeMapKey,cubeMapValue) -> {
-			shapeMap.forEach((shapeMapKey,shapeMapValue) -> {
-				if(shapeMapKey.entrySet().stream().allMatch(entry -> compareValue(entry.getValue(),cubeMapKey.get(entry.getKey())))) cubeMapValue.addAll(shapeMapValue);
-			});
-		});
-		final Map<Map<String, Object>, VoxelShape> voxelShapeMap = new HashMap<>();
-		cubeMap[0].forEach((cubeMapKey,cubeMapValue) -> voxelShapeMap.put(cubeMapKey,BlockBuilder.createShape(cubeMapValue)));
-		return voxelShapeMap;
-	}
-	private boolean compareValue(Object o1, Object o2) {
-		if(o1.getClass() == Double.class || o1.getClass() == Float.class || o1.getClass() == Integer.class) {
-			if(o2.getClass() == Double.class || o2.getClass() == Float.class || o2.getClass() == Integer.class)
-				return ((Number) o1).doubleValue() == ((Number) o2).doubleValue();
-		}
-		else return o1.equals(o2);
-		return false;
 	}
 }
