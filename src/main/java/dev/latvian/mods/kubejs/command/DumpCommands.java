@@ -79,9 +79,7 @@ public class DumpCommands {
 
 				if (eventType.getPackageName().startsWith("dev.latvian.mods.kubejs")) {
 					builder.append('[').append(UtilsJS.toMappedTypeString(eventType)).append(']')
-						.append('(').append("https://github.com/KubeJS-Mods/KubeJS/tree/")
-						.append(KubeJS.MC_VERSION_NUMBER)
-						.append("/common/src/main/java/")
+						.append('(').append("https://github.com/KubeJS-Mods/KubeJS/tree/main/src/main/java/")
 						.append(eventType.getPackageName().replace('.', '/'))
 						.append('/').append(eventType.getSimpleName()).append(".java")
 						.append(')');
