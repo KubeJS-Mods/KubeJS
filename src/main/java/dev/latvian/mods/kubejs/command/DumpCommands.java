@@ -24,6 +24,7 @@ import java.nio.file.Files;
 public class DumpCommands {
 	private static final char UNICODE_TICK = '✔';
 	private static final char UNICODE_CROSS = '✘';
+	private static final char BRANCH_NAME = "main";
 
 	public static int events(CommandSourceStack source) {
 		var groups = EventGroups.ALL.get().map();
@@ -78,7 +79,8 @@ public class DumpCommands {
 
 				if (eventType.getPackageName().startsWith("dev.latvian.mods.kubejs")) {
 					builder.append('[').append(UtilsJS.toMappedTypeString(eventType)).append(']')
-						.append('(').append("https://github.com/KubeJS-Mods/KubeJS/tree/main/src/main/java/")
+						.append('(').append("https://github.com/KubeJS-Mods/KubeJS/tree/main/src/")
+						.append(BRANCH_NAME).append("/java/")
 						.append(eventType.getPackageName().replace('.', '/'))
 						.append('/').append(eventType.getSimpleName()).append(".java")
 						.append(')');
