@@ -77,7 +77,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient String model;
 	public transient BlockItemBuilder itemBuilder;
 	public transient List<AABB> customShape;
-	public Map<Map<String, Object>, List<AABB>> shapeMap;
 	public transient boolean noCollision;
 	public transient boolean notSolid;
 	public transient float slipperiness = Float.NaN;
@@ -124,7 +123,6 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 		itemBuilder = getOrCreateItemBuilder();
 		itemBuilder.blockBuilder = this;
 		customShape = new ArrayList<>();
-		shapeMap = new HashMap<>();
 		noCollision = false;
 		notSolid = false;
 		randomTickCallback = null;

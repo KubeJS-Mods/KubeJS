@@ -102,7 +102,6 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 		blockBuilder = p;
 		shape = BlockBuilder.createShape(p.customShape);
 
-
 		var blockState = stateDefinition.any();
 		if (blockBuilder.defaultStateModification != null) {
 			var callbackJS = new BlockStateModifyCallbackJS(blockState);
@@ -259,7 +258,7 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 			return SimpleWaterloggedBlock.super.pickupBlock(levelAccessor, blockPos, blockState);
 		}
 
-		return Items.STONE.getDefaultInstance();
+		return ItemStack.EMPTY;
 	}
 
 	@Override
