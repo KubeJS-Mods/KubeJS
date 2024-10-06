@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
+	public static final String CHANGED_MARKER = "_kubejs_changed_marker";
+
 	public ResourceLocation id;
 	public RecipeTypeFunction type;
 	public boolean newRecipe;
@@ -490,6 +492,8 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				staged.add("recipe", json);
 				json = staged;
 			}
+
+			json.addProperty(CHANGED_MARKER, true);
 		}
 
 		return this;
