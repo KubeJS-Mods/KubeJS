@@ -1,7 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.error.EmptyRecipeComponentValueException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
@@ -114,13 +116,9 @@ public interface RecipeComponent<T> {
 			}
 		}
 
-		var encoded = cv.key.codec.encodeStart(recipe.type.event.registries.json(), cv.value);
-
-		if (encoded.error().isPresent()) {
-			ConsoleJS.SERVER.error("Failed to encode " + cv.key.name + " for " + recipe.id + " from " + cv.value + ": " + encoded.error().get().message(), recipe.sourceLine, null, RecipesKubeEvent.POST_SKIP_ERROR);
-		} else if (encoded.isSuccess()) {
-			var e = encoded.getOrThrow();
-			json.add(cv.key.name, e);
+		switch (cv.key.codec.encodeStart(recipe.type.event.registries.json(), cv.value)) {
+			case DataResult.Success(var value, var lifecycle) -> json.add(cv.key.name, value);
+			case DataResult.Error<JsonElement> error -> ConsoleJS.SERVER.error("Failed to encode " + cv.key.name + " for recipe " + recipe.id + " from value" + cv.value + ": " + error.message(), recipe.sourceLine, null, RecipesKubeEvent.POST_SKIP_ERROR);
 		}
 	}
 
