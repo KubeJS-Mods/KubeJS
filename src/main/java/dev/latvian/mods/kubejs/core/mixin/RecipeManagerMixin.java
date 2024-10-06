@@ -73,12 +73,8 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 
 		if (ServerEvents.RECIPES.hasListeners()) {
 			ConsoleJS.SERVER.info("Processing recipes...");
-
 			kjs$event = new RecipesKubeEvent(manager, resourceManager);
-
-			kjs$event.discoverRecipes(this, map);
-			kjs$event.postEvent();
-			kjs$event.applyChanges(map);
+			kjs$event.post(this, map);
 		}
 	}
 
@@ -88,8 +84,7 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 	)
 	private void catchFailingRecipes(CallbackInfo ci, @Local Map.Entry<ResourceLocation, JsonElement> entry, @Local RuntimeException ex) {
 		if (kjs$event != null) {
-			ConsoleJS.SERVER.warn("Error parsing recipe %s: %s".formatted(entry.getKey(), entry.getValue()), ex);
-			kjs$event.failedCount.incrementAndGet();
+			kjs$event.handleFailedRecipe(entry.getKey(), entry.getValue(), ex);
 		}
 	}
 

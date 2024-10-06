@@ -60,7 +60,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -84,9 +83,9 @@ public class RecipesKubeEvent implements KubeEvent {
 	public final Collection<KubeRecipe> addedRecipes;
 	public final Collection<KubeRecipe> removedRecipes;
 
-	private int modifiedCount;
-	public final AtomicInteger failedCount;
-	public final Map<ResourceLocation, KubeRecipe> takenIds;
+	int modifiedCount, failedCount;
+
+	private final Map<ResourceLocation, KubeRecipe> takenIds;
 
 	private final Map<String, Object> recipeFunctions;
 	public final transient RecipeTypeFunction vanillaShaped;
@@ -119,9 +118,6 @@ public class RecipesKubeEvent implements KubeEvent {
 
 		// var itemTags = manager.getLoadedTags(Registries.ITEM);
 		// System.out.println(itemTags);
-
-		this.modifiedCount = 0;
-		this.failedCount = new AtomicInteger(0);
 
 		for (var namespace : recipeSchemaStorage.namespaces.values()) {
 			var nsMap = new HashMap<String, RecipeTypeFunction>();
@@ -279,6 +275,30 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 	}
 
+	private void infoSkip(String s) {
+		if (DevProperties.get().logSkippedRecipes) {
+			ConsoleJS.SERVER.info(s);
+		} else {
+			RecipeManager.LOGGER.info(s);
+		}
+	}
+
+	private void warnSkip(String s) {
+		if (DevProperties.get().logSkippedRecipes) {
+			ConsoleJS.SERVER.warn(s);
+		} else {
+			RecipeManager.LOGGER.warn(s);
+		}
+	}
+
+	private void errorSkip(String s) {
+		if (DevProperties.get().logSkippedRecipes) {
+			ConsoleJS.SERVER.error(s);
+		} else {
+			RecipeManager.LOGGER.error(s);
+		}
+	}
+
 	@HideFromJS
 	public void postEvent() {
 		var timer = Stopwatch.createStarted();
@@ -327,7 +347,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		ChangesForChat.recipesRemoved = removedRecipes.size();
 		ChangesForChat.recipesMs = overallTimer.stop().elapsed(TimeUnit.MILLISECONDS);
 
-		ConsoleJS.SERVER.info("Added %d recipes, removed %d recipes, modified %d recipes, with %d failed recipes taking %s in total".formatted(addedRecipes.size(), removedRecipes.size(), modifiedCount, failedCount.get(), TimeJS.msToString(ChangesForChat.recipesMs)));
+		ConsoleJS.SERVER.info("Added %d recipes, removed %d recipes, modified %d recipes, with %d failed recipes taking %s in total".formatted(addedRecipes.size(), removedRecipes.size(), modifiedCount, failedCount, TimeJS.msToString(ChangesForChat.recipesMs)));
 
 		if (DataExport.export != null) {
 			for (var r : removedRecipes) {
@@ -369,6 +389,12 @@ public class RecipesKubeEvent implements KubeEvent {
 				DataExport.export.addJson("added_recipes/%s.json".formatted(path), r.json);
 			}
 		}
+	}
+
+	@HideFromJS
+	public void handleFailedRecipe(ResourceLocation id, JsonElement json, Throwable ex) {
+		ConsoleJS.SERVER.warn("Error parsing recipe %s: %s".formatted(id, json), ex);
+		failedCount++;
 	}
 
 	public Map<String, Object> getRecipes() {
@@ -583,29 +609,5 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	public void stage(Context cx, RecipeFilter filter, String stage) {
 		forEachRecipe(cx, filter, r -> r.stage(stage));
-	}
-
-	private void infoSkip(String s) {
-		if (DevProperties.get().logSkippedRecipes) {
-			ConsoleJS.SERVER.info(s);
-		} else {
-			RecipeManager.LOGGER.info(s);
-		}
-	}
-
-	private void warnSkip(String s) {
-		if (DevProperties.get().logSkippedRecipes) {
-			ConsoleJS.SERVER.warn(s);
-		} else {
-			RecipeManager.LOGGER.warn(s);
-		}
-	}
-
-	private void errorSkip(String s) {
-		if (DevProperties.get().logSkippedRecipes) {
-			ConsoleJS.SERVER.error(s);
-		} else {
-			RecipeManager.LOGGER.error(s);
-		}
 	}
 }
