@@ -543,12 +543,12 @@ public class ConsoleJS {
 		printObject(o, false);
 	}
 
-	public void handleError(ConsoleLine line, Throwable error, @Nullable Pattern exitPattern, boolean print) {
+	public void handleError(ConsoleLine line, @Nullable Throwable error, @Nullable Pattern exitPattern, boolean print) {
 		while (error instanceof WrappedException ex) {
 			error = ex.getWrappedException();
 		}
 
-		if (error instanceof EcmaError) {
+		if (error == null || error instanceof EcmaError) {
 			return;
 		}
 
