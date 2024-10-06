@@ -335,12 +335,20 @@ public class ConsoleJS {
 
 	public ConsoleLine warn(String message, SourceLine sourceLine, Throwable error, @Nullable Pattern exitPattern) {
 		if (shouldPrint()) {
-			var l = log(LogType.WARN, sourceLine, error, message.isEmpty() ? error.toString() : (message + ": " + error.toString()));
+			var l = log(LogType.WARN, sourceLine, error, messageForPrint(message, error));
 			handleError(l, error, exitPattern, !capturingErrors);
 			return l;
 		}
 
 		return null;
+	}
+
+	private static String messageForPrint(String message, @Nullable Throwable error) {
+		if (message.isEmpty()) {
+			return Objects.requireNonNull(error, "Both message and error are empty!").toString();
+		} else {
+			return error == null ? message : (message + ": " + error);
+		}
 	}
 
 	public ConsoleLine warn(String message, Throwable error) {
@@ -361,7 +369,7 @@ public class ConsoleJS {
 
 	public ConsoleLine error(String message, SourceLine sourceLine, Throwable error, @Nullable Pattern exitPattern) {
 		if (shouldPrint()) {
-			var l = log(LogType.ERROR, sourceLine, error, message.isEmpty() ? error.toString() : (message + ": " + error.toString()));
+			var l = log(LogType.ERROR, sourceLine, error, messageForPrint(message, error));
 			handleError(l, error, exitPattern, true);
 			return l;
 		}

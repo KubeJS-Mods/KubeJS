@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
@@ -210,23 +211,16 @@ public class RecipesKubeEvent implements KubeEvent {
 			}
 
 			var codec = ConditionalOps.createConditionalCodec(Codec.unit(originalJson));
-
-			var jsonResult = codec.parse(jsonOps, originalJson);
-
-			if (jsonResult.isError()) {
-				errorSkip("Skipping recipe %s, error parsing conditions: %s".formatted(recipeId, jsonResult.error().get().message()));
-				continue;
+			switch (codec.parse(jsonOps, originalJson)) {
+				case DataResult.Success(var jsonResult, var lifecycle) -> {
+					if (jsonResult.isEmpty()) {
+						infoSkip("Skipping recipe %s, conditions not met".formatted(recipeId));
+					} else {
+						parseOriginalRecipe(jsonResult.get(), recipeId);
+					}
+				}
+				case DataResult.Error<?> error -> errorSkip("Skipping recipe %s, error parsing conditions: %s".formatted(recipeId, error.message()));
 			}
-
-			var result = jsonResult.getOrThrow();
-
-			if (result.isEmpty()) {
-				infoSkip("Skipping recipe %s, conditions not met".formatted(recipeId));
-				continue;
-			}
-
-			var json = result.get();
-			parseOriginalRecipe(json, recipeId);
 		}
 
 		takenIds.putAll(originalRecipes);
