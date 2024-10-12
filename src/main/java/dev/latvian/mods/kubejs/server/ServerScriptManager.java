@@ -1,23 +1,17 @@
 package dev.latvian.mods.kubejs.server;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
-import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
-import dev.latvian.mods.kubejs.net.KubeServerData;
 import dev.latvian.mods.kubejs.net.SyncServerDataPayload;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
-import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
-import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
-import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
@@ -38,14 +32,12 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -245,35 +237,6 @@ public class ServerScriptManager extends ScriptManager {
 				ServerEvents.GENERATE_DATA.post(ScriptType.SERVER, pack.stage, pack);
 			}
 		}
-	}
-
-	public boolean recipes(RecipeManagerKJS recipeManager, ResourceManager resourceManager, Map<ResourceLocation, JsonElement> map) {
-		if (ServerEvents.COMPOSTABLE_RECIPES.hasListeners()) {
-			ServerEvents.COMPOSTABLE_RECIPES.post(ScriptType.SERVER, new CompostableRecipesKubeEvent());
-		}
-
-		boolean result = false;
-
-		for (var entry : getRegistries().cachedRegistryTags.values()) {
-			if (entry.registry() == null || entry.lookup() == null) {
-				continue;
-			}
-
-			entry.registry().bindTags((Map) entry.lookup().bindingMap());
-		}
-
-		recipeSchemaStorage.fireEvents(getRegistries(), resourceManager);
-
-		SpecialRecipeSerializerManager.INSTANCE.reset();
-		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
-
-		if (ServerEvents.RECIPES.hasListeners()) {
-			new RecipesKubeEvent(this, resourceManager).post(recipeManager, new HashMap<>(map));
-			result = true;
-		}
-
-		serverData = new SyncServerDataPayload(KubeServerData.collect());
-		return result;
 	}
 
 	@Override

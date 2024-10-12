@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
@@ -35,15 +36,18 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
+	public static final String CHANGED_MARKER = "_kubejs_changed_marker";
+
 	public ResourceLocation id;
 	public RecipeTypeFunction type;
 	public boolean newRecipe;
@@ -459,18 +463,13 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	/**
-	 * Only used by {@link KubeRecipe#getOrCreateId()} and {@link KubeRecipe#createRecipe()} in rare case that a recipe can be another recipe type than itself (e.g. kubejs:shaped -> minecraft:crafting_shaped)
+	 * Only used by {@link KubeRecipe#getOrCreateId()} and {@link KubeRecipe#serializeChanges()} in rare case that a recipe can be another recipe type than itself (e.g. kubejs:shaped -> minecraft:crafting_shaped)
 	 */
 	public RecipeTypeFunction getSerializationTypeFunction() {
 		return type;
 	}
 
-	@Nullable
-	public RecipeHolder<?> createRecipe() {
-		if (removed) {
-			return null;
-		}
-
+	public KubeRecipe serializeChanges() {
 		if (newRecipe || hasChanged()) {
 			serialize();
 
@@ -490,25 +489,17 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				json.addProperty("type", getSerializationTypeFunction().idString);
 			}
 
-			var id = getOrCreateId();
-
 			if (type.event.stageSerializer != null && json.has(KubeJSCraftingRecipe.STAGE_KEY) && !type.idString.equals("recipestages:stage")) {
-				var o = new JsonObject();
-				o.addProperty("stage", json.get(KubeJSCraftingRecipe.STAGE_KEY).getAsString());
-				o.add("recipe", json);
-
-				try {
-					var recipe = type.event.registries.decodeJson(type.event.stageSerializer.codec(), o);
-					return recipe == null ? null : new RecipeHolder<>(id, recipe);
-				} catch (Throwable ex) {
-					ConsoleJS.SERVER.error("Failed to decode " + id + " from json " + o, sourceLine, ex, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
-				}
+				var staged = new JsonObject();
+				staged.addProperty("stage", json.get(KubeJSCraftingRecipe.STAGE_KEY).getAsString());
+				staged.add("recipe", json);
+				json = staged;
 			}
-		} else if (originalRecipe != null && originalRecipe.getValue() != null) {
-			return new RecipeHolder<>(getOrCreateId(), originalRecipe.getValue());
+
+			json.addProperty(CHANGED_MARKER, true);
 		}
 
-		return RecipeHelper.fromJson(type.event.jsonOps, getSerializationTypeFunction().schemaType.getSerializer(), getOrCreateId(), json, DevProperties.get().logErroringParsedRecipes);
+		return this;
 	}
 
 	@Nullable
@@ -516,11 +507,24 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		if (originalRecipe == null) {
 			originalRecipe = new MutableObject<>();
 			try {
-				var holder = RecipeHelper.fromJson(type.event.jsonOps, type.schemaType.getSerializer(), getOrCreateId(), originalJson, DevProperties.get().logErroringParsedRecipes);
+				var serializer = type.schemaType.getSerializer();
+				var ops = type.event.jsonOps;
 
-				if (holder != null) {
-					originalRecipe.setValue(holder.value());
-				}
+				// people apparently violate the contract here?!
+				//noinspection OptionalOfNullableMisuse
+				Optional.ofNullable(serializer.codec())
+					.map(DataResult::success)
+					.orElseGet(() -> DataResult.error(() -> "Codec for " + serializer.getClass().getName() + " is null!"))
+					.flatMap(codec -> ops.getMap(json).flatMap(map -> codec.decode(ops, map)))
+					.mapError(err -> "Error parsing recipe " + id + ": " + err)
+					.ifSuccess(originalRecipe::setValue)
+					.ifError(err -> {
+						if (DevProperties.get().logErroringParsedRecipes) {
+							ConsoleJS.SERVER.error(err.message());
+						} else {
+							RecipeManager.LOGGER.error(err.message());
+						}
+					});
 			} catch (Throwable e) {
 				ConsoleJS.SERVER.error("Could not create recipe from json for " + this, e);
 			}
