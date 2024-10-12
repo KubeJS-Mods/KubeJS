@@ -104,11 +104,11 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 
 			// make sure byType is also set correctly
 			kjs$replaceRecipes(recipesByName);
-
-			kjs$getResources().kjs$getServerScriptManager().serverData = new SyncServerDataPayload(KubeServerData.collect());
 		}
 
 		kjs$event = null;
+
+		kjs$getResources().kjs$getServerScriptManager().serverData = new SyncServerDataPayload(KubeServerData.collect());
 	}
 
 	@Override
