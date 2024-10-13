@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.apps.tinyserver.content.ResponseContent;
 import dev.latvian.mods.kubejs.util.Lazy;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
@@ -43,7 +44,7 @@ public record JsonContent(Lazy<byte[]> json) implements ResponseContent {
 	}
 
 	@Override
-	public void write(OutputStream out) throws Exception {
+	public void write(OutputStream out) throws IOException {
 		out.write(json.get());
 	}
 }

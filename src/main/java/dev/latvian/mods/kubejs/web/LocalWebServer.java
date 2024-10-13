@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record LocalWebServer(HTTPServer<KJSHTTPRequest> server, String url, List<Endpoint> endpoints) {
+	public static final String SERVER_NAME = "KubeJS " + KubeJS.VERSION;
+
 	public record Endpoint(String method, String path) implements Comparable<Endpoint> {
 		@Override
 		public int compareTo(@NotNull LocalWebServer.Endpoint o) {
@@ -37,10 +39,11 @@ public record LocalWebServer(HTTPServer<KJSHTTPRequest> server, String url, List
 				var publicAddress = WebServerProperties.get().publicAddress;
 
 				registry.server.setDaemon(true);
-				registry.server.setServerName("KubeJS " + KubeJS.VERSION);
+				registry.server.setServerName(SERVER_NAME);
 				registry.server.setAddress(publicAddress.isEmpty() ? "127.0.0.1" : "0.0.0.0");
 				registry.server.setPort(WebServerProperties.get().port);
 				registry.server.setMaxPortShift(10);
+				registry.server.setMaxKeepAliveConnections(3);
 
 				var url = "http://localhost:" + registry.server.start();
 				KubeJS.LOGGER.info("Started the local web server at " + url);

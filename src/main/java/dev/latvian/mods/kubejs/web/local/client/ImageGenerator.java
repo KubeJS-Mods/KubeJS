@@ -11,8 +11,8 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import dev.latvian.apps.tinyserver.content.ResponseContent;
+import dev.latvian.apps.tinyserver.http.response.HTTPPayload;
 import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
-import dev.latvian.apps.tinyserver.http.response.HTTPResponseBuilder;
 import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
@@ -22,6 +22,7 @@ import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.util.CachedComponentObject;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
+import dev.latvian.mods.kubejs.web.LocalWebServer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -61,6 +62,7 @@ import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -233,7 +235,7 @@ public class ImageGenerator {
 		req.runInMainThread(() -> {
 			for (var response : responses) {
 				try {
-					var content = new ContentGrabber();
+					var content = new ContentGrabber(LocalWebServer.SERVER_NAME, req.startTime());
 					response.build(content);
 
 					if (content.body != null && bodyKeys.add(new BodyKey(content.body))) {
@@ -444,8 +446,12 @@ public class ImageGenerator {
 		return renderAnimated(req, "fluid_tag", buf, list);
 	}
 
-	private static class ContentGrabber extends HTTPResponseBuilder {
+	private static class ContentGrabber extends HTTPPayload {
 		private byte[] body = null;
+
+		public ContentGrabber(String serverName, Instant serverTime) {
+			super(serverName, serverTime);
+		}
 
 		@Override
 		public void setBody(ResponseContent body) {

@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.web.local;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.apps.tinyserver.ServerRegistry;
+import dev.latvian.apps.tinyserver.http.response.HTTPPayload;
 import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
 import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
 import dev.latvian.apps.tinyserver.ws.Frame;
@@ -129,6 +130,7 @@ public class KubeJSWeb {
 	private static HTTPResponse getHomepage(KJSHTTPRequest req) {
 		var list = new ArrayList<String>();
 		list.add("KubeJS Local Web Server [" + KubeJS.PROXY.getWebServerWindowTitle() + "]");
+		list.add(HTTPPayload.DATE_TIME_FORMATTER.format(req.startTime()));
 		list.add("");
 
 		list.add("Loaded Plugins:");
