@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Info("""
@@ -60,8 +61,8 @@ public class CheckLivingEntitySpawnKubeEvent implements KubeLivingEntityEvent {
 		return type;
 	}
 
-	@Info("The spawner that spawned the entity. Can be null if the entity was spawned by worldgen.")
-	@Nullable
+	@Info("The spawner that spawned the entity.")
+	@NotNull
 	public SpawnerJS getSpawner() {
 		if (spawner == null) {
 			spawner = SpawnerJS.of(spawnerEither);
