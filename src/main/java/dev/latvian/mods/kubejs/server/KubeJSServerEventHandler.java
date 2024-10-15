@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.bindings.event.LevelEvents;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.command.CommandRegistryKubeEvent;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
+import dev.latvian.mods.kubejs.gui.chest.CustomChestMenu;
 import dev.latvian.mods.kubejs.level.SimpleLevelKubeEvent;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -17,6 +18,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelResource;
@@ -24,9 +26,11 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.CommandEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -172,5 +176,14 @@ public class KubeJSServerEventHandler {
 	@SubscribeEvent
 	public static void addReloadListeners(AddReloadListenerEvent event) {
 		event.addListener(new KubeJSReloadListener(event.getServerResources()));
+	}
+
+	@SubscribeEvent
+	public static void preventPickupDuringChestGUI(ItemEntityPickupEvent.Pre event) {
+		var e = event.getPlayer();
+
+		if (e instanceof ServerPlayer player && player.isAlive() && !player.hasDisconnected() && player.containerMenu instanceof CustomChestMenu) {
+			event.setCanPickup(TriState.FALSE);
+		}
 	}
 }

@@ -7,6 +7,10 @@ import org.jetbrains.annotations.Nullable;
 
 public record SpawnerJS(@Nullable Entity entity, @Nullable BlockContainerJS block) {
 	public static SpawnerJS of(Either<BlockEntity, Entity> spawner) {
+		if (spawner == null) {
+			return new SpawnerJS(null, null);
+		}
+
 		var e = spawner.right().orElse(null);
 
 		if (e != null) {
@@ -20,5 +24,9 @@ public record SpawnerJS(@Nullable Entity entity, @Nullable BlockContainerJS bloc
 		}
 
 		return new SpawnerJS(null, null);
+	}
+
+	public boolean isWorldgen() {
+		return entity == null && block == null;
 	}
 }
