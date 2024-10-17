@@ -208,7 +208,7 @@ public final class RecipeKey<T> {
 	}
 
 	public String getPreferredBuilderKey() {
-		return functionNames == null ? name : functionNames.getFirst();
+		return functionNames == null || functionNames.isEmpty() ? name : functionNames.getFirst();
 	}
 
 	public JsonObject toJson(RecipeSchemaType type, DynamicOps<JsonElement> ops) {
