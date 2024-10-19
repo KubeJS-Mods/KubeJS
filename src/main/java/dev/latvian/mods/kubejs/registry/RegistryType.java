@@ -188,7 +188,8 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 			var stack = Thread.currentThread().getStackTrace();
 
 			for (var stackTraceElement : stack) {
-				if (MODULES_TO_SKIP.contains(stackTraceElement.getModuleName())) {
+				var moduleName = stackTraceElement.getModuleName();
+				if (moduleName != null && MODULES_TO_SKIP.contains(moduleName)) {
 					continue;
 				}
 

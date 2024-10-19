@@ -137,5 +137,6 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 		}
 
 		byType = recipesByType.build();
+		ConsoleJS.SERVER.info("Loaded " + byType.size() + " recipes");
 	}
 }
