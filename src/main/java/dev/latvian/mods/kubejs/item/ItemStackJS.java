@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Lazy;
@@ -89,8 +90,8 @@ public interface ItemStackJS {
 			return ItemStack.EMPTY;
 		} else if (o instanceof ItemStack stack) {
 			return stack.isEmpty() ? ItemStack.EMPTY : stack;
-		} else if (o instanceof Ingredient ingr) {
-			return ingr.kjs$getFirst();
+		} else if (o instanceof Ingredient) {
+			throw new KubeRuntimeException("Use .first of an ingredient to get its ItemStack!");
 		} else if (o instanceof ResourceLocation id) {
 			var item = BuiltInRegistries.ITEM.get(id);
 

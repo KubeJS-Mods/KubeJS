@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.script;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
@@ -54,7 +55,13 @@ public class TypeWrapperRegistry {
 	}
 
 	public <T> void register(Class<T> target, RegistriesFromFunction<T> factory) {
-		typeWrappers.register(target, (cx, from, t) -> factory.apply(RegistryAccessContainer.of(cx), from));
+		typeWrappers.register(target, (cx, from, t) -> {
+			try {
+				return factory.apply(RegistryAccessContainer.of(cx), from);
+			} catch (KubeRuntimeException ex) {
+				throw ex.source(SourceLine.of(cx));
+			}
+		});
 	}
 
 	public <T> void register(Class<T> target, TypeWrapperValidator validator, DirectTypeWrapperFactory<T> factory) {

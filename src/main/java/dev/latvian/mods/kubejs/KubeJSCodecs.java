@@ -10,11 +10,15 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.rhino.type.EnumTypeInfo;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.Utf8String;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.util.valueproviders.IntProvider;
@@ -60,6 +64,30 @@ public interface KubeJSCodecs {
 			}
 		}
 	};
+
+	Codec<Class<?>> ENUM_CLASS_CODEC = Codec.STRING.flatXmap(str -> {
+		try {
+			var c = Class.forName(str);
+
+			if (!c.isEnum()) {
+				return DataResult.error(() -> "Class '" + str + "' is not an enum");
+			}
+
+			return DataResult.success(c);
+		} catch (ClassNotFoundException e) {
+			return DataResult.error(() -> "Could not find enum class: " + str);
+		}
+	}, c -> DataResult.success(c.getName()));
+
+	Codec<EnumTypeInfo> ENUM_TYPE_INFO_CODEC = ENUM_CLASS_CODEC.flatXmap(c -> {
+		if (TypeInfo.of(c) instanceof EnumTypeInfo info) {
+			return DataResult.success(info);
+		} else {
+			return DataResult.error(() -> "Class " + c.getTypeName() + " is not an enum!");
+		}
+	}, info -> DataResult.success(info.asClass()));
+
+	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY = ResourceLocation.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::location);
 
 	static <E> Codec<E> stringResolverCodec(Function<E, String> toStringFunction, Function<String, E> fromStringFunction) {
 		return Codec.STRING.flatXmap(str -> Optional.ofNullable(fromStringFunction.apply(str))
