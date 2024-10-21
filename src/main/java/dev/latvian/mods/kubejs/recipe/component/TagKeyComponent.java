@@ -27,15 +27,18 @@ public record TagKeyComponent<T>(ResourceKey<? extends Registry<T>> registry, Ty
 	public static final RecipeComponent<TagKey<Biome>> BIOME = new TagKeyComponent<>(Registries.BIOME, TypeInfo.of(Biome.class));
 	public static final RecipeComponent<TagKey<Fluid>> FLUID = new TagKeyComponent<>(Registries.FLUID, TypeInfo.of(Fluid.class));
 
+	private static TagKeyComponent<?> of(ResourceKey<? extends Registry<?>> registry) {
+		var r = RegistryType.ofKey(registry);
+		return new TagKeyComponent<>((ResourceKey) registry, r != null ? r.type() : TypeInfo.NONE);
+	}
+
 	public static final RecipeComponentFactory FACTORY = (registries, storage, reader) -> {
 		reader.skipWhitespace();
 		reader.expect('<');
 		reader.skipWhitespace();
 		var registry = ResourceKey.createRegistryKey(ResourceLocation.read(reader));
 		reader.expect('>');
-
-		var r = RegistryType.ofKey(registry);
-		return new TagKeyComponent<>(registry, r != null ? r.type() : TypeInfo.NONE);
+		return of(registry);
 	};
 
 	@Override

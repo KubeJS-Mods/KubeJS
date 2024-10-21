@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.rhino.type.EnumTypeInfo;
@@ -22,24 +23,13 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(String cust
 			}
 
 			var clazz = Class.forName(cname);
-
 			var typeInfo = TypeInfo.of(clazz);
 
 			if (!(typeInfo instanceof EnumTypeInfo enumTypeInfo)) {
 				throw new KubeRuntimeException("Class " + clazz.getTypeName() + " is not an enum!");
 			}
 
-			return new EnumComponent("", enumTypeInfo, Codec.STRING.xmap(s -> {
-				for (var c : enumTypeInfo.enumConstants()) {
-					if (c instanceof RemappedEnumConstant r && r.getRemappedEnumConstantName().equalsIgnoreCase(s)) {
-						return c;
-					} else if (c instanceof Enum<?> e && e.name().equalsIgnoreCase(s)) {
-						return c;
-					}
-				}
-
-				throw new KubeRuntimeException("Enum value '" + s + "' of " + clazz.getName() + " not found");
-			}, EnumTypeInfo::getName));
+			return new EnumComponent<>(enumTypeInfo);
 		} catch (Exception ex) {
 			throw new KubeRuntimeException("Error loading class " + cname + " for EnumComponent", ex);
 		}
@@ -47,6 +37,20 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(String cust
 
 	public static <T extends Enum<T> & StringRepresentable> EnumComponent<T> of(String customName, Class<T> enumClass, Codec<T> codec) {
 		return new EnumComponent<>(customName, (EnumTypeInfo) TypeInfo.of(enumClass), codec);
+	}
+
+	public EnumComponent(EnumTypeInfo typeInfo) {
+		this("", typeInfo, (Codec) Codec.STRING.flatXmap(s -> {
+			for (var c : typeInfo.enumConstants()) {
+				if (c instanceof RemappedEnumConstant r && r.getRemappedEnumConstantName().equalsIgnoreCase(s)) {
+					return DataResult.success(c);
+				} else if (c instanceof Enum<?> e && e.name().equalsIgnoreCase(s)) {
+					return DataResult.success(c);
+				}
+			}
+
+			return DataResult.error(() -> "Enum value '" + s + "' of " + typeInfo.asClass().getName() + " not found");
+		}, o -> DataResult.success(EnumTypeInfo.getName(o))));
 	}
 
 	@Override

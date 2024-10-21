@@ -109,6 +109,7 @@ import dev.latvian.mods.kubejs.recipe.component.MapRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NestedRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
 import dev.latvian.mods.kubejs.recipe.component.RegistryComponent;
+import dev.latvian.mods.kubejs.recipe.component.ResourceKeyComponent;
 import dev.latvian.mods.kubejs.recipe.component.SizedFluidIngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.SizedIngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringComponent;
@@ -697,12 +698,16 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(BookCategoryComponent.CRAFTING_BOOK_CATEGORY);
 		registry.register(BookCategoryComponent.COOKING_BOOK_CATEGORY);
 
+		registry.register(ResourceKeyComponent.DIMENSION);
+		registry.register(ResourceKeyComponent.LOOT_TABLE);
+
 		registry.register("tag", TagKeyComponent.FACTORY);
 		registry.register("registry_element", RegistryComponent.FACTORY);
 		registry.register("enum", EnumComponent.FACTORY);
 		registry.register("map", MapRecipeComponent.FACTORY);
 		registry.register("pattern", MapRecipeComponent.PATTERN_FACTORY);
 		registry.register("either", EitherRecipeComponent.FACTORY);
+		registry.register("resource_key", ResourceKeyComponent.FACTORY);
 	}
 
 	@Override
