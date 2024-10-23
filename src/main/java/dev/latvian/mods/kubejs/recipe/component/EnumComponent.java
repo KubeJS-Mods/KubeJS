@@ -15,7 +15,6 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(String cust
 		reader.expect('<');
 		reader.skipWhitespace();
 		var cname = reader.readStringUntil('>').trim();
-		reader.expect('>');
 
 		try {
 			if (cname == null) {
