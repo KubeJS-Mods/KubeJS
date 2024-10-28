@@ -43,12 +43,17 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class BlockBuilder extends BuilderBase<Block> {
@@ -78,6 +83,7 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public transient float speedFactor = Float.NaN;
 	public transient float jumpFactor = Float.NaN;
 	public Consumer<RandomTickCallbackJS> randomTickCallback;
+	public Consumer<PickBlockCallbackJS> pickBlockCallback;
 	public Consumer<LootBuilder> lootTable;
 	public JsonObject blockstateJson;
 	public JsonObject modelJson;
@@ -761,6 +767,17 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	public BlockBuilder blockEntity(Consumer<BlockEntityInfo> callback) {
 		blockEntityInfo = new BlockEntityInfo(this);
 		callback.accept(blockEntityInfo);
+		return this;
+	}
+
+	/**
+	 * Sets random tick callback for this black.
+	 *
+	 * @param pickBlockCallback A callback using a block container and a random.
+	 */
+	@Info("Sets pick block callback for this block.")
+	public BlockBuilder pickBlock(@Nullable Consumer<PickBlockCallbackJS> pickBlockCallback) {
+		this.pickBlockCallback = pickBlockCallback;
 		return this;
 	}
 
