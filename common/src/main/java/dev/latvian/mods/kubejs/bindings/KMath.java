@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
@@ -43,10 +42,6 @@ public class KMath {
 
 	public static Matrix4f m4f() {
 		return new Matrix4f();
-	}
-
-	public static PoseStack poseStack() {
-		return new PoseStack();
 	}
 
 	public static Quaternionf quaternion(float x, float y, float z, float w) {
