@@ -1,10 +1,7 @@
 package dev.latvian.mods.kubejs.bindings;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -45,11 +42,6 @@ public interface KMath {
 
 	static Matrix4f m4f() {
 		return new Matrix4f();
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	static PoseStack poseStack() {
-		return new PoseStack();
 	}
 
 	static Quaternionf quaternion(float x, float y, float z, float w) {
