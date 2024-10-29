@@ -13,6 +13,8 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.text.action.DynamicTextAction;
 import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;
 import dev.latvian.mods.kubejs.text.tooltip.TooltipRequirements;
+import dev.latvian.mods.kubejs.util.ID;
+import dev.latvian.mods.kubejs.util.StackTraceCollector;
 import dev.latvian.mods.kubejs.util.Tristate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
@@ -47,10 +49,16 @@ import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.regex.Pattern;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT)
 public class KubeJSGameClientEventHandler {
+	public static final Pattern COMPONENT_ERROR = ConsoleJS.methodPattern(KubeJSGameClientEventHandler.class, "onItemTooltip");
+	private static List<String> lastComponentError = List.of();
+
 	@SubscribeEvent
 	public static void debugInfo(CustomizeGuiOverlayEvent.DebugText event) {
 		var mc = Minecraft.getInstance();
@@ -65,19 +73,23 @@ public class KubeJSGameClientEventHandler {
 		}
 	}
 
-	private static <T> void appendComponentValue(DynamicOps<Tag> ops, MutableComponent line, DataComponentType<T> type, T value) {
+	private static <T> List<String> appendComponentValue(DynamicOps<Tag> ops, MutableComponent line, DataComponentType<T> type, T value) {
 		if (value == null) {
 			line.append(Component.literal("null").kjs$red());
-			return;
+			return List.of();
 		} else if (value instanceof Component c) {
-			line.append(Component.empty().kjs$green().append(c));
+			line.append(Component.empty().kjs$gold().append(c));
 		}
 
 		try {
 			var tag = type.codecOrThrow().encodeStart(ops, value).getOrThrow();
 			line.append(NbtUtils.toPrettyComponent(tag));
-		} catch (Exception ex) {
-			line.append(Component.literal(String.valueOf(value)).kjs$green());
+			return List.of();
+		} catch (Throwable ex) {
+			line.append(Component.literal(String.valueOf(value)).kjs$red());
+			var lines = new ArrayList<String>();
+			ex.printStackTrace(new StackTraceCollector(lines, COMPONENT_ERROR, ConsoleJS.ERROR_REDUCE));
+			return lines;
 		}
 	}
 
@@ -161,6 +173,7 @@ public class KubeJSGameClientEventHandler {
 		if (mc.level != null && advanced && ClientProperties.get().showComponents && dynamicEvent.alt) {
 			var components = BuiltInRegistries.DATA_COMPONENT_TYPE;
 			var ops = mc.level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+			var errors = new ArrayList<String>(0);
 
 			for (var entry : stack.getComponentsPatch().entrySet()) {
 				var id = components.getKey(entry.getKey());
@@ -173,11 +186,17 @@ public class KubeJSGameClientEventHandler {
 						line.append(Component.literal("!"));
 					}
 
-					line.append(Component.literal(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).kjs$yellow());
+					line.append(Component.literal(ID.reduce(id)).kjs$yellow());
 
 					if (entry.getValue().isPresent()) {
 						line.append(Component.literal("="));
-						appendComponentValue(ops, line, (DataComponentType) entry.getKey(), entry.getValue().get());
+						var errors0 = appendComponentValue(ops, line, (DataComponentType) entry.getKey(), entry.getValue().get());
+
+						if (!errors0.isEmpty()) {
+							lines.add(Component.literal(ID.reduce(id) + " errored, see log").kjs$darkRed());
+							errors.add("Failed to encode value of " + id + ": " + entry.getValue().get());
+							errors.addAll(errors0);
+						}
 					}
 
 					lines.add(line);
@@ -191,12 +210,24 @@ public class KubeJSGameClientEventHandler {
 					if (id != null && stack.getComponentsPatch().get(type.type()) == null) {
 						var line = Component.empty();
 						line.append(TextIcons.icon(Component.literal("P.")));
-						line.append(Component.literal(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).kjs$gray());
+						line.append(Component.literal(ID.reduce(id)).kjs$gray());
 						line.append(Component.literal("="));
-						appendComponentValue(ops, line, (DataComponentType) type.type(), type.value());
+						var errors0 = appendComponentValue(ops, line, (DataComponentType) type.type(), type.value());
+
+						if (!errors0.isEmpty()) {
+							lines.add(Component.literal(ID.reduce(id) + " errored, see log").kjs$darkRed());
+							errors.add("Failed to encode value of " + id + ": " + type.value());
+							errors.addAll(errors0);
+						}
+
 						lines.add(line);
 					}
 				}
+			}
+
+			if (!errors.isEmpty() && !lastComponentError.equals(errors)) {
+				lastComponentError = errors;
+				errors.forEach(ConsoleJS.CLIENT::error);
 			}
 		} else if (advanced && ClientProperties.get().showTagNames && dynamicEvent.shift) {
 			var tempTagNames = new LinkedHashMap<ResourceLocation, TagInstance>();

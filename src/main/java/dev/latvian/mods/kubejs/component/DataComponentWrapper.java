@@ -315,7 +315,7 @@ public interface DataComponentWrapper {
 			}
 
 			var value = codec == Codec.BOOL ? comp.value() : codec.encodeStart(ops, Cast.to(comp.value())).getOrThrow();
-			builder.append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).append('=').append(value);
+			builder.append(ID.reduce(id)).append('=').append(value);
 		}
 
 		builder.append(']');
@@ -343,9 +343,9 @@ public interface DataComponentWrapper {
 
 			if (comp.getValue().isPresent()) {
 				var value = codec == Codec.BOOL ? comp.getValue().get() : codec.encodeStart(ops, Cast.to(comp.getValue().get())).result().get();
-				builder.append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString()).append('=').append(value);
+				builder.append(ID.reduce(id)).append('=').append(value);
 			} else {
-				builder.append('!').append(id.getNamespace().equals("minecraft") ? id.getPath() : id.toString());
+				builder.append('!').append(ID.reduce(id));
 			}
 		}
 

@@ -69,8 +69,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RecipesKubeEvent implements KubeEvent {
-	public static final Pattern POST_SKIP_ERROR = Pattern.compile("dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesKubeEvent\\.post");
-	public static final Pattern CREATE_RECIPE_SKIP_ERROR = Pattern.compile("dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipesKubeEvent\\.createRecipe");
+	public static final Pattern POST_SKIP_ERROR = ConsoleJS.methodPattern(RecipesKubeEvent.class, "post");
+	public static final Pattern CREATE_RECIPE_SKIP_ERROR = ConsoleJS.methodPattern(RecipesKubeEvent.class, "createRecipe");
 	private static final Predicate<KubeRecipe> RECIPE_NOT_REMOVED = r -> r != null && !r.removed;
 	private static final Predicate<KubeRecipe> RECIPE_IS_SYNTHETIC = r -> !r.newRecipe;
 

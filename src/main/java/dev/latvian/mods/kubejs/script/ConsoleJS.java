@@ -21,6 +21,7 @@ import dev.latvian.mods.rhino.ContextFactory;
 import dev.latvian.mods.rhino.EcmaError;
 import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.WrappedException;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.loading.FMLLoader;
 import org.jetbrains.annotations.Nullable;
@@ -58,13 +59,19 @@ public class ConsoleJS {
 	}
 
 	private static final Pattern GARBAGE_PATTERN = Pattern.compile("(?:TRANSFORMER|LAYER PLUGIN)/\\w+@[^/]+/");
-	private static final Function<String, String> ERROR_REDUCE = s -> {
+
+	@HideFromJS
+	public static final Function<String, String> ERROR_REDUCE = s -> {
 		if (s.startsWith("java.util.concurrent.ForkJoin") || s.startsWith("jdk.internal.")) {
 			return "";
 		}
 
 		return GARBAGE_PATTERN.matcher(s).replaceAll("").replace("dev.latvian.mods.", "…");
 	};
+
+	public static Pattern methodPattern(Class<?> c, String method) {
+		return Pattern.compile(c.getName().replace(".", "\\.") + "\\." + method);
+	}
 
 	public final ScriptType scriptType;
 	public final transient Collection<ConsoleLine> errors;

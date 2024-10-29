@@ -68,15 +68,18 @@ public class StackTraceCollector extends PrintStream {
 			x = x.substring(10);
 		}
 
+		if (exitPattern != null && exitPattern.matcher(x).find()) {
+			exit = true;
+			return;
+		}
+
 		x = reduce.apply(x);
 
 		if (x == null || x.isEmpty()) {
 			return;
 		}
 
-		if (exitPattern != null && exitPattern.matcher(x).find()) {
-			exit = true;
-		} else if (isAt) {
+		if (isAt) {
 			stackTrace.add("  at " + x);
 		} else {
 			stackTrace.add(x);

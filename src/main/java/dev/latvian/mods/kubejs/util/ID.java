@@ -109,4 +109,8 @@ public interface ID {
 	static String url(ResourceLocation id) {
 		return URLEncoder.encode(id.getNamespace(), StandardCharsets.UTF_8) + "/" + URLEncoder.encode(id.getPath(), StandardCharsets.UTF_8);
 	}
+
+	static String reduce(ResourceLocation id) {
+		return id.getNamespace().equals("minecraft") ? id.getPath() : id.toString();
+	}
 }

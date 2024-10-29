@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
-	public static final Pattern SKIP_ERROR = Pattern.compile("dev\\.latvian\\.mods\\.kubejs\\.recipe\\.RecipeTypeFunction\\.call");
+	public static final Pattern SKIP_ERROR = ConsoleJS.methodPattern(RecipeTypeFunction.class, "call");
 
 	public final RecipesKubeEvent event;
 	public final ResourceLocation id;
