@@ -218,11 +218,17 @@ public abstract class BlockBuilder extends BuilderBase<Block> {
 	}
 
 	protected void generateItemModelJson(ModelGenerator m) {
-		if (!model.isEmpty()) {
-			m.parent(model);
+		if (itemBuilder.textureJson.size() != 0) {
+			m.parent("minecraft:item/generated");
 		} else {
-			m.parent(newID("block/", "").toString());
+			if (!model.isEmpty()) {
+				m.parent(model);
+			} else {
+				m.parent(newID("block/", "").toString());
+			}
+			itemBuilder.texture(newID("item/", "").toString());
 		}
+		m.textures(itemBuilder.textureJson);
 	}
 
 	protected void generateBlockModelJsons(AssetJsonGenerator generator) {
