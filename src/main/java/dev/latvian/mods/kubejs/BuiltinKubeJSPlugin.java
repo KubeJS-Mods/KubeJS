@@ -567,6 +567,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		registry.register(BlockPos.class, KubeJSTypeWrappers::blockPosOf);
 		registry.register(Vec3.class, KubeJSTypeWrappers::vec3Of);
+		registry.register(Vec3i.class, KubeJSTypeWrappers::blockPosOf);
 
 		registry.register(Item.class, ItemStackJS::getRawItem);
 		registry.register(ItemLike.class, ItemStackJS::getRawItem);

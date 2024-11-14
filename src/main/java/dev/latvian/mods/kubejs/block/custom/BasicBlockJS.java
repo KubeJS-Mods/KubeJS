@@ -14,7 +14,6 @@ import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.EntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.EntitySteppedOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.entity.KubeBlockEntity;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -178,7 +177,7 @@ public class BasicBlockJS extends Block implements SimpleWaterloggedBlock {
 	@Deprecated
 	public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 		if (blockBuilder.randomTickCallback != null) {
-			var callback = new RandomTickCallbackJS(new BlockContainerJS(level, pos), random);
+			var callback = new RandomTickCallbackJS(level.kjs$getBlock(pos), random);
 			safeCallback(blockBuilder.randomTickCallback, callback, "Error while random ticking custom block ");
 		}
 	}

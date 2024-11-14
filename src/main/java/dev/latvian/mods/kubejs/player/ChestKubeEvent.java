@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
@@ -26,7 +26,7 @@ public class ChestKubeEvent extends InventoryKubeEvent {
 
 	@Nullable
 	@Info("Gets the chest block.")
-	public BlockContainerJS getBlock() {
+	public LevelBlock getBlock() {
 		if (getInventory() instanceof BlockEntity be) {
 			return getLevel().kjs$getBlock(be);
 		}

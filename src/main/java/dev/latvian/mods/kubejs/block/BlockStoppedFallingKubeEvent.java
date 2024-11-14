@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.entity.KubeEntityEvent;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -13,18 +13,16 @@ import net.minecraft.world.level.block.state.BlockState;
 	Invoked when a falling block finishes falling.
 	""")
 public class BlockStoppedFallingKubeEvent implements KubeEntityEvent {
-	public final BlockContainerJS block;
+	public final LevelBlock block;
 	private final FallingBlockEntity entity;
 	public final double fallSpeed;
-	public final BlockContainerJS replacedBlock;
+	public final LevelBlock replacedBlock;
 
 	public BlockStoppedFallingKubeEvent(Level level, BlockPos pos, BlockState state, FallingBlockEntity entity, double fallSpeed, BlockState replacedState) {
-		this.block = new BlockContainerJS(level, pos);
-		this.block.cachedState = state;
+		this.block = level.kjs$getBlock(pos).cache(state);
 		this.entity = entity;
 		this.fallSpeed = fallSpeed;
-		this.replacedBlock = new BlockContainerJS(level, pos);
-		this.replacedBlock.cachedState = replacedState;
+		this.replacedBlock = level.kjs$getBlock(pos).cache(replacedState);
 	}
 
 	@Override

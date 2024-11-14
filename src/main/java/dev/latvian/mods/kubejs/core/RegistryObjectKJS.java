@@ -1,17 +1,30 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 
-import java.util.Collection;
+import java.util.List;
 
 @RemapPrefixForJS("kjs$")
-public interface RegistryObjectKJS<T> {
+public interface RegistryObjectKJS<T> extends SpecialEquality {
+	@Override
+	default boolean specialEquals(Context cx, Object o, boolean shallow) {
+		if (o instanceof CharSequence) {
+			return kjs$getId().equals(o.toString());
+		} else if (o instanceof ResourceLocation) {
+			return kjs$getIdLocation().equals(o);
+		}
+
+		return equals(o);
+	}
+
 	default ResourceKey<Registry<T>> kjs$getRegistryId() {
 		throw new NoMixinException();
 	}
@@ -49,7 +62,11 @@ public interface RegistryObjectKJS<T> {
 		return kjs$getIdLocation().getNamespace();
 	}
 
-	default Collection<ResourceLocation> kjs$getTags() {
+	default List<TagKey<T>> kjs$getTagKeys() {
+		return kjs$asHolder().tags().toList();
+	}
+
+	default List<ResourceLocation> kjs$getTags() {
 		return kjs$asHolder().tags().map(TagKey::location).toList();
 	}
 

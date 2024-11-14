@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block.entity;
 
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -26,7 +26,7 @@ public class KubeBlockEntity extends BlockEntity {
 
 	public final BlockEntityInfo info;
 	public final ResourceKey<Block> blockKey;
-	protected BlockContainerJS block;
+	protected LevelBlock block;
 	public final int x, y, z;
 	public int tick, cycle;
 	public CompoundTag data;
@@ -182,11 +182,9 @@ public class KubeBlockEntity extends BlockEntity {
 		return false;
 	}
 
-	public BlockContainerJS getBlock() {
+	public LevelBlock getBlock() {
 		if (block == null) {
-			this.block = new BlockContainerJS(level, worldPosition);
-			this.block.cachedEntity = this;
-			this.block.cachedState = getBlockState();
+			this.block = level.kjs$getBlock(worldPosition).cache(this).cache(getBlockState());
 		}
 
 		return block;

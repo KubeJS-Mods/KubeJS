@@ -3,49 +3,37 @@ package dev.latvian.mods.kubejs.core.mixin;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.core.BlockKJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Mixin(Block.class)
 @RemapPrefixForJS("kjs$")
 public abstract class BlockMixin implements BlockKJS {
-	@Shadow
-	@Final
-	private Holder.Reference<Block> builtInRegistryHolder;
-
 	@Unique
 	private String kjs$id;
 
 	@Unique
 	private BlockBuilder kjs$blockBuilder;
 
-	@Override
-	public Holder.Reference<Block> kjs$asHolder() {
-		return builtInRegistryHolder;
-	}
-
-	@Override
-	public ResourceKey<Block> kjs$getKey() {
-		return builtInRegistryHolder.key();
-	}
+	@Unique
+	private Map<String, Object> kjs$typeData;
 
 	@Override
 	public String kjs$getId() {
 		if (kjs$id == null) {
-			kjs$id = builtInRegistryHolder.key().location().toString();
+			kjs$id = kjs$getBlock().builtInRegistryHolder().key().location().toString();
 		}
 
 		return kjs$id;
@@ -60,6 +48,15 @@ public abstract class BlockMixin implements BlockKJS {
 	@Override
 	public void kjs$setBlockBuilder(BlockBuilder b) {
 		kjs$blockBuilder = b;
+	}
+
+	@Override
+	public Map<String, Object> kjs$getTypeData() {
+		if (kjs$typeData == null) {
+			kjs$typeData = new HashMap<>();
+		}
+
+		return kjs$typeData;
 	}
 
 	@Override

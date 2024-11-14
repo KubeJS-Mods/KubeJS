@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.block.callbacks;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -26,8 +26,8 @@ public class CanBeReplacedCallbackJS {
 		return context.getClickedPos();
 	}
 
-	public BlockContainerJS getClickedBlock() {
-		return new BlockContainerJS(getLevel(), getClickedPos());
+	public LevelBlock getClickedBlock() {
+		return getLevel().kjs$getBlock(getClickedPos());
 	}
 
 	public Direction getNearestLookingDirection() {

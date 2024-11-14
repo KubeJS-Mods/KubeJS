@@ -5,7 +5,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
-public record SpawnerJS(@Nullable Entity entity, @Nullable BlockContainerJS block) {
+public record SpawnerJS(@Nullable Entity entity, @Nullable LevelBlock block) {
 	public static SpawnerJS of(Either<BlockEntity, Entity> spawner) {
 		if (spawner == null) {
 			return new SpawnerJS(null, null);
@@ -20,7 +20,7 @@ public record SpawnerJS(@Nullable Entity entity, @Nullable BlockContainerJS bloc
 		var be = spawner.left().orElse(null);
 
 		if (be != null) {
-			return new SpawnerJS(null, new BlockContainerJS(be));
+			return new SpawnerJS(null, be.getLevel().kjs$getBlock(be));
 		}
 
 		return new SpawnerJS(null, null);

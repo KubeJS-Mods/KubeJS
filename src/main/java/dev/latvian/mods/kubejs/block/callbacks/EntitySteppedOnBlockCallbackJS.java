@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.block.callbacks;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -10,13 +10,13 @@ import net.minecraft.world.level.block.state.BlockState;
 public class EntitySteppedOnBlockCallbackJS {
 	protected final Level level;
 	protected final Entity entity;
-	protected final BlockContainerJS block;
+	protected final LevelBlock block;
 	protected final BlockState state;
 
 	public EntitySteppedOnBlockCallbackJS(Level level, Entity entity, BlockPos pos, BlockState state) {
 		this.level = level;
 		this.entity = entity;
-		this.block = new BlockContainerJS(level, pos);
+		this.block = level.kjs$getBlock(pos);
 		this.state = state;
 	}
 
@@ -31,7 +31,7 @@ public class EntitySteppedOnBlockCallbackJS {
 	}
 
 	@Info("Returns the block")
-	public BlockContainerJS getBlock() {
+	public LevelBlock getBlock() {
 		return block;
 	}
 

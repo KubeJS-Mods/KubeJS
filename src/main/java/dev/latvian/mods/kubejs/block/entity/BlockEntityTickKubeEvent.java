@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block.entity;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.KubeLevelEvent;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import net.minecraft.world.level.Level;
 
 public class BlockEntityTickKubeEvent implements KubeLevelEvent {
@@ -16,7 +16,7 @@ public class BlockEntityTickKubeEvent implements KubeLevelEvent {
 		return entity.getLevel();
 	}
 
-	public BlockContainerJS getBlock() {
+	public LevelBlock getBlock() {
 		return entity.getBlock();
 	}
 

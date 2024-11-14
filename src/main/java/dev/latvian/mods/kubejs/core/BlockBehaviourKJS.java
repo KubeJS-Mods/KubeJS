@@ -1,16 +1,13 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.level.block.SoundType;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
-public interface BlockBehaviourKJS {
-	default Map<String, Object> kjs$getTypeData() {
-		throw new NoMixinException();
-	}
-
+@RemapPrefixForJS("kjs$")
+public interface BlockBehaviourKJS extends BlockProviderKJS {
 	default void kjs$setHasCollision(boolean v) {
 		throw new NoMixinException();
 	}

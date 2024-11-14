@@ -5,7 +5,7 @@ import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.Cast;
@@ -66,6 +66,8 @@ public interface ItemStackKJS extends
 	default boolean specialEquals(Context cx, Object o, boolean shallow) {
 		if (o instanceof CharSequence) {
 			return kjs$getId().equals(ID.string(o.toString()));
+		} else if (o instanceof ResourceLocation) {
+			return kjs$getIdLocation().equals(o);
 		} else if (o instanceof ItemStack s) {
 			return kjs$equalsIgnoringCount(s);
 		}
@@ -185,7 +187,7 @@ public interface ItemStackKJS extends
 		return ItemStack.isSameItemSameComponents(kjs$self(), other);
 	}
 
-	default float kjs$getHarvestSpeed(@Nullable BlockContainerJS block) {
+	default float kjs$getHarvestSpeed(@Nullable LevelBlock block) {
 		return kjs$self().getDestroySpeed(block == null ? Blocks.AIR.defaultBlockState() : block.getBlockState());
 	}
 

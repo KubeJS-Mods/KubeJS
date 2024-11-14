@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.entity.KubeEntityEvent;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -30,9 +30,7 @@ public class BlockPlacedKubeEvent implements KubeEntityEvent {
 	}
 
 	@Info("The block that is placed.")
-	public BlockContainerJS getBlock() {
-		var block = new BlockContainerJS((Level) event.getLevel(), event.getPos());
-		block.cachedState = event.getPlacedBlock();
-		return block;
+	public LevelBlock getBlock() {
+		return ((Level) event.getLevel()).kjs$getBlock(event.getPos()).cache(event.getPlacedBlock());
 	}
 }

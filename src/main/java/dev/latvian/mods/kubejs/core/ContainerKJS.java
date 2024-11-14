@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -178,7 +178,7 @@ public interface ContainerKJS extends InventoryKJS {
 	}
 
 	@Override
-	default @Nullable BlockContainerJS kjs$getBlock(Level level) {
+	default @Nullable LevelBlock kjs$getBlock(Level level) {
 		if (kjs$self() instanceof BlockEntity be) {
 			return level.kjs$getBlock(be);
 		}

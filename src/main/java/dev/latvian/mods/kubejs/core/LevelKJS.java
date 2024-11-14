@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.CachedLevelBlock;
 import dev.latvian.mods.kubejs.level.ExplosionJS;
-import dev.latvian.mods.kubejs.player.EntityArrayList;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
 import dev.latvian.mods.rhino.util.RemapForJS;
@@ -12,6 +12,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
@@ -20,14 +21,14 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.storage.ServerLevelData;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.UUID;
+import java.util.function.Consumer;
 
 @RemapPrefixForJS("kjs$")
-public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
+public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, EntityGetterKJS {
+	@Override
 	default Level kjs$self() {
 		return (Level) this;
 	}
@@ -35,7 +36,7 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
 	@Override
 	@RemapForJS("getSide")
 	default ScriptType kjs$getScriptType() {
-		throw new NoMixinException();
+		return kjs$self().isClientSide() ? ScriptType.CLIENT : ScriptType.SERVER;
 	}
 
 	@Override
@@ -86,28 +87,22 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
 		return kjs$self().dimension() == Level.OVERWORLD;
 	}
 
-	default BlockContainerJS kjs$getBlock(int x, int y, int z) {
+	default void kjs$setTime(long time) {
+		if (kjs$self().getLevelData() instanceof ServerLevelData d) {
+			d.setGameTime(time);
+		}
+	}
+
+	default LevelBlock kjs$getBlock(int x, int y, int z) {
 		return kjs$getBlock(new BlockPos(x, y, z));
 	}
 
-	default BlockContainerJS kjs$getBlock(BlockPos pos) {
-		return new BlockContainerJS(kjs$self(), pos);
+	default LevelBlock kjs$getBlock(BlockPos pos) {
+		return new CachedLevelBlock(kjs$self(), pos);
 	}
 
-	default BlockContainerJS kjs$getBlock(BlockEntity blockEntity) {
-		return new BlockContainerJS(blockEntity);
-	}
-
-	default EntityArrayList kjs$createEntityList(Collection<? extends Entity> entities) {
-		return new EntityArrayList(kjs$self(), entities);
-	}
-
-	default EntityArrayList kjs$getPlayers() {
-		return kjs$createEntityList(kjs$self().players());
-	}
-
-	default EntityArrayList kjs$getEntities() {
-		return new EntityArrayList(kjs$self(), 0);
+	default LevelBlock kjs$getBlock(BlockEntity entity) {
+		return new CachedLevelBlock(entity.getLevel(), entity.getBlockPos()).cache(entity).cache(entity.getBlockState());
 	}
 
 	default ExplosionJS kjs$createExplosion(double x, double y, double z) {
@@ -119,9 +114,18 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
 		return type.create(kjs$self());
 	}
 
-	default void kjs$spawnFireworks(double x, double y, double z, Fireworks f, int lifetime) {
+	default void spawnEntity(EntityType<?> type, Consumer<Entity> callback) {
+		var entity = type.create(kjs$self());
+
+		if (entity != null) {
+			callback.accept(entity);
+			kjs$self().addFreshEntity(entity);
+		}
+	}
+
+	default void kjs$spawnFireworks(double x, double y, double z, Fireworks fireworks, int lifetime) {
 		var stack = new ItemStack(Items.FIREWORK_ROCKET);
-		stack.set(DataComponents.FIREWORKS, f);
+		stack.set(DataComponents.FIREWORKS, fireworks);
 
 		var rocket = new FireworkRocketEntity(kjs$self(), x, y, z, stack);
 
@@ -133,21 +137,47 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder {
 		kjs$self().addFreshEntity(rocket);
 	}
 
-	default EntityArrayList kjs$getEntitiesWithin(AABB aabb) {
-		return new EntityArrayList(kjs$self(), kjs$self().getEntities(null, aabb));
-	}
-
 	default void kjs$spawnParticles(ParticleOptions options, boolean overrideLimiter, double x, double y, double z, double vx, double vy, double vz, int count, double speed) {
-	}
+		var level = kjs$self();
 
-	@Nullable
-	default Entity kjs$getEntityByUUID(UUID id) {
-		for (var entity : kjs$getEntities()) {
-			if (entity.getUUID().equals(id)) {
-				return entity;
+		if (count == 0) {
+			double d0 = speed * vx;
+			double d2 = speed * vy;
+			double d4 = speed * vz;
+
+			try {
+				level.addParticle(options, overrideLimiter, x, y, z, d0, d2, d4);
+			} catch (Throwable var17) {
+			}
+		} else {
+			var random = level.random;
+
+			for (int i = 0; i < count; ++i) {
+				double ox = random.nextGaussian() * vx;
+				double oy = random.nextGaussian() * vy;
+				double oz = random.nextGaussian() * vz;
+				double d6 = random.nextGaussian() * speed;
+				double d7 = random.nextGaussian() * speed;
+				double d8 = random.nextGaussian() * speed;
+
+				try {
+					level.addParticle(options, overrideLimiter, x + ox, y + oy, z + oz, d6, d7, d8);
+				} catch (Throwable var16) {
+					return;
+				}
 			}
 		}
+	}
 
-		return null;
+	default void kjs$spawnLightning(double x, double y, double z, boolean visualOnly, @Nullable ServerPlayer cause) {
+		var e = EntityType.LIGHTNING_BOLT.create(kjs$self());
+		e.moveTo(x, y, z);
+		e.setCause(cause);
+		e.setVisualOnly(visualOnly);
+		kjs$self().addFreshEntity(e);
+	}
+
+	default void kjs$spawnLightning(double x, double y, double z, boolean visualOnly) {
+		kjs$spawnLightning(x, y, z, visualOnly, null);
 	}
 }

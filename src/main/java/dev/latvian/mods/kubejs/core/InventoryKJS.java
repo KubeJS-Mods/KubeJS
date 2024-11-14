@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.item.ItemPredicate;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -194,7 +194,7 @@ public interface InventoryKJS {
 	}
 
 	@Nullable
-	default BlockContainerJS kjs$getBlock(Level level) {
+	default LevelBlock kjs$getBlock(Level level) {
 		return null;
 	}
 

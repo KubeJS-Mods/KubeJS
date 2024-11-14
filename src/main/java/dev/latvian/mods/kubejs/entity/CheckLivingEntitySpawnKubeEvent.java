@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.entity;
 
 import com.mojang.datafixers.util.Either;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.level.SpawnerJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
@@ -52,8 +52,8 @@ public class CheckLivingEntitySpawnKubeEvent implements KubeLivingEntityEvent {
 	}
 
 	@Info("The block the entity is being spawned on.")
-	public BlockContainerJS getBlock() {
-		return new BlockContainerJS(level, BlockPos.containing(x, y, z));
+	public LevelBlock getBlock() {
+		return level.kjs$getBlock(BlockPos.containing(x, y, z));
 	}
 
 	@Info("The type of spawn.")

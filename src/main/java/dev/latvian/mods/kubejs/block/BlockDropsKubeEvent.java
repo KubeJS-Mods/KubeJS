@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.entity.KubeEntityEvent;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -37,11 +37,8 @@ public class BlockDropsKubeEvent implements KubeEntityEvent {
 	}
 
 	@Info("The block that was broken.")
-	public BlockContainerJS getBlock() {
-		var block = new BlockContainerJS(event.getLevel(), event.getPos());
-		block.cachedState = event.getState();
-		block.cachedEntity = event.getBlockEntity();
-		return block;
+	public LevelBlock getBlock() {
+		return event.getLevel().kjs$getBlock(event.getPos()).cache(event.getState()).cache(event.getBlockEntity());
 	}
 
 	@Info("The experience dropped by the block.")

@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.block.callbacks;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,13 +21,13 @@ import org.jetbrains.annotations.Nullable;
 public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbackJS {
 	public final BlockPlaceContext context;
 	public final Block minecraftBlock;
-	public BlockContainerJS block;
+	public LevelBlock block;
 
 	public BlockStateModifyPlacementCallbackJS(BlockPlaceContext context, Block block) {
 		super(getBlockStateToModify(context, block));
 		this.context = context;
 		this.minecraftBlock = block;
-		this.block = new BlockContainerJS(context.getLevel(), context.getClickedPos());
+		this.block = context.getLevel().kjs$getBlock(context.getClickedPos());
 	}
 
 	private static BlockState getBlockStateToModify(BlockPlaceContext context, Block block) {
@@ -44,8 +44,8 @@ public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbac
 	}
 
 	@Info("Gets the clicked block")
-	public BlockContainerJS getClickedBlock() {
-		return new BlockContainerJS(getLevel(), getClickedPos());
+	public LevelBlock getClickedBlock() {
+		return getLevel().kjs$getBlock(getClickedPos());
 	}
 
 	@Info("Returns if the block being placed thinks it can be placed here. This is used for replacement checks, like placing blocks in water or tall grass")

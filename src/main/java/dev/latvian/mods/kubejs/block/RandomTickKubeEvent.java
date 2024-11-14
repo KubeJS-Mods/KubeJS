@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.KubeLevelEvent;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -12,7 +12,7 @@ public class RandomTickKubeEvent implements KubeLevelEvent {
 	private final BlockPos pos;
 	private final BlockState state;
 	public final RandomSource random;
-	private BlockContainerJS block;
+	private LevelBlock block;
 
 	public RandomTickKubeEvent(ServerLevel level, BlockPos pos, BlockState state, RandomSource random) {
 		this.level = level;
@@ -26,10 +26,9 @@ public class RandomTickKubeEvent implements KubeLevelEvent {
 		return level;
 	}
 
-	public BlockContainerJS getBlock() {
+	public LevelBlock getBlock() {
 		if (block == null) {
-			block = new BlockContainerJS(level, pos);
-			block.cachedState = state;
+			block = level.kjs$getBlock(pos).cache(state);
 		}
 
 		return block;

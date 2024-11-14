@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.block.predicate;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 
@@ -18,7 +18,7 @@ public class BlockEntityPredicate implements BlockPredicate {
 	}
 
 	@Override
-	public boolean check(BlockContainerJS block) {
+	public boolean check(LevelBlock block) {
 		var tileEntity = block.getEntity();
 		return tileEntity != null && id.equals(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(tileEntity.getType())) && (checkData == null || checkData.checkData(block.getEntityData()));
 	}

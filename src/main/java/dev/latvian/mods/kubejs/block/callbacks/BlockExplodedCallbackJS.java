@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.block.callbacks;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,29 +13,24 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class BlockExplodedCallbackJS {
-
-	protected final Level level;
-	protected final BlockContainerJS block;
-	protected final BlockState state;
+	protected final LevelBlock block;
 	protected final Explosion explosion;
 
 	public BlockExplodedCallbackJS(Level level, BlockPos pos, Explosion explosion) {
-		this.level = level;
-		this.block = new BlockContainerJS(level, pos);
-		this.state = level.getBlockState(pos);
+		this.block = level.kjs$getBlock(pos);
 		this.explosion = explosion;
 	}
 
 	public Level getLevel() {
-		return level;
+		return block.getLevel();
 	}
 
-	public BlockContainerJS getBlock() {
+	public LevelBlock getBlock() {
 		return block;
 	}
 
 	public BlockState getBlockState() {
-		return state;
+		return block.getBlockState();
 	}
 
 	public Explosion getExplosion() {

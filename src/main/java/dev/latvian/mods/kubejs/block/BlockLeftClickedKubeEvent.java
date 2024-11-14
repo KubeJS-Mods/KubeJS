@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.player.KubePlayerEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.Direction;
@@ -26,8 +26,8 @@ public class BlockLeftClickedKubeEvent implements KubePlayerEvent {
 	}
 
 	@Info("The block that was left clicked.")
-	public BlockContainerJS getBlock() {
-		return new BlockContainerJS(event.getLevel(), event.getPos());
+	public LevelBlock getBlock() {
+		return event.getLevel().kjs$getBlock(event.getPos());
 	}
 
 	@Info("The item that was used to left click the block.")

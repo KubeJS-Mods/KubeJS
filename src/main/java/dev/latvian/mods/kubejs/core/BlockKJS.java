@@ -5,25 +5,16 @@ import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
 @RemapPrefixForJS("kjs$")
-public interface BlockKJS extends BlockBuilderProvider, RegistryObjectKJS<Block>, Replaceable {
+public interface BlockKJS extends BlockBuilderProvider, BlockBehaviourKJS, Replaceable {
 	@Override
-	default ResourceKey<Registry<Block>> kjs$getRegistryId() {
-		return Registries.BLOCK;
-	}
-
-	@Override
-	default Registry<Block> kjs$getRegistry() {
-		return BuiltInRegistries.BLOCK;
+	default Block kjs$getBlock() {
+		return (Block) this;
 	}
 
 	default void kjs$setBlockBuilder(BlockBuilder b) {
@@ -53,7 +44,7 @@ public interface BlockKJS extends BlockBuilderProvider, RegistryObjectKJS<Block>
 	}
 
 	default List<BlockState> kjs$getBlockStates() {
-		return this instanceof Block block ? block.getStateDefinition().getPossibleStates() : List.of();
+		return kjs$getBlock().getStateDefinition().getPossibleStates();
 	}
 
 	@Override

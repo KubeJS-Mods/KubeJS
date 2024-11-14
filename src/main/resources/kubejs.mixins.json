@@ -20,6 +20,7 @@
 		"DifferenceIngredientMixin",
 		"DirectionMixin",
 		"DyeColorMixin",
+		"EntityGetterMixin",
 		"EntityMixin",
 		"EntityTypeMixin",
 		"FallingBlockEntityMixin",

@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.gui.KubeJSGUI;
 import dev.latvian.mods.kubejs.gui.KubeJSMenu;
 import dev.latvian.mods.kubejs.gui.chest.ChestMenuData;
 import dev.latvian.mods.kubejs.gui.chest.CustomChestMenu;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.net.NotificationPayload;
 import dev.latvian.mods.kubejs.net.SendDataFromServerPayload;
 import dev.latvian.mods.kubejs.net.SetActivePostShaderPayload;
@@ -139,13 +139,13 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	}
 
 	@Nullable
-	default BlockContainerJS kjs$getSpawnLocation() {
+	default LevelBlock kjs$getSpawnLocation() {
 		var pos = kjs$self().getRespawnPosition();
-		return pos == null ? null : new BlockContainerJS(kjs$getLevel(), pos);
+		return pos == null ? null : kjs$getLevel().kjs$getBlock(pos);
 	}
 
-	default void kjs$setSpawnLocation(BlockContainerJS c) {
-		kjs$self().setRespawnPosition(c.minecraftLevel.dimension(), c.getPos(), 0F, true, false);
+	default void kjs$setSpawnLocation(LevelBlock c) {
+		kjs$self().setRespawnPosition(c.getDimensionKey(), c.getPos(), 0F, true, false);
 	}
 
 	@Override

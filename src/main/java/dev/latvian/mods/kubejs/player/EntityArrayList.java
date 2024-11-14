@@ -4,13 +4,14 @@ import dev.latvian.mods.kubejs.core.DataSenderKJS;
 import dev.latvian.mods.kubejs.core.MessageSenderKJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -20,15 +21,14 @@ import java.util.function.Predicate;
 
 @RemapPrefixForJS("kjs$")
 public class EntityArrayList extends ArrayList<Entity> implements MessageSenderKJS, DataSenderKJS {
-	public final Level level;
+	public static final Predicate<Entity> ALWAYS_TRUE_PREDICATE = entity -> true;
 
-	public EntityArrayList(Level l, int size) {
+	public EntityArrayList(int size) {
 		super(size);
-		level = l;
 	}
 
-	public EntityArrayList(Level l, Iterable<? extends Entity> entities) {
-		this(l, entities instanceof Collection c ? c.size() : 4);
+	public EntityArrayList(Iterable<? extends Entity> entities) {
+		this(entities instanceof Collection c ? c.size() : 4);
 		addAllIterable(entities);
 	}
 
@@ -103,12 +103,29 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 		playSound(id, 1F, 1F);
 	}
 
+	public EntityArrayList oneFilter(Predicate<Entity> filter) {
+		if (isEmpty()) {
+			return this;
+		}
+
+		var list = new EntityArrayList(size() / 4);
+
+		for (var entity : this) {
+			if (filter.test(entity)) {
+				list.add(entity);
+				break;
+			}
+		}
+
+		return list;
+	}
+
 	public EntityArrayList filter(List<Predicate<Entity>> filterList) {
 		if (isEmpty() || filterList.isEmpty()) {
 			return this;
 		}
 
-		var list = new EntityArrayList(level, size());
+		var list = new EntityArrayList(size());
 
 		for (var entity : this) {
 			for (var filter : filterList) {
@@ -123,6 +140,30 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 
 	public EntityArrayList filterSelector(EntitySelector selector) {
 		return filter(selector.contextFreePredicates);
+	}
+
+	public EntityArrayList filterDistance(double x, double y, double z, double distance) {
+		var list = new EntityArrayList(size());
+
+		for (var entity : this) {
+			if (entity.distanceToSqr(x, y, z) <= distance * distance) {
+				list.add(entity);
+			}
+		}
+
+		return list;
+	}
+
+	public EntityArrayList filterDistance(BlockPos pos, double distance) {
+		return filterDistance(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, distance);
+	}
+
+	public EntityArrayList filterPlayers() {
+		return oneFilter(e -> e instanceof Player);
+	}
+
+	public EntityArrayList filterItems() {
+		return oneFilter(e -> e instanceof ItemEntity);
 	}
 
 	@Override

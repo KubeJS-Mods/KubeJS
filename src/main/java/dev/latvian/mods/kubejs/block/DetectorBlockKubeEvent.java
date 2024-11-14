@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
 import dev.latvian.mods.kubejs.level.KubeLevelEvent;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -14,16 +14,14 @@ import net.minecraft.world.level.Level;
 public class DetectorBlockKubeEvent implements KubeLevelEvent {
 	private final String detectorId;
 	private final Level level;
-	private final BlockPos pos;
 	private final boolean powered;
-	private final BlockContainerJS block;
+	private final LevelBlock block;
 
 	public DetectorBlockKubeEvent(String i, Level l, BlockPos p, boolean pow) {
 		detectorId = i;
 		level = l;
-		pos = p;
 		powered = pow;
-		block = new BlockContainerJS(level, pos);
+		block = level.kjs$getBlock(p);
 	}
 
 	@Info("The id of the detector block when it was registered.")
@@ -43,7 +41,7 @@ public class DetectorBlockKubeEvent implements KubeLevelEvent {
 	}
 
 	@Info("The detector block.")
-	public BlockContainerJS getBlock() {
+	public LevelBlock getBlock() {
 		return block;
 	}
 }

@@ -43,8 +43,8 @@ public abstract class ExplosionKubeEvent implements KubeLevelEvent {
 		return getPosition().z;
 	}
 
-	public BlockContainerJS getBlock() {
-		return new BlockContainerJS(level, BlockPos.containing(getPosition()));
+	public LevelBlock getBlock() {
+		return level.kjs$getBlock(BlockPos.containing(getPosition()));
 	}
 
 	@Nullable
@@ -84,7 +84,7 @@ public abstract class ExplosionKubeEvent implements KubeLevelEvent {
 
 		@Info("Gets a list of all entities affected by the explosion.")
 		public EntityArrayList getAffectedEntities() {
-			return new EntityArrayList(level, affectedEntities);
+			return new EntityArrayList(affectedEntities);
 		}
 
 		@Info("Remove an entity from the list of affected entities.")
@@ -98,18 +98,18 @@ public abstract class ExplosionKubeEvent implements KubeLevelEvent {
 		}
 
 		@Info("Gets a list of all blocks affected by the explosion.")
-		public List<BlockContainerJS> getAffectedBlocks() {
-			List<BlockContainerJS> list = new ArrayList<>(explosion.getToBlow().size());
+		public List<LevelBlock> getAffectedBlocks() {
+			List<LevelBlock> list = new ArrayList<>(explosion.getToBlow().size());
 
 			for (var pos : explosion.getToBlow()) {
-				list.add(new BlockContainerJS(level, pos));
+				list.add(level.kjs$getBlock(pos));
 			}
 
 			return list;
 		}
 
 		@Info("Remove a block from the list of affected blocks.")
-		public void removeAffectedBlock(BlockContainerJS block) {
+		public void removeAffectedBlock(LevelBlock block) {
 			explosion.getToBlow().remove(block.getPos());
 		}
 

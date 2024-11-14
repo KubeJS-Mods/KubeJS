@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.player.KubePlayerEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.entity.player.Player;
@@ -24,9 +24,7 @@ public class BlockBrokenKubeEvent implements KubePlayerEvent {
 	}
 
 	@Info("The block that was broken.")
-	public BlockContainerJS getBlock() {
-		var block = new BlockContainerJS((Level) event.getLevel(), event.getPos());
-		block.cachedState = event.getState();
-		return block;
+	public LevelBlock getBlock() {
+		return ((Level) event.getLevel()).kjs$getBlock(event.getPos()).cache(event.getState());
 	}
 }

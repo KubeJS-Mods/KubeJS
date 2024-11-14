@@ -43,6 +43,8 @@ public interface FluidStackKJS extends
 	default boolean specialEquals(Context cx, Object o, boolean shallow) {
 		if (o instanceof CharSequence) {
 			return kjs$getId().equals(ID.string(o.toString()));
+		} else if (o instanceof ResourceLocation) {
+			return kjs$getIdLocation().equals(o);
 		} else if (o instanceof FluidStack s) {
 			return kjs$equalsIgnoringCount(s);
 		}

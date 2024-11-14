@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
@@ -200,7 +200,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		}
 	}
 
-	default void kjs$setPosition(BlockContainerJS block) {
+	default void kjs$setPosition(LevelBlock block) {
 		kjs$teleportTo(block.getDimension(), block.getX(), block.getY(), block.getZ(), kjs$self().getYRot(), kjs$self().getXRot());
 	}
 
@@ -217,7 +217,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	default EntityArrayList kjs$getPassengers() {
-		return new EntityArrayList(kjs$getLevel(), kjs$self().getPassengers());
+		return new EntityArrayList(kjs$self().getPassengers());
 	}
 
 	default String kjs$getTeamId() {
@@ -240,8 +240,8 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		return kjs$self().getDirection();
 	}
 
-	default BlockContainerJS kjs$getBlock() {
-		return new BlockContainerJS(kjs$getLevel(), kjs$self().blockPosition());
+	default LevelBlock kjs$getBlock() {
+		return kjs$getLevel().kjs$getBlock(kjs$self().blockPosition());
 	}
 
 	default CompoundTag kjs$getNbt() {

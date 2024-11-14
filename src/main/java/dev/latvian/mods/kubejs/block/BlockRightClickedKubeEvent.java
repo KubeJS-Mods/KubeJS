@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.player.KubePlayerEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
@@ -21,7 +21,7 @@ public class BlockRightClickedKubeEvent implements KubePlayerEvent {
 	private final BlockPos pos;
 	private final Direction direction;
 	private final BlockHitResult hitResult;
-	private BlockContainerJS block;
+	private LevelBlock block;
 
 	public BlockRightClickedKubeEvent(ItemStack item, Player player, InteractionHand hand, BlockPos pos, Direction direction, @Nullable BlockHitResult hitResult) {
 		this.item = item;
@@ -39,9 +39,9 @@ public class BlockRightClickedKubeEvent implements KubePlayerEvent {
 	}
 
 	@Info("The block that was right clicked.")
-	public BlockContainerJS getBlock() {
+	public LevelBlock getBlock() {
 		if (block == null) {
-			block = new BlockContainerJS(player.level(), pos);
+			block = player.level().kjs$getBlock(pos);
 		}
 
 		return block;

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.server;
 
 import dev.latvian.mods.kubejs.entity.KubeEntityEvent;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -46,7 +46,7 @@ public class BasicCommandKubeEvent implements KubeEntityEvent {
 		return serverPlayer;
 	}
 
-	public BlockContainerJS getBlock() {
+	public LevelBlock getBlock() {
 		return this.getLevel().kjs$getBlock(pos);
 	}
 }

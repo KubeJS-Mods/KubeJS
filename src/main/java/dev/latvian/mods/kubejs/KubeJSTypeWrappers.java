@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -133,8 +133,8 @@ public interface KubeJSTypeWrappers {
 			return new Vec3(UtilsJS.parseDouble(list.get(0), 0), UtilsJS.parseDouble(list.get(1), 0), UtilsJS.parseDouble(list.get(2), 0));
 		} else if (o instanceof BlockPos pos) {
 			return new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
-		} else if (o instanceof BlockContainerJS block) {
-			return new Vec3(block.getPos().getX() + 0.5D, block.getPos().getY() + 0.5D, block.getPos().getZ() + 0.5D);
+		} else if (o instanceof LevelBlock block) {
+			return new Vec3(block.getCenterX(), block.getCenterY(), block.getCenterZ());
 		}
 
 		return Vec3.ZERO;
@@ -145,7 +145,7 @@ public interface KubeJSTypeWrappers {
 			return pos;
 		} else if (o instanceof List<?> list && list.size() >= 3) {
 			return new BlockPos(UtilsJS.parseInt(list.get(0), 0), UtilsJS.parseInt(list.get(1), 0), UtilsJS.parseInt(list.get(2), 0));
-		} else if (o instanceof BlockContainerJS block) {
+		} else if (o instanceof LevelBlock block) {
 			return block.getPos();
 		} else if (o instanceof Vec3 vec) {
 			return BlockPos.containing(vec.x, vec.y, vec.z);

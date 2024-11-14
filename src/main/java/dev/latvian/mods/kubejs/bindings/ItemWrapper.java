@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.bindings;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
-import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.JsonUtils;
@@ -11,7 +10,6 @@ import net.minecraft.Util;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -30,8 +28,6 @@ import java.util.UUID;
 
 @Info("Various item related helper methods")
 public interface ItemWrapper {
-	MapCodec<EntityType<?>> ENTITY_TYPE_FIELD_CODEC = BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("id");
-
 	@Info("Returns an ItemStack of the input")
 	static ItemStack of(ItemStack in) {
 		return in;

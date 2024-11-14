@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block;
 
 import dev.latvian.mods.kubejs.entity.KubeEntityEvent;
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -12,12 +12,11 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 	""")
 public class FarmlandTrampledKubeEvent implements KubeEntityEvent {
 	private final BlockEvent.FarmlandTrampleEvent event;
-	private final BlockContainerJS block;
+	private final LevelBlock block;
 
 	public FarmlandTrampledKubeEvent(BlockEvent.FarmlandTrampleEvent event) {
 		this.event = event;
-		this.block = new BlockContainerJS((Level) event.getLevel(), event.getPos());
-		this.block.cachedState = event.getState();
+		this.block = ((Level) event.getLevel()).kjs$getBlock(event.getPos()).cache(event.getState());
 	}
 
 	@Info("The distance of the entity from the block.")
@@ -38,7 +37,7 @@ public class FarmlandTrampledKubeEvent implements KubeEntityEvent {
 	}
 
 	@Info("The farmland block.")
-	public BlockContainerJS getBlock() {
+	public LevelBlock getBlock() {
 		return block;
 	}
 }

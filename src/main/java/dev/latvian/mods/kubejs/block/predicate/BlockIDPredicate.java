@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.block.predicate;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -113,7 +113,7 @@ public class BlockIDPredicate implements BlockPredicate {
 	}
 
 	@Override
-	public boolean check(BlockContainerJS b) {
+	public boolean check(LevelBlock b) {
 		return getBlock() != Blocks.AIR && checkState(b.getBlockState());
 	}
 

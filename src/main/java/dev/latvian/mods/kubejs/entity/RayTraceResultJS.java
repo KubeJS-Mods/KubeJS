@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.entity;
 
-import dev.latvian.mods.kubejs.level.BlockContainerJS;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;
@@ -15,7 +15,7 @@ public class RayTraceResultJS {
 	public final double distance;
 	public Vec3 hit = null;
 
-	public BlockContainerJS block = null;
+	public LevelBlock block = null;
 	public Direction facing = null;
 
 	public Entity entity = null;
@@ -27,7 +27,7 @@ public class RayTraceResultJS {
 
 		if (result instanceof BlockHitResult b && result.getType() == HitResult.Type.BLOCK) {
 			hit = result.getLocation();
-			block = new BlockContainerJS(from.level(), b.getBlockPos());
+			block = from.level().kjs$getBlock(b.getBlockPos());
 			facing = b.getDirection();
 		} else if (result instanceof EntityHitResult e && result.getType() == HitResult.Type.ENTITY) {
 			hit = result.getLocation();

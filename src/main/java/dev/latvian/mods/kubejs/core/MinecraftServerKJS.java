@@ -19,15 +19,20 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @RemapPrefixForJS("kjs$")
-public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, WithPersistentData, DataSenderKJS, MinecraftEnvironmentKJS {
+public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, WithPersistentData, DataSenderKJS, MinecraftEnvironmentKJS, EntityCollectionKJS {
 	default MinecraftServer kjs$self() {
 		return (MinecraftServer) this;
 	}
@@ -81,18 +86,61 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 		return selector.getPlayer(kjs$self());
 	}
 
-	default EntityArrayList kjs$getPlayers() {
-		return new EntityArrayList(kjs$self().overworld(), kjs$self().getPlayerList().getPlayers());
-	}
-
-	default EntityArrayList kjs$getEntities() {
-		var list = new EntityArrayList(kjs$self().overworld(), 10);
+	@Override
+	default Iterable<? extends Entity> kjs$getMcEntities() {
+		var list = new ArrayList<Entity>(10);
 
 		for (var level : kjs$self().getAllLevels()) {
-			list.addAllIterable(level.getAllEntities());
+			var i = level.getAllEntities();
+
+			if (i instanceof Collection<Entity> c) {
+				list.addAll(c);
+			} else {
+				for (var e : i) {
+					list.add(e);
+				}
+			}
 		}
 
 		return list;
+	}
+
+	@Override
+	default List<? extends Player> kjs$getMcPlayers() {
+		return kjs$self().getPlayerList().getPlayers();
+	}
+
+	@Override
+	default EntityArrayList kjs$getPlayers() {
+		return new EntityArrayList(kjs$self().getPlayerList().getPlayers());
+	}
+
+	@Override
+	@Nullable
+	default Entity kjs$getEntityByUUID(UUID id) {
+		for (var level : kjs$self().getAllLevels()) {
+			var e = level.getEntities().get(id);
+
+			if (e != null) {
+				return e;
+			}
+		}
+
+		return null;
+	}
+
+	@Override
+	@Nullable
+	default Entity kjs$getEntityByNetworkID(int id) {
+		for (var level : kjs$self().getAllLevels()) {
+			var e = level.getEntities().get(id);
+
+			if (e != null) {
+				return e;
+			}
+		}
+
+		return null;
 	}
 
 	@Nullable
