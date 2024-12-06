@@ -164,7 +164,7 @@ public final class RegistryAccessContainer implements ICondition.IContext {
 		} else if (o instanceof Map<?, ?>) {
 			return codec.decode(java, o).result().orElseThrow().getFirst();
 		} else {
-			return codec.decode(json, MapJS.json(cx, o)).result().orElseThrow().getFirst();
+			return codec.decode(json, JsonUtils.of(cx, o)).result().orElseThrow().getFirst();
 		}
 	}
 
@@ -174,7 +174,7 @@ public final class RegistryAccessContainer implements ICondition.IContext {
 		} else if (o instanceof Map<?, ?> map) {
 			return codec.decode(java, java.getMap(map).getOrThrow()).result().orElseThrow();
 		} else {
-			return codec.decode(json, json.getMap(MapJS.json(cx, o)).getOrThrow()).result().orElseThrow();
+			return codec.decode(json, json.getMap(JsonUtils.of(cx, o)).getOrThrow()).result().orElseThrow();
 		}
 	}
 

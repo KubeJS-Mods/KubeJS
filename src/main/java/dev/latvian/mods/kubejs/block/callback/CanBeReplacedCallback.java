@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.block.callbacks;
+package dev.latvian.mods.kubejs.block.callback;
 
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import net.minecraft.core.BlockPos;
@@ -14,11 +14,11 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class CanBeReplacedCallbackJS {
+public class CanBeReplacedCallback {
 
 	private final BlockPlaceContext context;
 
-	public CanBeReplacedCallbackJS(BlockPlaceContext blockPlaceContext, BlockState state) {
+	public CanBeReplacedCallback(BlockPlaceContext blockPlaceContext, BlockState state) {
 		context = blockPlaceContext;
 	}
 

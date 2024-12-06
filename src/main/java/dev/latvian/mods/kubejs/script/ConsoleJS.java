@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.script;
 import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
 import dev.latvian.apps.tinyserver.ws.WSHandler;
 import dev.latvian.mods.kubejs.DevProperties;
+import dev.latvian.mods.kubejs.bindings.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.util.JSObjectType;
@@ -298,7 +299,7 @@ public class ConsoleJS {
 			return;
 		}
 
-		var lines = Arrays.asList(writeQueue.toArray(UtilsJS.EMPTY_STRING_ARRAY));
+		var lines = Arrays.asList(writeQueue.toArray(StringUtilsWrapper.EMPTY_STRING_ARRAY));
 		writeQueue.clear();
 
 		if (sync) {

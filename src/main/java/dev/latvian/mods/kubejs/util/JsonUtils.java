@@ -13,6 +13,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +24,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public interface JsonUtils {
@@ -34,17 +34,17 @@ public interface JsonUtils {
 		if (element == null || element.isJsonNull()) {
 			return JsonNull.INSTANCE;
 		} else if (element instanceof JsonArray) {
-			JsonArray a = new JsonArray();
+			var a = new JsonArray();
 
-			for (JsonElement e : (JsonArray) element) {
+			for (var e : (JsonArray) element) {
 				a.add(copy(e));
 			}
 
 			return a;
 		} else if (element instanceof JsonObject) {
-			JsonObject o = new JsonObject();
+			var o = new JsonObject();
 
-			for (Map.Entry<String, JsonElement> entry : ((JsonObject) element).entrySet()) {
+			for (var entry : ((JsonObject) element).entrySet()) {
 				o.add(entry.getKey(), copy(entry.getValue()));
 			}
 
@@ -62,9 +62,9 @@ public interface JsonUtils {
 			case Boolean b -> new JsonPrimitive(b);
 			case Number n -> new JsonPrimitive(n);
 			case Character c -> new JsonPrimitive(c);
-			case Map<?, ?> map -> MapJS.json(cx, map);
-			case CompoundTag tag -> MapJS.json(cx, tag);
-			case Collection<?> c -> ListJS.json(cx, c);
+			case Map<?, ?> map -> objectOf(cx, map);
+			case CompoundTag tag -> objectOf(cx, tag);
+			case Collection<?> c -> arrayOf(cx, c);
 			case null, default -> JsonNull.INSTANCE;
 		};
 	}
@@ -74,23 +74,85 @@ public interface JsonUtils {
 	}
 
 	@Nullable
+	static JsonObject objectOf(Context cx, @Nullable Object map) {
+		if (map instanceof JsonObject json) {
+			return json;
+		} else if (map instanceof CharSequence) {
+			try {
+				return GSON.fromJson(map.toString(), JsonObject.class);
+			} catch (Exception ex) {
+				return null;
+			}
+		}
+
+		var m = (Map<?, ?>) cx.jsToJava(map, TypeInfo.RAW_MAP);
+
+		if (m != null) {
+			var json = new JsonObject();
+
+			for (var entry : m.entrySet()) {
+				var e = of(cx, entry.getValue());
+
+				if (e instanceof JsonPrimitive p && p.isNumber() && p.getAsNumber() instanceof Double d && d <= Long.MAX_VALUE && d >= Long.MIN_VALUE && d == d.longValue()) {
+					var l = d.longValue();
+
+					if (l >= Integer.MIN_VALUE && l <= Integer.MAX_VALUE) {
+						json.add(String.valueOf(entry.getKey()), new JsonPrimitive((int) l));
+					} else {
+						json.add(String.valueOf(entry.getKey()), new JsonPrimitive(l));
+					}
+				} else {
+					json.add(String.valueOf(entry.getKey()), e);
+				}
+			}
+
+			return json;
+		}
+
+		return null;
+	}
+
+	@Nullable
+	static JsonArray arrayOf(Context cx, @Nullable Object array) {
+		if (array instanceof JsonArray arr) {
+			return arr;
+		} else if (array instanceof CharSequence) {
+			try {
+				return JsonUtils.GSON.fromJson(array.toString(), JsonArray.class);
+			} catch (Exception ex) {
+				return null;
+			}
+		} else if (array instanceof Iterable<?> itr) {
+			JsonArray json = new JsonArray();
+
+			for (Object o1 : itr) {
+				json.add(JsonUtils.of(cx, o1));
+			}
+
+			return json;
+		}
+
+		return null;
+	}
+
+	@Nullable
 	static Object toObject(@Nullable JsonElement json) {
 		if (json == null || json.isJsonNull()) {
 			return null;
 		} else if (json.isJsonObject()) {
-			LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-			JsonObject o = json.getAsJsonObject();
+			var map = new LinkedHashMap<String, Object>();
+			var o = json.getAsJsonObject();
 
-			for (Map.Entry<String, JsonElement> entry : o.entrySet()) {
+			for (var entry : o.entrySet()) {
 				map.put(entry.getKey(), toObject(entry.getValue()));
 			}
 
 			return map;
 		} else if (json.isJsonArray()) {
-			JsonArray a = json.getAsJsonArray();
-			List<Object> objects = new ArrayList<>(a.size());
+			var a = json.getAsJsonArray();
+			var objects = new ArrayList<>(a.size());
 
-			for (JsonElement e : a) {
+			for (var e : a) {
 				objects.add(toObject(e));
 			}
 
@@ -101,10 +163,10 @@ public interface JsonUtils {
 	}
 
 	static String toString(JsonElement json) {
-		StringWriter writer = new StringWriter();
+		var writer = new StringWriter();
 
 		try {
-			JsonWriter jsonWriter = new JsonWriter(writer);
+			var jsonWriter = new JsonWriter(writer);
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);
 			jsonWriter.setHtmlSafe(false);
@@ -117,10 +179,10 @@ public interface JsonUtils {
 	}
 
 	static String toPrettyString(JsonElement json) {
-		StringWriter writer = new StringWriter();
+		var writer = new StringWriter();
 
 		try {
-			JsonWriter jsonWriter = new JsonWriter(writer);
+			var jsonWriter = new JsonWriter(writer);
 			jsonWriter.setIndent("\t");
 			jsonWriter.setSerializeNulls(true);
 			jsonWriter.setLenient(true);
@@ -139,9 +201,8 @@ public interface JsonUtils {
 		}
 
 		try {
-			JsonReader jsonReader = new JsonReader(new StringReader(string));
+			var jsonReader = new JsonReader(new StringReader(string));
 			JsonElement element;
-			boolean lenient = jsonReader.isLenient();
 			jsonReader.setLenient(true);
 			element = Streams.parse(jsonReader);
 
@@ -162,7 +223,7 @@ public interface JsonUtils {
 		if (element == null || element.isJsonNull()) {
 			return null;
 		} else if (element.isJsonPrimitive()) {
-			JsonPrimitive p = element.getAsJsonPrimitive();
+			var p = element.getAsJsonPrimitive();
 
 			if (p.isBoolean()) {
 				return p.getAsBoolean();

@@ -15,6 +15,7 @@ import java.util.function.UnaryOperator;
 
 public interface ID {
 	ResourceLocation UNKNOWN = ResourceLocation.fromNamespaceAndPath("unknown", "unknown");
+	ResourceLocation AIR = ResourceLocation.withDefaultNamespace("air");
 	UnaryOperator<String> BLOCKSTATE = s -> "blockstates/" + s;
 	UnaryOperator<String> BLOCK = s -> "block/" + s;
 	UnaryOperator<String> ITEM = s -> "item/" + s;

@@ -9,8 +9,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
+import dev.latvian.mods.kubejs.bindings.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.util.JsonUtils;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.type.EnumTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import io.netty.buffer.ByteBuf;
@@ -127,7 +127,7 @@ public interface KubeJSCodecs {
 	}
 
 	static <T> String getUniqueId(T input, Codec<T> codec) {
-		return UtilsJS.getUniqueId(input, o -> toJsonOrThrow(o, codec));
+		return StringUtilsWrapper.getUniqueId(input, o -> toJsonOrThrow(o, codec));
 	}
 
 	static JsonElement numberProviderJson(NumberProvider gen) {

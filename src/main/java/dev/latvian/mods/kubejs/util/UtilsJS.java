@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.util;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -10,12 +9,8 @@ import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockModificationKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.rhino.BaseFunction;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
-import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.type.TypeUtils;
-import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.arguments.selector.EntitySelectorParser;
@@ -29,57 +24,27 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.CreativeModeTab;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 public class UtilsJS {
 	public static final RandomSource RANDOM = RandomSource.create();
-	public static final ResourceLocation AIR_LOCATION = ResourceLocation.parse("minecraft:air");
-	public static final Pattern SNAKE_CASE_SPLIT = Pattern.compile("[:_/]");
-	public static final Set<String> ALWAYS_LOWER_CASE = new HashSet<>(Arrays.asList("a", "an", "the", "of", "on", "in", "and", "or", "but", "for"));
+
 	public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
-	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
 
 	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
 	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, List.of(), MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_RANDOM, false, null, null, null, true);
-
-	@FunctionalInterface
-	public interface TryIO {
-		void run() throws IOException;
-	}
-
-	public static void tryIO(TryIO tryIO) {
-		try {
-			tryIO.run();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public static void queueIO(Runnable runnable) {
-		try {
-			runnable.run();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
 
 	// TODO: Remove this garbage
 	@Nullable
@@ -146,66 +111,6 @@ public class UtilsJS {
 		}
 
 		return o;
-	}
-
-	public static int parseInt(@Nullable Object object, int def) {
-		if (object == null) {
-			return def;
-		} else if (object instanceof Number num) {
-			return num.intValue();
-		}
-
-		try {
-			var s = object.toString();
-
-			if (s.isEmpty()) {
-				return def;
-			}
-
-			return Integer.parseInt(s);
-		} catch (Exception ex) {
-			return def;
-		}
-	}
-
-	public static long parseLong(@Nullable Object object, long def) {
-		if (object == null) {
-			return def;
-		} else if (object instanceof Number num) {
-			return num.longValue();
-		}
-
-		try {
-			var s = object.toString();
-
-			if (s.isEmpty()) {
-				return def;
-			}
-
-			return Long.parseLong(s);
-		} catch (Exception ex) {
-			return def;
-		}
-	}
-
-	public static double parseDouble(@Nullable Object object, double def) {
-		if (object == null) {
-			return def;
-		} else if (object instanceof Number num) {
-			return num.doubleValue();
-		}
-
-		try {
-			var s = object.toString();
-
-			if (s.isEmpty()) {
-				return def;
-			}
-
-			return Double.parseDouble(String.valueOf(object));
-		} catch (Exception ex) {
-			return def;
-		}
 	}
 
 	public static <T> Predicate<T> onMatchDo(Predicate<T> predicate, Consumer<T> onMatch) {
@@ -301,76 +206,6 @@ public class UtilsJS {
 		throw new IllegalArgumentException("Expected a Class, ParameterizedType, GenericArrayType, TypeVariable or WildcardType, but <" + type + "> is of type " + className);
 	}
 
-	public static String snakeCaseToCamelCase(String string) {
-		if (string == null || string.isEmpty()) {
-			return string;
-		}
-
-		var s = SNAKE_CASE_SPLIT.split(string, 0);
-
-		var sb = new StringBuilder();
-		var first = true;
-
-		for (var value : s) {
-			if (!value.isEmpty()) {
-				if (first) {
-					first = false;
-					sb.append(value);
-				} else {
-					sb.append(Character.toUpperCase(value.charAt(0)));
-					sb.append(value, 1, value.length());
-				}
-			}
-		}
-
-		return sb.toString();
-	}
-
-	public static String snakeCaseToTitleCase(String string) {
-		StringJoiner joiner = new StringJoiner(" ");
-		String[] split = string.split("_");
-		for (int i = 0; i < split.length; i++) {
-			String s = split[i];
-			String titleCase = toTitleCase(s, i == 0);
-			joiner.add(titleCase);
-		}
-		return joiner.toString();
-	}
-
-	public static String toTitleCase(String s) {
-		return toTitleCase(s, false);
-	}
-
-	public static String toTitleCase(String s, boolean ignoreSpecial) {
-		if (s.isEmpty()) {
-			return "";
-		} else if (!ignoreSpecial && ALWAYS_LOWER_CASE.contains(s)) {
-			return s;
-		} else if (s.length() == 1) {
-			return s.toUpperCase();
-		}
-
-		char[] chars = s.toCharArray();
-		chars[0] = Character.toUpperCase(chars[0]);
-		return new String(chars);
-	}
-
-	public static String stripIdForEvent(ResourceLocation id) {
-		return stripEventName(id.toString());
-	}
-
-	public static String getUniqueId(JsonElement json) {
-		return getUniqueId(json, Function.identity());
-	}
-
-	public static <T> String getUniqueId(T input, Function<T, JsonElement> toJson) {
-		return JsonIO.getJsonHashString(toJson.apply(input));
-	}
-
-	public static String stripEventName(String s) {
-		return s.replaceAll("[/:]", ".").replace('-', '_');
-	}
-
 	public static EntitySelector entitySelector(@Nullable Object o) {
 		if (o == null) {
 			return ALL_ENTITIES_SELECTOR;
@@ -403,19 +238,5 @@ public class UtilsJS {
 	@Nullable
 	public static CreativeModeTab findCreativeTab(ResourceLocation id) {
 		return BuiltInRegistries.CREATIVE_MODE_TAB.get(id);
-	}
-
-	public static <T> T makeFunctionProxy(Context cx, TypeInfo targetClass, BaseFunction function) {
-		return Cast.to(cx.createInterfaceAdapter(targetClass, function));
-	}
-
-	@Nullable
-	@HideFromJS
-	public static Class<?> tryLoadClass(String className) {
-		try {
-			return Class.forName(className);
-		} catch (Exception ignored) {
-			return null;
-		}
 	}
 }

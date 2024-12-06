@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
+import dev.latvian.mods.kubejs.bindings.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.error.InvalidRecipeComponentException;
@@ -37,7 +38,6 @@ import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.TimeJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
@@ -145,7 +145,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 		for (var entry : new ArrayList<>(recipeFunctions.entrySet())) {
 			if (entry.getValue() instanceof RecipeTypeFunction && entry.getKey().indexOf(':') != -1) {
-				var s = UtilsJS.snakeCaseToCamelCase(entry.getKey());
+				var s = StringUtilsWrapper.snakeCaseToCamelCase(entry.getKey());
 
 				if (!s.equals(entry.getKey())) {
 					recipeFunctions.put(s, entry.getValue());
@@ -328,6 +328,8 @@ public class RecipesKubeEvent implements KubeEvent {
 			.peek(this::addToExport)
 			.collect(Collectors.toConcurrentMap(KubeRecipe::getOrCreateId, recipe -> recipe.json, (a, b) -> {
 				ConsoleJS.SERVER.warn("KubeJS has found two recipes with the same ID in your custom recipes! Picking the last one encountered!");
+				ConsoleJS.SERVER.warn("Recipe A JSON: " + a);
+				ConsoleJS.SERVER.warn("Recipe B JSON: " + b);
 				return b;
 			})));
 

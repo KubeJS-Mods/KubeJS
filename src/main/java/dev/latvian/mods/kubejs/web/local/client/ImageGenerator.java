@@ -90,7 +90,7 @@ public class ImageGenerator {
 
 		@Override
 		public boolean equals(Object o) {
-			return this == o || o instanceof BodyKey k && Arrays.equals(bytes, k.bytes);
+			return this == o || o instanceof BodyKey(byte[] bytes1) && Arrays.equals(bytes, bytes1);
 		}
 	}
 
@@ -109,7 +109,7 @@ public class ImageGenerator {
 	}
 
 	private static HTTPResponse renderCanvas(KJSHTTPRequest req, int canvasSize, String dir, @Nullable ByteBuf cacheBuf, boolean wildcard, Consumer<RenderImage> render) {
-		int size = Integer.parseInt(req.variable("size"));
+		int size = req.variable("size").asInt();
 
 		if (size < 1 || size > 1024) {
 			return HTTPStatus.BAD_REQUEST.text("Invalid size, must be [1, 1024]");
@@ -203,7 +203,7 @@ public class ImageGenerator {
 	}
 
 	private static HTTPResponse renderAnimated(KJSHTTPRequest req, String dir, @Nullable ByteBuf cacheBuf, List<HTTPResponse> responses) throws Exception {
-		int size = Integer.parseInt(req.variable("size"));
+		int size = req.variable("size").asInt();
 
 		if (size < 1 || size > 1024) {
 			return HTTPStatus.BAD_REQUEST.text("Invalid size, must be [1, 1024]");

@@ -110,7 +110,7 @@ public class CachedTagLookup<T> {
 
 	public boolean isEmpty(TagKey<T> key) {
 		var set = values(key);
-		// noinspection RedundantCast
+		// noinspection RedundantCast,rawtypes,SuspiciousMethodCalls
 		return set.size() - ((ResourceKey) registry.key() == Registries.ITEM ? ((set.contains(Items.AIR) ? 1 : 0) + (set.contains(Items.BARRIER) ? 1 : 0)) : 0) <= 0;
 	}
 

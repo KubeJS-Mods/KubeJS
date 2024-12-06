@@ -45,7 +45,8 @@ public record LocalWebServer(HTTPServer<KJSHTTPRequest> server, String url, List
 				registry.server.setMaxPortShift(10);
 				registry.server.setMaxKeepAliveConnections(3);
 
-				var url = "http://localhost:" + registry.server.start();
+				int port = registry.server.start();
+				var url = "http://localhost:" + port;
 				KubeJS.LOGGER.info("Started the local web server at " + url);
 				var endpoints = new ArrayList<>(registry.endpoints);
 				endpoints.sort(null);

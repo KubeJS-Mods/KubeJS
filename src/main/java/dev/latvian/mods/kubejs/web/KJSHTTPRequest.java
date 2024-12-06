@@ -30,7 +30,7 @@ public class KJSHTTPRequest extends HTTPRequest {
 	}
 
 	public ResourceLocation id(String ns, String path) {
-		return ResourceLocation.fromNamespaceAndPath(variable(ns), variable(path));
+		return ResourceLocation.fromNamespaceAndPath(variable(ns).asString(), variable(path).asString());
 	}
 
 	@Nullable
@@ -39,6 +39,6 @@ public class KJSHTTPRequest extends HTTPRequest {
 	}
 
 	public DataComponentPatch components(DynamicOps<Tag> ops) throws CommandSyntaxException {
-		return DataComponentWrapper.patchOrEmptyOf(ops, "[" + query().getOrDefault("components", "") + "]");
+		return DataComponentWrapper.patchOrEmptyOf(ops, "[" + query().get("components").asString() + "]");
 	}
 }

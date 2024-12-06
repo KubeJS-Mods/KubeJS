@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.bindings.StringUtilsWrapper;
 import net.neoforged.fml.ModList;
 
 import java.nio.file.Files;
@@ -37,7 +37,7 @@ public class ScriptFile implements Comparable<ScriptFile> {
 		this.packMode = "";
 		this.requiredMods = new HashSet<>(0);
 
-		this.lines = Files.readAllLines(info.path).toArray(UtilsJS.EMPTY_STRING_ARRAY);
+		this.lines = Files.readAllLines(info.path).toArray(StringUtilsWrapper.EMPTY_STRING_ARRAY);
 
 		try {
 			this.lastModified = Files.getLastModifiedTime(this.info.path).toMillis();
@@ -69,7 +69,7 @@ public class ScriptFile implements Comparable<ScriptFile> {
 
 	public void load(KubeJSContext cx) throws Throwable {
 		cx.evaluateString(cx.topLevelScope, String.join("\n", lines), info.location, 1, null);
-		lines = UtilsJS.EMPTY_STRING_ARRAY; // free memory
+		lines = StringUtilsWrapper.EMPTY_STRING_ARRAY; // free memory
 	}
 
 	public List<String> getProperties(String s) {

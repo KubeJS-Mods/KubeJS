@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.block.callbacks;
+package dev.latvian.mods.kubejs.block.callback;
 
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -6,11 +6,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class BlockStateRotateCallbackJS extends BlockStateModifyCallbackJS {
+public class BlockStateRotateCallback extends BlockStateModifyCallback {
 
 	private final Rotation rotation;
 
-	public BlockStateRotateCallbackJS(BlockState state, Rotation rotation) {
+	public BlockStateRotateCallback(BlockState state, Rotation rotation) {
 		super(state);
 		this.rotation = rotation;
 	}
@@ -22,7 +22,7 @@ public class BlockStateRotateCallbackJS extends BlockStateModifyCallbackJS {
 
 	@HideFromJS // begone ambiguity!
 	@Override
-	public BlockStateModifyCallbackJS rotate(Rotation rotation) {
+	public BlockStateModifyCallback rotate(Rotation rotation) {
 		throw new IllegalCallerException("Do not call this or you will get stuck in a loop!");
 	}
 

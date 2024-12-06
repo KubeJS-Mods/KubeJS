@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.registry;
 
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
+import dev.latvian.mods.kubejs.bindings.JavaWrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.Util;
@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -97,7 +98,7 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 			Set<Class<?>> set = new HashSet<>();
 			set.add(ResourceKey.class);
 			set.add(Registry.class);
-			var registrar = UtilsJS.tryLoadClass("dev.architectury.registry.registries.Registrar");
+			var registrar = JavaWrapper.tryLoadClass("dev.architectury.registry.registries.Registrar");
 			if (registrar != null) {
 				set.add(registrar);
 			}
@@ -121,13 +122,15 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 
 			frozen = true;
 			var startTime = Util.getNanos();
-			processClass(CLASSES_TO_SCAN.stream().map(UtilsJS::tryLoadClass));
+			processClass(CLASSES_TO_SCAN.stream().map(JavaWrapper::tryLoadClass));
 			CLASSES_TO_SCAN.clear();
 			KubeJS.LOGGER.debug("Took {} ms to discover registry classes.", (int) ((Util.getNanos() - startTime) / 1_000_000));
 		}
 
 		private static void processClass(Stream<Class<?>> classStream) {
-			classStream.map(Class::getDeclaredFields)
+			classStream
+				.filter(Objects::nonNull)
+				.map(Class::getDeclaredFields)
 				.flatMap(Stream::of)
 				.forEach(field -> {
 					try {

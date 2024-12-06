@@ -16,6 +16,7 @@ import dev.latvian.mods.kubejs.bindings.KMath;
 import dev.latvian.mods.kubejs.bindings.ParticleOptionsWrapper;
 import dev.latvian.mods.kubejs.bindings.RegistryWrapper;
 import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
+import dev.latvian.mods.kubejs.bindings.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.UUIDWrapper;
@@ -145,8 +146,6 @@ import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.KubeResourceLocation;
-import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
 import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
@@ -256,12 +255,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -485,6 +480,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		bindings.add("KMath", KMath.class);
 		bindings.add("Utils", UtilsWrapper.class);
+		bindings.add("StringUtils", StringUtilsWrapper.class);
 		bindings.add("Java", JavaWrapper.class);
 		bindings.add("Text", TextWrapper.class);
 		bindings.add("Component", TextWrapper.class);
@@ -545,8 +541,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(CharSequence.class, String::valueOf);
 		registry.register(UUID.class, UUIDWrapper::fromString);
 		registry.register(Pattern.class, RegExpKJS::wrap);
-		registry.register(JsonObject.class, MapJS::json);
-		registry.register(JsonArray.class, ListJS::json);
+		registry.register(JsonObject.class, JsonUtils::objectOf);
+		registry.register(JsonArray.class, JsonUtils::arrayOf);
 		registry.register(JsonElement.class, JsonUtils::of);
 		registry.register(JsonPrimitive.class, JsonUtils::primitiveOf);
 		registry.register(Path.class, KubeJSTypeWrappers::pathOf);
@@ -588,17 +584,12 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ColorRGBA.class, ColorWrapper::colorRGBAOf);
 
 		// KubeJS //
-		registry.register(Map.class, MapJS::of);
-		registry.register(List.class, ListJS::of);
-		registry.register(Iterable.class, ListJS::of);
-		registry.register(Collection.class, ListJS::of);
-		registry.register(Set.class, ListJS::ofSet);
 		registry.register(ItemStack.class, ItemStackJS::wrap);
 		registry.register(Ingredient.class, IngredientJS::wrap);
 		registry.register(ItemPredicate.class, ItemPredicate::wrap);
 		registry.register(SizedIngredient.class, SizedIngredientWrapper::wrap);
-		registry.register(BlockStatePredicate.class, BlockStatePredicate::of);
-		registry.register(RuleTest.class, BlockStatePredicate::ruleTestOf);
+		registry.register(BlockStatePredicate.class, BlockStatePredicate::wrap);
+		registry.register(RuleTest.class, BlockStatePredicate::wrapRuleTest);
 		registry.register(FluidStack.class, FluidWrapper::wrap);
 		registry.register(FluidIngredient.class, FluidWrapper::wrapIngredient);
 		registry.register(SizedFluidIngredient.class, FluidWrapper::wrapSizedIngredient);

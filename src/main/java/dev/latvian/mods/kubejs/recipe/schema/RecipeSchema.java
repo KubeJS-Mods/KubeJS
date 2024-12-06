@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SequencedCollection;
-import java.util.function.Function;
 
 /**
  * A recipe schema is a set of keys that defines how a recipe is constructed
@@ -36,8 +35,6 @@ import java.util.function.Function;
  * @see KubeRecipe
  */
 public class RecipeSchema {
-	public static final Function<KubeRecipe, String> DEFAULT_UNIQUE_ID_FUNCTION = r -> null;
-
 	public KubeRecipeFactory recipeFactory;
 	public ResourceLocation typeOverride;
 	public final List<RecipeKey<?>> keys;

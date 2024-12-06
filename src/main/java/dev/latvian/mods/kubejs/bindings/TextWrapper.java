@@ -7,8 +7,6 @@ import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.JSObjectType;
 import dev.latvian.mods.kubejs.util.JsonUtils;
-import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.nbt.NbtOps;
@@ -74,7 +72,7 @@ public interface TextWrapper {
 					for (var e1 : a) {
 						with[i] = e1;
 
-						if (with[i] instanceof MapJS || with[i] instanceof ListJS) {
+						if (with[i] instanceof Map<?, ?> || with[i] instanceof Collection<?>) {
 							with[i] = of(cx, e1);
 						}
 
@@ -148,7 +146,8 @@ public interface TextWrapper {
 			return ce;
 		}
 
-		var json = MapJS.json(cx, o);
+		var json = JsonUtils.objectOf(cx, o);
+
 		if (json != null) {
 			var action = GsonHelper.getAsString(json, "action");
 			var value = GsonHelper.getAsString(json, "value");

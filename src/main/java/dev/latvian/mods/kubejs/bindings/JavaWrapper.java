@@ -3,6 +3,11 @@ package dev.latvian.mods.kubejs.bindings;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.rhino.BaseFunction;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.type.TypeInfo;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
@@ -30,5 +35,19 @@ public interface JavaWrapper {
 	@Info("Creates a custom ConsoleJS instance for you to use to, well, log stuff")
 	static ConsoleJS createConsole(KubeJSContext cx, String name) {
 		return new ConsoleJS(cx.getType(), LoggerFactory.getLogger(name));
+	}
+
+	static <T> T makeFunctionProxy(Context cx, TypeInfo targetClass, BaseFunction function) {
+		return Cast.to(cx.createInterfaceAdapter(targetClass, function));
+	}
+
+	@Nullable
+	@HideFromJS
+	static Class<?> tryLoadClass(String className) {
+		try {
+			return Class.forName(className);
+		} catch (Exception ignored) {
+			return null;
+		}
 	}
 }

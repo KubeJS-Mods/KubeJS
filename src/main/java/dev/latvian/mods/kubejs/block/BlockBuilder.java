@@ -2,15 +2,15 @@ package dev.latvian.mods.kubejs.block;
 
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.bindings.AABBWrapper;
-import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockStateMirrorCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockStateModifyPlacementCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.BlockStateRotateCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.CanBeReplacedCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.EntityFallenOnBlockCallbackJS;
-import dev.latvian.mods.kubejs.block.callbacks.EntitySteppedOnBlockCallbackJS;
+import dev.latvian.mods.kubejs.block.callback.AfterEntityFallenOnBlockCallback;
+import dev.latvian.mods.kubejs.block.callback.BlockExplodedCallback;
+import dev.latvian.mods.kubejs.block.callback.BlockStateMirrorCallback;
+import dev.latvian.mods.kubejs.block.callback.BlockStateModifyCallback;
+import dev.latvian.mods.kubejs.block.callback.BlockStateModifyPlacementCallback;
+import dev.latvian.mods.kubejs.block.callback.BlockStateRotateCallback;
+import dev.latvian.mods.kubejs.block.callback.CanBeReplacedCallback;
+import dev.latvian.mods.kubejs.block.callback.EntityFallenOnBlockCallback;
+import dev.latvian.mods.kubejs.block.callback.EntitySteppedOnBlockCallback;
 import dev.latvian.mods.kubejs.block.drop.BlockDropSupplier;
 import dev.latvian.mods.kubejs.block.drop.BlockDrops;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityBuilder;
@@ -97,15 +97,15 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	public transient boolean transparent;
 	public transient NoteBlockInstrument instrument;
 	public transient Set<Property<?>> blockStateProperties;
-	public transient Consumer<BlockStateModifyCallbackJS> defaultStateModification;
-	public transient Consumer<BlockStateModifyPlacementCallbackJS> placementStateModification;
-	public transient Predicate<CanBeReplacedCallbackJS> canBeReplacedFunction;
-	public transient Consumer<EntitySteppedOnBlockCallbackJS> stepOnCallback;
-	public transient Consumer<EntityFallenOnBlockCallbackJS> fallOnCallback;
-	public transient Consumer<AfterEntityFallenOnBlockCallbackJS> afterFallenOnCallback;
-	public transient Consumer<BlockExplodedCallbackJS> explodedCallback;
-	public transient Consumer<BlockStateRotateCallbackJS> rotateStateModification;
-	public transient Consumer<BlockStateMirrorCallbackJS> mirrorStateModification;
+	public transient Consumer<BlockStateModifyCallback> defaultStateModification;
+	public transient Consumer<BlockStateModifyPlacementCallback> placementStateModification;
+	public transient Predicate<CanBeReplacedCallback> canBeReplacedFunction;
+	public transient Consumer<EntitySteppedOnBlockCallback> stepOnCallback;
+	public transient Consumer<EntityFallenOnBlockCallback> fallOnCallback;
+	public transient Consumer<AfterEntityFallenOnBlockCallback> afterFallenOnCallback;
+	public transient Consumer<BlockExplodedCallback> explodedCallback;
+	public transient Consumer<BlockStateRotateCallback> rotateStateModification;
+	public transient Consumer<BlockStateMirrorCallback> mirrorStateModification;
 	public transient Consumer<BlockRightClickedKubeEvent> rightClick;
 	public transient BlockEntityInfo blockEntityInfo;
 
@@ -656,19 +656,19 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	}
 
 	@Info("Set the default state of the block.")
-	public BlockBuilder defaultState(Consumer<BlockStateModifyCallbackJS> callbackJS) {
+	public BlockBuilder defaultState(Consumer<BlockStateModifyCallback> callbackJS) {
 		defaultStateModification = callbackJS;
 		return this;
 	}
 
 	@Info("Set the callback for determining the blocks state when placed.")
-	public BlockBuilder placementState(Consumer<BlockStateModifyPlacementCallbackJS> callbackJS) {
+	public BlockBuilder placementState(Consumer<BlockStateModifyPlacementCallback> callbackJS) {
 		placementStateModification = callbackJS;
 		return this;
 	}
 
 	@Info("Set if the block can be replaced by something else.")
-	public BlockBuilder canBeReplaced(Predicate<CanBeReplacedCallbackJS> callbackJS) {
+	public BlockBuilder canBeReplaced(Predicate<CanBeReplacedCallback> callbackJS) {
 		canBeReplacedFunction = callbackJS;
 		return this;
 	}
@@ -677,13 +677,13 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		Set what happens when an entity steps on the block
 		This is called every tick for every entity standing on the block, so be careful what you do here.
 		""")
-	public BlockBuilder steppedOn(Consumer<EntitySteppedOnBlockCallbackJS> callbackJS) {
+	public BlockBuilder steppedOn(Consumer<EntitySteppedOnBlockCallback> callbackJS) {
 		stepOnCallback = callbackJS;
 		return this;
 	}
 
 	@Info("Set what happens when an entity falls on the block. Do not use this for moving them, use bounce instead!")
-	public BlockBuilder fallenOn(Consumer<EntityFallenOnBlockCallbackJS> callbackJS) {
+	public BlockBuilder fallenOn(Consumer<EntityFallenOnBlockCallback> callbackJS) {
 		fallOnCallback = callbackJS;
 		return this;
 	}
@@ -700,13 +700,13 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		Set how this block bounces/moves entities that land on top of this. Do not use this to modify the block, use fallOn instead!
 		Use ctx.bounce(height) or ctx.setVelocity(x, y, z) to change the entities velocity.
 		""")
-	public BlockBuilder afterFallenOn(Consumer<AfterEntityFallenOnBlockCallbackJS> callbackJS) {
+	public BlockBuilder afterFallenOn(Consumer<AfterEntityFallenOnBlockCallback> callbackJS) {
 		afterFallenOnCallback = callbackJS;
 		return this;
 	}
 
 	@Info("Set how this block reacts after an explosion. Note the block has already been destroyed at this point")
-	public BlockBuilder exploded(Consumer<BlockExplodedCallbackJS> callbackJS) {
+	public BlockBuilder exploded(Consumer<BlockExplodedCallback> callbackJS) {
 		explodedCallback = callbackJS;
 		return this;
 	}
@@ -725,13 +725,13 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	}
 
 	@Info("Set the callback used for determining how the block rotates")
-	public BlockBuilder rotateState(Consumer<BlockStateRotateCallbackJS> callbackJS) {
+	public BlockBuilder rotateState(Consumer<BlockStateRotateCallback> callbackJS) {
 		rotateStateModification = callbackJS;
 		return this;
 	}
 
 	@Info("Set the callback used for determining how the block is mirrored")
-	public BlockBuilder mirrorState(Consumer<BlockStateMirrorCallbackJS> callbackJS) {
+	public BlockBuilder mirrorState(Consumer<BlockStateMirrorCallback> callbackJS) {
 		mirrorStateModification = callbackJS;
 		return this;
 	}

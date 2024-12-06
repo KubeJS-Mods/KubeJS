@@ -74,16 +74,6 @@ public interface UtilsWrapper {
 		return Pattern.compile(pattern, flags);
 	}
 
-	@Info("Tries to parse the first parameter as an integer, and returns that. The second parameter is returned if parsing fails")
-	static int parseInt(@Nullable Object object, int def) {
-		return UtilsJS.parseInt(object, def);
-	}
-
-	@Info("Tries to parse the first parameter as a double and returns that. The second parameter is returned if parsing fails")
-	static double parseDouble(@Nullable Object object, double def) {
-		return UtilsJS.parseDouble(object, def);
-	}
-
 	@Info("""
 		Returns a Stat of the passed in ResourceLocation.
 		Note that this requires the same ResourceLocation to get the same stat, so should not be used unless you want to make your own stat, and are storing an actual ResourceLocation somewhere to access it.
@@ -121,16 +111,6 @@ public interface UtilsWrapper {
 		return o instanceof WrappedJS;
 	}
 
-	@Info("Capitalises the first letter of the string unless it is \"a\", \"an\", \"the\", \"of\", \"on\", \"in\", \"and\", \"or\", \"but\" or \"for\"")
-	static String toTitleCase(String s) {
-		return UtilsJS.toTitleCase(s);
-	}
-
-	@Info("Capitalises the first letter of the string. If ignoreSpecial is true, it will also capitalise articles and prepositions")
-	static String toTitleCase(String s, boolean ignoreSpecial) {
-		return UtilsJS.toTitleCase(s, ignoreSpecial);
-	}
-
 	@Info("Returns a lazy value with the supplier function as its value factory")
 	static <T> Lazy<T> lazy(Supplier<T> supplier) {
 		return Lazy.of(supplier);
@@ -155,15 +135,5 @@ public interface UtilsWrapper {
 	@Info("Runs the provided supplier function in KubeJS' background thread and returns its CompletableFuture")
 	static CompletableFuture<Object> supplyAsync(Supplier<Object> task) {
 		return CompletableFuture.supplyAsync(task, Util.backgroundExecutor());
-	}
-
-	@Info("Returns the provided snake_case_string in camelCase")
-	static String snakeCaseToCamelCase(String string) {
-		return UtilsJS.snakeCaseToCamelCase(string);
-	}
-
-	@Info("Returns the provided snake_case_string in Title Case")
-	static String snakeCaseToTitleCase(String string) {
-		return UtilsJS.snakeCaseToTitleCase(string);
 	}
 }

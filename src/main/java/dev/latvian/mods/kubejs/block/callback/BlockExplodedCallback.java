@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.block.callbacks;
+package dev.latvian.mods.kubejs.block.callback;
 
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import net.minecraft.core.BlockPos;
@@ -12,11 +12,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BlockExplodedCallbackJS {
+public class BlockExplodedCallback {
 	protected final LevelBlock block;
 	protected final Explosion explosion;
 
-	public BlockExplodedCallbackJS(Level level, BlockPos pos, Explosion explosion) {
+	public BlockExplodedCallback(Level level, BlockPos pos, Explosion explosion) {
 		this.block = level.kjs$getBlock(pos);
 		this.explosion = explosion;
 	}

@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.registry;
 
+import dev.latvian.mods.kubejs.bindings.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.Util;
@@ -147,7 +147,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 		if (displayName != null) {
 			lang.add(id.getNamespace(), getBuilderTranslationKey(), displayName.getString());
 		} else {
-			lang.add(id.getNamespace(), getBuilderTranslationKey(), UtilsJS.snakeCaseToTitleCase(id.getPath()));
+			lang.add(id.getNamespace(), getBuilderTranslationKey(), StringUtilsWrapper.snakeCaseToTitleCase(id.getPath()));
 		}
 	}
 

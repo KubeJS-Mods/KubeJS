@@ -5,6 +5,7 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
+import dev.latvian.mods.kubejs.bindings.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.error.MissingComponentException;
@@ -25,7 +26,6 @@ import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.KubeResourceLocation;
 import dev.latvian.mods.kubejs.util.SlotFilter;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Wrapper;
@@ -408,7 +408,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			var prefix = js.id.getNamespace() + ":kjs/";
 
 			if (ids == null || ids.isEmpty()) {
-				ids = UtilsJS.getUniqueId(json);
+				ids = StringUtilsWrapper.getUniqueId(json);
 			} else {
 				ids = ids.replace(':', '_');
 			}

@@ -95,7 +95,7 @@ public class KubeJSClientWeb {
 	}
 
 	private static HTTPResponse getTranslate(KJSHTTPRequest req) {
-		return HTTPResponse.ok().text(I18n.get(req.variable("key")));
+		return HTTPResponse.ok().text(I18n.get(req.variable("key").asString()));
 	}
 
 	private static HTTPResponse getComponentString(KJSHTTPRequest req) {
@@ -201,7 +201,7 @@ public class KubeJSClientWeb {
 	}
 
 	private static HTTPResponse getAssetList(KJSHTTPRequest req) {
-		var prefix = req.variable("prefix");
+		var prefix = req.variable("prefix").asString();
 
 		if (prefix.isEmpty()) {
 			return HTTPStatus.BAD_REQUEST;

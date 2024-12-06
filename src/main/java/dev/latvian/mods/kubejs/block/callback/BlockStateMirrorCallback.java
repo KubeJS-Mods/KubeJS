@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.block.callbacks;
+package dev.latvian.mods.kubejs.block.callback;
 
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -7,11 +7,11 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class BlockStateMirrorCallbackJS extends BlockStateModifyCallbackJS {
+public class BlockStateMirrorCallback extends BlockStateModifyCallback {
 
 	private final Mirror mirror;
 
-	public BlockStateMirrorCallbackJS(BlockState state, Mirror mirror) {
+	public BlockStateMirrorCallback(BlockState state, Mirror mirror) {
 		super(state);
 		this.mirror = mirror;
 
@@ -24,7 +24,7 @@ public class BlockStateMirrorCallbackJS extends BlockStateModifyCallbackJS {
 
 	@HideFromJS // I banish thee ambiguity to the depths of Rhino, never to be seen again!
 	@Override
-	public BlockStateModifyCallbackJS mirror(Mirror mirror) {
+	public BlockStateModifyCallback mirror(Mirror mirror) {
 		throw new IllegalCallerException("Do not call this or you will get stuck in a loop!");
 	}
 

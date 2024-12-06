@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.block.callbacks;
+package dev.latvian.mods.kubejs.block.callback;
 
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -18,12 +18,12 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbackJS {
+public class BlockStateModifyPlacementCallback extends BlockStateModifyCallback {
 	public final BlockPlaceContext context;
 	public final Block minecraftBlock;
 	public LevelBlock block;
 
-	public BlockStateModifyPlacementCallbackJS(BlockPlaceContext context, Block block) {
+	public BlockStateModifyPlacementCallback(BlockPlaceContext context, Block block) {
 		super(getBlockStateToModify(context, block));
 		this.context = context;
 		this.minecraftBlock = block;
@@ -135,13 +135,13 @@ public class BlockStateModifyPlacementCallbackJS extends BlockStateModifyCallbac
 	}
 
 	@Info("Set if this block is waterlogged or not")
-	public BlockStateModifyPlacementCallbackJS waterlogged(boolean waterlogged) {
+	public BlockStateModifyPlacementCallback waterlogged(boolean waterlogged) {
 		setValue(BlockStateProperties.WATERLOGGED, waterlogged);
 		return this;
 	}
 
 	@Info("Set this block as waterlogged if it is in water")
-	public BlockStateModifyPlacementCallbackJS waterlogged() {
+	public BlockStateModifyPlacementCallback waterlogged() {
 		return waterlogged(isInWater());
 	}
 

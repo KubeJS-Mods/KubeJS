@@ -1,7 +1,5 @@
 package dev.latvian.mods.kubejs.util;
 
-import com.google.gson.JsonArray;
-import dev.latvian.mods.rhino.Context;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
@@ -172,28 +170,5 @@ public interface ListJS {
 
 		var list = of(o);
 		return list == null ? null : new LinkedHashSet<>(list);
-	}
-
-	@Nullable
-	static JsonArray json(Context cx, @Nullable Object array) {
-		if (array instanceof JsonArray arr) {
-			return arr;
-		} else if (array instanceof CharSequence) {
-			try {
-				return JsonUtils.GSON.fromJson(array.toString(), JsonArray.class);
-			} catch (Exception ex) {
-				return null;
-			}
-		} else if (array instanceof Iterable<?> itr) {
-			JsonArray json = new JsonArray();
-
-			for (Object o1 : itr) {
-				json.add(JsonUtils.of(cx, o1));
-			}
-
-			return json;
-		}
-
-		return null;
 	}
 }

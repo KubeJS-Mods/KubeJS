@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
-import dev.latvian.mods.kubejs.util.MapJS;
+import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
@@ -64,7 +64,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 
 			if (constructor == null) {
 				if (args.length == 1 && (args[0] instanceof Map<?, ?> || args[0] instanceof JsonObject)) {
-					var recipe = schemaType.schema.deserialize(sourceLine, this, null, MapJS.json(cx, args[0]));
+					var recipe = schemaType.schema.deserialize(sourceLine, this, null, JsonUtils.objectOf(cx, args[0]));
 					recipe.afterLoaded();
 					return event.addRecipe(recipe, true);
 					// throw new RecipeExceptionJS("Use event.custom(json) for json recipes!");

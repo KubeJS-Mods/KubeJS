@@ -6,6 +6,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.bindings.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
@@ -14,7 +15,6 @@ import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -161,7 +161,7 @@ public interface ItemStackJS {
 				var stack = Ingredient.of(ItemTags.create(ID.mc(map.get("tag")))).kjs$getFirst();
 
 				if (map.containsKey("count")) {
-					stack.setCount(UtilsJS.parseInt(map.get("count"), 1));
+					stack.setCount(StringUtilsWrapper.parseInt(map.get("count"), 1));
 				}
 
 				return stack;

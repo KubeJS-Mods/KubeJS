@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.block.callbacks;
+package dev.latvian.mods.kubejs.block.callback;
 
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
@@ -7,11 +7,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class EntityFallenOnBlockCallbackJS extends EntitySteppedOnBlockCallbackJS {
+public class EntityFallenOnBlockCallback extends EntitySteppedOnBlockCallback {
 
 	private final float fallHeight;
 
-	public EntityFallenOnBlockCallbackJS(Level level, Entity entity, BlockPos pos, BlockState state, float fallHeight) {
+	public EntityFallenOnBlockCallback(Level level, Entity entity, BlockPos pos, BlockState state, float fallHeight) {
 		super(level, entity, pos, state);
 		this.fallHeight = fallHeight;
 	}
