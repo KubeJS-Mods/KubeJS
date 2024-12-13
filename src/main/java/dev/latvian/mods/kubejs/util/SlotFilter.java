@@ -41,7 +41,7 @@ public record SlotFilter(Ingredient item, int index) {
 		if (o instanceof Number num) {
 			return of(Ingredient.EMPTY, num.intValue());
 		} else if (o instanceof String || o instanceof Ingredient || o instanceof NativeRegExp || o instanceof Pattern) {
-			return of(IngredientJS.wrap(RegistryAccessContainer.of(cx), o), -1);
+			return of(IngredientJS.wrap(cx, o), -1);
 		} else {
 			return (SlotFilter) ((RecordTypeInfo) target).wrap(cx, o, target);
 		}

@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
@@ -62,7 +61,7 @@ public interface RecipeFilter {
 			return predicate.list.isEmpty() ? ConstantFilter.FALSE : predicate.list.size() == 1 ? predicate.list.getFirst() : predicate;
 		}
 
-		var map = MapJS.of(list.getFirst());
+		var map = cx.optionalMapOf(list.getFirst());
 
 		if (map == null || map.isEmpty()) {
 			return ConstantFilter.TRUE;

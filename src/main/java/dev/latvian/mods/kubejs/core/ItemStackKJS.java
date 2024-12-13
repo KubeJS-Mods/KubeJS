@@ -72,7 +72,7 @@ public interface ItemStackKJS extends
 			return kjs$equalsIgnoringCount(s);
 		}
 
-		return kjs$equalsIgnoringCount(ItemStackJS.wrap(RegistryAccessContainer.of(cx), o));
+		return kjs$equalsIgnoringCount(ItemStackJS.wrap(cx, o));
 	}
 
 	default boolean kjs$equalsIgnoringCount(ItemStack stack) {
@@ -275,7 +275,7 @@ public interface ItemStackKJS extends
 	@Override
 	default Object replaceThisWith(Context cx, Object with) {
 		var t = kjs$self();
-		var r = ItemStackJS.wrap(RegistryAccessContainer.of(cx), with);
+		var r = ItemStackJS.wrap(cx, with);
 
 		if (!ItemStack.isSameItemSameComponents(t, r)) {
 			r.setCount(t.getCount());

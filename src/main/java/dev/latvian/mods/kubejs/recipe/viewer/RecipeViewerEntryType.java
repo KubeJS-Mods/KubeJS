@@ -40,7 +40,7 @@ public class RecipeViewerEntryType {
 	) {
 		@Override
 		public Object wrapEntry(Context cx, Object from) {
-			return ItemStackJS.wrap(RegistryAccessContainer.of(cx), from);
+			return ItemStackJS.wrap(cx, from);
 		}
 
 		@Override

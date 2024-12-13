@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.level.ruletest.AnyMatchRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.InvertRuleTest;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
@@ -103,7 +102,8 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			return predicates.isEmpty() ? Simple.NONE : predicates.size() == 1 ? predicates.getFirst() : new OrMatch(predicates);
 		}
 
-		var map = MapJS.of(o);
+		var map = cx.optionalMapOf(o);
+
 		if (map != null) {
 			if (map.isEmpty()) {
 				return Simple.ALL;

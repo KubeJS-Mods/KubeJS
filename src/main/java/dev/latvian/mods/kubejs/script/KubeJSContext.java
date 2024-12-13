@@ -1,11 +1,13 @@
 package dev.latvian.mods.kubejs.script;
 
+import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.holder.HolderWrapper;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ID;
+import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaClass;
@@ -16,12 +18,15 @@ import dev.latvian.mods.rhino.util.ClassVisibilityContext;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.AccessibleObject;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -234,5 +239,33 @@ public class KubeJSContext extends Context {
 
 	public Map<String, Either<NativeJavaClass, Boolean>> getJavaClassCache() {
 		return javaClassCache == null ? Map.of() : Collections.unmodifiableMap(javaClassCache);
+	}
+
+	@Override
+	public boolean isMapLike(Object from) {
+		return super.isMapLike(from) || from instanceof CompoundTag || from instanceof JsonObject;
+	}
+
+	@Override
+	public Object mapOf(@Nullable Object from, TypeInfo kTarget, TypeInfo vTarget) {
+		if (from instanceof CompoundTag tag) {
+			var map = new LinkedHashMap<>();
+
+			for (var key : tag.getAllKeys()) {
+				map.put(kTarget == TypeInfo.STRING ? key : String.valueOf(jsToJava(key, kTarget)), jsToJava(tag.get(key), vTarget));
+			}
+
+			return map;
+		} else if (from instanceof JsonObject json) {
+			var map = new LinkedHashMap<>();
+
+			for (var entry : json.entrySet()) {
+				map.put(kTarget == TypeInfo.STRING ? entry.getKey() : jsToJava(entry.getKey(), kTarget), jsToJava(JsonUtils.toObject(entry.getValue()), vTarget));
+			}
+
+			return map;
+		} else {
+			return super.mapOf(from, kTarget, vTarget);
+		}
 	}
 }

@@ -9,15 +9,12 @@ import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.JsonUtils;
-import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-
-import java.util.Map;
 
 public record BlockStateComponent(boolean preferObjectForm) implements RecipeComponent<BlockState> {
 	public static final RecipeComponent<BlockState> BLOCK = new BlockStateComponent(true);
@@ -40,7 +37,8 @@ public record BlockStateComponent(boolean preferObjectForm) implements RecipeCom
 			case Block b -> b.defaultBlockState();
 			case JsonPrimitive json -> BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), json.getAsString());
 			case null, default -> {
-				Map<?, ?> map = MapJS.of(from);
+				var map = cx.optionalMapOf(from);
+
 				if (map == null) {
 					yield BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), String.valueOf(from));
 				} else {

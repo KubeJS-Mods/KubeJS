@@ -3,8 +3,10 @@ package dev.latvian.mods.kubejs.bindings;
 import dev.latvian.mods.kubejs.block.predicate.BlockEntityPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockIDPredicate;
 import dev.latvian.mods.kubejs.block.predicate.BlockPredicate;
+import dev.latvian.mods.kubejs.registry.RegistryKubeEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.KubeResourceLocation;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.rhino.Context;
@@ -181,5 +183,13 @@ public class BlockWrapper {
 		}
 
 		return state;
+	}
+
+	public static void registerBuildingMaterial(Context cx, RegistryKubeEvent<Block> event, KubeResourceLocation id, BuildingMaterialProperties properties) {
+		properties.register(cx, event, id);
+	}
+
+	public static void registerBuildingMaterial(Context cx, RegistryKubeEvent<Block> event, KubeResourceLocation id) {
+		registerBuildingMaterial(cx, event, id, (BuildingMaterialProperties) cx.jsToJava(Map.of(), BuildingMaterialProperties.TYPE_INFO));
 	}
 }

@@ -61,7 +61,7 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 			} else if (from instanceof Item item) {
 				return (Holder<T>) item.builtInRegistryHolder();
 			} else {
-				return (Holder<T>) ItemStackJS.wrap(RegistryAccessContainer.of(cx), from).getItemHolder();
+				return (Holder<T>) ItemStackJS.wrap(cx, from).getItemHolder();
 			}
 		} else if (registry == BuiltInRegistries.FLUID) {
 			if (from instanceof FluidStack fs) {

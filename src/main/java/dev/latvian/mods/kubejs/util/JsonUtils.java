@@ -15,14 +15,12 @@ import com.google.gson.stream.JsonWriter;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -62,10 +60,16 @@ public interface JsonUtils {
 			case Boolean b -> new JsonPrimitive(b);
 			case Number n -> new JsonPrimitive(n);
 			case Character c -> new JsonPrimitive(c);
-			case Map<?, ?> map -> objectOf(cx, map);
-			case CompoundTag tag -> objectOf(cx, tag);
-			case Collection<?> c -> arrayOf(cx, c);
-			case null, default -> JsonNull.INSTANCE;
+			case null -> JsonNull.INSTANCE;
+			default -> {
+				if (cx.isMapLike(o)) {
+					yield objectOf(cx, o);
+				} else if (cx.isListLike(o)) {
+					yield arrayOf(cx, o);
+				} else {
+					yield JsonNull.INSTANCE;
+				}
+			}
 		};
 	}
 

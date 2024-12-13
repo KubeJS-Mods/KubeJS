@@ -9,7 +9,6 @@ import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -76,7 +75,7 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 	@Override
 	default Object replaceThisWith(Context cx, Object with) {
 		var t = kjs$self();
-		var r = IngredientJS.wrap(RegistryAccessContainer.of(cx), with);
+		var r = IngredientJS.wrap(cx, with);
 
 		if (!r.equals(t)) {
 			return r;

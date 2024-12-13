@@ -12,9 +12,9 @@ import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Lazy;
-import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -81,7 +81,7 @@ public interface ItemStackJS {
 
 	Lazy<List<ItemStack>> CACHED_ITEM_LIST = Lazy.of(() -> CACHED_ITEM_MAP.get().values().stream().flatMap(Collection::stream).toList());
 
-	static ItemStack wrap(RegistryAccessContainer registries, @Nullable Object o) {
+	static ItemStack wrap(Context cx, @Nullable Object o) {
 		if (o instanceof Wrapper w) {
 			o = w.unwrap();
 		}
@@ -103,9 +103,10 @@ public interface ItemStackJS {
 		} else if (o instanceof ItemLike itemLike) {
 			return itemLike.asItem().getDefaultInstance();
 		} else if (o instanceof JsonElement json) {
+			var registries = RegistryAccessContainer.of(cx);
 			return resultFromRecipeJson(registries.nbt(), json);
 		} else if (o instanceof StringTag tag) {
-			return wrap(registries, tag.getAsString());
+			return wrap(cx, tag.getAsString());
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
 			var reg = RegExpKJS.wrap(o);
 
@@ -117,6 +118,7 @@ public interface ItemStackJS {
 		} else if (o instanceof CharSequence) {
 			var os = o.toString().trim();
 			var s = os;
+			var registries = RegistryAccessContainer.of(cx);
 
 			var cached = registries.itemStackParseCache().get(os);
 
@@ -138,7 +140,7 @@ public interface ItemStackJS {
 			return cached.copy();
 		}
 
-		var map = MapJS.of(o);
+		var map = cx.optionalMapOf(o);
 
 		if (map != null) {
 			if (map.containsKey("item")) {
@@ -171,7 +173,7 @@ public interface ItemStackJS {
 		return ItemStack.EMPTY;
 	}
 
-	static Item getRawItem(RegistryAccessContainer registries, @Nullable Object o) {
+	static Item getRawItem(Context cx, @Nullable Object o) {
 		if (o == null) {
 			return Items.AIR;
 		} else if (o instanceof ItemLike item) {
@@ -185,7 +187,7 @@ public interface ItemStackJS {
 			}
 		}
 
-		return wrap(registries, o).getItem();
+		return wrap(cx, o).getItem();
 	}
 
 	// Use ItemStackJS.of(object)

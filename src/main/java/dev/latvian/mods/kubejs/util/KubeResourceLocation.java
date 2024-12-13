@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.util;
 
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.function.UnaryOperator;
+
 /**
  * Exists to indicate that a ResourceLocation would use kubejs: namespace by default when written as plain string. Should only be used as an argument in registry methods
  */
@@ -13,5 +15,13 @@ public record KubeResourceLocation(ResourceLocation wrapped) {
 	@Override
 	public String toString() {
 		return wrapped.toString();
+	}
+
+	public KubeResourceLocation withPath(String path) {
+		return new KubeResourceLocation(ResourceLocation.fromNamespaceAndPath(wrapped.getNamespace(), path));
+	}
+
+	public KubeResourceLocation withPath(UnaryOperator<String> path) {
+		return withPath(path.apply(wrapped.getPath()));
 	}
 }

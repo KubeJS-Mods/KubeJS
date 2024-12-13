@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.block.custom;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.util.ID;
+import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -11,7 +12,7 @@ import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 
 @ReturnsSelf
-public class PressurePlateBlockBuilder extends ShapedBlockBuilder {
+public class PressurePlateBlockBuilder extends ShapedBlockBuilder implements ButtonOrPressurePlateBuilder {
 	public static final ResourceLocation[] PRESSURE_PLATE_TAGS = {
 		BlockTags.PRESSURE_PLATES.location(),
 	};
@@ -19,7 +20,22 @@ public class PressurePlateBlockBuilder extends ShapedBlockBuilder {
 	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/pressure_plate_up");
 	private static final ResourceLocation PRESSED_MODEL = ResourceLocation.withDefaultNamespace("block/pressure_plate_down");
 
+	private static class KubePressurePlateBlock extends PressurePlateBlock {
+		private final int pressedTime;
+
+		public KubePressurePlateBlock(BlockSetType type, int pressedTime, Properties properties) {
+			super(type, properties);
+			this.pressedTime = pressedTime;
+		}
+
+		@Override
+		protected int getPressedTime() {
+			return pressedTime;
+		}
+	}
+
 	public transient BlockSetType behaviour;
+	public transient int ticksToStayPressed;
 
 	public PressurePlateBlockBuilder(ResourceLocation i) {
 		super(i, "_pressure_plate");
@@ -27,27 +43,24 @@ public class PressurePlateBlockBuilder extends ShapedBlockBuilder {
 		tagBoth(PRESSURE_PLATE_TAGS);
 		// tagBoth(BlockTags.WOODEN_PRESSURE_PLATES.location());
 		behaviour = BlockSetType.OAK;
+		ticksToStayPressed = 20;
 	}
 
-	public PressurePlateBlockBuilder behaviour(BlockSetType wt) {
-		behaviour = wt;
+	@Override
+	public PressurePlateBlockBuilder behaviour(BlockSetType behaviour) {
+		this.behaviour = behaviour;
 		return this;
 	}
 
-	public PressurePlateBlockBuilder behaviour(String wt) {
-		for (var type : BlockSetType.values().toList()) {
-			if (type.name().equals(wt)) {
-				behaviour = type;
-				return this;
-			}
-		}
-
+	@Override
+	public PressurePlateBlockBuilder ticksToStayPressed(TickDuration ticks) {
+		this.ticksToStayPressed = (int) ticks.ticks();
 		return this;
 	}
 
 	@Override
 	public Block createObject() {
-		return new PressurePlateBlock(behaviour, createProperties());
+		return new KubePressurePlateBlock(behaviour, ticksToStayPressed, createProperties());
 	}
 
 	@Override

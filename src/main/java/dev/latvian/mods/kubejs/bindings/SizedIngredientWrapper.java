@@ -5,6 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.tags.TagKey;
@@ -39,7 +40,7 @@ public interface SizedIngredientWrapper {
 	}
 
 	@HideFromJS
-	static SizedIngredient wrap(RegistryAccessContainer registries, Object from) {
+	static SizedIngredient wrap(Context cx, Object from) {
 		if (from instanceof SizedIngredient s) {
 			return s;
 		} else if (from instanceof Ingredient ingredient) {
@@ -50,13 +51,13 @@ public interface SizedIngredientWrapper {
 			return Ingredient.of(item).kjs$asStack();
 		} else if (from instanceof CharSequence) {
 			try {
-				return read(registries, new StringReader(from.toString()));
+				return read(RegistryAccessContainer.of(cx), new StringReader(from.toString()));
 			} catch (Exception ex) {
 				return empty;
 			}
 		}
 
-		return IngredientJS.wrap(registries, from).kjs$asStack();
+		return IngredientJS.wrap(cx, from).kjs$asStack();
 	}
 
 	@HideFromJS

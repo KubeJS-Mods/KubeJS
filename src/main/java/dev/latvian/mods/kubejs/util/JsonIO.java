@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonWriter;
+import dev.latvian.mods.rhino.Context;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
@@ -67,8 +68,9 @@ public class JsonIO {
 		return null;
 	}
 
+	@Nullable
 	public static JsonElement readJson(Path path) throws IOException {
-		if (!Files.isRegularFile(path)) {
+		if (Files.notExists(path) || !Files.isRegularFile(path)) {
 			return null;
 		}
 
@@ -82,11 +84,11 @@ public class JsonIO {
 	}
 
 	@Nullable
-	public static Map<?, ?> read(Path path) throws IOException {
-		return MapJS.of(readJson(path));
+	public static Map<?, ?> read(Context cx, Path path) throws IOException {
+		return cx.optionalMapOf(readJson(path));
 	}
 
-	public static void write(Path path, @Nullable JsonObject json) throws IOException {
+	public static void write(Path path, @Nullable JsonElement json) throws IOException {
 		if (json == null || json.isJsonNull()) {
 			Files.deleteIfExists(path);
 			return;

@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.block.custom;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -11,7 +12,7 @@ import net.minecraft.world.level.block.ButtonBlock;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 
 @ReturnsSelf
-public class ButtonBlockBuilder extends ShapedBlockBuilder {
+public class ButtonBlockBuilder extends ShapedBlockBuilder implements ButtonOrPressurePlateBuilder {
 	public static final ResourceLocation[] BUTTON_TAGS = {
 		BlockTags.BUTTONS.location(),
 	};
@@ -31,13 +32,15 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder {
 		ticksToStayPressed = 30;
 	}
 
-	public ButtonBlockBuilder behaviour(BlockSetType wt) {
-		behaviour = wt;
+	@Override
+	public ButtonBlockBuilder behaviour(BlockSetType behaviour) {
+		this.behaviour = behaviour;
 		return this;
 	}
 
-	public ButtonBlockBuilder ticksToStayPressed(int t) {
-		ticksToStayPressed = t;
+	@Override
+	public ButtonBlockBuilder ticksToStayPressed(TickDuration ticks) {
+		this.ticksToStayPressed = (int) ticks.ticks();
 		return this;
 	}
 
