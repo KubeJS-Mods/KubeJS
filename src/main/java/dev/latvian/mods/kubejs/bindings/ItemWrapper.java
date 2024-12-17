@@ -309,7 +309,7 @@ public interface ItemWrapper {
 		return playerHeadFromUrl("https://textures.minecraft.net/texture/" + hash);
 	}
 
-	static ItemAbility itemAbilityOf(Object object) {
+	static ItemAbility wrapItemAbility(Object object) {
 		if (object instanceof ItemAbility ta) {
 			return ta;
 		} else if (object != null) {

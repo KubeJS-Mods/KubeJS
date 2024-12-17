@@ -35,6 +35,7 @@ public interface ServerEvents {
 	EventHandler COMMAND_REGISTRY = GROUP.server("commandRegistry", () -> CommandRegistryKubeEvent.class);
 	TargetedEventHandler<String> COMMAND = GROUP.server("command", () -> CommandKubeEvent.class).hasResult().supportsTarget(EventTargetType.STRING);
 	TargetedEventHandler<String> BASIC_COMMAND = GROUP.server("basicCommand", () -> BasicCommandKubeEvent.class).hasResult().requiredTarget(EventTargetType.STRING);
+	TargetedEventHandler<String> BASIC_PUBLIC_COMMAND = GROUP.server("basicPublicCommand", () -> BasicCommandKubeEvent.class).hasResult().requiredTarget(EventTargetType.STRING);
 	EventHandler RECIPE_MAPPING_REGISTRY = GROUP.server("recipeMappingRegistry", () -> RecipeMappingRegistry.class);
 	EventHandler RECIPE_SCHEMA_REGISTRY = GROUP.server("recipeSchemaRegistry", () -> RecipeSchemaRegistry.class);
 	EventHandler RECIPES = GROUP.server("recipes", () -> RecipesKubeEvent.class);

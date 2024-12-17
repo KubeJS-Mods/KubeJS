@@ -22,7 +22,7 @@ public record TickDuration(long ticks) implements TemporalAmount {
 		if (from instanceof Number n) {
 			return new TickDuration(n.longValue());
 		} else {
-			return new TickDuration(TimeJS.durationOf(from).toMillis() / 50L);
+			return new TickDuration(TimeJS.wrapDuration(from).toMillis() / 50L);
 		}
 	}
 

@@ -14,7 +14,9 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.TextIcons;
+import dev.latvian.mods.kubejs.bindings.TextWrapper;
 import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.event.TargetedEventHandler;
 import dev.latvian.mods.kubejs.net.DisplayClientErrorsPayload;
 import dev.latvian.mods.kubejs.net.DisplayServerErrorsPayload;
 import dev.latvian.mods.kubejs.net.ReloadStartupScriptsPayload;
@@ -251,9 +253,18 @@ public class KubeJSCommands {
 		for (var id : ServerEvents.BASIC_COMMAND.findUniqueExtraIds(ScriptType.SERVER)) {
 			dispatcher.register(Commands.literal(id)
 				.requires(spOrOP)
-				.executes(ctx -> customCommand(ctx.getSource(), id, ""))
+				.executes(ctx -> customCommand(ServerEvents.BASIC_COMMAND, ctx.getSource(), id, ""))
 				.then(Commands.argument("input", StringArgumentType.greedyString())
-					.executes(ctx -> customCommand(ctx.getSource(), id, StringArgumentType.getString(ctx, "input")))
+					.executes(ctx -> customCommand(ServerEvents.BASIC_COMMAND, ctx.getSource(), id, StringArgumentType.getString(ctx, "input")))
+				)
+			);
+		}
+
+		for (var id : ServerEvents.BASIC_PUBLIC_COMMAND.findUniqueExtraIds(ScriptType.SERVER)) {
+			dispatcher.register(Commands.literal(id)
+				.executes(ctx -> customCommand(ServerEvents.BASIC_PUBLIC_COMMAND, ctx.getSource(), id, ""))
+				.then(Commands.argument("input", StringArgumentType.greedyString())
+					.executes(ctx -> customCommand(ServerEvents.BASIC_PUBLIC_COMMAND, ctx.getSource(), id, StringArgumentType.getString(ctx, "input")))
 				)
 			);
 		}
@@ -280,13 +291,15 @@ public class KubeJSCommands {
 		return Command.SINGLE_SUCCESS;
 	}
 
-	private static int customCommand(CommandSourceStack source, String id, String input) {
-		if (ServerEvents.BASIC_COMMAND.hasListeners(id)) {
-			var result = ServerEvents.BASIC_COMMAND.post(new BasicCommandKubeEvent(source.getLevel(), source.getEntity(), BlockPos.containing(source.getPosition()), id, input.trim()), id);
+	private static int customCommand(TargetedEventHandler<String> event, CommandSourceStack source, String id, String input) {
+		if (event.hasListeners(id)) {
+			var result = event.post(new BasicCommandKubeEvent(source.getLevel(), source.getEntity(), BlockPos.containing(source.getPosition()), id, input.trim()), id);
 
 			if (result.value() instanceof Throwable ex) {
 				source.sendFailure(Component.literal(ex.toString()));
 				return 0;
+			} else if (result.value() != null && result.cx() != null) {
+				source.sendSuccess(() -> TextWrapper.wrap(result.cx(), result.value()), false);
 			}
 
 			return 1;

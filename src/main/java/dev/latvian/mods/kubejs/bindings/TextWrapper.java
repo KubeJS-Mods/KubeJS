@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.util.JSObjectType;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.StringTag;
@@ -32,7 +33,12 @@ import java.util.Optional;
 @Info("The hub for all things text components. Format text to your hearts content!")
 public interface TextWrapper {
 	@Info("Returns a Component of the input")
-	static MutableComponent of(Context cx, @Nullable Object o) {
+	static MutableComponent of(MutableComponent component) {
+		return component;
+	}
+
+	@HideFromJS
+	static MutableComponent wrap(Context cx, @Nullable Object o) {
 		o = UtilsJS.wrap(o, JSObjectType.ANY);
 		if (o == null) {
 			return Component.literal("null");
@@ -73,7 +79,7 @@ public interface TextWrapper {
 						with[i] = e1;
 
 						if (with[i] instanceof Map<?, ?> || with[i] instanceof Collection<?>) {
-							with[i] = of(cx, e1);
+							with[i] = wrap(cx, e1);
 						}
 
 						i++;
@@ -86,7 +92,7 @@ public interface TextWrapper {
 			}
 
 			if (map.containsKey("color")) {
-				text.kjs$color(ColorWrapper.of(map.get("color")));
+				text.kjs$color(ColorWrapper.wrap(map.get("color")));
 			}
 
 			text.kjs$bold((Boolean) map.getOrDefault("bold", null));
@@ -97,12 +103,12 @@ public interface TextWrapper {
 
 			text.kjs$insertion((String) map.getOrDefault("insertion", null));
 			text.kjs$font(map.containsKey("font") ? ResourceLocation.parse(map.get("font").toString()) : null);
-			text.kjs$click(map.containsKey("click") ? clickEventOf(cx, map.get("click")) : null);
-			text.kjs$hover(map.containsKey("hover") ? of(cx, map.get("hover")) : null);
+			text.kjs$click(map.containsKey("click") ? wrapClickEvent(cx, map.get("click")) : null);
+			text.kjs$hover(map.containsKey("hover") ? wrap(cx, map.get("hover")) : null);
 
 			if (map.get("extra") instanceof Iterable<?> itr) {
 				for (var e : itr) {
-					text.append(of(cx, e));
+					text.append(wrap(cx, e));
 				}
 			}
 
@@ -111,7 +117,7 @@ public interface TextWrapper {
 			var text = Component.empty();
 
 			for (var e1 : list) {
-				text.append(of(cx, e1));
+				text.append(wrap(cx, e1));
 			}
 
 			return text;
@@ -139,7 +145,12 @@ public interface TextWrapper {
 	}
 
 	@Info("Returns a ClickEvent of the input")
-	static ClickEvent clickEventOf(Context cx, Object o) {
+	static ClickEvent clickEventOf(ClickEvent event) {
+		return event;
+	}
+
+	@HideFromJS
+	static ClickEvent wrapClickEvent(Context cx, Object o) {
 		if (o == null) {
 			return null;
 		} else if (o instanceof ClickEvent ce) {

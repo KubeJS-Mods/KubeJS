@@ -138,7 +138,7 @@ public class BlockWrapper {
 		}
 	}
 
-	public static BlockSetType setTypeOf(Context cx, Object from, TypeInfo target) {
+	public static BlockSetType wrapSetType(Context cx, Object from, TypeInfo target) {
 		return switch (from) {
 			case null -> null;
 			case BlockSetType type -> type;

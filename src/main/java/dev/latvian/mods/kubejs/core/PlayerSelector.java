@@ -12,7 +12,7 @@ import java.util.UUID;
 @FunctionalInterface
 public interface PlayerSelector {
 
-	static PlayerSelector of(Object o) {
+	static PlayerSelector wrap(Object o) {
 		if (o instanceof ServerPlayer sp) {
 			return identity(sp);
 		} else if (o instanceof UUID uuid) {

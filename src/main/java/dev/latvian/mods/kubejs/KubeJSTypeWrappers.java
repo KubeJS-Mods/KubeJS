@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs;
 
+import dev.latvian.mods.kubejs.bindings.NBTWrapper;
 import dev.latvian.mods.kubejs.bindings.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.level.LevelBlock;
-import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.BlockPos;
@@ -30,7 +30,7 @@ import java.util.Map;
 
 public interface KubeJSTypeWrappers {
 	@SuppressWarnings("unchecked")
-	static IntProvider intProviderOf(Context cx, Object o) {
+	static IntProvider wrapIntProvider(Context cx, Object o) {
 		if (o instanceof Number n) {
 			return ConstantInt.of(n.intValue());
 		} else if (o instanceof List l && !l.isEmpty()) {
@@ -44,7 +44,7 @@ public interface KubeJSTypeWrappers {
 			if (intBounds != null) {
 				return intBounds;
 			} else if (m.containsKey("clamped")) {
-				var source = intProviderOf(cx, m.get("clamped"));
+				var source = wrapIntProvider(cx, m.get("clamped"));
 				var clampTo = parseIntBounds(m);
 				if (clampTo != null) {
 					return ClampedInt.of(source, clampTo.getMinValue(), clampTo.getMaxValue());
@@ -58,7 +58,7 @@ public interface KubeJSTypeWrappers {
 				}
 			}
 
-			var decoded = IntProvider.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), NBTUtils.toTagCompound(cx, m)).result();
+			var decoded = IntProvider.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), NBTWrapper.wrapCompound(cx, m)).result();
 			if (decoded.isPresent()) {
 				return decoded.get();
 			}
@@ -68,7 +68,7 @@ public interface KubeJSTypeWrappers {
 	}
 
 	@SuppressWarnings("unchecked")
-	static FloatProvider floatProviderOf(Context cx, Object o) {
+	static FloatProvider wrapFloatProvider(Context cx, Object o) {
 		if (o instanceof Number n) {
 			return ConstantFloat.of(n.floatValue());
 		} else if (o instanceof List l && !l.isEmpty()) {
@@ -90,7 +90,7 @@ public interface KubeJSTypeWrappers {
 				}
 			}
 
-			var decoded = FloatProvider.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), NBTUtils.toTagCompound(cx, m)).result();
+			var decoded = FloatProvider.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), NBTWrapper.wrapCompound(cx, m)).result();
 
 			if (decoded.isPresent()) {
 				return decoded.get();
@@ -101,7 +101,7 @@ public interface KubeJSTypeWrappers {
 	}
 
 	@SuppressWarnings("unchecked")
-	static NumberProvider numberProviderOf(Object o) {
+	static NumberProvider wrapNumberProvider(Object o) {
 		if (o instanceof Number n) {
 			var f = n.floatValue();
 			return UniformGenerator.between(f, f);
@@ -124,7 +124,7 @@ public interface KubeJSTypeWrappers {
 		return ConstantValue.exactly(0);
 	}
 
-	static Vec3 vec3Of(@Nullable Object o) {
+	static Vec3 wrapVec3(@Nullable Object o) {
 		if (o instanceof Vec3 vec) {
 			return vec;
 		} else if (o instanceof Entity entity) {
@@ -140,7 +140,7 @@ public interface KubeJSTypeWrappers {
 		return Vec3.ZERO;
 	}
 
-	static BlockPos blockPosOf(@Nullable Object o) {
+	static BlockPos wrapBlockPos(@Nullable Object o) {
 		if (o instanceof BlockPos pos) {
 			return pos;
 		} else if (o instanceof List<?> list && list.size() >= 3) {
@@ -183,7 +183,7 @@ public interface KubeJSTypeWrappers {
 	}
 
 	@Nullable
-	static Path pathOf(Object o) {
+	static Path wrapPath(Object o) {
 		try {
 			if (o instanceof Path) {
 				return KubeJSPaths.verifyFilePath((Path) o);
@@ -198,7 +198,7 @@ public interface KubeJSTypeWrappers {
 	}
 
 	@Nullable
-	static File fileOf(Object o) {
+	static File wrapFile(Object o) {
 		try {
 			if (o instanceof File) {
 				return KubeJSPaths.verifyFilePath(((File) o).toPath()).toFile();

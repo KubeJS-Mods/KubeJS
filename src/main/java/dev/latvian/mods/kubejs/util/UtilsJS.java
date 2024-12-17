@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.util;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.mojang.brigadier.StringReader;
 import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.block.BlockModificationKubeEvent;
@@ -11,9 +10,6 @@ import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeUtils;
-import net.minecraft.advancements.critereon.MinMaxBounds;
-import net.minecraft.commands.arguments.selector.EntitySelector;
-import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.NumericTag;
@@ -31,10 +27,8 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class UtilsJS {
@@ -42,9 +36,6 @@ public class UtilsJS {
 
 	public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
-
-	private static final Map<String, EntitySelector> ENTITY_SELECTOR_CACHE = new HashMap<>();
-	private static final EntitySelector ALL_ENTITIES_SELECTOR = new EntitySelector(EntitySelector.INFINITE, true, false, List.of(), MinMaxBounds.Doubles.ANY, Function.identity(), null, EntitySelectorParser.ORDER_RANDOM, false, null, null, null, true);
 
 	// TODO: Remove this garbage
 	@Nullable
@@ -204,35 +195,6 @@ public class UtilsJS {
 
 		var className = type == null ? "null" : type.getClass().getName();
 		throw new IllegalArgumentException("Expected a Class, ParameterizedType, GenericArrayType, TypeVariable or WildcardType, but <" + type + "> is of type " + className);
-	}
-
-	public static EntitySelector entitySelector(@Nullable Object o) {
-		if (o == null) {
-			return ALL_ENTITIES_SELECTOR;
-		} else if (o instanceof EntitySelector s) {
-			return s;
-		}
-
-		String s = o.toString();
-
-		if (s.isBlank()) {
-			return ALL_ENTITIES_SELECTOR;
-		}
-
-		var sel = ENTITY_SELECTOR_CACHE.get(s);
-
-		if (sel == null) {
-			sel = ALL_ENTITIES_SELECTOR;
-
-			try {
-				sel = new EntitySelectorParser(new StringReader(s), true).parse();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-
-		ENTITY_SELECTOR_CACHE.put(s, sel);
-		return sel;
 	}
 
 	@Nullable

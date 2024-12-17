@@ -14,7 +14,7 @@ import net.minecraft.network.codec.StreamCodec;
 
 @RemapPrefixForJS("kjs$")
 public interface KubeColor extends SpecialEquality {
-	Codec<KubeColor> CODEC = KubeJSCodecs.stringResolverCodec(KubeColor::kjs$serialize, ColorWrapper::of);
+	Codec<KubeColor> CODEC = KubeJSCodecs.stringResolverCodec(KubeColor::kjs$serialize, ColorWrapper::wrap);
 	StreamCodec<ByteBuf, KubeColor> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
 
 	@RemapForJS("getArgb")
@@ -43,7 +43,7 @@ public interface KubeColor extends SpecialEquality {
 
 	@Override
 	default boolean specialEquals(Context cx, Object o, boolean shallow) {
-		KubeColor c = ColorWrapper.of(o);
+		KubeColor c = ColorWrapper.wrap(o);
 		return shallow ? (kjs$getARGB() == c.kjs$getARGB()) : (kjs$getRGB() == c.kjs$getRGB());
 	}
 }

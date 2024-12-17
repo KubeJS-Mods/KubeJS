@@ -83,7 +83,7 @@ public interface ItemTintFunction {
 	};
 
 	@Nullable
-	static ItemTintFunction of(Context cx, Object o) {
+	static ItemTintFunction wrap(Context cx, Object o) {
 		if (o == null || Undefined.isUndefined(o)) {
 			return null;
 		} else if (o instanceof ItemTintFunction f) {
@@ -92,7 +92,7 @@ public interface ItemTintFunction {
 			var map = new Mapped();
 
 			for (int i = 0; i < list.size(); i++) {
-				var f = of(cx, list.get(i));
+				var f = wrap(cx, list.get(i));
 
 				if (f != null) {
 					map.map.put(i, f);
@@ -116,6 +116,6 @@ public interface ItemTintFunction {
 			return (ItemTintFunction) cx.createInterfaceAdapter(TYPE_INFO, function);
 		}
 
-		return new Fixed(ColorWrapper.of(o));
+		return new Fixed(ColorWrapper.wrap(o));
 	}
 }

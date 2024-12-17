@@ -26,7 +26,7 @@ public interface ColorWrapper {
 		}
 	});
 
-	static KubeColor of(Object o) {
+	static KubeColor wrap(Object o) {
 		if (o instanceof KubeColor) {
 			return (KubeColor) o;
 		} else if (o instanceof String) {
@@ -56,16 +56,16 @@ public interface ColorWrapper {
 		return NONE;
 	}
 
-	static TextColor textColorOf(Object o) {
-		return of(o).kjs$createTextColor();
+	static TextColor wrapTextColor(Object o) {
+		return wrap(o).kjs$createTextColor();
 	}
 
-	static ColorRGBA colorRGBAOf(Object o) {
-		return new ColorRGBA(of(o).kjs$getARGB());
+	static ColorRGBA wrapColorRGBA(Object o) {
+		return new ColorRGBA(wrap(o).kjs$getARGB());
 	}
 
 	static KubeColor createMapped(Object o, String... names) {
-		KubeColor c = of(o);
+		KubeColor c = wrap(o);
 
 		for (String s : names) {
 			MAP.put(s, c);

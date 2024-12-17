@@ -59,7 +59,7 @@ public interface KubeEvent {
 		`cancel` denotes a `false` outcome.
 		""")
 	default Object cancel(Context cx, @Nullable Object value) throws EventExit {
-		throw EventResult.Type.INTERRUPT_FALSE.exit(mapExitValue(cx, value));
+		throw EventResult.Type.INTERRUPT_FALSE.exit(cx, mapExitValue(cx, value));
 	}
 
 	@Info("""
@@ -68,7 +68,7 @@ public interface KubeEvent {
 		`success` denotes a `true` outcome.
 		""")
 	default Object success(Context cx, @Nullable Object value) throws EventExit {
-		throw EventResult.Type.INTERRUPT_TRUE.exit(mapExitValue(cx, value));
+		throw EventResult.Type.INTERRUPT_TRUE.exit(cx, mapExitValue(cx, value));
 	}
 
 	@Info("""
@@ -77,7 +77,7 @@ public interface KubeEvent {
 		`exit` denotes a `default` outcome.
 		""")
 	default Object exit(Context cx, @Nullable Object value) throws EventExit {
-		throw EventResult.Type.INTERRUPT_DEFAULT.exit(mapExitValue(cx, value));
+		throw EventResult.Type.INTERRUPT_DEFAULT.exit(cx, mapExitValue(cx, value));
 	}
 
 	@HideFromJS

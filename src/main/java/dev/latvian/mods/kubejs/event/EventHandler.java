@@ -241,7 +241,7 @@ public class EventHandler extends BaseFunction {
 			eventResult = exit.result;
 		} catch (Throwable error) {
 			scriptType.console.error("Internal Error in '" + this + "'", error);
-			eventResult = EventResult.Type.ERROR.exit(error).result;
+			eventResult = EventResult.Type.ERROR.exit(null, error).result;
 		}
 
 		event.afterPosted(eventResult);

@@ -12,7 +12,7 @@ import java.util.Map;
 public class ItemEnchantmentsWrapper {
 	public static final TypeInfo MAP_TYPE = TypeInfo.RAW_MAP.withParams(TypeInfo.of(Holder.class).withParams(TypeInfo.of(Enchantment.class)), TypeInfo.INT);
 
-	public static ItemEnchantments from(Context cx, Object from) {
+	public static ItemEnchantments wrap(Context cx, Object from) {
 		if (from instanceof ItemEnchantments e) {
 			return e;
 		} else if (from instanceof Map<?, ?> || from instanceof NativeJavaMap) {

@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.event;
 
+import dev.latvian.mods.rhino.Context;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.common.util.TriState;
 import org.jetbrains.annotations.Nullable;
@@ -14,33 +15,41 @@ public class EventResult {
 		INTERRUPT_FALSE,
 		INTERRUPT_TRUE;
 
-		public final EventResult defaultResult;
-		public final EventExit defaultExit;
+		private final EventResult defaultResult;
+		private final EventExit defaultExit;
 
 		Type() {
-			this.defaultResult = new EventResult(this, null);
+			this.defaultResult = new EventResult(null, this, null);
 			this.defaultExit = new EventExit(this.defaultResult);
 		}
 
-		public EventExit exit(@Nullable Object value) {
-			return value == null ? defaultExit : new EventExit(new EventResult(this, value));
+		public EventExit exit(@Nullable Context cx, @Nullable Object value) {
+			return value == null ? defaultExit : new EventExit(new EventResult(cx, this, value));
 		}
 	}
 
 	public static final EventResult PASS = Type.PASS.defaultResult;
 
+	private final Context cx;
 	private final Type type;
 	private final Object value;
 
-	private EventResult(Type type, @Nullable Object value) {
+	private EventResult(@Nullable Context cx, Type type, @Nullable Object value) {
+		this.cx = cx;
 		this.type = type;
 		this.value = value;
+	}
+
+	@Nullable
+	public Context cx() {
+		return cx;
 	}
 
 	public Type type() {
 		return type;
 	}
 
+	@Nullable
 	public Object value() {
 		return value;
 	}

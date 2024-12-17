@@ -14,10 +14,10 @@ import java.util.regex.Pattern;
 
 public interface TimeJS {
 	Pattern TEMPORAL_AMOUNT_PATTERN = Pattern.compile("(\\d+)\\s*(y|M|d|w|h|m|s|ms|ns|t)\\b");
-	Codec<Duration> DURATION = KubeJSCodecs.stringResolverCodec(Duration::toString, TimeJS::durationOf);
-	StreamCodec<ByteBuf, Duration> DURATION_STREAM = ByteBufCodecs.STRING_UTF8.map(TimeJS::durationOf, Duration::toString);
+	Codec<Duration> DURATION = KubeJSCodecs.stringResolverCodec(Duration::toString, TimeJS::wrapDuration);
+	StreamCodec<ByteBuf, Duration> DURATION_STREAM = ByteBufCodecs.STRING_UTF8.map(TimeJS::wrapDuration, Duration::toString);
 
-	static TemporalAmount temporalAmountOf(Object o) {
+	static TemporalAmount wrapTemporalAmount(Object o) {
 		if (o instanceof TemporalAmount d) {
 			return d;
 		} else if (o instanceof Number n) {
@@ -71,10 +71,10 @@ public interface TimeJS {
 			return json.getAsLong();
 		}
 
-		var t = temporalAmountOf(o);
+		var t = wrapTemporalAmount(o);
 
-		if (t instanceof TickDuration d) {
-			return d.ticks();
+		if (t instanceof TickDuration(long ticks)) {
+			return ticks;
 		} else if (t instanceof Duration d) {
 			return d.toMillis() / 50L;
 		} else {
@@ -82,13 +82,13 @@ public interface TimeJS {
 		}
 	}
 
-	static Duration durationOf(Object o) {
-		var t = temporalAmountOf(o);
+	static Duration wrapDuration(Object o) {
+		var t = wrapTemporalAmount(o);
 
 		if (t instanceof Duration d) {
 			return d;
-		} else if (t instanceof TickDuration d) {
-			return Duration.ofMillis(d.ticks() * 50L);
+		} else if (t instanceof TickDuration(long ticks)) {
+			return Duration.ofMillis(ticks * 50L);
 		} else {
 			var d = Duration.ZERO;
 

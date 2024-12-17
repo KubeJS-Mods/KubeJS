@@ -90,7 +90,7 @@ public record MapColorHelper(int id, String name, MapColor color, Vector3f rgb) 
 		add("glow_lichen", MapColor.GLOW_LICHEN);
 	}
 
-	public static MapColor of(Object o) {
+	public static MapColor wrap(Object o) {
 		if (o == null || Undefined.isUndefined(o)) {
 			return MapColor.NONE;
 		} else if (o instanceof MapColor c) {

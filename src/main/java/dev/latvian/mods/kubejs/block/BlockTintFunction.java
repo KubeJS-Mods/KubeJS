@@ -64,7 +64,7 @@ public interface BlockTintFunction {
 	};
 
 	@Nullable
-	static BlockTintFunction of(Context cx, Object o) {
+	static BlockTintFunction wrap(Context cx, Object o) {
 		if (o == null || Undefined.isUndefined(o)) {
 			return null;
 		} else if (o instanceof BlockTintFunction f) {
@@ -73,7 +73,7 @@ public interface BlockTintFunction {
 			var map = new Mapped();
 
 			for (int i = 0; i < list.size(); i++) {
-				var f = of(cx, list.get(i));
+				var f = wrap(cx, list.get(i));
 
 				if (f != null) {
 					map.map.put(i, f);
@@ -100,6 +100,6 @@ public interface BlockTintFunction {
 			return (BlockTintFunction) cx.createInterfaceAdapter(TYPE_INFO, function);
 		}
 
-		return new Fixed(ColorWrapper.of(o));
+		return new Fixed(ColorWrapper.wrap(o));
 	}
 }

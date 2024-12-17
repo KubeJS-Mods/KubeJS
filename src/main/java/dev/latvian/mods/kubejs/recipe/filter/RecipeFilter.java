@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 public interface RecipeFilter {
 	boolean test(Context cx, RecipeLikeKJS r);
 
-	static RecipeFilter of(Context cx, @Nullable Object o) {
+	static RecipeFilter wrap(Context cx, @Nullable Object o) {
 		if (o == null || o == ConstantFilter.TRUE) {
 			return ConstantFilter.TRUE;
 		} else if (o == ConstantFilter.FALSE) {
@@ -49,7 +49,7 @@ public interface RecipeFilter {
 			var predicate = new OrFilter();
 
 			for (var o1 : list) {
-				var p = of(cx, o1);
+				var p = wrap(cx, o1);
 
 				if (p == ConstantFilter.TRUE) {
 					return ConstantFilter.TRUE;
@@ -70,11 +70,11 @@ public interface RecipeFilter {
 		var predicate = new AndFilter();
 
 		if (map.get("or") != null) {
-			predicate.list.add(of(cx, map.get("or")));
+			predicate.list.add(wrap(cx, map.get("or")));
 		}
 
 		if (map.get("not") != null) {
-			predicate.list.add(new NotFilter(of(cx, map.get("not"))));
+			predicate.list.add(new NotFilter(wrap(cx, map.get("not"))));
 		}
 
 		try {

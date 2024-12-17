@@ -2,13 +2,13 @@ package dev.latvian.mods.kubejs.block.state;
 
 import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.bindings.BlockWrapper;
+import dev.latvian.mods.kubejs.bindings.NBTWrapper;
 import dev.latvian.mods.kubejs.level.ruletest.AllMatchRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.AlwaysFalseRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.AnyMatchRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.InvertRuleTest;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.ListJS;
-import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.Tags;
@@ -134,7 +134,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 
 		var nbt = RegistryAccessContainer.of(cx).nbt();
 
-		return Optional.ofNullable(NBTUtils.toTagCompound(cx, o))
+		return Optional.ofNullable(NBTWrapper.wrapCompound(cx, o))
 			.map(tag -> RuleTest.CODEC.parse(nbt, tag))
 			.flatMap(DataResult::result)
 			.or(() -> Optional.ofNullable(wrap(cx, o).asRuleTest()))

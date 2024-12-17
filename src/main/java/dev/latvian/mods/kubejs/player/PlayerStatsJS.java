@@ -19,7 +19,7 @@ public class PlayerStatsJS {
 		statFile = s;
 	}
 
-	public static Stat<?> statOf(Object o) {
+	public static Stat<?> wrapStat(Object o) {
 		if (o instanceof Stat s) {
 			return s;
 		} else if (o instanceof ResourceLocation rl) {

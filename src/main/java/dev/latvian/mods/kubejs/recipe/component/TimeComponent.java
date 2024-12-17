@@ -34,7 +34,7 @@ public record TimeComponent(String name, long scale, Codec<TickDuration> codec) 
 		if (from instanceof Number n) {
 			return new TickDuration((long) (n.doubleValue() * scale));
 		} else {
-			return new TickDuration(TimeJS.durationOf(from).toMillis() / 50L);
+			return new TickDuration(TimeJS.wrapDuration(from).toMillis() / 50L);
 		}
 	}
 

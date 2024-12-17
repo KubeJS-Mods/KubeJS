@@ -349,7 +349,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 
 	@Info("Sets the block's map color dynamically per block state. If unset, defaults to NONE.")
 	public BlockBuilder dynamicMapColor(@Nullable Function<BlockState, Object> m) {
-		mapColorFn = m == null ? MapColorHelper.NONE : s -> MapColorHelper.of(m.apply(s));
+		mapColorFn = m == null ? MapColorHelper.NONE : s -> MapColorHelper.wrap(m.apply(s));
 		return this;
 	}
 
