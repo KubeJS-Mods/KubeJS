@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.bindings.event;
 
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventTargetType;
@@ -15,7 +16,6 @@ import dev.latvian.mods.kubejs.item.ItemModelPropertiesKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemPickedUpKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemSmeltedKubeEvent;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ModifyItemTooltipsKubeEvent;
 import dev.latvian.mods.kubejs.item.custom.ItemToolTierRegistryKubeEvent;
 import net.minecraft.core.registries.Registries;
@@ -28,7 +28,7 @@ public interface ItemEvents {
 
 	EventHandler MODIFICATION = GROUP.startup("modification", () -> ItemModificationKubeEvent.class);
 	EventHandler TOOL_TIER_REGISTRY = GROUP.startup("toolTierRegistry", () -> ItemToolTierRegistryKubeEvent.class);
-	TargetedEventHandler<ResourceKey<Item>> RIGHT_CLICKED = GROUP.common("rightClicked", () -> ItemClickedKubeEvent.class).hasResult(ItemStackJS.TYPE_INFO).supportsTarget(TARGET);
+	TargetedEventHandler<ResourceKey<Item>> RIGHT_CLICKED = GROUP.common("rightClicked", () -> ItemClickedKubeEvent.class).hasResult(ItemWrapper.TYPE_INFO).supportsTarget(TARGET);
 	TargetedEventHandler<ResourceKey<Item>> CAN_PICK_UP = GROUP.common("canPickUp", () -> ItemPickedUpKubeEvent.class).hasResult().supportsTarget(TARGET);
 	TargetedEventHandler<ResourceKey<Item>> PICKED_UP = GROUP.common("pickedUp", () -> ItemPickedUpKubeEvent.class).supportsTarget(TARGET);
 	TargetedEventHandler<ResourceKey<Item>> DROPPED = GROUP.common("dropped", () -> ItemDroppedKubeEvent.class).hasResult().supportsTarget(TARGET);

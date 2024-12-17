@@ -1,7 +1,8 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -34,7 +35,7 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 				}
 			}
 
-			var in = IngredientJS.wrap(cx, from);
+			var in = IngredientWrapper.wrap(cx, from);
 
 			if (in.isEmpty()) {
 				return NONE;
@@ -51,7 +52,7 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 	}
 
 	default ItemStack[] kjs$getStackArray() {
-		return ItemStackJS.getList().stream().filter(this).toArray(ItemStack[]::new);
+		return ItemWrapper.getList().stream().filter(this).toArray(ItemStack[]::new);
 	}
 
 	default ItemStackSet kjs$getStacks() {
@@ -61,7 +62,7 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 	default ItemStackSet kjs$getDisplayStacks() {
 		var set = new ItemStackSet();
 
-		for (var stack : ItemStackJS.getList()) {
+		for (var stack : ItemWrapper.getList()) {
 			if (test(stack)) {
 				set.add(stack);
 			}

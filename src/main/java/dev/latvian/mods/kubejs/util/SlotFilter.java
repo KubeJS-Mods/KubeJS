@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.util;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 public record SlotFilter(Ingredient item, int index) {
 	public static final SlotFilter EMPTY = new SlotFilter(Ingredient.EMPTY, -1);
-	public static final TypeInfo TYPE_INFO = TypeInfo.INT.or(IngredientJS.TYPE_INFO).or(new JSObjectTypeInfo(List.of(new JSOptionalParam("item", IngredientJS.TYPE_INFO, true), new JSOptionalParam("index", TypeInfo.INT, true))));
+	public static final TypeInfo TYPE_INFO = TypeInfo.INT.or(IngredientWrapper.TYPE_INFO).or(new JSObjectTypeInfo(List.of(new JSOptionalParam("item", IngredientWrapper.TYPE_INFO, true), new JSOptionalParam("index", TypeInfo.INT, true))));
 
 	public static SlotFilter of(Ingredient ingredient, int index) {
 		return ingredient.isEmpty() && index == -1 ? EMPTY : new SlotFilter(ingredient, index);
@@ -41,7 +41,7 @@ public record SlotFilter(Ingredient item, int index) {
 		if (o instanceof Number num) {
 			return of(Ingredient.EMPTY, num.intValue());
 		} else if (o instanceof String || o instanceof Ingredient || o instanceof NativeRegExp || o instanceof Pattern) {
-			return of(IngredientJS.wrap(cx, o), -1);
+			return of(IngredientWrapper.wrap(cx, o), -1);
 		} else {
 			return (SlotFilter) ((RecordTypeInfo) target).wrap(cx, o, target);
 		}

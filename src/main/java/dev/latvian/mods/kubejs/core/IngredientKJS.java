@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.WithCodec;
@@ -75,7 +74,7 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 	@Override
 	default Object replaceThisWith(Context cx, Object with) {
 		var t = kjs$self();
-		var r = IngredientJS.wrap(cx, with);
+		var r = IngredientWrapper.wrap(cx, with);
 
 		if (!r.equals(t)) {
 			return r;

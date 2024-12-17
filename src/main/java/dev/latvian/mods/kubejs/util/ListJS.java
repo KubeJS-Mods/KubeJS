@@ -29,11 +29,6 @@ public interface ListJS {
 		return ofArray(o);
 	}
 
-	static List<?> orEmpty(@Nullable Object o) {
-		var l = of(o);
-		return l == null ? List.of() : l;
-	}
-
 	static List<?> orSelf(@Nullable Object o) {
 		var l = of(o);
 

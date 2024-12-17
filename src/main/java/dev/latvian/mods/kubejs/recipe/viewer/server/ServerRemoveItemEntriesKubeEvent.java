@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.viewer.server;
 
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.recipe.viewer.RemoveEntriesKubeEvent;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -16,6 +16,6 @@ public class ServerRemoveItemEntriesKubeEvent implements RemoveEntriesKubeEvent 
 
 	@Override
 	public void remove(Context cx, Object filter) {
-		removedEntries.add(IngredientJS.wrap(cx, filter));
+		removedEntries.add(IngredientWrapper.wrap(cx, filter));
 	}
 }

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.ingredient;
 
 import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 
@@ -14,7 +14,7 @@ public interface KubeJSIngredient extends ICustomIngredient, Predicate<ItemStack
 
 	@Override
 	default Stream<ItemStack> getItems() {
-		return ItemStackJS.getList().stream().filter(this);
+		return ItemWrapper.getList().stream().filter(this);
 	}
 
 	@Override

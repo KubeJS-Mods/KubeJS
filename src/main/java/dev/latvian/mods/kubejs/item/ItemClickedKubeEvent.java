@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
 import dev.latvian.mods.kubejs.player.KubePlayerEvent;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -63,6 +64,6 @@ public class ItemClickedKubeEvent implements KubePlayerEvent {
 	@Override
 	@HideFromJS
 	public TypeInfo getExitValueType() {
-		return ItemStackJS.TYPE_INFO;
+		return ItemWrapper.TYPE_INFO;
 	}
 }

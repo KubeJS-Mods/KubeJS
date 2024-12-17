@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -62,7 +63,7 @@ public class ItemStackSet implements Iterable<ItemStack> {
 	}
 
 	public ItemStack[] toArray() {
-		return map.isEmpty() ? ItemStackJS.EMPTY_ARRAY : map.values().toArray(ItemStackJS.EMPTY_ARRAY);
+		return map.isEmpty() ? ItemWrapper.EMPTY_ARRAY : map.values().toArray(ItemWrapper.EMPTY_ARRAY);
 	}
 
 	public boolean isEmpty() {

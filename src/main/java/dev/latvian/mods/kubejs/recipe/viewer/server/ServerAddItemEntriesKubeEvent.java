@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.viewer.server;
 
-import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.recipe.viewer.AddEntriesKubeEvent;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +17,7 @@ public class ServerAddItemEntriesKubeEvent implements AddEntriesKubeEvent {
 	@Override
 	public void add(Context cx, Object[] items) {
 		for (var item : items) {
-			list.add(ItemStackJS.wrap(cx, item));
+			list.add(ItemWrapper.wrap(cx, item));
 		}
 	}
 }

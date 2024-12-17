@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.bindings;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
@@ -57,7 +56,7 @@ public interface SizedIngredientWrapper {
 			}
 		}
 
-		return IngredientJS.wrap(cx, from).kjs$asStack();
+		return IngredientWrapper.wrap(cx, from).kjs$asStack();
 	}
 
 	@HideFromJS
@@ -75,6 +74,6 @@ public interface SizedIngredientWrapper {
 			}
 		}
 
-		return IngredientJS.read(registries, reader).kjs$withCount(count);
+		return IngredientWrapper.read(registries, reader).kjs$withCount(count);
 	}
 }

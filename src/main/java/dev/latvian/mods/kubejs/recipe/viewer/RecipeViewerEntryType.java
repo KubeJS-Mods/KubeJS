@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.viewer;
 
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.core.FluidKJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.Lazy;
@@ -34,13 +34,13 @@ public class RecipeViewerEntryType {
 	}
 
 	public static final RecipeViewerEntryType ITEM = new RecipeViewerEntryType("item",
-		new Component<>(ItemStackJS.TYPE_INFO, ItemStack.STREAM_CODEC, ItemStack::isEmpty),
+		new Component<>(ItemWrapper.TYPE_INFO, ItemStack.STREAM_CODEC, ItemStack::isEmpty),
 		new Component<>(ItemPredicate.TYPE_INFO, Ingredient.CONTENTS_STREAM_CODEC, Ingredient::isEmpty),
-		new Component<>(ItemStackJS.ITEM_TYPE_INFO, ByteBufCodecs.registry(Registries.ITEM), i -> i == Items.AIR)
+		new Component<>(ItemWrapper.ITEM_TYPE_INFO, ByteBufCodecs.registry(Registries.ITEM), i -> i == Items.AIR)
 	) {
 		@Override
 		public Object wrapEntry(Context cx, Object from) {
-			return ItemStackJS.wrap(cx, from);
+			return ItemWrapper.wrap(cx, from);
 		}
 
 		@Override

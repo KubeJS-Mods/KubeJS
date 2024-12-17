@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.registry.BuilderBase;
+import dev.latvian.mods.kubejs.util.KubeResourceLocation;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.PaintingVariant;
@@ -29,8 +30,8 @@ public class PaintingVariantBuilder extends BuilderBase<PaintingVariant> {
 		return this;
 	}
 
-	public PaintingVariantBuilder assetId(ResourceLocation assetId) {
-		this.assetId = assetId;
+	public PaintingVariantBuilder assetId(KubeResourceLocation assetId) {
+		this.assetId = assetId.wrapped();
 		return this;
 	}
 }

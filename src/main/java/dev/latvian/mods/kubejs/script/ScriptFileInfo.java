@@ -14,13 +14,15 @@ public class ScriptFileInfo {
 	public final Path path;
 	public final String file;
 	public final ResourceLocation id;
+	public final String locationPath;
 	public final String location;
 
 	public ScriptFileInfo(ScriptPackInfo p, Path ph, String f) {
-		pack = p;
-		path = ph;
-		file = f;
-		id = ResourceLocation.fromNamespaceAndPath(pack.namespace, FILE_FIXER.matcher(pack.pathStart + file).replaceAll("_").toLowerCase(Locale.ROOT));
-		location = ID.string(pack.namespace + ":" + pack.pathStart + file);
+		this.pack = p;
+		this.path = ph;
+		this.file = f;
+		this.id = ResourceLocation.fromNamespaceAndPath(pack.namespace, FILE_FIXER.matcher(pack.pathStart + file).replaceAll("_").toLowerCase(Locale.ROOT));
+		this.locationPath = pack.pathStart + file;
+		this.location = ID.string(pack.namespace + ":" + locationPath);
 	}
 }

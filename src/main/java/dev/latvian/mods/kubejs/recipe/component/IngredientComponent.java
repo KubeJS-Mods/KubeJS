@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
@@ -62,12 +61,12 @@ public class IngredientComponent implements RecipeComponent<Ingredient> {
 
 	@Override
 	public TypeInfo typeInfo() {
-		return IngredientJS.TYPE_INFO;
+		return IngredientWrapper.TYPE_INFO;
 	}
 
 	@Override
 	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
-		return IngredientJS.isIngredientLike(from);
+		return IngredientWrapper.isIngredientLike(from);
 	}
 
 	@Override

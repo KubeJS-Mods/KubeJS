@@ -118,8 +118,6 @@ public class ScriptManager {
 			for (var fileInfo : pack.info.scripts) {
 				loadFile(pack, fileInfo);
 			}
-
-			pack.scripts.sort(null);
 		}
 
 		packs.put(pack.info.namespace, pack);
@@ -175,6 +173,8 @@ public class ScriptManager {
 
 		for (var pack : packs.values()) {
 			try {
+				pack.scripts.sort(null);
+
 				for (var file : pack.scripts) {
 					t++;
 					var start = System.currentTimeMillis();

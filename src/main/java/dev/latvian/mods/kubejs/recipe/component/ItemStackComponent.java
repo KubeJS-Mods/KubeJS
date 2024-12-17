@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
@@ -28,12 +28,12 @@ public class ItemStackComponent implements RecipeComponent<ItemStack> {
 
 	@Override
 	public TypeInfo typeInfo() {
-		return ItemStackJS.TYPE_INFO;
+		return ItemWrapper.TYPE_INFO;
 	}
 
 	@Override
 	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
-		return ItemStackJS.isItemStackLike(from);
+		return ItemWrapper.isItemStackLike(from);
 	}
 
 	@Override

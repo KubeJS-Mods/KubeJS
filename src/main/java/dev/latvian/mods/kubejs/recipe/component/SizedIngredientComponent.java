@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.bindings.SizedIngredientWrapper;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
@@ -35,7 +34,7 @@ public class SizedIngredientComponent implements RecipeComponent<SizedIngredient
 
 	@Override
 	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
-		return from instanceof SizedIngredient || IngredientJS.isIngredientLike(from);
+		return IngredientWrapper.isIngredientLike(from);
 	}
 
 	@Override

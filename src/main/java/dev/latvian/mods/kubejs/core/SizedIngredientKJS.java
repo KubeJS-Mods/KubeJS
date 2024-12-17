@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.rhino.Context;
@@ -15,7 +15,7 @@ public interface SizedIngredientKJS extends Replaceable, IngredientSupplierKJS, 
 
 	@Override
 	default Object replaceThisWith(Context cx, Object with) {
-		var ingredient = IngredientJS.wrap(cx, with);
+		var ingredient = IngredientWrapper.wrap(cx, with);
 
 		if (!ingredient.equals(kjs$self().ingredient())) {
 			return new SizedIngredient(ingredient, kjs$self().count());

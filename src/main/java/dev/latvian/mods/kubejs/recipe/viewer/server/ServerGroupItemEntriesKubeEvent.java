@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.viewer.server;
 
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.recipe.viewer.GroupEntriesKubeEvent;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.network.chat.Component;
@@ -17,6 +17,6 @@ public class ServerGroupItemEntriesKubeEvent implements GroupEntriesKubeEvent {
 
 	@Override
 	public void group(Context cx, Object filter, ResourceLocation groupId, Component description) {
-		list.add(new ItemData.Group(IngredientJS.wrap(cx, filter), groupId, description));
+		list.add(new ItemData.Group(IngredientWrapper.wrap(cx, filter), groupId, description));
 	}
 }

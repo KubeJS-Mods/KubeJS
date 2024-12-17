@@ -2,9 +2,9 @@ package dev.latvian.mods.kubejs.core;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
+import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
@@ -72,7 +72,7 @@ public interface ItemStackKJS extends
 			return kjs$equalsIgnoringCount(s);
 		}
 
-		return kjs$equalsIgnoringCount(ItemStackJS.wrap(cx, o));
+		return kjs$equalsIgnoringCount(ItemWrapper.wrap(cx, o));
 	}
 
 	default boolean kjs$equalsIgnoringCount(ItemStack stack) {
@@ -275,7 +275,7 @@ public interface ItemStackKJS extends
 	@Override
 	default Object replaceThisWith(Context cx, Object with) {
 		var t = kjs$self();
-		var r = ItemStackJS.wrap(cx, with);
+		var r = ItemWrapper.wrap(cx, with);
 
 		if (!ItemStack.isSameItemSameComponents(t, r)) {
 			r.setCount(t.getCount());

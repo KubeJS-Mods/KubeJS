@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.viewer.server;
 
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
+import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
 import dev.latvian.mods.kubejs.recipe.viewer.RegisterSubtypesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.viewer.SubtypeInterpreter;
 import dev.latvian.mods.rhino.Context;
@@ -22,6 +22,6 @@ public class ServerRegisterItemSubtypesKubeEvent implements RegisterSubtypesKube
 
 	@Override
 	public void useComponents(Context cx, Object filter, List<DataComponentType<?>> components) {
-		list.add(new ItemData.DataComponentSubtypes(IngredientJS.wrap(cx, filter), components));
+		list.add(new ItemData.DataComponentSubtypes(IngredientWrapper.wrap(cx, filter), components));
 	}
 }

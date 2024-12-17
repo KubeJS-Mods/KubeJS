@@ -70,7 +70,6 @@ import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
-import dev.latvian.mods.kubejs.item.ItemStackJS;
 import dev.latvian.mods.kubejs.item.ItemTintFunction;
 import dev.latvian.mods.kubejs.item.ItemToolTiers;
 import dev.latvian.mods.kubejs.item.JukeboxSongBuilder;
@@ -80,7 +79,6 @@ import dev.latvian.mods.kubejs.item.custom.DiggerItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.ShearsItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SmithingTemplateItemBuilder;
 import dev.latvian.mods.kubejs.item.custom.SwordItemBuilder;
-import dev.latvian.mods.kubejs.item.ingredient.IngredientJS;
 import dev.latvian.mods.kubejs.misc.CustomStatBuilder;
 import dev.latvian.mods.kubejs.misc.MobEffectBuilder;
 import dev.latvian.mods.kubejs.misc.PaintingVariantBuilder;
@@ -565,8 +563,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(Vec3.class, KubeJSTypeWrappers::vec3Of);
 		registry.register(Vec3i.class, KubeJSTypeWrappers::blockPosOf);
 
-		registry.register(Item.class, ItemStackJS::getRawItem);
-		registry.register(ItemLike.class, ItemStackJS::getRawItem);
+		registry.register(Item.class, ItemWrapper::wrapItem);
+		registry.register(ItemLike.class, ItemWrapper::wrapItem);
 		registry.registerEnumFromStringCodec(MobCategory.class, MobCategory.CODEC);
 		registry.register(ItemEnchantments.class, ItemEnchantmentsWrapper::from);
 
@@ -584,8 +582,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ColorRGBA.class, ColorWrapper::colorRGBAOf);
 
 		// KubeJS //
-		registry.register(ItemStack.class, ItemStackJS::wrap);
-		registry.register(Ingredient.class, IngredientJS::wrap);
+		registry.register(ItemStack.class, ItemWrapper::wrap);
+		registry.register(Ingredient.class, IngredientWrapper::wrap);
 		registry.register(ItemPredicate.class, ItemPredicate::wrap);
 		registry.register(SizedIngredient.class, SizedIngredientWrapper::wrap);
 		registry.register(BlockStatePredicate.class, BlockStatePredicate::wrap);
@@ -629,7 +627,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void registerTypeDescriptions(TypeDescriptionRegistry registry) {
-		registry.register(SlotFilter.class, ((RecordTypeInfo) TypeInfo.of(SlotFilter.class)).createCombinedType(TypeInfo.INT, IngredientJS.TYPE_INFO));
+		registry.register(SlotFilter.class, ((RecordTypeInfo) TypeInfo.of(SlotFilter.class)).createCombinedType(TypeInfo.INT, IngredientWrapper.TYPE_INFO));
 	}
 
 	@Override
@@ -722,9 +720,9 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	@Override
 	@SuppressWarnings("deprecation")
 	public void clearCaches() {
-		ItemStackJS.CACHED_ITEM_MAP.forget();
-		ItemStackJS.CACHED_ITEM_LIST.forget();
-		ItemStackJS.CACHED_ITEM_TYPE_LIST.forget();
+		ItemWrapper.CACHED_ITEM_MAP.forget();
+		ItemWrapper.CACHED_ITEM_LIST.forget();
+		ItemWrapper.CACHED_ITEM_TYPE_LIST.forget();
 	}
 
 	@Override

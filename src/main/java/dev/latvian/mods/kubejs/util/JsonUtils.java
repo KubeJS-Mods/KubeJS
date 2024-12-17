@@ -7,18 +7,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.internal.Streams;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -26,7 +20,7 @@ import java.util.Map;
 
 public interface JsonUtils {
 	@HideFromJS
-	Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().create();
+	Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().serializeNulls().create();
 
 	static JsonElement copy(@Nullable JsonElement element) {
 		if (element == null || element.isJsonNull()) {
@@ -167,35 +161,14 @@ public interface JsonUtils {
 	}
 
 	static String toString(JsonElement json) {
-		var writer = new StringWriter();
-
-		try {
-			var jsonWriter = new JsonWriter(writer);
-			jsonWriter.setSerializeNulls(true);
-			jsonWriter.setLenient(true);
-			jsonWriter.setHtmlSafe(false);
-			Streams.write(json, jsonWriter);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-
-		return writer.toString();
+		return GSON.toJson(json);
 	}
 
 	static String toPrettyString(JsonElement json) {
 		var writer = new StringWriter();
-
-		try {
-			var jsonWriter = new JsonWriter(writer);
-			jsonWriter.setIndent("\t");
-			jsonWriter.setSerializeNulls(true);
-			jsonWriter.setLenient(true);
-			jsonWriter.setHtmlSafe(false);
-			Streams.write(json, jsonWriter);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-
+		var jsonWriter = new JsonWriter(writer);
+		jsonWriter.setIndent("\t");
+		GSON.toJson(json, jsonWriter);
 		return writer.toString();
 	}
 
@@ -205,16 +178,7 @@ public interface JsonUtils {
 		}
 
 		try {
-			var jsonReader = new JsonReader(new StringReader(string));
-			JsonElement element;
-			jsonReader.setLenient(true);
-			element = Streams.parse(jsonReader);
-
-			if (!element.isJsonNull() && jsonReader.peek() != JsonToken.END_DOCUMENT) {
-				throw new JsonSyntaxException("Did not consume the entire document.");
-			}
-
-			return element;
+			return GSON.fromJson(string, JsonElement.class);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

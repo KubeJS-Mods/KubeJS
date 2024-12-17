@@ -107,6 +107,7 @@ public class ScriptFile implements Comparable<ScriptFile> {
 
 	@Override
 	public int compareTo(ScriptFile o) {
-		return Integer.compare(o.priority, priority);
+		int i = Integer.compare(o.priority, priority);
+		return i == 0 ? info.locationPath.compareToIgnoreCase(o.info.locationPath) : i;
 	}
 }

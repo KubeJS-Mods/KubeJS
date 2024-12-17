@@ -5,15 +5,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.internal.Streams;
-import com.google.gson.stream.JsonWriter;
 import dev.latvian.mods.rhino.Context;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.Writer;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -91,15 +88,8 @@ public class JsonIO {
 	public static void write(Path path, @Nullable JsonElement json) throws IOException {
 		if (json == null || json.isJsonNull()) {
 			Files.deleteIfExists(path);
-			return;
-		}
-
-		try (Writer fileWriter = Files.newBufferedWriter(path)) {
-			var jsonWriter = new JsonWriter(fileWriter);
-			jsonWriter.setIndent("\t");
-			jsonWriter.setSerializeNulls(true);
-			jsonWriter.setLenient(true);
-			Streams.write(json, jsonWriter);
+		} else {
+			Files.writeString(path, JsonUtils.toPrettyString(json));
 		}
 	}
 
