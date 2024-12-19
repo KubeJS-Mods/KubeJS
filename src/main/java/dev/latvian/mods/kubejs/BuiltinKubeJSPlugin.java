@@ -536,8 +536,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(RegistryPredicate.class, RegistryPredicate::of);
 
 		// Java / Minecraft //
-		registry.register(String.class, String::valueOf);
-		registry.register(CharSequence.class, String::valueOf);
+		// registry.register(String.class, String::valueOf);
+		// registry.register(CharSequence.class, String::valueOf);
 		registry.register(UUID.class, UUIDWrapper::fromString);
 		registry.register(Pattern.class, RegExpKJS::wrap);
 		registry.register(JsonObject.class, JsonUtils::objectOf);

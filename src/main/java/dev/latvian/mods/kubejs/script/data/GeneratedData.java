@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.script.data;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
@@ -22,7 +23,11 @@ public record GeneratedData(ResourceLocation id, Supplier<byte[]> data) implemen
 		var json = new JsonObject();
 		var pack = new JsonObject();
 		pack.addProperty("description", "KubeJS Pack");
-		pack.addProperty("pack_format", 15);
+		pack.addProperty("pack_format", 8);
+		var arr = new JsonArray();
+		arr.add(8);
+		arr.add(99);
+		pack.add("supported_formats", arr);
 		json.add("pack", pack);
 		return json.toString().getBytes(StandardCharsets.UTF_8);
 	}));

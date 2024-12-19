@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.util;
 
-import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
 import io.netty.buffer.ByteBuf;
@@ -25,60 +24,42 @@ public interface TimeJS {
 		} else if (o instanceof CharSequence) {
 			var matcher = TEMPORAL_AMOUNT_PATTERN.matcher(o.toString());
 
-			var millis = 0L;
-			var nanos = 0L;
-			var ticks = -1L;
+			var millis = 0D;
+			var nanos = 0D;
+			var ticks = Double.NaN;
 
 			while (matcher.find()) {
 				var amount = Double.parseDouble(matcher.group(1));
 
 				switch (matcher.group(2)) {
 					case "t" -> {
-						if (ticks == -1L) {
-							ticks = 0L;
+						if (Double.isNaN(ticks)) {
+							ticks = 0D;
 						}
 
 						ticks += amount;
 					}
 
-					case "ns" -> nanos += (long) amount;
-					case "ms" -> millis += (long) amount;
-					case "s" -> millis = (long) (amount * 1000D);
-					case "m" -> millis = (long) (amount * 60000D);
-					case "h" -> millis = (long) (amount * 60000D) * 60L;
-					case "d" -> millis = (long) (amount * 24D * 86400L) * 1000L;
-					case "w" -> millis = (long) (amount * 24D * 86400L) * 7000L;
-					case "M" -> millis = (long) (amount * 31556952D / 12D) * 1000L;
-					case "y" -> millis = (long) (amount * 31556952D) * 1000L;
+					case "ns" -> nanos += amount;
+					case "ms" -> millis += amount;
+					case "s" -> millis = amount * 1000D;
+					case "m" -> millis = amount * 60000D;
+					case "h" -> millis = amount * 60000D * 60L;
+					case "d" -> millis = amount * 24D * 86400L * 1000L;
+					case "w" -> millis = amount * 24D * 86400L * 7000L;
+					case "M" -> millis = amount * 31556952D / 12D * 1000L;
+					case "y" -> millis = amount * 31556952D * 1000L;
 					default -> throw new IllegalArgumentException("Invalid temporal unit: " + matcher.group(2));
 				}
 			}
 
-			if (ticks != -1L) {
-				return new TickDuration(ticks + millis / 50L);
+			if (!Double.isNaN(ticks)) {
+				return TickDuration.of((long) (ticks + millis / 50D));
 			}
 
-			return Duration.ofMillis(millis).plusNanos(nanos);
+			return Duration.ofMillis((long) millis).plusNanos((long) nanos);
 		} else {
 			throw new IllegalArgumentException("Invalid temporal amount: " + o);
-		}
-	}
-
-	static long tickDurationOf(Object o) {
-		if (o instanceof Number n) {
-			return n.longValue();
-		} else if (o instanceof JsonPrimitive json) {
-			return json.getAsLong();
-		}
-
-		var t = wrapTemporalAmount(o);
-
-		if (t instanceof TickDuration(long ticks)) {
-			return ticks;
-		} else if (t instanceof Duration d) {
-			return d.toMillis() / 50L;
-		} else {
-			return 0L;
 		}
 	}
 

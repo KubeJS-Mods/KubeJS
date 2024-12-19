@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.web.local;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.apps.tinyserver.ServerRegistry;
+import dev.latvian.apps.tinyserver.content.MimeType;
 import dev.latvian.apps.tinyserver.http.response.HTTPPayload;
 import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
 import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
@@ -14,6 +15,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.web.JsonContent;
 import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
@@ -36,12 +38,19 @@ import org.jetbrains.annotations.Nullable;
 import javax.imageio.ImageIO;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class KubeJSWeb {
 	public static WSHandler<KJSHTTPRequest, KJSWSSession> UPDATES = WSHandler.empty();
@@ -116,6 +125,7 @@ public class KubeJSWeb {
 		registry.get("/api/mods", KubeJSWeb::getMods);
 		registry.get("/api/mods/{id}/icon", KubeJSWeb::getModIcon);
 
+		registry.get("/api/assets.zip", KubeJSWeb::getAssetsZip);
 		registry.get("/api/browse", KubeJSWeb::getBrowse);
 		registry.get("/api/browse/{directory}", KubeJSWeb::getBrowseDir);
 		registry.get("/api/browse/{directory}/<file>", KubeJSWeb::getBrowseFile);
@@ -223,6 +233,70 @@ public class KubeJSWeb {
 		}
 
 		return HTTPResponse.ok().png(img);
+	}
+
+	private static HTTPResponse getAssetsZip(KJSHTTPRequest req) throws IOException {
+		if (Files.notExists(KubeJSPaths.ASSETS)) {
+			throw new NotFoundError("kubejs/assets directory is not found!");
+		}
+
+		var allFiles = new HashMap<String, byte[]>();
+		var allZipFiles = new HashMap<String, byte[]>();
+
+		for (var rpath : Files.list(KubeJSPaths.ASSETS).sorted((a, b) -> a.getFileName().toString().compareToIgnoreCase(b.getFileName().toString())).toList()) {
+			var fn = rpath.getFileName().toString();
+
+			if (fn.endsWith(".zip")) {
+				try (var fs = FileSystems.newFileSystem(rpath)) {
+					var root = fs.getPath(".");
+
+					for (var cpath : Files.walk(root).toList()) {
+						if (Files.isRegularFile(cpath)) {
+							var zpath = root.relativize(cpath).toString().replace('\\', '/');
+							allZipFiles.put(zpath, Files.readAllBytes(cpath));
+						}
+					}
+				}
+			} else if (Files.isDirectory(rpath)) {
+				for (var path : Files.walk(rpath).toList()) {
+					var zpath = KubeJSPaths.DIRECTORY.relativize(path).toString().replace('\\', '/');
+
+					if (Files.isRegularFile(path)) {
+						allFiles.put(zpath, Files.readAllBytes(path));
+					}
+				}
+			}
+		}
+
+		for (var entry : allZipFiles.entrySet()) {
+			allFiles.putIfAbsent(entry.getKey(), entry.getValue());
+		}
+
+		allFiles.remove("LICENSE");
+		allFiles.remove("pack.mcmeta");
+		allFiles.remove("pack.png");
+
+		var list = allFiles.entrySet().stream().sorted((a, b) -> a.getKey().compareToIgnoreCase(b.getKey())).toList();
+
+		var zipBytes = new ByteArrayOutputStream();
+
+		try (var out = new ZipOutputStream(zipBytes)) {
+			for (var path : list) {
+				out.putNextEntry(new ZipEntry(path.getKey()));
+				out.write(path.getValue());
+				out.closeEntry();
+			}
+
+			out.putNextEntry(new ZipEntry("pack.mcmeta"));
+			out.write(GeneratedData.PACK_META.data().get());
+			out.closeEntry();
+
+			out.putNextEntry(new ZipEntry("pack.png"));
+			out.write(GeneratedData.PACK_ICON.data().get());
+			out.closeEntry();
+		}
+
+		return HTTPResponse.ok().content(zipBytes.toByteArray(), MimeType.ZIP).publicCache(Duration.ofSeconds(15L));
 	}
 
 	private static HTTPResponse getBrowse(KJSHTTPRequest req) {

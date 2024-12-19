@@ -35,7 +35,6 @@ import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ClickEvent;
@@ -293,7 +292,7 @@ public class KubeJSCommands {
 
 	private static int customCommand(TargetedEventHandler<String> event, CommandSourceStack source, String id, String input) {
 		if (event.hasListeners(id)) {
-			var result = event.post(new BasicCommandKubeEvent(source.getLevel(), source.getEntity(), BlockPos.containing(source.getPosition()), id, input.trim()), id);
+			var result = event.post(new BasicCommandKubeEvent(source, id, input.trim()), id);
 
 			if (result.value() instanceof Throwable ex) {
 				source.sendFailure(Component.literal(ex.toString()));

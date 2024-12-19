@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.util;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.RegistryObjectKJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
@@ -91,7 +92,7 @@ public interface ID {
 		try {
 			return ResourceLocation.parse(s);
 		} catch (ResourceLocationException ex) {
-			throw new IllegalArgumentException("Could not create ID from '%s'!".formatted(s));
+			throw new KubeRuntimeException("Could not create ID from '%s'!".formatted(s));
 		}
 	}
 

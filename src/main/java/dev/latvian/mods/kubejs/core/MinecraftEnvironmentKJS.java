@@ -15,7 +15,7 @@ public interface MinecraftEnvironmentKJS extends MessageSenderKJS {
 	}
 
 	default ScheduledEvents.ScheduledEvent kjs$scheduleInTicks(long ticks, ScheduledEvents.Callback callback) {
-		return kjs$getScheduledEvents().schedule(new TickDuration(ticks), false, callback);
+		return kjs$getScheduledEvents().schedule(TickDuration.of(ticks), false, callback);
 	}
 
 	default ScheduledEvents.ScheduledEvent kjs$scheduleRepeating(TemporalAmount timer, ScheduledEvents.Callback callback) {
@@ -23,6 +23,6 @@ public interface MinecraftEnvironmentKJS extends MessageSenderKJS {
 	}
 
 	default ScheduledEvents.ScheduledEvent kjs$scheduleRepeatingInTicks(long ticks, ScheduledEvents.Callback callback) {
-		return kjs$getScheduledEvents().schedule(new TickDuration(ticks), true, callback);
+		return kjs$getScheduledEvents().schedule(TickDuration.of(ticks), true, callback);
 	}
 }

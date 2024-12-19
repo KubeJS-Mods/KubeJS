@@ -35,7 +35,7 @@ public interface KubeJSNet {
 
 	@SubscribeEvent
 	static void register(RegisterPayloadHandlersEvent event) {
-		var reg = event.registrar("1");
+		var reg = event.registrar("1").optional();
 
 		reg.playToClient(WEB_SERVER_JSON_UPDATE, WebServerUpdateJSONPayload.STREAM_CODEC, WebServerUpdateJSONPayload::handle);
 		reg.playToClient(WEB_SERVER_NBT_UPDATE, WebServerUpdateNBTPayload.STREAM_CODEC, WebServerUpdateNBTPayload::handle);
