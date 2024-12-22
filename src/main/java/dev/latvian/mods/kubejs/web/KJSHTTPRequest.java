@@ -39,6 +39,7 @@ public class KJSHTTPRequest extends HTTPRequest {
 	}
 
 	public DataComponentPatch components(DynamicOps<Tag> ops) throws CommandSyntaxException {
-		return DataComponentWrapper.patchOrEmptyOf(ops, "[" + query().get("components").asString() + "]");
+		var str = query("components").asString();
+		return str.isEmpty() ? DataComponentPatch.EMPTY : DataComponentWrapper.patchOrEmptyOf(ops, "[" + str + "]");
 	}
 }

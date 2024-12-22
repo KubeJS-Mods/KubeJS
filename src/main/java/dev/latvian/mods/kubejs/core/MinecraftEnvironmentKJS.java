@@ -14,15 +14,15 @@ public interface MinecraftEnvironmentKJS extends MessageSenderKJS {
 		return kjs$getScheduledEvents().schedule(timer, false, callback);
 	}
 
-	default ScheduledEvents.ScheduledEvent kjs$scheduleInTicks(long ticks, ScheduledEvents.Callback callback) {
-		return kjs$getScheduledEvents().schedule(TickDuration.of(ticks), false, callback);
+	default ScheduledEvents.ScheduledEvent kjs$scheduleInTicks(TickDuration ticks, ScheduledEvents.Callback callback) {
+		return kjs$getScheduledEvents().schedule(ticks, false, callback);
 	}
 
 	default ScheduledEvents.ScheduledEvent kjs$scheduleRepeating(TemporalAmount timer, ScheduledEvents.Callback callback) {
 		return kjs$getScheduledEvents().schedule(timer, false, callback);
 	}
 
-	default ScheduledEvents.ScheduledEvent kjs$scheduleRepeatingInTicks(long ticks, ScheduledEvents.Callback callback) {
-		return kjs$getScheduledEvents().schedule(TickDuration.of(ticks), true, callback);
+	default ScheduledEvents.ScheduledEvent kjs$scheduleRepeatingInTicks(TickDuration ticks, ScheduledEvents.Callback callback) {
+		return kjs$getScheduledEvents().schedule(ticks, true, callback);
 	}
 }
