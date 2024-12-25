@@ -7,12 +7,16 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
 import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
+import dev.latvian.apps.tinyserver.http.response.error.client.BadRequestError;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.bindings.UUIDWrapper;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.CachedComponentObject;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.Lazy;
+import dev.latvian.mods.kubejs.util.NameProvider;
 import dev.latvian.mods.kubejs.web.JsonContent;
 import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
 import dev.latvian.mods.kubejs.web.LocalWebServer;
@@ -20,36 +24,57 @@ import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 public class KubeJSClientWeb {
-	public static final Lazy<Map<UUID, CachedComponentObject<Item, ItemStack>>> CACHED_ITEM_SEARCH = Lazy.of(() -> {
+	private static final Lazy<CreativeModeTab> SEARCH_TAB = Lazy.of(() -> BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.SEARCH));
+
+	private static final Lazy<Map<Item, NameProvider<ItemStack>>> ITEM_NAME_PROVIDERS = Lazy.of(() -> NameProvider.create(reg -> KubeJSPlugins.forEachPlugin(p -> p.registerItemNameProviders(reg))));
+
+	public static Map<UUID, CachedComponentObject<Item, ItemStack>> createItemSearch(boolean useSearchTab) {
 		var map = new LinkedHashMap<UUID, CachedComponentObject<Item, ItemStack>>();
 
-		for (var stack : BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.SEARCH).getSearchTabDisplayItems()) {
-			var patch = stack.getComponentsPatch();
-			map.put(UUID.randomUUID(), new CachedComponentObject<>(UUID.randomUUID(), stack.getItem(), stack, patch));
+		if (useSearchTab) {
+			for (var stack : SEARCH_TAB.get().getSearchTabDisplayItems()) {
+				var obj = CachedComponentObject.ofItemStack(stack, false);
+				map.put(obj.cacheKey(), obj);
+			}
+		} else {
+			for (var item : BuiltInRegistries.ITEM) {
+				if (item != Items.AIR) {
+					var obj = CachedComponentObject.ofItemStack(item.getDefaultInstance(), false);
+					map.put(obj.cacheKey(), obj);
+				}
+			}
 		}
 
 		return map;
-	});
+	}
 
-	public static final Lazy<Map<CachedComponentObject, UUID>> REVERSE_CACHED_ITEM_SEARCH = Lazy.of(() -> {
-		var map = new HashMap<CachedComponentObject, UUID>();
-		CACHED_ITEM_SEARCH.get().forEach((uuid, obj) -> map.put(obj, uuid));
+	public static Map<CachedComponentObject<Item, ItemStack>, UUID> createReverseItemSearch(Map<UUID, CachedComponentObject<Item, ItemStack>> original) {
+		var map = new HashMap<CachedComponentObject<Item, ItemStack>, UUID>();
+		original.forEach((uuid, obj) -> map.put(obj, uuid));
 		return map;
-	});
+	}
 
 	public static void register(LocalWebServerRegistry registry) {
 		KubeJSWeb.addScriptTypeEndpoints(registry, ScriptType.CLIENT, KubeJS.getClientScriptManager()::reload);
@@ -103,18 +128,60 @@ public class KubeJSClientWeb {
 	}
 
 	private static HTTPResponse getSearchItems(KJSHTTPRequest req) {
-		return HTTPResponse.ok().content(JsonContent.object(json -> {
-			var jsonOps = Minecraft.getInstance().level == null ? req.registries().json() : Minecraft.getInstance().level.registryAccess().createSerializationContext(JsonOps.INSTANCE);
-			var nbtOps = Minecraft.getInstance().level == null ? req.registries().nbt() : Minecraft.getInstance().level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
-			var results = new JsonArray();
-			var iconPathRoot = LocalWebServer.instance().url() + "/img/64/item/";
+		var level = Minecraft.getInstance().level;
+		var jsonOps = level == null ? req.registries().json() : level.registryAccess().createSerializationContext(JsonOps.INSTANCE);
+		var nbtOps = level == null ? req.registries().nbt() : level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+		var results = new JsonArray();
+		var itemSearch = createItemSearch(level != null);
+		var search = req.query("search").asString().toLowerCase();
+		var includeTags = req.query("tags").asBoolean(false);
+		var renderIcons = req.query("render-icons").asInt(0);
 
-			for (var item : CACHED_ITEM_SEARCH.get().values()) {
+		if (renderIcons > 1024) {
+			throw new BadRequestError("render-icons value too large, max 1024!");
+		}
+
+		var localPath = "local/kubejs/cache/web/img/item/";
+		var iconPathRoot = renderIcons > 0 ? (KubeJSPaths.GAMEDIR.toUri() + localPath) : (LocalWebServer.instance().url() + "/img/64/item/");
+
+		if (renderIcons > 0) {
+			var futures = new ArrayList<CompletableFuture<Void>>(itemSearch.size());
+
+			try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+				for (var item : itemSearch.values()) {
+					futures.add(CompletableFuture.runAsync(() -> item.iconPath().setValue(ImageGenerator.renderItem(req, renderIcons, item.stack(), false).pathStr()), executor));
+				}
+
+				CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+			}
+		}
+
+		var registries = level != null ? level.registryAccess() : RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+
+		return HTTPResponse.ok().content(JsonContent.object(json -> {
+			json.addProperty("world", level != null);
+
+			for (var item : itemSearch.values()) {
 				var o = new JsonObject();
+
+				var nameProvider = ITEM_NAME_PROVIDERS.get().get(item.value());
+				var nameProviderName = nameProvider == null ? null : nameProvider.getName(registries, item.stack());
+				var name = (nameProviderName == null ? item.stack().getHoverName() : nameProviderName).getString();
+
+				if (!search.isEmpty() && !name.toLowerCase().contains(search)) {
+					continue;
+				}
+
 				o.addProperty("cache_key", UUIDWrapper.toString(item.cacheKey()));
 				o.addProperty("id", item.value().kjs$getId());
-				o.addProperty("name", item.stack().getHoverName().getString());
-				o.addProperty("icon_path", item.stack().kjs$getWebIconURL(nbtOps, 64).fullString().substring(iconPathRoot.length()));
+				o.addProperty("name", name);
+				o.addProperty("icon_path", renderIcons > 0 ? item.iconPath().getValue().substring(localPath.length()) : item.stack().kjs$getWebIconURL(nbtOps, 64).fullString().substring(iconPathRoot.length()));
+
+				var block = item.value() instanceof BlockItem b ? b.getBlock() : Blocks.AIR;
+
+				if (block != Blocks.AIR) {
+					o.addProperty("block", block.kjs$getId());
+				}
 
 				var patch = item.components();
 
@@ -138,14 +205,16 @@ public class KubeJSClientWeb {
 					}
 				}
 
-				var tags = new JsonArray();
+				if (includeTags) {
+					var tags = new JsonArray();
 
-				for (var t : item.value().builtInRegistryHolder().tags().toList()) {
-					tags.add(t.location().toString());
-				}
+					for (var t : item.value().builtInRegistryHolder().tags().toList()) {
+						tags.add(t.location().toString());
+					}
 
-				if (!tags.isEmpty()) {
-					o.add("tags", tags);
+					if (!tags.isEmpty()) {
+						o.add("tags", tags);
+					}
 				}
 
 				results.add(o);
@@ -157,20 +226,24 @@ public class KubeJSClientWeb {
 	}
 
 	private static HTTPResponse getSearchBlocks(KJSHTTPRequest req) {
+		var includeTags = req.query("tags").asBoolean(false);
+
 		return HTTPResponse.ok().content(JsonContent.array(json -> {
 			for (var block : BuiltInRegistries.BLOCK) {
 				var o = new JsonObject();
 				o.addProperty("id", block.kjs$getId());
 				o.addProperty("name", Component.translatable(block.getDescriptionId()).getString());
 
-				var tags = new JsonArray();
+				if (includeTags) {
+					var tags = new JsonArray();
 
-				for (var t : block.builtInRegistryHolder().tags().toList()) {
-					tags.add(t.location().toString());
-				}
+					for (var t : block.builtInRegistryHolder().tags().toList()) {
+						tags.add(t.location().toString());
+					}
 
-				if (!tags.isEmpty()) {
-					o.add("tags", tags);
+					if (!tags.isEmpty()) {
+						o.add("tags", tags);
+					}
 				}
 
 				json.add(o);
@@ -179,20 +252,24 @@ public class KubeJSClientWeb {
 	}
 
 	private static HTTPResponse getSearchFluids(KJSHTTPRequest req) {
+		var includeTags = req.query("tags").asBoolean(false);
+
 		return HTTPResponse.ok().content(JsonContent.array(json -> {
 			for (var fluid : BuiltInRegistries.FLUID) {
 				var o = new JsonObject();
 				o.addProperty("id", fluid.kjs$getId());
 				o.addProperty("name", fluid.getFluidType().getDescription().getString());
 
-				var tags = new JsonArray();
+				if (includeTags) {
+					var tags = new JsonArray();
 
-				for (var t : fluid.builtInRegistryHolder().tags().toList()) {
-					tags.add(t.location().toString());
-				}
+					for (var t : fluid.builtInRegistryHolder().tags().toList()) {
+						tags.add(t.location().toString());
+					}
 
-				if (!tags.isEmpty()) {
-					o.add("tags", tags);
+					if (!tags.isEmpty()) {
+						o.add("tags", tags);
+					}
 				}
 
 				json.add(o);

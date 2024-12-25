@@ -10,6 +10,7 @@ import net.minecraft.util.thread.BlockableEventLoop;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,7 @@ public record LocalWebServer(HTTPServer<KJSHTTPRequest> server, String url, List
 				registry.server.setPort(WebServerProperties.get().port);
 				registry.server.setMaxPortShift(10);
 				registry.server.setMaxKeepAliveConnections(3);
+				registry.server.setKeepAliveTimeout(Duration.ofMinutes(5L));
 
 				int port = registry.server.start();
 				var url = "http://localhost:" + port;

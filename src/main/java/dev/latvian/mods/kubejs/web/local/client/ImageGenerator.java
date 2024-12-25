@@ -82,6 +82,9 @@ public class ImageGenerator {
 	private record RenderImage(Minecraft mc, GuiGraphics graphics, int size) {
 	}
 
+	public record CachedImage(HTTPResponse response, @Nullable String pathStr) {
+	}
+
 	private record BodyKey(byte[] bytes) {
 		@Override
 		public int hashCode() {
@@ -108,11 +111,11 @@ public class ImageGenerator {
 		return target;
 	}
 
-	private static HTTPResponse renderCanvas(KJSHTTPRequest req, int canvasSize, String dir, @Nullable ByteBuf cacheBuf, boolean wildcard, Consumer<RenderImage> render) {
-		int size = req.variable("size").asInt();
+	private static CachedImage renderCanvas(KJSHTTPRequest req, int canvasSize, int imageSize, String dir, @Nullable ByteBuf cacheBuf, boolean wildcard, Consumer<RenderImage> render) {
+		int size = imageSize > 0 ? imageSize : req.variable("size").asInt();
 
 		if (size < 1 || size > 1024) {
-			return HTTPStatus.BAD_REQUEST.text("Invalid size, must be [1, 1024]");
+			return new CachedImage(HTTPStatus.BAD_REQUEST.text("Invalid size, must be [1, 1024]"), null);
 		}
 
 		if (req.query().containsKey("uncached")) {
@@ -127,7 +130,8 @@ public class ImageGenerator {
 		var cachePath = cacheUUIDStr == null ? null : KubeJSPaths.dir(KubeJSPaths.LOCAL.resolve("cache/web/img/" + dir + "/" + cacheUUIDStr.substring(0, 2))).resolve(cacheUUIDStr + "_" + size + ".png");
 
 		if (cachePath != null && Files.exists(cachePath)) {
-			return HTTPResponse.ok().content(cachePath).header("X-KubeJS-Cache-Key", cacheUUIDStr).header("X-KubeJS-Cache-Path", KubeJSPaths.GAMEDIR.relativize(cachePath).toString().replace('\\', '/'));
+			var pathStr = KubeJSPaths.GAMEDIR.relativize(cachePath).toString().replace('\\', '/');
+			return new CachedImage(HTTPResponse.ok().content(cachePath).header("X-KubeJS-Cache-Key", cacheUUIDStr).header("X-KubeJS-Cache-Path", pathStr), pathStr);
 		}
 
 		var bytes = req.supplyInMainThread(() -> {
@@ -196,17 +200,18 @@ public class ImageGenerator {
 			} catch (Exception ignore) {
 			}
 
-			return HTTPResponse.ok().content(bytes, "image/png").header("X-KubeJS-Cache-Key", cacheUUIDStr).header("X-KubeJS-Cache-Path", KubeJSPaths.GAMEDIR.relativize(cachePath).toString().replace('\\', '/'));
+			var pathStr = KubeJSPaths.GAMEDIR.relativize(cachePath).toString().replace('\\', '/');
+			return new CachedImage(HTTPResponse.ok().content(bytes, "image/png").header("X-KubeJS-Cache-Key", cacheUUIDStr).header("X-KubeJS-Cache-Path", pathStr), pathStr);
 		}
 
-		return HTTPResponse.ok().content(bytes, "image/png");
+		return new CachedImage(HTTPResponse.ok().content(bytes, "image/png"), null);
 	}
 
-	private static HTTPResponse renderAnimated(KJSHTTPRequest req, String dir, @Nullable ByteBuf cacheBuf, List<HTTPResponse> responses) throws Exception {
+	private static CachedImage renderAnimated(KJSHTTPRequest req, String dir, @Nullable ByteBuf cacheBuf, List<CachedImage> images) throws Exception {
 		int size = req.variable("size").asInt();
 
 		if (size < 1 || size > 1024) {
-			return HTTPStatus.BAD_REQUEST.text("Invalid size, must be [1, 1024]");
+			return new CachedImage(HTTPStatus.BAD_REQUEST.text("Invalid size, must be [1, 1024]"), null);
 		}
 
 		if (req.query().containsKey("uncached")) {
@@ -217,7 +222,8 @@ public class ImageGenerator {
 		var cachePath = cacheUUIDStr == null ? null : KubeJSPaths.dir(KubeJSPaths.LOCAL.resolve("cache/web/img/" + dir + "/" + cacheUUIDStr.substring(0, 2))).resolve(cacheUUIDStr + "_" + size + ".gif");
 
 		if (cachePath != null && Files.exists(cachePath)) {
-			return HTTPResponse.ok().content(cachePath).header("X-KubeJS-Cache-Key", cacheUUIDStr).header("X-KubeJS-Cache-Path", KubeJSPaths.GAMEDIR.relativize(cachePath).toString().replace('\\', '/'));
+			var pathStr = KubeJSPaths.GAMEDIR.relativize(cachePath).toString().replace('\\', '/');
+			return new CachedImage(HTTPResponse.ok().content(cachePath).header("X-KubeJS-Cache-Key", cacheUUIDStr).header("X-KubeJS-Cache-Path", pathStr), pathStr);
 		}
 
 		var outputStream = new ByteArrayOutputStream();
@@ -233,10 +239,10 @@ public class ImageGenerator {
 		var bodyKeys = new HashSet<BodyKey>();
 
 		req.runInMainThread(() -> {
-			for (var response : responses) {
+			for (var image : images) {
 				try {
 					var content = new ContentGrabber(LocalWebServer.SERVER_NAME, req.startTime());
-					response.build(content);
+					image.response().build(content);
 
 					if (content.body != null && bodyKeys.add(new BodyKey(content.body))) {
 						encoder.addFrame(ImageIO.read(new ByteArrayInputStream(content.body)));
@@ -256,27 +262,38 @@ public class ImageGenerator {
 			} catch (Exception ignore) {
 			}
 
-			return HTTPResponse.ok().content(bytes, "image/gif").header("X-KubeJS-Cache-Key", cacheUUIDStr).header("X-KubeJS-Cache-Path", KubeJSPaths.GAMEDIR.relativize(cachePath).toString().replace('\\', '/'));
+			var pathStr = KubeJSPaths.GAMEDIR.relativize(cachePath).toString().replace('\\', '/');
+			return new CachedImage(HTTPResponse.ok().content(bytes, "image/gif").header("X-KubeJS-Cache-Key", cacheUUIDStr).header("X-KubeJS-Cache-Path", pathStr), pathStr);
 		}
 
-		return HTTPResponse.ok().content(bytes, "image/gif");
+		return new CachedImage(HTTPResponse.ok().content(bytes, "image/gif"), null);
+	}
+
+	public static HTTPResponse renderAllItems(KJSHTTPRequest req) throws Exception {
+		int size = req.variable("size").asInt();
+
+		if (size < 1 || size > 1024) {
+			return HTTPStatus.BAD_REQUEST.text("Invalid size, must be [1, 1024]");
+		}
+
+		return HTTPResponse.noContent();
 	}
 
 	public static HTTPResponse item(KJSHTTPRequest req) throws Exception {
 		var stack = BuiltInRegistries.ITEM.get(req.id()).getDefaultInstance();
 		stack.applyComponents(req.components(req.registries().nbt()));
-		return renderItem(req, stack, req.query().containsKey("wildcard"));
+		return renderItem(req, 0, stack, req.query().containsKey("wildcard")).response();
 	}
 
-	public static HTTPResponse renderItem(KJSHTTPRequest req, ItemStack stack, boolean wildcard) {
+	public static CachedImage renderItem(KJSHTTPRequest req, int imageSize, ItemStack stack, boolean wildcard) {
 		if (stack.isEmpty()) {
-			return HTTPStatus.NOT_FOUND;
+			return new CachedImage(HTTPStatus.NOT_FOUND, null);
 		}
 
 		var buf = new FriendlyByteBuf(Unpooled.buffer());
 		CachedComponentObject.writeCacheKey(buf, stack.getItem(), DataComponentWrapper.visualPatch(stack.getComponentsPatch()));
 
-		return renderCanvas(req, 16, "item", buf, wildcard, render -> {
+		return renderCanvas(req, 16, imageSize, "item", buf, wildcard, render -> {
 			render.graphics.renderFakeItem(stack, 0, 0, 0);
 			render.graphics.renderItemDecorations(render.mc.font, stack, 0, 0);
 		});
@@ -284,12 +301,12 @@ public class ImageGenerator {
 
 	public static HTTPResponse block(KJSHTTPRequest req) throws Exception {
 		var state = BlockWrapper.withProperties(BuiltInRegistries.BLOCK.get(req.id()).defaultBlockState(), req.query());
-		return renderBlock(req, state, req.query().containsKey("wildcard"));
+		return renderBlock(req, state, req.query().containsKey("wildcard")).response();
 	}
 
-	public static HTTPResponse renderBlock(KJSHTTPRequest req, BlockState state, boolean wildcard) {
+	public static CachedImage renderBlock(KJSHTTPRequest req, BlockState state, boolean wildcard) {
 		if (state.isEmpty()) {
-			return HTTPStatus.NOT_FOUND;
+			return new CachedImage(HTTPStatus.NOT_FOUND, null);
 		}
 
 		var buf = new FriendlyByteBuf(Unpooled.buffer());
@@ -308,7 +325,7 @@ public class ImageGenerator {
 			}
 		}
 
-		return renderCanvas(req, 16, "block", buf, wildcard, render -> {
+		return renderCanvas(req, 16, 0, "block", buf, wildcard, render -> {
 			var model = render.mc.getBlockRenderer().getBlockModel(state);
 			var pose = render.graphics.pose();
 			pose.pushPose();
@@ -352,12 +369,12 @@ public class ImageGenerator {
 	public static HTTPResponse fluid(KJSHTTPRequest req) throws Exception {
 		var stack = new FluidStack(BuiltInRegistries.FLUID.get(req.id()), FluidType.BUCKET_VOLUME);
 		stack.applyComponents(req.components(req.registries().nbt()));
-		return renderFluid(req, stack, req.query().containsKey("wildcard"));
+		return renderFluid(req, stack, req.query().containsKey("wildcard")).response();
 	}
 
-	public static HTTPResponse renderFluid(KJSHTTPRequest req, FluidStack stack, boolean wildcard) {
+	public static CachedImage renderFluid(KJSHTTPRequest req, FluidStack stack, boolean wildcard) {
 		if (stack.isEmpty()) {
-			return HTTPStatus.NOT_FOUND;
+			return new CachedImage(HTTPStatus.NOT_FOUND, null);
 		}
 
 		var fluidInfo = IClientFluidTypeExtensions.of(stack.getFluid());
@@ -371,7 +388,7 @@ public class ImageGenerator {
 		var buf = new FriendlyByteBuf(Unpooled.buffer());
 		CachedComponentObject.writeCacheKey(buf, stack.getFluid(), DataComponentWrapper.visualPatch(stack.getComponentsPatch()));
 
-		return renderCanvas(req, 16, "fluid", buf, wildcard, render -> {
+		return renderCanvas(req, 16, 0, "fluid", buf, wildcard, render -> {
 			var s = render.mc.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(still);
 			RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
 			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
@@ -393,14 +410,14 @@ public class ImageGenerator {
 		}
 
 		var buf = new FriendlyByteBuf(Unpooled.buffer());
-		var list = new ArrayList<HTTPResponse>();
+		var list = new ArrayList<CachedImage>();
 
 		for (var holder : tag.get()) {
 			buf.writeUtf(holder.value().kjs$getId());
-			list.add(renderItem(req, holder.value().getDefaultInstance(), true));
+			list.add(renderItem(req, 0, holder.value().getDefaultInstance(), true));
 		}
 
-		return renderAnimated(req, "item_tag", buf, list);
+		return renderAnimated(req, "item_tag", buf, list).response();
 	}
 
 	public static HTTPResponse blockTag(KJSHTTPRequest req) throws Exception {
@@ -411,7 +428,7 @@ public class ImageGenerator {
 		}
 
 		var buf = new FriendlyByteBuf(Unpooled.buffer());
-		var list = new ArrayList<HTTPResponse>();
+		var list = new ArrayList<CachedImage>();
 
 		for (var holder : tag.get()) {
 			buf.writeUtf(holder.value().kjs$getId());
@@ -419,13 +436,13 @@ public class ImageGenerator {
 			var item = holder.value().asItem();
 
 			if (item != Items.AIR) {
-				list.add(renderItem(req, item.getDefaultInstance(), true));
+				list.add(renderItem(req, 0, item.getDefaultInstance(), true));
 			} else {
 				list.add(renderBlock(req, holder.value().defaultBlockState(), true));
 			}
 		}
 
-		return renderAnimated(req, "block_tag", buf, list);
+		return renderAnimated(req, "block_tag", buf, list).response();
 	}
 
 	public static HTTPResponse fluidTag(KJSHTTPRequest req) throws Exception {
@@ -436,14 +453,14 @@ public class ImageGenerator {
 		}
 
 		var buf = new FriendlyByteBuf(Unpooled.buffer());
-		var list = new ArrayList<HTTPResponse>();
+		var list = new ArrayList<CachedImage>();
 
 		for (var holder : tag.get()) {
 			buf.writeUtf(holder.value().kjs$getId());
 			list.add(renderFluid(req, new FluidStack(holder, FluidType.BUCKET_VOLUME), true));
 		}
 
-		return renderAnimated(req, "fluid_tag", buf, list);
+		return renderAnimated(req, "fluid_tag", buf, list).response();
 	}
 
 	private static class ContentGrabber extends HTTPPayload {

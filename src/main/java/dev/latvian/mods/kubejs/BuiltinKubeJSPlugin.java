@@ -147,6 +147,7 @@ import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.KubeResourceLocation;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
+import dev.latvian.mods.kubejs.util.NameProvider;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
@@ -161,23 +162,29 @@ import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import dev.latvian.mods.rhino.type.RecordTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.Util;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
@@ -190,6 +197,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.animal.WolfVariant;
+import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
@@ -205,6 +213,7 @@ import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.enchantment.providers.EnchantmentProvider;
 import net.minecraft.world.level.ItemLike;
@@ -734,5 +743,77 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	@Override
 	public void registerLocalWebServer(LocalWebServerRegistry registry) {
 		KubeJSWeb.register(registry);
+	}
+
+	@Override
+	public void registerItemNameProviders(NameProvider.Registry<Item, ItemStack> registry) {
+		registry.register(Items.ENCHANTED_BOOK, (registries, stack) -> {
+			var enchants = EnchantmentHelper.getEnchantmentsForCrafting(stack);
+
+			if (enchants.isEmpty()) {
+				return null;
+			}
+
+			var c = Component.empty();
+			c.append(stack.getHoverName());
+			boolean first = true;
+
+			for (var e : enchants.entrySet()) {
+				if (first) {
+					first = false;
+					c.append(": ");
+				} else {
+					c.append(", ");
+				}
+
+				c.append(Enchantment.getFullname(e.getKey(), e.getIntValue()));
+			}
+
+			return c;
+		});
+
+		/*
+		registry.register(List.of(Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION), (registries, stack) -> {
+			var potions = stack.get(DataComponents.POTION_CONTENTS);
+
+			if (potions == null || potions.potion().isEmpty()) {
+				return null;
+			}
+
+			var c = Component.empty();
+			c.append(stack.getHoverName());
+			// c.append(Potion.getName(potions.potion().get(), potions.));
+			return c;
+		});
+		 */
+
+		for (var item : BuiltInRegistries.ITEM) {
+			var song = item.components().get(DataComponents.JUKEBOX_PLAYABLE);
+
+			if (song != null) {
+				registry.register(item, (registries, stack) -> {
+					var key = Util.makeDescriptionId("jukebox_song", song.song().key().location());
+					return Component.empty().append(stack.getHoverName()).append(": ").append(Component.translatable(key));
+				});
+			}
+		}
+
+		registry.register(Items.PAINTING, (registries, stack) -> {
+			var customData = stack.getOrDefault(DataComponents.ENTITY_DATA, CustomData.EMPTY);
+
+			if (!customData.isEmpty()) {
+				var key = customData.read(registries.createSerializationContext(NbtOps.INSTANCE), Painting.VARIANT_MAP_CODEC)
+					.result()
+					.flatMap(Holder::unwrapKey)
+					.map(ResourceKey::location)
+					.orElse(null);
+
+				if (key != null) {
+					return Component.empty().append(stack.getHoverName()).append(": ").append(Component.translatable(key.toLanguageKey("painting", "author"))).append(" - ").append(Component.translatable(key.toLanguageKey("painting", "title")));
+				}
+			}
+
+			return null;
+		});
 	}
 }

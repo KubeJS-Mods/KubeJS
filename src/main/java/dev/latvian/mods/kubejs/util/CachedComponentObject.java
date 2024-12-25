@@ -10,10 +10,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 import java.util.UUID;
 
-public record CachedComponentObject<T extends RegistryObjectKJS<T>, S>(UUID cacheKey, T value, S stack, DataComponentPatch components) {
+public record CachedComponentObject<T extends RegistryObjectKJS<T>, S>(UUID cacheKey, T value, S stack, DataComponentPatch components, Mutable<String> iconPath) {
 	public static <T extends RegistryObjectKJS<T>> void writeCacheKey(FriendlyByteBuf buf, T value, DataComponentPatch components) {
 		buf.writeUtf(value.kjs$getId());
 		buf.writeVarInt(components.size());
@@ -33,7 +35,7 @@ public record CachedComponentObject<T extends RegistryObjectKJS<T>, S>(UUID cach
 	public static <T extends RegistryObjectKJS<T>, S> CachedComponentObject<T, S> of(T value, S stack, DataComponentPatch components) {
 		var buf = new FriendlyByteBuf(Unpooled.buffer());
 		writeCacheKey(buf, value, components);
-		return new CachedComponentObject<>(UUID.nameUUIDFromBytes(buf.array()), value, stack, components);
+		return new CachedComponentObject<>(UUID.nameUUIDFromBytes(buf.array()), value, stack, components, new MutableObject<>());
 	}
 
 	public static CachedComponentObject<Item, ItemStack> ofItemStack(ItemStack stack, boolean visual) {

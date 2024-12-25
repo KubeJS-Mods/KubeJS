@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.web;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.apps.tinyserver.http.HTTPRequest;
+import dev.latvian.apps.tinyserver.http.response.HTTPPayload;
+import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.core.component.DataComponentPatch;
@@ -41,5 +43,10 @@ public class KJSHTTPRequest extends HTTPRequest {
 	public DataComponentPatch components(DynamicOps<Tag> ops) throws CommandSyntaxException {
 		var str = query("components").asString();
 		return str.isEmpty() ? DataComponentPatch.EMPTY : DataComponentWrapper.patchOrEmptyOf(ops, "[" + str + "]");
+	}
+
+	@Override
+	public HTTPResponse handleResponse(HTTPPayload payload, HTTPResponse response, @Nullable Throwable error) {
+		return response.cors();
 	}
 }
