@@ -8,16 +8,16 @@ public class KubeJSBackgroundThread extends Thread {
 	public static boolean running = true;
 
 	public KubeJSBackgroundThread() {
-		super("KubeJS Background Thread");
+		super("kubejs-background-thread");
 		setDaemon(true);
 	}
 
 	@Override
 	public void run() {
-		var types = ScriptType.values();
+		Runtime.getRuntime().addShutdownHook(new Thread(KubeJSBackgroundThread::shutdown, "kubejs-background-thread-shutdown"));
 
-		for (var type : types) {
-			type.executor = Executors.newSingleThreadExecutor();
+		for (var type : ScriptType.VALUES) {
+			type.executor = Executors.newSingleThreadExecutor(Thread.ofVirtual().name("kubejs-" + type + "-background-task-").factory());
 		}
 
 		while (running) {
@@ -27,25 +27,36 @@ public class KubeJSBackgroundThread extends Thread {
 				e.printStackTrace();
 			}
 
-			for (var type : types) {
+			for (var type : ScriptType.VALUES) {
 				type.console.flush(false);
 			}
 		}
 
-		for (var type : types) {
+		for (var type : ScriptType.VALUES) {
 			type.console.flush(true);
-			((ExecutorService) type.executor).shutdown();
 
-			boolean b;
-			try {
-				b = ((ExecutorService) type.executor).awaitTermination(3L, TimeUnit.SECONDS);
-			} catch (InterruptedException var3) {
-				b = false;
-			}
+			if (type.executor instanceof ExecutorService service) {
+				service.shutdown();
 
-			if (!b) {
-				((ExecutorService) type.executor).shutdownNow();
+				boolean b;
+				try {
+					b = service.awaitTermination(3L, TimeUnit.SECONDS);
+				} catch (InterruptedException var3) {
+					b = false;
+				}
+
+				if (!b) {
+					service.shutdownNow();
+				}
 			}
+		}
+	}
+
+	public static void shutdown() {
+		running = false;
+
+		for (var value : ScriptType.VALUES) {
+			value.console.flush(true);
 		}
 	}
 }
