@@ -233,7 +233,11 @@ public class KubedexHighlight {
 			if (slot.container instanceof Inventory) {
 				slotIds.add(slot.getSlotIndex());
 			} else {
-				stacks.add(slot.getItem());
+				var stack = slot.getItem();
+
+				if (!stack.isEmpty()) {
+					stacks.add(stack);
+				}
 			}
 		}
 

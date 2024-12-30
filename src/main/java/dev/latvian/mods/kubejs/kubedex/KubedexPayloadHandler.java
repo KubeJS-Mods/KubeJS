@@ -138,7 +138,9 @@ public class KubedexPayloadHandler {
 		var allStacks = new LinkedHashSet<SlotItem>();
 
 		for (var s : stacks) {
-			allStacks.add(new SlotItem(s, -1));
+			if (!s.isEmpty()) {
+				allStacks.add(new SlotItem(s, -1));
+			}
 		}
 
 		for (int s : slots) {
