@@ -87,7 +87,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 
 		if (list.isEmpty()) {
 			return Simple.NONE;
-		} else if (list.size() > 1) {
+		} else {
 			var predicates = new ArrayList<BlockStatePredicate>();
 
 			for (var o1 : list) {
