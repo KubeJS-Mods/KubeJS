@@ -47,7 +47,12 @@ public class KubeFileResourcePack implements PackResources {
 	}
 
 	public static void scanForInvalidFiles(String pathName, Path path) throws IOException {
+		long start = System.currentTimeMillis();
+		int files = 0;
+
 		for (var p : Files.list(path).filter(Files::isDirectory).flatMap(KubeFileResourcePack::tryWalk).filter(Files::isRegularFile).filter(Files::isReadable).toList()) {
+			files++;
+
 			try {
 				var fileName = p.getFileName().toString();
 				var fileNameLC = fileName.toLowerCase(Locale.ROOT);
@@ -74,6 +79,8 @@ public class KubeFileResourcePack implements PackResources {
 				ConsoleJS.STARTUP.error("Invalid file name: " + pathName + path.relativize(p).toString().replace('\\', '/'), ex).withExternalFile(p);
 			}
 		}
+
+		ConsoleJS.STARTUP.info("Validated " + files + " files in " + pathName + " in " + (System.currentTimeMillis() - start) + "ms");
 	}
 
 	public static int findBeforeModsIndex(List<PackResources> packs) {
