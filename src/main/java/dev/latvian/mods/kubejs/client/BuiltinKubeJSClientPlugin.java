@@ -6,6 +6,8 @@ import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
+import dev.latvian.mods.kubejs.script.ScriptManager;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.kubejs.web.local.client.KubeJSClientWeb;
@@ -49,5 +51,13 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void afterScriptsLoaded(ScriptManager manager) {
+		if (manager.scriptType != ScriptType.CLIENT) {
+			return;
+		}
+		KubeJSKeybinds.triggerReload();
 	}
 }

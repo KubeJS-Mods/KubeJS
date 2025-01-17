@@ -317,6 +317,7 @@ public class KubeJSGameClientEventHandler {
 	public static void clientTick(ClientTickEvent.Pre event) {
 		var mc = Minecraft.getInstance();
 		KubedexHighlight.INSTANCE.tickPre(mc);
+		KubeJSKeybinds.triggerKeyEvents(mc);
 	}
 
 	@SubscribeEvent

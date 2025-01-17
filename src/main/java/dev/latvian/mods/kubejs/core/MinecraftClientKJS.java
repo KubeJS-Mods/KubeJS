@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.ClientProperties;
+import dev.latvian.mods.kubejs.client.KubeJSKeybinds;
 import dev.latvian.mods.kubejs.item.ItemClickedKubeEvent;
 import dev.latvian.mods.kubejs.net.FirstClickPayload;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
@@ -81,6 +82,14 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 
 	default boolean kjs$isKeyDown(int key) {
 		return InputConstants.isKeyDown(kjs$self().getWindow().getWindow(), key);
+	}
+
+	default boolean kjs$isKeybindDown(String key) {
+		KeyMapping keyMapping = KubeJSKeybinds.getKeybind(key);
+		if (keyMapping == null) {
+			return false;
+		}
+		return kjs$isKeyMappingDown(keyMapping);
 	}
 
 	default boolean kjs$isKeyMappingDown(KeyMapping key) {
