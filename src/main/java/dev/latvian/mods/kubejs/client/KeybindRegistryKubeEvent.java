@@ -1,16 +1,22 @@
 package dev.latvian.mods.kubejs.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.latvian.mods.kubejs.util.ClassWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.client.KeyMapping;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class KeybindRegistryKubeEvent implements ClientKubeEvent {
 	private final List<Builder> builders = new ArrayList<>();
+
+	public ClassWrapper<GLFW> getGLFW() {
+		return new ClassWrapper<>(GLFW.class);
+	}
 
 	public Builder register(String keybindId) {
 		Builder builder = new Builder(keybindId);
