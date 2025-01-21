@@ -43,13 +43,28 @@ jobs:
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
 
-      - name: Build and Publish with Gradle
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build --stacktrace --no-daemon
+
+      - name: Publish to latvian.dev Maven
         uses: gradle/gradle-build-action@v2
         env:
+          MAVEN_URL: 'https://maven.latvian.dev/releases'
+          MAVEN_USERNAME: 'lat'
           MAVEN_TOKEN: ${{ secrets.MAVEN_TOKEN }}
-          SAPS_TOKEN: ${{ secrets.SAPS_TOKEN }}
         with:
-          arguments: build publish --stacktrace --no-daemon
+          arguments: publish --stacktrace --no-daemon
+
+      - name: Publish to saps.dev Maven
+        uses: gradle/gradle-build-action@v2
+        env:
+          MAVEN_URL: 'https://maven.saps.dev/releases'
+          MAVEN_USERNAME: 'latvian'
+          MAVEN_TOKEN: ${{ secrets.SAPS_TOKEN }}
+        with:
+          arguments: publish --stacktrace --no-daemon
 
       - name: Release to CurseForge
         uses: gradle/gradle-build-action@v2
@@ -58,7 +73,17 @@ jobs:
           GIT_COMMIT: ${{ github.event.after }}
           GIT_PREVIOUS_COMMIT: ${{ github.event.before }}
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
+          RELEASE_TYPE: ${{ inputs.release_type }}
+        with:
+          arguments: curseforge --stacktrace --no-daemon
+
+      - name: Release to Modrinth
+        uses: gradle/gradle-build-action@v2
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_type != 'none' }}
+        env:
+          GIT_COMMIT: ${{ github.event.after }}
+          GIT_PREVIOUS_COMMIT: ${{ github.event.before }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           RELEASE_TYPE: ${{ inputs.release_type }}
         with:
-          arguments: curseforge modrinth --stacktrace --no-daemon
+          arguments: modrinth --stacktrace --no-daemon

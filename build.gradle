@@ -4,9 +4,9 @@ plugins {
 	id 'base'
 	id 'java'
 	id 'maven-publish'
-	id 'net.neoforged.moddev' version "2.0.10-beta"
+	id 'net.neoforged.moddev' version "2.0.74"
 	// https://maven.architectury.dev/me/shedaniel/unified-publishing/maven-metadata.xml
-	id "me.shedaniel.unified-publishing" version "0.1.13"
+	id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
 ext.ENV = System.getenv()
@@ -15,6 +15,8 @@ def isLocal = !ENV.containsKey("GITHUB_RUN_NUMBER")
 version = "${mod_version}-${isLocal ? "local.${Instant.now().epochSecond}" : "build.${ENV.GITHUB_RUN_NUMBER}"}"
 group = project.maven_group
 base.archivesBaseName = project.archives_base_name
+
+println("Building version: ${version}")
 
 neoForge {
 	version = project.neoforge_version
@@ -185,22 +187,12 @@ publishing {
 	}
 
 	repositories {
-		if (ENV.MAVEN_TOKEN) {
+		if (ENV.MAVEN_URL && ENV.MAVEN_USERNAME && ENV.MAVEN_TOKEN) {
 			maven {
-				url "https://maven.latvian.dev/releases"
+				url = ENV.MAVEN_URL
 				credentials {
-					username = "lat"
-					password = "${ENV.MAVEN_TOKEN}"
-				}
-			}
-		}
-
-		if (ENV.SAPS_TOKEN) {
-			maven {
-				url "https://maven.saps.dev/releases"
-				credentials {
-					username = "latvian"
-					password = "${ENV.SAPS_TOKEN}"
+					username = ENV.MAVEN_USERNAME
+					password = ENV.MAVEN_TOKEN
 				}
 			}
 		}
