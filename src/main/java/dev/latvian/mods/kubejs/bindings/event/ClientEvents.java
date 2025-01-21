@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.client.BlockEntityRendererRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.ClientPlayerKubeEvent;
 import dev.latvian.mods.kubejs.client.DebugInfoKubeEvent;
 import dev.latvian.mods.kubejs.client.EntityRendererRegistryKubeEvent;
+import dev.latvian.mods.kubejs.client.KeybindRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.client.MenuScreenRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.ParticleProviderRegistryKubeEvent;
@@ -31,4 +32,8 @@ public interface ClientEvents {
 	TargetedEventHandler<ResourceLocation> ATLAS_SPRITE_REGISTRY = GROUP.client("atlasSpriteRegistry", () -> AtlasSpriteRegistryKubeEvent.class).requiredTarget(EventTargetType.ID);
 	TargetedEventHandler<String> LANG = GROUP.client("lang", () -> LangKubeEvent.class).requiredTarget(EventTargetType.STRING);
 	EventHandler PARTICLE_PROVIDER_REGISTRY = GROUP.client("particleProviderRegistry", () -> ParticleProviderRegistryKubeEvent.class);
+	EventHandler KEYBIND_REGISTRY = GROUP.startup("keybindRegistry", () -> KeybindRegistryKubeEvent.class);
+	TargetedEventHandler<String> KEY_DOWN = GROUP.client("keyDown", () -> ClientPlayerKubeEvent.class).requiredTarget(EventTargetType.STRING);
+	TargetedEventHandler<String> KEY_UP = GROUP.client("keyUp", () -> ClientPlayerKubeEvent.class).requiredTarget(EventTargetType.STRING);
+	TargetedEventHandler<String> KEY_PRESSED = GROUP.client("keyPressed", () -> ClientPlayerKubeEvent.class).requiredTarget(EventTargetType.STRING);
 }

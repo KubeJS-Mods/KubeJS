@@ -142,6 +142,14 @@ public class KubeJSModClientEventHandler {
 	@SubscribeEvent
 	public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
 		event.register(KubedexHighlight.keyMapping = new KeyMapping("key.kubejs.kubedex", KeyConflictContext.UNIVERSAL, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "key.categories.kubejs"));
+
+		KeybindRegistryKubeEvent kubeEvent = new KeybindRegistryKubeEvent();
+		ClientEvents.KEYBIND_REGISTRY.post(kubeEvent);
+		for (KubeJSKeybinds.KubeKeybind kubeKeybind : kubeEvent.build()) {
+			event.register(kubeKeybind.keyMapping());
+			KubeJSKeybinds.addKeybind(kubeKeybind);
+		}
+		KubeJSKeybinds.triggerReload();
 	}
 
 	@SubscribeEvent
