@@ -46,7 +46,7 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build --stacktrace --no-daemon
+          arguments: build -x test --stacktrace
 
       - name: Publish to latvian.dev Maven
         uses: gradle/gradle-build-action@v2
@@ -55,7 +55,7 @@ jobs:
           MAVEN_USERNAME: 'lat'
           MAVEN_TOKEN: ${{ secrets.MAVEN_TOKEN }}
         with:
-          arguments: publish --stacktrace --no-daemon
+          arguments: publish --stacktrace
 
       - name: Publish to saps.dev Maven
         uses: gradle/gradle-build-action@v2
@@ -64,7 +64,7 @@ jobs:
           MAVEN_USERNAME: 'latvian'
           MAVEN_TOKEN: ${{ secrets.SAPS_TOKEN }}
         with:
-          arguments: publish --stacktrace --no-daemon
+          arguments: publish --stacktrace
 
       - name: Release to CurseForge
         uses: gradle/gradle-build-action@v2
@@ -75,7 +75,7 @@ jobs:
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
           RELEASE_TYPE: ${{ inputs.release_type }}
         with:
-          arguments: curseforge --stacktrace --no-daemon
+          arguments: publishUnified --stacktrace
 
       - name: Release to Modrinth
         uses: gradle/gradle-build-action@v2
@@ -86,4 +86,4 @@ jobs:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           RELEASE_TYPE: ${{ inputs.release_type }}
         with:
-          arguments: modrinth --stacktrace --no-daemon
+          arguments: publishUnified --stacktrace
