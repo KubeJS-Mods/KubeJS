@@ -34,5 +34,6 @@ public interface ClientEvents {
 	EventHandler PARTICLE_PROVIDER_REGISTRY = GROUP.client("particleProviderRegistry", () -> ParticleProviderRegistryKubeEvent.class);
 	EventHandler KEYBIND_REGISTRY = GROUP.startup("keybindRegistry", () -> KeybindRegistryKubeEvent.class);
 	TargetedEventHandler<String> KEY_DOWN = GROUP.client("keyDown", () -> ClientPlayerKubeEvent.class).requiredTarget(EventTargetType.STRING);
+	TargetedEventHandler<String> KEY_UP = GROUP.client("keyUp", () -> ClientPlayerKubeEvent.class).requiredTarget(EventTargetType.STRING);
 	TargetedEventHandler<String> KEY_PRESSED = GROUP.client("keyPressed", () -> ClientPlayerKubeEvent.class).requiredTarget(EventTargetType.STRING);
 }

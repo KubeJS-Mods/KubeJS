@@ -5,14 +5,15 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class KubeJSKeybinds {
 	private static final Map<String, KubeKeybind> registeredKeybinds = new HashMap<>();
-	private static final List<KubeKeybindState> listeningKeybinds = new ArrayList<>();
+	private static final Set<KubeKeybindState> listeningKeybinds = new HashSet<>();
 
 	public static void triggerReload() {
 		listeningKeybinds.clear();
@@ -40,6 +41,9 @@ public class KubeJSKeybinds {
 				listeningKeybind.keyDown = true;
 				ClientEvents.KEY_DOWN.post(event, listeningKeybind.keybind.keybindId);
 			} else {
+				if (listeningKeybind.keyDown) {
+					ClientEvents.KEY_UP.post(new ClientPlayerKubeEvent(client.player));
+				}
 				listeningKeybind.keyDown = false;
 			}
 		}
@@ -66,6 +70,18 @@ public class KubeJSKeybinds {
 
 		private KubeKeybindState(KubeKeybind keybind) {
 			this.keybind = keybind;
+		}
+
+		@Override
+		public boolean equals(Object object) {
+			if (this == object) return true;
+			if (!(object instanceof KubeKeybindState that)) return false;
+			return Objects.equals(keybind.keybindId, that.keybind.keybindId);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hashCode(keybind.keybindId);
 		}
 	}
 }

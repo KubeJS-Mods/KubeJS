@@ -13,10 +13,7 @@ import java.util.List;
 
 public class KeybindRegistryKubeEvent implements ClientKubeEvent {
 	private final List<Builder> builders = new ArrayList<>();
-
-	public ClassWrapper<GLFW> getGLFW() {
-		return new ClassWrapper<>(GLFW.class);
-	}
+	public final ClassWrapper<GLFW> GLFW = new ClassWrapper<>(GLFW.class);
 
 	public Builder register(String keybindId) {
 		Builder builder = new Builder(keybindId);
@@ -34,7 +31,7 @@ public class KeybindRegistryKubeEvent implements ClientKubeEvent {
 		private KeyConflictContext keyConflictContext = KeyConflictContext.UNIVERSAL;
 		private KeyModifier keyModifier = KeyModifier.NONE;
 		private InputConstants.Type inputType = InputConstants.Type.KEYSYM;
-		private int keyId = 0;
+		private int keyId = -1;
 		private String category = "key.categories.kubejs";
 
 		public Builder(String id) {
