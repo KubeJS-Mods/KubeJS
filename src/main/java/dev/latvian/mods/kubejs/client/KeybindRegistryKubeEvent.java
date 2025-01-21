@@ -1,50 +1,60 @@
 package dev.latvian.mods.kubejs.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.latvian.mods.kubejs.util.ClassWrapper;
+import dev.latvian.mods.kubejs.bindings.GLFWInputWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.client.KeyMapping;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class KeybindRegistryKubeEvent implements ClientKubeEvent {
 	private final List<Builder> builders = new ArrayList<>();
-	public final ClassWrapper<GLFW> GLFW = new ClassWrapper<>(GLFW.class);
 
-	public Builder register(String keybindId) {
-		Builder builder = new Builder(keybindId);
+	public Builder register(String id) {
+		var builder = new Builder(id);
 		builders.add(builder);
 		return builder;
 	}
 
+	public Builder register(String id, String defaultKey) {
+		return register(id).defaultKey(defaultKey);
+	}
+
 	@HideFromJS
-	public List<KubeJSKeybinds.KubeKeybind> build() {
+	public List<KubeJSKeybinds.KubeKey> build() {
 		return builders.stream().map(Builder::create).toList();
 	}
 
 	public static class Builder {
 		private final String id;
 		private KeyConflictContext keyConflictContext = KeyConflictContext.UNIVERSAL;
-		private KeyModifier keyModifier = KeyModifier.NONE;
+		private KeyModifier modifier = KeyModifier.NONE;
 		private InputConstants.Type inputType = InputConstants.Type.KEYSYM;
-		private int keyId = -1;
+		private int defaultKey = -1;
 		private String category = "key.categories.kubejs";
 
-		public Builder(String id) {
+		private Builder(String id) {
 			this.id = id;
 		}
 
-		public Builder keyConflictContext(KeyConflictContext keyConflictContext) {
+		public Builder conflictContext(KeyConflictContext keyConflictContext) {
 			this.keyConflictContext = keyConflictContext;
 			return this;
 		}
 
-		public Builder keyModifier(KeyModifier keyModifier) {
-			this.keyModifier = keyModifier;
+		public Builder gui() {
+			return conflictContext(KeyConflictContext.GUI);
+		}
+
+		public Builder inGame() {
+			return conflictContext(KeyConflictContext.IN_GAME);
+		}
+
+		public Builder modifier(KeyModifier modifier) {
+			this.modifier = modifier;
 			return this;
 		}
 
@@ -53,8 +63,16 @@ public class KeybindRegistryKubeEvent implements ClientKubeEvent {
 			return this;
 		}
 
-		public Builder keyId(int keyId) {
-			this.keyId = keyId;
+		public Builder scanCodeInputType() {
+			return inputType(InputConstants.Type.SCANCODE);
+		}
+
+		public Builder mouseInputType() {
+			return inputType(InputConstants.Type.MOUSE);
+		}
+
+		public Builder defaultKey(String keyName) {
+			this.defaultKey = GLFWInputWrapper.get(keyName);
 			return this;
 		}
 
@@ -64,8 +82,10 @@ public class KeybindRegistryKubeEvent implements ClientKubeEvent {
 		}
 
 		@HideFromJS
-		public KubeJSKeybinds.KubeKeybind create() {
-			return new KubeJSKeybinds.KubeKeybind(id, new KeyMapping("key.kubejs.%s".formatted(id), keyConflictContext, keyModifier, inputType, keyId, category));
+		public KubeJSKeybinds.KubeKey create() {
+			var key = KubeJSKeybinds.getOrCreate(id);
+			key.mapping = new KeyMapping("key.kubejs.%s".formatted(id), keyConflictContext, modifier, inputType, defaultKey, category);
+			return key;
 		}
 	}
 }

@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.web;
 
-import dev.latvian.apps.tinyserver.HTTPServer;
 import dev.latvian.apps.tinyserver.error.BindFailedException;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
@@ -18,9 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public record LocalWebServer(HTTPServer<KJSHTTPRequest> server, String url, List<Endpoint> endpoints) {
-	public static String explorerCode = "";
-
+public record LocalWebServer(KJSHTTPServer server, String url, List<Endpoint> endpoints, String explorerCode) {
 	public record Endpoint(String method, String path, boolean auth) implements Comparable<Endpoint> {
 		@Override
 		public int compareTo(@NotNull LocalWebServer.Endpoint o) {
@@ -31,6 +28,7 @@ public record LocalWebServer(HTTPServer<KJSHTTPRequest> server, String url, List
 	private static LocalWebServer instance;
 
 	@Nullable
+	@HideFromJS
 	public static LocalWebServer instance() {
 		return instance;
 	}
@@ -40,10 +38,11 @@ public record LocalWebServer(HTTPServer<KJSHTTPRequest> server, String url, List
 		if (instance == null) {
 			try {
 				var properties = WebServerProperties.get();
-				var holder = new LocalWebServerRegistryHolder(eventLoop, properties.auth);
+				var server = new KJSHTTPServer(new KJSHTTPServer.RequestFactory(eventLoop), properties.auth);
+
 				var endpoints0 = new HashSet<LocalWebServer.Endpoint>();
-				var registry = new LocalWebServerRegistry(holder, endpoints0, false);
-				var registryWithAuth = /*localClient || */holder.auth.isEmpty() ? registry : new LocalWebServerRegistry(holder, endpoints0, true);
+				var registry = new LocalWebServerRegistry(server, endpoints0, false);
+				var registryWithAuth = /*localClient || */server.auth.isEmpty() ? registry : new LocalWebServerRegistry(server, endpoints0, true);
 
 				KubeJSPlugins.forEachPlugin(registry, KubeJSPlugin::registerLocalWebServer);
 				KubeJSPlugins.forEachPlugin(registryWithAuth, KubeJSPlugin::registerLocalWebServerWithAuth);
@@ -55,19 +54,24 @@ public record LocalWebServer(HTTPServer<KJSHTTPRequest> server, String url, List
 					publicAddress = publicAddress.substring(7);
 				}
 
-				holder.server.setDaemon(true);
-				holder.server.setServerName(KubeJS.DISPLAY_NAME);
-				holder.server.setAddress(publicAddress.isEmpty() ? "127.0.0.1" : "0.0.0.0");
-				holder.server.setPort(IntStream.range(properties.port, properties.port + 10));
-				holder.server.setMaxKeepAliveConnections(3);
-				holder.server.setKeepAliveTimeout(Duration.ofMinutes(5L));
+				server.setDaemon(true);
+				server.setServerName(KubeJS.DISPLAY_NAME);
+				server.setAddress(publicAddress.isEmpty() ? "127.0.0.1" : "0.0.0.0");
+				server.setPort(IntStream.range(properties.port, properties.port + 10));
+				server.setMaxKeepAliveConnections(3);
+				server.setKeepAliveTimeout(Duration.ofMinutes(5L));
 
-				int port = holder.server.start();
+				int port = server.start();
 				var url = "http://localhost:" + port;
 				var endpoints = new ArrayList<>(endpoints0);
 				endpoints.sort(null);
-				instance = new LocalWebServer(holder.server, publicAddress.isEmpty() ? url : ("https://" + publicAddress), List.copyOf(endpoints));
-				explorerCode = (publicAddress.isEmpty() ? ("p=" + port) : ("a=" + URLEncoder.encode(publicAddress, StandardCharsets.UTF_8))) + (holder.auth.isEmpty() ? "" : ("&c=" + holder.encodedAuth));
+
+				instance = new LocalWebServer(
+					server,
+					publicAddress.isEmpty() ? url : ("https://" + publicAddress),
+					List.copyOf(endpoints),
+					(publicAddress.isEmpty() ? ("p=" + port) : ("a=" + URLEncoder.encode(publicAddress, StandardCharsets.UTF_8))) + (server.auth.isEmpty() ? "" : ("&c=" + server.encodedAuth))
+				);
 
 				KubeJS.LOGGER.info("Started the local web server at " + url);
 			} catch (BindFailedException ex) {

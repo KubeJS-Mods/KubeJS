@@ -30,31 +30,31 @@ public class LocalWebServerRegistry implements ServerRegistry<KJSHTTPRequest> {
 		}
 	}
 
-	private final LocalWebServerRegistryHolder holder;
+	private final KJSHTTPServer server;
 	private final Set<LocalWebServer.Endpoint> endpoints;
 	private final boolean requireAuth;
 
-	LocalWebServerRegistry(LocalWebServerRegistryHolder holder, Set<LocalWebServer.Endpoint> endpoints, boolean requireAuth) {
-		this.holder = holder;
+	LocalWebServerRegistry(KJSHTTPServer server, Set<LocalWebServer.Endpoint> endpoints, boolean requireAuth) {
+		this.server = server;
 		this.endpoints = endpoints;
 		this.requireAuth = requireAuth;
 	}
 
 	private HTTPHandler<KJSHTTPRequest> wrap(HTTPHandler<KJSHTTPRequest> handler) {
-		return requireAuth ? new AuthHandler(handler, "Bearer " + holder.auth) : handler;
+		return requireAuth ? new AuthHandler(handler, "Bearer " + server.auth) : handler;
 	}
 
 	@Override
 	public void http(HTTPMethod method, String path, HTTPHandler<KJSHTTPRequest> handler) {
 		endpoints.add(new LocalWebServer.Endpoint(method.name(), path, requireAuth));
-		holder.server.http(method, path, wrap(handler));
+		server.http(method, path, wrap(handler));
 	}
 
 	@Override
 	public <WSS extends WSSession<KJSHTTPRequest>> WSHandler<KJSHTTPRequest, WSS> ws(String path, WSSessionFactory<KJSHTTPRequest, WSS> factory) {
 		endpoints.add(new LocalWebServer.Endpoint("WS", path, requireAuth));
 		var handler = new WSEndpointHandler<>(factory, new ConcurrentHashMap<>());
-		holder.server.http(HTTPMethod.GET, path, wrap(handler));
+		server.http(HTTPMethod.GET, path, wrap(handler));
 		return handler;
 	}
 }

@@ -1,7 +1,9 @@
 package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.bindings.GLFWInputWrapper;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
+import dev.latvian.mods.kubejs.bindings.event.KeyBindEvents;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
@@ -18,6 +20,7 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 	@Override
 	public void registerEvents(EventGroupRegistry registry) {
 		registry.register(ClientEvents.GROUP);
+		registry.register(KeyBindEvents.GROUP);
 	}
 
 	@Override
@@ -32,6 +35,8 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 			bindings.add("setInterval", new ScheduledEvents.TimeoutJSFunction(se, false, true));
 			bindings.add("clearInterval", new ScheduledEvents.TimeoutJSFunction(se, true, true));
 		}
+
+		bindings.add("GLFWInput", GLFWInputWrapper.MAP.get());
 	}
 
 	@Override
@@ -56,13 +61,14 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 				}
 			}
 		}
+
+		KubeJSKeybinds.generateLang(event);
 	}
 
 	@Override
 	public void afterScriptsLoaded(ScriptManager manager) {
-		if (manager.scriptType != ScriptType.CLIENT) {
-			return;
+		if (manager.scriptType == ScriptType.CLIENT) {
+			KubeJSKeybinds.triggerReload();
 		}
-		KubeJSKeybinds.triggerReload();
 	}
 }

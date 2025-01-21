@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.latvian.mods.kubejs.bindings.GLFWInputWrapper;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.client.KubeJSKeybinds;
@@ -81,19 +82,25 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 	}
 
 	default boolean kjs$isKeyDown(int key) {
-		return InputConstants.isKeyDown(kjs$self().getWindow().getWindow(), key);
+		return key != -1 && InputConstants.isKeyDown(kjs$self().getWindow().getWindow(), key);
 	}
 
-	default boolean kjs$isKeybindDown(String key) {
-		KeyMapping keyMapping = KubeJSKeybinds.getKeybind(key);
-		if (keyMapping == null) {
-			return false;
-		}
-		return kjs$isKeyMappingDown(keyMapping);
+	default boolean kjs$isKeyDown(String keyName) {
+		return kjs$isKeyDown(GLFWInputWrapper.get(keyName));
+	}
+
+	default boolean kjs$isKeyBindDown(String id) {
+		var bind = KubeJSKeybinds.get(id);
+		return bind != null && bind.down;
+	}
+
+	default int kjs$getKeyBindPressedTicks(String id) {
+		var bind = KubeJSKeybinds.get(id);
+		return bind == null || !bind.down ? -1 : bind.ticksPressed;
 	}
 
 	default boolean kjs$isKeyMappingDown(KeyMapping key) {
-		if (!key.isUnbound() && key.isConflictContextAndModifierActive()) {
+		if (key != null && !key.isUnbound() && key.isConflictContextAndModifierActive()) {
 			if (key.getKey().getType() == InputConstants.Type.KEYSYM) {
 				return kjs$isKeyDown(key.getKey().getValue());
 			} else if (key.getKey().getType() == InputConstants.Type.MOUSE) {

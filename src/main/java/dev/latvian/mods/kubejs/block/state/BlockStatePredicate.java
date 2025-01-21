@@ -87,7 +87,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 
 		if (list.isEmpty()) {
 			return Simple.NONE;
-		} else {
+		} else if (list.size() > 1) {
 			var predicates = new ArrayList<BlockStatePredicate>();
 
 			for (var o1 : list) {
@@ -102,7 +102,8 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			return predicates.isEmpty() ? Simple.NONE : predicates.size() == 1 ? predicates.getFirst() : new OrMatch(predicates);
 		}
 
-		var map = cx.optionalMapOf(o);
+		var first = list.getFirst();
+		var map = cx.optionalMapOf(first);
 
 		if (map != null) {
 			if (map.isEmpty()) {
@@ -122,7 +123,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			return new AndMatch(predicates);
 		}
 
-		return ofSingle(cx, o);
+		return ofSingle(cx, first);
 	}
 
 	static RuleTest wrapRuleTest(Context cx, Object o) {

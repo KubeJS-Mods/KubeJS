@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
+import dev.latvian.mods.kubejs.bindings.event.KeyBindEvents;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBlockBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
@@ -143,12 +144,13 @@ public class KubeJSModClientEventHandler {
 	public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
 		event.register(KubedexHighlight.keyMapping = new KeyMapping("key.kubejs.kubedex", KeyConflictContext.UNIVERSAL, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "key.categories.kubejs"));
 
-		KeybindRegistryKubeEvent kubeEvent = new KeybindRegistryKubeEvent();
-		ClientEvents.KEYBIND_REGISTRY.post(kubeEvent);
-		for (KubeJSKeybinds.KubeKeybind kubeKeybind : kubeEvent.build()) {
-			event.register(kubeKeybind.keyMapping());
-			KubeJSKeybinds.addKeybind(kubeKeybind);
+		var kubeEvent = new KeybindRegistryKubeEvent();
+		KeyBindEvents.REGISTRY.post(kubeEvent);
+
+		for (var bind : kubeEvent.build()) {
+			event.register(bind.mapping);
 		}
+
 		KubeJSKeybinds.triggerReload();
 	}
 

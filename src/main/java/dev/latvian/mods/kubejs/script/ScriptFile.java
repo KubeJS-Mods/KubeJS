@@ -2,7 +2,9 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.bindings.StringUtilsWrapper;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLLoader;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class ScriptFile implements Comparable<ScriptFile> {
 	private boolean ignored;
 	private String packMode;
 	private final Set<String> requiredMods;
+	private boolean requiredClient;
 	public String[] lines;
 	public long lastModified;
 
@@ -36,6 +39,7 @@ public class ScriptFile implements Comparable<ScriptFile> {
 		this.ignored = false;
 		this.packMode = "";
 		this.requiredMods = new HashSet<>(0);
+		this.requiredClient = false;
 
 		this.lines = Files.readAllLines(info.path).toArray(StringUtilsWrapper.EMPTY_STRING_ARRAY);
 
@@ -65,6 +69,7 @@ public class ScriptFile implements Comparable<ScriptFile> {
 		this.ignored = getProperty("ignored", "false").equals("true") || getProperty("ignore", "false").equals("true");
 		this.packMode = getProperty("packmode", "");
 		this.requiredMods.addAll(getProperties("requires"));
+		this.requiredClient = requiredMods.remove("client");
 	}
 
 	public void load(KubeJSContext cx) throws Throwable {
@@ -88,6 +93,10 @@ public class ScriptFile implements Comparable<ScriptFile> {
 	public String skipLoading() {
 		if (ignored) {
 			return "Ignored";
+		}
+
+		if (requiredClient && FMLLoader.getDist() != Dist.CLIENT) {
+			return "Client only";
 		}
 
 		if (!packMode.isEmpty() && !packMode.equals(CommonProperties.get().packMode)) {
