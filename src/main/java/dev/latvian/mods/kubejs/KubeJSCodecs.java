@@ -35,6 +35,7 @@ import java.util.function.Function;
 
 public interface KubeJSCodecs {
 	Codec<Character> CHARACTER = Codec.STRING.xmap(str -> str.charAt(0), Object::toString);
+	Codec<ResourceLocation> KUBEJS_ID = Codec.STRING.xmap(str -> str.indexOf(':') == -1 ? KubeJS.id(str) : ResourceLocation.parse(str), s -> s.getNamespace().equals(KubeJS.MOD_ID) ? s.getPath() : s.toString());
 
 	StreamCodec<? super RegistryFriendlyByteBuf, IntProvider> INT_PROVIDER_STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(IntProvider.CODEC);
 

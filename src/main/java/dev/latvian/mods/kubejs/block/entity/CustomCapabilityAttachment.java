@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block.entity;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import org.jetbrains.annotations.Nullable;
 
@@ -7,7 +8,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public record CustomCapabilityAttachment(BlockCapability<?, ?> capability, Object data) implements BlockEntityAttachment {
-	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType("custom_capability", Factory.class);
+	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType(KubeJS.id("custom_capability"), Factory.class);
 
 	public record Factory(BlockCapability<?, ?> type, Supplier<?> dataFactory) implements BlockEntityAttachmentFactory {
 		@Override

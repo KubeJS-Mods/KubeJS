@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -86,7 +87,7 @@ public class ModResourceBindings {
 	}
 
 	private ScriptTypePredicate typePredicateOf(String typeString) {
-		var lower = typeString.toLowerCase();
+		var lower = typeString.toLowerCase(Locale.ROOT);
 		return switch (lower) {
 			case "*", "all" -> ScriptTypePredicate.ALL;
 			case "common" -> ScriptTypePredicate.COMMON;

@@ -1,42 +1,60 @@
 package dev.latvian.mods.kubejs.web;
 
-import dev.latvian.apps.tinyserver.HTTPServer;
 import dev.latvian.apps.tinyserver.ServerRegistry;
 import dev.latvian.apps.tinyserver.http.HTTPHandler;
 import dev.latvian.apps.tinyserver.http.HTTPMethod;
+import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
+import dev.latvian.apps.tinyserver.http.response.error.client.ForbiddenError;
+import dev.latvian.apps.tinyserver.http.response.error.client.UnauthorizedError;
+import dev.latvian.apps.tinyserver.ws.WSEndpointHandler;
 import dev.latvian.apps.tinyserver.ws.WSHandler;
 import dev.latvian.apps.tinyserver.ws.WSSession;
 import dev.latvian.apps.tinyserver.ws.WSSessionFactory;
-import net.minecraft.util.thread.BlockableEventLoop;
 
-import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LocalWebServerRegistry implements ServerRegistry<KJSHTTPRequest> {
-	private final BlockableEventLoop<?> eventLoop;
-	final HTTPServer<KJSHTTPRequest> server;
-	final HashSet<LocalWebServer.Endpoint> endpoints;
+	private record AuthHandler(HTTPHandler<KJSHTTPRequest> handler, String match) implements HTTPHandler<KJSHTTPRequest> {
+		@Override
+		public HTTPResponse handle(KJSHTTPRequest req) throws Exception {
+			var a = req.header("Authorization").asString();
 
-	public LocalWebServerRegistry(BlockableEventLoop<?> eventLoop) {
-		this.eventLoop = eventLoop;
-		this.server = new HTTPServer<>(this::createRequest);
-		this.endpoints = new HashSet<>();
+			if (a.isEmpty()) {
+				throw new UnauthorizedError("Missing Authorization header");
+			} else if (!a.equals(match)) {
+				throw new ForbiddenError("Authorization header does not match configured auth token");
+			}
+
+			return handler.handle(req);
+		}
 	}
 
-	private KJSHTTPRequest createRequest() {
-		KJSHTTPRequest request = new KJSHTTPRequest();
-		request.eventLoop = eventLoop;
-		return request;
+	private final LocalWebServerRegistryHolder holder;
+	private final Set<LocalWebServer.Endpoint> endpoints;
+	private final boolean requireAuth;
+
+	LocalWebServerRegistry(LocalWebServerRegistryHolder holder, Set<LocalWebServer.Endpoint> endpoints, boolean requireAuth) {
+		this.holder = holder;
+		this.endpoints = endpoints;
+		this.requireAuth = requireAuth;
+	}
+
+	private HTTPHandler<KJSHTTPRequest> wrap(HTTPHandler<KJSHTTPRequest> handler) {
+		return requireAuth ? new AuthHandler(handler, "Bearer " + holder.auth) : handler;
 	}
 
 	@Override
 	public void http(HTTPMethod method, String path, HTTPHandler<KJSHTTPRequest> handler) {
-		server.http(method, path, handler);
-		endpoints.add(new LocalWebServer.Endpoint(method.name(), path));
+		endpoints.add(new LocalWebServer.Endpoint(method.name(), path, requireAuth));
+		holder.server.http(method, path, wrap(handler));
 	}
 
 	@Override
 	public <WSS extends WSSession<KJSHTTPRequest>> WSHandler<KJSHTTPRequest, WSS> ws(String path, WSSessionFactory<KJSHTTPRequest, WSS> factory) {
-		endpoints.add(new LocalWebServer.Endpoint("WS", path));
-		return server.ws(path, factory);
+		endpoints.add(new LocalWebServer.Endpoint("WS", path, requireAuth));
+		var handler = new WSEndpointHandler<>(factory, new ConcurrentHashMap<>());
+		holder.server.http(HTTPMethod.GET, path, wrap(handler));
+		return handler;
 	}
 }

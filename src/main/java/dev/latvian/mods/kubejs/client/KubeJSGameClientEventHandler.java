@@ -130,9 +130,9 @@ public class KubeJSGameClientEventHandler {
 	private static void handleItemTooltips(Minecraft mc, ItemTooltipData tooltip, DynamicItemTooltipsKubeEvent event) {
 		if ((tooltip.filter().isEmpty() || tooltip.filter().get().test(event.item)) && (tooltip.requirements().isEmpty() || testRequirements(mc, event, tooltip.requirements().get()))) {
 			for (var action : tooltip.actions()) {
-				if (action instanceof DynamicTextAction dynamic) {
+				if (action instanceof DynamicTextAction(String id)) {
 					try {
-						ItemEvents.DYNAMIC_TOOLTIPS.post(ScriptType.CLIENT, dynamic.id(), event);
+						ItemEvents.DYNAMIC_TOOLTIPS.post(ScriptType.CLIENT, id, event);
 					} catch (Exception ex) {
 						ConsoleJS.CLIENT.error("Item " + event.item.kjs$getId() + " dynamic tooltip error", ex);
 					}
@@ -358,8 +358,10 @@ public class KubeJSGameClientEventHandler {
 
 		if (ClientProperties.get().disableRecipeBook && screen instanceof RecipeUpdateListener) {
 			var iterator = screen.children().iterator();
+
 			while (iterator.hasNext()) {
 				var listener = iterator.next();
+
 				if (listener instanceof ImageButton button && button.sprites.enabled().equals(KubeJSClient.RECIPE_BUTTON_TEXTURE)) {
 					screen.renderables.remove(listener);
 					screen.narratables.remove(listener);

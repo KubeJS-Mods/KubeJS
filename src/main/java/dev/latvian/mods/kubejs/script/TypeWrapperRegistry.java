@@ -16,6 +16,7 @@ import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -82,7 +83,7 @@ public class TypeWrapperRegistry {
 				return Cast.to(o);
 			} else {
 				var s = o.toString();
-				return s.isEmpty() ? defaultValue : KubeJSCodecs.byName(codec, forceLowerCase ? s.toLowerCase() : s);
+				return s.isEmpty() ? defaultValue : KubeJSCodecs.byName(codec, forceLowerCase ? s.toLowerCase(Locale.ROOT) : s);
 			}
 		});
 	}

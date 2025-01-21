@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.bindings;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.ButtonOrPressurePlateBuilder;
 import dev.latvian.mods.kubejs.registry.RegistryKubeEvent;
@@ -58,39 +59,39 @@ public record BuildingMaterialProperties(
 		}
 
 		if (add(Blocks::slab)) {
-			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_slab"), "slab"));
+			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_slab"), new KubeResourceLocation(KubeJS.id("slab"))));
 		}
 
 		if (add(Blocks::stairs)) {
-			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_stairs"), "stairs"));
+			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_stairs"), new KubeResourceLocation(KubeJS.id("stairs"))));
 		}
 
 		if (add(Blocks::fence)) {
-			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_fence"), "fence"));
+			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_fence"), new KubeResourceLocation(KubeJS.id("fence"))));
 		}
 
 		if (add(Blocks::fenceGate)) {
-			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_fence_gate"), "fence_gate"));
+			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_fence_gate"), new KubeResourceLocation(KubeJS.id("fence_gate"))));
 		}
 
 		if (add(Blocks::wall)) {
-			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_wall"), "wall"));
+			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_wall"), new KubeResourceLocation(KubeJS.id("wall"))));
 		}
 
 		if (add(Blocks::pressurePlate)) {
-			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_pressure_plate"), "pressure_plate"));
+			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_pressure_plate"), new KubeResourceLocation(KubeJS.id("pressure_plate"))));
 		}
 
 		if (add(Blocks::button)) {
-			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_button"), "button"));
+			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_button"), new KubeResourceLocation(KubeJS.id("button"))));
 		}
 
 		if (add(Blocks::trapdoor)) {
-			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_trapdoor"), "trapdoor"));
+			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_trapdoor"), new KubeResourceLocation(KubeJS.id("trapdoor"))));
 		}
 
 		if (add(Blocks::door)) {
-			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_door"), "door"));
+			builder.add((BlockBuilder) event.create(cx, id.withPath(p -> p + "_door"), new KubeResourceLocation(KubeJS.id("door"))));
 		}
 
 		for (var b : builder) {

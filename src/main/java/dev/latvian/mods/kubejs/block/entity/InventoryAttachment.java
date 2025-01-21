@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block.entity;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import net.minecraft.core.HolderLookup;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class InventoryAttachment implements BlockEntityAttachment {
-	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType("inventory", Factory.class);
+	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType(KubeJS.id("inventory"), Factory.class);
 
 	public record Factory(int width, int height, Optional<ItemPredicate> inputFilter) implements BlockEntityAttachmentFactory {
 		@Override

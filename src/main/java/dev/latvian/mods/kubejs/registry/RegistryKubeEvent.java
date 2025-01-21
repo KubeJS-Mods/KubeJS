@@ -26,9 +26,9 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 		this.created = new LinkedList<>();
 	}
 
-	public BuilderBase<? extends T> create(Context cx, KubeResourceLocation id, String type) {
+	public BuilderBase<? extends T> create(Context cx, KubeResourceLocation id, KubeResourceLocation type) {
 		var sourceLine = SourceLine.of(cx);
-		var t = builderInfo.namedType(type);
+		var t = builderInfo.namedType(type.wrapped());
 
 		if (t == null) {
 			throw new KubeRuntimeException("Unknown type '" + type + "' for object '" + id + "'!").source(sourceLine);

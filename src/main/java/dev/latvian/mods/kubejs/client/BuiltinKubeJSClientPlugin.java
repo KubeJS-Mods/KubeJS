@@ -38,6 +38,11 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 	}
 
 	@Override
+	public void registerLocalWebServerWithAuth(LocalWebServerRegistry registry) {
+		KubeJSClientWeb.registerWithAuth(registry);
+	}
+
+	@Override
 	public void generateLang(LangKubeEvent event) {
 		event.add(KubeJS.MOD_ID, "key.categories.kubejs", "KubeJS");
 		event.add(KubeJS.MOD_ID, "key.kubejs.kubedex", "Kubedex");

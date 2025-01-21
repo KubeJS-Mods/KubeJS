@@ -56,7 +56,7 @@ public class ScriptManager {
 		});
 
 		unload();
-		scriptType.console.writeToFile(LogType.INIT, "KubeJS " + KubeJS.VERSION + "; MC " + KubeJS.MC_VERSION_NUMBER + " NeoForge");
+		scriptType.console.writeToFile(LogType.INIT, KubeJS.DISPLAY_NAME + "; MC " + KubeJS.MC_VERSION_NUMBER + " NeoForge");
 		scriptType.console.writeToFile(LogType.INIT, "Loaded plugins:");
 
 		for (var plugin : KubeJSPlugins.getAll()) {

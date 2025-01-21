@@ -11,6 +11,7 @@ public interface TextIcons {
 	ResourceLocation FONT = KubeJS.id("icons");
 	Style STYLE = Style.EMPTY.withFont(FONT).applyFormat(ChatFormatting.WHITE);
 	Component NAME = Component.empty().append(icons("K.")).append(Component.literal(KubeJS.MOD_NAME));
+	String ALL_ICONS = "!+~ABCDEFIJKNPQTWY";
 
 	static MutableComponent icon(MutableComponent character) {
 		return character.setStyle(STYLE);
@@ -40,12 +41,12 @@ public interface TextIcons {
 		return icons("~");
 	}
 
-	static MutableComponent blockTagIcon() {
-		return icons("B");
-	}
-
 	static MutableComponent crafting() {
 		return icons("A");
+	}
+
+	static MutableComponent blockTagIcon() {
+		return icons("B");
 	}
 
 	static MutableComponent copy() {

@@ -69,7 +69,7 @@ public class KubeJSModClientEventHandler {
 
 	private static void setupClient0() {
 		if (!PlatformWrapper.isGeneratingData() && Minecraft.getInstance() != null && WebServerProperties.get().enabled) {
-			LocalWebServer.start(Minecraft.getInstance());
+			LocalWebServer.start(Minecraft.getInstance(), true);
 		}
 
 		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesKubeEvent());

@@ -118,17 +118,11 @@ public class KubeJSWeb {
 	public static void register(LocalWebServerRegistry registry) {
 		UPDATES = registry.ws("/api/updates", KJSWSSession::new);
 
-		addScriptTypeEndpoints(registry, ScriptType.STARTUP, KubeJS.getStartupScriptManager()::reload);
-		addScriptTypeEndpoints(registry, ScriptType.SERVER, KubeJSWeb::reloadInternalServer);
-
 		registry.get("/", KubeJSWeb::getHomepage);
 		registry.get("/api/mods", KubeJSWeb::getMods);
 		registry.get("/api/mods/{id}/icon", KubeJSWeb::getModIcon);
 
 		registry.get("/api/assets.zip", KubeJSWeb::getAssetsZip);
-		registry.get("/api/browse", KubeJSWeb::getBrowse);
-		registry.get("/api/browse/{directory}", KubeJSWeb::getBrowseDir);
-		registry.get("/api/browse/{directory}/<file>", KubeJSWeb::getBrowseFile);
 
 		registry.get("/api/registries", KubeJSWeb::getRegistriesResponse); // List of all registries
 		registry.get("/api/registries/{namespace}/{path}/keys", KubeJSWeb::getRegistryKeysResponse); // List of all IDs in registry
@@ -137,6 +131,19 @@ public class KubeJSWeb {
 		registry.get("/api/tags/{namespace}/{path}", KubeJSWeb::getTagsResponse); // List of all tags in registry
 		registry.get("/api/tags/{namespace}/{path}/values/{tag-namespace}/{tag-path}", KubeJSWeb::getTagValuesResponse); // List of all values in a tag
 		registry.get("/api/tags/{namespace}/{path}/keys/{value-namespace}/{value-path}", KubeJSWeb::getTagKeysResponse); // List of all tags for a value
+	}
+
+	public static void registerWithAuth(LocalWebServerRegistry registry) {
+		addScriptTypeEndpoints(registry, ScriptType.STARTUP, KubeJSWeb::reloadStartupScripts);
+		addScriptTypeEndpoints(registry, ScriptType.SERVER, KubeJSWeb::reloadInternalServer);
+
+		registry.get("/api/browse", KubeJSWeb::getBrowse);
+		registry.get("/api/browse/{directory}", KubeJSWeb::getBrowseDir);
+		registry.get("/api/browse/{directory}/<file>", KubeJSWeb::getBrowseFile);
+	}
+
+	private static void reloadStartupScripts() {
+		KubeJS.getStartupScriptManager().reload();
 	}
 
 	private static void reloadInternalServer() {
@@ -170,7 +177,7 @@ public class KubeJSWeb {
 		list.add("Available Endpoints:");
 
 		for (var endpoint : LocalWebServer.instance().endpoints()) {
-			list.add("- " + endpoint.method() + "\t" + endpoint.path());
+			list.add("- " + endpoint.method() + "\t" + endpoint.path() + (endpoint.auth() ? " [Requires Auth]" : ""));
 		}
 
 		return HTTPResponse.ok().text(list);

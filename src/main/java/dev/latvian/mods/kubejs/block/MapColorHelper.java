@@ -7,6 +7,7 @@ import net.minecraft.world.level.material.MapColor;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -101,7 +102,7 @@ public record MapColorHelper(int id, String name, MapColor color, Vector3f rgb) 
 			} else if (s.charAt(0) == '#') {
 				return findClosest(Integer.decode(s.toString())).color;
 			} else {
-				return NAME_MAP.getOrDefault(s.toString().toLowerCase(), NONE).color;
+				return NAME_MAP.getOrDefault(s.toString().toLowerCase(Locale.ROOT), NONE).color;
 			}
 		} else if (o instanceof Number n) {
 			return findClosest(n.intValue()).color;

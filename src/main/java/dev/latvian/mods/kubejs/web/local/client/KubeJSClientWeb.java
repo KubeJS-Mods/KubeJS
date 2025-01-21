@@ -40,6 +40,7 @@ import net.minecraft.world.level.block.Blocks;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -77,8 +78,6 @@ public class KubeJSClientWeb {
 	}
 
 	public static void register(LocalWebServerRegistry registry) {
-		KubeJSWeb.addScriptTypeEndpoints(registry, ScriptType.CLIENT, KubeJS.getClientScriptManager()::reload);
-
 		registry.get("/api/client/translate/{key}", KubeJSClientWeb::getTranslate);
 		registry.get("/api/client/component-string/{json}", KubeJSClientWeb::getComponentString);
 
@@ -97,6 +96,14 @@ public class KubeJSClientWeb {
 		registry.get("/img/{size}/item-tag/{namespace}/{path}", ImageGenerator::itemTag);
 		registry.get("/img/{size}/block-tag/{namespace}/{path}", ImageGenerator::blockTag);
 		registry.get("/img/{size}/fluid-tag/{namespace}/{path}", ImageGenerator::fluidTag);
+	}
+
+	public static void registerWithAuth(LocalWebServerRegistry registry) {
+		KubeJSWeb.addScriptTypeEndpoints(registry, ScriptType.CLIENT, KubeJSClientWeb::reloadClientScripts);
+	}
+
+	private static void reloadClientScripts() {
+		KubeJS.getClientScriptManager().reload();
 	}
 
 	private static HTTPResponse getScreenshot(KJSHTTPRequest req) {
@@ -133,7 +140,7 @@ public class KubeJSClientWeb {
 		var nbtOps = level == null ? req.registries().nbt() : level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
 		var results = new JsonArray();
 		var itemSearch = createItemSearch(level != null);
-		var search = req.query("search").asString().toLowerCase();
+		var search = req.query("search").asString().toLowerCase(Locale.ROOT);
 		var includeTags = req.query("tags").asBoolean(false);
 		var renderIcons = req.query("render-icons").asInt(0);
 
@@ -168,7 +175,7 @@ public class KubeJSClientWeb {
 				var nameProviderName = nameProvider == null ? null : nameProvider.getName(registries, item.stack());
 				var name = (nameProviderName == null ? item.stack().getHoverName() : nameProviderName).getString();
 
-				if (!search.isEmpty() && !name.toLowerCase().contains(search)) {
+				if (!search.isEmpty() && !name.toLowerCase(Locale.ROOT).contains(search)) {
 					continue;
 				}
 

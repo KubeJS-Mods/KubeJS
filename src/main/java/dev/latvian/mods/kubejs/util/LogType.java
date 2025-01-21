@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.util;
 
 import org.slf4j.Logger;
 
+import java.util.Locale;
 import java.util.function.BiConsumer;
 
 public enum LogType {
@@ -19,7 +20,7 @@ public enum LogType {
 
 	LogType(String name, BiConsumer<Logger, String> callback) {
 		this.name = name;
-		this.id = name.toLowerCase();
+		this.id = name.toLowerCase(Locale.ROOT);
 		this.callback = callback;
 	}
 }

@@ -17,7 +17,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public class KJSHTTPRequest extends HTTPRequest {
-	public BlockableEventLoop<?> eventLoop;
+	public final BlockableEventLoop<?> eventLoop;
+
+	public KJSHTTPRequest(BlockableEventLoop<?> eventLoop) {
+		this.eventLoop = eventLoop;
+	}
 
 	public RegistryAccessContainer registries() {
 		return RegistryAccessContainer.current;

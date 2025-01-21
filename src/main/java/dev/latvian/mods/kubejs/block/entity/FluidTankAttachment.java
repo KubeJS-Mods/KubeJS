@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block.entity;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.capabilities.BlockCapability;
@@ -14,7 +15,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class FluidTankAttachment implements BlockEntityAttachment {
-	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType("fluid_tank", Factory.class);
+	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType(KubeJS.id("fluid_tank"), Factory.class);
 
 	public record Factory(int capacity, Optional<FluidIngredient> inputFilter) implements BlockEntityAttachmentFactory {
 		private static final Predicate<FluidStack> ALWAYS_TRUE = stack -> true;

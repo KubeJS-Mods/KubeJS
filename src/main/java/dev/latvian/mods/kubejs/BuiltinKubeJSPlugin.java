@@ -117,6 +117,11 @@ import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringGridComponent;
 import dev.latvian.mods.kubejs.recipe.component.TagKeyComponent;
 import dev.latvian.mods.kubejs.recipe.component.TimeComponent;
+import dev.latvian.mods.kubejs.recipe.component.validator.AlwaysValidValidator;
+import dev.latvian.mods.kubejs.recipe.component.validator.AndValidator;
+import dev.latvian.mods.kubejs.recipe.component.validator.NonEmptyValidator;
+import dev.latvian.mods.kubejs.recipe.component.validator.OrValidator;
+import dev.latvian.mods.kubejs.recipe.component.validator.RecipeComponentValidatorTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ConsumeAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
@@ -277,44 +282,44 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.addDefault(Registries.BLOCK, BasicBlockJS.Builder.class, BasicBlockJS.Builder::new);
 
 		registry.of(Registries.BLOCK, reg -> {
-			reg.add("detector", DetectorBlock.Builder.class, DetectorBlock.Builder::new);
-			reg.add("slab", SlabBlockBuilder.class, SlabBlockBuilder::new);
-			reg.add("stairs", StairBlockBuilder.class, StairBlockBuilder::new);
-			reg.add("fence", FenceBlockBuilder.class, FenceBlockBuilder::new);
-			reg.add("wall", WallBlockBuilder.class, WallBlockBuilder::new);
-			reg.add("fence_gate", FenceGateBlockBuilder.class, FenceGateBlockBuilder::new);
-			reg.add("pressure_plate", PressurePlateBlockBuilder.class, PressurePlateBlockBuilder::new);
-			reg.add("button", ButtonBlockBuilder.class, ButtonBlockBuilder::new);
-			reg.add("falling", FallingBlockBuilder.class, FallingBlockBuilder::new);
-			reg.add("crop", CropBlockBuilder.class, CropBlockBuilder::new);
-			reg.add("cardinal", HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);
-			reg.add("carpet", CarpetBlockBuilder.class, CarpetBlockBuilder::new);
-			reg.add("door", DoorBlockBuilder.class, DoorBlockBuilder::new);
-			reg.add("trapdoor", TrapdoorBlockBuilder.class, TrapdoorBlockBuilder::new);
+			reg.add(KubeJS.id("detector"), DetectorBlock.Builder.class, DetectorBlock.Builder::new);
+			reg.add(KubeJS.id("slab"), SlabBlockBuilder.class, SlabBlockBuilder::new);
+			reg.add(KubeJS.id("stairs"), StairBlockBuilder.class, StairBlockBuilder::new);
+			reg.add(KubeJS.id("fence"), FenceBlockBuilder.class, FenceBlockBuilder::new);
+			reg.add(KubeJS.id("wall"), WallBlockBuilder.class, WallBlockBuilder::new);
+			reg.add(KubeJS.id("fence_gate"), FenceGateBlockBuilder.class, FenceGateBlockBuilder::new);
+			reg.add(KubeJS.id("pressure_plate"), PressurePlateBlockBuilder.class, PressurePlateBlockBuilder::new);
+			reg.add(KubeJS.id("button"), ButtonBlockBuilder.class, ButtonBlockBuilder::new);
+			reg.add(KubeJS.id("falling"), FallingBlockBuilder.class, FallingBlockBuilder::new);
+			reg.add(KubeJS.id("crop"), CropBlockBuilder.class, CropBlockBuilder::new);
+			reg.add(KubeJS.id("cardinal"), HorizontalDirectionalBlockBuilder.class, HorizontalDirectionalBlockBuilder::new);
+			reg.add(KubeJS.id("carpet"), CarpetBlockBuilder.class, CarpetBlockBuilder::new);
+			reg.add(KubeJS.id("door"), DoorBlockBuilder.class, DoorBlockBuilder::new);
+			reg.add(KubeJS.id("trapdoor"), TrapdoorBlockBuilder.class, TrapdoorBlockBuilder::new);
 		});
 
 		registry.addDefault(Registries.ITEM, ItemBuilder.class, ItemBuilder::new);
 
 		registry.of(Registries.ITEM, reg -> {
-			reg.add("sword", SwordItemBuilder.class, SwordItemBuilder::new);
-			reg.add("pickaxe", DiggerItemBuilder.Pickaxe.class, DiggerItemBuilder.Pickaxe::new);
-			reg.add("axe", DiggerItemBuilder.Axe.class, DiggerItemBuilder.Axe::new);
-			reg.add("shovel", DiggerItemBuilder.Shovel.class, DiggerItemBuilder.Shovel::new);
-			reg.add("hoe", DiggerItemBuilder.Hoe.class, DiggerItemBuilder.Hoe::new);
-			reg.add("shears", ShearsItemBuilder.class, ShearsItemBuilder::new);
-			reg.add("helmet", ArmorItemBuilder.Helmet.class, ArmorItemBuilder.Helmet::new);
-			reg.add("chestplate", ArmorItemBuilder.Chestplate.class, ArmorItemBuilder.Chestplate::new);
-			reg.add("leggings", ArmorItemBuilder.Leggings.class, ArmorItemBuilder.Leggings::new);
-			reg.add("boots", ArmorItemBuilder.Boots.class, ArmorItemBuilder.Boots::new);
-			reg.add("animal_armor", ArmorItemBuilder.AnimalArmor.class, ArmorItemBuilder.AnimalArmor::new);
-			reg.add("smithing_template", SmithingTemplateItemBuilder.class, SmithingTemplateItemBuilder::new);
+			reg.add(KubeJS.id("sword"), SwordItemBuilder.class, SwordItemBuilder::new);
+			reg.add(KubeJS.id("pickaxe"), DiggerItemBuilder.Pickaxe.class, DiggerItemBuilder.Pickaxe::new);
+			reg.add(KubeJS.id("axe"), DiggerItemBuilder.Axe.class, DiggerItemBuilder.Axe::new);
+			reg.add(KubeJS.id("shovel"), DiggerItemBuilder.Shovel.class, DiggerItemBuilder.Shovel::new);
+			reg.add(KubeJS.id("hoe"), DiggerItemBuilder.Hoe.class, DiggerItemBuilder.Hoe::new);
+			reg.add(KubeJS.id("shears"), ShearsItemBuilder.class, ShearsItemBuilder::new);
+			reg.add(KubeJS.id("helmet"), ArmorItemBuilder.Helmet.class, ArmorItemBuilder.Helmet::new);
+			reg.add(KubeJS.id("chestplate"), ArmorItemBuilder.Chestplate.class, ArmorItemBuilder.Chestplate::new);
+			reg.add(KubeJS.id("leggings"), ArmorItemBuilder.Leggings.class, ArmorItemBuilder.Leggings::new);
+			reg.add(KubeJS.id("boots"), ArmorItemBuilder.Boots.class, ArmorItemBuilder.Boots::new);
+			reg.add(KubeJS.id("animal_armor"), ArmorItemBuilder.AnimalArmor.class, ArmorItemBuilder.AnimalArmor::new);
+			reg.add(KubeJS.id("smithing_template"), SmithingTemplateItemBuilder.class, SmithingTemplateItemBuilder::new);
 		});
 
 		registry.addDefault(Registries.FLUID, FluidBuilder.class, FluidBuilder::new);
 
 		registry.of(Registries.FLUID, reg -> {
-			reg.add("thin", ThinFluidBuilder.class, ThinFluidBuilder::new);
-			reg.add("thick", ThickFluidBuilder.class, ThickFluidBuilder::new);
+			reg.add(KubeJS.id("thin"), ThinFluidBuilder.class, ThinFluidBuilder::new);
+			reg.add(KubeJS.id("thick"), ThickFluidBuilder.class, ThickFluidBuilder::new);
 		});
 
 		registry.addDefault(NeoForgeRegistries.Keys.FLUID_TYPES, FluidTypeBuilder.class, FluidTypeBuilder::new);
@@ -746,6 +751,11 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
+	public void registerLocalWebServerWithAuth(LocalWebServerRegistry registry) {
+		KubeJSWeb.registerWithAuth(registry);
+	}
+
+	@Override
 	public void registerItemNameProviders(NameProvider.Registry<Item, ItemStack> registry) {
 		registry.register(Items.ENCHANTED_BOOK, (registries, stack) -> {
 			var enchants = EnchantmentHelper.getEnchantmentsForCrafting(stack);
@@ -815,5 +825,13 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 			return null;
 		});
+	}
+
+	@Override
+	public void registerRecipeComponentValidatorTypes(RecipeComponentValidatorTypeRegistry registry) {
+		registry.register(NonEmptyValidator.TYPE);
+		registry.register(AlwaysValidValidator.TYPE);
+		registry.register(AndValidator.TYPE);
+		registry.register(OrValidator.TYPE);
 	}
 }

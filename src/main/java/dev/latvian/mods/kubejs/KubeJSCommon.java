@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.net.KubeServerData;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
+import dev.latvian.mods.kubejs.web.WebServerProperties;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -36,6 +37,7 @@ public class KubeJSCommon {
 	public void reloadConfig() {
 		CommonProperties.reload();
 		DevProperties.reload();
+		WebServerProperties.reload();
 	}
 
 	public void reloadStartupScripts(boolean dedicated) {

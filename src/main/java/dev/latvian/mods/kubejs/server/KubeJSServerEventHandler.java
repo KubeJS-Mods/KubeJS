@@ -59,7 +59,7 @@ public class KubeJSServerEventHandler {
 		var server = event.getServer();
 
 		if (FMLEnvironment.dist == Dist.DEDICATED_SERVER && !PlatformWrapper.isGeneratingData() && WebServerProperties.get().enabled && !WebServerProperties.get().publicAddress.isEmpty()) {
-			LocalWebServer.start(server);
+			LocalWebServer.start(server, false);
 		}
 
 		var p = server.getWorldPath(PERSISTENT_DATA);

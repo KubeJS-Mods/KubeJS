@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public record UniqueIdBuilder(StringBuilder builder) {
@@ -38,7 +39,7 @@ public record UniqueIdBuilder(StringBuilder builder) {
 	public String build() {
 		var result = builder.toString();
 		builder.setLength(0);
-		result = MULTIPLE_UNDERSCORES_PATTERN.matcher(NON_W_PATTERN.matcher(result.toLowerCase()).replaceAll("_")).replaceAll("_");
+		result = MULTIPLE_UNDERSCORES_PATTERN.matcher(NON_W_PATTERN.matcher(result.toLowerCase(Locale.ROOT)).replaceAll("_")).replaceAll("_");
 
 		if (!result.isEmpty() && result.charAt(0) == '_') {
 			result = result.substring(1);

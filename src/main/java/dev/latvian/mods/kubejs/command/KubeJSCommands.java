@@ -27,6 +27,7 @@ import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.server.BasicCommandKubeEvent;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.JsonUtils;
+import dev.latvian.mods.kubejs.web.LocalWebServer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -48,6 +49,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -279,14 +281,28 @@ public class KubeJSCommands {
 			.getTagNames();
 	}
 
-	private static void link(CommandSourceStack source, ChatFormatting color, String name, String url) {
-		source.sendSystemMessage(Component.literal("• ").append(Component.literal(name).withStyle(color).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url)))));
+	private static void link(CommandSourceStack source, ChatFormatting color, Component icon, String name, @Nullable Component info, String url) {
+		var c = Component.literal("• ").withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url)));
+
+		if (info != null) {
+			c = c.withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, info)));
+		}
+
+		c.append(icon);
+		c.append(TextIcons.smallSpace());
+		c.append(Component.literal(name).withStyle(color));
+		source.sendSystemMessage(c);
 	}
 
 	private static int help(CommandSourceStack source) {
-		link(source, ChatFormatting.GOLD, "Wiki", "https://kubejs.com/?" + KubeJS.QUERY);
-		link(source, ChatFormatting.GREEN, "Support", "https://kubejs.com/support?" + KubeJS.QUERY);
-		link(source, ChatFormatting.BLUE, "Changelog", "https://kubejs.com/changelog?" + KubeJS.QUERY);
+		link(source, ChatFormatting.GOLD, TextIcons.crafting(), "Wiki", null, "https://kubejs.com/?" + KubeJS.QUERY);
+		link(source, ChatFormatting.GREEN, TextIcons.info(), "Support", null, "https://kubejs.com/support?" + KubeJS.QUERY);
+		link(source, ChatFormatting.BLUE, TextIcons.copy(), "Changelog", null, "https://kubejs.com/changelog?" + KubeJS.QUERY);
+
+		if (!LocalWebServer.explorerCode.isEmpty() && source.getServer().isSingleplayer()) {
+			link(source, ChatFormatting.LIGHT_PURPLE, TextIcons.entityTypeTag(), "Explore", null, "https://kubejs.com/explorer#" + LocalWebServer.explorerCode);
+		}
+
 		return Command.SINGLE_SUCCESS;
 	}
 

@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.SoundType;
 
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class SoundTypeWrapper implements TypeWrapperFactory<SoundType> {
@@ -25,7 +26,7 @@ public class SoundTypeWrapper implements TypeWrapperFactory<SoundType> {
 				for (var field : SoundType.class.getFields()) {
 					if (field.getType() == SoundType.class && Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) {
 						try {
-							map.put(field.getName().toLowerCase(), (SoundType) field.get(null));
+							map.put(field.getName().toLowerCase(Locale.ROOT), (SoundType) field.get(null));
 						} catch (Exception ex) {
 							ex.printStackTrace();
 						}
@@ -46,7 +47,7 @@ public class SoundTypeWrapper implements TypeWrapperFactory<SoundType> {
 		} else if (o == null || Undefined.isUndefined(o)) {
 			return SoundType.EMPTY;
 		} else {
-			return getMap().getOrDefault((o instanceof JsonElement j ? j.getAsString() : o.toString()).toLowerCase(), SoundType.EMPTY);
+			return getMap().getOrDefault((o instanceof JsonElement j ? j.getAsString() : o.toString()).toLowerCase(Locale.ROOT), SoundType.EMPTY);
 		}
 	}
 }

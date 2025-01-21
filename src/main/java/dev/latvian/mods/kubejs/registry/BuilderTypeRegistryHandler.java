@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.registry;
 
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
@@ -9,6 +10,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
@@ -32,7 +34,7 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 		private static final Info<?> EMPTY = new Info<>();
 
 		private BuilderType<T> defaultType;
-		private Map<String, BuilderType<T>> types;
+		private Map<ResourceLocation, BuilderType<T>> types;
 		private Codec<T> directCodec;
 		private TypeInfo typeInfo;
 
@@ -46,7 +48,7 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 		}
 
 		@Nullable
-		public BuilderType<T> namedType(String name) {
+		public BuilderType<T> namedType(ResourceLocation name) {
 			return types == null ? null : types.get(name);
 		}
 
@@ -74,17 +76,19 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 	}
 
 	private record RegConsumer<T>(Info<T> info) implements BuilderTypeRegistry.Callback<T> {
+		private static final ResourceLocation DEFAULT = KubeJS.id("default");
+
 		@Override
 		public void addDefault(Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory) {
 			if (info.defaultType != null) {
 				ConsoleJS.STARTUP.warn("Previous default type '" + info.defaultType.builderClass().getName() + "' for registry '" + info + "' replaced with '" + builderType.getName() + "'!");
 			}
 
-			info.defaultType = new BuilderType<>("default", builderType, factory);
+			info.defaultType = new BuilderType<>(DEFAULT, builderType, factory);
 		}
 
 		@Override
-		public void add(String type, Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory) {
+		public void add(ResourceLocation type, Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory) {
 			if (info.types == null) {
 				info.types = new LinkedHashMap<>();
 			}

@@ -19,7 +19,7 @@ public interface PlayerSelector {
 			return uuid(uuid);
 		}
 
-		var name = Objects.toString(o, "").trim().toLowerCase();
+		var name = Objects.toString(o, "").trim().toLowerCase(Locale.ROOT);
 
 		if (name.isEmpty()) {
 			return identity(null);

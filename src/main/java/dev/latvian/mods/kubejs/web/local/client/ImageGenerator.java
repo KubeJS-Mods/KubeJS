@@ -22,7 +22,6 @@ import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.util.CachedComponentObject;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
-import dev.latvian.mods.kubejs.web.LocalWebServer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -241,7 +240,7 @@ public class ImageGenerator {
 		req.runInMainThread(() -> {
 			for (var image : images) {
 				try {
-					var content = new ContentGrabber(LocalWebServer.SERVER_NAME, req.startTime());
+					var content = new ContentGrabber(KubeJS.DISPLAY_NAME, req.startTime());
 					image.response().build(content);
 
 					if (content.body != null && bodyKeys.add(new BodyKey(content.body))) {

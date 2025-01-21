@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Function;
@@ -130,7 +131,7 @@ public interface StringUtilsWrapper {
 		} else if (!ignoreSpecial && ALWAYS_LOWER_CASE.contains(s)) {
 			return s;
 		} else if (s.length() == 1) {
-			return s.toUpperCase();
+			return s.toUpperCase(Locale.ROOT);
 		}
 
 		char[] chars = s.toCharArray();

@@ -7,6 +7,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 
+import java.util.Locale;
 import java.util.function.BooleanSupplier;
 
 public enum Tristate implements StringRepresentable {
@@ -28,7 +29,7 @@ public enum Tristate implements StringRepresentable {
 			case null -> DEFAULT;
 			case Tristate t -> t;
 			case Boolean b -> b ? TRUE : FALSE;
-			default -> switch (from.toString().toLowerCase()) {
+			default -> switch (from.toString().toLowerCase(Locale.ROOT)) {
 				case "true" -> TRUE;
 				case "false" -> FALSE;
 				default -> DEFAULT;

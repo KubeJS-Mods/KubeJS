@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block.entity;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.bindings.DirectionWrapper;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class EnergyStorageAttachment implements BlockEntityAttachment {
-	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType("energy_storage", Factory.class);
+	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType(KubeJS.id("energy_storage"), Factory.class);
 
 	public record Factory(int capacity, Optional<Integer> maxReceive, Optional<Integer> maxExtract, Optional<Integer> autoOutput) implements BlockEntityAttachmentFactory {
 		@Override

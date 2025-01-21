@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
+import dev.latvian.mods.kubejs.recipe.component.validator.RecipeComponentValidatorTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
@@ -99,7 +100,13 @@ public interface KubeJSPlugin {
 	default void registerLocalWebServer(LocalWebServerRegistry registry) {
 	}
 
+	default void registerLocalWebServerWithAuth(LocalWebServerRegistry registry) {
+	}
+
 	default void registerItemNameProviders(NameProvider.Registry<Item, ItemStack> registry) {
+	}
+
+	default void registerRecipeComponentValidatorTypes(RecipeComponentValidatorTypeRegistry registry) {
 	}
 
 	default void attachServerData(AttachedData<MinecraftServer> event) {

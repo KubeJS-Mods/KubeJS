@@ -46,6 +46,7 @@ public class KubeJS {
 	public static final String MC_VERSION_STRING = "1.21.1";
 	public static String QUERY;
 	public static String VERSION = "0";
+	public static String DISPLAY_NAME = "KubeJS";
 
 	public static ResourceLocation id(String path) {
 		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
@@ -70,6 +71,7 @@ public class KubeJS {
 		modEventBus = bus;
 		thisMod = mod;
 		VERSION = mod.getModInfo().getVersion().toString();
+		DISPLAY_NAME = "KubeJS " + VERSION;
 		QUERY = "source=kubejs&mc=" + MC_VERSION_NUMBER + "&loader=neoforge&v=" + URLEncoder.encode(mod.getModInfo().getVersion().toString(), StandardCharsets.UTF_8);
 
 		if (Files.notExists(KubeJSPaths.README)) {
@@ -114,8 +116,9 @@ public class KubeJS {
 		var pluginTimer = Stopwatch.createStarted();
 		LOGGER.info("Looking for KubeJS plugins...");
 		var allMods = new ArrayList<>(ModList.get().getMods().stream().map(IModInfo::getOwningFile).map(IModFileInfo::getFile).toList());
-		allMods.remove(thisMod.getModInfo().getOwningFile().getFile());
-		allMods.addFirst(thisMod.getModInfo().getOwningFile().getFile());
+		var thisModFile = mod.getModInfo().getOwningFile().getFile();
+		allMods.remove(thisModFile);
+		allMods.addFirst(thisModFile);
 		KubeJSPlugins.load(allMods, dist == Dist.CLIENT);
 		LOGGER.info("Done in " + pluginTimer.stop());
 

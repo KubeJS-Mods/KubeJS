@@ -9,6 +9,7 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class ItemToolTiers {
@@ -16,7 +17,7 @@ public class ItemToolTiers {
 		var map = new HashMap<String, Tier>();
 
 		for (var tier : Tiers.values()) {
-			map.put(tier.toString().toLowerCase(), tier);
+			map.put(tier.toString().toLowerCase(Locale.ROOT), tier);
 		}
 
 		ItemEvents.TOOL_TIER_REGISTRY.post(ScriptType.STARTUP, new ItemToolTierRegistryKubeEvent(map));
