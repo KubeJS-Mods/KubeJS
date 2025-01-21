@@ -92,9 +92,7 @@ import dev.latvian.mods.kubejs.misc.VillagerProfessionBuilder;
 import dev.latvian.mods.kubejs.misc.VillagerTypeBuilder;
 import dev.latvian.mods.kubejs.neoforge.NativeEventWrapper;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
-import dev.latvian.mods.kubejs.plugin.ClassFilter;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
-import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.recipe.component.BlockComponent;
 import dev.latvian.mods.kubejs.recipe.component.BlockStateComponent;
 import dev.latvian.mods.kubejs.recipe.component.BookCategoryComponent;
@@ -381,87 +379,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(PlayerEvents.GROUP);
 		registry.register(RecipeViewerEvents.GROUP);
 		registry.register(KGUIEvents.GROUP);
-	}
-
-	@Override
-	public void registerClasses(ClassFilter filter) {
-		filter.deny("java.lang"); // java.lang
-		filter.allow("java.lang.Number");
-		filter.allow("java.lang.String");
-		filter.allow("java.lang.Character");
-		filter.allow("java.lang.Byte");
-		filter.allow("java.lang.Short");
-		filter.allow("java.lang.Integer");
-		filter.allow("java.lang.Long");
-		filter.allow("java.lang.Float");
-		filter.allow("java.lang.Double");
-		filter.allow("java.lang.Boolean");
-		filter.allow("java.lang.Runnable");
-		filter.allow("java.lang.Iterable");
-		filter.allow("java.lang.Comparable");
-		filter.allow("java.lang.CharSequence");
-		filter.allow("java.lang.Void");
-		filter.allow("java.lang.Package");
-		filter.allow("java.lang.Appendable");
-		filter.allow("java.lang.AutoCloseable");
-		filter.allow("java.lang.Comparable");
-		filter.allow("java.lang.Iterable");
-		filter.allow("java.lang.Object");
-		filter.allow("java.lang.Runnable");
-		filter.allow("java.lang.StringBuilder");
-
-		filter.allow("java.math.BigInteger"); // java.math
-		filter.allow("java.math.BigDecimal");
-
-		filter.deny("java.io"); // IO
-		filter.allow("java.io.Closeable");
-		filter.allow("java.io.Serializable");
-
-		filter.deny("java.nio"); // NIO
-		filter.allow("java.nio.ByteOrder");
-
-		filter.allow("java.util"); // Utils
-		filter.deny("java.util.jar");
-		filter.deny("java.util.zip");
-
-		filter.allow("it.unimi.dsi.fastutil"); // FastUtil
-
-		filter.allow("dev.latvian.mods.kubejs"); // KubeJS
-		filter.deny("dev.latvian.mods.kubejs.script");
-		filter.deny("dev.latvian.mods.kubejs.plugin");
-		filter.deny("dev.latvian.mods.kubejs.mixin");
-		filter.deny(KubeJSPlugin.class);
-		filter.deny(KubeJSPlugins.class);
-
-		filter.allow("net.minecraft"); // Minecraft
-		filter.allow("com.mojang.authlib.GameProfile");
-		filter.allow("com.mojang.util.UUIDTypeAdapter");
-		filter.allow("com.mojang.brigadier");
-		filter.allow("com.mojang.blaze3d");
-
-		filter.allow("dev.architectury"); // Architectury
-
-		// Misc
-		filter.deny("java.net"); // Networks
-		filter.deny("sun"); // Sun
-		filter.deny("com.sun"); // Sun
-		filter.deny("io.netty"); // Netty
-		filter.deny("org.objectweb.asm"); // ASM
-		filter.deny("org.spongepowered.asm"); // Sponge ASM
-		filter.deny("org.openjdk.nashorn"); // Nashorn
-		filter.deny("jdk.nashorn"); // Nashorn
-		filter.deny("org.lwjgl.system"); // LWJGL
-
-		filter.allow("net.neoforged"); // Forge
-		filter.deny("net.neoforged.fml");
-		filter.deny("net.neoforged.accesstransformer");
-		filter.deny("net.neoforged.coremod");
-
-		filter.deny("cpw.mods.modlauncher"); // FML
-		filter.deny("cpw.mods.gross");
-
-		// Mods
-		filter.allow("mezz.jei"); // JEI
 	}
 
 	@Override

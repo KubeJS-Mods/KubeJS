@@ -1,0 +1,86 @@
+# Java
+- java.lang
++ java.lang.Number
++ java.lang.String
++ java.lang.Character
++ java.lang.Byte
++ java.lang.Short
++ java.lang.Integer
++ java.lang.Long
++ java.lang.Float
++ java.lang.Double
++ java.lang.Boolean
++ java.lang.Runnable
++ java.lang.Iterable
++ java.lang.Comparable
++ java.lang.CharSequence
++ java.lang.Void
++ java.lang.Package
++ java.lang.Appendable
++ java.lang.AutoCloseable
++ java.lang.Comparable
++ java.lang.Iterable
++ java.lang.Object
++ java.lang.Runnable
++ java.lang.StringBuilder
+
+# Math
++ java.math.BigInteger
++ java.math.BigDecimal
+
+# IO
+- java.io
++ java.io.Closeable
++ java.io.Serializable
+
+# NIO
+- java.nio
++ java.nio.ByteOrder
+
+# Utils
++ java.util
+- java.util.jar
+- java.util.zip
+
+# FastUtil
++ it.unimi.dsi.fastutil
+
+# KubeJS
++ dev.latvian.mods.kubejs
+- dev.latvian.mods.kubejs.script
+- dev.latvian.mods.kubejs.plugin
+- dev.latvian.mods.kubejs.core
+
+# Minecraft
++ net.minecraft
++ com.mojang.authlib.GameProfile
++ com.mojang.util.UUIDTypeAdapter
++ com.mojang.brigadier
++ com.mojang.blaze3d
+
+# Architectury
++ dev.architectury
+
+# Misc
+- java.net
+- sun
+- com.sun
+- io.netty
+- org.objectweb.asm
+- org.spongepowered.asm
+- org.openjdk.nashorn
+- jdk.nashorn
+- org.lwjgl.system
+
+# NeoForge
++ net.neoforged
+- net.neoforged.fml
+- net.neoforged.accesstransformer
+- net.neoforged.coremod
+
+# FML
+- cpw.mods.modlauncher
+- cpw.mods.gross
+
+# Mods
++ mezz.jei

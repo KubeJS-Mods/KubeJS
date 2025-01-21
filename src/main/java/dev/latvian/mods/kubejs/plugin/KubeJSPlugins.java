@@ -101,9 +101,9 @@ public class KubeJSPlugins {
 		for (var s : GLOBAL_CLASS_FILTER) {
 			if (s.length() >= 2) {
 				if (s.startsWith("+")) {
-					filter.allow(s.substring(1));
+					filter.allow(s.substring(1).trim());
 				} else if (s.startsWith("-")) {
-					filter.deny(s.substring(1));
+					filter.deny(s.substring(1).trim());
 				}
 			}
 		}
