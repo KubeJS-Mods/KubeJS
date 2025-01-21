@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.block.custom;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockRightClickedEventJS;
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
+import dev.latvian.mods.kubejs.block.PickBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.AfterEntityFallenOnBlockCallbackJS;
 import dev.latvian.mods.kubejs.block.callbacks.BlockExplodedCallbackJS;
@@ -31,6 +32,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
@@ -57,6 +59,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -369,5 +373,15 @@ public class BasicBlockJS extends Block implements BlockKJS, SimpleWaterloggedBl
 		if (livingEntity != null && !level.isClientSide() && level.getBlockEntity(blockPos) instanceof BlockEntityJS e) {
 			e.placerId = livingEntity.getUUID();
 		}
+	}
+
+	@Override
+	public ItemStack getCloneItemStack(BlockGetter blockGetter, BlockPos blockPos, BlockState blockState) {
+		if(blockBuilder.pickBlockCallback != null) {
+			var callback = new PickBlockCallbackJS(blockGetter, blockPos, blockState);
+			safeCallback(blockBuilder.pickBlockCallback, callback, "Error while getting pick block item ");
+			if(callback.item != null) return new ItemStack(callback.item);
+		}
+		return super.getCloneItemStack(blockGetter, blockPos, blockState);
 	}
 }
