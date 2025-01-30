@@ -1,4 +1,2 @@
-@NonnullByDefault
+@dev.latvian.mods.kubejs.util.NonnullByDefault
 package dev.latvian.mods.kubejs.block;
-
-import dev.latvian.mods.kubejs.NonnullByDefault;

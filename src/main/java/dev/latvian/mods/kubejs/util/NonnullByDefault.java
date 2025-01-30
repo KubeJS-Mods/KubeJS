@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs;
+package dev.latvian.mods.kubejs.util;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -11,6 +11,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Documented
 @NotNull
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.CLASS)
 public @interface NonnullByDefault {
 }

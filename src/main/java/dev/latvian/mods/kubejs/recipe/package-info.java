@@ -1,4 +1,3 @@
-@NonnullByDefault
+@dev.latvian.mods.kubejs.util.NonnullByDefault
 package dev.latvian.mods.kubejs.recipe;
 
-import dev.latvian.mods.kubejs.NonnullByDefault;

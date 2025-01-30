@@ -53,6 +53,7 @@
 
 # Minecraft
 + net.minecraft
+- net.minecraft.Util
 + com.mojang.authlib.GameProfile
 + com.mojang.util.UUIDTypeAdapter
 + com.mojang.brigadier
