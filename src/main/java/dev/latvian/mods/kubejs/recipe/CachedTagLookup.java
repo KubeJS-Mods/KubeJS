@@ -73,7 +73,7 @@ public class CachedTagLookup<T> {
 			@Override
 			@Nullable
 			public T element(ResourceLocation id) {
-				return registry.get(id);
+				return registry.getOptional(id).orElse(null);
 			}
 
 			@Override
