@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.bindings.ColorWrapper;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.color.SimpleColor;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ColorWrapper;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Undefined;

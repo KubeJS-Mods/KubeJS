@@ -2,9 +2,9 @@ package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.event.EventGroups;
-import dev.latvian.mods.kubejs.neoforge.NativeEventListeners;
 import dev.latvian.mods.kubejs.plugin.ClassFilter;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.NativeEventWrapper;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.neoforged.fml.loading.FMLPaths;
@@ -37,7 +37,7 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 	public final String nameStrip;
 	public transient Executor executor;
 	public final Lazy<ClassFilter> classFilter;
-	public final Map<NativeEventListeners.Key, NativeEventListeners> nativeEventListeners;
+	public final Map<NativeEventWrapper.Listeners.Key, NativeEventWrapper.Listeners> nativeEventListeners;
 	public KubeJSFileWatcherThread fileWatcherThread;
 
 	ScriptType(String n, String cname, Path path) {
@@ -98,7 +98,7 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 		}
 
 		for (var listener : nativeEventListeners.values()) {
-			listener.listeners.clear();
+			listener.listeners().clear();
 		}
 
 		fileWatcherThread = null;

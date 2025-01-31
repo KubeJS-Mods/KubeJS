@@ -46,6 +46,7 @@ public record LocalWebServer(KJSHTTPServer server, String url, List<Endpoint> en
 
 				KubeJSPlugins.forEachPlugin(registry, KubeJSPlugin::registerLocalWebServer);
 				KubeJSPlugins.forEachPlugin(registryWithAuth, KubeJSPlugin::registerLocalWebServerWithAuth);
+
 				var publicAddress = localClient ? "" : properties.publicAddress;
 
 				if (publicAddress.startsWith("https://")) {

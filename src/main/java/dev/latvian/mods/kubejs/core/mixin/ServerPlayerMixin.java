@@ -2,8 +2,6 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import com.mojang.authlib.GameProfile;
 import dev.latvian.mods.kubejs.core.ServerPlayerKJS;
-import dev.latvian.mods.kubejs.kgui.action.KGUIActions;
-import dev.latvian.mods.kubejs.kgui.action.ServerKGUIActions;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
@@ -13,14 +11,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(ServerPlayer.class)
 @RemapPrefixForJS("kjs$")
 public abstract class ServerPlayerMixin extends Player implements ServerPlayerKJS {
-	@Unique
-	private KGUIActions kjs$kguiActions;
-
 	public ServerPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
 		super(level, blockPos, f, gameProfile);
 	}
@@ -28,13 +22,4 @@ public abstract class ServerPlayerMixin extends Player implements ServerPlayerKJ
 	@Shadow
 	@RemapForJS("getStatsCounter")
 	public abstract ServerStatsCounter getStats();
-
-	@Override
-	public KGUIActions kjs$getKgui() {
-		if (kjs$kguiActions == null) {
-			kjs$kguiActions = new ServerKGUIActions(kjs$self());
-		}
-
-		return kjs$kguiActions;
-	}
 }

@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.recipe.ingredientaction;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
 import dev.latvian.mods.kubejs.recipe.ModifyCraftingItemKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.world.item.ItemStack;

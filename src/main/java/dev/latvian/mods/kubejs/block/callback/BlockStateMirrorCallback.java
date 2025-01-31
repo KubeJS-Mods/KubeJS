@@ -8,7 +8,6 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class BlockStateMirrorCallback extends BlockStateModifyCallback {
-
 	private final Mirror mirror;
 
 	public BlockStateMirrorCallback(BlockState state, Mirror mirror) {

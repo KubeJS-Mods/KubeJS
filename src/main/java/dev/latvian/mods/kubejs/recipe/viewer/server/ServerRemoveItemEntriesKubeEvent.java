@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.viewer.server;
 
-import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
 import dev.latvian.mods.kubejs.recipe.viewer.RemoveEntriesKubeEvent;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.world.item.crafting.Ingredient;

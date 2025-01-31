@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
-import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.player.InventoryChangedKubeEvent;
+import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.event.PlayerEvents;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;

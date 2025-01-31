@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.color;
 
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
-import dev.latvian.mods.kubejs.bindings.ColorWrapper;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ColorWrapper;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;

@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
-import dev.latvian.mods.kubejs.bindings.ItemWrapper;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;

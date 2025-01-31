@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.net;
 
-import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.item.ItemClickedKubeEvent;
+import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;

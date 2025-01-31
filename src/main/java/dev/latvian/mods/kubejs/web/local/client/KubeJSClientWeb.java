@@ -10,8 +10,8 @@ import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
 import dev.latvian.apps.tinyserver.http.response.error.client.BadRequestError;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.bindings.UUIDWrapper;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.UUIDWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.CachedComponentObject;
 import dev.latvian.mods.kubejs.util.Cast;
@@ -20,6 +20,7 @@ import dev.latvian.mods.kubejs.util.NameProvider;
 import dev.latvian.mods.kubejs.web.JsonContent;
 import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
 import dev.latvian.mods.kubejs.web.LocalWebServer;
+import dev.latvian.mods.kubejs.web.LocalWebServerAPIRegistry;
 import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import net.minecraft.client.Minecraft;
@@ -75,6 +76,15 @@ public class KubeJSClientWeb {
 		var map = new HashMap<CachedComponentObject<Item, ItemStack>, UUID>();
 		original.forEach((uuid, obj) -> map.put(obj, uuid));
 		return map;
+	}
+
+	public static void registerAPIs(LocalWebServerAPIRegistry registry) {
+		registry.register(KubeJS.id("translate"), 1);
+		registry.register(KubeJS.id("translate"), 1);
+		registry.register(KubeJS.id("translate"), 1);
+		registry.register(KubeJS.id("translate"), 1);
+		registry.register(KubeJS.id("translate"), 1);
+		registry.register(KubeJS.id("translate"), 1);
 	}
 
 	public static void register(LocalWebServerRegistry registry) {

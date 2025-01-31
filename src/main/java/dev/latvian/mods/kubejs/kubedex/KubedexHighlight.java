@@ -49,7 +49,10 @@ import org.joml.Matrix4f;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class KubedexHighlight {
@@ -157,6 +160,8 @@ public class KubedexHighlight {
 	public boolean renderAnything;
 
 	public final Set<Slot> hoveredSlots = new HashSet<>();
+	public final Map<Entity, Integer> highlightedEntities = new IdentityHashMap<>();
+	public final Map<BlockPos, Integer> highlightedBlocks = new HashMap<>();
 
 	public void loadPostChains(Minecraft mc) {
 		if (postChain != null) {
@@ -274,6 +279,17 @@ public class KubedexHighlight {
 		}
 
 		renderAnything = false;
+
+		highlightedEntities.clear();
+		highlightedBlocks.clear();
+
+		if (renderInput != null && highlightShader != null && mc.screen == null) {
+			if (mc.hitResult instanceof EntityHitResult hit) {
+				highlightedEntities.put(hit.getEntity(), color);
+			} else if (mc.hitResult instanceof BlockHitResult hit && mc.hitResult.getType() == HitResult.Type.BLOCK) {
+				highlightedBlocks.put(hit.getBlockPos(), color);
+			}
+		}
 	}
 
 	public void renderAfterEntities(Minecraft mc, RenderLevelStageEvent event) {

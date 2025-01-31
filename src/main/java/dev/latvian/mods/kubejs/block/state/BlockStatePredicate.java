@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.block.state;
 
 import com.mojang.serialization.DataResult;
-import dev.latvian.mods.kubejs.bindings.BlockWrapper;
-import dev.latvian.mods.kubejs.bindings.NBTWrapper;
 import dev.latvian.mods.kubejs.level.ruletest.AllMatchRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.AlwaysFalseRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.AnyMatchRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.InvertRuleTest;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.NBTWrapper;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatch;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;

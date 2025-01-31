@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.gui;
 
-import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.SimpleContainer;

@@ -15,8 +15,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SeedItemBuilder extends BlockItemBuilder {
-	public static class SeedItemJS extends ItemNameBlockItem implements SpecialPlantable {
-		public SeedItemJS(SeedItemBuilder b) {
+	public static class SeedKubeItem extends ItemNameBlockItem implements SpecialPlantable {
+		public SeedKubeItem(SeedItemBuilder b) {
 			super(b.blockBuilder.get(), b.createItemProperties());
 		}
 
@@ -48,6 +48,6 @@ public class SeedItemBuilder extends BlockItemBuilder {
 
 	@Override
 	public Item createObject() {
-		return new SeedItemJS(this);
+		return new SeedKubeItem(this);
 	}
 }

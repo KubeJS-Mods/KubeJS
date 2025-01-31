@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.entity.EntityPotionEffectsJS;
-import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
+import dev.latvian.mods.kubejs.entity.KubeRayTraceResult;
 import dev.latvian.mods.kubejs.item.FoodEatenKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
+import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -224,7 +224,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		return kjs$self().getAttribute(Attributes.BLOCK_INTERACTION_RANGE).getValue();
 	}
 
-	default RayTraceResultJS kjs$rayTrace() {
+	default KubeRayTraceResult kjs$rayTrace() {
 		return kjs$rayTrace(kjs$getReachDistance());
 	}
 

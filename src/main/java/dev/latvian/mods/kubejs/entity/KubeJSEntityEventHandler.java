@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.entity;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.bindings.event.EntityEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.event.EntityEvents;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

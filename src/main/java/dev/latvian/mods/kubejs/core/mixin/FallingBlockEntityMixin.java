@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
-import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.block.BlockStartedFallingKubeEvent;
 import dev.latvian.mods.kubejs.block.BlockStoppedFallingKubeEvent;
+import dev.latvian.mods.kubejs.plugin.builtin.event.BlockEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import net.minecraft.core.BlockPos;

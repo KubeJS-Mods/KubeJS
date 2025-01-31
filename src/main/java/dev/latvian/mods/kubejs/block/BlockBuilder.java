@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
 import com.mojang.serialization.JsonOps;
-import dev.latvian.mods.kubejs.bindings.AABBWrapper;
 import dev.latvian.mods.kubejs.block.callback.AfterEntityFallenOnBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.BlockExplodedCallback;
 import dev.latvian.mods.kubejs.block.callback.BlockStateMirrorCallback;
@@ -11,6 +10,7 @@ import dev.latvian.mods.kubejs.block.callback.BlockStateRotateCallback;
 import dev.latvian.mods.kubejs.block.callback.CanBeReplacedCallback;
 import dev.latvian.mods.kubejs.block.callback.EntityFallenOnBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.EntitySteppedOnBlockCallback;
+import dev.latvian.mods.kubejs.block.callback.RandomTickCallback;
 import dev.latvian.mods.kubejs.block.drop.BlockDropSupplier;
 import dev.latvian.mods.kubejs.block.drop.BlockDrops;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityBuilder;
@@ -21,6 +21,7 @@ import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.AABBWrapper;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.ModelledBuilderBase;
@@ -88,7 +89,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	public transient float slipperiness = Float.NaN;
 	public transient float speedFactor = Float.NaN;
 	public transient float jumpFactor = Float.NaN;
-	public Consumer<RandomTickCallbackJS> randomTickCallback;
+	public Consumer<RandomTickCallback> randomTickCallback;
 	public BlockDropSupplier drops;
 	public transient boolean noValidSpawns;
 	public transient boolean suffocating;
@@ -579,7 +580,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	 * @param randomTickCallback A callback using a block container and a random.
 	 */
 	@Info("Sets random tick callback for this black.")
-	public BlockBuilder randomTick(@Nullable Consumer<RandomTickCallbackJS> randomTickCallback) {
+	public BlockBuilder randomTick(@Nullable Consumer<RandomTickCallback> randomTickCallback) {
 		this.randomTickCallback = randomTickCallback;
 		return this;
 	}

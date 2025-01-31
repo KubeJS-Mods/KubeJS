@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import dev.latvian.mods.kubejs.bindings.TextWrapper;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextWrapper;
 import dev.latvian.mods.kubejs.util.IconKJS;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
 import net.minecraft.client.Minecraft;

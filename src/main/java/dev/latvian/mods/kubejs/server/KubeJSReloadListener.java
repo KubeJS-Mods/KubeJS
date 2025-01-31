@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
-import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
 import dev.latvian.mods.kubejs.recipe.AfterRecipesLoadedKubeEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.server.ReloadableServerResources;

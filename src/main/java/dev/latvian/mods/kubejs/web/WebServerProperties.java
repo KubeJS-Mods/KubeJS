@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.web;
 
-import dev.latvian.mods.kubejs.BaseProperties;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.util.BaseProperties;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

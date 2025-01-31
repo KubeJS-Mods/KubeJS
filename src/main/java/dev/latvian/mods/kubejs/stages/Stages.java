@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.stages;
 
-import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
 import dev.latvian.mods.kubejs.net.AddStagePayload;
 import dev.latvian.mods.kubejs.net.RemoveStagePayload;
 import dev.latvian.mods.kubejs.net.SyncStagesPayload;
 import dev.latvian.mods.kubejs.player.StageChangedEvent;
+import dev.latvian.mods.kubejs.plugin.builtin.event.PlayerEvents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;

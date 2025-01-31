@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
-import dev.latvian.mods.kubejs.bindings.TextIcons;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import net.minecraft.network.chat.Component;
 

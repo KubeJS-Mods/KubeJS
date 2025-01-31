@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs;
 
+import dev.latvian.mods.kubejs.util.BaseProperties;
+
 public class DevProperties extends BaseProperties {
 	private static DevProperties instance;
 

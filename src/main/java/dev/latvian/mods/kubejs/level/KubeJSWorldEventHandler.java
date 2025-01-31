@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.level;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.bindings.event.LevelEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.event.LevelEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.SubscribeEvent;

@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.bindings.StringUtilsWrapper;
-import dev.latvian.mods.kubejs.bindings.event.KeyBindEvents;
 import dev.latvian.mods.kubejs.event.EventTargetType;
+import dev.latvian.mods.kubejs.plugin.builtin.event.KeyBindEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.client.KeyMapping;

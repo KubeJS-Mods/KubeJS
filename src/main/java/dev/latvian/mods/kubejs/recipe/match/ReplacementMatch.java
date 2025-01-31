@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.match;
 
-import dev.latvian.mods.kubejs.bindings.IngredientWrapper;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
 import dev.latvian.mods.rhino.Context;
 
 public interface ReplacementMatch {

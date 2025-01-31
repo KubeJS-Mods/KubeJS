@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.script.data;
 
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.bindings.TextIcons;
 import dev.latvian.mods.kubejs.generator.KubeResourceGenerator;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

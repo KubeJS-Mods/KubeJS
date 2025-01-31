@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.bindings.BlockWrapper;
-import dev.latvian.mods.kubejs.bindings.event.BlockEvents;
 import dev.latvian.mods.kubejs.block.RandomTickKubeEvent;
+import dev.latvian.mods.kubejs.plugin.builtin.event.BlockEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ID;

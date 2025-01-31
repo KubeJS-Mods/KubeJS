@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.level;
 
-import dev.latvian.mods.kubejs.bindings.BlockWrapper;
 import dev.latvian.mods.kubejs.core.BlockProviderKJS;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -20,6 +20,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.Fireworks;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biomes;
@@ -246,8 +247,8 @@ public interface LevelBlock extends BlockProviderKJS {
 		return getLevel().canSeeSkyFromBelowWater(getPos());
 	}
 
-	default ExplosionJS createExplosion() {
-		return new ExplosionJS(getLevel(), getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D);
+	default Explosion explode(ExplosionProperties properties) {
+		return getLevel().kjs$explode(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D, properties);
 	}
 
 	@Nullable

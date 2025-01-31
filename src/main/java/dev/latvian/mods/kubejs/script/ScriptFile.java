@@ -1,8 +1,7 @@
 package dev.latvian.mods.kubejs.script;
 
 import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.bindings.StringUtilsWrapper;
-import net.neoforged.api.distmarker.Dist;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 
@@ -95,7 +94,7 @@ public class ScriptFile implements Comparable<ScriptFile> {
 			return "Ignored";
 		}
 
-		if (requiredClient && FMLLoader.getDist() != Dist.CLIENT) {
+		if (requiredClient && !FMLLoader.getDist().isClient()) {
 			return "Client only";
 		}
 

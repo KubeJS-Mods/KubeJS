@@ -4,8 +4,8 @@ import com.mojang.datafixers.util.Pair;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockRenderType;
-import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
 import dev.latvian.mods.kubejs.block.SeedItemBuilder;
+import dev.latvian.mods.kubejs.block.callback.RandomTickCallback;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
@@ -121,8 +121,8 @@ public class CropBlockBuilder extends BlockBuilder {
 
 	public transient int age;
 	protected transient List<VoxelShape> shapeByAge;
-	public transient ToDoubleFunction<RandomTickCallbackJS> growSpeedCallback;
-	public transient ToIntFunction<RandomTickCallbackJS> fertilizerCallback;
+	public transient ToDoubleFunction<RandomTickCallback> growSpeedCallback;
+	public transient ToIntFunction<RandomTickCallback> fertilizerCallback;
 	public transient SurviveCallback surviveCallback;
 
 	public transient List<Pair<Holder<Item>, NumberProvider>> outputs;
@@ -207,7 +207,7 @@ public class CropBlockBuilder extends BlockBuilder {
 		return this;
 	}
 
-	public CropBlockBuilder bonemeal(ToIntFunction<RandomTickCallbackJS> bonemealCallback) {
+	public CropBlockBuilder bonemeal(ToIntFunction<RandomTickCallback> bonemealCallback) {
 		this.fertilizerCallback = bonemealCallback;
 		return this;
 	}
@@ -217,13 +217,13 @@ public class CropBlockBuilder extends BlockBuilder {
 		return this;
 	}
 
-	public CropBlockBuilder growTick(ToDoubleFunction<RandomTickCallbackJS> growSpeedCallback) {
+	public CropBlockBuilder growTick(ToDoubleFunction<RandomTickCallback> growSpeedCallback) {
 		this.growSpeedCallback = growSpeedCallback;
 		return this;
 	}
 
 	@Override
-	public BlockBuilder randomTick(@Nullable Consumer<RandomTickCallbackJS> randomTickCallback) {
+	public BlockBuilder randomTick(@Nullable Consumer<RandomTickCallback> randomTickCallback) {
 		KubeJS.LOGGER.warn("randomTick is overridden by growTick to return grow speed, use it instead.");
 		return this;
 	}

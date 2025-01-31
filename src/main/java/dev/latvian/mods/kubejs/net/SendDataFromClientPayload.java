@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.net;
 
-import dev.latvian.mods.kubejs.bindings.event.NetworkEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.event.NetworkEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;

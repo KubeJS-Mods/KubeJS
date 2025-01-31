@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.client;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dev.latvian.mods.kubejs.bindings.AABBWrapper;
-import dev.latvian.mods.kubejs.bindings.DirectionWrapper;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.AABBWrapper;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.DirectionWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;

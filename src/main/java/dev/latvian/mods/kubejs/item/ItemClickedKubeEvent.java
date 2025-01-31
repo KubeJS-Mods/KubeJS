@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.bindings.ItemWrapper;
-import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
+import dev.latvian.mods.kubejs.entity.KubeRayTraceResult;
 import dev.latvian.mods.kubejs.player.KubePlayerEvent;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -22,7 +22,7 @@ public class ItemClickedKubeEvent implements KubePlayerEvent {
 	private final Player player;
 	private final InteractionHand hand;
 	private final ItemStack item;
-	private RayTraceResultJS target;
+	private KubeRayTraceResult target;
 
 	public ItemClickedKubeEvent(Player player, InteractionHand hand, ItemStack item) {
 		this.player = player;
@@ -47,7 +47,7 @@ public class ItemClickedKubeEvent implements KubePlayerEvent {
 	}
 
 	@Info("The ray trace result of the click.")
-	public RayTraceResultJS getTarget() {
+	public KubeRayTraceResult getTarget() {
 		if (target == null) {
 			target = player.kjs$rayTrace();
 		}

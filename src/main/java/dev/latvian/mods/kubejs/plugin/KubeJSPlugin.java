@@ -26,6 +26,7 @@ import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.NameProvider;
+import dev.latvian.mods.kubejs.web.LocalWebServerAPIRegistry;
 import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.ResourceLocation;
@@ -95,6 +96,9 @@ public interface KubeJSPlugin {
 	}
 
 	default void registerDataComponentTypeDescriptions(DataComponentTypeInfoRegistry registry) {
+	}
+
+	default void registerLocalWebServerAPIs(LocalWebServerAPIRegistry registry) {
 	}
 
 	default void registerLocalWebServer(LocalWebServerRegistry registry) {

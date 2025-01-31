@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.block.KubeJSBlockProperties;
-import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
+import dev.latvian.mods.kubejs.block.callback.RandomTickCallback;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -59,7 +59,7 @@ public class BasicCropBlockJS extends CropBlock {
 
 	@Override
 	public void randomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource random) {
-		double f = builder.growSpeedCallback == null ? -1 : builder.growSpeedCallback.applyAsDouble(new RandomTickCallbackJS(serverLevel.kjs$getBlock(blockPos).cache(blockState), random));
+		double f = builder.growSpeedCallback == null ? -1 : builder.growSpeedCallback.applyAsDouble(new RandomTickCallback(serverLevel.kjs$getBlock(blockPos).cache(blockState), random));
 		int age = this.getAge(blockState);
 		if (age < this.getMaxAge()) {
 			if (f < 0) {
@@ -76,7 +76,7 @@ public class BasicCropBlockJS extends CropBlock {
 		if (builder.fertilizerCallback == null) {
 			super.growCrops(level, blockPos, blockState);
 		} else {
-			int effect = builder.fertilizerCallback.applyAsInt(new RandomTickCallbackJS(level.kjs$getBlock(blockPos).cache(blockState), level.random));
+			int effect = builder.fertilizerCallback.applyAsInt(new RandomTickCallback(level.kjs$getBlock(blockPos).cache(blockState), level.random));
 			if (effect > 0) {
 				level.setBlock(blockPos, this.getStateForAge(Integer.min(getAge(blockState) + effect, getMaxAge())), 2);
 			}

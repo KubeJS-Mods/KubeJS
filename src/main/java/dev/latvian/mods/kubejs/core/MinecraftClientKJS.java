@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.latvian.mods.kubejs.bindings.GLFWInputWrapper;
-import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.client.KubeJSKeybinds;
 import dev.latvian.mods.kubejs.item.ItemClickedKubeEvent;
 import dev.latvian.mods.kubejs.net.FirstClickPayload;
+import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.GLFWInputWrapper;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.util.HideFromJS;

@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
-import dev.latvian.mods.kubejs.block.RandomTickCallbackJS;
+import dev.latvian.mods.kubejs.block.callback.RandomTickCallback;
 import dev.latvian.mods.kubejs.core.BlockBehaviourKJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
@@ -23,10 +23,10 @@ import java.util.function.Consumer;
 @RemapPrefixForJS("kjs$")
 public abstract class BlockBehaviourMixin implements BlockBehaviourKJS {
 	@Unique
-	private Consumer<RandomTickCallbackJS> kjs$randomTickCallback;
+	private Consumer<RandomTickCallback> kjs$randomTickCallback;
 
 	@Override
-	public void kjs$setRandomTickCallback(Consumer<RandomTickCallbackJS> callback) {
+	public void kjs$setRandomTickCallback(Consumer<RandomTickCallback> callback) {
 		kjs$setIsRandomlyTicking(true);
 		this.kjs$randomTickCallback = callback;
 	}
@@ -34,7 +34,7 @@ public abstract class BlockBehaviourMixin implements BlockBehaviourKJS {
 	@Inject(method = "randomTick", at = @At("HEAD"), cancellable = true)
 	private void onRandomTick(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource, CallbackInfo ci) {
 		if (kjs$randomTickCallback != null) {
-			kjs$randomTickCallback.accept(new RandomTickCallbackJS(serverLevel.kjs$getBlock(blockPos).cache(blockState), randomSource));
+			kjs$randomTickCallback.accept(new RandomTickCallback(serverLevel.kjs$getBlock(blockPos).cache(blockState), randomSource));
 			ci.cancel();
 		}
 	}

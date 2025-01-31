@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.integration.jei;
 
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.plugin.builtin.event.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
-import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerData;
 import dev.latvian.mods.kubejs.recipe.viewer.server.RemoteRecipeViewerDataUpdatedEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;

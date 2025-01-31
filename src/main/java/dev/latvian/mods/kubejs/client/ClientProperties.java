@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.client;
 
-import dev.latvian.mods.kubejs.BaseProperties;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.util.BaseProperties;
 
 public class ClientProperties extends BaseProperties {
 	private static ClientProperties instance;

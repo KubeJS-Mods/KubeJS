@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
+import dev.latvian.mods.kubejs.block.callback.RandomTickCallback;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -34,7 +35,7 @@ public class BlockModificationKubeEvent implements KubeEvent {
 			block.kjs$setIsRandomlyTicking(v);
 		}
 
-		public void setRandomTickCallback(Consumer<RandomTickCallbackJS> callback) {
+		public void setRandomTickCallback(Consumer<RandomTickCallback> callback) {
 			block.kjs$setRandomTickCallback(callback);
 		}
 

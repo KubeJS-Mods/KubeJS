@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.player;
 
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.event.PlayerEvents;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.resources.ResourceKey;
@@ -157,6 +157,14 @@ public class KubeJSPlayerEventHandler {
 					PlayerEvents.CHEST_CLOSED.post(player, key, new ChestKubeEvent(player, menu));
 				}
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void dimensionChanged(PlayerEvent.PlayerChangedDimensionEvent event) {
+		try {
+			event.getEntity().kjs$getStages().sync();
+		} catch (Exception ignored) {
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.client;
 
-import dev.latvian.mods.kubejs.bindings.TextIcons;
-import dev.latvian.mods.kubejs.bindings.TextWrapper;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextWrapper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;

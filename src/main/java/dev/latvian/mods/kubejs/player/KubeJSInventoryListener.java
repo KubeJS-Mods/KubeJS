@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.player;
 
-import dev.latvian.mods.kubejs.bindings.event.PlayerEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.event.PlayerEvents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;

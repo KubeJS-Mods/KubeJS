@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.integration.rei;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
+import dev.latvian.mods.kubejs.plugin.builtin.event.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
-import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEvents;
 import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerData;
 import dev.latvian.mods.kubejs.recipe.viewer.server.RemoteRecipeViewerDataUpdatedEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;

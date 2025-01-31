@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs;
 
-import dev.latvian.mods.kubejs.bindings.event.StartupEvents;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentInfo;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityBuilder;
 import dev.latvian.mods.kubejs.block.entity.KubeBlockEntity;
@@ -9,6 +8,7 @@ import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallbackForge;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabKubeEvent;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
+import dev.latvian.mods.kubejs.plugin.builtin.event.StartupEvents;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
@@ -18,7 +18,6 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -81,7 +80,7 @@ public class KubeJSModEventHandler {
 
 			ConsoleJS.STARTUP.flush(true);
 
-			if (FMLLoader.getDist() == Dist.DEDICATED_SERVER || !CommonProperties.get().startupErrorGUI) {
+			if (FMLLoader.getDist().isDedicatedServer() || !CommonProperties.get().startupErrorGUI) {
 				throw new RuntimeException("There were KubeJS startup script syntax errors! See logs/kubejs/startup.log for more info");
 			}
 		}

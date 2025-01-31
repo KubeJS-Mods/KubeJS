@@ -13,13 +13,13 @@ import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.bindings.TextIcons;
-import dev.latvian.mods.kubejs.bindings.TextWrapper;
-import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
 import dev.latvian.mods.kubejs.event.TargetedEventHandler;
 import dev.latvian.mods.kubejs.net.DisplayClientErrorsPayload;
 import dev.latvian.mods.kubejs.net.DisplayServerErrorsPayload;
 import dev.latvian.mods.kubejs.net.ReloadStartupScriptsPayload;
+import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextWrapper;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -136,17 +136,6 @@ public class KubeJSCommands {
 					.executes(context -> exportPacks(context.getSource(), false))
 				)
 			)
-			/*
-			.then(Commands.literal("output_recipes")
-					.executes(context -> outputRecipes(context.getSource().getPlayerOrException()))
-			)
-			.then(Commands.literal("input_recipes")
-					.executes(context -> inputRecipes(context.getSource().getPlayerOrException()))
-			)
-			.then(Commands.literal("check_recipe_conflicts")
-					.executes(context -> checkRecipeConflicts(context.getSource().getPlayerOrException()))
-			)
-			 */
 			.then(Commands.literal("list-tag")
 				.then(Commands.argument("registry", ResourceLocationArgument.id())
 					.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(

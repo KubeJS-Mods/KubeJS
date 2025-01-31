@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block.entity;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.bindings.DirectionWrapper;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.DirectionWrapper;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.neoforged.neoforge.capabilities.BlockCapability;

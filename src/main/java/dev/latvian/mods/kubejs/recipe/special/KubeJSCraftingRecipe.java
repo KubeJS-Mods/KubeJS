@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.special;
 
-import dev.latvian.mods.kubejs.bindings.event.ServerEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
 import dev.latvian.mods.kubejs.recipe.ModifyCraftingItemKubeEvent;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionHolder;

@@ -13,6 +13,7 @@ import dev.latvian.apps.tinyserver.ws.Frame;
 import dev.latvian.apps.tinyserver.ws.WSHandler;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
@@ -119,6 +120,7 @@ public class KubeJSWeb {
 		UPDATES = registry.ws("/api/updates", KJSWSSession::new);
 
 		registry.get("/", KubeJSWeb::getHomepage);
+		registry.get("/api", KubeJSWeb::getAPIs);
 		registry.get("/api/mods", KubeJSWeb::getMods);
 		registry.get("/api/mods/{id}/icon", KubeJSWeb::getModIcon);
 
@@ -180,7 +182,16 @@ public class KubeJSWeb {
 			list.add("- " + endpoint.method() + "\t" + endpoint.path() + (endpoint.auth() ? " [Requires Auth]" : ""));
 		}
 
+		list.add("");
+		list.add("APIs:");
+
+		KubeJSPlugins.forEachPlugin((id, version) -> list.add("- " + id + " v" + Math.max(version, 1)), KubeJSPlugin::registerLocalWebServerAPIs);
+
 		return HTTPResponse.ok().text(list);
+	}
+
+	private static HTTPResponse getAPIs(KJSHTTPRequest req) {
+		return HTTPResponse.ok().content(JsonContent.object(json -> KubeJSPlugins.forEachPlugin((id, version) -> json.addProperty(id.toString(), Math.max(version, 1)), KubeJSPlugin::registerLocalWebServerAPIs)));
 	}
 
 	private static HTTPResponse getMods(KJSHTTPRequest req) {

@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.latvian.mods.kubejs.entity.RayTraceResultJS;
+import dev.latvian.mods.kubejs.entity.KubeRayTraceResult;
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -305,7 +305,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		return Math.sqrt(kjs$getDistanceSq(pos));
 	}
 
-	default RayTraceResultJS kjs$rayTrace(double distance, boolean fluids) {
+	default KubeRayTraceResult kjs$rayTrace(double distance, boolean fluids) {
 		var entity = kjs$self();
 		var hitResult = entity.pick(distance, 0F, fluids);
 		var eyePosition = entity.getEyePosition();
@@ -320,10 +320,10 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 				hitResult = entityHitResult;
 			}
 		}
-		return new RayTraceResultJS(entity, hitResult, distance);
+		return new KubeRayTraceResult(entity, hitResult, distance);
 	}
 
-	default RayTraceResultJS kjs$rayTrace(double distance) {
+	default KubeRayTraceResult kjs$rayTrace(double distance) {
 		return kjs$rayTrace(distance, true);
 	}
 

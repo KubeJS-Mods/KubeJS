@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.net;
 
-import dev.latvian.mods.kubejs.bindings.event.ItemEvents;
 import dev.latvian.mods.kubejs.item.ModifyItemTooltipsKubeEvent;
+import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
 import dev.latvian.mods.kubejs.recipe.viewer.server.RecipeViewerData;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;

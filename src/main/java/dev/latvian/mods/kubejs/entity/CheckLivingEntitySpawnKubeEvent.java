@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.entity;
 
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.level.LevelBlock;
-import dev.latvian.mods.kubejs.level.SpawnerJS;
+import dev.latvian.mods.kubejs.level.WrappedSpawner;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -27,7 +27,7 @@ public class CheckLivingEntitySpawnKubeEvent implements KubeLivingEntityEvent {
 	private final Either<BlockEntity, Entity> spawnerEither;
 
 	@Nullable
-	public transient SpawnerJS spawner;
+	public transient WrappedSpawner spawner;
 
 	public CheckLivingEntitySpawnKubeEvent(LivingEntity entity, Level level, double x, double y, double z, MobSpawnType type, Either<BlockEntity, Entity> spawnerEither) {
 		this.entity = entity;
@@ -63,9 +63,9 @@ public class CheckLivingEntitySpawnKubeEvent implements KubeLivingEntityEvent {
 
 	@Info("The spawner that spawned the entity.")
 	@NotNull
-	public SpawnerJS getSpawner() {
+	public WrappedSpawner getSpawner() {
 		if (spawner == null) {
-			spawner = SpawnerJS.of(spawnerEither);
+			spawner = WrappedSpawner.of(spawnerEither);
 		}
 
 		return spawner;

@@ -1,12 +1,12 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import dev.latvian.mods.kubejs.bindings.event.ClientEvents;
 import dev.latvian.mods.kubejs.client.ClientAssetPacks;
 import dev.latvian.mods.kubejs.client.ClientPlayerKubeEvent;
 import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.client.ScheduledClientEvent;
 import dev.latvian.mods.kubejs.core.MinecraftClientKJS;
+import dev.latvian.mods.kubejs.plugin.builtin.event.ClientEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;

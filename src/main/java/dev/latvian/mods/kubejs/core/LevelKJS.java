@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.level.CachedLevelBlock;
-import dev.latvian.mods.kubejs.level.ExplosionJS;
+import dev.latvian.mods.kubejs.level.ExplosionProperties;
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
@@ -19,6 +19,7 @@ import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.Fireworks;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.ServerLevelData;
@@ -105,8 +106,8 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Ent
 		return new CachedLevelBlock(entity.getLevel(), entity.getBlockPos()).cache(entity).cache(entity.getBlockState());
 	}
 
-	default ExplosionJS kjs$createExplosion(double x, double y, double z) {
-		return new ExplosionJS(kjs$self(), x, y, z);
+	default Explosion kjs$explode(double x, double y, double z, ExplosionProperties properties) {
+		return properties.explode(kjs$self(), x, y, z);
 	}
 
 	@Nullable

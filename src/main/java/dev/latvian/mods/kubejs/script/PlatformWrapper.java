@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.rhino.Context;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
@@ -123,7 +122,7 @@ public class PlatformWrapper {
 	}
 
 	public static boolean isClientEnvironment() {
-		return FMLLoader.getDist() == Dist.CLIENT;
+		return FMLLoader.getDist().isClient();
 	}
 
 	public static void setModName(String modId, String name) {
