@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.client.highlight;
 
 import dev.latvian.mods.kubejs.client.ClientPlayerKubeEvent;
 import dev.latvian.mods.kubejs.color.KubeColor;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.arguments.selector.EntitySelector;
@@ -131,5 +132,16 @@ public class HighlightKubeEvent extends ClientPlayerKubeEvent {
 		} else if (mc.hitResult instanceof BlockHitResult hit && mc.hitResult.getType() == HitResult.Type.BLOCK) {
 			addBlock(hit.getBlockPos(), color);
 		}
+	}
+
+	public LevelBlock getTargetBlock() {
+		if (mc.hitResult instanceof BlockHitResult block && mc.hitResult.getType() == HitResult.Type.BLOCK) {
+			return getLevel().kjs$getBlock(block.getBlockPos());
+		}
+		return null;
+	}
+
+	public Entity getTargetEntity() {
+		return mc.hitResult instanceof EntityHitResult hit ? hit.getEntity() : null;
 	}
 }
