@@ -74,7 +74,7 @@ public class HighlightKubeEvent extends ClientPlayerKubeEvent {
 	}
 
 	public void addTargetBlock(KubeColor color) {
-		if (Minecraft.getInstance().hitResult instanceof BlockHitResult hit && hit.getType() == HitResult.Type.BLOCK) {
+		if (mc.hitResult instanceof BlockHitResult hit && hit.getType() == HitResult.Type.BLOCK) {
 			addBlock(hit.getBlockPos(), color);
 		}
 	}
@@ -119,10 +119,6 @@ public class HighlightKubeEvent extends ClientPlayerKubeEvent {
 		if (mc.hitResult instanceof EntityHitResult hit) {
 			addEntity(hit.getEntity(), color);
 		}
-	}
-
-	public void cancelBlockHighlight() {
-		renderer.cancelBlockHighlight = true;
 	}
 
 	public void addTarget(KubeColor color) {

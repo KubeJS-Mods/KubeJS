@@ -15,8 +15,10 @@ import dev.latvian.mods.kubejs.net.RequestInventoryKubedexPayload;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ClientEvents;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2IntMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
@@ -62,15 +64,9 @@ import java.util.Set;
 
 public class HighlightRenderer {
 	public enum Mode {
-		NONE(false),
-		SCREEN(false),
-		WORLD(true);
-
-		public final boolean cancelBlockHighlight;
-
-		Mode(boolean cancelBlockHighlight) {
-			this.cancelBlockHighlight = cancelBlockHighlight;
-		}
+		NONE,
+		SCREEN,
+		WORLD
 	}
 
 	public record ShaderChain(PostChain postChain, RenderTarget renderInput, RenderTarget mcDepthInput, RenderTarget renderOutput, MutableBoolean renderAnything) {
@@ -218,8 +214,8 @@ public class HighlightRenderer {
 	public ShaderInstance highlightShader;
 
 	public final Set<Slot> hoveredSlots = new HashSet<>();
-	public final Reference2IntOpenHashMap<Entity> highlightedEntities = new Reference2IntOpenHashMap<>(0);
-	public final Long2IntOpenHashMap highlightedBlocks = new Long2IntOpenHashMap(0);
+	public final Reference2IntMap<Entity> highlightedEntities = new Reference2IntLinkedOpenHashMap<>(0);
+	public final Long2IntMap highlightedBlocks = new Long2IntLinkedOpenHashMap(0);
 	public final IntOpenHashSet uniqueColors = new IntOpenHashSet(0);
 	public boolean cancelBlockHighlight;
 
@@ -258,7 +254,7 @@ public class HighlightRenderer {
 		highlightedEntities.clear();
 		highlightedBlocks.clear();
 		uniqueColors.clear();
-		cancelBlockHighlight = mode.cancelBlockHighlight;
+		cancelBlockHighlight = false;
 
 		if (mc.level != null && mc.player != null) {
 			var event = new HighlightKubeEvent(mc, this);
@@ -266,6 +262,10 @@ public class HighlightRenderer {
 
 			if (mode == Mode.WORLD) {
 				event.addTarget(color);
+			}
+
+			if (mc.hitResult instanceof BlockHitResult hit && hit.getType() == HitResult.Type.BLOCK && highlightedBlocks.containsKey(hit.getBlockPos().asLong())) {
+				cancelBlockHighlight = true;
 			}
 		}
 	}
@@ -568,9 +568,5 @@ public class HighlightRenderer {
 	}
 
 	public void hudPostDraw(Minecraft mc, GuiGraphics graphics, float delta) {
-		if (worldChain != null) {
-			graphics.flush();
-			// worldChain.draw(mc, delta);
-		}
 	}
 }
