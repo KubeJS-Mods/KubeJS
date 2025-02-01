@@ -179,6 +179,9 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	}
 
 	default void kjs$openInventoryGUI(InventoryKJS inventory, Component title, int columns, int rows) {
+		if (inventory.kjs$getSlots() < columns * rows) {
+			throw new RuntimeException("Given container size is unable to contain inventory of size %sx%s!".formatted(columns, rows));
+		}
 		kjs$openChestGUI(gui -> {
 			gui.title = title;
 			gui.setInventory(inventory);
