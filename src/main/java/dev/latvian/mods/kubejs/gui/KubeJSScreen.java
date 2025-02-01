@@ -8,16 +8,20 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public class KubeJSScreen extends AbstractContainerScreen<KubeJSMenu> implements MenuAccess<KubeJSMenu> {
-	private static final ResourceLocation CONTAINER_BACKGROUND = ResourceLocation.parse("textures/gui/container/generic_54.png");
+	private static final ResourceLocation CONTAINER_BACKGROUND = ResourceLocation.parse("kubejs:textures/gui/container/generic_background.png");
+
 	public final int containerRows;
+	public final int containerColumns;
+	private final int xOffset;
 
 	public KubeJSScreen(KubeJSMenu menu, Inventory inventory, Component component) {
 		super(menu, inventory, component);
-		this.imageWidth = menu.guiData.width;
-		this.imageHeight = menu.guiData.height;
-		this.containerRows = (menu.guiData.inventory.kjs$getSlots() + 8) / 9;
+		this.containerRows = menu.guiData.inventoryHeight;
+		this.containerColumns = menu.guiData.inventoryWidth;
 		this.imageHeight = 114 + this.containerRows * 18;
 		this.inventoryLabelY = this.imageHeight - 94;
+		this.xOffset = 88 - 9 * this.containerColumns;
+
 	}
 
 	@Override
@@ -33,5 +37,10 @@ public class KubeJSScreen extends AbstractContainerScreen<KubeJSMenu> implements
 		int l = (this.height - this.imageHeight) / 2;
 		guiGraphics.blit(CONTAINER_BACKGROUND, k, l, 0, 0, this.imageWidth, this.containerRows * 18 + 17);
 		guiGraphics.blit(CONTAINER_BACKGROUND, k, l + this.containerRows * 18 + 17, 0, 126, this.imageWidth, 96);
+
+		for (int slotY = 0; slotY < this.containerRows; slotY++) {
+			guiGraphics.blit(CONTAINER_BACKGROUND, k + this.xOffset , l + 17 + slotY * 18, 7, 139, 18 * containerColumns, 18);
+		}
+
 	}
 }

@@ -171,9 +171,23 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	}
 
 	default void kjs$openInventoryGUI(InventoryKJS inventory, Component title) {
+		kjs$openInventoryGUI(inventory, title, inventory.kjs$getWidth());
+	}
+
+	default void kjs$openInventoryGUI(InventoryKJS inventory, Component title, int columns) {
+		kjs$openInventoryGUI(inventory, title, columns, inventory.kjs$getSlots() / columns);
+	}
+
+	default void kjs$openInventoryGUI(InventoryKJS inventory, Component title, int columns, int rows) {
 		kjs$openChestGUI(gui -> {
 			gui.title = title;
 			gui.setInventory(inventory);
+
+			gui.inventoryWidth = columns;
+			gui.inventoryHeight = rows;
+			gui.height = 114 + gui.inventoryHeight * 18;
+			gui.width = 14 + gui.inventoryWidth * 18;
+			gui.inventoryLabelY = gui.height - 94;
 		});
 	}
 
