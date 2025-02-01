@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.kubedex;
+package dev.latvian.mods.kubejs.client.highlight;
 
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.net.WebServerUpdateNBTPayload;

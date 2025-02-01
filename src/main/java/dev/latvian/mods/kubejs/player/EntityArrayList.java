@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
@@ -164,6 +165,10 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 
 	public EntityArrayList filterItems() {
 		return oneFilter(e -> e instanceof ItemEntity);
+	}
+
+	public EntityArrayList filterType(EntityType<?> type) {
+		return oneFilter(e -> e.getType() == type);
 	}
 
 	@Override

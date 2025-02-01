@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs.kubedex;
+package dev.latvian.mods.kubejs.client.highlight;
 
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
@@ -7,9 +7,16 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.color.KubeColor;
+import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.kubejs.net.RequestBlockKubedexPayload;
 import dev.latvian.mods.kubejs.net.RequestEntityKubedexPayload;
 import dev.latvian.mods.kubejs.net.RequestInventoryKubedexPayload;
+import dev.latvian.mods.kubejs.plugin.builtin.event.ClientEvents;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
@@ -44,27 +51,86 @@ import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
 import java.util.Set;
 
-public class KubedexHighlight {
+public class HighlightRenderer {
 	public enum Mode {
 		NONE(false),
 		SCREEN(false),
 		WORLD(true);
 
-		public final boolean cancelHighlight;
+		public final boolean cancelBlockHighlight;
 
-		Mode(boolean cancelHighlight) {
-			this.cancelHighlight = cancelHighlight;
+		Mode(boolean cancelBlockHighlight) {
+			this.cancelBlockHighlight = cancelBlockHighlight;
+		}
+	}
+
+	public record ShaderChain(PostChain postChain, RenderTarget renderInput, RenderTarget mcDepthInput, RenderTarget renderOutput, MutableBoolean renderAnything) {
+		@Nullable
+		public static ShaderChain load(Minecraft mc, ResourceLocation id) {
+			try {
+				var postChain = new PostChain(mc.getTextureManager(), mc.getResourceManager(), mc.getMainRenderTarget(), id);
+				postChain.resize(mc.getWindow().getWidth(), mc.getWindow().getHeight());
+				var renderInput = postChain.getTempTarget("input");
+				var mcDepthInput = postChain.getTempTarget("mcdepth");
+				var renderOutput = postChain.getTempTarget("output");
+				return new ShaderChain(postChain, renderInput, mcDepthInput, renderOutput, new MutableBoolean(false));
+			} catch (IOException ex) {
+				KubeJS.LOGGER.warn("Failed to load shader: {}", id, ex);
+			} catch (JsonSyntaxException ex) {
+				KubeJS.LOGGER.warn("Failed to parse shader: {}", id, ex);
+			}
+
+			return null;
+		}
+
+		public void close() {
+			postChain.close();
+		}
+
+		public void clearInput(Minecraft mc) {
+			renderInput.clear(Minecraft.ON_OSX);
+			mc.getMainRenderTarget().bindWrite(false);
+			renderAnything.setFalse();
+		}
+
+		public void clearDepth(Minecraft mc, boolean copy) {
+			// mcDepthInput.bindWrite(false);
+			mcDepthInput.clear(Minecraft.ON_OSX);
+
+			if (copy) {
+				mcDepthInput.copyDepthFrom(mc.getMainRenderTarget());
+			}
+
+			mc.getMainRenderTarget().bindWrite(false);
+		}
+
+		public void draw(Minecraft mc, float delta) {
+			if (renderAnything.isFalse()) {
+				return;
+			}
+
+			RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+
+			postChain.setUniform("OutlineSize", (float) mc.getWindow().getGuiScale());
+			postChain.process(delta);
+			mc.getMainRenderTarget().bindWrite(false);
+
+			RenderSystem.enableBlend();
+			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
+			renderOutput.blitToScreen(mc.getWindow().getWidth(), mc.getWindow().getHeight(), false);
+			RenderSystem.disableBlend();
+			RenderSystem.defaultBlendFunc();
+
+			mc.getMainRenderTarget().bindWrite(false);
 		}
 	}
 
@@ -135,56 +201,40 @@ public class KubedexHighlight {
 		}
 	}
 
-	public static KubedexHighlight INSTANCE = new KubedexHighlight();
+	public static HighlightRenderer INSTANCE = new HighlightRenderer();
 	public static KeyMapping keyMapping;
 
-	public int color = 0x99FFB3;
+	public KubeColor color = new SimpleColor(0x99FFB3);
 	public Mode mode = Mode.NONE;
 	public boolean actualKey;
 
 	@Nullable
-	public PostChain postChain;
+	public ShaderChain worldChain;
 
 	@Nullable
-	public RenderTarget renderInput;
-
-	@Nullable
-	public RenderTarget mcDepthInput;
-
-	@Nullable
-	public RenderTarget renderOutput;
+	public ShaderChain guiChain;
 
 	@Nullable
 	public ShaderInstance highlightShader;
 
-	public boolean renderAnything;
-
 	public final Set<Slot> hoveredSlots = new HashSet<>();
-	public final Map<Entity, Integer> highlightedEntities = new IdentityHashMap<>();
-	public final Map<BlockPos, Integer> highlightedBlocks = new HashMap<>();
+	public final Reference2IntOpenHashMap<Entity> highlightedEntities = new Reference2IntOpenHashMap<>(0);
+	public final Long2IntOpenHashMap highlightedBlocks = new Long2IntOpenHashMap(0);
+	public final IntOpenHashSet uniqueColors = new IntOpenHashSet(0);
+	public boolean cancelBlockHighlight;
 
 	public void loadPostChains(Minecraft mc) {
-		if (postChain != null) {
-			postChain.close();
-			postChain = null;
-			renderInput = null;
-			mcDepthInput = null;
-			renderOutput = null;
+		if (worldChain != null) {
+			worldChain.close();
+		}
+
+		if (guiChain != null) {
+			guiChain.close();
 		}
 
 		var id = ResourceLocation.withDefaultNamespace("shaders/post/kubejs/highlight.json");
-
-		try {
-			postChain = new PostChain(mc.getTextureManager(), mc.getResourceManager(), mc.getMainRenderTarget(), id);
-			postChain.resize(mc.getWindow().getWidth(), mc.getWindow().getHeight());
-			renderInput = postChain.getTempTarget("input");
-			mcDepthInput = postChain.getTempTarget("mcdepth");
-			renderOutput = postChain.getTempTarget("output");
-		} catch (IOException ex) {
-			KubeJS.LOGGER.warn("Failed to load shader: {}", id, ex);
-		} catch (JsonSyntaxException ex) {
-			KubeJS.LOGGER.warn("Failed to parse shader: {}", id, ex);
-		}
+		worldChain = ShaderChain.load(mc, id);
+		guiChain = ShaderChain.load(mc, id);
 	}
 
 	public void tickPre(Minecraft mc) {
@@ -202,6 +252,20 @@ public class KubedexHighlight {
 				keyToggled(mc, Mode.SCREEN, true);
 			} else {
 				keyToggled(mc, Mode.WORLD, true);
+			}
+		}
+
+		highlightedEntities.clear();
+		highlightedBlocks.clear();
+		uniqueColors.clear();
+		cancelBlockHighlight = mode.cancelBlockHighlight;
+
+		if (mc.level != null && mc.player != null) {
+			var event = new HighlightKubeEvent(mc, this);
+			ClientEvents.HIGHLIGHT.post(event);
+
+			if (mode == Mode.WORLD) {
+				event.addTarget(color);
 			}
 		}
 	}
@@ -259,7 +323,7 @@ public class KubedexHighlight {
 
 				hoveredSlots.clear();
 			} else if (success) {
-				if (mc.hitResult instanceof EntityHitResult hit && hit.getType() == HitResult.Type.ENTITY) {
+				if (mc.hitResult instanceof EntityHitResult hit) {
 					playSound(mc);
 					requestEntity(hit.getEntity());
 				} else if (mc.hitResult instanceof BlockHitResult hit && hit.getType() == HitResult.Type.BLOCK) {
@@ -273,29 +337,51 @@ public class KubedexHighlight {
 	}
 
 	public void clearBuffers(Minecraft mc) {
-		if (renderInput != null) {
-			renderInput.clear(Minecraft.ON_OSX);
-			mc.getMainRenderTarget().bindWrite(false);
+		if (worldChain != null) {
+			worldChain.clearInput(mc);
 		}
 
-		renderAnything = false;
+		if (guiChain != null) {
+			guiChain.clearInput(mc);
+		}
+	}
 
-		highlightedEntities.clear();
-		highlightedBlocks.clear();
+	public void renderAfterLevel(Minecraft mc, RenderLevelStageEvent event) {
+		updateDepth(mc);
+		// renderAfterEntities(mc, event);
 
-		if (renderInput != null && highlightShader != null && mc.screen == null) {
-			if (mc.hitResult instanceof EntityHitResult hit) {
-				highlightedEntities.put(hit.getEntity(), color);
-			} else if (mc.hitResult instanceof BlockHitResult hit && mc.hitResult.getType() == HitResult.Type.BLOCK) {
-				highlightedBlocks.put(hit.getBlockPos(), color);
-			}
+		if (worldChain != null) {
+			worldChain.draw(mc, event.getPartialTick().getGameTimeDeltaPartialTick(false));
+		}
+	}
+
+	public void updateDepth(Minecraft mc) {
+		if (worldChain != null) {
+			worldChain.clearDepth(mc, true);
+		}
+
+		if (guiChain != null) {
+			guiChain.clearDepth(mc, false);
+		}
+	}
+
+	public void resizePostChains(int width, int height) {
+		if (worldChain != null) {
+			worldChain.postChain.resize(width, height);
+		}
+
+		if (guiChain != null) {
+			guiChain.postChain.resize(width, height);
 		}
 	}
 
 	public void renderAfterEntities(Minecraft mc, RenderLevelStageEvent event) {
-		if (mode != Mode.WORLD || mc.hitResult == null || mc.hitResult.getType() == HitResult.Type.MISS || renderInput == null || highlightShader == null || mc.screen != null) {
+		if (mc.level == null || worldChain == null || highlightShader == null || highlightedBlocks.isEmpty() && highlightedEntities.isEmpty()) {
 			return;
 		}
+
+		mc.renderBuffers().bufferSource().endBatch();
+		worldChain.renderInput.bindWrite(false);
 
 		var ms = event.getPoseStack();
 		var cam = event.getCamera().getPosition();
@@ -304,29 +390,39 @@ public class KubedexHighlight {
 		ms.pushPose();
 		ms.translate(-cam.x, -cam.y, -cam.z);
 
-		if (mc.hitResult instanceof BlockHitResult hit && hit.getType() == HitResult.Type.BLOCK) {
-			mc.renderBuffers().bufferSource().endBatch();
-			renderInput.bindWrite(false);
-			renderAnything = true;
+		var sources = new Int2ObjectOpenHashMap<WrappedMultiBufferSource>();
 
-			double x = hit.getBlockPos().getX();
-			double y = hit.getBlockPos().getY();
-			double z = hit.getBlockPos().getZ();
+		for (int color : uniqueColors) {
+			sources.put(color, new WrappedMultiBufferSource(mc.renderBuffers().bufferSource(), color));
+		}
 
-			ms.translate(x, y, z);
+		for (var entry : highlightedBlocks.long2IntEntrySet()) {
+			var pos = BlockPos.of(entry.getLongKey());
+			var state = mc.level.getBlockState(pos);
 
-			var state = mc.level.getBlockState(hit.getBlockPos());
-			var model = mc.getBlockRenderer().getBlockModel(state);
-
-			var seed = state.getSeed(hit.getBlockPos());
-
-			var bufferSource = new WrappedMultiBufferSource(mc.renderBuffers().bufferSource(), color);
-
-			for (var renderType : model.getRenderTypes(state, RandomSource.create(seed), ModelData.EMPTY)) {
-				mc.getBlockRenderer().getModelRenderer().tesselateBlock(mc.level, model, state, hit.getBlockPos(), ms, bufferSource.getBuffer(RenderTypeHelper.getMovingBlockRenderType(renderType)), false, RandomSource.create(), seed, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, renderType);
+			if (state.isAir()) {
+				continue;
 			}
 
-			var entity = mc.level.getBlockEntity(hit.getBlockPos());
+			worldChain.renderAnything.setTrue();
+
+			double x = pos.getX();
+			double y = pos.getY();
+			double z = pos.getZ();
+
+			ms.pushPose();
+			ms.translate(x, y, z);
+
+			var model = mc.getBlockRenderer().getBlockModel(state);
+			var seed = state.getSeed(pos);
+
+			var bufferSource = sources.get(entry.getIntValue());
+
+			for (var renderType : model.getRenderTypes(state, RandomSource.create(seed), ModelData.EMPTY)) {
+				mc.getBlockRenderer().getModelRenderer().tesselateBlock(mc.level, model, state, pos, ms, bufferSource.getBuffer(RenderTypeHelper.getMovingBlockRenderType(renderType)), false, RandomSource.create(), seed, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, renderType);
+			}
+
+			var entity = mc.level.getBlockEntity(pos);
 
 			if (entity != null) {
 				mc.getBlockEntityRenderDispatcher().render(entity, delta, ms, bufferSource);
@@ -336,19 +432,18 @@ public class KubedexHighlight {
 				box(buf, m, 0F, 0F, 0F, 1F, 1F, 1F);
 			}
 
-			mc.renderBuffers().bufferSource().endBatch();
-			mc.getMainRenderTarget().bindWrite(false);
-		} else if (mc.hitResult instanceof EntityHitResult hit && hit.getType() == HitResult.Type.ENTITY) {
-			var entity = hit.getEntity();
-			mc.renderBuffers().bufferSource().endBatch();
-			renderInput.bindWrite(false);
-			renderAnything = true;
+			ms.popPose();
+		}
+
+		for (var entry : highlightedEntities.reference2IntEntrySet()) {
+			var entity = entry.getKey();
+			worldChain.renderAnything.setTrue();
 
 			var p = entity.getPosition(delta);
-			float yaw = Mth.lerp(delta, hit.getEntity().yRotO, entity.getYRot());
+			float yaw = Mth.lerp(delta, entity.yRotO, entity.getYRot());
 
 			var renderer = mc.getEntityRenderDispatcher().getRenderer(entity);
-			var bufferSource = new WrappedMultiBufferSource(mc.renderBuffers().bufferSource(), color);
+			var bufferSource = sources.get(entry.getIntValue());
 
 			if (renderer != null) {
 				var off = renderer.getRenderOffset(entity, delta);
@@ -362,17 +457,19 @@ public class KubedexHighlight {
 			} else {
 				var buf = bufferSource.getBuffer(RenderType.debugQuads());
 
+				ms.pushPose();
 				ms.translate(p.x, p.y, p.z);
 				var m = ms.last().pose();
 				float w = entity.getBbWidth() / 2F;
 				box(buf, m, -w, 0F, -w, w, entity.getBbHeight(), w);
+				ms.popPose();
 			}
-
-			mc.renderBuffers().bufferSource().endBatch();
-			mc.getMainRenderTarget().bindWrite(false);
 		}
 
 		ms.popPose();
+
+		mc.renderBuffers().bufferSource().endBatch();
+		mc.getMainRenderTarget().bindWrite(false);
 	}
 
 	private void box(VertexConsumer buf, Matrix4f m, float x0, float y0, float z0, float x1, float y1, float z1) {
@@ -403,7 +500,7 @@ public class KubedexHighlight {
 	}
 
 	public void screen(Minecraft mc, GuiGraphics graphics, AbstractContainerScreen<?> screen, int mx, int my, float delta) {
-		if (renderInput == null || highlightShader == null) {
+		if (guiChain == null || highlightShader == null) {
 			return;
 		}
 
@@ -430,11 +527,11 @@ public class KubedexHighlight {
 			return;
 		}
 
-		renderAnything = true;
+		guiChain.renderAnything.setTrue();
 		graphics.flush();
-		renderInput.bindWrite(false);
+		guiChain.renderInput.bindWrite(false);
 
-		var bufferSource = new WrappedMultiBufferSource(mc.renderBuffers().bufferSource(), color);
+		var bufferSource = new WrappedMultiBufferSource(mc.renderBuffers().bufferSource(), color.kjs$getRGB());
 
 		for (var slot : hoveredSlots) {
 			int x = slot.x + screen.getGuiLeft();
@@ -467,31 +564,13 @@ public class KubedexHighlight {
 
 		graphics.flush();
 		mc.getMainRenderTarget().bindWrite(false);
+		guiChain.draw(mc, delta);
 	}
 
-	public void afterEverything(Minecraft mc, GuiGraphics graphics, float delta) {
-		if (renderOutput == null || postChain == null || !renderAnything) {
-			return;
-		}
-
-		graphics.flush();
-
-		postChain.setUniform("OutlineSize", (float) mc.getWindow().getGuiScale());
-		postChain.process(delta);
-		mc.getMainRenderTarget().bindWrite(false);
-
-		RenderSystem.enableBlend();
-		RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-		renderOutput.blitToScreen(mc.getWindow().getWidth(), mc.getWindow().getHeight(), false);
-		RenderSystem.disableBlend();
-		RenderSystem.defaultBlendFunc();
-
-		mc.getMainRenderTarget().bindWrite(false);
-	}
-
-	public void resizePostChains(int width, int height) {
-		if (postChain != null) {
-			postChain.resize(width, height);
+	public void hudPostDraw(Minecraft mc, GuiGraphics graphics, float delta) {
+		if (worldChain != null) {
+			graphics.flush();
+			// worldChain.draw(mc, delta);
 		}
 	}
 }

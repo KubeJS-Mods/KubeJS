@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.client;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.client.highlight.HighlightRenderer;
 import dev.latvian.mods.kubejs.item.DynamicItemTooltipsKubeEvent;
-import dev.latvian.mods.kubejs.kubedex.KubedexHighlight;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ClientEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
@@ -272,10 +272,7 @@ public class KubeJSGameClientEventHandler {
 	@SubscribeEvent
 	public static void hudPostDraw(RenderGuiEvent.Post event) {
 		var mc = Minecraft.getInstance();
-
-		if (mc.screen == null) {
-			KubedexHighlight.INSTANCE.afterEverything(mc, event.getGuiGraphics(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
-		}
+		HighlightRenderer.INSTANCE.hudPostDraw(mc, event.getGuiGraphics(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
 
 		/*
 		if (PlatformWrapper.isDevelopmentEnvironment()) {
@@ -307,16 +304,14 @@ public class KubeJSGameClientEventHandler {
 		var mc = Minecraft.getInstance();
 
 		if (event.getScreen() instanceof AbstractContainerScreen<?> screen) {
-			KubedexHighlight.INSTANCE.screen(mc, event.getGuiGraphics(), screen, event.getMouseX(), event.getMouseY(), event.getPartialTick());
+			HighlightRenderer.INSTANCE.screen(mc, event.getGuiGraphics(), screen, event.getMouseX(), event.getMouseY(), event.getPartialTick());
 		}
-
-		KubedexHighlight.INSTANCE.afterEverything(mc, event.getGuiGraphics(), event.getPartialTick());
 	}
 
 	@SubscribeEvent
 	public static void clientTick(ClientTickEvent.Pre event) {
 		var mc = Minecraft.getInstance();
-		KubedexHighlight.INSTANCE.tickPre(mc);
+		HighlightRenderer.INSTANCE.tickPre(mc);
 		KubeJSKeybinds.triggerKeyEvents(mc);
 	}
 
@@ -325,18 +320,11 @@ public class KubeJSGameClientEventHandler {
 		var mc = Minecraft.getInstance();
 
 		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
-			KubedexHighlight.INSTANCE.clearBuffers(mc);
+			HighlightRenderer.INSTANCE.clearBuffers(mc);
 		} else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
-			KubedexHighlight.INSTANCE.renderAfterEntities(mc, event);
+			HighlightRenderer.INSTANCE.renderAfterEntities(mc, event);
 		} else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-			var depth = KubedexHighlight.INSTANCE.mcDepthInput;
-
-			if (depth != null) {
-				depth.bindWrite(false);
-				depth.clear(Minecraft.ON_OSX);
-				depth.copyDepthFrom(mc.getMainRenderTarget());
-				mc.getMainRenderTarget().bindWrite(false);
-			}
+			HighlightRenderer.INSTANCE.renderAfterLevel(mc, event);
 		}
 	}
 

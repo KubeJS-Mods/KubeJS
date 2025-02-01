@@ -162,52 +162,57 @@ public interface NBTWrapper {
 
 	@Nullable
 	static CompoundTag wrapCompound(Context cx, @Nullable Object v) {
-		if (v instanceof CompoundTag nbt) {
-			return nbt;
-		} else if (v instanceof CharSequence) {
-			try {
-				return TagParser.parseTag(v.toString());
-			} catch (Exception ex) {
-				return null;
+		return switch (v) {
+			case null -> null;
+			case CompoundTag nbt -> nbt;
+			case CharSequence ignored -> {
+				try {
+					yield TagParser.parseTag(v.toString());
+				} catch (Exception ex) {
+					throw Context.throwAsScriptRuntimeEx(ex, cx);
+				}
 			}
-		} else if (v instanceof JsonPrimitive json) {
-			try {
-				return TagParser.parseTag(json.getAsString());
-			} catch (Exception ex) {
-				return null;
+			case JsonPrimitive json -> {
+				try {
+					yield TagParser.parseTag(json.getAsString());
+				} catch (Exception ex) {
+					throw Context.throwAsScriptRuntimeEx(ex, cx);
+				}
 			}
-		} else if (v instanceof JsonObject json) {
-			try {
-				return TagParser.parseTag(json.toString());
-			} catch (Exception ex) {
-				return null;
+			case JsonObject json -> {
+				try {
+					yield TagParser.parseTag(json.toString());
+				} catch (Exception ex) {
+					throw Context.throwAsScriptRuntimeEx(ex, cx);
+				}
 			}
-		}
-
-		return wrap(cx, v) instanceof CompoundTag nbt ? nbt : null;
+			default -> wrap(cx, v) instanceof CompoundTag nbt ? nbt : null;
+		};
 	}
 
 	@Nullable
 	static CollectionTag<?> wrapCollection(Context cx, @Nullable Object v) {
-		if (v instanceof CollectionTag<?> tag) {
-			return tag;
-		} else if (v instanceof CharSequence) {
-			try {
-				return (CollectionTag<?>) TagParser.parseTag("{a:" + v + "}").get("a");
-			} catch (Exception ex) {
-				return null;
+		return switch (v) {
+			case null -> null;
+			case CollectionTag<?> tag -> tag;
+			case CharSequence ignored -> {
+				try {
+					yield (CollectionTag<?>) TagParser.parseTag("{a:" + v + "}").get("a");
+				} catch (Exception ex) {
+					throw Context.throwAsScriptRuntimeEx(ex, cx);
+				}
 			}
-		} else if (v instanceof JsonArray array) {
-			List<Tag> list = new ArrayList<>(array.size());
+			case JsonArray array -> {
+				var list = new ArrayList<Tag>(array.size());
 
-			for (JsonElement element : array) {
-				list.add(wrap(cx, element));
+				for (var element : array) {
+					list.add(wrap(cx, element));
+				}
+
+				yield wrapCollection0(cx, list);
 			}
-
-			return wrapCollection0(cx, list);
-		}
-
-		return v == null ? null : wrapCollection0(cx, (Collection<?>) v);
+			default -> wrapCollection0(cx, (Collection<?>) v);
+		};
 	}
 
 	@Nullable

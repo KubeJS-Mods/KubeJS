@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.net;
 
-import dev.latvian.mods.kubejs.kubedex.KubedexPayloadHandler;
+import dev.latvian.mods.kubejs.client.highlight.KubedexPayloadHandler;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

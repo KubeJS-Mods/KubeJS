@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.net;
 
-import dev.latvian.mods.kubejs.kubedex.KubedexPayloadHandler;
+import dev.latvian.mods.kubejs.client.highlight.KubedexPayloadHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;

@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.client;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.client.highlight.HighlightRenderer;
 import dev.latvian.mods.kubejs.item.ModifyItemTooltipsKubeEvent;
-import dev.latvian.mods.kubejs.kubedex.KubedexHighlight;
 import dev.latvian.mods.kubejs.net.KubeServerData;
 import dev.latvian.mods.kubejs.net.NetworkKubeEvent;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
@@ -200,11 +200,11 @@ public class KubeJSClient extends KubeJSCommon {
 	}
 
 	public static void loadPostChains(Minecraft mc) {
-		KubedexHighlight.INSTANCE.loadPostChains(mc);
+		HighlightRenderer.INSTANCE.loadPostChains(mc);
 	}
 
 	public static void resizePostChains(int width, int height) {
-		KubedexHighlight.INSTANCE.resizePostChains(width, height);
+		HighlightRenderer.INSTANCE.resizePostChains(width, height);
 	}
 
 	private static final char[] POWER = {'K', 'M', 'B', 'T'};
