@@ -44,6 +44,10 @@ public interface JavaWrapper {
 		return Cast.to(cx.createInterfaceAdapter(targetClass, function));
 	}
 
+	static <T> T cast(Context cx, Class<T> targetClass, Object object) {
+		return Cast.to(cx.jsToJava(object, TypeInfo.of(targetClass)));
+	}
+
 	@Nullable
 	@HideFromJS
 	static Class<?> tryLoadClass(String className) {
