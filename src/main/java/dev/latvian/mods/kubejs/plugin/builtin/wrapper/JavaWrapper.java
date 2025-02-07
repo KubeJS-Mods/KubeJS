@@ -44,6 +44,7 @@ public interface JavaWrapper {
 		return Cast.to(cx.createInterfaceAdapter(targetClass, function));
 	}
 
+	@Info("Cast the object to a target type, use if Rhino can't determine the parameter type due to type erasure.")
 	static <T> T cast(Context cx, Class<T> targetClass, Object object) {
 		return Cast.to(cx.jsToJava(object, TypeInfo.of(targetClass)));
 	}
