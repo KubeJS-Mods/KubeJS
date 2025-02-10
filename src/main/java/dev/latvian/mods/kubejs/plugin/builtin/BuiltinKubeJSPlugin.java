@@ -158,9 +158,9 @@ import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.RotationAxis;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.kubejs.util.SlotFilter;
+import dev.latvian.mods.kubejs.util.MobEffectUtil;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.kubejs.util.TimeJS;
-import dev.latvian.mods.kubejs.util.MobEffectUtil;
 import dev.latvian.mods.kubejs.util.Tristate;
 import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
 import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
@@ -249,7 +249,6 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ItemAbility;
@@ -463,7 +462,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		bindings.add("NativeEvents", NativeEventWrapper.class);
 
-		bindings.add("MobEffects", MobEffects.class);
 		bindings.add("MobEffectInstance", MobEffectUtil.class)
 	}
 
