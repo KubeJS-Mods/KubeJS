@@ -160,6 +160,7 @@ import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.kubejs.util.SlotFilter;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.kubejs.util.TimeJS;
+import dev.latvian.mods.kubejs.util.MobEffectUtil;
 import dev.latvian.mods.kubejs.util.Tristate;
 import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
 import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
@@ -463,6 +464,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		bindings.add("NativeEvents", NativeEventWrapper.class);
 
 		bindings.add("MobEffects", MobEffects.class);
+		bindings.add("MobEffectInstance", MobEffectUtil.class)
 	}
 
 	@Override
