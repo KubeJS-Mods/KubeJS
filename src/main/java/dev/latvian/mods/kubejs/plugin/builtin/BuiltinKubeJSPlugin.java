@@ -462,7 +462,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		bindings.add("NativeEvents", NativeEventWrapper.class);
 
-		bindings.add("MobEffectInstance", MobEffectUtil.class)
+		bindings.add("MobEffectUtil", MobEffectUtil.class)
 	}
 
 	@Override
