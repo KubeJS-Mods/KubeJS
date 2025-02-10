@@ -248,6 +248,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ItemAbility;
@@ -460,6 +461,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		bindings.add("BlockProperties", BlockStateProperties.class);
 
 		bindings.add("NativeEvents", NativeEventWrapper.class);
+
+		bindings.add("MobEffects", MobEffects.class);
 	}
 
 	@Override
