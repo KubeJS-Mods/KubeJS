@@ -7,6 +7,11 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public class MobEffectUtil {
+	@Contract("_ -> new")
+	public static @NotNull MobEffectInstance of(MobEffectInstance oldInstance) {
+		return new MobEffectInstance(oldInstance)
+	}
+
     @Contract("_ -> new")
     public static @NotNull MobEffectInstance of(Holder<MobEffect> effect) {
         return new MobEffectInstance(effect);
