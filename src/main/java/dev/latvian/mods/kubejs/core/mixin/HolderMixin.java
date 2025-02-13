@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -33,13 +34,19 @@ public interface HolderMixin<T> {
 	boolean is(Holder<T> holder);
 
 	@Shadow
+	@Info("Tests the resource key held by the holder using a predicate.")
 	@RemapForJS("test")
 	boolean is(Predicate<ResourceKey<T>> predicate);
 
 	@Shadow
 	Optional<ResourceKey<T>> unwrapKey();
 
+	@Shadow
+	@Info("Test if the holder holds an object registered with given resource location.")
+	boolean is(ResourceLocation location);
+
 	@Unique
+	@Info("Test if a tag matches the object this holder holds.")
 	default boolean kjs$isTag(ResourceLocation tagKey) {
 		return this.unwrapKey().map(resourceKey -> is(TagKey.create(resourceKey.registryKey(), tagKey))).orElse(false);
 	}
