@@ -145,13 +145,15 @@ public class ServerScriptManager extends ScriptManager {
 			furnaceFuelsJson.add(entry.getKey().kjs$getId(), json);
 		}
 
-		for (var item : RegistryObjectStorage.ITEM) {
-			long b = ((ItemBuilder) item).burnTime;
+		for (var builder : RegistryObjectStorage.ITEM) {
+			if (builder instanceof ItemBuilder item) {
+				long b = item.burnTime;
 
-			if (b > 0L) {
-				var json = new JsonObject();
-				json.addProperty("burn_time", b);
-				furnaceFuelsJson.add(item.id.toString(), json);
+				if (b > 0L) {
+					var json = new JsonObject();
+					json.addProperty("burn_time", b);
+					furnaceFuelsJson.add(builder.id.toString(), json);
+				}
 			}
 		}
 

@@ -121,7 +121,9 @@ public class KubeJSModEventHandler {
 
 	@SubscribeEvent
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-		for (var info : RegistryObjectStorage.BLOCK_ENTITY.objects.values().stream().map(b -> ((BlockEntityBuilder) b).info).toList()) {
+		for (var info : RegistryObjectStorage.BLOCK_ENTITY.objects.values().stream()
+			.filter(BlockEntityBuilder.class::isInstance)
+			.map(b -> ((BlockEntityBuilder) b).info).toList()) {
 			for (var attachment : info.attachments.values()) {
 				for (var capability : attachment.factory().getCapabilities()) {
 					event.registerBlockEntity(capability, (BlockEntityType<KubeBlockEntity>) info.entityType, new KubeEntityCapabilityProvider(capability, attachment));
