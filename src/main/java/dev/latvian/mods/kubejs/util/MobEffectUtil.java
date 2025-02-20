@@ -9,19 +9,19 @@ import org.jetbrains.annotations.NotNull;
 
 public class MobEffectUtil {
 	@Contract("_ -> new")
-	@Info("Creates a new instance from the old one")
+	@Info("Copies an existing MobEffectInstance")
 	public static @NotNull MobEffectInstance of(MobEffectInstance oldInstance) {
 		return new MobEffectInstance(oldInstance)
 	}
 
     @Contract("_ -> new")
-	@Info("Creates an instance for the given effect")
+	@Info("Creates an instance for the given effect. Default duration and amplifier is 0")
     public static @NotNull MobEffectInstance of(Holder<MobEffect> effect) {
         return new MobEffectInstance(effect);
     }
 
     @Contract("_, _ -> new")
-	@Info("Creates an instance for the given effect and duration")
+	@Info("Creates an instance for the given effect and duration (in ticks)")
     public static @NotNull MobEffectInstance of(Holder<MobEffect> effect, int duration) {
         return new MobEffectInstance(effect, duration);
     }
