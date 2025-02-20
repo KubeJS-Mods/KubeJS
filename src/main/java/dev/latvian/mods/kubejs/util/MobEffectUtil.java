@@ -39,7 +39,7 @@ public class MobEffectUtil {
     }
 
     @Contract("_, _, _, _, _, _ -> new")
-	@Info("Creates an instance for the given effect, duration, amplifier, ambient, visible to the HUD, and to show the icon")
+	@Info("Creates an instance for the given effect, duration, amplifier, ambient, visible to the HUD, and to show the icon on the sceen")
     public static @NotNull MobEffectInstance of(Holder<MobEffect> effect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon) {
         return new MobEffectInstance(effect, duration, amplifier, ambient, visible, showIcon);
     }
