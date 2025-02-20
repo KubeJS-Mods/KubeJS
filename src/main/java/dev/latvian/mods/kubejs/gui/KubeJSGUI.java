@@ -52,6 +52,7 @@ public class KubeJSGUI {
 		inventoryWidth = inv.kjs$getWidth();
 		inventoryHeight = inv.kjs$getHeight();
 		height = 114 + inventoryHeight * 18;
+		width = 14 + inventoryWidth * 18;
 		inventoryLabelY = height - 94;
 		playerSlotsX = 8;
 		playerSlotsY = 103;
