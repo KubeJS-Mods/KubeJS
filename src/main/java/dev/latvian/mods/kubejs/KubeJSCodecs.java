@@ -58,6 +58,8 @@ public interface KubeJSCodecs {
 
 	Codec<Duration> DURATION = KubeJSCodecs.stringResolverCodec(Duration::toString, TimeJS::wrapDuration);
 
+	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY_CODEC = ResourceLocation.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::location);
+
 	static <E> Codec<E> stringResolverCodec(Function<E, String> toStringFunction, Function<String, E> fromStringFunction) {
 		return Codec.STRING.flatXmap(str -> Optional.ofNullable(fromStringFunction.apply(str))
 				.map(DataResult::success)
