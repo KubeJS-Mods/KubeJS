@@ -5,8 +5,8 @@ import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import dev.latvian.mods.kubejs.client.icon.KubeIconRenderer;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextWrapper;
-import dev.latvian.mods.kubejs.util.IconKJS;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -24,7 +24,7 @@ public class NotificationToast implements Toast {
 	private final NotificationToastData notification;
 
 	private final long duration;
-	private final IconKJS icon;
+	private final KubeIconRenderer icon;
 	private final List<FormattedCharSequence> text;
 	private int width, height;
 
@@ -35,7 +35,7 @@ public class NotificationToast implements Toast {
 		this.notification = notification;
 		this.duration = notification.duration().toMillis();
 
-		this.icon = notification.icon();
+		this.icon = notification.icon().map(KubeIconRenderer::from).orElse(null);
 
 		this.text = new ArrayList<>(2);
 		this.width = 0;
@@ -102,17 +102,17 @@ public class NotificationToast implements Toast {
 		int w = width();
 		int h = height();
 
-		int oc = notification.outlineColor().kjs$getRGB();
+		int oc = notification.outlineColor().orElse(NotificationToastData.DEFAULT_OUTLINE_COLOR).kjs$getRGB();
 		int ocr = FastColor.ARGB32.red(oc);
 		int ocg = FastColor.ARGB32.green(oc);
 		int ocb = FastColor.ARGB32.blue(oc);
 
-		int bc = notification.borderColor().kjs$getRGB();
+		int bc = notification.borderColor().orElse(NotificationToastData.DEFAULT_BORDER_COLOR).kjs$getRGB();
 		int bcr = FastColor.ARGB32.red(bc);
 		int bcg = FastColor.ARGB32.green(bc);
 		int bcb = FastColor.ARGB32.blue(bc);
 
-		int bgc = notification.backgroundColor().kjs$getRGB();
+		int bgc = notification.backgroundColor().orElse(NotificationToastData.DEFAULT_BACKGROUND_COLOR).kjs$getRGB();
 		int bgcr = FastColor.ARGB32.red(bgc);
 		int bgcg = FastColor.ARGB32.green(bgc);
 		int bgcb = FastColor.ARGB32.blue(bgc);

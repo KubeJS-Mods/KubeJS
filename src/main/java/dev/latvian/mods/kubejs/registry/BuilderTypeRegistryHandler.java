@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -19,11 +18,10 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) implements BuilderTypeRegistry, ServerRegistryRegistry {
-	public static final Lazy<Map<ResourceKey<?>, Info<?>>> INFO = Lazy.of(() -> {
-		var handler = new BuilderTypeRegistryHandler(new Reference2ObjectOpenHashMap<>());
+	public static final Lazy<Map<ResourceKey<?>, Info<?>>> INFO = Lazy.identityMap(map -> {
+		var handler = new BuilderTypeRegistryHandler(map);
 		KubeJSPlugins.forEachPlugin(handler, KubeJSPlugin::registerBuilderTypes);
 		KubeJSPlugins.forEachPlugin(handler, KubeJSPlugin::registerServerRegistries);
-		return handler.map;
 	});
 
 	public static <T> Info<T> info(ResourceKey<Registry<T>> key) {

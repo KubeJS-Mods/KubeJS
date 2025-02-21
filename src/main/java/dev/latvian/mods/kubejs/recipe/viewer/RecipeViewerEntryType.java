@@ -21,7 +21,6 @@ import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -75,11 +74,7 @@ public class RecipeViewerEntryType {
 		}
 	};
 
-	public static Lazy<Map<String, RecipeViewerEntryType>> CUSTOM_TYPES = Lazy.of(() -> {
-		var map = new HashMap<String, RecipeViewerEntryType>();
-		KubeJSPlugins.forEachPlugin(t -> map.put(t.id, t), KubeJSPlugin::registerRecipeViewerEntryTypes);
-		return Map.copyOf(map);
-	});
+	public static Lazy<Map<String, RecipeViewerEntryType>> CUSTOM_TYPES = Lazy.map(map -> KubeJSPlugins.forEachPlugin(t -> map.put(t.id, t), KubeJSPlugin::registerRecipeViewerEntryTypes));
 
 	public static final Lazy<List<RecipeViewerEntryType>> ALL_TYPES = Lazy.of(() -> {
 		var list = new ArrayList<RecipeViewerEntryType>();

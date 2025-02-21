@@ -3,11 +3,13 @@ package dev.latvian.mods.kubejs.recipe.special;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.KubeJSStreamCodecs;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionHolder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -70,14 +72,19 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 		return kjs$assemble(input, registryAccess);
 	}
 
-	public static class SerializerKJS implements RecipeSerializer<ShapedKubeJSRecipe> {
+	private ShapedRecipePattern pattern() {
+		return pattern;
+	}
 
+	private ItemStack result() {
+		return result;
+	}
+
+	public static class SerializerKJS implements RecipeSerializer<ShapedKubeJSRecipe> {
 		public static final MapCodec<ShapedKubeJSRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			// manually copied from the shaped recipe codec
-			// (would be nice if we could just swap out specifically the pattern codec from the underlying codec)
 			Codec.STRING.optionalFieldOf("group", "").forGetter(ShapedRecipe::getGroup),
 			CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(ShapedRecipe::category),
-			// kubejs modified keys
+			// KubeJS modified keys
 			ShapedRecipePattern.MAP_CODEC.forGetter(recipe -> recipe.pattern),
 			ItemStack.STRICT_CODEC.fieldOf("result").forGetter(r -> r.result),
 			Codec.BOOL.optionalFieldOf("show_notification", true).forGetter(ShapedRecipe::showNotification),
@@ -88,37 +95,29 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			Codec.STRING.optionalFieldOf(STAGE_KEY, "").forGetter(ShapedKubeJSRecipe::kjs$getStage)
 		).apply(instance, ShapedKubeJSRecipe::new));
 
-		public static final StreamCodec<RegistryFriendlyByteBuf, ShapedKubeJSRecipe> STREAM_CODEC = new StreamCodec<>() {
-			@Override
-			public ShapedKubeJSRecipe decode(RegistryFriendlyByteBuf buf) {
-				var group = buf.readUtf();
-				var category = buf.readEnum(CraftingBookCategory.class);
-				var shapedrecipepattern = ShapedRecipePattern.STREAM_CODEC.decode(buf);
-				var result = ItemStack.STREAM_CODEC.decode(buf);
-				var showNotification = buf.readBoolean();
-
-				var mirror = buf.readBoolean();
-				var ingredientActions = IngredientActionHolder.LIST_STREAM_CODEC.decode(buf);
-				var modifyResult = buf.readUtf();
-				var stage = buf.readUtf();
-
-				return new ShapedKubeJSRecipe(group, category, shapedrecipepattern, result, showNotification, mirror, ingredientActions, modifyResult, stage);
-			}
-
-			@Override
-			public void encode(RegistryFriendlyByteBuf buf, ShapedKubeJSRecipe recipe) {
-				buf.writeUtf(recipe.getGroup());
-				buf.writeEnum(recipe.category());
-				ShapedRecipePattern.STREAM_CODEC.encode(buf, recipe.pattern);
-				ItemStack.STREAM_CODEC.encode(buf, recipe.result);
-				buf.writeBoolean(recipe.showNotification);
-
-				buf.writeBoolean(recipe.kjs$getMirror());
-				IngredientActionHolder.LIST_STREAM_CODEC.encode(buf, recipe.kjs$getIngredientActions());
-				buf.writeUtf(recipe.kjs$getModifyResult());
-				buf.writeUtf(recipe.kjs$getStage());
-			}
-		};
+		public static final StreamCodec<RegistryFriendlyByteBuf, ShapedKubeJSRecipe> STREAM_CODEC = KubeJSStreamCodecs.composite(
+			ByteBufCodecs.STRING_UTF8,
+			ShapedKubeJSRecipe::getGroup,
+			CraftingBookCategory.STREAM_CODEC,
+			ShapedKubeJSRecipe::category,
+			ShapedRecipePattern.STREAM_CODEC,
+			ShapedKubeJSRecipe::pattern,
+			// KubeJS modified keys
+			ItemStack.STREAM_CODEC,
+			ShapedKubeJSRecipe::result,
+			ByteBufCodecs.BOOL,
+			ShapedKubeJSRecipe::showNotification,
+			// KubeJS additions
+			ByteBufCodecs.BOOL,
+			ShapedKubeJSRecipe::kjs$getMirror,
+			IngredientActionHolder.LIST_STREAM_CODEC,
+			ShapedKubeJSRecipe::kjs$getIngredientActions,
+			ByteBufCodecs.STRING_UTF8,
+			ShapedKubeJSRecipe::kjs$getModifyResult,
+			ByteBufCodecs.STRING_UTF8,
+			ShapedKubeJSRecipe::kjs$getStage,
+			ShapedKubeJSRecipe::new
+		);
 
 		@Override
 		public MapCodec<ShapedKubeJSRecipe> codec() {

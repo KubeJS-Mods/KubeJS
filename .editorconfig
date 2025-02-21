@@ -710,6 +710,9 @@ ij_javascript_wrap_comments = false
 
 [{*.comp,*.frag,*.fsh,*.geom,*.glsl,*.tesc,*.tese,*.vert,*.vsh}]
 ij_glsl_keep_indents_on_empty_lines = false
+indent_style = tab
+tab_width = 2
+indent_size = 2
 
 [{*.gant,*.groovy,*.gy}]
 ij_smart_tabs = false

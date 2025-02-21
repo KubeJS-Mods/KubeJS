@@ -47,7 +47,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -73,8 +72,7 @@ public interface ItemWrapper {
 	});
 
 	@HideFromJS
-	Lazy<Map<ResourceLocation, Collection<ItemStack>>> CACHED_ITEM_MAP = Lazy.of(() -> {
-		var map = new HashMap<ResourceLocation, Collection<ItemStack>>();
+	Lazy<Map<ResourceLocation, Collection<ItemStack>>> CACHED_ITEM_MAP = Lazy.map(map -> {
 		var stackList = ItemStackLinkedSet.createTypeAndComponentsSet();
 
 		stackList.addAll(CreativeModeTabs.searchTab().getDisplayItems());
@@ -92,8 +90,6 @@ public interface ItemWrapper {
 			var itemRl = ResourceLocation.parse(itemId);
 			map.computeIfAbsent(itemRl, id -> Set.of(BuiltInRegistries.ITEM.get(id).getDefaultInstance()));
 		}
-
-		return map;
 	});
 
 	@HideFromJS

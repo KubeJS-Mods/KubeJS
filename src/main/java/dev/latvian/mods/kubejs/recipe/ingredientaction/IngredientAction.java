@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.recipe.ingredientaction;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -11,7 +10,7 @@ import java.util.List;
 
 public interface IngredientAction {
 	Codec<IngredientAction> CODEC = IngredientActionType.CODEC.dispatch("type", IngredientAction::getType, IngredientActionType::codec);
-	StreamCodec<RegistryFriendlyByteBuf, IngredientAction> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);
+	StreamCodec<RegistryFriendlyByteBuf, IngredientAction> STREAM_CODEC = IngredientActionType.STREAM_CODEC.dispatch(IngredientAction::getType, IngredientActionType::streamCodec);
 
 	static ItemStack getRemaining(CraftingInput input, int index, List<IngredientActionHolder> ingredientActions) {
 		var stack = input.getItem(index);

@@ -1,4 +1,3 @@
 dev.latvian.mods.kubejs.plugin.builtin.BuiltinKubeJSPlugin
 dev.latvian.mods.kubejs.plugin.builtin.BuiltinKubeJSClientPlugin client
 dev.latvian.mods.kubejs.integration.architectury.ArchitecturyIntegration architectury
-dev.latvian.mods.kubejs.integration.gamestages.GameStagesIntegration gamestages

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Either;
@@ -10,25 +9,19 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
-import dev.latvian.mods.kubejs.util.JsonUtils;
+import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.rhino.type.EnumTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.Utf8String;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
-import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -37,39 +30,7 @@ public interface KubeJSCodecs {
 	Codec<Character> CHARACTER = Codec.STRING.xmap(str -> str.charAt(0), Object::toString);
 	Codec<ResourceLocation> KUBEJS_ID = Codec.STRING.xmap(str -> str.indexOf(':') == -1 ? KubeJS.id(str) : ResourceLocation.parse(str), s -> s.getNamespace().equals(KubeJS.MOD_ID) ? s.getPath() : s.toString());
 
-	StreamCodec<? super RegistryFriendlyByteBuf, IntProvider> INT_PROVIDER_STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(IntProvider.CODEC);
-
-	StreamCodec<ByteBuf, ResourceLocation> KUBEJS_ID_STREAM_CODEC = new StreamCodec<>() {
-		@Override
-		public ResourceLocation decode(ByteBuf buf) {
-			var str = Utf8String.read(buf, Short.MAX_VALUE);
-			return str.indexOf(':') == -1 ? KubeJS.id(str) : ResourceLocation.parse(str);
-		}
-
-		@Override
-		public void encode(ByteBuf buf, ResourceLocation value) {
-			Utf8String.write(buf, value.getNamespace().equals(KubeJS.MOD_ID) ? value.getPath() : value.toString(), Short.MAX_VALUE);
-		}
-	};
-
-	StreamCodec<ByteBuf, JsonElement> JSON_ELEMENT_STREAM_CODEC = new StreamCodec<>() {
-		@Override
-		public JsonElement decode(ByteBuf buffer) {
-			var str = Utf8String.read(buffer, Integer.MAX_VALUE);
-			return str.isEmpty() || str.equals("null") ? JsonNull.INSTANCE : JsonUtils.fromString(str);
-		}
-
-		@Override
-		public void encode(ByteBuf buffer, @Nullable JsonElement value) {
-			if (value == null || value.isJsonNull()) {
-				Utf8String.write(buffer, "", Integer.MAX_VALUE);
-			} else {
-				Utf8String.write(buffer, JsonUtils.toString(value), Integer.MAX_VALUE);
-			}
-		}
-	};
-
-	Codec<Class<?>> ENUM_CLASS_CODEC = Codec.STRING.flatXmap(str -> {
+	Codec<Class<?>> ENUM_CLASS = Codec.STRING.flatXmap(str -> {
 		try {
 			var c = Class.forName(str);
 
@@ -83,7 +44,7 @@ public interface KubeJSCodecs {
 		}
 	}, c -> DataResult.success(c.getName()));
 
-	Codec<EnumTypeInfo> ENUM_TYPE_INFO_CODEC = ENUM_CLASS_CODEC.flatXmap(c -> {
+	Codec<EnumTypeInfo> ENUM_TYPE_INFO = ENUM_CLASS.flatXmap(c -> {
 		if (TypeInfo.of(c) instanceof EnumTypeInfo info) {
 			return DataResult.success(info);
 		} else {
@@ -93,7 +54,9 @@ public interface KubeJSCodecs {
 
 	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY = ResourceLocation.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::location);
 
-	MapCodec<EntityType<?>> ENTITY_TYPE_FIELD_CODEC = BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("id");
+	MapCodec<EntityType<?>> ENTITY_TYPE_FIELD = BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("id");
+
+	Codec<Duration> DURATION = KubeJSCodecs.stringResolverCodec(Duration::toString, TimeJS::wrapDuration);
 
 	static <E> Codec<E> stringResolverCodec(Function<E, String> toStringFunction, Function<String, E> fromStringFunction) {
 		return Codec.STRING.flatXmap(str -> Optional.ofNullable(fromStringFunction.apply(str))

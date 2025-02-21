@@ -584,11 +584,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	public final KubeRecipe keepIngredient(SlotFilter filter) {
-		return ingredientAction(filter, new KeepAction());
+		return ingredientAction(filter, KeepAction.INSTANCE);
 	}
 
 	public final KubeRecipe consumeIngredient(SlotFilter filter) {
-		return ingredientAction(filter, new ConsumeAction());
+		return ingredientAction(filter, ConsumeAction.INSTANCE);
 	}
 
 	public final KubeRecipe modifyResult(String id) {

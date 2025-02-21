@@ -4,13 +4,10 @@ import dev.latvian.mods.kubejs.util.Lazy;
 import org.lwjgl.glfw.GLFW;
 
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.Map;
 
 public interface GLFWInputWrapper {
-	Lazy<Map<String, Integer>> MAP = Lazy.of(() -> {
-		var map = new HashMap<String, Integer>();
-
+	Lazy<Map<String, Integer>> MAP = Lazy.map(map -> {
 		try {
 			for (var field : GLFW.class.getDeclaredFields()) {
 				int mod = field.getModifiers();
@@ -26,8 +23,6 @@ public interface GLFWInputWrapper {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-
-		return Map.copyOf(map);
 	});
 
 	static int get(String name) {

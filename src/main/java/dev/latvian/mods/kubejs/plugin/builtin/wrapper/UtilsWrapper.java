@@ -16,6 +16,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.CreativeModeTab;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -116,9 +117,9 @@ public interface UtilsWrapper {
 		return Lazy.of(supplier);
 	}
 
-	@Info("Returns a lazy value with the supplier function as its value factory, that will expire after the specified number of milliseconds")
-	static <T> Lazy<T> expiringLazy(Supplier<T> supplier, long time) {
-		return Lazy.of(supplier, time);
+	@Info("Returns a lazy value with the supplier function as its value factory, that will expire after the specified time")
+	static <T> Lazy<T> expiringLazy(Supplier<T> supplier, Duration expires) {
+		return Lazy.of(supplier, expires);
 	}
 
 	@Nullable

@@ -44,15 +44,15 @@ public interface BlockEntityAttachmentHandler {
 		inventory(id, directions, width, height, null);
 	}
 
-	default void fluidTank(String id, Set<Direction> directions, int capcity, @Nullable FluidIngredient inputFilter) {
-		attach(id, FluidTankAttachment.TYPE, directions, new FluidTankAttachment.Factory(capcity, Optional.ofNullable(inputFilter)));
+	default void fluidTank(String id, Set<Direction> directions, int capacity, @Nullable FluidIngredient inputFilter) {
+		attach(id, FluidTankAttachment.TYPE, directions, new FluidTankAttachment.Factory(capacity, Optional.ofNullable(inputFilter)));
 	}
 
-	default void fluidTank(String id, Set<Direction> directions, int capcity) {
-		fluidTank(id, directions, capcity, null);
+	default void fluidTank(String id, Set<Direction> directions, int capacity) {
+		fluidTank(id, directions, capacity, null);
 	}
 
-	default void energyStorage(String id, Set<Direction> directions, int capcity, int maxReceive, int maxExtract, int autoOutput) {
-		attach(id, EnergyStorageAttachment.TYPE, directions, new EnergyStorageAttachment.Factory(capcity, maxReceive <= 0 ? Optional.empty() : Optional.of(maxReceive), maxExtract <= 0 ? Optional.empty() : Optional.of(maxExtract), autoOutput <= 0 ? Optional.empty() : Optional.of(autoOutput)));
+	default void energyStorage(String id, Set<Direction> directions, int capacity, int maxReceive, int maxExtract, int autoOutput) {
+		attach(id, EnergyStorageAttachment.TYPE, directions, new EnergyStorageAttachment.Factory(capacity, maxReceive <= 0 ? Optional.empty() : Optional.of(maxReceive), maxExtract <= 0 ? Optional.empty() : Optional.of(maxExtract), autoOutput <= 0 ? Optional.empty() : Optional.of(autoOutput)));
 	}
 }

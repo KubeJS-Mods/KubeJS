@@ -10,6 +10,7 @@ import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
 import dev.latvian.apps.tinyserver.http.response.error.client.BadRequestError;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.UUIDWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -50,7 +51,7 @@ import java.util.concurrent.Executors;
 public class KubeJSClientWeb {
 	private static final Lazy<CreativeModeTab> SEARCH_TAB = Lazy.of(() -> BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.SEARCH));
 
-	private static final Lazy<Map<Item, NameProvider<ItemStack>>> ITEM_NAME_PROVIDERS = Lazy.of(() -> NameProvider.create(reg -> KubeJSPlugins.forEachPlugin(p -> p.registerItemNameProviders(reg))));
+	private static final Lazy<Map<Item, NameProvider<ItemStack>>> ITEM_NAME_PROVIDERS = Lazy.identityMap(map -> KubeJSPlugins.forEachPlugin(map::put, KubeJSPlugin::registerItemNameProviders));
 
 	public static Map<UUID, CachedComponentObject<Item, ItemStack>> createItemSearch(boolean useSearchTab) {
 		var map = new LinkedHashMap<UUID, CachedComponentObject<Item, ItemStack>>();

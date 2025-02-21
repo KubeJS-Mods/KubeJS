@@ -39,7 +39,7 @@ public class KubeJSScreen extends AbstractContainerScreen<KubeJSMenu> implements
 		guiGraphics.blit(CONTAINER_BACKGROUND, k, l + this.containerRows * 18 + 17, 0, 126, this.imageWidth, 96);
 
 		for (int slotY = 0; slotY < this.containerRows; slotY++) {
-			guiGraphics.blit(CONTAINER_BACKGROUND, k + this.xOffset , l + 17 + slotY * 18, 7, 139, 18 * containerColumns, 18);
+			guiGraphics.blit(CONTAINER_BACKGROUND, k + this.xOffset, l + 17 + slotY * 18, 7, 139, 18 * containerColumns, 18);
 		}
 
 	}

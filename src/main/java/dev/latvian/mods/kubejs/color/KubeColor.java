@@ -12,10 +12,13 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
+import java.util.Optional;
+
 @RemapPrefixForJS("kjs$")
 public interface KubeColor extends SpecialEquality {
 	Codec<KubeColor> CODEC = KubeJSCodecs.stringResolverCodec(KubeColor::kjs$serialize, ColorWrapper::wrap);
 	StreamCodec<ByteBuf, KubeColor> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
+	StreamCodec<ByteBuf, Optional<KubeColor>> OPTIONAL_STREAM_CODEC = ByteBufCodecs.optional(STREAM_CODEC);
 
 	@RemapForJS("getArgb")
 	int kjs$getARGB();

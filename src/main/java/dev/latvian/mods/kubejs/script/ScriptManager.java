@@ -159,9 +159,11 @@ public class ScriptManager {
 
 		var typeWrappers = new TypeWrapperRegistry(scriptType, contextFactory.getTypeWrappers());
 		// typeWrappers.removeAll();
+		RecordDefaultsRegistry recordDefaults = contextFactory::registerDefaultRecordProperties;
 
 		for (var plugin : KubeJSPlugins.getAll()) {
 			plugin.registerTypeWrappers(typeWrappers);
+			plugin.registerRecordDefaults(recordDefaults);
 		}
 
 		var i = 0;

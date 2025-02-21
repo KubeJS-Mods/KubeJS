@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.plugin;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentRegistry;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
+import dev.latvian.mods.kubejs.client.icon.KubeIconTypeRegistry;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
@@ -20,6 +21,7 @@ import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.registry.ServerRegistryRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.DataComponentTypeInfoRegistry;
+import dev.latvian.mods.kubejs.script.RecordDefaultsRegistry;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
@@ -71,6 +73,9 @@ public interface KubeJSPlugin {
 	default void registerTypeWrappers(TypeWrapperRegistry registry) {
 	}
 
+	default void registerRecordDefaults(RecordDefaultsRegistry registry) {
+	}
+
 	default void registerTypeDescriptions(TypeDescriptionRegistry registry) {
 	}
 
@@ -111,6 +116,9 @@ public interface KubeJSPlugin {
 	}
 
 	default void registerRecipeComponentValidatorTypes(RecipeComponentValidatorTypeRegistry registry) {
+	}
+
+	default void registerIconTypes(KubeIconTypeRegistry registry) {
 	}
 
 	default void attachServerData(AttachedData<MinecraftServer> event) {

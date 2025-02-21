@@ -29,6 +29,11 @@ import dev.latvian.mods.kubejs.block.entity.EnergyStorageAttachment;
 import dev.latvian.mods.kubejs.block.entity.FluidTankAttachment;
 import dev.latvian.mods.kubejs.block.entity.InventoryAttachment;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
+import dev.latvian.mods.kubejs.client.icon.AtlasSpriteKubeIcon;
+import dev.latvian.mods.kubejs.client.icon.ItemKubeIcon;
+import dev.latvian.mods.kubejs.client.icon.KubeIcon;
+import dev.latvian.mods.kubejs.client.icon.KubeIconTypeRegistry;
+import dev.latvian.mods.kubejs.client.icon.TextureKubeIcon;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
@@ -141,6 +146,7 @@ import dev.latvian.mods.kubejs.registry.ServerRegistryRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.DataComponentTypeInfoRegistry;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
+import dev.latvian.mods.kubejs.script.RecordDefaultsRegistry;
 import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
@@ -268,6 +274,7 @@ import java.time.Duration;
 import java.time.temporal.TemporalAmount;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -548,6 +555,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		// codecs
 		registry.registerCodec(Fireworks.class, Fireworks.CODEC);
+		registry.registerCodec(KubeIcon.class, KubeIcon.CODEC);
 
 		// alias
 		registry.registerAlias(Unit.class, TypeInfo.NONE, o -> Unit.INSTANCE);
@@ -555,6 +563,12 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.registerAlias(CustomModelData.class, TypeInfo.PRIMITIVE_INT, CustomModelData::new);
 		registry.registerAlias(LockCode.class, TypeInfo.STRING, LockCode::new);
 		registry.registerAlias(BlockItemStateProperties.class, TypeInfo.RAW_MAP.withParams(TypeInfo.STRING, TypeInfo.STRING), BlockItemStateProperties::new);
+	}
+
+	@Override
+	public void registerRecordDefaults(RecordDefaultsRegistry registry) {
+		registry.register(BlockSetType.OAK);
+		registry.register(new NotificationToastData(NotificationToastData.DEFAULT_DURATION, Component.empty(), Optional.empty(), 16, Optional.empty(), Optional.empty(), Optional.empty(), false));
 	}
 
 	@Override
@@ -750,5 +764,12 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(AlwaysValidValidator.TYPE);
 		registry.register(AndValidator.TYPE);
 		registry.register(OrValidator.TYPE);
+	}
+
+	@Override
+	public void registerIconTypes(KubeIconTypeRegistry registry) {
+		registry.register(TextureKubeIcon.TYPE);
+		registry.register(AtlasSpriteKubeIcon.TYPE);
+		registry.register(ItemKubeIcon.TYPE);
 	}
 }
