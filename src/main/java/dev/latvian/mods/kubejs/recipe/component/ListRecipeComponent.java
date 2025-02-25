@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonArray;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.error.EmptyRecipeComponentException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
@@ -27,6 +29,17 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 		} else {
 			return new ListRecipeComponent<>(component, false, TypeInfo.RAW_LIST.withParams(typeInfo), listCodec, conditional);
 		}
+	}
+
+	public static final RecipeComponentType<List<?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("list"), (RecipeComponentCodecFactory<ListRecipeComponent<?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		ctx.codec().fieldOf("component").forGetter(ListRecipeComponent::component),
+		Codec.BOOL.optionalFieldOf("can_write_self", false).forGetter(ListRecipeComponent::canWriteSelf),
+		Codec.BOOL.optionalFieldOf("conditional", false).forGetter(ListRecipeComponent::conditional)
+	).apply(instance, ListRecipeComponent::create)));
+
+	@Override
+	public RecipeComponentType<?> type() {
+		return TYPE;
 	}
 
 	@Override

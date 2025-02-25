@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
@@ -16,9 +17,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-public record BlockStateComponent(boolean preferObjectForm) implements RecipeComponent<BlockState> {
-	public static final RecipeComponent<BlockState> BLOCK = new BlockStateComponent(true);
-	public static final RecipeComponent<BlockState> BLOCK_STRING = new BlockStateComponent(false);
+public record BlockStateComponent(RecipeComponentType<?> type, boolean preferObjectForm) implements RecipeComponent<BlockState> {
+	public static final RecipeComponentType<BlockState> BLOCK = RecipeComponentType.unit(KubeJS.id("block_state"), type -> new BlockStateComponent(type, true));
+	public static final RecipeComponentType<BlockState> BLOCK_STRING = RecipeComponentType.unit(KubeJS.id("block_state_string"), type -> new BlockStateComponent(type, false));
 
 	@Override
 	public Codec<BlockState> codec() {

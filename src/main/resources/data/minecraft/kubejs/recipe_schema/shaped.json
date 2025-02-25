@@ -13,7 +13,10 @@
 		{
 			"name": "key",
 			"role": "input",
-			"type": "pattern<ingredient>"
+			"type": {
+				"type": "pattern",
+				"component": "ingredient"
+			}
 		},
 		{
 			"name": "kubejs:mirror",

@@ -1,8 +1,10 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.Context;
@@ -10,24 +12,33 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootTable;
+import org.jetbrains.annotations.Nullable;
 
-public record ResourceKeyComponent<T>(ResourceKey<? extends Registry<T>> registryKey) implements RecipeComponent<ResourceKey<T>> {
-	public static final RecipeComponent<ResourceKey<Level>> DIMENSION = new ResourceKeyComponent<>(Registries.DIMENSION);
-	public static final RecipeComponent<ResourceKey<LootTable>> LOOT_TABLE = new ResourceKeyComponent<>(Registries.LOOT_TABLE);
+public record ResourceKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, ResourceKey<? extends Registry<T>> registryKey) implements RecipeComponent<ResourceKey<T>> {
+	public static final RecipeComponentType<ResourceKey<Level>> DIMENSION = RecipeComponentType.unit(KubeJS.id("dimension_resource_key"), type -> new ResourceKeyComponent<>(type, Registries.DIMENSION));
+	public static final RecipeComponentType<ResourceKey<LootTable>> LOOT_TABLE = RecipeComponentType.unit(KubeJS.id("loot_table_resource_key"), type -> new ResourceKeyComponent<>(type, Registries.LOOT_TABLE));
 
-	@SuppressWarnings({"rawtypes"})
-	public static final RecipeComponentFactory FACTORY = (registries, storage, reader) -> {
-		reader.skipWhitespace();
-		reader.expect('<');
-		reader.skipWhitespace();
-		var regId = ResourceLocation.read(reader);
-		reader.expect('>');
-		var key = ResourceKey.createRegistryKey(regId);
-		return new ResourceKeyComponent(key);
-	};
+	private static ResourceKeyComponent<?> of(ResourceKey key) {
+		if (key == Registries.DIMENSION) {
+			return (ResourceKeyComponent<?>) DIMENSION.instance();
+		} else if (key == Registries.LOOT_TABLE) {
+			return (ResourceKeyComponent<?>) LOOT_TABLE.instance();
+		} else {
+			return new ResourceKeyComponent(null, key);
+		}
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public static final RecipeComponentType<ResourceKeyComponent<?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("resource_key"), RecordCodecBuilder.<ResourceKeyComponent<?>>mapCodec(instance -> instance.group(
+		KubeJSCodecs.REGISTRY_KEY_CODEC.fieldOf("registry").forGetter(ResourceKeyComponent::registryKey)
+	).apply(instance, ResourceKeyComponent::of)));
+
+	@Override
+	public RecipeComponentType<?> type() {
+		return typeOverride == null ? TYPE : typeOverride;
+	}
 
 	@Override
 	public Codec<ResourceKey<T>> codec() {
@@ -47,14 +58,6 @@ public record ResourceKeyComponent<T>(ResourceKey<? extends Registry<T>> registr
 
 	@Override
 	public String toString() {
-		var key = (ResourceKey) registryKey;
-
-		if (key == Registries.DIMENSION) {
-			return "dimension_resource_key";
-		} else if (key == Registries.LOOT_TABLE) {
-			return "loot_table_resource_key";
-		} else {
-			return "resource_key<" + registryKey.location() + ">";
-		}
+		return "resource_key<" + registryKey.location() + ">";
 	}
 }

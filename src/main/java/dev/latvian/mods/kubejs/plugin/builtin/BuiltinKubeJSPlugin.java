@@ -105,6 +105,7 @@ import dev.latvian.mods.kubejs.recipe.component.BlockStateComponent;
 import dev.latvian.mods.kubejs.recipe.component.BookCategoryComponent;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
 import dev.latvian.mods.kubejs.recipe.component.CharacterComponent;
+import dev.latvian.mods.kubejs.recipe.component.CustomObjectRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.EitherRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.EnumComponent;
 import dev.latvian.mods.kubejs.recipe.component.FluidIngredientComponent;
@@ -114,6 +115,8 @@ import dev.latvian.mods.kubejs.recipe.component.ItemStackComponent;
 import dev.latvian.mods.kubejs.recipe.component.MapRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NestedRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
+import dev.latvian.mods.kubejs.recipe.component.PairRecipeComponent;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.component.RegistryComponent;
 import dev.latvian.mods.kubejs.recipe.component.ResourceKeyComponent;
 import dev.latvian.mods.kubejs.recipe.component.SizedFluidIngredientComponent;
@@ -127,6 +130,7 @@ import dev.latvian.mods.kubejs.recipe.component.validator.AndValidator;
 import dev.latvian.mods.kubejs.recipe.component.validator.NonEmptyValidator;
 import dev.latvian.mods.kubejs.recipe.component.validator.OrValidator;
 import dev.latvian.mods.kubejs.recipe.component.validator.RecipeComponentValidatorTypeRegistry;
+import dev.latvian.mods.kubejs.recipe.component.validator.ValidatedRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ConsumeAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
@@ -136,7 +140,6 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.UnknownKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedKubeRecipe;
@@ -584,7 +587,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	public void registerRecipeComponents(RecipeComponentFactoryRegistry registry) {
+	public void registerRecipeComponents(RecipeComponentTypeRegistry registry) {
 		registry.register(BooleanComponent.BOOLEAN);
 		registry.register(StringComponent.ANY);
 		registry.register(StringComponent.NON_EMPTY);
@@ -593,10 +596,10 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(CharacterComponent.CHARACTER);
 		registry.register(StringGridComponent.STRING_GRID);
 
-		registry.register("int", NumberComponent.INT_FACTORY);
-		registry.register("long", NumberComponent.LONG_FACTORY);
-		registry.register("float", NumberComponent.FLOAT_FACTORY);
-		registry.register("double", NumberComponent.DOUBLE_FACTORY);
+		registry.register(NumberComponent.INT_TYPE);
+		registry.register(NumberComponent.LONG_TYPE);
+		registry.register(NumberComponent.FLOAT_TYPE);
+		registry.register(NumberComponent.DOUBLE_TYPE);
 
 		registry.register(IngredientComponent.INGREDIENT);
 		registry.register(IngredientComponent.NON_EMPTY_INGREDIENT);
@@ -609,6 +612,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ItemStackComponent.STRICT_ITEM_STACK);
 
 		registry.register(FluidStackComponent.FLUID_STACK);
+		registry.register(FluidStackComponent.STRICT_FLUID_STACK);
 		registry.register(FluidIngredientComponent.FLUID_INGREDIENT);
 
 		registry.register(SizedFluidIngredientComponent.FLAT);
@@ -637,13 +641,16 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ResourceKeyComponent.DIMENSION);
 		registry.register(ResourceKeyComponent.LOOT_TABLE);
 
-		registry.register("tag", TagKeyComponent.FACTORY);
-		registry.register("registry_element", RegistryComponent.FACTORY);
-		registry.register("enum", EnumComponent.FACTORY);
-		registry.register("map", MapRecipeComponent.FACTORY);
-		registry.register("pattern", MapRecipeComponent.PATTERN_FACTORY);
-		registry.register("either", EitherRecipeComponent.FACTORY);
-		registry.register("resource_key", ResourceKeyComponent.FACTORY);
+		registry.register(ValidatedRecipeComponent.TYPE);
+		registry.register(TagKeyComponent.TYPE);
+		registry.register(RegistryComponent.TYPE);
+		registry.register(EnumComponent.TYPE);
+		registry.register(MapRecipeComponent.TYPE);
+		registry.register(MapRecipeComponent.PATTERN_TYPE);
+		registry.register(EitherRecipeComponent.TYPE);
+		registry.register(ResourceKeyComponent.TYPE);
+		registry.register(PairRecipeComponent.TYPE);
+		registry.register(CustomObjectRecipeComponent.TYPE);
 	}
 
 	@Override

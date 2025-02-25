@@ -2,12 +2,18 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 public class BooleanComponent implements RecipeComponent<Boolean> {
-	public static final RecipeComponent<Boolean> BOOLEAN = new BooleanComponent();
+	public static final RecipeComponentType<Boolean> BOOLEAN = RecipeComponentType.unit(KubeJS.id("boolean"), new BooleanComponent());
+
+	@Override
+	public RecipeComponentType<?> type() {
+		return BOOLEAN;
+	}
 
 	@Override
 	public Codec<Boolean> codec() {

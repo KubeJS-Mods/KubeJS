@@ -2,8 +2,10 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -17,29 +19,44 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
+import org.jetbrains.annotations.Nullable;
 
-public record TagKeyComponent<T>(ResourceKey<? extends Registry<T>> registry, TypeInfo registryType) implements RecipeComponent<TagKey<T>> {
+public record TagKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, ResourceKey<? extends Registry<T>> registry, TypeInfo registryType) implements RecipeComponent<TagKey<T>> {
 	private static final TypeInfo TAG_KEY_TYPE = TypeInfo.of(TagKey.class);
 
-	public static final RecipeComponent<TagKey<Block>> BLOCK = new TagKeyComponent<>(Registries.BLOCK, TypeInfo.of(Block.class));
-	public static final RecipeComponent<TagKey<Item>> ITEM = new TagKeyComponent<>(Registries.ITEM, TypeInfo.of(Item.class));
-	public static final RecipeComponent<TagKey<EntityType<?>>> ENTITY_TYPE = new TagKeyComponent<>(Registries.ENTITY_TYPE, TypeInfo.of(EntityType.class));
-	public static final RecipeComponent<TagKey<Biome>> BIOME = new TagKeyComponent<>(Registries.BIOME, TypeInfo.of(Biome.class));
-	public static final RecipeComponent<TagKey<Fluid>> FLUID = new TagKeyComponent<>(Registries.FLUID, TypeInfo.of(Fluid.class));
+	public static final RecipeComponentType<TagKey<Block>> BLOCK = RecipeComponentType.unit(KubeJS.id("block_tag"), type -> new TagKeyComponent<>(type, Registries.BLOCK, TypeInfo.of(Block.class)));
+	public static final RecipeComponentType<TagKey<Item>> ITEM = RecipeComponentType.unit(KubeJS.id("item_tag"), type -> new TagKeyComponent<>(type, Registries.ITEM, TypeInfo.of(Item.class)));
+	public static final RecipeComponentType<TagKey<EntityType<?>>> ENTITY_TYPE = RecipeComponentType.unit(KubeJS.id("entity_type_tag"), type -> new TagKeyComponent<>(type, Registries.ENTITY_TYPE, TypeInfo.of(EntityType.class)));
+	public static final RecipeComponentType<TagKey<Biome>> BIOME = RecipeComponentType.unit(KubeJS.id("biome_tag"), type -> new TagKeyComponent<>(type, Registries.BIOME, TypeInfo.of(Biome.class)));
+	public static final RecipeComponentType<TagKey<Fluid>> FLUID = RecipeComponentType.unit(KubeJS.id("fluid_tag"), type -> new TagKeyComponent<>(type, Registries.FLUID, TypeInfo.of(Fluid.class)));
 
 	private static TagKeyComponent<?> of(ResourceKey<? extends Registry<?>> registry) {
-		var r = RegistryType.ofKey(registry);
-		return new TagKeyComponent<>((ResourceKey) registry, r != null ? r.type() : TypeInfo.NONE);
+		var key = (ResourceKey) registry;
+
+		if (key == Registries.BLOCK) {
+			return (TagKeyComponent<?>) BLOCK.instance();
+		} else if (key == Registries.ITEM) {
+			return (TagKeyComponent<?>) ITEM.instance();
+		} else if (key == Registries.ENTITY_TYPE) {
+			return (TagKeyComponent<?>) ENTITY_TYPE.instance();
+		} else if (key == Registries.BIOME) {
+			return (TagKeyComponent<?>) BIOME.instance();
+		} else if (key == Registries.FLUID) {
+			return (TagKeyComponent<?>) FLUID.instance();
+		} else {
+			var r = RegistryType.ofKey(registry);
+			return new TagKeyComponent<>(null, key, r != null ? r.type() : TypeInfo.NONE);
+		}
 	}
 
-	public static final RecipeComponentFactory FACTORY = (registries, storage, reader) -> {
-		reader.skipWhitespace();
-		reader.expect('<');
-		reader.skipWhitespace();
-		var registry = ResourceKey.createRegistryKey(ResourceLocation.read(reader));
-		reader.expect('>');
-		return of(registry);
-	};
+	public static final RecipeComponentType<TagKeyComponent<?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("tag"), RecordCodecBuilder.<TagKeyComponent<?>>mapCodec(instance -> instance.group(
+		KubeJSCodecs.REGISTRY_KEY_CODEC.fieldOf("registry").forGetter(TagKeyComponent::registry)
+	).apply(instance, TagKeyComponent::of)));
+
+	@Override
+	public RecipeComponentType<?> type() {
+		return typeOverride == null ? TYPE : typeOverride;
+	}
 
 	@Override
 	public Codec<TagKey<T>> codec() {
@@ -78,20 +95,6 @@ public record TagKeyComponent<T>(ResourceKey<? extends Registry<T>> registry, Ty
 
 	@Override
 	public String toString() {
-		var key = (ResourceKey) registry;
-
-		if (key == Registries.BLOCK) {
-			return "block_tag";
-		} else if (key == Registries.ITEM) {
-			return "item_tag";
-		} else if (key == Registries.ENTITY_TYPE) {
-			return "entity_type_tag";
-		} else if (key == Registries.BIOME) {
-			return "biome_tag";
-		} else if (key == Registries.FLUID) {
-			return "fluid_tag";
-		} else {
-			return "tag<" + key.location() + ">";
-		}
+		return "tag<" + registry.location() + ">";
 	}
 }

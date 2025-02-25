@@ -2,11 +2,13 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.holder.HolderWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ID;
@@ -26,20 +28,18 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
 
 public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<T> regType, Codec<Holder<T>> codec) implements RecipeComponent<Holder<T>> {
-	@SuppressWarnings({"rawtypes"})
-	public static final RecipeComponentFactory FACTORY = (registries, storage, reader) -> {
-		reader.skipWhitespace();
-		reader.expect('<');
-		reader.skipWhitespace();
-		var regId = ResourceLocation.read(reader);
-		reader.expect('>');
-		var key = ResourceKey.createRegistryKey(regId);
-		return new RegistryComponent(registries, key);
-	};
+	public static final RecipeComponentType<RegistryComponent<?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("registry_element"), (RecipeComponentCodecFactory<RegistryComponent<?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		KubeJSCodecs.REGISTRY_KEY_CODEC.fieldOf("registry").forGetter(c -> c.registry.key())
+	).apply(instance, key -> new RegistryComponent<>(ctx.registries(), key))));
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public RegistryComponent(RegistryAccessContainer registries, ResourceKey key) {
 		this((Registry) registries.access().registry(key).orElseThrow(), (RegistryType) RegistryType.ofKey(key), RegistryFixedCodec.create(key));
+	}
+
+	@Override
+	public RecipeComponentType<?> type() {
+		return TYPE;
 	}
 
 	@Override

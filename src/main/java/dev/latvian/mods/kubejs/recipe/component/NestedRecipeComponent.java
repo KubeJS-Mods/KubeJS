@@ -2,12 +2,18 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 public class NestedRecipeComponent implements RecipeComponent<KubeRecipe> {
-	public static final RecipeComponent<KubeRecipe> RECIPE = new NestedRecipeComponent();
+	public static final RecipeComponentType<KubeRecipe> RECIPE = RecipeComponentType.unit(KubeJS.id("nested_recipe"), new NestedRecipeComponent());
+
+	@Override
+	public RecipeComponentType<?> type() {
+		return RECIPE;
+	}
 
 	@Override
 	public Codec<KubeRecipe> codec() {

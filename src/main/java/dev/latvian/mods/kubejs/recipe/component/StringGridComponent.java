@@ -1,16 +1,17 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.rhino.Context;
 
 import java.util.List;
 
 public class StringGridComponent extends SimpleRecipeComponent<List<String>> {
-	private static final RecipeComponent<List<String>> PARENT = StringComponent.NON_EMPTY.asList();
-	public static final StringGridComponent STRING_GRID = new StringGridComponent();
+	private static final RecipeComponent<List<String>> PARENT = StringComponent.NON_EMPTY.instance().asList();
+	public static final RecipeComponentType<List<String>> STRING_GRID = RecipeComponentType.unit(KubeJS.id("string_grid"), StringGridComponent::new);
 
-	private StringGridComponent() {
-		super("string_grid", PARENT.codec(), PARENT.typeInfo());
+	private StringGridComponent(RecipeComponentType<?> type) {
+		super(type, "string_grid", PARENT.codec(), PARENT.typeInfo());
 	}
 
 	@Override

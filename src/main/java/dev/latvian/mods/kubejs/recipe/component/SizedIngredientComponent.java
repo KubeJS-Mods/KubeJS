@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.SizedIngredientWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
@@ -10,22 +11,9 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
-public class SizedIngredientComponent implements RecipeComponent<SizedIngredient> {
-	public static final SizedIngredientComponent FLAT = new SizedIngredientComponent("flat_sized_ingredient", SizedIngredient.FLAT_CODEC);
-	public static final SizedIngredientComponent NESTED = new SizedIngredientComponent("nested_sized_ingredient", SizedIngredient.NESTED_CODEC);
-
-	public final String name;
-	public final Codec<SizedIngredient> codec;
-
-	public SizedIngredientComponent(String name, Codec<SizedIngredient> codec) {
-		this.name = name;
-		this.codec = codec;
-	}
-
-	@Override
-	public Codec<SizedIngredient> codec() {
-		return codec;
-	}
+public record SizedIngredientComponent(RecipeComponentType<?> type, Codec<SizedIngredient> codec) implements RecipeComponent<SizedIngredient> {
+	public static final RecipeComponentType<SizedIngredient> FLAT = RecipeComponentType.unit(KubeJS.id("flat_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.FLAT_CODEC));
+	public static final RecipeComponentType<SizedIngredient> NESTED = RecipeComponentType.unit(KubeJS.id("nested_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC));
 
 	@Override
 	public TypeInfo typeInfo() {
@@ -64,6 +52,6 @@ public class SizedIngredientComponent implements RecipeComponent<SizedIngredient
 
 	@Override
 	public String toString() {
-		return name;
+		return "sized_ingredient";
 	}
 }

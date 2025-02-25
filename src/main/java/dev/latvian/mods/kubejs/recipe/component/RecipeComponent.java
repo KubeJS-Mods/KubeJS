@@ -15,7 +15,6 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -37,14 +36,13 @@ import java.util.List;
  * @see RecipeComponentWithParent
  * @see PairRecipeComponent
  */
-@Nullable
 public interface RecipeComponent<T> {
-	static RecipeComponentBuilder builder(List<RecipeComponentBuilder.Key> keys) {
-		return new RecipeComponentBuilder(keys);
+	static CustomObjectRecipeComponent builder(List<CustomObjectRecipeComponent.Key> keys) {
+		return new CustomObjectRecipeComponent(keys);
 	}
 
-	static RecipeComponentBuilder builder(RecipeComponentBuilder.Key... keys) {
-		return new RecipeComponentBuilder(List.of(keys));
+	static CustomObjectRecipeComponent builder(CustomObjectRecipeComponent.Key... keys) {
+		return new CustomObjectRecipeComponent(List.of(keys));
 	}
 
 	/**
@@ -68,6 +66,8 @@ public interface RecipeComponent<T> {
 	default RecipeKey<T> otherKey(String name) {
 		return key(name, ComponentRole.OTHER);
 	}
+
+	RecipeComponentType<?> type();
 
 	Codec<T> codec();
 
@@ -210,11 +210,11 @@ public interface RecipeComponent<T> {
 	}
 
 	default <K> RecipeComponent<TinyMap<K, T>> asMap(RecipeComponent<K> key) {
-		return new MapRecipeComponent<>(key, this, false);
+		return MapRecipeComponent.of(key, this);
 	}
 
 	default RecipeComponent<TinyMap<Character, T>> asPatternKey() {
-		return new MapRecipeComponent<>(CharacterComponent.CHARACTER, this, true);
+		return MapRecipeComponent.patternOf(this);
 	}
 
 	default <O> EitherRecipeComponent<T, O> or(RecipeComponent<O> other) {

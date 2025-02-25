@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
@@ -9,22 +10,9 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.item.ItemStack;
 
-public class ItemStackComponent implements RecipeComponent<ItemStack> {
-	public static final ItemStackComponent ITEM_STACK = new ItemStackComponent("item_stack", ItemStack.OPTIONAL_CODEC);
-	public static final ItemStackComponent STRICT_ITEM_STACK = new ItemStackComponent("strict_item_stack", ItemStack.STRICT_CODEC);
-
-	public final String name;
-	public final Codec<ItemStack> codec;
-
-	public ItemStackComponent(String name, Codec<ItemStack> codec) {
-		this.name = name;
-		this.codec = codec;
-	}
-
-	@Override
-	public Codec<ItemStack> codec() {
-		return ItemStack.OPTIONAL_CODEC;
-	}
+public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> codec) implements RecipeComponent<ItemStack> {
+	public static final RecipeComponentType<ItemStack> ITEM_STACK = RecipeComponentType.unit(KubeJS.id("item_stack"), type -> new ItemStackComponent(type, ItemStack.OPTIONAL_CODEC));
+	public static final RecipeComponentType<ItemStack> STRICT_ITEM_STACK = RecipeComponentType.unit(KubeJS.id("strict_item_stack"), type -> new ItemStackComponent(type, ItemStack.STRICT_CODEC));
 
 	@Override
 	public TypeInfo typeInfo() {
@@ -55,6 +43,6 @@ public class ItemStackComponent implements RecipeComponent<ItemStack> {
 
 	@Override
 	public String toString() {
-		return name;
+		return "item_stack";
 	}
 }

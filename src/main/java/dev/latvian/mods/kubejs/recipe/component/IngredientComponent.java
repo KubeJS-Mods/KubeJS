@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
@@ -15,16 +16,22 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IngredientComponent implements RecipeComponent<Ingredient> {
-	public static final IngredientComponent INGREDIENT = new IngredientComponent("ingredient", Ingredient.CODEC);
-	public static final IngredientComponent NON_EMPTY_INGREDIENT = new IngredientComponent("non_empty_ingredient", Ingredient.CODEC_NONEMPTY);
+public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient> codec) implements RecipeComponent<Ingredient> {
+	public static final RecipeComponentType<Ingredient> INGREDIENT = RecipeComponentType.unit(KubeJS.id("ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC));
+	public static final RecipeComponentType<Ingredient> NON_EMPTY_INGREDIENT = RecipeComponentType.unit(KubeJS.id("non_empty_ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC_NONEMPTY));
 
-	public static final RecipeComponent<List<Ingredient>> UNWRAPPED_INGREDIENT_LIST = new RecipeComponentWithParent<>() {
+	public static final RecipeComponentType<List<Ingredient>> UNWRAPPED_INGREDIENT_LIST = RecipeComponentType.unit(KubeJS.id("unwrapped_ingredient_list"), new RecipeComponentWithParent<>() {
+		private static final RecipeComponent<List<Ingredient>> PARENT = INGREDIENT.instance().asList();
 		private static final TypeInfo WRAP_TYPE = TypeInfo.RAW_LIST.withParams(TypeInfo.of(SizedIngredient.class));
 
 		@Override
+		public RecipeComponentType<?> type() {
+			return UNWRAPPED_INGREDIENT_LIST;
+		}
+
+		@Override
 		public RecipeComponent<List<Ingredient>> parentComponent() {
-			return INGREDIENT.asList();
+			return PARENT;
 		}
 
 		@Override
@@ -39,25 +46,7 @@ public class IngredientComponent implements RecipeComponent<Ingredient> {
 
 			return list;
 		}
-
-		@Override
-		public String toString() {
-			return "unwrapped_ingredient_list";
-		}
-	};
-
-	public final String name;
-	public final Codec<Ingredient> codec;
-
-	public IngredientComponent(String name, Codec<Ingredient> codec) {
-		this.name = name;
-		this.codec = codec;
-	}
-
-	@Override
-	public Codec<Ingredient> codec() {
-		return codec;
-	}
+	});
 
 	@Override
 	public TypeInfo typeInfo() {
@@ -119,6 +108,6 @@ public class IngredientComponent implements RecipeComponent<Ingredient> {
 
 	@Override
 	public String toString() {
-		return name;
+		return "ingredient";
 	}
 }

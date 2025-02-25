@@ -1,11 +1,10 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
-import com.mojang.brigadier.StringReader;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
-import dev.latvian.mods.kubejs.util.StringReaderFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.util.Mth;
@@ -32,65 +31,25 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		return DOUBLE.range(min, max);
 	}
 
-	static <T extends Number> RecipeComponentFactory createFactory(T zero, NumberComponent<?, T> range, StringReaderFunction<T> numFunc) {
-		return (registries, storage, reader) -> {
-			reader.skipWhitespace();
+	RecipeComponentType<Integer> INT_TYPE = RecipeComponentType.dynamic(KubeJS.id("int"), RecordCodecBuilder.<IntRange>mapCodec(instance -> instance.group(
+		Codec.INT.optionalFieldOf("min", 0).forGetter(IntRange::min),
+		Codec.INT.optionalFieldOf("max", Integer.MAX_VALUE).forGetter(IntRange::max)
+	).apply(instance, NumberComponent::intRange)));
 
-			if (!reader.canRead() || reader.peek() != '<') {
-				return range;
-			}
+	RecipeComponentType<Long> LONG_TYPE = RecipeComponentType.dynamic(KubeJS.id("long"), RecordCodecBuilder.<LongRange>mapCodec(instance -> instance.group(
+		Codec.LONG.optionalFieldOf("min", 0L).forGetter(LongRange::min),
+		Codec.LONG.optionalFieldOf("max", Long.MAX_VALUE).forGetter(LongRange::max)
+	).apply(instance, NumberComponent::longRange)));
 
-			reader.skip();
-			reader.skipWhitespace();
+	RecipeComponentType<Float> FLOAT_TYPE = RecipeComponentType.dynamic(KubeJS.id("float"), RecordCodecBuilder.<FloatRange>mapCodec(instance -> instance.group(
+		Codec.FLOAT.optionalFieldOf("min", 0F).forGetter(FloatRange::min),
+		Codec.FLOAT.optionalFieldOf("max", Float.POSITIVE_INFINITY).forGetter(FloatRange::max)
+	).apply(instance, NumberComponent::floatRange)));
 
-			T num1;
-
-			if (reader.peek() == 'm') {
-				if (!reader.readUnquotedString().equals("min")) {
-					throw new IllegalStateException("Expected 'min'!");
-				}
-
-				num1 = range.min();
-			} else {
-				num1 = numFunc.read(reader);
-			}
-
-			reader.skipWhitespace();
-			T num2 = null;
-
-			if (reader.peek() == ',') {
-				reader.skip();
-				reader.skipWhitespace();
-
-				if (reader.peek() == 'm') {
-					if (!reader.readUnquotedString().equals("max")) {
-						throw new IllegalStateException("Expected 'max'!");
-					}
-
-					num2 = range.max();
-				} else {
-					num2 = numFunc.read(reader);
-				}
-
-				reader.skipWhitespace();
-			}
-
-			reader.expect('>');
-
-			if (num2 == null) {
-				return range.range(zero, num1);
-			} else if (num1.equals(range.min()) && num2.equals(range.max())) {
-				return range;
-			} else {
-				return range.range(num1, num2);
-			}
-		};
-	}
-
-	RecipeComponentFactory INT_FACTORY = createFactory(0, INT, StringReader::readInt);
-	RecipeComponentFactory LONG_FACTORY = createFactory(0L, LONG, StringReader::readLong);
-	RecipeComponentFactory FLOAT_FACTORY = createFactory(0F, FLOAT, StringReader::readFloat);
-	RecipeComponentFactory DOUBLE_FACTORY = createFactory(0D, DOUBLE, StringReader::readDouble);
+	RecipeComponentType<Double> DOUBLE_TYPE = RecipeComponentType.dynamic(KubeJS.id("double"), RecordCodecBuilder.<DoubleRange>mapCodec(instance -> instance.group(
+		Codec.DOUBLE.optionalFieldOf("min", 0D).forGetter(DoubleRange::min),
+		Codec.DOUBLE.optionalFieldOf("max", Double.POSITIVE_INFINITY).forGetter(DoubleRange::max)
+	).apply(instance, NumberComponent::doubleRange)));
 
 	private static Number numberOf(Object from) {
 		if (from instanceof Number n) {
@@ -145,6 +104,11 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 
 	record IntRange(Integer min, Integer max, Codec<Integer> codec) implements NumberComponent<IntRange, Integer> {
 		@Override
+		public RecipeComponentType<?> type() {
+			return INT_TYPE;
+		}
+
+		@Override
 		public Codec<Integer> codec() {
 			return codec;
 		}
@@ -171,6 +135,11 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 	}
 
 	record LongRange(Long min, Long max, Codec<Long> codec) implements NumberComponent<LongRange, Long> {
+		@Override
+		public RecipeComponentType<?> type() {
+			return LONG_TYPE;
+		}
+
 		@Override
 		public Codec<Long> codec() {
 			return codec;
@@ -201,6 +170,11 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 
 	record FloatRange(Float min, Float max, Codec<Float> codec) implements NumberComponent<FloatRange, Float> {
 		@Override
+		public RecipeComponentType<?> type() {
+			return FLOAT_TYPE;
+		}
+
+		@Override
 		public Codec<Float> codec() {
 			return codec;
 		}
@@ -227,6 +201,11 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 	}
 
 	record DoubleRange(Double min, Double max, Codec<Double> codec) implements NumberComponent<DoubleRange, Double> {
+		@Override
+		public RecipeComponentType<?> type() {
+			return DOUBLE_TYPE;
+		}
+
 		@Override
 		public Codec<Double> codec() {
 			return codec;

@@ -2,31 +2,49 @@ package dev.latvian.mods.kubejs.recipe.schema;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.mojang.brigadier.StringReader;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
+import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
-import dev.latvian.mods.kubejs.recipe.component.RecipeComponentBuilder;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentCodecFactory;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentTypeRegistry;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.DelegatingOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.apache.commons.lang3.mutable.MutableObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class RecipeSchemaStorage {
+	public static class Ops<T> extends DelegatingOps<T> {
+		public final RecipeSchemaStorage storage;
+		public final RegistryAccessContainer registries;
+		public final RecipeComponentCodecFactory.Context recipeComponentCodecFactoryContext;
+
+		private Ops(DynamicOps<T> delegate, RecipeSchemaStorage storage, RegistryAccessContainer registries, RecipeComponentCodecFactory.Context recipeComponentCodecFactoryContext) {
+			super(delegate);
+			this.storage = storage;
+			this.registries = registries;
+			this.recipeComponentCodecFactoryContext = recipeComponentCodecFactoryContext;
+		}
+	}
+
 	public final Map<ResourceLocation, KubeRecipeFactory> recipeTypes;
 	public final Map<String, RecipeNamespace> namespaces;
 	public final Map<String, ResourceLocation> mappings;
-	public final Map<String, RecipeComponent<?>> simpleComponents;
-	public final Map<String, RecipeComponentFactory> dynamicComponents;
-	private final Map<String, RecipeComponent<?>> componentCache;
 	public final Map<String, RecipeSchemaType> schemaTypes;
 	public RecipeSchema shapedSchema;
 	public RecipeSchema shapelessSchema;
@@ -36,9 +54,6 @@ public class RecipeSchemaStorage {
 		this.recipeTypes = new HashMap<>();
 		this.namespaces = new HashMap<>();
 		this.mappings = new HashMap<>();
-		this.simpleComponents = new HashMap<>();
-		this.dynamicComponents = new HashMap<>();
-		this.componentCache = new HashMap<>();
 		this.schemaTypes = new HashMap<>();
 	}
 
@@ -50,9 +65,6 @@ public class RecipeSchemaStorage {
 		recipeTypes.clear();
 		namespaces.clear();
 		mappings.clear();
-		simpleComponents.clear();
-		dynamicComponents.clear();
-		componentCache.clear();
 		schemaTypes.clear();
 		shapedSchema = null;
 		shapelessSchema = null;
@@ -85,14 +97,34 @@ public class RecipeSchemaStorage {
 		KubeJSPlugins.forEachPlugin(mappingRegistry, KubeJSPlugin::registerRecipeMappings);
 		ServerEvents.RECIPE_MAPPING_REGISTRY.post(ScriptType.SERVER, mappingRegistry);
 
-		KubeJSPlugins.forEachPlugin(new RecipeComponentFactoryRegistry(this), KubeJSPlugin::registerRecipeComponents);
+		var componentTypes = new HashMap<ResourceLocation, RecipeComponentType<?>>();
+		var rcCtx = new RecipeComponentCodecFactory.Context(registries, this, KubeJSCodecs.KUBEJS_ID.xmap(componentTypes::get, RecipeComponentType::id), new MutableObject<>());
+
+		rcCtx.unsetCodec().setValue(
+			Codec.either(
+				rcCtx.typeCodec(), // .validate that it's a unit type
+				rcCtx.typeCodec().dispatch("type", RecipeComponent::type, type -> type.mapCodec(rcCtx))
+			).xmap(either -> either.map(RecipeComponentType::instance, Function.identity()), component -> {
+				if (component.type().isUnit()) {
+					return Either.left(component.type());
+				} else {
+					return Either.right(component);
+				}
+			})
+		);
+
+		KubeJSPlugins.forEachPlugin(new RecipeComponentTypeRegistry(componentTypes), KubeJSPlugin::registerRecipeComponents);
+
+		var jsonOps = new Ops<>(registries.json(), this, registries, rcCtx);
 
 		for (var entry : resourceManager.listResources("kubejs", path -> path.getPath().endsWith("/recipe_components.json")).entrySet()) {
 			try (var reader = entry.getValue().openAsReader()) {
 				var json = JsonUtils.GSON.fromJson(reader, JsonObject.class);
 
 				for (var entry1 : json.entrySet()) {
-					simpleComponents.put(entry1.getKey(), getComponent(registries, entry1.getValue().getAsString()));
+					var id = ID.kjs(entry1.getKey());
+					var component = rcCtx.codec().decode(jsonOps, entry1.getValue()).getOrThrow().getFirst();
+					componentTypes.put(id, RecipeComponentType.unit(id, component));
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -105,7 +137,7 @@ public class RecipeSchemaStorage {
 		}
 
 		var schemaRegistry = new RecipeSchemaRegistry(this);
-		JsonRecipeSchemaLoader.load(this, registries, schemaRegistry, resourceManager);
+		JsonRecipeSchemaLoader.load(jsonOps, schemaRegistry, resourceManager);
 
 		shapedSchema = Objects.requireNonNull(namespace("minecraft").get("shaped").schema);
 		shapelessSchema = Objects.requireNonNull(namespace("minecraft").get("shapeless").schema);
@@ -113,125 +145,5 @@ public class RecipeSchemaStorage {
 
 		KubeJSPlugins.forEachPlugin(schemaRegistry, KubeJSPlugin::registerRecipeSchemas);
 		ServerEvents.RECIPE_SCHEMA_REGISTRY.post(ScriptType.SERVER, schemaRegistry);
-	}
-
-	public RecipeComponent<?> getComponent(RegistryAccessContainer registries, String string) {
-		var c = componentCache.get(string);
-
-		if (c == null) {
-			try {
-				c = readComponent(registries, new StringReader(string));
-				componentCache.put(string, c);
-			} catch (Exception ex) {
-				throw new IllegalArgumentException(ex);
-			}
-		}
-
-		return c;
-	}
-
-	public RecipeComponent<?> readComponent(RegistryAccessContainer registries, StringReader reader) throws Exception {
-		reader.skipWhitespace();
-
-		if (!reader.canRead()) {
-			throw new IllegalArgumentException("Nothing to read");
-		}
-
-		if (reader.peek() == '{') {
-			reader.skip();
-
-			var keys = new ArrayList<RecipeComponentBuilder.Key>();
-
-			while (true) {
-				reader.skipWhitespace();
-
-				if (!reader.canRead()) {
-					throw new IllegalArgumentException("Expected key name");
-				}
-
-				var name = reader.readString();
-				var optional = false;
-				var alwaysWrite = false;
-
-				reader.skipWhitespace();
-
-				if (reader.canRead() && reader.peek() == '?') {
-					reader.skip();
-					reader.skipWhitespace();
-					optional = true;
-				}
-
-				if (reader.canRead() && reader.peek() == '!') {
-					reader.skip();
-					reader.skipWhitespace();
-					alwaysWrite = true;
-				}
-
-				reader.expect(':');
-				reader.skipWhitespace();
-
-				var component = readComponent(registries, reader);
-
-				keys.add(new RecipeComponentBuilder.Key(name, component, optional, alwaysWrite));
-
-				reader.skipWhitespace();
-
-				if (!reader.canRead()) {
-					throw new IllegalArgumentException("Unexpected EOL");
-				} else if (reader.peek() == ',') {
-					reader.skip();
-				} else if (reader.peek() == '}') {
-					reader.skip();
-					break;
-				}
-			}
-
-			return new RecipeComponentBuilder(keys);
-		}
-
-		var key = reader.readUnquotedString();
-
-		if (reader.canRead() && reader.peek() == ':') {
-			reader.skip();
-			key += ":" + reader.readUnquotedString();
-		}
-
-		RecipeComponent<?> component = simpleComponents.get(key);
-
-		if (component == null) {
-			var d = dynamicComponents.get(key);
-
-			if (d != null) {
-				component = d.readComponent(registries, this, reader);
-			}
-		}
-
-		if (component == null) {
-			throw new NullPointerException("Recipe Component '" + key + "' not found");
-		}
-
-		reader.skipWhitespace();
-
-		while (reader.canRead() && reader.peek() == '[') {
-			reader.skip();
-			reader.skipWhitespace();
-			boolean conditional = reader.canRead() && reader.peek() == '?';
-
-			if (conditional) {
-				reader.skip();
-				reader.skipWhitespace();
-			}
-
-			reader.expect(']');
-
-			if (reader.canRead() && reader.peek() == '?') {
-				reader.skip();
-				component = conditional ? component.asConditionalListOrSelf() : component.asListOrSelf();
-			} else {
-				component = conditional ? component.asConditionalList() : component.asList();
-			}
-		}
-
-		return component;
 	}
 }

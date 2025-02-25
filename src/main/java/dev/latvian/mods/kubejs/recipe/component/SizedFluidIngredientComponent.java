@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
@@ -12,22 +13,9 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
-public class SizedFluidIngredientComponent implements RecipeComponent<SizedFluidIngredient> {
-	public static final SizedFluidIngredientComponent FLAT = new SizedFluidIngredientComponent("flat_sized_fluid_ingredient", SizedFluidIngredient.FLAT_CODEC);
-	public static final SizedFluidIngredientComponent NESTED = new SizedFluidIngredientComponent("nested_sized_fluid_ingredient", SizedFluidIngredient.NESTED_CODEC);
-
-	public final String name;
-	public final Codec<SizedFluidIngredient> codec;
-
-	public SizedFluidIngredientComponent(String name, Codec<SizedFluidIngredient> codec) {
-		this.name = name;
-		this.codec = codec;
-	}
-
-	@Override
-	public Codec<SizedFluidIngredient> codec() {
-		return codec;
-	}
+public record SizedFluidIngredientComponent(RecipeComponentType<?> type, Codec<SizedFluidIngredient> codec) implements RecipeComponent<SizedFluidIngredient> {
+	public static final RecipeComponentType<SizedFluidIngredient> FLAT = RecipeComponentType.unit(KubeJS.id("flat_sized_fluid_ingredient"), type -> new SizedFluidIngredientComponent(type, SizedFluidIngredient.FLAT_CODEC));
+	public static final RecipeComponentType<SizedFluidIngredient> NESTED = RecipeComponentType.unit(KubeJS.id("nested_sized_fluid_ingredient"), type -> new SizedFluidIngredientComponent(type, SizedFluidIngredient.NESTED_CODEC));
 
 	@Override
 	public TypeInfo typeInfo() {
@@ -62,6 +50,6 @@ public class SizedFluidIngredientComponent implements RecipeComponent<SizedFluid
 
 	@Override
 	public String toString() {
-		return name;
+		return "sized_fluid_ingredient";
 	}
 }
