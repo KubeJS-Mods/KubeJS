@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.component.ComponentFunctions;
 import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
+import dev.latvian.mods.kubejs.core.DiggerItemKJS;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.TickDuration;
@@ -10,13 +11,19 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.Util;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static net.minecraft.world.item.Item.BASE_ATTACK_DAMAGE_ID;
 
 @Info("""
 	Invoked after all items are registered to modify them.
@@ -58,7 +65,28 @@ public class ItemModificationKubeEvent implements KubeEvent {
 
 		public void setTier(Consumer<MutableToolTier> c) {
 			if (item instanceof TieredItem tiered) {
-				tiered.tier = Util.make(new MutableToolTier(tiered.tier), c);
+				var oldTier = tiered.tier;
+				var tier = Util.make(new MutableToolTier(tiered.tier), c);
+				tiered.tier = tier;
+
+				// need to update modifiers for attack dmg; this is quite messy but oh well
+				var modifiers = ItemAttributeModifiers.builder();
+				for (var entry : kjs$get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers()) {
+					if (entry.matches(Attributes.ATTACK_DAMAGE, BASE_ATTACK_DAMAGE_ID)) {
+						double base = entry.modifier().amount() - oldTier.getAttackDamageBonus();
+						modifiers.add(entry.attribute(),
+							new AttributeModifier(BASE_ATTACK_DAMAGE_ID, base + tier.getAttackDamageBonus(),
+								AttributeModifier.Operation.ADD_VALUE), entry.slot());
+					} else {
+						modifiers.add(entry.attribute(), entry.modifier(), entry.slot());
+					}
+				}
+				kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, modifiers.build());
+
+				// if it's a digger item we also need to modify the tool properties
+				if (tiered instanceof DiggerItemKJS dig) {
+					kjs$setTool(tier.createToolProperties(dig.kjs$getMineableTag()));
+				}
 			} else {
 				throw new IllegalArgumentException("Item is not a tool/tiered item!");
 			}
