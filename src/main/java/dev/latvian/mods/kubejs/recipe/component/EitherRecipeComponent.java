@@ -91,7 +91,7 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeCompone
 	public void validate(Either<H, L> value) {
 		var left = value.left();
 
-		if (left.isEmpty()) {
+		if (left.isPresent()) {
 			high.validate(left.get());
 		} else {
 			low.validate(value.right().get());
