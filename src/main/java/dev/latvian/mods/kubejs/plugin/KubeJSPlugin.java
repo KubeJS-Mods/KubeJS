@@ -36,7 +36,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 
 import java.util.Map;
@@ -147,15 +146,6 @@ public interface KubeJSPlugin {
 	}
 
 	default void beforeRecipeLoading(RecipesKubeEvent event, RecipeManagerKJS manager, Map<ResourceLocation, JsonElement> recipeJsons) {
-	}
-
-	/**
-	 * Only use this method if your mod adds runtime recipes and is conflicting with KubeJS recipe manager. Disable your other hook if "kubejs" mod is loaded!
-	 *
-	 * @deprecated This method should no longer be necessary, as KubeJS no longer interferes with dynamic recipes added through RecipeManager.
-	 */
-	@Deprecated(forRemoval = true)
-	default void injectRuntimeRecipes(RecipesKubeEvent event, RecipeManagerKJS manager, Map<ResourceLocation, RecipeHolder<?>> recipesByName) {
 	}
 
 	default void beforeScriptsLoaded(ScriptManager manager) {
