@@ -14,21 +14,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class KubeJSCommon {
-	public void reloadClientInternal() {
-	}
-
 	public void handleDataFromServerPacket(String channel, @Nullable CompoundTag data) {
 	}
 
 	@Nullable
 	public Player getClientPlayer() {
 		return null;
-	}
-
-	public void reloadTextures() {
-	}
-
-	public void reloadLang() {
 	}
 
 	public void generateTypings(CommandSourceStack source) {
