@@ -11,7 +11,6 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.error.InvalidRecipeComponentException;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
-import dev.latvian.mods.kubejs.error.UnknownRecipeTypeException;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
@@ -110,7 +109,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		this.recipeSchemaStorage = manager.recipeSchemaStorage;
 		this.registries = manager.getRegistries();
 		this.resourceManager = resourceManager;
-		this.jsonOps = new ConditionalOps<>(registries.json(), registries);
+		this.jsonOps = new KubeRecipeEventOps<>(this, registries.json());
 		this.originalRecipes = new HashMap<>();
 		this.addedRecipes = new ConcurrentLinkedQueue<>();
 		this.removedRecipes = new ConcurrentLinkedQueue<>();
@@ -521,29 +520,34 @@ public class RecipesKubeEvent implements KubeEvent {
 	}
 
 	public KubeRecipe custom(Context cx, JsonObject json) {
+		return parseJson(json, SourceLine.of(cx)).getPartialOrThrow(KubeRuntimeException::new);
+	}
+
+	@HideFromJS
+	public DataResult<KubeRecipe> parseJson(JsonObject json, SourceLine sourceLine) {
 		if (json == null || !json.has("type")) {
-			throw new KubeRuntimeException("JSON must contain 'type'!");
+			return DataResult.error(() -> "JSON must contain 'type'!");
 		}
 
 		var type = getRecipeFunction(json.get("type").getAsString());
 
 		if (type == null) {
-			throw new UnknownRecipeTypeException(json.get("type").getAsString());
+			return DataResult.error(() -> "Unknown recipe type: " + json.get("type").getAsString());
 		}
-
-		var sourceLine = SourceLine.of(cx);
 
 		try {
 			var r = type.schemaType.schema.deserialize(sourceLine, type, null, json);
 			r.afterLoaded();
-			return addRecipe(r, true);
+			return DataResult.success(addRecipe(r, true));
 		} catch (Throwable cause) {
 			var r = type.schemaType.schema.recipeFactory.create(type, sourceLine, true);
 			r.creationError = true;
 			ConsoleJS.SERVER.error("Failed to create custom recipe from json " + JsonUtils.toString(json), sourceLine, cause, POST_SKIP_ERROR);
 			r.json = json;
 			r.newRecipe = true;
-			return r;
+
+			// importantly, we return a partial result here!
+			return DataResult.error(() -> "Failed to create custom recipe from json " + JsonUtils.toString(json), r);
 		}
 	}
 
