@@ -37,6 +37,7 @@ public class BasicItemJS extends Item {
 	private final Multimap<ResourceLocation, AttributeModifier> modifiers;
 	private boolean modified = false;
 	private final Function<ItemStackJS, Collection<ItemStackJS>> subtypes;
+	private final CreativeModeTab group;
 
 	public BasicItemJS(ItemBuilder p) {
 		super(p.createItemProperties());
@@ -47,11 +48,12 @@ public class BasicItemJS extends Item {
 		subtypes = p.subtypes;
 		attributes = ArrayListMultimap.create();
 		modifiers = p.attributes;
+		group = p.group;
 	}
 
 	@Override
 	public void fillItemCategory(CreativeModeTab category, NonNullList<ItemStack> stacks) {
-		if (subtypes != null) {
+		if (subtypes != null && category == group) {
 			for (var stack : subtypes.apply(ItemStackJS.of(this))) {
 				stacks.add(stack.getItemStack());
 			}
