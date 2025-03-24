@@ -78,14 +78,14 @@ public class KubeJSForge {
 		@Override
 		public void addAfter(ItemStack order, ItemStack[] items, CreativeModeTab.TabVisibility visibility) {
 			for (var item : items) {
-				event.accept(item, visibility);
+				event.getEntries().putAfter(order, item, visibility);
 			}
 		}
 
 		@Override
 		public void addBefore(ItemStack order, ItemStack[] items, CreativeModeTab.TabVisibility visibility) {
 			for (var item : items) {
-				event.accept(item, visibility);
+				event.getEntries().putBefore(order, item, visibility);
 			}
 		}
 
