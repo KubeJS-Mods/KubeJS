@@ -19,12 +19,13 @@ public class KubeJSMenu extends AbstractContainerMenu {
 		this.player = inventory.player;
 		this.guiData = guiData;
 
+		int xOffset = 89 - 9 * this.guiData.inventoryWidth;
 		if (guiData.inventory.kjs$getSlots() > 0) {
 			int k = (guiData.inventoryHeight - 4) * 18;
 
 			for (int l = 0; l < guiData.inventoryHeight; ++l) {
-				for (int m = 0; m < 9; ++m) {
-					this.addSlot(new InventoryKJSSlot(guiData.inventory, m + l * 9, 8 + m * 18, 18 + l * 18));
+				for (int m = 0; m < guiData.inventoryWidth; ++m) {
+					this.addSlot(new InventoryKJSSlot(guiData.inventory, m + l * guiData.inventoryWidth, xOffset + m * 18, 18 + l * 18));
 				}
 			}
 

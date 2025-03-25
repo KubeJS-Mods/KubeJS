@@ -147,11 +147,11 @@ public final class RegistryAccessContainer implements ICondition.IContext {
 	}
 
 	public <T> T decodeJson(Codec<T> codec, JsonElement from) {
-		return codec.decode(json, from).result().orElseThrow().getFirst();
+		return codec.decode(json, from).getOrThrow().getFirst();
 	}
 
 	public <T> T decodeNbt(Codec<T> codec, Tag from) {
-		return codec.decode(nbt, from).result().orElseThrow().getFirst();
+		return codec.decode(nbt, from).getOrThrow().getFirst();
 	}
 
 	public <T> T decodeJson(MapCodec<T> mapCodec, JsonElement from) {
@@ -159,23 +159,19 @@ public final class RegistryAccessContainer implements ICondition.IContext {
 	}
 
 	public <T> T decode(Context cx, Codec<T> codec, Object o) {
-		if (o instanceof Tag tag) {
-			return codec.decode(nbt, tag).result().orElseThrow().getFirst();
-		} else if (o instanceof Map<?, ?>) {
-			return codec.decode(java, o).result().orElseThrow().getFirst();
-		} else {
-			return codec.decode(json, JsonUtils.of(cx, o)).result().orElseThrow().getFirst();
-		}
+		return (switch (o) {
+			case Tag tag -> codec.decode(nbt, tag);
+			case Map<?, ?> map -> codec.decode(java, map);
+			default -> codec.decode(json, JsonUtils.of(cx, o));
+		}).getOrThrow().getFirst();
 	}
 
 	public <T> T decodeMap(Context cx, MapCodec<T> codec, Object o) {
-		if (o instanceof Tag tag) {
-			return codec.decode(nbt, nbt.getMap(tag).getOrThrow()).result().orElseThrow();
-		} else if (o instanceof Map<?, ?> map) {
-			return codec.decode(java, java.getMap(map).getOrThrow()).result().orElseThrow();
-		} else {
-			return codec.decode(json, json.getMap(JsonUtils.of(cx, o)).getOrThrow()).result().orElseThrow();
-		}
+		return (switch (o) {
+			case Tag tag -> codec.decode(nbt, nbt.getMap(tag).getOrThrow());
+			case Map<?, ?> map -> codec.decode(java, java.getMap(map).getOrThrow());
+			default -> codec.decode(json, json.getMap(JsonUtils.of(cx, o)).getOrThrow());
+		}).getOrThrow();
 	}
 
 	private <T> RegistryWrapper<T> createRegistryWrapper(ResourceLocation id) {

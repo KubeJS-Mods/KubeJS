@@ -4,14 +4,21 @@ import com.mojang.serialization.Codec;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 public class SimpleRecipeComponent<T> implements RecipeComponent<T> {
+	public final RecipeComponentType<?> type;
 	public final String componentType;
 	public final Codec<T> codec;
 	public final TypeInfo typeInfo;
 
-	public SimpleRecipeComponent(String componentType, Codec<T> codec, TypeInfo typeInfo) {
+	public SimpleRecipeComponent(RecipeComponentType<?> type, String componentType, Codec<T> codec, TypeInfo typeInfo) {
+		this.type = type;
 		this.componentType = componentType;
 		this.codec = codec;
 		this.typeInfo = typeInfo;
+	}
+
+	@Override
+	public RecipeComponentType<?> type() {
+		return type;
 	}
 
 	@Override

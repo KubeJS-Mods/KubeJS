@@ -6,15 +6,10 @@ import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public record BlockEntityAttachmentType(ResourceLocation id, TypeInfo typeInfo) {
-	public static final Lazy<Map<ResourceLocation, BlockEntityAttachmentType>> ALL = Lazy.of(() -> {
-		var map = new HashMap<ResourceLocation, BlockEntityAttachmentType>();
-		KubeJSPlugins.forEachPlugin(type -> map.put(type.id, type), KubeJSPlugin::registerBlockEntityAttachments);
-		return Map.copyOf(map);
-	});
+	public static final Lazy<Map<ResourceLocation, BlockEntityAttachmentType>> ALL = Lazy.map(map -> KubeJSPlugins.forEachPlugin(type -> map.put(type.id, type), KubeJSPlugin::registerBlockEntityAttachments));
 
 	public BlockEntityAttachmentType(ResourceLocation id, Class<?> type) {
 		this(id, TypeInfo.of(type));

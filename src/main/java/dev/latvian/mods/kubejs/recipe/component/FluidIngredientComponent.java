@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
@@ -13,7 +14,12 @@ import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 public class FluidIngredientComponent implements RecipeComponent<FluidIngredient> {
-	public static final FluidIngredientComponent FLUID_INGREDIENT = new FluidIngredientComponent();
+	public static final RecipeComponentType<FluidIngredient> FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("fluid_ingredient"), new FluidIngredientComponent());
+
+	@Override
+	public RecipeComponentType<?> type() {
+		return FLUID_INGREDIENT;
+	}
 
 	@Override
 	public Codec<FluidIngredient> codec() {

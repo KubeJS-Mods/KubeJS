@@ -14,7 +14,6 @@ import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.rhino.NativeJavaMap;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentPredicate;
@@ -37,9 +36,7 @@ public interface DataComponentWrapper {
 	DynamicCommandExceptionType ERROR_UNKNOWN_COMPONENT = new DynamicCommandExceptionType((object) -> Component.translatableEscape("arguments.item.component.unknown", object));
 	Dynamic2CommandExceptionType ERROR_MALFORMED_COMPONENT = new Dynamic2CommandExceptionType((object, object2) -> Component.translatableEscape("arguments.item.component.malformed", object, object2));
 	SimpleCommandExceptionType ERROR_EXPECTED_COMPONENT = new SimpleCommandExceptionType(Component.translatable("arguments.item.component.expected"));
-	Lazy<Map<DataComponentType<?>, TypeInfo>> TYPE_INFOS = Lazy.of(() -> {
-		var map = new Reference2ObjectOpenHashMap<DataComponentType<?>, TypeInfo>();
-
+	Lazy<Map<DataComponentType<?>, TypeInfo>> TYPE_INFOS = Lazy.identityMap(map -> {
 		try {
 			for (var field : DataComponents.class.getDeclaredFields()) {
 				if (field.getType() == DataComponentType.class
@@ -57,7 +54,6 @@ public interface DataComponentWrapper {
 		}
 
 		KubeJSPlugins.forEachPlugin(map::put, KubeJSPlugin::registerDataComponentTypeDescriptions);
-		return Map.copyOf(map);
 	});
 
 	Lazy<Set<DataComponentType<?>>> VISUAL_DIFFERENCE = Lazy.of(() -> {

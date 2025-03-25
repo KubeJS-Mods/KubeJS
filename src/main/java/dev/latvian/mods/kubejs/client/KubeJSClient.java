@@ -12,12 +12,10 @@ import dev.latvian.mods.kubejs.plugin.builtin.event.NetworkEvents;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
-import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
 import dev.latvian.mods.kubejs.script.data.VirtualAssetPack;
 import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;
 import net.minecraft.SharedConstants;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -26,9 +24,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.util.Mth;
-import net.minecraft.util.profiling.InactiveProfiler;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import org.jetbrains.annotations.Nullable;
@@ -44,7 +40,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 public class KubeJSClient extends KubeJSCommon {
 	public static final ResourceLocation WHITE_TEXTURE = ResourceLocation.parse("textures/misc/white.png");
@@ -57,11 +52,6 @@ public class KubeJSClient extends KubeJSCommon {
 		for (var stage : GeneratedDataStage.values()) {
 			CLIENT_PACKS.put(stage, new VirtualAssetPack(stage));
 		}
-	}
-
-	@Override
-	public void reloadClientInternal() {
-		reloadClientScripts();
 	}
 
 	public static void reloadClientScripts() {
@@ -100,37 +90,6 @@ public class KubeJSClient extends KubeJSCommon {
 	@Nullable
 	public Player getClientPlayer() {
 		return Minecraft.getInstance().player;
-	}
-
-	private void reload(PreparableReloadListener listener) {
-		var start = System.currentTimeMillis();
-		var mc = Minecraft.getInstance();
-		mc.getResourceManager().getResource(GeneratedData.INTERNAL_RELOAD.id());
-
-		listener.reload(CompletableFuture::completedFuture, mc.getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Util.backgroundExecutor(), mc).thenAccept(unused -> {
-			/*
-			long ms = System.currentTimeMillis() - start;
-
-			if (ms < 1000L) {
-				mc.player.sendMessage(Component.literal("Reloaded in " + ms + "ms! You still may have to reload all assets with F3 + T"), Util.NIL_UUID);
-			} else {
-				mc.player.sendMessage(Component.literal("Reloaded in " + Mth.ceil(ms / 1000D) + "s! You still may have to reload all assets with F3 + T"), Util.NIL_UUID);
-			}
-			 */
-
-			mc.player.sendSystemMessage(Component.literal("Done! You still may have to reload all assets with F3 + T"));
-		});
-	}
-
-	@Override
-	public void reloadTextures() {
-		reload(Minecraft.getInstance().getTextureManager());
-	}
-
-	@Override
-	public void reloadLang() {
-		reloadClientScripts();
-		reload(Minecraft.getInstance().getLanguageManager());
 	}
 
 	@Override

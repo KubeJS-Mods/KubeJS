@@ -64,7 +64,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class KubeJSCommands {
-	public static final DynamicCommandExceptionType NO_REGISTRY = new DynamicCommandExceptionType(id -> Component.literal("No builtin or static registry found for " + id));
+	static final DynamicCommandExceptionType NO_REGISTRY = new DynamicCommandExceptionType(id -> Component.literal("No builtin or static registry found for " + id));
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 		Predicate<CommandSourceStack> spOrOP = (source) -> source.getServer().isSingleplayer() || source.hasPermission(2);
@@ -110,18 +110,6 @@ public class KubeJSCommands {
 				.then(Commands.literal("server-scripts")
 					.requires(spOrOP)
 					.executes(context -> reloadServer(context.getSource()))
-				)
-				.then(Commands.literal("client-scripts")
-					.requires(source -> true)
-					.executes(context -> reloadClient(context.getSource()))
-				)
-				.then(Commands.literal("textures")
-					.requires(source -> true)
-					.executes(context -> reloadTextures(context.getSource()))
-				)
-				.then(Commands.literal("lang")
-					.requires(source -> true)
-					.executes(context -> reloadLang(context.getSource()))
 				)
 			)
 			.then(Commands.literal("export")
@@ -385,23 +373,6 @@ public class KubeJSCommands {
 					.kjs$clickRunCommand("/reload")
 					.kjs$hover(Component.literal("Click to run"))),
 			false);
-		return 1;
-	}
-
-	// TODO: move these commands to client commands
-	private static int reloadClient(CommandSourceStack source) {
-		KubeJS.PROXY.reloadClientInternal();
-		source.sendSystemMessage(Component.literal("Done! To reload textures, models and other assets, press F3 + T"));
-		return 1;
-	}
-
-	private static int reloadTextures(CommandSourceStack source) {
-		KubeJS.PROXY.reloadTextures();
-		return 1;
-	}
-
-	private static int reloadLang(CommandSourceStack source) {
-		KubeJS.PROXY.reloadLang();
 		return 1;
 	}
 

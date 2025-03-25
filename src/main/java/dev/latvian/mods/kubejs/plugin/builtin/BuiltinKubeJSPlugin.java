@@ -29,6 +29,11 @@ import dev.latvian.mods.kubejs.block.entity.EnergyStorageAttachment;
 import dev.latvian.mods.kubejs.block.entity.FluidTankAttachment;
 import dev.latvian.mods.kubejs.block.entity.InventoryAttachment;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
+import dev.latvian.mods.kubejs.client.icon.AtlasSpriteKubeIcon;
+import dev.latvian.mods.kubejs.client.icon.ItemKubeIcon;
+import dev.latvian.mods.kubejs.client.icon.KubeIcon;
+import dev.latvian.mods.kubejs.client.icon.KubeIconTypeRegistry;
+import dev.latvian.mods.kubejs.client.icon.TextureKubeIcon;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.core.PlayerSelector;
@@ -100,6 +105,7 @@ import dev.latvian.mods.kubejs.recipe.component.BlockStateComponent;
 import dev.latvian.mods.kubejs.recipe.component.BookCategoryComponent;
 import dev.latvian.mods.kubejs.recipe.component.BooleanComponent;
 import dev.latvian.mods.kubejs.recipe.component.CharacterComponent;
+import dev.latvian.mods.kubejs.recipe.component.CustomObjectRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.EitherRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.EnumComponent;
 import dev.latvian.mods.kubejs.recipe.component.FluidIngredientComponent;
@@ -109,6 +115,8 @@ import dev.latvian.mods.kubejs.recipe.component.ItemStackComponent;
 import dev.latvian.mods.kubejs.recipe.component.MapRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NestedRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
+import dev.latvian.mods.kubejs.recipe.component.PairRecipeComponent;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.component.RegistryComponent;
 import dev.latvian.mods.kubejs.recipe.component.ResourceKeyComponent;
 import dev.latvian.mods.kubejs.recipe.component.SizedFluidIngredientComponent;
@@ -122,6 +130,7 @@ import dev.latvian.mods.kubejs.recipe.component.validator.AndValidator;
 import dev.latvian.mods.kubejs.recipe.component.validator.NonEmptyValidator;
 import dev.latvian.mods.kubejs.recipe.component.validator.OrValidator;
 import dev.latvian.mods.kubejs.recipe.component.validator.RecipeComponentValidatorTypeRegistry;
+import dev.latvian.mods.kubejs.recipe.component.validator.ValidatedRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ConsumeAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
@@ -131,7 +140,6 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.KeepAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.UnknownKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedKubeRecipe;
@@ -141,6 +149,7 @@ import dev.latvian.mods.kubejs.registry.ServerRegistryRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.DataComponentTypeInfoRegistry;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
+import dev.latvian.mods.kubejs.script.RecordDefaultsRegistry;
 import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
@@ -269,6 +278,7 @@ import java.time.Duration;
 import java.time.temporal.TemporalAmount;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -551,6 +561,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		// codecs
 		registry.registerCodec(Fireworks.class, Fireworks.CODEC);
+		registry.registerCodec(KubeIcon.class, KubeIcon.CODEC);
 
 		// alias
 		registry.registerAlias(Unit.class, TypeInfo.NONE, o -> Unit.INSTANCE);
@@ -558,6 +569,12 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.registerAlias(CustomModelData.class, TypeInfo.PRIMITIVE_INT, CustomModelData::new);
 		registry.registerAlias(LockCode.class, TypeInfo.STRING, LockCode::new);
 		registry.registerAlias(BlockItemStateProperties.class, TypeInfo.RAW_MAP.withParams(TypeInfo.STRING, TypeInfo.STRING), BlockItemStateProperties::new);
+	}
+
+	@Override
+	public void registerRecordDefaults(RecordDefaultsRegistry registry) {
+		registry.register(BlockSetType.OAK);
+		registry.register(new NotificationToastData(NotificationToastData.DEFAULT_DURATION, Component.empty(), Optional.empty(), 16, Optional.empty(), Optional.empty(), Optional.empty(), false));
 	}
 
 	@Override
@@ -573,7 +590,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	public void registerRecipeComponents(RecipeComponentFactoryRegistry registry) {
+	public void registerRecipeComponents(RecipeComponentTypeRegistry registry) {
 		registry.register(BooleanComponent.BOOLEAN);
 		registry.register(StringComponent.ANY);
 		registry.register(StringComponent.NON_EMPTY);
@@ -582,10 +599,10 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(CharacterComponent.CHARACTER);
 		registry.register(StringGridComponent.STRING_GRID);
 
-		registry.register("int", NumberComponent.INT_FACTORY);
-		registry.register("long", NumberComponent.LONG_FACTORY);
-		registry.register("float", NumberComponent.FLOAT_FACTORY);
-		registry.register("double", NumberComponent.DOUBLE_FACTORY);
+		registry.register(NumberComponent.INT_TYPE);
+		registry.register(NumberComponent.LONG_TYPE);
+		registry.register(NumberComponent.FLOAT_TYPE);
+		registry.register(NumberComponent.DOUBLE_TYPE);
 
 		registry.register(IngredientComponent.INGREDIENT);
 		registry.register(IngredientComponent.NON_EMPTY_INGREDIENT);
@@ -598,6 +615,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ItemStackComponent.STRICT_ITEM_STACK);
 
 		registry.register(FluidStackComponent.FLUID_STACK);
+		registry.register(FluidStackComponent.STRICT_FLUID_STACK);
 		registry.register(FluidIngredientComponent.FLUID_INGREDIENT);
 
 		registry.register(SizedFluidIngredientComponent.FLAT);
@@ -626,13 +644,16 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ResourceKeyComponent.DIMENSION);
 		registry.register(ResourceKeyComponent.LOOT_TABLE);
 
-		registry.register("tag", TagKeyComponent.FACTORY);
-		registry.register("registry_element", RegistryComponent.FACTORY);
-		registry.register("enum", EnumComponent.FACTORY);
-		registry.register("map", MapRecipeComponent.FACTORY);
-		registry.register("pattern", MapRecipeComponent.PATTERN_FACTORY);
-		registry.register("either", EitherRecipeComponent.FACTORY);
-		registry.register("resource_key", ResourceKeyComponent.FACTORY);
+		registry.register(ValidatedRecipeComponent.TYPE);
+		registry.register(TagKeyComponent.TYPE);
+		registry.register(RegistryComponent.TYPE);
+		registry.register(EnumComponent.TYPE);
+		registry.register(MapRecipeComponent.TYPE);
+		registry.register(MapRecipeComponent.PATTERN_TYPE);
+		registry.register(EitherRecipeComponent.TYPE);
+		registry.register(ResourceKeyComponent.TYPE);
+		registry.register(PairRecipeComponent.TYPE);
+		registry.register(CustomObjectRecipeComponent.TYPE);
 	}
 
 	@Override
@@ -753,5 +774,12 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(AlwaysValidValidator.TYPE);
 		registry.register(AndValidator.TYPE);
 		registry.register(OrValidator.TYPE);
+	}
+
+	@Override
+	public void registerIconTypes(KubeIconTypeRegistry registry) {
+		registry.register(TextureKubeIcon.TYPE);
+		registry.register(AtlasSpriteKubeIcon.TYPE);
+		registry.register(ItemKubeIcon.TYPE);
 	}
 }

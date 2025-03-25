@@ -206,7 +206,7 @@ public class DataExport {
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
-			}, Util.ioPool());
+			}, Util.backgroundExecutor());
 		}
 
 		CompletableFuture.allOf(arr).join();

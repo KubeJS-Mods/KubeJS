@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.net.KubeServerData;
 import dev.latvian.mods.kubejs.net.SyncServerDataPayload;
-import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
 import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
@@ -29,7 +28,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Mixin(value = RecipeManager.class, priority = 1100)
@@ -95,15 +93,7 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 	@SuppressWarnings("removal")
 	private void addServerData(CallbackInfo ci) {
 		if (kjs$event != null) {
-			// FIXME: please remove this soon! massive performance implications!
-			var recipesByName = new HashMap<>(byName);
-
-			KubeJSPlugins.forEachPlugin(p -> p.injectRuntimeRecipes(kjs$event, this, recipesByName));
-
 			kjs$event.finishEvent();
-
-			// make sure byType is also set correctly
-			kjs$replaceRecipes(recipesByName);
 		}
 
 		kjs$event = null;

@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.client.KubeSessionData;
+import dev.latvian.mods.kubejs.client.NotificationToast;
 import dev.latvian.mods.kubejs.net.SendDataFromClientPayload;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
@@ -57,7 +58,8 @@ public interface LocalClientPlayerKJS extends ClientPlayerKJS {
 
 	@Override
 	default void kjs$notify(NotificationToastData notification) {
-		notification.show();
+		var mc = Minecraft.getInstance();
+		mc.getToasts().addToast(new NotificationToast(mc, notification));
 	}
 
 	@Override

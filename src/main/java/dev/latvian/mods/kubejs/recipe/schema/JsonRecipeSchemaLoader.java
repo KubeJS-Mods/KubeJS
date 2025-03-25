@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.ComponentRole;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.JsonUtils;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -254,7 +253,7 @@ public class JsonRecipeSchemaLoader {
 		}
 	}
 
-	public static void load(RecipeSchemaStorage storage, RegistryAccessContainer registries, RecipeSchemaRegistry event, ResourceManager resourceManager) {
+	public static void load(RecipeSchemaStorage.Ops<JsonElement> jsonOps, RecipeSchemaRegistry event, ResourceManager resourceManager) {
 		var map = new HashMap<ResourceLocation, RecipeSchemaBuilder>();
 
 		for (var entry : resourceManager.listResources("kubejs/recipe_schema", path -> path.getPath().endsWith(".json")).entrySet()) {
@@ -265,7 +264,7 @@ public class JsonRecipeSchemaLoader {
 
 				if (holder.json.has("mappings")) {
 					for (var m : holder.json.getAsJsonArray("mappings")) {
-						storage.mappings.put(m.getAsString(), holder.id);
+						jsonOps.storage.mappings.put(m.getAsString(), holder.id);
 					}
 				}
 			} catch (Exception ex) {
@@ -286,7 +285,7 @@ public class JsonRecipeSchemaLoader {
 
 			if (holder.json.has("factory")) {
 				var fname = ResourceLocation.parse(holder.json.get("factory").getAsString());
-				holder.recipeFactory = storage.recipeTypes.get(fname);
+				holder.recipeFactory = jsonOps.storage.recipeTypes.get(fname);
 
 				if (holder.recipeFactory == null) {
 					throw new NullPointerException("Recipe factory '" + fname + "' not found for recipe schema '" + holder.id + "'");
@@ -306,7 +305,7 @@ public class JsonRecipeSchemaLoader {
 							default -> ComponentRole.OTHER;
 						};
 
-						var type = storage.getComponent(registries, keyJson.get("type").getAsString());
+						var type = jsonOps.recipeComponentCodecFactoryContext.codec().decode(jsonOps, keyJson.get("type")).getOrThrow().getFirst();
 						var key = type.key(name, role);
 
 						if (keyJson.has("optional")) {
@@ -316,7 +315,7 @@ public class JsonRecipeSchemaLoader {
 								key.defaultOptional();
 							} else {
 								try {
-									key.optional = new RecipeOptional.Constant(key.codec.decode(registries.json(), optionalJson).getOrThrow().getFirst());
+									key.optional = new RecipeOptional.Constant(key.codec.decode(jsonOps, optionalJson).getOrThrow().getFirst());
 								} catch (Exception ex) {
 									throw new IllegalArgumentException("Failed to create optional value for key '" + key + "' of '" + holder.id + "' from " + optionalJson, ex);
 								}
@@ -409,7 +408,7 @@ public class JsonRecipeSchemaLoader {
 		}
 
 		for (var holder : map.values()) {
-			var schema = holder.getSchema(registries.json());
+			var schema = holder.getSchema(jsonOps);
 			event.namespace(holder.id.getNamespace()).register(holder.id.getPath(), schema);
 		}
 	}

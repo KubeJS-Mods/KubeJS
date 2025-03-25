@@ -2,10 +2,12 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.error.EmptyRecipeComponentException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -14,23 +16,37 @@ import net.minecraft.world.item.crafting.Ingredient;
 import java.util.Map;
 
 public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V> component, boolean patternKey) implements RecipeComponent<TinyMap<K, V>> {
-	public static final MapRecipeComponent<Character, Ingredient> INGREDIENT_PATTERN_KEY = new MapRecipeComponent<>(CharacterComponent.CHARACTER, IngredientComponent.INGREDIENT, true);
+	public static final MapRecipeComponent<Character, Ingredient> INGREDIENT_PATTERN_KEY = new MapRecipeComponent<>(CharacterComponent.CHARACTER.instance(), IngredientComponent.INGREDIENT.instance(), true);
 
-	public static final RecipeComponentFactory FACTORY = RecipeComponentFactory.readTwoComponents((key, component) -> {
-		if (key == CharacterComponent.CHARACTER && component == INGREDIENT_PATTERN_KEY.component) {
-			return INGREDIENT_PATTERN_KEY;
+	public static <K, V> MapRecipeComponent<K, V> of(RecipeComponent<K> key, RecipeComponent<V> component) {
+		if (key == CharacterComponent.CHARACTER.instance() && component == INGREDIENT_PATTERN_KEY.component) {
+			return Cast.to(INGREDIENT_PATTERN_KEY);
 		}
 
 		return new MapRecipeComponent<>(key, component, false);
-	});
+	}
 
-	public static final RecipeComponentFactory PATTERN_FACTORY = RecipeComponentFactory.readOneComponent(component -> {
+	public static <V> MapRecipeComponent<Character, V> patternOf(RecipeComponent<V> component) {
 		if (component == INGREDIENT_PATTERN_KEY.component) {
-			return INGREDIENT_PATTERN_KEY;
+			return Cast.to(INGREDIENT_PATTERN_KEY);
 		}
 
-		return new MapRecipeComponent<>(CharacterComponent.CHARACTER, component, true);
-	});
+		return new MapRecipeComponent<>(CharacterComponent.CHARACTER.instance(), component, true);
+	}
+
+	public static final RecipeComponentType<TinyMap<?, ?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("map"), (RecipeComponentCodecFactory<MapRecipeComponent<?, ?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		ctx.codec().fieldOf("key").forGetter(MapRecipeComponent::key),
+		ctx.codec().fieldOf("component").forGetter(MapRecipeComponent::component)
+	).apply(instance, MapRecipeComponent::of)));
+
+	public static final RecipeComponentType<TinyMap<?, ?>> PATTERN_TYPE = RecipeComponentType.dynamic(KubeJS.id("pattern"), (RecipeComponentCodecFactory<MapRecipeComponent<?, ?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		ctx.codec().fieldOf("component").forGetter(MapRecipeComponent::component)
+	).apply(instance, MapRecipeComponent::patternOf)));
+
+	@Override
+	public RecipeComponentType<?> type() {
+		return patternKey ? PATTERN_TYPE : TYPE;
+	}
 
 	@Override
 	public Codec<TinyMap<K, V>> codec() {

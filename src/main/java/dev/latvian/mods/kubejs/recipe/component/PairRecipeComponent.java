@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.rhino.type.JSFixedArrayTypeInfo;
 import dev.latvian.mods.rhino.type.JSOptionalParam;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -9,6 +11,16 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import java.util.List;
 
 public record PairRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B> b, Codec<Pair<A, B>> codec) implements RecipeComponent<Pair<A, B>> {
+	public static final RecipeComponentType<Pair<?, ?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("pair"), (RecipeComponentCodecFactory<PairRecipeComponent<?, ?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		ctx.codec().fieldOf("a").forGetter(PairRecipeComponent::a),
+		ctx.codec().fieldOf("b").forGetter(PairRecipeComponent::b)
+	).apply(instance, PairRecipeComponent::new)));
+
+	@Override
+	public RecipeComponentType<?> type() {
+		return TYPE;
+	}
+
 	public PairRecipeComponent(RecipeComponent<A> a, RecipeComponent<B> b) {
 		this(a, b, Codec.pair(a.codec(), b.codec()));
 	}

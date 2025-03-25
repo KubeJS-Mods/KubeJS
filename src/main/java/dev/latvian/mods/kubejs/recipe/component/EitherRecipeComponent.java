@@ -2,17 +2,26 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactory;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 @SuppressWarnings("OptionalIsPresent")
 public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeComponent<L> low) implements RecipeComponent<Either<H, L>> {
-	public static final RecipeComponentFactory FACTORY = RecipeComponentFactory.readTwoComponents(EitherRecipeComponent::new);
+	public static final RecipeComponentType<Either<?, ?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("either"), (RecipeComponentCodecFactory<EitherRecipeComponent<?, ?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		ctx.codec().fieldOf("high").forGetter(EitherRecipeComponent::high),
+		ctx.codec().fieldOf("low").forGetter(EitherRecipeComponent::low)
+	).apply(instance, EitherRecipeComponent::new)));
+
+	@Override
+	public RecipeComponentType<?> type() {
+		return TYPE;
+	}
 
 	@Override
 	public Codec<Either<H, L>> codec() {
@@ -82,7 +91,7 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeCompone
 	public void validate(Either<H, L> value) {
 		var left = value.left();
 
-		if (left.isEmpty()) {
+		if (left.isPresent()) {
 			high.validate(left.get());
 		} else {
 			low.validate(value.right().get());

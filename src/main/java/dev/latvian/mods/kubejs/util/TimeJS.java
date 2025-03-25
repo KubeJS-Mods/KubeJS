@@ -1,11 +1,5 @@
 package dev.latvian.mods.kubejs.util;
 
-import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.KubeJSCodecs;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
 import java.util.Calendar;
@@ -13,8 +7,6 @@ import java.util.regex.Pattern;
 
 public interface TimeJS {
 	Pattern TEMPORAL_AMOUNT_PATTERN = Pattern.compile("(\\d+)\\s*(y|M|d|w|h|m|s|ms|ns|t)\\b");
-	Codec<Duration> DURATION = KubeJSCodecs.stringResolverCodec(Duration::toString, TimeJS::wrapDuration);
-	StreamCodec<ByteBuf, Duration> DURATION_STREAM = ByteBufCodecs.STRING_UTF8.map(TimeJS::wrapDuration, Duration::toString);
 
 	static TemporalAmount wrapTemporalAmount(Object o) {
 		if (o instanceof TemporalAmount d) {

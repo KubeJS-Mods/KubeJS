@@ -8,20 +8,16 @@ import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class ItemToolTiers {
-	public static final Lazy<Map<String, Tier>> ALL = Lazy.of(() -> {
-		var map = new HashMap<String, Tier>();
-
+	public static final Lazy<Map<String, Tier>> ALL = Lazy.map(map -> {
 		for (var tier : Tiers.values()) {
 			map.put(tier.toString().toLowerCase(Locale.ROOT), tier);
 		}
 
 		ItemEvents.TOOL_TIER_REGISTRY.post(ScriptType.STARTUP, new ItemToolTierRegistryKubeEvent(map));
-		return map;
 	});
 
 	public static Tier wrap(Object o) {

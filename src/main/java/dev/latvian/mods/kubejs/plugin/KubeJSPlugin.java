@@ -3,15 +3,16 @@ package dev.latvian.mods.kubejs.plugin;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentRegistry;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
+import dev.latvian.mods.kubejs.client.icon.KubeIconTypeRegistry;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.component.validator.RecipeComponentValidatorTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionTypeRegistry;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeComponentFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeMappingRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
@@ -20,6 +21,7 @@ import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.registry.ServerRegistryRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.DataComponentTypeInfoRegistry;
+import dev.latvian.mods.kubejs.script.RecordDefaultsRegistry;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
@@ -34,7 +36,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 
 import java.util.Map;
@@ -71,6 +72,9 @@ public interface KubeJSPlugin {
 	default void registerTypeWrappers(TypeWrapperRegistry registry) {
 	}
 
+	default void registerRecordDefaults(RecordDefaultsRegistry registry) {
+	}
+
 	default void registerTypeDescriptions(TypeDescriptionRegistry registry) {
 	}
 
@@ -80,7 +84,7 @@ public interface KubeJSPlugin {
 	default void registerRecipeMappings(RecipeMappingRegistry registry) {
 	}
 
-	default void registerRecipeComponents(RecipeComponentFactoryRegistry registry) {
+	default void registerRecipeComponents(RecipeComponentTypeRegistry registry) {
 	}
 
 	default void registerRecipeSchemas(RecipeSchemaRegistry registry) {
@@ -113,6 +117,9 @@ public interface KubeJSPlugin {
 	default void registerRecipeComponentValidatorTypes(RecipeComponentValidatorTypeRegistry registry) {
 	}
 
+	default void registerIconTypes(KubeIconTypeRegistry registry) {
+	}
+
 	default void attachServerData(AttachedData<MinecraftServer> event) {
 	}
 
@@ -139,15 +146,6 @@ public interface KubeJSPlugin {
 	}
 
 	default void beforeRecipeLoading(RecipesKubeEvent event, RecipeManagerKJS manager, Map<ResourceLocation, JsonElement> recipeJsons) {
-	}
-
-	/**
-	 * Only use this method if your mod adds runtime recipes and is conflicting with KubeJS recipe manager. Disable your other hook if "kubejs" mod is loaded!
-	 *
-	 * @deprecated This method should no longer be necessary, as KubeJS no longer interferes with dynamic recipes added through RecipeManager.
-	 */
-	@Deprecated(forRemoval = true)
-	default void injectRuntimeRecipes(RecipesKubeEvent event, RecipeManagerKJS manager, Map<ResourceLocation, RecipeHolder<?>> recipesByName) {
 	}
 
 	default void beforeScriptsLoaded(ScriptManager manager) {

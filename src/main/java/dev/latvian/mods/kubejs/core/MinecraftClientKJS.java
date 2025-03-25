@@ -14,12 +14,16 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.function.Function;
 
 @SuppressWarnings("resource")
 @RemapPrefixForJS("kjs$")
@@ -163,5 +167,13 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 		}
 
 		ConsoleJS.CLIENT.info("Client resource reload complete!");
+	}
+
+	default Function<ResourceLocation, TextureAtlasSprite> kjs$getBlockTextureAtlas() {
+		return kjs$self().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS);
+	}
+
+	default Function<ResourceLocation, TextureAtlasSprite> kjs$getParticleTextureAtlas() {
+		return kjs$self().getTextureAtlas(TextureAtlas.LOCATION_PARTICLES);
 	}
 }

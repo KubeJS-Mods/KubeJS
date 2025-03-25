@@ -4,6 +4,7 @@ import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.client.highlight.HighlightRenderer;
+import dev.latvian.mods.kubejs.command.KubeJSClientCommands;
 import dev.latvian.mods.kubejs.item.DynamicItemTooltipsKubeEvent;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ClientEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
@@ -42,6 +43,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
@@ -58,6 +60,12 @@ import java.util.regex.Pattern;
 public class KubeJSGameClientEventHandler {
 	public static final Pattern COMPONENT_ERROR = ConsoleJS.methodPattern(KubeJSGameClientEventHandler.class, "onItemTooltip");
 	private static List<String> lastComponentError = List.of();
+
+	@SubscribeEvent
+	public static void onRegisterClientCommands(RegisterClientCommandsEvent event) {
+		KubeJSClientCommands.register(event.getDispatcher());
+		// TODO: custom client commands...?
+	}
 
 	@SubscribeEvent
 	public static void debugInfo(CustomizeGuiOverlayEvent.DebugText event) {

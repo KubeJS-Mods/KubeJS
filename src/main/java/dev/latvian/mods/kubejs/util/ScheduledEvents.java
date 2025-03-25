@@ -117,8 +117,8 @@ public class ScheduledEvents {
 	}
 
 	public ScheduledEvent schedule(TemporalAmount timer, boolean repeating, ScheduledEvents.Callback callback) {
-		if (timer instanceof TickDuration duration) {
-			return schedule(duration.ticks(), true, repeating, callback);
+		if (timer instanceof TickDuration(long ticks)) {
+			return schedule(ticks, true, repeating, callback);
 		} else if (timer instanceof Duration duration) {
 			return schedule(duration.toMillis(), false, repeating, callback);
 		} else {

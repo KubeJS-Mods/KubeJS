@@ -4,6 +4,11 @@ import com.mojang.serialization.Codec;
 
 public record RecipeComponentWithCodec<T>(RecipeComponent<T> parent, Codec<T> codec) implements RecipeComponentWithParent<T> {
 	@Override
+	public RecipeComponentType<?> type() {
+		return parent.type();
+	}
+
+	@Override
 	public RecipeComponent<T> parentComponent() {
 		return parent;
 	}

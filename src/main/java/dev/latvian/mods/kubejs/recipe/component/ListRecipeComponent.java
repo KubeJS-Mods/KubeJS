@@ -2,6 +2,8 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonArray;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
 import dev.latvian.mods.kubejs.error.EmptyRecipeComponentException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
@@ -16,17 +18,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWriteSelf, TypeInfo listTypeInfo, Codec<List<T>> listCodec, boolean conditional) implements RecipeComponent<List<T>> {
-	static <L> ListRecipeComponent<L> create(RecipeComponent<L> component, boolean canWriteSelf, boolean conditional) {
+public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWriteSelf, TypeInfo listTypeInfo, Codec<List<T>> listCodec, boolean conditional, boolean allowEmptyList) implements RecipeComponent<List<T>> {
+	static <L> ListRecipeComponent<L> create(RecipeComponent<L> component, boolean canWriteSelf, boolean conditional, boolean allowEmptyList) {
 		var typeInfo = component.typeInfo();
 		var codec = component.codec();
 		var listCodec = conditional ? NeoForgeExtraCodecs.listWithOptionalElements(ConditionalOps.createConditionalCodec(codec)) : codec.listOf();
 
 		if (canWriteSelf) {
-			return new ListRecipeComponent<>(component, true, TypeInfo.RAW_LIST.withParams(typeInfo).or(typeInfo), KubeJSCodecs.listOfOrSelf(listCodec, codec), conditional);
+			return new ListRecipeComponent<>(component, true, TypeInfo.RAW_LIST.withParams(typeInfo).or(typeInfo), KubeJSCodecs.listOfOrSelf(listCodec, codec), conditional, allowEmptyList);
 		} else {
-			return new ListRecipeComponent<>(component, false, TypeInfo.RAW_LIST.withParams(typeInfo), listCodec, conditional);
+			return new ListRecipeComponent<>(component, false, TypeInfo.RAW_LIST.withParams(typeInfo), listCodec, conditional, allowEmptyList);
 		}
+	}
+
+	public static final RecipeComponentType<List<?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("list"), (RecipeComponentCodecFactory<ListRecipeComponent<?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		ctx.codec().fieldOf("component").forGetter(ListRecipeComponent::component),
+		Codec.BOOL.optionalFieldOf("can_write_self", false).forGetter(ListRecipeComponent::canWriteSelf),
+		Codec.BOOL.optionalFieldOf("conditional", false).forGetter(ListRecipeComponent::conditional),
+		Codec.BOOL.optionalFieldOf("allow_empty_list", false).forGetter(ListRecipeComponent::allowEmptyList)
+	).apply(instance, ListRecipeComponent::create)));
+
+	@Override
+	public RecipeComponentType<?> type() {
+		return TYPE;
 	}
 
 	@Override
@@ -150,7 +164,7 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 
 	@Override
 	public void validate(List<T> value) {
-		if (value.isEmpty()) {
+		if (!allowEmptyList && value.isEmpty()) {
 			throw new EmptyRecipeComponentException(this);
 		}
 

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.net;
 
 import com.google.gson.JsonElement;
-import dev.latvian.mods.kubejs.KubeJSCodecs;
+import dev.latvian.mods.kubejs.KubeJSStreamCodecs;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -14,7 +14,7 @@ public record WebServerUpdateJSONPayload(String event, String requiredTag, @Null
 	public static final StreamCodec<ByteBuf, WebServerUpdateJSONPayload> STREAM_CODEC = StreamCodec.composite(
 		ByteBufCodecs.STRING_UTF8, WebServerUpdateJSONPayload::event,
 		ByteBufCodecs.STRING_UTF8, WebServerUpdateJSONPayload::requiredTag,
-		KubeJSCodecs.JSON_ELEMENT_STREAM_CODEC, WebServerUpdateJSONPayload::payload,
+		KubeJSStreamCodecs.JSON_ELEMENT, WebServerUpdateJSONPayload::payload,
 		WebServerUpdateJSONPayload::new
 	);
 

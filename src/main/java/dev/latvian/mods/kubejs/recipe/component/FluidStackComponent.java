@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
@@ -12,13 +13,9 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
-public class FluidStackComponent implements RecipeComponent<FluidStack> {
-	public static final FluidStackComponent FLUID_STACK = new FluidStackComponent();
-
-	@Override
-	public Codec<FluidStack> codec() {
-		return FluidStack.OPTIONAL_CODEC;
-	}
+public record FluidStackComponent(RecipeComponentType<?> type, Codec<FluidStack> codec) implements RecipeComponent<FluidStack> {
+	public static final RecipeComponentType<FluidStack> FLUID_STACK = RecipeComponentType.unit(KubeJS.id("fluid_stack"), type -> new FluidStackComponent(type, FluidStack.OPTIONAL_CODEC));
+	public static final RecipeComponentType<FluidStack> STRICT_FLUID_STACK = RecipeComponentType.unit(KubeJS.id("strict_fluid_stack"), type -> new FluidStackComponent(type, FluidStack.CODEC));
 
 	@Override
 	public TypeInfo typeInfo() {

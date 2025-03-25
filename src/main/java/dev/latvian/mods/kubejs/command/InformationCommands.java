@@ -19,14 +19,18 @@ import java.util.List;
 
 public class InformationCommands {
 	private static Component copy(String s, ChatFormatting col, String info) {
+		return copy(Component.literal(s).withStyle(col), Component.literal(info));
+	}
+
+	private static Component copy(String s, ChatFormatting col, Component info) {
 		return copy(Component.literal(s).withStyle(col), info);
 	}
 
-	private static Component copy(Component c, String info) {
+	private static Component copy(Component c, Component info) {
 		return Component.literal("- ")
 			.withStyle(ChatFormatting.GRAY)
 			.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, c.getString())))
-			.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(info + " (Click to copy)"))))
+			.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, info.copy().append(" (Click to copy)"))))
 			.append(c);
 	}
 
@@ -37,6 +41,7 @@ public class InformationCommands {
 		var itemRegistry = player.server.registryAccess().registry(Registries.ITEM).orElseThrow();
 		var blockRegistry = player.server.registryAccess().registry(Registries.BLOCK).orElseThrow();
 		var fluidRegistry = player.server.registryAccess().registry(Registries.FLUID).orElseThrow();
+		var tabRegistry = player.server.registryAccess().registry(Registries.CREATIVE_MODE_TAB).orElseThrow();
 
 		// item info
 		// id
@@ -50,11 +55,17 @@ public class InformationCommands {
 		}
 		// mod
 		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + new NamespaceIngredient(stack.kjs$getMod()).toVanilla().kjs$getStacks().size() + " items]"));
-		// TODO: creative tabs (neo has made them client only in 1.20.1, this is fixed in 1.20.4)
-		/*var cat = stack.getItem().getItemCategory();
-		if (cat != null) {
-			player.sendSystemMessage(copy("'%" + cat.getRecipeFolderName() + "'", ChatFormatting.LIGHT_PURPLE, "Item Group [" + IngredientPlatformHelper.get().creativeTab(cat).kjs$getStacks().size() + " items]"));
-		}*/
+
+		// creative tab
+		for (var tab : tabRegistry) {
+			if (tab.contains(stack)) {
+				var id = tabRegistry.getKey(tab);
+				var count = tab.getDisplayItems().size();
+				var searchCount = tab.getSearchTabDisplayItems().size();
+
+				player.sendSystemMessage(copy("'%" + id + "'", ChatFormatting.LIGHT_PURPLE, tab.getDisplayName().copy().append(" [%d/%d items in tab / search tab]".formatted(count, searchCount))));
+			}
+		}
 
 		// block info
 		if (stack.getItem() instanceof BlockItem blockItem) {

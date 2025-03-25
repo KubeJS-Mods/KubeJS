@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
@@ -15,7 +16,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 public record BlockComponent() implements RecipeComponent<Block> {
-	public static final RecipeComponent<Block> BLOCK = new BlockComponent();
+	public static final RecipeComponentType<Block> BLOCK = RecipeComponentType.unit(KubeJS.id("block"), new BlockComponent());
+
+	@Override
+	public RecipeComponentType<?> type() {
+		return BLOCK;
+	}
 
 	@Override
 	public Codec<Block> codec() {
