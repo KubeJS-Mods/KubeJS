@@ -77,6 +77,14 @@ public interface ComponentKJS extends Component, WithCodec, WrappedJS {
 		kjs$asIterable().forEach(action);
 	}
 
+	default MutableComponent kjs$fallback(String text) {
+    	TranslatableContents content = this.getContents();
+    	Object[] args = content.getArgs();
+    	if (args == null)
+			return Component.translatableWithFallback(new TranslatableContents(content.getKey(), text, TranslatableContents.NO_ARGS));
+    	return Component.translatableWithFallback(new TranslatableContents(content.getKey(), text, ...args));
+	}
+
 	// region ChatFormatting extensions
 	default MutableComponent kjs$black() {
 		return kjs$self().withStyle(ChatFormatting.BLACK);
