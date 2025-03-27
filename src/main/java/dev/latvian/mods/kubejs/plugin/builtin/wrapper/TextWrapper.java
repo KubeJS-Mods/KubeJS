@@ -239,6 +239,11 @@ public interface TextWrapper {
 		return Component.translatable(key, objects);
 	}
 
+	@Info("Returns a translatable component of the input key, with args of the objects and a fallback")
+	static MutableComponent translateWithFallback(String key, String fallback, Object... objects) {
+		return Component.translatableWithFallback(key, fallback, objects);
+	}
+
 	@Info("Returns a translatable component of the input key")
 	static MutableComponent translatable(String key) {
 		return Component.translatable(key);
@@ -247,6 +252,11 @@ public interface TextWrapper {
 	@Info("Returns a translatable component of the input key, with args of the objects")
 	static MutableComponent translatable(String key, Object... objects) {
 		return Component.translatable(key, objects);
+	}
+
+	@Info("Returns a translatable component of the input key, with args of the objects and a fallback")
+	static MutableComponent translatableWithFallback(String key, String fallback, Object... objects) {
+		return Component.translatableWithFallback(key, fallback, objects);
 	}
 
 	@Info("Returns a keybinding component of the input keybinding descriptor")
