@@ -2,6 +2,7 @@
 	"required": true,
 	"minVersion": "0.8",
 	"package": "dev.latvian.mods.kubejs.core.mixin",
+	"plugin": "dev.latvian.mods.kubejs.KubeJSMixinPlugin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"AdvancementNodeMixin",
