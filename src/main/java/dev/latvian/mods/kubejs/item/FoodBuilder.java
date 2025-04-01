@@ -31,7 +31,7 @@ public class FoodBuilder {
 		this.nutrition = 0;
 		this.saturation = 0;
 		this.alwaysEdible = false;
-		this.eatSeconds = 0.6F;
+		this.eatSeconds = 1.6F;
 		this.usingConvertsTo = Optional.empty();
 		this.effects = new ArrayList<>();
 	}
