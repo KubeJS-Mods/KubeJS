@@ -36,10 +36,6 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 		BlockTags.DOORS.location()
 	};
 
-	public static final ResourceLocation[] MINEABLE_AXE_TAGS = {
-		BlockTags.MINEABLE_WITH_AXE.location(),
-	};
-
 	public static final ResourceLocation[] WOODEN_DOOR_TAGS = {
 		BlockTags.WOODEN_DOORS.location()
 	};
@@ -63,7 +59,6 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 		noValidSpawns(true);
 		notSolid();
 		tagBoth(DOOR_TAGS);
-		tagBoth(MINEABLE_AXE_TAGS);
 		textures.put("top", newID("block/", "_top").toString());
 		textures.put("bottom", newID("block/", "_bottom").toString());
 		hardness(3F);
