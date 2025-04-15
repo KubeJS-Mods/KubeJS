@@ -32,8 +32,16 @@ import java.util.Map;
 
 @ReturnsSelf
 public class DoorBlockBuilder extends ShapedBlockBuilder {
-	public static final ResourceLocation[] TRAPDOOR_TAGS = {
-		BlockTags.TRAPDOORS.location(),
+	public static final ResourceLocation[] DOOR_TAGS = {
+		BlockTags.DOORS.location()
+	};
+
+	public static final ResourceLocation[] MINEABLE_AXE_TAGS = {
+		BlockTags.MINEABLE_WITH_AXE.location(),
+	};
+
+	public static final ResourceLocation[] WOODEN_DOOR_TAGS = {
+		BlockTags.WOODEN_DOORS.location()
 	};
 
 	private static final Map<String, ResourceLocation> MODELS = Map.of(
@@ -54,7 +62,8 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 		renderType(BlockRenderType.CUTOUT);
 		noValidSpawns(true);
 		notSolid();
-		tagBoth(TRAPDOOR_TAGS);
+		tagBoth(DOOR_TAGS);
+		tagBoth(MINEABLE_AXE_TAGS);
 		textures.put("top", newID("block/", "_top").toString());
 		textures.put("bottom", newID("block/", "_bottom").toString());
 		hardness(3F);
@@ -63,6 +72,11 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 
 	public DoorBlockBuilder behaviour(BlockSetType wt) {
 		behaviour = wt;
+		return this;
+	}
+
+	public DoorBlockBuilder wooden() {
+		tagBoth(WOODEN_DOOR_TAGS);
 		return this;
 	}
 
