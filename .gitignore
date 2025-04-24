@@ -21,8 +21,7 @@ logs
 
 # other
 eclipse
-run
-run_server
+runs
 .vscode
 .architectury-transformer/
 

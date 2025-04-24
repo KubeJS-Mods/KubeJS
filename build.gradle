@@ -42,13 +42,13 @@ neoForge {
 			}
 
 			jvmArguments.addAll("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
-			gameDirectory = file 'run'
+			gameDirectory = file 'runs/client'
 		}
 
 		server {
 			server()
 			programArgument("--nogui")
-			gameDirectory = file 'run_server'
+			gameDirectory = file 'runs/server'
 		}
 	}
 
