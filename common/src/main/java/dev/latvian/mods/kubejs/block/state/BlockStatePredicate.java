@@ -327,10 +327,10 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		public RegexMatch(Pattern p) {
 			pattern = p;
 			matchedBlocks = new LinkedHashSet<>();
-			for (var state : UtilsJS.getAllBlockStates()) {
-				var block = state.getBlock();
+			for (var entry : RegistryInfo.BLOCK.entrySet()) {
+				var block = entry.getValue();
 				if (!matchedBlocks.contains(block) && pattern.matcher(RegistryInfo.BLOCK.getId(block).toString()).find()) {
-					matchedBlocks.add(state.getBlock());
+					matchedBlocks.add(block);
 				}
 			}
 		}
