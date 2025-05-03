@@ -97,6 +97,8 @@ public class GeneratedClientResourcePack extends GeneratedResourcePack {
 
 		ClientEvents.HIGH_ASSETS.post(ScriptType.CLIENT, new GenerateClientAssetsEventJS(generator));
 
+		generator.buildSounds();
+
 		for (var lang : ClientEvents.LANG.findUniqueExtraIds(ScriptType.CLIENT)) {
 			var l = String.valueOf(lang);
 
