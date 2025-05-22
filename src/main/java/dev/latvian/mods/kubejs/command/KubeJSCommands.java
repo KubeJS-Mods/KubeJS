@@ -561,7 +561,6 @@ public class KubeJSCommands {
 		CommonProperties.get().setUseDoubleQuotes(!current);
 		String newStyle = CommonProperties.get().useDoubleQuotes ? "double" : "single";
 		source.sendSuccess(() -> Component.literal("Quote style switched to: " + newStyle + " quotes"), true);
-		source.sendSuccess(() -> Component.literal("Please use /kubejs hand again to apply the new quote style to chat messages.").withStyle(ChatFormatting.YELLOW), false);
 		return 1;
 	}
 	
@@ -569,7 +568,6 @@ public class KubeJSCommands {
 		CommonProperties.get().setUseDoubleQuotes(useDoubleQuotes);
 		String style = useDoubleQuotes ? "double" : "single";
 		source.sendSuccess(() -> Component.literal("Quote style set to: " + style + " quotes"), true);
-		source.sendSuccess(() -> Component.literal("Please use /kubejs hand again to apply the new quote style to chat messages.").withStyle(ChatFormatting.YELLOW), false);
 		return 1;
 	}
 
