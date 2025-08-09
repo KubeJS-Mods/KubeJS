@@ -18,7 +18,7 @@ displayURL = "https://kubejs.com"
 [[dependencies.kubejs]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.0.148,)"
+versionRange = "[${neoforge_version},)"
 ordering = "NONE"
 side = "BOTH"
 
@@ -32,21 +32,21 @@ side = "BOTH"
 [[dependencies.kubejs]]
 modId = "jei"
 type = "optional"
-versionRange = "[19.0.0.11,)"
+versionRange = "[${jei_version},)"
 ordering = "AFTER"
 side = "CLIENT"
 
 [[dependencies.kubejs]]
 modId = "roughlyenoughitems"
 type = "optional"
-versionRange = "[16.0.729,)"
+versionRange = "[${rei_version},)"
 ordering = "AFTER"
 side = "CLIENT"
 
 [[dependencies.kubejs]]
 modId = "emi"
 type = "optional"
-versionRange = "[1.1,)"
+versionRange = "[${emi_version},)"
 ordering = "AFTER"
 side = "CLIENT"
 

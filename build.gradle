@@ -5,7 +5,7 @@ plugins {
 	id 'java'
 	id 'idea'
 	id 'maven-publish'
-	id 'net.neoforged.moddev' version "2.0.75"
+	id 'net.neoforged.moddev' version "2.0.106"
 	id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
@@ -20,6 +20,8 @@ println("Building version: ${version}")
 
 neoForge {
 	version = project.neoforge_version
+	validateAccessTransformers = true
+
 	accessTransformers {
 		publish(project.file('src/main/resources/META-INF/accesstransformer.cfg'))
 	}
@@ -35,7 +37,9 @@ neoForge {
 		}
 
 		client {
+			ideName = 'Client'
 			client()
+			systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
 
 			if (ENV.MC_CLIENT_ARGS) {
 				programArguments.addAll(ENV.MC_CLIENT_ARGS.split(' '))
@@ -46,6 +50,7 @@ neoForge {
 		}
 
 		server {
+			ideName = 'Server'
 			server()
 			programArgument("--nogui")
 			gameDirectory = file 'runs/server'
@@ -57,17 +62,12 @@ neoForge {
 			sourceSet sourceSets.main
 		}
 	}
-
-	parchment {
-		minecraftVersion = parchment_mc_version
-		mappingsVersion = parchment_mapping_version
-	}
 }
 
 compileJava {
 	options.encoding = "UTF-8"
 	options.release.set(21)
-	options.compilerArgs << '-parameters'
+	options.compilerArgs << '-parameters' << '-Xmaxerrs' << '1000'
 }
 
 java {
@@ -134,7 +134,7 @@ dependencies {
 	compileOnly("dev.architectury:architectury-neoforge:$architectury_version")
 	compileOnly("mezz.jei:jei-1.21.1-neoforge:$jei_version")
 	compileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version")
-	compileOnly("dev.emi:emi-neoforge:$emi_version:api")
+	compileOnly("dev.emi:emi-neoforge:$emi_version+1.21.1:api")
 
 	additionalRuntimeClasspath(jarJar(implementation('dev.latvian.apps:tiny-java-server'))) {
 		version {
@@ -153,8 +153,12 @@ dependencies {
 
 processResources {
 	def toReplace = [
-			"version"      : project.version,
-			"rhino_version": project.rhino_version,
+			"version"         : project.version,
+			"rhino_version"   : project.rhino_version,
+			"neoforge_version": project.neoforge_version,
+			"jei_version"     : project.jei_version,
+			"rei_version"     : project.rei_version,
+			"emi_version"     : project.emi_version,
 	]
 
 	println("[Process Resources] Replacing properties in resources: " + toReplace)
@@ -236,11 +240,27 @@ idea {
 	module {
 		downloadSources = true
 		downloadJavadoc = true
-	}
-}
 
-afterEvaluate {
-	tasks.withType(JavaCompile) {
-		options.compilerArgs << "-Xmaxerrs" << "1000"
+		["client", "server"].each {
+			[
+					"config",
+					"crash-reports",
+					"debug",
+					"downloads",
+					"flashback",
+					"local",
+					"logs",
+					"mods",
+					"pack-sync",
+					"profilekeys",
+					"saves",
+					"command_history.txt",
+					"options.txt",
+					"server.properties",
+					"world",
+			].each { ext ->
+				excludeDirs.add(file("runs/$it/$ext"))
+			}
+		}
 	}
 }
