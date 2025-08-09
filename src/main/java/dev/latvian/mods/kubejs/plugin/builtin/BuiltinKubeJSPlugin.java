@@ -159,6 +159,7 @@ import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.KubeResourceLocation;
+import dev.latvian.mods.kubejs.util.MobEffectUtil;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
 import dev.latvian.mods.kubejs.util.NameProvider;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
@@ -167,7 +168,6 @@ import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.RotationAxis;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.kubejs.util.SlotFilter;
-import dev.latvian.mods.kubejs.util.MobEffectUtil;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.Tristate;
@@ -469,10 +469,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		bindings.add("SoundType", SoundType.class);
 
 		bindings.add("BlockProperties", BlockStateProperties.class);
-
 		bindings.add("NativeEvents", NativeEventWrapper.class);
-
-		bindings.add("MobEffectUtil", MobEffectUtil.class)
+		bindings.add("MobEffectUtil", MobEffectUtil.class);
 	}
 
 	@Override
