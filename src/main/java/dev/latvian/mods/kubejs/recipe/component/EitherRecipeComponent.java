@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
@@ -88,19 +89,20 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> high, RecipeCompone
 	}
 
 	@Override
-	public void validate(Either<H, L> value) {
+	public void validate(ErrorStack stack, Either<H, L> value) {
+		stack.push(this);
+
 		var left = value.left();
 
 		if (left.isPresent()) {
-			high.validate(left.get());
+			stack.setKey("high");
+			high.validate(stack, left.get());
 		} else {
-			low.validate(value.right().get());
+			stack.setKey("low");
+			low.validate(stack, value.right().get());
 		}
-	}
 
-	@Override
-	public boolean isEmpty(Either<H, L> value) {
-		return value.map(high::isEmpty, low::isEmpty);
+		stack.pop();
 	}
 
 	@Override

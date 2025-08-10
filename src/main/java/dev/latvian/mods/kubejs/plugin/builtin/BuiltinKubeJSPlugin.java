@@ -125,12 +125,6 @@ import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringGridComponent;
 import dev.latvian.mods.kubejs.recipe.component.TagKeyComponent;
 import dev.latvian.mods.kubejs.recipe.component.TimeComponent;
-import dev.latvian.mods.kubejs.recipe.component.validator.AlwaysValidValidator;
-import dev.latvian.mods.kubejs.recipe.component.validator.AndValidator;
-import dev.latvian.mods.kubejs.recipe.component.validator.NonEmptyValidator;
-import dev.latvian.mods.kubejs.recipe.component.validator.OrValidator;
-import dev.latvian.mods.kubejs.recipe.component.validator.RecipeComponentValidatorTypeRegistry;
-import dev.latvian.mods.kubejs.recipe.component.validator.ValidatedRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ConsumeAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
@@ -592,7 +586,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(BooleanComponent.BOOLEAN);
 		registry.register(StringComponent.ANY);
 		registry.register(StringComponent.NON_EMPTY);
-		registry.register(StringComponent.NON_BLANK);
 		registry.register(StringComponent.ID);
 		registry.register(CharacterComponent.CHARACTER);
 		registry.register(StringGridComponent.STRING_GRID);
@@ -603,26 +596,35 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(NumberComponent.DOUBLE_TYPE);
 
 		registry.register(IngredientComponent.INGREDIENT);
-		registry.register(IngredientComponent.NON_EMPTY_INGREDIENT);
+		registry.register(IngredientComponent.OPTIONAL_INGREDIENT);
 		registry.register(IngredientComponent.UNWRAPPED_INGREDIENT_LIST);
 
 		registry.register(SizedIngredientComponent.FLAT);
 		registry.register(SizedIngredientComponent.NESTED);
+		registry.register(SizedIngredientComponent.OPTIONAL_FLAT);
+		registry.register(SizedIngredientComponent.OPTIONAL_NESTED);
 
 		registry.register(ItemStackComponent.ITEM_STACK);
-		registry.register(ItemStackComponent.STRICT_ITEM_STACK);
+		registry.register(ItemStackComponent.OPTIONAL_ITEM_STACK);
 
 		registry.register(FluidStackComponent.FLUID_STACK);
-		registry.register(FluidStackComponent.STRICT_FLUID_STACK);
+		registry.register(FluidStackComponent.OPTIONAL_FLUID_STACK);
+
 		registry.register(FluidIngredientComponent.FLUID_INGREDIENT);
+		registry.register(FluidIngredientComponent.OPTIONAL_FLUID_INGREDIENT);
 
 		registry.register(SizedFluidIngredientComponent.FLAT);
 		registry.register(SizedFluidIngredientComponent.NESTED);
+		registry.register(SizedFluidIngredientComponent.OPTIONAL_FLAT);
+		registry.register(SizedFluidIngredientComponent.OPTIONAL_NESTED);
 
 		registry.register(BlockComponent.BLOCK);
+		registry.register(BlockComponent.OPTIONAL_BLOCK);
 
 		registry.register(BlockStateComponent.BLOCK);
 		registry.register(BlockStateComponent.BLOCK_STRING);
+		registry.register(BlockStateComponent.OPTIONAL_BLOCK);
+		registry.register(BlockStateComponent.OPTIONAL_BLOCK_STRING);
 
 		registry.register(TimeComponent.TICKS);
 		registry.register(TimeComponent.SECONDS);
@@ -642,7 +644,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ResourceKeyComponent.DIMENSION);
 		registry.register(ResourceKeyComponent.LOOT_TABLE);
 
-		registry.register(ValidatedRecipeComponent.TYPE);
 		registry.register(TagKeyComponent.TYPE);
 		registry.register(RegistryComponent.TYPE);
 		registry.register(EnumComponent.TYPE);
@@ -764,14 +765,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 			return null;
 		});
-	}
-
-	@Override
-	public void registerRecipeComponentValidatorTypes(RecipeComponentValidatorTypeRegistry registry) {
-		registry.register(NonEmptyValidator.TYPE);
-		registry.register(AlwaysValidValidator.TYPE);
-		registry.register(AndValidator.TYPE);
-		registry.register(OrValidator.TYPE);
 	}
 
 	@Override

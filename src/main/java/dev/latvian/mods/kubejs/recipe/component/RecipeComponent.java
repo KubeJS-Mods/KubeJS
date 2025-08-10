@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -175,12 +176,19 @@ public interface RecipeComponent<T> {
 		return original instanceof Replaceable r && matches(cx, recipe, original, match) ? wrap(cx, recipe, r.replaceThisWith(cx, with)) : original;
 	}
 
-	default void validate(T value) {
-		if (isEmpty(value)) {
+	default boolean allowEmpty() {
+		return false;
+	}
+
+	default void validate(ErrorStack stack, T value) {
+		if (!allowEmpty() && isEmpty(value)) {
 			throw new EmptyRecipeComponentValueException(this);
 		}
 	}
 
+	/**
+	 * Shallow empty check function
+	 */
 	default boolean isEmpty(T value) {
 		return false;
 	}

@@ -11,7 +11,6 @@ import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentTypeRegistry;
-import dev.latvian.mods.kubejs.recipe.component.validator.RecipeComponentValidatorTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeMappingRegistry;
@@ -112,9 +111,6 @@ public interface KubeJSPlugin {
 	}
 
 	default void registerItemNameProviders(NameProvider.Registry<Item, ItemStack> registry) {
-	}
-
-	default void registerRecipeComponentValidatorTypes(RecipeComponentValidatorTypeRegistry registry) {
 	}
 
 	default void registerIconTypes(KubeIconTypeRegistry registry) {

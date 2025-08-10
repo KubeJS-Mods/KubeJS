@@ -32,6 +32,7 @@ import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.server.ChangesForChat;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
+import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.JsonUtils;
@@ -236,9 +237,11 @@ public class RecipesKubeEvent implements KubeEvent {
 			return;
 		}
 
+		var stack = new ErrorStack();
+
 		try {
 			var recipe = type.schemaType.schema.deserialize(SourceLine.UNKNOWN, type, recipeId, json);
-			recipe.afterLoaded();
+			recipe.afterLoaded(stack);
 			originalRecipes.put(recipeId, recipe);
 
 			if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -253,17 +256,17 @@ public class RecipesKubeEvent implements KubeEvent {
 		} catch (InvalidRecipeComponentException ignore) {
 		} catch (Throwable ex) {
 			if (DevProperties.get().logErroringRecipes) {
-				ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'! Falling back to vanilla", ex, POST_SKIP_ERROR);
+				ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'" + stack.atString() + "! Falling back to vanilla", ex, POST_SKIP_ERROR);
 			}
 
 			try {
 				originalRecipes.put(recipeId, UnknownRecipeSchema.SCHEMA.deserialize(SourceLine.UNKNOWN, type, recipeId, json));
 			} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
 				if (DevProperties.get().logErroringRecipes) {
-					ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex2, POST_SKIP_ERROR);
+					ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType + stack.atString(), ex2, POST_SKIP_ERROR);
 				}
 			} catch (Exception ex3) {
-				ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType, ex3, POST_SKIP_ERROR);
+				ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType + stack.atString(), ex3, POST_SKIP_ERROR);
 			}
 		}
 	}
@@ -535,19 +538,22 @@ public class RecipesKubeEvent implements KubeEvent {
 			return DataResult.error(() -> "Unknown recipe type: " + json.get("type").getAsString());
 		}
 
+		var stack = new ErrorStack();
+
 		try {
 			var r = type.schemaType.schema.deserialize(sourceLine, type, null, json);
-			r.afterLoaded();
+			r.afterLoaded(stack);
 			return DataResult.success(addRecipe(r, true));
 		} catch (Throwable cause) {
 			var r = type.schemaType.schema.recipeFactory.create(type, sourceLine, true);
 			r.creationError = true;
-			ConsoleJS.SERVER.error("Failed to create custom recipe from json " + JsonUtils.toString(json), sourceLine, cause, POST_SKIP_ERROR);
+			var errorString = "Failed to create custom recipe" + stack.atString() + " from json " + JsonUtils.toString(json);
+			ConsoleJS.SERVER.error(errorString, sourceLine, cause, POST_SKIP_ERROR);
 			r.json = json;
 			r.newRecipe = true;
 
 			// importantly, we return a partial result here!
-			return DataResult.error(() -> "Failed to create custom recipe from json " + JsonUtils.toString(json), r);
+			return DataResult.error(() -> errorString, r);
 		}
 	}
 

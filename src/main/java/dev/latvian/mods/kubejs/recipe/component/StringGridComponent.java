@@ -23,4 +23,9 @@ public class StringGridComponent extends SimpleRecipeComponent<List<String>> {
 	public List<String> wrap(Context cx, KubeRecipe recipe, Object from) {
 		return PARENT.wrap(cx, recipe, from);
 	}
+
+	@Override
+	public boolean isEmpty(List<String> value) {
+		return value.isEmpty();
+	}
 }

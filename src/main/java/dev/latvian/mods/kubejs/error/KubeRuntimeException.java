@@ -1,17 +1,18 @@
 package dev.latvian.mods.kubejs.error;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.MutedError;
 import dev.latvian.mods.rhino.RhinoException;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class KubeRuntimeException extends RuntimeException implements MutedError {
 	private SourceLine sourceLine;
-	private JsonObject customData;
+	private Map<String, Object> customData;
 
 	public KubeRuntimeException(String m) {
 		super(m);
@@ -53,17 +54,13 @@ public class KubeRuntimeException extends RuntimeException implements MutedError
 		return this;
 	}
 
-	public KubeRuntimeException customData(String key, JsonElement data) {
+	public KubeRuntimeException customData(String key, Object data) {
 		if (customData == null) {
-			customData = new JsonObject();
+			customData = new LinkedHashMap<>();
 		}
 
-		customData.add(key, data);
+		customData.put(key, data);
 		return this;
-	}
-
-	public KubeRuntimeException customData(String key, String value) {
-		return customData(key, value == null ? JsonNull.INSTANCE : new JsonPrimitive(value));
 	}
 
 	public void apply(ConsoleLine line) {
@@ -75,7 +72,7 @@ public class KubeRuntimeException extends RuntimeException implements MutedError
 
 				if (ex.customData != null) {
 					for (var entry : ex.customData.entrySet()) {
-						line.customData(entry.getKey(), entry.getValue(), false);
+						line.customData(entry.getKey(), entry.getValue() == null ? JsonNull.INSTANCE : new JsonPrimitive(entry.getValue().toString()), false);
 					}
 				}
 			}

@@ -11,9 +11,11 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
-public record SizedIngredientComponent(RecipeComponentType<?> type, Codec<SizedIngredient> codec) implements RecipeComponent<SizedIngredient> {
-	public static final RecipeComponentType<SizedIngredient> FLAT = RecipeComponentType.unit(KubeJS.id("flat_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.FLAT_CODEC));
-	public static final RecipeComponentType<SizedIngredient> NESTED = RecipeComponentType.unit(KubeJS.id("nested_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC));
+public record SizedIngredientComponent(RecipeComponentType<?> type, Codec<SizedIngredient> codec, boolean allowEmpty) implements RecipeComponent<SizedIngredient> {
+	public static final RecipeComponentType<SizedIngredient> FLAT = RecipeComponentType.unit(KubeJS.id("flat_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.FLAT_CODEC, false));
+	public static final RecipeComponentType<SizedIngredient> NESTED = RecipeComponentType.unit(KubeJS.id("nested_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, false));
+	public static final RecipeComponentType<SizedIngredient> OPTIONAL_FLAT = RecipeComponentType.unit(KubeJS.id("optional_flat_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.FLAT_CODEC, true));
+	public static final RecipeComponentType<SizedIngredient> OPTIONAL_NESTED = RecipeComponentType.unit(KubeJS.id("optional_nested_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, true));
 
 	@Override
 	public TypeInfo typeInfo() {
@@ -52,6 +54,10 @@ public record SizedIngredientComponent(RecipeComponentType<?> type, Codec<SizedI
 
 	@Override
 	public String toString() {
-		return "sized_ingredient";
+		if (allowEmpty) {
+			return codec == SizedIngredient.FLAT_CODEC ? "optional_flat_sized_ingredient" : "optional_nested_sized_ingredient";
+		} else {
+			return codec == SizedIngredient.FLAT_CODEC ? "flat_sized_ingredient" : "nested_sized_ingredient";
+		}
 	}
 }

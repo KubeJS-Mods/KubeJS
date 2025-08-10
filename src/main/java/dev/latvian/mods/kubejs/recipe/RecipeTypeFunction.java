@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
+import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.BaseFunction;
@@ -37,14 +38,15 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 	@Override
 	public KubeRecipe call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args0) {
 		var sourceLine = SourceLine.of(cx);
+		var stack = new ErrorStack();
 
 		try {
-			return createRecipe(cx, sourceLine, args0);
+			return createRecipe(cx, sourceLine, stack, args0);
 		} catch (Throwable cause) {
 			var r = schemaType.schema.recipeFactory.create(this, sourceLine, true);
 			r.creationError = true;
 			event.failedCount++;
-			ConsoleJS.SERVER.error("Failed to create a '" + idString + "' recipe from args " + Arrays.toString(args0), sourceLine, cause, SKIP_ERROR);
+			ConsoleJS.SERVER.error("Failed to create a '" + idString + "' recipe" + stack.atString() + " from args " + Arrays.toString(args0), sourceLine, cause, SKIP_ERROR);
 			r.json = new JsonObject();
 			r.json.addProperty("type", idString);
 			r.newRecipe = true;
@@ -52,7 +54,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 		}
 	}
 
-	public KubeRecipe createRecipe(Context cx, SourceLine sourceLine, Object[] args) {
+	public KubeRecipe createRecipe(Context cx, SourceLine sourceLine, ErrorStack stack, Object[] args) {
 		try {
 			for (int i = 0; i < args.length; i++) {
 				args[i] = Wrapper.unwrapped(args[i]);
@@ -65,7 +67,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			if (constructor == null) {
 				if (args.length == 1 && (args[0] instanceof Map<?, ?> || args[0] instanceof JsonObject)) {
 					var recipe = schemaType.schema.deserialize(sourceLine, this, null, JsonUtils.objectOf(cx, args[0]));
-					recipe.afterLoaded();
+					recipe.afterLoaded(stack);
 					return event.addRecipe(recipe, true);
 					// throw new RecipeExceptionJS("Use event.custom(json) for json recipes!");
 				}
@@ -89,12 +91,12 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			}
 
 			var recipe = constructor.create(cx, sourceLine, this, schemaType, argMap);
-			recipe.afterLoaded();
+			recipe.afterLoaded(stack);
 			return event.addRecipe(recipe, false);
 		} catch (KubeRuntimeException rex) {
 			throw rex.source(sourceLine);
 		} catch (Throwable ex) {
-			throw new KubeRuntimeException("Failed to create recipe for type '" + id + "' with args " + Arrays.stream(args).map(o -> o == null ? "null" : (o + ": " + o.getClass().getSimpleName())).collect(Collectors.joining(", ", "[", "]")), ex).source(sourceLine);
+			throw new KubeRuntimeException("Failed to create a recipe for type '" + id + "'" + stack.atString() + " with args " + Arrays.stream(args).map(o -> o == null ? "null" : (o + ": " + o.getClass().getSimpleName())).collect(Collectors.joining(", ", "[", "]")), ex).source(sourceLine);
 		}
 	}
 

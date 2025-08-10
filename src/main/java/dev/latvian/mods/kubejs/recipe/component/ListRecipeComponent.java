@@ -5,9 +5,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCodecs;
-import dev.latvian.mods.kubejs.error.EmptyRecipeComponentException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWriteSelf, TypeInfo listTypeInfo, Codec<List<T>> listCodec, boolean conditional, boolean allowEmptyList) implements RecipeComponent<List<T>> {
+public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWriteSelf, TypeInfo listTypeInfo, Codec<List<T>> listCodec, boolean conditional, boolean allowEmpty) implements RecipeComponent<List<T>> {
 	static <L> ListRecipeComponent<L> create(RecipeComponent<L> component, boolean canWriteSelf, boolean conditional, boolean allowEmptyList) {
 		var typeInfo = component.typeInfo();
 		var codec = component.codec();
@@ -35,7 +35,7 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 		ctx.codec().fieldOf("component").forGetter(ListRecipeComponent::component),
 		Codec.BOOL.optionalFieldOf("can_write_self", false).forGetter(ListRecipeComponent::canWriteSelf),
 		Codec.BOOL.optionalFieldOf("conditional", false).forGetter(ListRecipeComponent::conditional),
-		Codec.BOOL.optionalFieldOf("allow_empty_list", false).forGetter(ListRecipeComponent::allowEmptyList)
+		Codec.BOOL.optionalFieldOf("allow_empty_list", false).forGetter(ListRecipeComponent::allowEmpty)
 	).apply(instance, ListRecipeComponent::create)));
 
 	@Override
@@ -163,28 +163,21 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 	}
 
 	@Override
-	public void validate(List<T> value) {
-		if (!allowEmptyList && value.isEmpty()) {
-			throw new EmptyRecipeComponentException(this);
+	public void validate(ErrorStack stack, List<T> value) {
+		RecipeComponent.super.validate(stack, value);
+
+		stack.push(this);
+
+		for (int i = 0; i < value.size(); i++) {
+			stack.setKey(i);
+			component.validate(stack, value.get(i));
 		}
 
-		for (var v : value) {
-			component.validate(v);
-		}
+		stack.pop();
 	}
 
 	@Override
 	public boolean isEmpty(List<T> value) {
-		if (value.isEmpty()) {
-			return true;
-		}
-
-		for (var v : value) {
-			if (component.isEmpty(v)) {
-				return true;
-			}
-		}
-
-		return false;
+		return value.isEmpty();
 	}
 }

@@ -13,9 +13,11 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
-public record SizedFluidIngredientComponent(RecipeComponentType<?> type, Codec<SizedFluidIngredient> codec) implements RecipeComponent<SizedFluidIngredient> {
-	public static final RecipeComponentType<SizedFluidIngredient> FLAT = RecipeComponentType.unit(KubeJS.id("flat_sized_fluid_ingredient"), type -> new SizedFluidIngredientComponent(type, SizedFluidIngredient.FLAT_CODEC));
-	public static final RecipeComponentType<SizedFluidIngredient> NESTED = RecipeComponentType.unit(KubeJS.id("nested_sized_fluid_ingredient"), type -> new SizedFluidIngredientComponent(type, SizedFluidIngredient.NESTED_CODEC));
+public record SizedFluidIngredientComponent(RecipeComponentType<?> type, Codec<SizedFluidIngredient> codec, boolean allowEmpty) implements RecipeComponent<SizedFluidIngredient> {
+	public static final RecipeComponentType<SizedFluidIngredient> FLAT = RecipeComponentType.unit(KubeJS.id("flat_sized_fluid_ingredient"), type -> new SizedFluidIngredientComponent(type, SizedFluidIngredient.FLAT_CODEC, false));
+	public static final RecipeComponentType<SizedFluidIngredient> NESTED = RecipeComponentType.unit(KubeJS.id("nested_sized_fluid_ingredient"), type -> new SizedFluidIngredientComponent(type, SizedFluidIngredient.NESTED_CODEC, false));
+	public static final RecipeComponentType<SizedFluidIngredient> OPTIONAL_FLAT = RecipeComponentType.unit(KubeJS.id("optional_flat_sized_fluid_ingredient"), type -> new SizedFluidIngredientComponent(type, SizedFluidIngredient.FLAT_CODEC, true));
+	public static final RecipeComponentType<SizedFluidIngredient> OPTIONAL_NESTED = RecipeComponentType.unit(KubeJS.id("optional_nested_sized_fluid_ingredient"), type -> new SizedFluidIngredientComponent(type, SizedFluidIngredient.NESTED_CODEC, true));
 
 	@Override
 	public TypeInfo typeInfo() {
@@ -50,6 +52,10 @@ public record SizedFluidIngredientComponent(RecipeComponentType<?> type, Codec<S
 
 	@Override
 	public String toString() {
-		return "sized_fluid_ingredient";
+		if (allowEmpty) {
+			return codec == SizedFluidIngredient.FLAT_CODEC ? "optional_flat_sized_fluid_ingredient" : "optional_nested_sized_fluid_ingredient";
+		} else {
+			return codec == SizedFluidIngredient.FLAT_CODEC ? "flat_sized_fluid_ingredient" : "nested_sized_fluid_ingredient";
+		}
 	}
 }

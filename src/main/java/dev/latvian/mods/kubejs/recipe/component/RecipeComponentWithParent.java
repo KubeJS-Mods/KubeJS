@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
@@ -48,8 +49,13 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default void validate(T value) {
-		parentComponent().validate(value);
+	default boolean allowEmpty() {
+		return parentComponent().allowEmpty();
+	}
+
+	@Override
+	default void validate(ErrorStack stack, T value) {
+		parentComponent().validate(stack, value);
 	}
 
 	@Override

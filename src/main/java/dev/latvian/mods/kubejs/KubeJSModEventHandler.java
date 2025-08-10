@@ -38,14 +38,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 
-@EventBusSubscriber(modid = KubeJS.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSModEventHandler {
-	/*
-	@SubscribeEvent(priority = EventPriority.LOW)
-	public static void commonSetup(FMLCommonSetupEvent event) {
-	}
-	 */
-
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void creativeTab(BuildCreativeModeTabContentsEvent event) {
 		var tabId = event.getTabKey().location();

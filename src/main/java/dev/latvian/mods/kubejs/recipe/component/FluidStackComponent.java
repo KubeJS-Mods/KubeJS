@@ -13,9 +13,9 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
-public record FluidStackComponent(RecipeComponentType<?> type, Codec<FluidStack> codec) implements RecipeComponent<FluidStack> {
-	public static final RecipeComponentType<FluidStack> FLUID_STACK = RecipeComponentType.unit(KubeJS.id("fluid_stack"), type -> new FluidStackComponent(type, FluidStack.OPTIONAL_CODEC));
-	public static final RecipeComponentType<FluidStack> STRICT_FLUID_STACK = RecipeComponentType.unit(KubeJS.id("strict_fluid_stack"), type -> new FluidStackComponent(type, FluidStack.CODEC));
+public record FluidStackComponent(RecipeComponentType<?> type, Codec<FluidStack> codec, boolean allowEmpty) implements RecipeComponent<FluidStack> {
+	public static final RecipeComponentType<FluidStack> FLUID_STACK = RecipeComponentType.unit(KubeJS.id("fluid_stack"), type -> new FluidStackComponent(type, FluidStack.CODEC, false));
+	public static final RecipeComponentType<FluidStack> OPTIONAL_FLUID_STACK = RecipeComponentType.unit(KubeJS.id("optional_fluid_stack"), type -> new FluidStackComponent(type, FluidStack.OPTIONAL_CODEC, true));
 
 	@Override
 	public TypeInfo typeInfo() {
@@ -46,6 +46,6 @@ public record FluidStackComponent(RecipeComponentType<?> type, Codec<FluidStack>
 
 	@Override
 	public String toString() {
-		return "fluid_stack";
+		return allowEmpty ? "optional_fluid_stack" : "fluid_stack";
 	}
 }

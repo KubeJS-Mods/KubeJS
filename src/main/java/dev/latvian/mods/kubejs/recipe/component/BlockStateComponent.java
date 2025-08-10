@@ -17,9 +17,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-public record BlockStateComponent(RecipeComponentType<?> type, boolean preferObjectForm) implements RecipeComponent<BlockState> {
-	public static final RecipeComponentType<BlockState> BLOCK = RecipeComponentType.unit(KubeJS.id("block_state"), type -> new BlockStateComponent(type, true));
-	public static final RecipeComponentType<BlockState> BLOCK_STRING = RecipeComponentType.unit(KubeJS.id("block_state_string"), type -> new BlockStateComponent(type, false));
+public record BlockStateComponent(RecipeComponentType<?> type, boolean preferObjectForm, boolean allowEmpty) implements RecipeComponent<BlockState> {
+	public static final RecipeComponentType<BlockState> BLOCK = RecipeComponentType.unit(KubeJS.id("block_state"), type -> new BlockStateComponent(type, true, false));
+	public static final RecipeComponentType<BlockState> BLOCK_STRING = RecipeComponentType.unit(KubeJS.id("block_state_string"), type -> new BlockStateComponent(type, false, false));
+	public static final RecipeComponentType<BlockState> OPTIONAL_BLOCK = RecipeComponentType.unit(KubeJS.id("optional_block_state"), type -> new BlockStateComponent(type, true, true));
+	public static final RecipeComponentType<BlockState> OPTIONAL_BLOCK_STRING = RecipeComponentType.unit(KubeJS.id("optional_block_state_string"), type -> new BlockStateComponent(type, false, true));
 
 	@Override
 	public Codec<BlockState> codec() {
@@ -70,6 +72,10 @@ public record BlockStateComponent(RecipeComponentType<?> type, boolean preferObj
 
 	@Override
 	public String toString() {
-		return preferObjectForm ? "block_state" : "block_state_string";
+		if (allowEmpty) {
+			return preferObjectForm ? "optional_block_state" : "optional_block_state_string";
+		} else {
+			return preferObjectForm ? "block_state" : "block_state_string";
+		}
 	}
 }

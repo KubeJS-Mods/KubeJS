@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.rhino.type.JSFixedArrayTypeInfo;
 import dev.latvian.mods.rhino.type.JSOptionalParam;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -48,13 +49,12 @@ public record PairRecipeComponent<A, B>(RecipeComponent<A> a, RecipeComponent<B>
 	}
 
 	@Override
-	public void validate(Pair<A, B> value) {
-		a.validate(value.getFirst());
-		b.validate(value.getSecond());
-	}
-
-	@Override
-	public boolean isEmpty(Pair<A, B> value) {
-		return a.isEmpty(value.getFirst()) && b.isEmpty(value.getSecond());
+	public void validate(ErrorStack stack, Pair<A, B> value) {
+		stack.push(this);
+		stack.setKey("a");
+		a.validate(stack, value.getFirst());
+		stack.setKey("b");
+		b.validate(stack, value.getSecond());
+		stack.pop();
 	}
 }

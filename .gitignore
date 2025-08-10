@@ -21,9 +21,8 @@ logs
 
 # other
 eclipse
-runs
+/runs
 .vscode
-.architectury-transformer/
 
 # metadata (macOS)
 .DS_Store

@@ -10,9 +10,9 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.item.ItemStack;
 
-public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> codec) implements RecipeComponent<ItemStack> {
-	public static final RecipeComponentType<ItemStack> ITEM_STACK = RecipeComponentType.unit(KubeJS.id("item_stack"), type -> new ItemStackComponent(type, ItemStack.OPTIONAL_CODEC));
-	public static final RecipeComponentType<ItemStack> STRICT_ITEM_STACK = RecipeComponentType.unit(KubeJS.id("strict_item_stack"), type -> new ItemStackComponent(type, ItemStack.STRICT_CODEC));
+public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> codec, boolean allowEmpty) implements RecipeComponent<ItemStack> {
+	public static final RecipeComponentType<ItemStack> ITEM_STACK = RecipeComponentType.unit(KubeJS.id("item_stack"), type -> new ItemStackComponent(type, ItemStack.STRICT_CODEC, false));
+	public static final RecipeComponentType<ItemStack> OPTIONAL_ITEM_STACK = RecipeComponentType.unit(KubeJS.id("optional_item_stack"), type -> new ItemStackComponent(type, ItemStack.OPTIONAL_CODEC, true));
 
 	@Override
 	public TypeInfo typeInfo() {
@@ -43,6 +43,6 @@ public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> c
 
 	@Override
 	public String toString() {
-		return "item_stack";
+		return allowEmpty ? "optional_item_stack" : "item_stack";
 	}
 }

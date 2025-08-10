@@ -4,10 +4,10 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.error.EmptyRecipeComponentException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -91,29 +91,22 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public void validate(TinyMap<K, V> value) {
-		if (value.isEmpty()) {
-			throw new EmptyRecipeComponentException(this);
-		}
+	public void validate(ErrorStack stack, TinyMap<K, V> value) {
+		RecipeComponent.super.validate(stack, value);
+
+		stack.push(this);
 
 		for (var entry : value.entries()) {
-			component.validate(entry.value());
+			stack.setKey(entry.key());
+			component.validate(stack, entry.value());
 		}
+
+		stack.pop();
 	}
 
 	@Override
 	public boolean isEmpty(TinyMap<K, V> value) {
-		if (value.isEmpty()) {
-			return true;
-		}
-
-		for (var entry : value.entries()) {
-			if (component.isEmpty(entry.value())) {
-				return true;
-			}
-		}
-
-		return false;
+		return value.isEmpty();
 	}
 
 	@Override

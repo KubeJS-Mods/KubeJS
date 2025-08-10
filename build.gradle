@@ -243,10 +243,12 @@ idea {
 
 		["client", "server"].each {
 			[
+					".architectury-transformer",
 					"config",
 					"crash-reports",
 					"debug",
 					"downloads",
+					"dumps",
 					"flashback",
 					"local",
 					"logs",
@@ -258,6 +260,9 @@ idea {
 					"options.txt",
 					"server.properties",
 					"world",
+					"emi.json",
+					"usercache.json",
+					"usernamecache.json"
 			].each { ext ->
 				excludeDirs.add(file("runs/$it/$ext"))
 			}

@@ -13,8 +13,9 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
-public class FluidIngredientComponent implements RecipeComponent<FluidIngredient> {
-	public static final RecipeComponentType<FluidIngredient> FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("fluid_ingredient"), new FluidIngredientComponent());
+public record FluidIngredientComponent(boolean allowEmpty) implements RecipeComponent<FluidIngredient> {
+	public static final RecipeComponentType<FluidIngredient> FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("fluid_ingredient"), new FluidIngredientComponent(false));
+	public static final RecipeComponentType<FluidIngredient> OPTIONAL_FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_fluid_ingredient"), new FluidIngredientComponent(true));
 
 	@Override
 	public RecipeComponentType<?> type() {
@@ -55,6 +56,6 @@ public class FluidIngredientComponent implements RecipeComponent<FluidIngredient
 
 	@Override
 	public String toString() {
-		return "fluid_ingredient";
+		return allowEmpty ? "optional_fluid_ingredient" : "fluid_ingredient";
 	}
 }

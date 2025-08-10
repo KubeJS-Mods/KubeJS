@@ -16,12 +16,12 @@ import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import java.util.ArrayList;
 import java.util.List;
 
-public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient> codec) implements RecipeComponent<Ingredient> {
-	public static final RecipeComponentType<Ingredient> INGREDIENT = RecipeComponentType.unit(KubeJS.id("ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC));
-	public static final RecipeComponentType<Ingredient> NON_EMPTY_INGREDIENT = RecipeComponentType.unit(KubeJS.id("non_empty_ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC_NONEMPTY));
+public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient> codec, boolean allowEmpty) implements RecipeComponent<Ingredient> {
+	public static final RecipeComponentType<Ingredient> INGREDIENT = RecipeComponentType.unit(KubeJS.id("ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC_NONEMPTY, false));
+	public static final RecipeComponentType<Ingredient> OPTIONAL_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC, true));
 
 	public static final RecipeComponentType<List<Ingredient>> UNWRAPPED_INGREDIENT_LIST = RecipeComponentType.unit(KubeJS.id("unwrapped_ingredient_list"), new RecipeComponentWithParent<>() {
-		private static final RecipeComponent<List<Ingredient>> PARENT = INGREDIENT.instance().asList();
+		private static final RecipeComponent<List<Ingredient>> PARENT = OPTIONAL_INGREDIENT.instance().asList();
 		private static final TypeInfo WRAP_TYPE = TypeInfo.RAW_LIST.withParams(TypeInfo.of(SizedIngredient.class));
 
 		@Override
@@ -39,12 +39,19 @@ public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient>
 			var list = new ArrayList<Ingredient>();
 
 			for (var in : (Iterable<SizedIngredient>) cx.jsToJava(from, WRAP_TYPE)) {
-				for (int i = 0; i < in.count(); i++) {
-					list.add(in.ingredient());
+				if (!in.ingredient().isEmpty()) {
+					for (int i = 0; i < in.count(); i++) {
+						list.add(in.ingredient());
+					}
 				}
 			}
 
 			return list;
+		}
+
+		@Override
+		public boolean isEmpty(List<Ingredient> value) {
+			return value.isEmpty();
 		}
 	});
 
@@ -108,6 +115,6 @@ public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient>
 
 	@Override
 	public String toString() {
-		return "ingredient";
+		return allowEmpty ? "optional_ingredient" : "ingredient";
 	}
 }

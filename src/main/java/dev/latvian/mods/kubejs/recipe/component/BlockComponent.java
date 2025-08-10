@@ -15,8 +15,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-public record BlockComponent() implements RecipeComponent<Block> {
-	public static final RecipeComponentType<Block> BLOCK = RecipeComponentType.unit(KubeJS.id("block"), new BlockComponent());
+public record BlockComponent(boolean allowEmpty) implements RecipeComponent<Block> {
+	public static final RecipeComponentType<Block> BLOCK = RecipeComponentType.unit(KubeJS.id("block"), new BlockComponent(false));
+	public static final RecipeComponentType<Block> OPTIONAL_BLOCK = RecipeComponentType.unit(KubeJS.id("optional_block"), new BlockComponent(true));
 
 	@Override
 	public RecipeComponentType<?> type() {
@@ -60,6 +61,6 @@ public record BlockComponent() implements RecipeComponent<Block> {
 
 	@Override
 	public String toString() {
-		return "block";
+		return allowEmpty ? "optional_block" : "block";
 	}
 }

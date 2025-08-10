@@ -24,6 +24,7 @@ import dev.latvian.mods.kubejs.recipe.special.KubeJSCraftingRecipe;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.KubeResourceLocation;
 import dev.latvian.mods.kubejs.util.SlotFilter;
 import dev.latvian.mods.rhino.Context;
@@ -187,12 +188,17 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	 * Perform additional validation after the recipe has been loaded.
 	 * <p>
 	 * You probably want to call <code>super.afterLoaded()</code> as well
-	 * if you override this, in order to check for empty values.
+	 * if you override this, in order to validate values.
 	 */
-	public void afterLoaded() {
+	public void afterLoaded(ErrorStack stack) {
+		stack.push(this);
+
 		for (var v : valueMap.holders) {
-			v.validate(sourceLine);
+			stack.setKey(v.key.name);
+			v.validate(stack, sourceLine);
 		}
+
+		stack.pop();
 	}
 
 	public final void save() {

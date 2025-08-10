@@ -9,10 +9,10 @@ import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.error.EmptyRecipeComponentException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
 import dev.latvian.mods.rhino.type.JSOptionalParam;
@@ -244,29 +244,22 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 	}
 
 	@Override
-	public void validate(List<Value> value) {
-		if (value.isEmpty()) {
-			throw new EmptyRecipeComponentException(this);
-		}
+	public void validate(ErrorStack stack, List<Value> value) {
+		RecipeComponent.super.validate(stack, value);
+
+		stack.push(this);
 
 		for (var entry : value) {
-			entry.key.component.validate(Cast.to(entry.value));
+			stack.setKey(entry.key.name);
+			entry.key.component.validate(stack, Cast.to(entry.value));
 		}
+
+		stack.pop();
 	}
 
 	@Override
 	public boolean isEmpty(List<Value> value) {
-		if (keys.isEmpty()) {
-			return true;
-		}
-
-		for (var entry : value) {
-			if (entry.key.component.isEmpty(Cast.to(entry.value))) {
-				return true;
-			}
-		}
-
-		return false;
+		return keys.isEmpty();
 	}
 
 	@Override
