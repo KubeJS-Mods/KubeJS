@@ -27,7 +27,7 @@ public class FluidTankAttachment implements BlockEntityAttachment {
 
 		@Override
 		public List<BlockCapability<?, ?>> getCapabilities() {
-			return List.of(Capabilities.EnergyStorage.BLOCK);
+			return List.of(Capabilities.FluidHandler.BLOCK);
 		}
 	}
 
