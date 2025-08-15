@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +35,12 @@ public record UniqueIdBuilder(StringBuilder builder) {
 		}
 
 		builder.append(id.getPath());
+	}
+
+	public void append(@Nullable ResourceKey<?> key) {
+		if (key != null) {
+			append(key.location());
+		}
 	}
 
 	public String build() {
