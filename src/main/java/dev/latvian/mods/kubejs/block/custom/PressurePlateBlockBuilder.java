@@ -54,7 +54,7 @@ public class PressurePlateBlockBuilder extends ShapedBlockBuilder implements But
 
 	@Override
 	public PressurePlateBlockBuilder ticksToStayPressed(TickDuration ticks) {
-		this.ticksToStayPressed = (int) ticks.ticks();
+		this.ticksToStayPressed = ticks.intTicks();
 		return this;
 	}
 

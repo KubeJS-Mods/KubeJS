@@ -40,7 +40,7 @@ public class ButtonBlockBuilder extends ShapedBlockBuilder implements ButtonOrPr
 
 	@Override
 	public ButtonBlockBuilder ticksToStayPressed(TickDuration ticks) {
-		this.ticksToStayPressed = (int) ticks.ticks();
+		this.ticksToStayPressed = ticks.intTicks();
 		return this;
 	}
 

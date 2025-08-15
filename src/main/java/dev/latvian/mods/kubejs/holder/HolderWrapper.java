@@ -44,9 +44,7 @@ public interface HolderWrapper {
 		}
 
 		var id = ID.mc(from);
-
 		var holder = registry.getHolder(id);
-
 		return holder.isEmpty() ? DeferredHolder.create(registry.key(), id) : holder.get();
 	}
 

@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import net.minecraft.Util;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
@@ -19,8 +20,6 @@ import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import static net.minecraft.world.item.Item.BASE_ATTACK_DAMAGE_ID;
@@ -41,7 +40,7 @@ public class ItemModificationKubeEvent implements KubeEvent {
 	@RemapPrefixForJS("kjs$")
 	public record ItemModifications(Item item) implements ItemComponentFunctions {
 		@HideFromJS
-		public static final Map<Item, Long> BURN_TIME_OVERRIDES = new IdentityHashMap<>();
+		public static final Reference2IntOpenHashMap<Item> BURN_TIME_OVERRIDES = new Reference2IntOpenHashMap<>();
 
 		@Override
 		public DataComponentMap kjs$getComponentMap() {
@@ -56,7 +55,7 @@ public class ItemModificationKubeEvent implements KubeEvent {
 		}
 
 		public void setBurnTime(TickDuration i) {
-			BURN_TIME_OVERRIDES.put(item, i.ticks());
+			BURN_TIME_OVERRIDES.put(item, i.intTicks());
 		}
 
 		public void setCraftingRemainder(Item item) {

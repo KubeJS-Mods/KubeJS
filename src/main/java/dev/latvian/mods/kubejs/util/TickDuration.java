@@ -49,7 +49,7 @@ public record TickDuration(long ticks) implements TemporalAmount {
 
 	@Override
 	public Temporal addTo(Temporal temporal) {
-		if (ticks != 0) {
+		if (ticks != 0L) {
 			return temporal.plus(ticks, TickTemporalUnit.INSTANCE);
 		}
 
@@ -58,7 +58,7 @@ public record TickDuration(long ticks) implements TemporalAmount {
 
 	@Override
 	public Temporal subtractFrom(Temporal temporal) {
-		if (ticks != 0) {
+		if (ticks != 0L) {
 			return temporal.minus(ticks, TickTemporalUnit.INSTANCE);
 		}
 
@@ -68,5 +68,9 @@ public record TickDuration(long ticks) implements TemporalAmount {
 	@Override
 	public String toString() {
 		return ticks + " ticks";
+	}
+
+	public int intTicks() {
+		return Math.clamp(ticks, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
 }

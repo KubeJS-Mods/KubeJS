@@ -51,7 +51,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 	public transient Map<Object, Object> components;
 	public transient int maxStackSize;
 	public transient int maxDamage;
-	public transient long burnTime;
+	public transient int burnTime;
 	private ResourceLocation containerItem;
 	public transient Function<ItemStack, Collection<ItemStack>> subtypes;
 	public transient Rarity rarity;
@@ -83,7 +83,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 
 		this.maxStackSize = -1;
 		this.maxDamage = 0;
-		this.burnTime = 0L;
+		this.burnTime = 0;
 		this.containerItem = null;
 		this.subtypes = null;
 		this.rarity = null;
@@ -164,7 +164,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 
 	@Info("Sets the item's burn time. Default is 0 (Not a fuel).")
 	public ItemBuilder burnTime(TickDuration v) {
-		burnTime = v.ticks();
+		burnTime = v.intTicks();
 		return this;
 	}
 
