@@ -5,13 +5,11 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 
 public class SimpleRecipeComponent<T> implements RecipeComponent<T> {
 	public final RecipeComponentType<?> type;
-	public final String componentType;
 	public final Codec<T> codec;
 	public final TypeInfo typeInfo;
 
-	public SimpleRecipeComponent(RecipeComponentType<?> type, String componentType, Codec<T> codec, TypeInfo typeInfo) {
+	public SimpleRecipeComponent(RecipeComponentType<?> type, Codec<T> codec, TypeInfo typeInfo) {
 		this.type = type;
-		this.componentType = componentType;
 		this.codec = codec;
 		this.typeInfo = typeInfo;
 	}
@@ -33,6 +31,6 @@ public class SimpleRecipeComponent<T> implements RecipeComponent<T> {
 
 	@Override
 	public String toString() {
-		return componentType;
+		return type.toString();
 	}
 }

@@ -11,7 +11,7 @@ public class CharacterComponent extends SimpleRecipeComponent<Character> {
 	public static final RecipeComponentType<Character> CHARACTER = RecipeComponentType.unit(KubeJS.id("character"), CharacterComponent::new);
 
 	public CharacterComponent(RecipeComponentType<?> type) {
-		super(type, "character", KubeJSCodecs.CHARACTER, TypeInfo.CHARACTER);
+		super(type, KubeJSCodecs.CHARACTER, TypeInfo.CHARACTER);
 	}
 
 	@Override

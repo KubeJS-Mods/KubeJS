@@ -11,7 +11,7 @@ public class StringGridComponent extends SimpleRecipeComponent<List<String>> {
 	public static final RecipeComponentType<List<String>> STRING_GRID = RecipeComponentType.unit(KubeJS.id("string_grid"), StringGridComponent::new);
 
 	private StringGridComponent(RecipeComponentType<?> type) {
-		super(type, "string_grid", PARENT.codec(), PARENT.typeInfo());
+		super(type, PARENT.codec(), PARENT.typeInfo());
 	}
 
 	@Override

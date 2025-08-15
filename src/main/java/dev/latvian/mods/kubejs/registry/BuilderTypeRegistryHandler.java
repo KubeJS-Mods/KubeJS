@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +30,9 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 	}
 
 	public static class Info<T> {
-		private static final Info<?> EMPTY = new Info<>();
-
 		private BuilderType<T> defaultType;
 		private Map<ResourceLocation, BuilderType<T>> types;
+		private Map<String, BuilderType<T>> fallbackLookup;
 		private Codec<T> directCodec;
 		private TypeInfo typeInfo;
 
@@ -47,7 +47,8 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 
 		@Nullable
 		public BuilderType<T> namedType(ResourceLocation name) {
-			return types == null ? null : types.get(name);
+			var t = types == null ? null : types.get(name);
+			return t != null ? t : fallbackLookup == null ? null : fallbackLookup.get(name.getPath());
 		}
 
 		@Nullable
@@ -91,13 +92,19 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 				info.types = new LinkedHashMap<>();
 			}
 
+			if (info.fallbackLookup == null) {
+				info.fallbackLookup = new HashMap<>();
+			}
+
 			var prev = info.types.get(type);
 
 			if (prev != null) {
 				ConsoleJS.STARTUP.warn("Previous '" + type + "' type '" + prev.builderClass().getName() + "' for registry '" + info + "' replaced with '" + builderType.getName() + "'!");
 			}
 
-			info.types.put(type, new BuilderType<>(type, builderType, factory));
+			var builderTypeDef = new BuilderType<>(type, builderType, factory);
+			info.types.put(type, builderTypeDef);
+			info.fallbackLookup.put(type.getPath(), builderTypeDef);
 		}
 	}
 }

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Function;
@@ -83,9 +84,11 @@ public abstract class RecipeComponentType<T> {
 	}
 
 	private final ResourceLocation id;
+	private final String idString;
 
 	public RecipeComponentType(ResourceLocation id) {
 		this.id = id;
+		this.idString = ID.reduceKjs(id);
 	}
 
 	public final ResourceLocation id() {
@@ -104,7 +107,7 @@ public abstract class RecipeComponentType<T> {
 
 	@Override
 	public final String toString() {
-		return id.toString();
+		return idString;
 	}
 
 	public boolean isUnit() {
