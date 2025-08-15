@@ -1,12 +1,9 @@
 package dev.latvian.mods.kubejs.server;
 
-import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
-import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
 import dev.latvian.mods.kubejs.net.SyncServerDataPayload;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
@@ -95,9 +92,9 @@ public class ServerScriptManager extends ScriptManager {
 		this.recipeSchemaStorage = new RecipeSchemaStorage();
 		this.serverData = null;
 
-		this.internalDataPack = new VirtualDataPack(GeneratedDataStage.INTERNAL);
-		this.registriesDataPack = new VirtualDataPack(GeneratedDataStage.REGISTRIES);
-		this.virtualPacks = GeneratedDataStage.forScripts(VirtualDataPack::new);
+		this.internalDataPack = new VirtualDataPack(GeneratedDataStage.INTERNAL, this::getRegistries);
+		this.registriesDataPack = new VirtualDataPack(GeneratedDataStage.REGISTRIES, this::getRegistries);
+		this.virtualPacks = GeneratedDataStage.forScripts(stage -> new VirtualDataPack(stage, this::getRegistries));
 
 		this.firstLoad = true;
 
@@ -136,7 +133,9 @@ public class ServerScriptManager extends ScriptManager {
 		}
 
 		KubeJSPlugins.forEachPlugin(internalDataPack, KubeJSPlugin::generateData);
+		internalDataPack.flush();
 
+		/*
 		var furnaceFuelsJson = new JsonObject();
 
 		for (var entry : ItemModificationKubeEvent.ItemModifications.BURN_TIME_OVERRIDES.entrySet()) {
@@ -147,9 +146,9 @@ public class ServerScriptManager extends ScriptManager {
 
 		for (var builder : RegistryObjectStorage.ITEM) {
 			if (builder instanceof ItemBuilder item) {
-				long b = item.burnTime;
+				int b = item.burnTime;
 
-				if (b > 0L) {
+				if (b > 0) {
 					var json = new JsonObject();
 					json.addProperty("burn_time", b);
 					furnaceFuelsJson.add(builder.id.toString(), json);
@@ -162,6 +161,7 @@ public class ServerScriptManager extends ScriptManager {
 			json.add("values", furnaceFuelsJson);
 			internalDataPack.json(ResourceLocation.fromNamespaceAndPath("neoforge", "data_maps/item/furnace_fuels.json"), json);
 		}
+		 */
 
 		if (firstLoad) {
 			firstLoad = false;
@@ -216,6 +216,8 @@ public class ServerScriptManager extends ScriptManager {
 						ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to register object '" + b.id + "' of registry '" + b.registryKey.location() + "'!", ex).source(b.sourceLine));
 					}
 				}
+
+				registriesDataPack.flush();
 			}
 		}
 	}
@@ -234,10 +236,14 @@ public class ServerScriptManager extends ScriptManager {
 
 		PreTagKubeEvent.handle(preTagEvents);
 
+		internalDataPack.flush();
+
 		for (var pack : virtualPacks.values()) {
 			if (ServerEvents.GENERATE_DATA.hasListeners(pack.stage)) {
 				ServerEvents.GENERATE_DATA.post(ScriptType.SERVER, pack.stage, pack);
 			}
+
+			pack.flush();
 		}
 	}
 

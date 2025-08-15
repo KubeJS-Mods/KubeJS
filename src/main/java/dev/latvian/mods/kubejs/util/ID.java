@@ -119,4 +119,8 @@ public interface ID {
 	static String reduceKjs(ResourceLocation id) {
 		return id.getNamespace().equals(KubeJS.MOD_ID) ? id.getPath() : id.toString();
 	}
+
+	static String resourcePath(ResourceLocation id) {
+		return id.getNamespace().equals("minecraft") ? id.getPath() : (id.getNamespace() + "/" + id.getPath());
+	}
 }

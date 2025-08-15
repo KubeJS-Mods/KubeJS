@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.client.ParticleGenerator;
 import dev.latvian.mods.kubejs.client.SoundsGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.color.KubeColor;
-import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.ID;
@@ -141,14 +140,5 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 	}
 
 	default void sounds(String namespace, Consumer<SoundsGenerator> consumer) {
-	}
-
-	default void buildSounds() {
-	}
-
-	@Override
-	default void afterPosted(EventResult result) {
-		KubeResourceGenerator.super.afterPosted(result);
-		buildSounds();
 	}
 }

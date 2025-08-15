@@ -46,9 +46,11 @@ import dev.latvian.mods.kubejs.fluid.FluidTypeBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.fluid.ThickFluidBuilder;
 import dev.latvian.mods.kubejs.fluid.ThinFluidBuilder;
+import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
+import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ItemTintFunction;
 import dev.latvian.mods.kubejs.item.ItemToolTiers;
@@ -139,6 +141,7 @@ import dev.latvian.mods.kubejs.recipe.schema.UnknownKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessKubeRecipe;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
+import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.registry.ServerRegistryRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.DataComponentTypeInfoRegistry;
@@ -260,6 +263,8 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -772,5 +777,20 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(TextureKubeIcon.TYPE);
 		registry.register(AtlasSpriteKubeIcon.TYPE);
 		registry.register(ItemKubeIcon.TYPE);
+	}
+
+	@Override
+	public void generateData(KubeDataGenerator generator) {
+		generator.dataMap(NeoForgeDataMaps.FURNACE_FUELS, callback -> {
+			for (var entry : ItemModificationKubeEvent.ItemModifications.BURN_TIME_OVERRIDES.reference2IntEntrySet()) {
+				callback.accept(entry.getKey().kjs$getIdLocation(), new FurnaceFuel(entry.getIntValue()));
+			}
+
+			for (var builder : RegistryObjectStorage.ITEM) {
+				if (builder instanceof ItemBuilder item && item.burnTime > 0) {
+					callback.accept(item.id, new FurnaceFuel(item.burnTime));
+				}
+			}
+		});
 	}
 }

@@ -15,6 +15,7 @@ import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
 import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
 import dev.latvian.mods.kubejs.script.data.VirtualAssetPack;
 import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -50,7 +51,7 @@ public class KubeJSClient extends KubeJSCommon {
 
 	static {
 		for (var stage : GeneratedDataStage.values()) {
-			CLIENT_PACKS.put(stage, new VirtualAssetPack(stage));
+			CLIENT_PACKS.put(stage, new VirtualAssetPack(stage, () -> RegistryAccessContainer.BUILTIN));
 		}
 	}
 

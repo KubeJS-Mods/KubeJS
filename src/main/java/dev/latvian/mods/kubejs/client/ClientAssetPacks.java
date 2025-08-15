@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.client;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.generator.KubeResourceGenerator;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ClientEvents;
@@ -13,6 +14,7 @@ import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
 import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
 import dev.latvian.mods.kubejs.script.data.VirtualAssetPack;
 import dev.latvian.mods.kubejs.util.JsonUtils;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -32,8 +34,8 @@ public class ClientAssetPacks {
 	public final Map<GeneratedDataStage, VirtualAssetPack> virtualPacks;
 
 	public ClientAssetPacks() {
-		this.internalAssetPack = new VirtualAssetPack(GeneratedDataStage.INTERNAL);
-		this.virtualPacks = GeneratedDataStage.forScripts(VirtualAssetPack::new);
+		this.internalAssetPack = new VirtualAssetPack(GeneratedDataStage.INTERNAL, () -> RegistryAccessContainer.BUILTIN);
+		this.virtualPacks = GeneratedDataStage.forScripts(stage -> new VirtualAssetPack(stage, () -> RegistryAccessContainer.BUILTIN));
 	}
 
 	public List<PackResources> inject(List<PackResources> original) {
@@ -70,7 +72,15 @@ public class ClientAssetPacks {
 
 		KubeJSPlugins.forEachPlugin(internalAssetPack, KubeJSPlugin::generateAssets);
 
-		internalAssetPack.buildSounds();
+		/*
+		// Originally internalAssetPack.buildSounds();
+
+		for (var pack : packs) {
+			if (pack instanceof KubeResourceGenerator generator) {
+				generator.flush();
+			}
+		}
+		 */
 
 		var langMap = new HashMap<LangKubeEvent.Key, String>();
 		var langEvents = new HashMap<String, LangKubeEvent>();
@@ -142,6 +152,12 @@ public class ClientAssetPacks {
 
 			if (ClientEvents.GENERATE_ASSETS.hasListeners(pack.stage)) {
 				ClientEvents.GENERATE_ASSETS.post(ScriptType.CLIENT, pack.stage, pack);
+			}
+		}
+
+		for (var pack : packs) {
+			if (pack instanceof KubeResourceGenerator generator) {
+				generator.flush();
 			}
 		}
 
