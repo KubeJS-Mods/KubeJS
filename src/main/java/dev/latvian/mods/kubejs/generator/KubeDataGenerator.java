@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.generator;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.random.Weight;
@@ -68,8 +67,8 @@ public interface KubeDataGenerator extends KubeResourceGenerator {
 		dataMap(NeoForgeDataMaps.VIBRATION_FREQUENCIES, callback -> callback.accept(BuiltInRegistries.GAME_EVENT.getKey(gameEvent), new VibrationFrequency(frequency)));
 	}
 
-	default void setVibrationFrequency(Biome biome, VillagerType villagerType) {
-		dataMap(NeoForgeDataMaps.VILLAGER_TYPES, callback -> callback.accept(getRegistries().access().registry(Registries.BIOME).orElseThrow().getKey(biome), new BiomeVillagerType(villagerType)));
+	default void setVillagerType(ResourceKey<Biome> biome, VillagerType villagerType) {
+		dataMap(NeoForgeDataMaps.VILLAGER_TYPES, callback -> callback.accept(biome.location(), new BiomeVillagerType(villagerType)));
 	}
 
 	default void setWaxable(Block from, Block to) {
