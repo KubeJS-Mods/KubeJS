@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.recipe.special;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.KubeJSStreamCodecs;
+import dev.latvian.mods.kubejs.codec.KubeJSStreamCodecs;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.IngredientActionHolder;
 import net.minecraft.core.HolderLookup;

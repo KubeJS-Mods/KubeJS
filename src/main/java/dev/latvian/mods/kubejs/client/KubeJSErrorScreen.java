@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -238,6 +239,17 @@ public class KubeJSErrorScreen extends Screen {
 				if (my < y + 10 && line.sourceLines.size() >= 3) {
 					var lines = new ArrayList<FormattedCharSequence>();
 
+					if (VSCodeExt.isInstalled()) {
+						var comp = Component.empty();
+						comp.append("Double-click to Open in ");
+						comp.append(TextIcons.icons("V."));
+						comp.append(Component.literal("VSCode").withColor(0x22A7F2));
+						lines.addAll(minecraft.font.split(comp, 1000));
+
+					} else {
+						lines.add(FormattedCharSequence.forward("Double-click to Open File", Style.EMPTY));
+					}
+
 					for (var line : line.sourceLines) {
 						lines.add(Component.empty().append(Component.literal(line.source()).kjs$gray()).append("#" + line.line()).getVisualOrderText());
 					}
@@ -293,7 +305,20 @@ public class KubeJSErrorScreen extends Screen {
 						path = path.getParent();
 					}
 
-					errorList.screen.handleComponentClicked(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toAbsolutePath().toString())));
+					if (VSCodeExt.isInstalled()) {
+						int ln = 1;
+
+						for (var line : line.sourceLines) {
+							if (line.line() > 0 && line.source().endsWith(".js")) {
+								ln = line.line();
+								break;
+							}
+						}
+
+						VSCodeExt.openFile(path, ln, 0);
+					} else {
+						errorList.screen.handleComponentClicked(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toAbsolutePath().toString())));
+					}
 				}
 			}
 		}

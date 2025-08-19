@@ -1,7 +1,7 @@
 {
-	"minecraft": 2100,
+	"minecraft": 2101,
 	"type": "neoforge",
-	"icon": "https://raw.githubusercontent.com/KubeJS-Mods/KubeJS/main/.lat.ci/icon.png",
+	"icon": "https://raw.githubusercontent.com/KubeJS-Mods/KubeJS/main/src/main/resources/kubejs_logo.png",
 	"version": {
 		"file": "gradle.properties",
 		"pattern": "^mod_version=([\\w.]+)$",

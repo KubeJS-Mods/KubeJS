@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.util;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.KubeJSCodecs;
+import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;

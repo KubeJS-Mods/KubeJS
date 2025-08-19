@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe;
 
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValueFunction;
-import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaFunction;
+import dev.latvian.mods.kubejs.recipe.schema.function.RecipeSchemaJSFunction;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.NativeJavaObject;
@@ -41,6 +41,8 @@ public class RecipeFunction extends NativeJavaObject {
 				var func = new RecipeComponentValueFunction(recipe, value);
 
 				for (var name : names) {
+					name = name.replace(':', '_').replace('/', '_');
+
 					if (isValidIdentifier(name.toCharArray())) {
 						builderFunctions.put(name, func);
 					}
@@ -50,7 +52,7 @@ public class RecipeFunction extends NativeJavaObject {
 
 		for (var entry : recipe.type.schemaType.schema.functions.entrySet()) {
 			if (isValidIdentifier(entry.getKey().toCharArray())) {
-				builderFunctions.put(entry.getKey(), new RecipeSchemaFunction.JSFunction(recipe, entry.getValue()));
+				builderFunctions.put(entry.getKey(), new RecipeSchemaJSFunction(recipe, entry.getValue()));
 			}
 		}
 	}

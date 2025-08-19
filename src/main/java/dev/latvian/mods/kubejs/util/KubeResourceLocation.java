@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.util;
 
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.KubeJSCodecs;
+import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.UnaryOperator;

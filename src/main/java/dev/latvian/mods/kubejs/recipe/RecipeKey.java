@@ -51,7 +51,6 @@ public final class RecipeKey<T> {
 	public RecipeOptional<T> optional;
 	public boolean excluded;
 	public List<String> functionNames;
-	public boolean allowEmpty;
 	public boolean alwaysWrite;
 
 	public RecipeKey(RecipeComponent<T> component, String name, ComponentRole role) {
@@ -65,7 +64,6 @@ public final class RecipeKey<T> {
 		this.optional = null;
 		this.excluded = false;
 		this.functionNames = null;
-		this.allowEmpty = false;
 		this.alwaysWrite = false;
 	}
 
@@ -189,15 +187,6 @@ public final class RecipeKey<T> {
 	}
 
 	/**
-	 * By default, some components may disallow empty values and throw an exception if encountered.
-	 * Use this method to explicitly allow such empty values (ex. minecraft:air) in results/ingredients.
-	 */
-	public RecipeKey<T> allowEmpty() {
-		allowEmpty = true;
-		return this;
-	}
-
-	/**
 	 * Set this in order to always write optional keys, even if their value hasn't changed.
 	 * <p>
 	 * This can also be used to always populate the value map with a default value for an optional key.
@@ -249,10 +238,6 @@ public final class RecipeKey<T> {
 			var a = new JsonArray();
 			functionNames.forEach(a::add);
 			json.add("function_names", a);
-		}
-
-		if (allowEmpty) {
-			json.addProperty("allow_empty", true);
 		}
 
 		if (alwaysWrite) {

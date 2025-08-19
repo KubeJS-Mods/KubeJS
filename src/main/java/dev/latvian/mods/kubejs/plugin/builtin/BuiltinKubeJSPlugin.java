@@ -138,6 +138,10 @@ import dev.latvian.mods.kubejs.recipe.match.ReplacementMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.UnknownKubeRecipe;
+import dev.latvian.mods.kubejs.recipe.schema.function.AddToListFunction;
+import dev.latvian.mods.kubejs.recipe.schema.function.BundleFunction;
+import dev.latvian.mods.kubejs.recipe.schema.function.RecipeSchemaFunctionRegistry;
+import dev.latvian.mods.kubejs.recipe.schema.function.SetFunction;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessKubeRecipe;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
@@ -658,6 +662,13 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ResourceKeyComponent.TYPE);
 		registry.register(PairRecipeComponent.TYPE);
 		registry.register(CustomObjectRecipeComponent.TYPE);
+	}
+
+	@Override
+	public void registerRecipeSchemaFunctionTypes(RecipeSchemaFunctionRegistry registry) {
+		registry.register(BundleFunction.TYPE);
+		registry.register(SetFunction.TYPE);
+		registry.register(AddToListFunction.TYPE);
 	}
 
 	@Override

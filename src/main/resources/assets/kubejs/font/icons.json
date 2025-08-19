@@ -110,6 +110,12 @@
 		},
 		{
 			"type": "bitmap",
+			"file": "kubejs:font/icons/vscode.png",
+			"ascent": 7,
+			"chars": ["V"]
+		},
+		{
+			"type": "bitmap",
 			"file": "kubejs:font/icons/warn.png",
 			"ascent": 7,
 			"chars": ["W"]

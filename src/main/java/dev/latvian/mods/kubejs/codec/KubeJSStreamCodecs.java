@@ -1,9 +1,10 @@
-package dev.latvian.mods.kubejs;
+package dev.latvian.mods.kubejs.codec;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.mojang.datafixers.util.Function8;
 import com.mojang.datafixers.util.Function9;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;

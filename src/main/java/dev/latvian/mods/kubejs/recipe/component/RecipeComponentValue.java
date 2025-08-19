@@ -96,10 +96,6 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 	}
 
 	public void validate(ErrorStack stack, SourceLine sourceLine) {
-		if (key.allowEmpty) {
-			return;
-		}
-
 		if (value != null) {
 			try {
 				key.component.validate(stack, value);

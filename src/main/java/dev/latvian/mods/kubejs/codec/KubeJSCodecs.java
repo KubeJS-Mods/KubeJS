@@ -1,4 +1,4 @@
-package dev.latvian.mods.kubejs;
+package dev.latvian.mods.kubejs.codec;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.rhino.type.EnumTypeInfo;
@@ -16,6 +17,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
@@ -23,6 +25,7 @@ import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -59,6 +62,8 @@ public interface KubeJSCodecs {
 	Codec<Duration> DURATION = KubeJSCodecs.stringResolverCodec(Duration::toString, TimeJS::wrapDuration);
 
 	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY_CODEC = ResourceLocation.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::location);
+
+	Codec<Map<String, JsonElement>> JSON_MAP = Codec.unboundedMap(Codec.STRING, ExtraCodecs.JSON);
 
 	static <E> Codec<E> stringResolverCodec(Function<E, String> toStringFunction, Function<String, E> fromStringFunction) {
 		return Codec.STRING.flatXmap(str -> Optional.ofNullable(fromStringFunction.apply(str))
@@ -108,5 +113,13 @@ public interface KubeJSCodecs {
 	static <T> Codec<List<T>> listOfOrSelf(Codec<List<T>> listCodec, Codec<T> codec) {
 		return Codec.either(listCodec, codec).xmap(either -> either.map(Function.identity(), List::of), Either::left);
 		// return Codec.withAlternative(listCodec, codec.xmap(List::of, List::getFirst));
+	}
+
+	static <V> Codec<V> or(List<Codec<? extends V>> codecs) {
+		return new OrCodec<>((List) codecs);
+	}
+
+	static <V> Codec<V> or(Codec<? extends V> first, Codec<? extends V> second) {
+		return new OrCodec<>((List) List.of(first, second));
 	}
 }

@@ -21,14 +21,14 @@
 		{
 			"name": "kubejs:mirror",
 			"type": "boolean",
-			"builder_names": ["kjsMirror"],
+			"function_names": ["kjsMirror"],
 			"optional": true,
 			"excluded": true
 		},
 		{
 			"name": "kubejs:shrink",
 			"type": "boolean",
-			"builder_names": ["kjsShrink"],
+			"function_names": ["kjsShrink"],
 			"optional": true,
 			"excluded": true
 		},
@@ -47,14 +47,14 @@
 	],
 	"functions": {
 		"noMirror": {
-			"set": {
-				"kubejs:mirror": false
-			}
+			"type": "set",
+			"key": "kubejs:mirror",
+			"value": false
 		},
 		"noShrink": {
-			"set": {
-				"kubejs:shrink": false
-			}
+			"type": "set",
+			"key": "kubejs:shrink",
+			"value": false
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.net;
 
 import com.google.gson.JsonElement;
-import dev.latvian.mods.kubejs.KubeJSStreamCodecs;
+import dev.latvian.mods.kubejs.codec.KubeJSStreamCodecs;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;

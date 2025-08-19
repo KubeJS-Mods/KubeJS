@@ -7,8 +7,12 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.UniqueIdBuilder;
+import dev.latvian.mods.kubejs.recipe.schema.function.AddToListFunction;
+import dev.latvian.mods.kubejs.recipe.schema.function.ResolvedRecipeSchemaFunction;
+import dev.latvian.mods.kubejs.recipe.schema.function.SetFunction;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -28,7 +32,7 @@ import java.util.SequencedCollection;
  * (using the {@link #deserialize(SourceLine, RecipeTypeFunction, ResourceLocation, JsonObject)} method).
  * <p>
  * The schema also defines a {@link #recipeFactory} in order to create a {@link KubeRecipe} object that
- * implements serialization logic, post-load validation ({@link KubeRecipe#afterLoaded()}),
+ * implements serialization logic, post-load validation ({@link KubeRecipe#afterLoaded(ErrorStack)} ()}),
  * as well as entirely custom logic such as additional methods a developer may call from scripts.
  *
  * @see RecipeKey
@@ -40,7 +44,7 @@ public class RecipeSchema {
 	public final List<RecipeKey<?>> keys;
 	public final List<RecipeKey<?>> includedKeys;
 	public final Map<RecipeKey<?>, RecipeOptional<?>> keyOverrides;
-	public final Map<String, RecipeSchemaFunction> functions;
+	public final Map<String, ResolvedRecipeSchemaFunction> functions;
 	private int inputCount;
 	private int outputCount;
 	private int minRequiredArguments;
@@ -253,24 +257,35 @@ public class RecipeSchema {
 		return r;
 	}
 
-	public RecipeSchema function(String name, RecipeSchemaFunction function) {
+	public RecipeSchema function(String name, ResolvedRecipeSchemaFunction function) {
 		this.functions.put(name, function);
 		return this;
 	}
 
 	public <T> RecipeSchema setOpFunction(String name, RecipeKey<T> key, T value) {
-		return function(name, new RecipeSchemaFunction.SetFunction<>(key, value));
+		return function(name, new SetFunction.Resolved<>(key, value));
 	}
 
 	public <T> RecipeSchema addToListOpFunction(String name, RecipeKey<List<T>> key) {
-		return function(name, new RecipeSchemaFunction.AddToListFunction<>(key));
+		return function(name, new AddToListFunction.Resolved<>(key));
 	}
 
-	public <T> RecipeKey<T> getKey(String id) {
+	@Nullable
+	public <T> RecipeKey<T> getOptionalKey(String id) {
 		for (var key : keys) {
 			if (key.name.equals(id)) {
 				return (RecipeKey<T>) key;
 			}
+		}
+
+		return null;
+	}
+
+	public <T> RecipeKey<T> getKey(String id) {
+		RecipeKey<T> key = getOptionalKey(id);
+
+		if (key != null) {
+			return key;
 		}
 
 		throw new NullPointerException("Key '" + id + "' not found");

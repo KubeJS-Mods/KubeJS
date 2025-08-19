@@ -93,6 +93,10 @@ public interface TextIcons {
 		return icons("T");
 	}
 
+	static MutableComponent vscode() {
+		return icons("V");
+	}
+
 	static MutableComponent warn() {
 		return icons("W");
 	}
