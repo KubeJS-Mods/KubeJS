@@ -26,12 +26,12 @@ jobs:
       !contains(github.event.head_commit.message, '[ci skip]')
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 30
+          fetch-depth: 5
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -41,15 +41,15 @@ jobs:
         run: chmod +x gradlew
 
       - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/wrapper-validation-action@v3
 
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           arguments: build -x test --stacktrace
 
       - name: Publish to latvian.dev Maven
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         env:
           MAVEN_URL: 'https://maven.latvian.dev/releases'
           MAVEN_USERNAME: 'lat'
@@ -58,7 +58,7 @@ jobs:
           arguments: publish --stacktrace
 
       - name: Publish to saps.dev Maven
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         env:
           MAVEN_URL: 'https://maven.saps.dev/releases'
           MAVEN_USERNAME: 'latvian'
@@ -67,7 +67,7 @@ jobs:
           arguments: publish --stacktrace
 
       - name: Release to CurseForge
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_type != 'none' }}
         env:
           GIT_COMMIT: ${{ github.event.after }}
@@ -78,7 +78,7 @@ jobs:
           arguments: publishUnified --stacktrace
 
       - name: Release to Modrinth
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_type != 'none' }}
         env:
           GIT_COMMIT: ${{ github.event.after }}
