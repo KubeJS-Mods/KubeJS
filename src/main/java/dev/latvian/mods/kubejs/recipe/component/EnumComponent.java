@@ -60,6 +60,10 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(@Nullable R
 
 	@Override
 	public String toString() {
-		return "enum<" + typeInfo.asClass().getName() + ">";
+		if (typeOverride != null) {
+			return typeOverride.toString();
+		} else {
+			return "enum<" + typeInfo.asClass().getName() + ">";
+		}
 	}
 }

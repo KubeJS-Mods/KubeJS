@@ -25,7 +25,7 @@ public class ComponentValueMap extends Reference2ObjectOpenHashMap<RecipeKey<?>,
 		try {
 			return key.component.wrap(cx, recipe, o);
 		} catch (Throwable ex) {
-			throw new KubeRuntimeException("Unable to cast '" + key + "' value '" + o + "' to '" + key.component + "'!", ex);
+			throw new KubeRuntimeException("Unable to cast '" + key + "' value '" + o + "' to '" + key.component.toString() + "'!", ex);
 		}
 	}
 }

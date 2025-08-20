@@ -54,10 +54,6 @@ public record SizedIngredientComponent(RecipeComponentType<?> type, Codec<SizedI
 
 	@Override
 	public String toString() {
-		if (allowEmpty) {
-			return codec == SizedIngredient.FLAT_CODEC ? "optional_flat_sized_ingredient" : "optional_nested_sized_ingredient";
-		} else {
-			return codec == SizedIngredient.FLAT_CODEC ? "flat_sized_ingredient" : "nested_sized_ingredient";
-		}
+		return type.toString();
 	}
 }

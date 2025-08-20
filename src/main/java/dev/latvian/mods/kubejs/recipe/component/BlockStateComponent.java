@@ -72,10 +72,6 @@ public record BlockStateComponent(RecipeComponentType<?> type, boolean preferObj
 
 	@Override
 	public String toString() {
-		if (allowEmpty) {
-			return preferObjectForm ? "optional_block_state" : "optional_block_state_string";
-		} else {
-			return preferObjectForm ? "block_state" : "block_state_string";
-		}
+		return type.toString();
 	}
 }

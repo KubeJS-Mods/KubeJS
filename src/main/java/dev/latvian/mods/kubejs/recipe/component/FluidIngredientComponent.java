@@ -19,7 +19,7 @@ public record FluidIngredientComponent(boolean allowEmpty) implements RecipeComp
 
 	@Override
 	public RecipeComponentType<?> type() {
-		return FLUID_INGREDIENT;
+		return allowEmpty ? OPTIONAL_FLUID_INGREDIENT : FLUID_INGREDIENT;
 	}
 
 	@Override

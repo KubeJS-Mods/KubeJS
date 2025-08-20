@@ -10,9 +10,11 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.rhino.type.EnumTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -31,7 +33,18 @@ import java.util.function.Function;
 
 public interface KubeJSCodecs {
 	Codec<Character> CHARACTER = Codec.STRING.xmap(str -> str.charAt(0), Object::toString);
-	Codec<ResourceLocation> KUBEJS_ID = Codec.STRING.xmap(str -> str.indexOf(':') == -1 ? KubeJS.id(str) : ResourceLocation.parse(str), s -> s.getNamespace().equals(KubeJS.MOD_ID) ? s.getPath() : s.toString());
+
+	Codec<ResourceLocation> KUBEJS_ID = Codec.STRING.comapFlatMap(s -> {
+		try {
+			if (s.indexOf(':') == -1) {
+				return DataResult.success(KubeJS.id(s));
+			} else {
+				return DataResult.success(ResourceLocation.parse(s));
+			}
+		} catch (ResourceLocationException ex) {
+			return DataResult.error(() -> "Not a valid resource location: " + s + " " + ex.getMessage());
+		}
+	}, ID::reduceKjs).stable();
 
 	Codec<Class<?>> ENUM_CLASS = Codec.STRING.flatXmap(str -> {
 		try {

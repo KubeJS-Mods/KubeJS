@@ -98,6 +98,6 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 
 	@Override
 	public String toString() {
-		return "registry_element<" + registry.key().location() + ">";
+		return "registry_element<" + ID.reduce(registry.key().location()) + ">";
 	}
 }

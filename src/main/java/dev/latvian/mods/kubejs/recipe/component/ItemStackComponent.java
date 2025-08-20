@@ -43,6 +43,6 @@ public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> c
 
 	@Override
 	public String toString() {
-		return allowEmpty ? "optional_item_stack" : "item_stack";
+		return type.toString();
 	}
 }

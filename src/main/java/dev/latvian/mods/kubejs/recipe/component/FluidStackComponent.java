@@ -46,6 +46,6 @@ public record FluidStackComponent(RecipeComponentType<?> type, Codec<FluidStack>
 
 	@Override
 	public String toString() {
-		return allowEmpty ? "optional_fluid_stack" : "fluid_stack";
+		return type.toString();
 	}
 }

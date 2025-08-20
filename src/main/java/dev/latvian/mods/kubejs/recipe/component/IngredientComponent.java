@@ -53,6 +53,11 @@ public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient>
 		public boolean isEmpty(List<Ingredient> value) {
 			return value.isEmpty();
 		}
+
+		@Override
+		public String toString() {
+			return "unwrapped_ingredient_list";
+		}
 	});
 
 	@Override
@@ -115,6 +120,6 @@ public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient>
 
 	@Override
 	public String toString() {
-		return allowEmpty ? "optional_ingredient" : "ingredient";
+		return type.toString();
 	}
 }

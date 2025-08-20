@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A recipe component that may delegate most of its logic to a parent component.
@@ -66,5 +67,11 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	@Override
 	default void buildUniqueId(UniqueIdBuilder builder, T value) {
 		parentComponent().buildUniqueId(builder, value);
+	}
+
+	@Override
+	@Nullable
+	default RecipeComponentBuilder createBuilder() {
+		return parentComponent().createBuilder();
 	}
 }

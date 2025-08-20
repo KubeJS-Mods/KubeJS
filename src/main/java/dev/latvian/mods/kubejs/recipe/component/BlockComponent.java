@@ -21,7 +21,7 @@ public record BlockComponent(boolean allowEmpty) implements RecipeComponent<Bloc
 
 	@Override
 	public RecipeComponentType<?> type() {
-		return BLOCK;
+		return allowEmpty ? OPTIONAL_BLOCK : BLOCK;
 	}
 
 	@Override

@@ -50,6 +50,6 @@ public record TimeComponent(RecipeComponentType<?> type, long scale, Codec<TickD
 
 	@Override
 	public String toString() {
-		return "time";
+		return type.toString();
 	}
 }

@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonPrimitive;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.RegistryObjectKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
@@ -29,18 +27,6 @@ public interface ID {
 	UnaryOperator<String> PNG_TEXTURE = s -> "textures/" + s + ".png";
 	UnaryOperator<String> PNG_TEXTURE_MCMETA = s -> "textures/" + s + ".png.mcmeta";
 	UnaryOperator<String> PARTICLE = s -> "particles/" + s;
-
-	Codec<ResourceLocation> REDUCED_KUBEJS_CODEC = Codec.STRING.comapFlatMap(s -> {
-		try {
-			if (s.indexOf(':') == -1) {
-				return DataResult.success(KubeJS.id(s));
-			} else {
-				return DataResult.success(ResourceLocation.parse(s));
-			}
-		} catch (ResourceLocationException ex) {
-			return DataResult.error(() -> "Not a valid resource location: " + s + " " + ex.getMessage());
-		}
-	}, ID::reduceKjs).stable();
 
 	static String string(@Nullable String id) {
 		if (id == null || id.isEmpty()) {
@@ -85,29 +71,26 @@ public interface ID {
 	}
 
 	static ResourceLocation of(@Nullable Object o, boolean preferKJS) {
-		if (o == null) {
-			return null;
-		} else if (o instanceof ResourceLocation id) {
-			return id;
-		} else if (o instanceof ResourceKey<?> key) {
-			return key.location();
-		} else if (o instanceof Holder<?> holder) {
-			return holder.getKey().location();
-		} else if (o instanceof RegistryObjectKJS<?> key) {
-			return key.kjs$getIdLocation();
-		}
+		return switch (o) {
+			case null -> null;
+			case ResourceLocation id -> id;
+			case ResourceKey<?> key -> key.location();
+			case Holder<?> holder -> holder.getKey().location();
+			case RegistryObjectKJS<?> key -> key.kjs$getIdLocation();
+			default -> {
+				var s = o instanceof JsonPrimitive p ? p.getAsString() : o.toString();
 
-		var s = o instanceof JsonPrimitive p ? p.getAsString() : o.toString();
+				if (s.indexOf(':') == -1 && preferKJS) {
+					s = "kubejs:" + s;
+				}
 
-		if (s.indexOf(':') == -1 && preferKJS) {
-			s = "kubejs:" + s;
-		}
-
-		try {
-			return ResourceLocation.parse(s);
-		} catch (ResourceLocationException ex) {
-			throw new KubeRuntimeException("Could not create ID from '%s'!".formatted(s));
-		}
+				try {
+					yield ResourceLocation.parse(s);
+				} catch (ResourceLocationException ex) {
+					throw new KubeRuntimeException("Could not create ID from '%s'!".formatted(s));
+				}
+			}
+		};
 	}
 
 	static ResourceLocation mc(@Nullable Object o) {

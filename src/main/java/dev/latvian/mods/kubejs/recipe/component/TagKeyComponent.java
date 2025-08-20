@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.registry.RegistryType;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
@@ -95,6 +96,6 @@ public record TagKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, 
 
 	@Override
 	public String toString() {
-		return "tag<" + registry.location() + ">";
+		return "tag<" + ID.reduce(registry.location()) + ">";
 	}
 }

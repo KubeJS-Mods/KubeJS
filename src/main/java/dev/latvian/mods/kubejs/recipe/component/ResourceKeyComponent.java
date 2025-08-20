@@ -58,6 +58,6 @@ public record ResourceKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverr
 
 	@Override
 	public String toString() {
-		return "resource_key<" + registryKey.location() + ">";
+		return "resource_key<" + ID.reduce(registryKey.location()) + ">";
 	}
 }

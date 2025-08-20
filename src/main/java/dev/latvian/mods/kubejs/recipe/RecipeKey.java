@@ -35,7 +35,7 @@ import java.util.SequencedSet;
  * You can disable this by setting {@link #noFunctions()} to true.
  * <p>
  * Finally, some types of components such as items or fluids may perform validation to ensure that they
- * aren't holding empty data. If empty data should explicitly be allowed, you can set {@link #allowEmpty} to true.
+ * aren't holding empty data.
  *
  * @param <T> The type of element held by this key's component
  * @see RecipeSchema
@@ -75,13 +75,14 @@ public final class RecipeKey<T> {
 	@Override
 	public String toString() {
 		var sb = new StringBuilder(name);
+		sb.append(':');
+		sb.append(' ');
+		sb.append(component.toString());
 
 		if (optional != null) {
 			sb.append('?');
 		}
 
-		sb.append(':');
-		sb.append(component);
 		return sb.toString();
 	}
 

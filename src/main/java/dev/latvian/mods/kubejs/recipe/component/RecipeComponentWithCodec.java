@@ -20,6 +20,6 @@ public record RecipeComponentWithCodec<T>(RecipeComponent<T> parent, Codec<T> co
 
 	@Override
 	public String toString() {
-		return "custom_codec<" + parent + ">";
+		return parent + "{custom_codec}";
 	}
 }

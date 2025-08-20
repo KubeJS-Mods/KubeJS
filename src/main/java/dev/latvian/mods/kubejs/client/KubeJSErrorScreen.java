@@ -178,7 +178,10 @@ public class KubeJSErrorScreen extends Screen {
 		private final FormattedCharSequence scriptLineText;
 		private final FormattedCharSequence timestampText;
 		private final List<FormattedCharSequence> errorText;
+		private final List<FormattedCharSequence> firstStackTraceLine;
 		private final List<FormattedCharSequence> stackTraceText;
+		private final List<FormattedCharSequence> fullStackTraceText;
+		private final int totalStackTraceSize;
 
 		public Entry(ErrorList errorList, Minecraft minecraft, int index, ConsoleLine line, Calendar calendar) {
 			this.errorList = errorList;
@@ -214,8 +217,46 @@ public class KubeJSErrorScreen extends Screen {
 			TimeJS.appendTimestamp(sb, calendar);
 			this.timestampText = Component.literal(sb.toString()).getVisualOrderText();
 
+			int maxWidth = minecraft.getWindow().getGuiScaledWidth() - 24;
+
 			this.errorText = new ArrayList<>(minecraft.font.split(Component.literal(line.message), errorList.getRowWidth()).stream().limit(3L).toList());
-			this.stackTraceText = line.stackTrace.isEmpty() ? List.of() : minecraft.font.split(Component.literal(String.join("\n", line.stackTrace)).setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY)), Integer.MAX_VALUE);
+
+			if (line.stackTrace.isEmpty()) {
+				this.firstStackTraceLine = List.of();
+				this.stackTraceText = List.of();
+				this.fullStackTraceText = List.of();
+				this.totalStackTraceSize = 0;
+			} else {
+				this.firstStackTraceLine = new ArrayList<>();
+				this.stackTraceText = new ArrayList<>();
+				this.fullStackTraceText = new ArrayList<>();
+
+				for (var l1 : line.stackTrace.getFirst().split("\n")) {
+					firstStackTraceLine.addAll(minecraft.font.split(Component.literal(l1).setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY)), maxWidth));
+				}
+
+				start:
+				for (int i = 1; i < line.stackTrace.size(); i++) {
+					for (var l1 : line.stackTrace.get(i).split("\n")) {
+
+						for (var l2 : minecraft.font.split(Component.literal(l1).setStyle(Style.EMPTY.withColor(ChatFormatting.DARK_GRAY)), Integer.MAX_VALUE)) {
+							stackTraceText.add(l2);
+
+							if (stackTraceText.size() >= 4) {
+								break start;
+							}
+						}
+					}
+				}
+
+				for (int i = 1; i < line.stackTrace.size(); i++) {
+					for (var l1 : line.stackTrace.get(i).split("\n")) {
+						fullStackTraceText.addAll(minecraft.font.split(Component.literal(l1).setStyle(Style.EMPTY.withColor(ChatFormatting.DARK_GRAY)), maxWidth));
+					}
+				}
+
+				this.totalStackTraceSize = firstStackTraceLine.size() + fullStackTraceText.size();
+			}
 		}
 
 		@Override
@@ -235,7 +276,7 @@ public class KubeJSErrorScreen extends Screen {
 				g.drawString(minecraft.font, errorText.get(i), x + 1, y + 13 + i * 10, col);
 			}
 
-			if (hovered && !stackTraceText.isEmpty()) {
+			if (hovered && totalStackTraceSize > 0) {
 				if (my < y + 10 && line.sourceLines.size() >= 3) {
 					var lines = new ArrayList<FormattedCharSequence>();
 
@@ -256,7 +297,15 @@ public class KubeJSErrorScreen extends Screen {
 
 					errorList.screen.setTooltipForNextRenderPass(lines);
 				} else {
-					errorList.screen.setTooltipForNextRenderPass(Screen.hasShiftDown() ? stackTraceText : stackTraceText.stream().limit(4L).toList());
+					var list = new ArrayList<>(firstStackTraceLine);
+
+					if (Screen.hasShiftDown()) {
+						list.addAll(fullStackTraceText);
+					} else {
+						list.addAll(stackTraceText);
+					}
+
+					errorList.screen.setTooltipForNextRenderPass(list);
 				}
 			}
 		}

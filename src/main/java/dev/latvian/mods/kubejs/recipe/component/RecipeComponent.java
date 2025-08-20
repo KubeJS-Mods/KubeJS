@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import dev.latvian.mods.kubejs.error.EmptyRecipeComponentValueException;
+import dev.latvian.mods.kubejs.error.EmptyRecipeComponentException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
@@ -16,6 +16,8 @@ import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -182,7 +184,7 @@ public interface RecipeComponent<T> {
 
 	default void validate(ErrorStack stack, T value) {
 		if (!allowEmpty() && isEmpty(value)) {
-			throw new EmptyRecipeComponentValueException(this);
+			throw new EmptyRecipeComponentException(this);
 		}
 	}
 
@@ -235,5 +237,11 @@ public interface RecipeComponent<T> {
 
 	default RecipeComponent<T> withCodec(Codec<T> codec) {
 		return new RecipeComponentWithCodec<>(this, codec);
+	}
+
+	@Nullable
+	@ApiStatus.Experimental
+	default RecipeComponentBuilder createBuilder() {
+		return null;
 	}
 }

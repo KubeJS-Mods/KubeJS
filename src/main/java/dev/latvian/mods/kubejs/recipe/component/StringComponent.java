@@ -35,6 +35,6 @@ public record StringComponent(RecipeComponentType<?> type, Codec<String> stringC
 
 	@Override
 	public String toString() {
-		return "string";
+		return type.toString();
 	}
 }
