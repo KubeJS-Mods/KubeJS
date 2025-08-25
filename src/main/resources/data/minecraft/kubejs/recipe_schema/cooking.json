@@ -30,7 +30,8 @@
 		{
 			"name": "category",
 			"type": "cooking_book_category",
-			"optional": "misc"
+			"optional": "misc",
+			"excluded": true
 		}
 	],
 	"unique": ["result"]

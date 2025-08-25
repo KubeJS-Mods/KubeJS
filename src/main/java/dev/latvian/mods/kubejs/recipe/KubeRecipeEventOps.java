@@ -12,6 +12,8 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.ExtraCodecs;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 
+import java.util.function.Function;
+
 public class KubeRecipeEventOps<T> extends ConditionalOps<T> {
 	private final RecipesKubeEvent event;
 
@@ -39,6 +41,13 @@ public class KubeRecipeEventOps<T> extends ConditionalOps<T> {
 			}
 		}
 	);
+
+	public static final Function<KubeRecipe, KubeRecipe> MARK_SYNTHETIC = r -> {
+		r.newRecipe = false;
+		return r;
+	};
+
+	public static final Codec<KubeRecipe> SYNTHETIC_CODEC = KUBE_RECIPE_CODEC.xmap(MARK_SYNTHETIC, MARK_SYNTHETIC);
 
 	public KubeRecipeEventOps(RecipesKubeEvent event, RegistryOps<T> ops) {
 		super(ops, event.registries);

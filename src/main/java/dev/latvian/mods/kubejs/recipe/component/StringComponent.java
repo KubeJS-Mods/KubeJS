@@ -5,18 +5,18 @@ import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ExtraCodecs;
 
-public record StringComponent(RecipeComponentType<?> type, Codec<String> stringCodec, boolean allowEmpty) implements RecipeComponent<String> {
-	public static final RecipeComponentType<String> ANY = RecipeComponentType.unit(KubeJS.id("string"), type -> new StringComponent(type, Codec.STRING, true));
-	public static final RecipeComponentType<String> NON_EMPTY = RecipeComponentType.unit(KubeJS.id("non_empty_string"), type -> new StringComponent(type, Codec.STRING, false));
+import java.util.ArrayList;
+import java.util.List;
+
+public record StringComponent(RecipeComponentType<?> type, Codec<String> codec, boolean allowEmpty) implements RecipeComponent<String> {
+	public static final RecipeComponentType<String> STRING = RecipeComponentType.unit(KubeJS.id("string"), type -> new StringComponent(type, ExtraCodecs.NON_EMPTY_STRING, false));
+	public static final RecipeComponentType<String> OPTIONAL_STRING = RecipeComponentType.unit(KubeJS.id("optional_string"), type -> new StringComponent(type, Codec.STRING, true));
 	public static final RecipeComponentType<String> ID = RecipeComponentType.unit(KubeJS.id("id"), type -> new StringComponent(type, Codec.STRING.validate(s -> ResourceLocation.read(s).map(ResourceLocation::toString)), false));
-
-	@Override
-	public Codec<String> codec() {
-		return stringCodec;
-	}
 
 	@Override
 	public TypeInfo typeInfo() {
@@ -36,5 +36,25 @@ public record StringComponent(RecipeComponentType<?> type, Codec<String> stringC
 	@Override
 	public String toString() {
 		return type.toString();
+	}
+
+	@Override
+	public List<Character> spread(String value) {
+		if (value.isEmpty()) {
+			return List.of();
+		}
+
+		var list = new ArrayList<Character>(value.length());
+
+		for (char c : value.toCharArray()) {
+			list.add(c);
+		}
+
+		return list;
+	}
+
+	@Override
+	public String toString(String value) {
+		return ScriptRuntime.escapeAndWrapString(value);
 	}
 }

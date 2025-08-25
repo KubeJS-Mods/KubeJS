@@ -13,19 +13,9 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
-public record FluidIngredientComponent(boolean allowEmpty) implements RecipeComponent<FluidIngredient> {
-	public static final RecipeComponentType<FluidIngredient> FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("fluid_ingredient"), new FluidIngredientComponent(false));
-	public static final RecipeComponentType<FluidIngredient> OPTIONAL_FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_fluid_ingredient"), new FluidIngredientComponent(true));
-
-	@Override
-	public RecipeComponentType<?> type() {
-		return allowEmpty ? OPTIONAL_FLUID_INGREDIENT : FLUID_INGREDIENT;
-	}
-
-	@Override
-	public Codec<FluidIngredient> codec() {
-		return FluidIngredient.CODEC;
-	}
+public record FluidIngredientComponent(RecipeComponentType<?> type, Codec<FluidIngredient> codec, boolean allowEmpty) implements RecipeComponent<FluidIngredient> {
+	public static final RecipeComponentType<FluidIngredient> FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("fluid_ingredient"), type -> new FluidIngredientComponent(type, FluidIngredient.CODEC_NON_EMPTY, false));
+	public static final RecipeComponentType<FluidIngredient> OPTIONAL_FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_fluid_ingredient"), type -> new FluidIngredientComponent(type, FluidIngredient.CODEC, true));
 
 	@Override
 	public TypeInfo typeInfo() {
@@ -56,6 +46,12 @@ public record FluidIngredientComponent(boolean allowEmpty) implements RecipeComp
 
 	@Override
 	public String toString() {
-		return allowEmpty ? "optional_fluid_ingredient" : "fluid_ingredient";
+		return type.toString();
+	}
+
+	@Override
+	public String toString(FluidIngredient value) {
+		// Better toString?
+		return value.toString();
 	}
 }

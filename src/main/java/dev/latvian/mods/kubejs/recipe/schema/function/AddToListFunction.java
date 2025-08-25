@@ -7,6 +7,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.Context;
 
@@ -36,10 +37,15 @@ public record AddToListFunction(String key) implements RecipeSchemaFunction {
 
 	public record Resolved<T>(RecipeKey<List<T>> key) implements ResolvedRecipeSchemaFunction {
 		@Override
-		public void execute(Context cx, KubeRecipe recipe, Object[] args) {
+		public List<RecipeComponent<?>> arguments() {
+			return List.of(key.component);
+		}
+
+		@Override
+		public void execute(Context cx, KubeRecipe recipe, List<Object> args) {
 			var value = recipe.getValue(key);
 			var list = value == null ? new ArrayList<T>() : new ArrayList<>(value);
-			list.addAll(key.component.wrap(cx, recipe, args));
+			list.addAll(key.component.wrap(cx, recipe, args.getFirst()));
 			recipe.setValue(key, list);
 		}
 	}

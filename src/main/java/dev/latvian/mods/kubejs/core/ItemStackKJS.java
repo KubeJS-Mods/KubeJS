@@ -208,7 +208,7 @@ public interface ItemStackKJS extends
 		return kjs$toItemString0(RegistryAccessContainer.of(cx).nbt());
 	}
 
-	default String kjs$toItemString0(DynamicOps<Tag> dynamicOps) {
+	default String kjs$toItemString0(@Nullable DynamicOps<Tag> dynamicOps) {
 		var is = kjs$self();
 		var count = is.getCount();
 

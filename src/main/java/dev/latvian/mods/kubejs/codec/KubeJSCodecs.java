@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.TimeJS;
+import dev.latvian.mods.rhino.type.ClassTypeInfo;
 import dev.latvian.mods.rhino.type.EnumTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.ResourceLocationException;
@@ -32,7 +33,13 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public interface KubeJSCodecs {
-	Codec<Character> CHARACTER = Codec.STRING.xmap(str -> str.charAt(0), Object::toString);
+	Codec<Character> CHARACTER = Codec.STRING.comapFlatMap(str -> {
+		if (str.length() != 1) {
+			return DataResult.error(() -> "Expected a single character, got empty string");
+		} else {
+			return DataResult.success(str.charAt(0));
+		}
+	}, Object::toString);
 
 	Codec<ResourceLocation> KUBEJS_ID = Codec.STRING.comapFlatMap(s -> {
 		try {
@@ -46,7 +53,7 @@ public interface KubeJSCodecs {
 		}
 	}, ID::reduceKjs).stable();
 
-	Codec<Class<?>> ENUM_CLASS = Codec.STRING.flatXmap(str -> {
+	Codec<Class<?>> ENUM_CLASS = Codec.STRING.comapFlatMap(str -> {
 		try {
 			var c = Class.forName(str);
 
@@ -58,15 +65,15 @@ public interface KubeJSCodecs {
 		} catch (ClassNotFoundException e) {
 			return DataResult.error(() -> "Could not find enum class: " + str);
 		}
-	}, c -> DataResult.success(c.getName()));
+	}, Class::getName);
 
-	Codec<EnumTypeInfo> ENUM_TYPE_INFO = ENUM_CLASS.flatXmap(c -> {
+	Codec<EnumTypeInfo> ENUM_TYPE_INFO = ENUM_CLASS.comapFlatMap(c -> {
 		if (TypeInfo.of(c) instanceof EnumTypeInfo info) {
 			return DataResult.success(info);
 		} else {
 			return DataResult.error(() -> "Class " + c.getTypeName() + " is not an enum!");
 		}
-	}, info -> DataResult.success(info.asClass()));
+	}, ClassTypeInfo::asClass);
 
 	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY = ResourceLocation.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::location);
 

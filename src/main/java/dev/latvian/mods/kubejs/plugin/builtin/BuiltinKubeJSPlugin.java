@@ -114,17 +114,16 @@ import dev.latvian.mods.kubejs.recipe.component.FluidIngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.FluidStackComponent;
 import dev.latvian.mods.kubejs.recipe.component.IngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.ItemStackComponent;
+import dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.MapRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NestedRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
-import dev.latvian.mods.kubejs.recipe.component.PairRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.component.RegistryComponent;
 import dev.latvian.mods.kubejs.recipe.component.ResourceKeyComponent;
 import dev.latvian.mods.kubejs.recipe.component.SizedFluidIngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.SizedIngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.StringComponent;
-import dev.latvian.mods.kubejs.recipe.component.StringGridComponent;
 import dev.latvian.mods.kubejs.recipe.component.TagKeyComponent;
 import dev.latvian.mods.kubejs.recipe.component.TimeComponent;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
@@ -140,6 +139,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.UnknownKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.function.AddToListFunction;
 import dev.latvian.mods.kubejs.recipe.schema.function.BundleFunction;
+import dev.latvian.mods.kubejs.recipe.schema.function.CustomFunction;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeSchemaFunctionRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.function.SetFunction;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedKubeRecipe;
@@ -593,25 +593,35 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	@Override
 	public void registerRecipeComponents(RecipeComponentTypeRegistry registry) {
 		registry.register(BooleanComponent.BOOLEAN);
-		registry.register(StringComponent.ANY);
-		registry.register(StringComponent.NON_EMPTY);
+		registry.register(StringComponent.STRING);
+		registry.register(StringComponent.OPTIONAL_STRING);
 		registry.register(StringComponent.ID);
 		registry.register(CharacterComponent.CHARACTER);
-		registry.register(StringGridComponent.STRING_GRID);
 
 		registry.register(NumberComponent.INT_TYPE);
 		registry.register(NumberComponent.LONG_TYPE);
 		registry.register(NumberComponent.FLOAT_TYPE);
 		registry.register(NumberComponent.DOUBLE_TYPE);
+		registry.register(NumberComponent.NON_NEGATIVE_INT);
+		registry.register(NumberComponent.POSITIVE_INT);
+		registry.register(NumberComponent.NON_NEGATIVE_LONG);
+		registry.register(NumberComponent.POSITIVE_LONG);
+
+		registry.register(ListRecipeComponent.TYPE);
+		registry.register(EnumComponent.TYPE);
+		registry.register(MapRecipeComponent.TYPE);
+		registry.register(MapRecipeComponent.PATTERN_TYPE);
+		registry.register(EitherRecipeComponent.TYPE);
+		registry.register(CustomObjectRecipeComponent.TYPE);
 
 		registry.register(IngredientComponent.INGREDIENT);
 		registry.register(IngredientComponent.OPTIONAL_INGREDIENT);
 		registry.register(IngredientComponent.UNWRAPPED_INGREDIENT_LIST);
 
+		registry.register(SizedIngredientComponent.SIZED_INGREDIENT);
+		registry.register(SizedIngredientComponent.OPTIONAL_SIZED_INGREDIENT);
 		registry.register(SizedIngredientComponent.FLAT);
-		registry.register(SizedIngredientComponent.NESTED);
 		registry.register(SizedIngredientComponent.OPTIONAL_FLAT);
-		registry.register(SizedIngredientComponent.OPTIONAL_NESTED);
 
 		registry.register(ItemStackComponent.ITEM_STACK);
 		registry.register(ItemStackComponent.OPTIONAL_ITEM_STACK);
@@ -655,17 +665,12 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		registry.register(TagKeyComponent.TYPE);
 		registry.register(RegistryComponent.TYPE);
-		registry.register(EnumComponent.TYPE);
-		registry.register(MapRecipeComponent.TYPE);
-		registry.register(MapRecipeComponent.PATTERN_TYPE);
-		registry.register(EitherRecipeComponent.TYPE);
 		registry.register(ResourceKeyComponent.TYPE);
-		registry.register(PairRecipeComponent.TYPE);
-		registry.register(CustomObjectRecipeComponent.TYPE);
 	}
 
 	@Override
 	public void registerRecipeSchemaFunctionTypes(RecipeSchemaFunctionRegistry registry) {
+		registry.register(CustomFunction.TYPE);
 		registry.register(BundleFunction.TYPE);
 		registry.register(SetFunction.TYPE);
 		registry.register(AddToListFunction.TYPE);

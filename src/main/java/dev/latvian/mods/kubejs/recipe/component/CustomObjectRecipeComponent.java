@@ -81,6 +81,8 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 
 	private final List<Key> keys;
 	public Predicate<Set<String>> hasPriority;
+	private Codec<List<Value>> codec;
+	private TypeInfo typeInfo;
 
 	public CustomObjectRecipeComponent(List<Key> keys) {
 		this.keys = List.copyOf(keys);
@@ -151,18 +153,26 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 
 	@Override
 	public Codec<List<Value>> codec() {
-		return mapCodec().codec();
+		if (codec == null) {
+			codec = mapCodec().codec();
+		}
+
+		return codec;
 	}
 
 	@Override
 	public TypeInfo typeInfo() {
-		var list = new ArrayList<JSOptionalParam>(keys.size());
+		if (typeInfo == null) {
+			var list = new ArrayList<JSOptionalParam>(keys.size());
 
-		for (var key : keys) {
-			list.add(new JSOptionalParam(key.name, key.component.typeInfo(), key.optional()));
+			for (var key : keys) {
+				list.add(new JSOptionalParam(key.name, key.component.typeInfo(), key.optional()));
+			}
+
+			typeInfo = new JSObjectTypeInfo(list);
 		}
 
-		return new JSObjectTypeInfo(list);
+		return typeInfo;
 	}
 
 	@Override

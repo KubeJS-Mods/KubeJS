@@ -48,6 +48,7 @@ import java.util.Optional;
 
 public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public static final String CHANGED_MARKER = "_kubejs_changed_marker";
+	public static final TypeInfo TYPE_INFO = TypeInfo.of(KubeRecipe.class);
 
 	public ResourceLocation id;
 	public RecipeTypeFunction type;
@@ -198,7 +199,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			v.validate(stack, sourceLine);
 		}
 
+		validate(stack);
 		stack.pop();
+	}
+
+	public void validate(ErrorStack stack) {
 	}
 
 	public final void save() {
@@ -243,7 +248,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		return false;
 	}
 
-	// RecipeKJS methods //
+	// RecipeLikeKJS methods //
 
 	@Override
 	@Deprecated
@@ -254,6 +259,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 
 	@Override
 	@Deprecated
+	@HideFromJS
 	public final void kjs$setGroup(String group) {
 		if (!kjs$getGroup().equals(group)) {
 			if (group.isEmpty()) {
@@ -485,7 +491,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 
 			if (recipeIngredientActions != null && !recipeIngredientActions.isEmpty()) {
 				try {
-					json.add(KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, IngredientActionHolder.LIST_CODEC.encodeStart(type.event.registries.json(), recipeIngredientActions).getOrThrow());
+					json.add(KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, IngredientActionHolder.LIST_CODEC.encodeStart(type.event.jsonOps, recipeIngredientActions).getOrThrow());
 				} catch (Throwable ex) {
 					ConsoleJS.SERVER.error("Failed to encode " + KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, sourceLine, ex, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
 				}

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.schema.minecraft;
 
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
@@ -26,14 +25,6 @@ public class ShapedKubeRecipe extends KubeRecipe {
 		super.afterLoaded(stack);
 		var pattern = new ArrayList<>(getValue(patternKey));
 		var key = getValue(keyKey);
-
-		if (pattern.isEmpty()) {
-			throw new KubeRuntimeException("Pattern is empty!");
-		}
-
-		if (key.isEmpty()) {
-			throw new KubeRuntimeException("Key map is empty!");
-		}
 
 		List<Character> airs = null;
 

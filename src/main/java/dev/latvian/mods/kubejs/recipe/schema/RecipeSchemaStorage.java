@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
@@ -98,7 +99,17 @@ public class RecipeSchemaStorage {
 		ServerEvents.RECIPE_MAPPING_REGISTRY.post(ScriptType.SERVER, mappingRegistry);
 
 		var componentTypes = new HashMap<ResourceLocation, RecipeComponentType<?>>();
-		var rcCtx = new RecipeComponentCodecFactory.Context(registries, this, KubeJSCodecs.KUBEJS_ID.xmap(componentTypes::get, RecipeComponentType::id), new MutableObject<>());
+		Codec<RecipeComponentType<?>> typeCodec = KubeJSCodecs.KUBEJS_ID.flatXmap(id -> {
+			var type = componentTypes.get(id);
+
+			if (type == null) {
+				return DataResult.error(() -> "Unknown recipe component type: " + ID.reduceKjs(id));
+			} else {
+				return DataResult.success(type);
+			}
+		}, type -> DataResult.success(type.id()));
+
+		var rcCtx = new RecipeComponentCodecFactory.Context(registries, this, typeCodec, new MutableObject<>());
 
 		rcCtx.unsetCodec().setValue(
 			Codec.either(

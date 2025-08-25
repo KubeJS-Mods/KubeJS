@@ -40,7 +40,7 @@ import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
@@ -55,7 +55,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -557,24 +557,54 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 	}
 
-	private void printTypes(Predicate<RecipeSchemaType> predicate) {
+	private void printTypes(Predicate<RecipeSchemaType> predicate, boolean all) {
 		int t = 0;
-		var map = new Reference2ObjectOpenHashMap<RecipeSchema, Set<ResourceLocation>>();
+		var map = new Reference2ObjectLinkedOpenHashMap<RecipeSchema, Set<ResourceLocation>>();
 
 		for (var ns : recipeSchemaStorage.namespaces.values()) {
 			for (var type : ns.values()) {
 				if (predicate.test(type)) {
 					t++;
-					map.computeIfAbsent(type.schema, s -> new HashSet<>()).add(type.id);
+					map.computeIfAbsent(type.schema, s -> new LinkedHashSet<>()).add(type.id);
 				}
 			}
+		}
+
+		if (all) {
+			ConsoleJS.SERVER.info("- All recipe types");
+			ConsoleJS.SERVER.info("  - .id(id)");
+			ConsoleJS.SERVER.info("  - .group(string)");
+			ConsoleJS.SERVER.info("  - .set(key, value)");
+			ConsoleJS.SERVER.info("  - .merge(json)");
+			ConsoleJS.SERVER.info("- All crafting table recipe types");
+			ConsoleJS.SERVER.info("  - .stage(string)");
+			ConsoleJS.SERVER.info("  - .damageIngredient(filter, int?)");
+			ConsoleJS.SERVER.info("  - .replaceIngredient(filter, item_stack)");
+			ConsoleJS.SERVER.info("  - .customIngredientAction(filter, string)");
+			ConsoleJS.SERVER.info("  - .keepIngredient(filter)");
+			ConsoleJS.SERVER.info("  - .consumeIngredient(filter)");
+			ConsoleJS.SERVER.info("  - .modifyResult(string)");
 		}
 
 		for (var entry : map.entrySet()) {
 			ConsoleJS.SERVER.info("- " + entry.getValue().stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")));
 
 			for (var c : entry.getKey().constructors().values()) {
-				ConsoleJS.SERVER.info("  - " + c);
+				ConsoleJS.SERVER.info("  - " + c.toString());
+			}
+
+			for (var key : entry.getKey().keys) {
+				var name = key.getPreferredBuilderKey().replace(':', '_').replace('/', '_');
+
+				if (RecipeFunction.isValidIdentifier(name.toCharArray())) {
+					ConsoleJS.SERVER.info("  - ." + name + "(" + key.component + ")");
+				}
+			}
+
+			for (var f : entry.getKey().functions.values()) {
+				if (RecipeFunction.isValidIdentifier(f.name().toCharArray())) {
+					ConsoleJS.SERVER.info("  - ." + f.toString());
+				}
 			}
 		}
 
@@ -584,12 +614,12 @@ public class RecipesKubeEvent implements KubeEvent {
 	public void printTypes(Context cx) {
 		ConsoleJS.SERVER.info("== All recipe types [used] ==");
 		var set = reduceRecipesAsync(cx, ConstantFilter.TRUE, s -> s.map(r -> r.type.id).collect(Collectors.toSet()));
-		printTypes(t -> set.contains(t.id));
+		printTypes(t -> set.contains(t.id), false);
 	}
 
 	public void printAllTypes() {
 		ConsoleJS.SERVER.info("== All recipe types [available] ==");
-		printTypes(t -> BuiltInRegistries.RECIPE_SERIALIZER.get(t.id) != null);
+		printTypes(t -> BuiltInRegistries.RECIPE_SERIALIZER.get(t.id) != null, true);
 	}
 
 	public void printExamples(String type) {

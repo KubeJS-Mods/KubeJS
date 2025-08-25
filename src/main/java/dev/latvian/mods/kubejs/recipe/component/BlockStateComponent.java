@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 public record BlockStateComponent(RecipeComponentType<?> type, boolean preferObjectForm, boolean allowEmpty) implements RecipeComponent<BlockState> {
+	public static final TypeInfo TYPE_INFO = TypeInfo.of(BlockState.class);
 	public static final RecipeComponentType<BlockState> BLOCK = RecipeComponentType.unit(KubeJS.id("block_state"), type -> new BlockStateComponent(type, true, false));
 	public static final RecipeComponentType<BlockState> BLOCK_STRING = RecipeComponentType.unit(KubeJS.id("block_state_string"), type -> new BlockStateComponent(type, false, false));
 	public static final RecipeComponentType<BlockState> OPTIONAL_BLOCK = RecipeComponentType.unit(KubeJS.id("optional_block_state"), type -> new BlockStateComponent(type, true, true));
@@ -30,7 +31,7 @@ public record BlockStateComponent(RecipeComponentType<?> type, boolean preferObj
 
 	@Override
 	public TypeInfo typeInfo() {
-		return TypeInfo.of(BlockState.class);
+		return TYPE_INFO;
 	}
 
 	@Override
@@ -73,5 +74,10 @@ public record BlockStateComponent(RecipeComponentType<?> type, boolean preferObj
 	@Override
 	public String toString() {
 		return type.toString();
+	}
+
+	@Override
+	public String toString(BlockState value) {
+		return value.kjs$toString();
 	}
 }

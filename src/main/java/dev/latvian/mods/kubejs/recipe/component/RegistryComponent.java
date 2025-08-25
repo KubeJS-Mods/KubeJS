@@ -27,29 +27,29 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
 
-public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<T> regType, Codec<Holder<T>> codec) implements RecipeComponent<Holder<T>> {
+public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<T> regType, Codec<Holder<T>> codec, TypeInfo typeInfo) implements RecipeComponent<Holder<T>> {
 	public static final RecipeComponentType<RegistryComponent<?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("registry_element"), (RecipeComponentCodecFactory<RegistryComponent<?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		KubeJSCodecs.REGISTRY_KEY_CODEC.fieldOf("registry").forGetter(c -> c.registry.key())
 	).apply(instance, key -> new RegistryComponent<>(ctx.registries(), key))));
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
+	public RegistryComponent(RegistryAccessContainer registries, @Nullable RegistryType<T> regType, ResourceKey key) {
+		this(
+			(Registry) registries.access().registry(key).orElseThrow(),
+			regType,
+			RegistryFixedCodec.create(key),
+			regType == null || regType.type() == TypeInfo.STRING ? TypeInfo.STRING : TypeInfo.STRING.or(regType.type())
+		);
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public RegistryComponent(RegistryAccessContainer registries, ResourceKey key) {
-		this((Registry) registries.access().registry(key).orElseThrow(), (RegistryType) RegistryType.ofKey(key), RegistryFixedCodec.create(key));
+		this(registries, (RegistryType) RegistryType.ofKey(key), key);
 	}
 
 	@Override
 	public RecipeComponentType<?> type() {
 		return TYPE;
-	}
-
-	@Override
-	public Codec<Holder<T>> codec() {
-		return codec;
-	}
-
-	@Override
-	public TypeInfo typeInfo() {
-		return regType == null || regType.type() == TypeInfo.STRING ? TypeInfo.STRING : TypeInfo.STRING.or(regType.type());
 	}
 
 	@Override

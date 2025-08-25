@@ -9,13 +9,18 @@ import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public record SizedIngredientComponent(RecipeComponentType<?> type, Codec<SizedIngredient> codec, boolean allowEmpty) implements RecipeComponent<SizedIngredient> {
+	public static final RecipeComponentType<SizedIngredient> SIZED_INGREDIENT = RecipeComponentType.unit(KubeJS.id("sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, false));
+	public static final RecipeComponentType<SizedIngredient> OPTIONAL_SIZED_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, true));
+
 	public static final RecipeComponentType<SizedIngredient> FLAT = RecipeComponentType.unit(KubeJS.id("flat_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.FLAT_CODEC, false));
-	public static final RecipeComponentType<SizedIngredient> NESTED = RecipeComponentType.unit(KubeJS.id("nested_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, false));
 	public static final RecipeComponentType<SizedIngredient> OPTIONAL_FLAT = RecipeComponentType.unit(KubeJS.id("optional_flat_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.FLAT_CODEC, true));
-	public static final RecipeComponentType<SizedIngredient> OPTIONAL_NESTED = RecipeComponentType.unit(KubeJS.id("optional_nested_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, true));
 
 	@Override
 	public TypeInfo typeInfo() {
@@ -55,5 +60,25 @@ public record SizedIngredientComponent(RecipeComponentType<?> type, Codec<SizedI
 	@Override
 	public String toString() {
 		return type.toString();
+	}
+
+	@Override
+	public List<Ingredient> spread(SizedIngredient value) {
+		int count = value.count();
+
+		if (count <= 0) {
+			return List.of();
+		} else if (count == 1) {
+			return List.of(value.ingredient());
+		} else {
+			var list = new ArrayList<Ingredient>(count);
+			var in = value.ingredient();
+
+			for (int i = 0; i < count; i++) {
+				list.add(in);
+			}
+
+			return list;
+		}
 	}
 }

@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.event.BlockEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.web.RelativeURL;
 import dev.latvian.mods.rhino.Context;
@@ -75,5 +76,35 @@ public interface BlockStateKJS extends RegistryObjectKJS<Block>, Replaceable {
 
 	default RelativeURL kjs$getWebIconURL(int size) {
 		return new RelativeURL("/img/" + size + "/block/" + ID.url(kjs$getIdLocation()));
+	}
+
+	default String kjs$toString() {
+		var state = (BlockState) this;
+		var sb = new StringBuilder();
+		sb.append(state.getBlock().builtInRegistryHolder().getKey().location());
+		boolean first = true;
+
+		for (var prop : state.getProperties()) {
+			var value = state.getValue(prop);
+
+			if (!value.equals(state.getBlock().defaultBlockState().getValue(prop))) {
+				if (first) {
+					sb.append('[');
+					first = false;
+				} else {
+					sb.append(',');
+				}
+
+				sb.append(prop.getName());
+				sb.append('=');
+				sb.append(prop.getName(Cast.to(value)));
+			}
+		}
+
+		if (!first) {
+			sb.append(']');
+		}
+
+		return sb.toString();
 	}
 }

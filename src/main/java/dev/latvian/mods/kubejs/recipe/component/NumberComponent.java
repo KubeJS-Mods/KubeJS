@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 
 public interface NumberComponent<S, T extends Number> extends RecipeComponent<T> {
@@ -50,6 +51,11 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		Codec.DOUBLE.optionalFieldOf("min", 0D).forGetter(DoubleRange::min),
 		Codec.DOUBLE.optionalFieldOf("max", Double.POSITIVE_INFINITY).forGetter(DoubleRange::max)
 	).apply(instance, NumberComponent::doubleRange)));
+
+	RecipeComponentType<Integer> NON_NEGATIVE_INT = RecipeComponentType.unit(KubeJS.id("non_negative_int"), new IntRange(0, Integer.MAX_VALUE, ExtraCodecs.NON_NEGATIVE_INT));
+	RecipeComponentType<Integer> POSITIVE_INT = RecipeComponentType.unit(KubeJS.id("positive_int"), new IntRange(1, Integer.MAX_VALUE, ExtraCodecs.POSITIVE_INT));
+	RecipeComponentType<Long> NON_NEGATIVE_LONG = RecipeComponentType.unit(KubeJS.id("non_negative_long"), longRange(0L, Long.MAX_VALUE));
+	RecipeComponentType<Long> POSITIVE_LONG = RecipeComponentType.unit(KubeJS.id("positive_long"), longRange(1L, Long.MAX_VALUE));
 
 	private static Number numberOf(Object from) {
 		if (from instanceof Number n) {

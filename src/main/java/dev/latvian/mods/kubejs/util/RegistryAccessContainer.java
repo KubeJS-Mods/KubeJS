@@ -146,18 +146,6 @@ public final class RegistryAccessContainer implements ICondition.IContext {
 		}
 	}
 
-	public <T> T decodeJson(Codec<T> codec, JsonElement from) {
-		return codec.decode(json, from).getOrThrow().getFirst();
-	}
-
-	public <T> T decodeNbt(Codec<T> codec, Tag from) {
-		return codec.decode(nbt, from).getOrThrow().getFirst();
-	}
-
-	public <T> T decodeJson(MapCodec<T> mapCodec, JsonElement from) {
-		return mapCodec.decode(json, json.getMap(from).getOrThrow()).getOrThrow();
-	}
-
 	public <T> T decode(Context cx, Codec<T> codec, Object o) {
 		return (switch (o) {
 			case Tag tag -> codec.decode(nbt, tag);

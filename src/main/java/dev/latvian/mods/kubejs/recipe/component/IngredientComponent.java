@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.item.Items;
@@ -20,13 +19,13 @@ public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient>
 	public static final RecipeComponentType<Ingredient> INGREDIENT = RecipeComponentType.unit(KubeJS.id("ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC_NONEMPTY, false));
 	public static final RecipeComponentType<Ingredient> OPTIONAL_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC, true));
 
-	public static final RecipeComponentType<List<Ingredient>> UNWRAPPED_INGREDIENT_LIST = RecipeComponentType.unit(KubeJS.id("unwrapped_ingredient_list"), new RecipeComponentWithParent<>() {
+	public static final RecipeComponentType<List<Ingredient>> UNWRAPPED_INGREDIENT_LIST = RecipeComponentType.unit(KubeJS.id("spread_ingredient_list"), type -> new RecipeComponentWithParent<>() {
 		private static final RecipeComponent<List<Ingredient>> PARENT = OPTIONAL_INGREDIENT.instance().asList();
 		private static final TypeInfo WRAP_TYPE = TypeInfo.RAW_LIST.withParams(TypeInfo.of(SizedIngredient.class));
 
 		@Override
 		public RecipeComponentType<?> type() {
-			return UNWRAPPED_INGREDIENT_LIST;
+			return type;
 		}
 
 		@Override
@@ -56,7 +55,7 @@ public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient>
 
 		@Override
 		public String toString() {
-			return "unwrapped_ingredient_list";
+			return type.toString();
 		}
 	});
 
@@ -99,11 +98,6 @@ public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient>
 	}
 
 	@Override
-	public RecipeComponent<TinyMap<Character, Ingredient>> asPatternKey() {
-		return MapRecipeComponent.INGREDIENT_PATTERN_KEY;
-	}
-
-	@Override
 	public void buildUniqueId(UniqueIdBuilder builder, Ingredient value) {
 		var tag = IngredientWrapper.tagKeyOf(value);
 
@@ -121,5 +115,10 @@ public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient>
 	@Override
 	public String toString() {
 		return type.toString();
+	}
+
+	@Override
+	public String toString(Ingredient value) {
+		return value.kjs$toIngredientString(null);
 	}
 }

@@ -46,7 +46,7 @@ public record BundleFunction(List<RecipeSchemaFunction> functions) implements Re
 
 	public record Resolved(List<ResolvedRecipeSchemaFunction> functions) implements ResolvedRecipeSchemaFunction {
 		@Override
-		public void execute(Context cx, KubeRecipe recipe, Object[] args) {
+		public void execute(Context cx, KubeRecipe recipe, List<Object> args) {
 			for (var function : functions) {
 				function.execute(cx, recipe, args);
 			}

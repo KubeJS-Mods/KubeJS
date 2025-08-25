@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.client.icon;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.codec.KubeJSStreamCodecs;
@@ -17,7 +18,16 @@ import java.util.Map;
 public record KubeIconType<T extends KubeIcon>(ResourceLocation id, MapCodec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
 	public static final Lazy<Map<ResourceLocation, KubeIconType<?>>> TYPES = Lazy.map(map -> KubeJSPlugins.forEachPlugin(type -> map.put(type.id, type), KubeJSPlugin::registerIconTypes));
 
-	public static final Codec<KubeIconType<?>> CODEC = KubeJSCodecs.KUBEJS_ID.xmap(s -> TYPES.get().get(s), KubeIconType::id);
+	public static final Codec<KubeIconType<?>> CODEC = KubeJSCodecs.KUBEJS_ID.comapFlatMap(id -> {
+		var type = TYPES.get().get(id);
+
+		if (type != null) {
+			return DataResult.success(type);
+		} else {
+			return DataResult.error(() -> "Unknown icon type: " + id);
+		}
+	}, KubeIconType::id);
+
 	public static final StreamCodec<RegistryFriendlyByteBuf, KubeIconType<?>> STREAM_CODEC = KubeJSStreamCodecs.KUBEJS_ID.map(s -> TYPES.get().get(s), KubeIconType::id);
 
 	public KubeIconType(ResourceLocation id, MapCodec<T> codec) {

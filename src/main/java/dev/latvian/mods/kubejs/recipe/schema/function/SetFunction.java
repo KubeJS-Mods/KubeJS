@@ -11,6 +11,8 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.util.ExtraCodecs;
 
+import java.util.List;
+
 public record SetFunction(String key, JsonElement value) implements RecipeSchemaFunction {
 	public static final RecipeSchemaFunctionType<SetFunction> TYPE = new RecipeSchemaFunctionType<>("set", RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.STRING.fieldOf("key").forGetter(SetFunction::key),
@@ -41,7 +43,7 @@ public record SetFunction(String key, JsonElement value) implements RecipeSchema
 
 	public record Resolved<T>(RecipeKey<T> key, T to) implements ResolvedRecipeSchemaFunction {
 		@Override
-		public void execute(Context cx, KubeRecipe recipe, Object[] args) {
+		public void execute(Context cx, KubeRecipe recipe, List<Object> args) {
 			recipe.setValue(key, to);
 		}
 	}

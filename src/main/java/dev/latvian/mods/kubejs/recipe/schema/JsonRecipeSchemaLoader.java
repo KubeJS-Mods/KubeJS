@@ -5,8 +5,10 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.schema.function.RecipeFunctionInstance;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeSchemaFunction;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
@@ -198,17 +200,15 @@ public class JsonRecipeSchemaLoader {
 								}
 							}
 
-							var constructor = new RecipeConstructor(cKeys.toArray(new RecipeKey[0]));
+							var constructor = new RecipeConstructor(List.copyOf(cKeys));
 
 							if (!c.overrides().isEmpty()) {
-								constructor.overrides = new Reference2ObjectOpenHashMap<>(c.overrides().size());
-
 								for (var entry : c.overrides().entrySet()) {
 									var key = keyMap.get(entry.getKey());
 
 									if (key != null) {
 										try {
-											constructor.overrides.put(key, new RecipeOptional.Constant(key.codec.decode(jsonOps, entry.getValue()).getOrThrow().getFirst()));
+											constructor.overrideValue(key, Cast.to(key.codec.parse(jsonOps, entry.getValue()).getOrThrow()));
 										} catch (Exception ex) {
 											throw new IllegalArgumentException("Failed to create optional value for key '" + key + "' of '" + id + "' from " + entry.getValue(), ex);
 										}
@@ -226,7 +226,7 @@ public class JsonRecipeSchemaLoader {
 						var func = entry.getValue().resolve(jsonOps, schema);
 
 						if (func.isSuccess()) {
-							schema.function(entry.getKey(), func.getOrThrow());
+							schema.function(new RecipeFunctionInstance(entry.getKey(), func.getOrThrow()));
 						} else {
 							throw new NullPointerException("Failed to parse function '" + entry.getKey() + "' of recipe schema '" + id + "': " + func.error().map(DataResult.Error::message).orElse("Unknown Error"));
 						}
@@ -357,9 +357,27 @@ public class JsonRecipeSchemaLoader {
 			}
 		}
 
-		for (var holder : map.values()) {
-			var schema = holder.getSchema(jsonOps);
-			event.namespace(holder.id.getNamespace()).register(holder.id.getPath(), schema);
+		for (var builder : map.values()) {
+			var schema = builder.getSchema(jsonOps);
+			System.out.println("SCHEMA " + builder.id);
+
+			for (var constructor : schema.constructors().values()) {
+				for (var key : schema.keys) {
+					if (key.optional != null && !constructor.keys.contains(key) && !constructor.overrides.containsKey(key)) {
+						constructor.defaultValue(key, Cast.to(key.optional));
+						System.out.println("- V DEF " + key.toString());
+					} else {
+						System.out.println("- X NOP " + key.toString());
+					}
+				}
+
+				System.out.println("^ " + constructor);
+			}
+		}
+
+		for (var builder : map.values()) {
+			var schema = builder.getSchema(jsonOps);
+			event.namespace(builder.id.getNamespace()).register(builder.id.getPath(), schema);
 		}
 	}
 }

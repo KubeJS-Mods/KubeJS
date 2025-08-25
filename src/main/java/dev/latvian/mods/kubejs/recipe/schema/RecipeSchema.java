@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.UniqueIdBuilder;
 import dev.latvian.mods.kubejs.recipe.schema.function.AddToListFunction;
-import dev.latvian.mods.kubejs.recipe.schema.function.ResolvedRecipeSchemaFunction;
+import dev.latvian.mods.kubejs.recipe.schema.function.RecipeFunctionInstance;
 import dev.latvian.mods.kubejs.recipe.schema.function.SetFunction;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
@@ -44,7 +44,7 @@ public class RecipeSchema {
 	public final List<RecipeKey<?>> keys;
 	public final List<RecipeKey<?>> includedKeys;
 	public final Map<RecipeKey<?>, RecipeOptional<?>> keyOverrides;
-	public final Map<String, ResolvedRecipeSchemaFunction> functions;
+	public final Map<String, RecipeFunctionInstance> functions;
 	private int inputCount;
 	private int outputCount;
 	private int minRequiredArguments;
@@ -257,17 +257,17 @@ public class RecipeSchema {
 		return r;
 	}
 
-	public RecipeSchema function(String name, ResolvedRecipeSchemaFunction function) {
-		this.functions.put(name, function);
+	public RecipeSchema function(RecipeFunctionInstance function) {
+		this.functions.put(function.name(), function);
 		return this;
 	}
 
 	public <T> RecipeSchema setOpFunction(String name, RecipeKey<T> key, T value) {
-		return function(name, new SetFunction.Resolved<>(key, value));
+		return function(new RecipeFunctionInstance(name, new SetFunction.Resolved<>(key, value)));
 	}
 
 	public <T> RecipeSchema addToListOpFunction(String name, RecipeKey<List<T>> key) {
-		return function(name, new AddToListFunction.Resolved<>(key));
+		return function(new RecipeFunctionInstance(name, new AddToListFunction.Resolved<>(key)));
 	}
 
 	@Nullable

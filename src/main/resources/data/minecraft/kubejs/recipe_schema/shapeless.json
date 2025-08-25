@@ -9,14 +9,36 @@
 		{
 			"name": "ingredients",
 			"role": "input",
-			"type": "unwrapped_ingredient_list"
+			"type": {
+				"type": "list",
+				"component": "ingredient",
+				"spread": "sized_ingredient"
+			}
 		},
 		{
 			"name": "category",
 			"role": "other",
 			"type": "crafting_book_category",
-			"optional": "misc"
+			"optional": "misc",
+			"excluded": true
 		}
 	],
-	"unique": ["result"]
+	"unique": ["result"],
+	"functions": {
+		"buildingCategory": {
+			"type": "set",
+			"key": "category",
+			"value": "building"
+		},
+		"redstoneCategory": {
+			"type": "set",
+			"key": "category",
+			"value": "redstone"
+		},
+		"equipmentCategory": {
+			"type": "set",
+			"key": "category",
+			"value": "equipment"
+		}
+	}
 }

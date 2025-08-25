@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
-public record TagKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, ResourceKey<? extends Registry<T>> registry, TypeInfo registryType) implements RecipeComponent<TagKey<T>> {
+public record TagKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, ResourceKey<? extends Registry<T>> registry, TypeInfo registryType, Codec<TagKey<T>> codec, TypeInfo typeInfo) implements RecipeComponent<TagKey<T>> {
 	private static final TypeInfo TAG_KEY_TYPE = TypeInfo.of(TagKey.class);
 
 	public static final RecipeComponentType<TagKey<Block>> BLOCK = RecipeComponentType.unit(KubeJS.id("block_tag"), type -> new TagKeyComponent<>(type, Registries.BLOCK, TypeInfo.of(Block.class)));
@@ -54,19 +54,13 @@ public record TagKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, 
 		KubeJSCodecs.REGISTRY_KEY_CODEC.fieldOf("registry").forGetter(TagKeyComponent::registry)
 	).apply(instance, TagKeyComponent::of)));
 
+	public TagKeyComponent(@Nullable RecipeComponentType<?> typeOverride, ResourceKey<? extends Registry<T>> registry, TypeInfo registryType) {
+		this(typeOverride, registry, registryType, TagKey.codec(registry), registryType.shouldConvert() ? TAG_KEY_TYPE : TAG_KEY_TYPE.withParams(registryType));
+	}
+
 	@Override
 	public RecipeComponentType<?> type() {
 		return typeOverride == null ? TYPE : typeOverride;
-	}
-
-	@Override
-	public Codec<TagKey<T>> codec() {
-		return TagKey.codec(registry);
-	}
-
-	@Override
-	public TypeInfo typeInfo() {
-		return registryType.shouldConvert() ? TAG_KEY_TYPE : TAG_KEY_TYPE.withParams(registryType);
 	}
 
 	@Override
@@ -96,6 +90,10 @@ public record TagKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, 
 
 	@Override
 	public String toString() {
-		return "tag<" + ID.reduce(registry.location()) + ">";
+		if (typeOverride != null) {
+			return typeOverride.toString();
+		} else {
+			return "tag<" + ID.reduce(registry.location()) + ">";
+		}
 	}
 }

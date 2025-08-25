@@ -4,58 +4,51 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.error.RecipeComponentTooLargeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ErrorStack;
+import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Map;
 
-public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V> component, boolean patternKey) implements RecipeComponent<TinyMap<K, V>> {
-	public static final MapRecipeComponent<Character, Ingredient> INGREDIENT_PATTERN_KEY = new MapRecipeComponent<>(CharacterComponent.CHARACTER.instance(), IngredientComponent.INGREDIENT.instance(), true);
-
-	public static <K, V> MapRecipeComponent<K, V> of(RecipeComponent<K> key, RecipeComponent<V> component) {
-		if (key == CharacterComponent.CHARACTER.instance() && component == INGREDIENT_PATTERN_KEY.component) {
-			return Cast.to(INGREDIENT_PATTERN_KEY);
-		}
-
-		return new MapRecipeComponent<>(key, component, false);
+public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V> component, boolean patternKey, IntBounds bounds, Codec<TinyMap<K, V>> codec, TypeInfo typeInfo) implements RecipeComponent<TinyMap<K, V>> {
+	public static <K, V> MapRecipeComponent<K, V> of(RecipeComponent<K> key, RecipeComponent<V> component, IntBounds bounds) {
+		return new MapRecipeComponent<>(key, component, bounds, false);
 	}
 
-	public static <V> MapRecipeComponent<Character, V> patternOf(RecipeComponent<V> component) {
-		if (component == INGREDIENT_PATTERN_KEY.component) {
-			return Cast.to(INGREDIENT_PATTERN_KEY);
-		}
-
-		return new MapRecipeComponent<>(CharacterComponent.CHARACTER.instance(), component, true);
+	public static <V> MapRecipeComponent<Character, V> patternOf(RecipeComponent<V> component, IntBounds bounds) {
+		return new MapRecipeComponent<>(CharacterComponent.CHARACTER.instance(), component, bounds, true);
 	}
 
 	public static final RecipeComponentType<TinyMap<?, ?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("map"), (RecipeComponentCodecFactory<MapRecipeComponent<?, ?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		ctx.codec().fieldOf("key").forGetter(MapRecipeComponent::key),
-		ctx.codec().fieldOf("component").forGetter(MapRecipeComponent::component)
+		ctx.codec().fieldOf("component").forGetter(MapRecipeComponent::component),
+		IntBounds.MAP_CODEC.forGetter(MapRecipeComponent::bounds)
 	).apply(instance, MapRecipeComponent::of)));
 
 	public static final RecipeComponentType<TinyMap<?, ?>> PATTERN_TYPE = RecipeComponentType.dynamic(KubeJS.id("pattern"), (RecipeComponentCodecFactory<MapRecipeComponent<?, ?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
-		ctx.codec().fieldOf("component").forGetter(MapRecipeComponent::component)
+		ctx.codec().fieldOf("component").forGetter(MapRecipeComponent::component),
+		IntBounds.MAP_CODEC.forGetter(MapRecipeComponent::bounds)
 	).apply(instance, MapRecipeComponent::patternOf)));
+
+	public MapRecipeComponent(RecipeComponent<K> key, RecipeComponent<V> component, IntBounds bounds, boolean patternKey) {
+		this(
+			key,
+			component,
+			patternKey,
+			bounds,
+			Codec.unboundedMap(key.codec(), component.codec()).xmap(TinyMap::ofMap, TinyMap::toMap),
+			TypeInfo.RAW_MAP.withParams(key.typeInfo(), component.typeInfo())
+		);
+	}
 
 	@Override
 	public RecipeComponentType<?> type() {
 		return patternKey ? PATTERN_TYPE : TYPE;
-	}
-
-	@Override
-	public Codec<TinyMap<K, V>> codec() {
-		return Codec.unboundedMap(key.codec(), component.codec()).xmap(TinyMap::ofMap, TinyMap::toMap);
-	}
-
-	@Override
-	public TypeInfo typeInfo() {
-		return TypeInfo.RAW_MAP.withParams(key.typeInfo(), component.typeInfo());
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -94,6 +87,10 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	public void validate(ErrorStack stack, TinyMap<K, V> value) {
 		RecipeComponent.super.validate(stack, value);
 
+		if (value.entries().length > bounds.max()) {
+			throw new RecipeComponentTooLargeException(this, value.entries().length, bounds.max());
+		}
+
 		stack.push(this);
 
 		for (var entry : value.entries()) {
@@ -102,6 +99,11 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 		}
 
 		stack.pop();
+	}
+
+	@Override
+	public boolean allowEmpty() {
+		return bounds.min() <= 0;
 	}
 
 	@Override

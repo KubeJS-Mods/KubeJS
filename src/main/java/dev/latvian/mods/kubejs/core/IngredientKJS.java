@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
@@ -11,6 +12,7 @@ import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.nbt.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -132,5 +134,23 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 
 	default boolean kjs$containsAnyTag() {
 		return IngredientWrapper.containsAnyTag(kjs$self());
+	}
+
+	default String kjs$toIngredientString(@Nullable DynamicOps<Tag> ops) {
+		var in = kjs$self();
+
+		if (in.isEmpty()) {
+			return "air";
+		}
+
+		var items = kjs$getStackArray();
+
+		if (items.length == 0) {
+			return "air";
+		} else if (items.length == 1) {
+			return items[0].kjs$toItemString0(null);
+		} else {
+			return Ingredient.CODEC.encodeStart(ops, in).getOrThrow().toString();
+		}
 	}
 }

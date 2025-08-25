@@ -11,8 +11,9 @@ import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.Context;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,10 +21,12 @@ import java.util.stream.Collectors;
 public class RecipeConstructor {
 	public final List<RecipeKey<?>> keys;
 	public Map<RecipeKey<?>, RecipeOptional<?>> overrides;
+	public Map<RecipeKey<?>, RecipeOptional<?>> defaultValues;
 
 	public RecipeConstructor(List<RecipeKey<?>> keys) {
 		this.keys = keys;
 		this.overrides = Map.of();
+		this.defaultValues = Map.of();
 	}
 
 	public RecipeConstructor(RecipeKey<?>... keys) {
@@ -32,7 +35,7 @@ public class RecipeConstructor {
 
 	public <T> RecipeConstructor override(RecipeKey<T> key, RecipeOptional<T> value) {
 		if (overrides.isEmpty()) {
-			overrides = new Reference2ObjectOpenHashMap<>(1);
+			overrides = new Reference2ObjectLinkedOpenHashMap<>(1);
 		}
 
 		overrides.put(key, value);
@@ -43,14 +46,42 @@ public class RecipeConstructor {
 		return override(key, new RecipeOptional.Constant<>(value));
 	}
 
-	public RecipeConstructor overrides(Map<RecipeKey<?>, RecipeOptional<?>> map) {
-		overrides = map;
+	public <T> RecipeConstructor defaultValue(RecipeKey<T> key, RecipeOptional<T> value) {
+		if (defaultValues.isEmpty()) {
+			defaultValues = new Reference2ObjectLinkedOpenHashMap<>(1);
+		}
+
+		defaultValues.put(key, value);
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return keys.stream().map(RecipeKey::toString).collect(Collectors.joining(", ", "(", ")"));
+		var str = keys.stream().map(RecipeKey::toString).collect(Collectors.joining(", ", "(", ")"));
+
+		if (!overrides.isEmpty() || !defaultValues.isEmpty()) {
+			var map = new LinkedHashMap<RecipeKey<?>, RecipeOptional<?>>();
+			map.putAll(defaultValues);
+			map.putAll(overrides);
+
+			str += map.entrySet().stream().map(e -> {
+				var k = e.getKey();
+
+				try {
+					var v = e.getValue().getInformativeValue();
+
+					if (v == null) {
+						return k.name + " = ?";
+					} else {
+						return k.name + " = " + k.component.toString(Cast.to(v));
+					}
+				} catch (Throwable ex) {
+					return k.name + " = ?";
+				}
+			}).collect(Collectors.joining(", ", " [", "]"));
+		}
+
+		return str;
 	}
 
 	public KubeRecipe create(Context cx, SourceLine sourceLine, RecipeTypeFunction type, RecipeSchemaType schemaType, ComponentValueMap from) {

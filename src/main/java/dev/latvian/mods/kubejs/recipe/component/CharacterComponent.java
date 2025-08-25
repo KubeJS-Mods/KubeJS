@@ -23,4 +23,9 @@ public class CharacterComponent extends SimpleRecipeComponent<Character> {
 	public boolean isEmpty(Character value) {
 		return value == '\0';
 	}
+
+	@Override
+	public String toString(Character value) {
+		return "'" + value + "'";
+	}
 }

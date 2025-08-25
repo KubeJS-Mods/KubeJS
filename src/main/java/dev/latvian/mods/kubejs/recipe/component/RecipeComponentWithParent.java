@@ -8,6 +8,8 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 /**
  * A recipe component that may delegate most of its logic to a parent component.
  * A common example of using this would be to define a custom item output component
@@ -73,5 +75,10 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	@Nullable
 	default RecipeComponentBuilder createBuilder() {
 		return parentComponent().createBuilder();
+	}
+
+	@Override
+	default List<?> spread(T value) {
+		return parentComponent().spread(value);
 	}
 }

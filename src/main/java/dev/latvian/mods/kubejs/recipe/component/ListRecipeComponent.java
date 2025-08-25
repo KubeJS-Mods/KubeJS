@@ -5,9 +5,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
+import dev.latvian.mods.kubejs.error.RecipeComponentTooLargeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ErrorStack;
+import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
@@ -17,25 +20,41 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
-public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWriteSelf, TypeInfo listTypeInfo, Codec<List<T>> listCodec, boolean conditional, boolean allowEmpty) implements RecipeComponent<List<T>> {
-	static <L> ListRecipeComponent<L> create(RecipeComponent<L> component, boolean canWriteSelf, boolean conditional, boolean allowEmptyList) {
+public record ListRecipeComponent<T>(
+	RecipeComponent<T> component,
+	boolean canWriteSelf,
+	TypeInfo listTypeInfo,
+	Codec<List<T>> listCodec,
+	boolean conditional,
+	IntBounds bounds,
+	Optional<RecipeComponent<?>> spread
+) implements RecipeComponent<List<T>> {
+	static <L> ListRecipeComponent<L> create(RecipeComponent<L> component, boolean canWriteSelf, boolean conditional) {
+		return create(component, canWriteSelf, conditional, IntBounds.DEFAULT, Optional.empty());
+	}
+
+	static <L> ListRecipeComponent<L> create(RecipeComponent<L> component, boolean canWriteSelf, boolean conditional, IntBounds bounds, Optional<RecipeComponent<?>> spread) {
 		var typeInfo = component.typeInfo();
 		var codec = component.codec();
 		var listCodec = conditional ? NeoForgeExtraCodecs.listWithOptionalElements(ConditionalOps.createConditionalCodec(codec)) : codec.listOf();
+		var listTypeInfo = TypeInfo.RAW_LIST.withParams(typeInfo);
 
 		if (canWriteSelf) {
-			return new ListRecipeComponent<>(component, true, TypeInfo.RAW_LIST.withParams(typeInfo).or(typeInfo), KubeJSCodecs.listOfOrSelf(listCodec, codec), conditional, allowEmptyList);
-		} else {
-			return new ListRecipeComponent<>(component, false, TypeInfo.RAW_LIST.withParams(typeInfo), listCodec, conditional, allowEmptyList);
+			listCodec = KubeJSCodecs.listOfOrSelf(listCodec, codec);
+			listTypeInfo = listTypeInfo.or(typeInfo);
 		}
+
+		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, conditional, bounds, spread);
 	}
 
 	public static final RecipeComponentType<List<?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("list"), (RecipeComponentCodecFactory<ListRecipeComponent<?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		ctx.codec().fieldOf("component").forGetter(ListRecipeComponent::component),
 		Codec.BOOL.optionalFieldOf("can_write_self", false).forGetter(ListRecipeComponent::canWriteSelf),
 		Codec.BOOL.optionalFieldOf("conditional", false).forGetter(ListRecipeComponent::conditional),
-		Codec.BOOL.optionalFieldOf("allow_empty_list", false).forGetter(ListRecipeComponent::allowEmpty)
+		IntBounds.MAP_CODEC.forGetter(ListRecipeComponent::bounds),
+		ctx.codec().optionalFieldOf("spread").forGetter(ListRecipeComponent::spread)
 	).apply(instance, ListRecipeComponent::create)));
 
 	@Override
@@ -58,8 +77,7 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 		return from instanceof Iterable<?> || from != null && from.getClass().isArray();
 	}
 
-	@Override
-	public List<T> wrap(Context cx, KubeRecipe recipe, Object from) {
+	public static <T> List<T> wrap0(Context cx, KubeRecipe recipe, RecipeComponent<T> component, Object from) {
 		if (from instanceof Iterable<?> iterable) {
 			int size;
 
@@ -115,6 +133,25 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 	}
 
 	@Override
+	public List<T> wrap(Context cx, KubeRecipe recipe, Object from) {
+		if (spread.isPresent()) {
+			var spreadComponent = spread.get();
+			var original = wrap0(cx, recipe, spreadComponent, from);
+			var result = new ArrayList<T>();
+
+			for (var o : original) {
+				for (var s : spreadComponent.spread(Cast.to(o))) {
+					result.add(component.wrap(cx, recipe, s));
+				}
+			}
+
+			return result;
+		} else {
+			return wrap0(cx, recipe, component, from);
+		}
+	}
+
+	@Override
 	public boolean matches(Context cx, KubeRecipe recipe, List<T> value, ReplacementMatchInfo match) {
 		for (var v : value) {
 			if (component.matches(cx, recipe, v, match)) {
@@ -166,6 +203,10 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 	public void validate(ErrorStack stack, List<T> value) {
 		RecipeComponent.super.validate(stack, value);
 
+		if (value.size() > bounds.max()) {
+			throw new RecipeComponentTooLargeException(this, value.size(), bounds.max());
+		}
+
 		stack.push(this);
 
 		for (int i = 0; i < value.size(); i++) {
@@ -177,7 +218,17 @@ public record ListRecipeComponent<T>(RecipeComponent<T> component, boolean canWr
 	}
 
 	@Override
+	public boolean allowEmpty() {
+		return bounds.min() <= 0;
+	}
+
+	@Override
 	public boolean isEmpty(List<T> value) {
 		return value.isEmpty();
+	}
+
+	@Override
+	public List<?> spread(List<T> value) {
+		return value;
 	}
 }

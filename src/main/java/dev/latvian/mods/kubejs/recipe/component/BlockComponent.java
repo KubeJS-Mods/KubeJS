@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 public record BlockComponent(boolean allowEmpty) implements RecipeComponent<Block> {
+	private static final Codec<Block> CODEC = BuiltInRegistries.BLOCK.byNameCodec();
 	public static final RecipeComponentType<Block> BLOCK = RecipeComponentType.unit(KubeJS.id("block"), new BlockComponent(false));
 	public static final RecipeComponentType<Block> OPTIONAL_BLOCK = RecipeComponentType.unit(KubeJS.id("optional_block"), new BlockComponent(true));
 
@@ -26,7 +27,7 @@ public record BlockComponent(boolean allowEmpty) implements RecipeComponent<Bloc
 
 	@Override
 	public Codec<Block> codec() {
-		return BuiltInRegistries.BLOCK.byNameCodec();
+		return CODEC;
 	}
 
 	@Override
@@ -62,5 +63,10 @@ public record BlockComponent(boolean allowEmpty) implements RecipeComponent<Bloc
 	@Override
 	public String toString() {
 		return allowEmpty ? "optional_block" : "block";
+	}
+
+	@Override
+	public String toString(Block value) {
+		return value.kjs$getId();
 	}
 }

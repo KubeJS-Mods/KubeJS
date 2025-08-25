@@ -20,11 +20,13 @@ import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.CustomData;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -94,7 +96,7 @@ public interface DataComponentWrapper {
 		return BuiltInRegistries.DATA_COMPONENT_TYPE.get(ID.mc(object));
 	}
 
-	static DataComponentMap readMap(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+	static DataComponentMap readMap(@Nullable DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
 		reader.skipWhitespace();
 
 		if (!reader.canRead()) {
@@ -114,7 +116,7 @@ public interface DataComponentWrapper {
 				reader.expect('=');
 				reader.skipWhitespace();
 				int i = reader.getCursor();
-				var dataResult = dataComponentType.codecOrThrow().parse(registryOps, new TagParser(reader).readValue());
+				var dataResult = dataComponentType.codecOrThrow().parse(registryOps == null ? NbtOps.INSTANCE : registryOps, new TagParser(reader).readValue());
 
 				if (builder == null) {
 					builder = DataComponentMap.builder();
@@ -153,7 +155,7 @@ public interface DataComponentWrapper {
 		return builder == null ? DataComponentMap.EMPTY : builder.build();
 	}
 
-	static DataComponentPatch readPatch(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+	static DataComponentPatch readPatch(@Nullable DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
 		reader.skipWhitespace();
 
 		if (!reader.canRead()) {
@@ -195,7 +197,7 @@ public interface DataComponentWrapper {
 				reader.expect('=');
 				reader.skipWhitespace();
 				int i = reader.getCursor();
-				var dataResult = dataComponentType.codecOrThrow().parse(registryOps, new TagParser(reader).readValue());
+				var dataResult = dataComponentType.codecOrThrow().parse(registryOps == null ? NbtOps.INSTANCE : registryOps, new TagParser(reader).readValue());
 
 				if (builder == null) {
 					builder = DataComponentPatch.builder();
@@ -250,7 +252,7 @@ public interface DataComponentWrapper {
 		}
 	}
 
-	static DataComponentPredicate readPredicate(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+	static DataComponentPredicate readPredicate(@Nullable DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
 		var map = reader.canRead() ? readMap(registryOps, reader) : DataComponentMap.EMPTY;
 		return map.isEmpty() ? DataComponentPredicate.EMPTY : DataComponentPredicate.allOf(map);
 	}
@@ -259,7 +261,7 @@ public interface DataComponentWrapper {
 		return from == null || from instanceof DataComponentMap || from instanceof DataComponentPatch || from instanceof Map || from instanceof NativeJavaMap || from instanceof String s && (s.isEmpty() || s.charAt(0) == '[');
 	}
 
-	static DataComponentMap mapOf(DynamicOps<Tag> ops, Object o) {
+	static DataComponentMap mapOf(@Nullable DynamicOps<Tag> ops, Object o) {
 		try {
 			return readMap(ops, new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
@@ -267,7 +269,7 @@ public interface DataComponentWrapper {
 		}
 	}
 
-	static DataComponentMap mapOrEmptyOf(DynamicOps<Tag> ops, Object o) {
+	static DataComponentMap mapOrEmptyOf(@Nullable DynamicOps<Tag> ops, Object o) {
 		try {
 			return readMap(ops, new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
@@ -275,7 +277,7 @@ public interface DataComponentWrapper {
 		}
 	}
 
-	static DataComponentPatch patchOf(DynamicOps<Tag> ops, Object o) {
+	static DataComponentPatch patchOf(@Nullable DynamicOps<Tag> ops, Object o) {
 		try {
 			return readPatch(ops, new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
@@ -283,7 +285,7 @@ public interface DataComponentWrapper {
 		}
 	}
 
-	static DataComponentPatch patchOrEmptyOf(DynamicOps<Tag> ops, Object o) {
+	static DataComponentPatch patchOrEmptyOf(@Nullable DynamicOps<Tag> ops, Object o) {
 		try {
 			return readPatch(ops, new StringReader(o.toString()));
 		} catch (CommandSyntaxException ex) {
@@ -291,7 +293,7 @@ public interface DataComponentWrapper {
 		}
 	}
 
-	static StringBuilder mapToString(StringBuilder builder, DynamicOps<Tag> ops, DataComponentMap map) {
+	static StringBuilder mapToString(StringBuilder builder, @Nullable DynamicOps<Tag> ops, DataComponentMap map) {
 		builder.append('[');
 
 		boolean first = true;
@@ -310,7 +312,7 @@ public interface DataComponentWrapper {
 				builder.append(',');
 			}
 
-			var value = codec == Codec.BOOL ? comp.value() : codec.encodeStart(ops, Cast.to(comp.value())).getOrThrow();
+			var value = codec == Codec.BOOL ? comp.value() : codec.encodeStart(ops == null ? NbtOps.INSTANCE : ops, Cast.to(comp.value())).getOrThrow();
 			builder.append(ID.reduce(id)).append('=').append(value);
 		}
 
@@ -318,7 +320,7 @@ public interface DataComponentWrapper {
 		return builder;
 	}
 
-	static StringBuilder patchToString(StringBuilder builder, DynamicOps<Tag> ops, DataComponentPatch patch) {
+	static StringBuilder patchToString(StringBuilder builder, @Nullable DynamicOps<Tag> ops, DataComponentPatch patch) {
 		builder.append('[');
 
 		boolean first = true;
@@ -338,7 +340,7 @@ public interface DataComponentWrapper {
 			}
 
 			if (comp.getValue().isPresent()) {
-				var value = codec == Codec.BOOL ? comp.getValue().get() : codec.encodeStart(ops, Cast.to(comp.getValue().get())).result().get();
+				var value = codec == Codec.BOOL ? comp.getValue().get() : codec.encodeStart(ops == null ? NbtOps.INSTANCE : ops, Cast.to(comp.getValue().get())).result().get();
 				builder.append(ID.reduce(id)).append('=').append(value);
 			} else {
 				builder.append('!').append(ID.reduce(id));

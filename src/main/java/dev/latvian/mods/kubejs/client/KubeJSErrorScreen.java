@@ -280,15 +280,26 @@ public class KubeJSErrorScreen extends Screen {
 				if (my < y + 10 && line.sourceLines.size() >= 3) {
 					var lines = new ArrayList<FormattedCharSequence>();
 
-					if (VSCodeExt.isInstalled()) {
-						var comp = Component.empty();
-						comp.append("Double-click to Open in ");
-						comp.append(TextIcons.icons("V."));
-						comp.append(Component.literal("VSCode").withColor(0x22A7F2));
-						lines.addAll(minecraft.font.split(comp, 1000));
+					int ln = 0;
 
-					} else {
-						lines.add(FormattedCharSequence.forward("Double-click to Open File", Style.EMPTY));
+					for (var line : line.sourceLines) {
+						if (line.line() > 0 && line.source().endsWith(".js")) {
+							ln = line.line();
+							break;
+						}
+					}
+
+					if (ln > 0) {
+						if (VSCodeExt.isInstalled()) {
+							var comp = Component.empty();
+							comp.append("Double-click to Open in ");
+							comp.append(TextIcons.icons("V."));
+							comp.append(Component.literal("VSCode").withColor(0x22A7F2));
+							lines.addAll(minecraft.font.split(comp, 1000));
+
+						} else {
+							lines.add(FormattedCharSequence.forward("Double-click to Open File", Style.EMPTY));
+						}
 					}
 
 					for (var line : line.sourceLines) {

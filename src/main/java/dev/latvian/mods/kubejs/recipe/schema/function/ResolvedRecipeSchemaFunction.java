@@ -1,14 +1,16 @@
 package dev.latvian.mods.kubejs.recipe.schema.function;
 
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.type.TypeInfo;
+
+import java.util.List;
 
 @FunctionalInterface
 public interface ResolvedRecipeSchemaFunction {
-	default TypeInfo[] getArgTypes() {
-		return TypeInfo.EMPTY_ARRAY;
+	default List<RecipeComponent<?>> arguments() {
+		return List.of();
 	}
 
-	void execute(Context cx, KubeRecipe recipe, Object[] args);
+	void execute(Context cx, KubeRecipe recipe, List<Object> args);
 }

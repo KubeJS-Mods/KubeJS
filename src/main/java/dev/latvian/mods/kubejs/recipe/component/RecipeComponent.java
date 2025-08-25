@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ErrorStack;
+import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -119,9 +120,15 @@ public interface RecipeComponent<T> {
 			}
 		}
 
-		switch (cv.key.codec.encodeStart(recipe.type.event.registries.json(), cv.value)) {
-			case DataResult.Success(var value, var lifecycle) -> json.add(cv.key.name, value);
-			case DataResult.Error<JsonElement> error -> ConsoleJS.SERVER.error("Failed to encode " + cv.key.name + " for recipe " + recipe.id + " from value" + cv.value + ": " + error.message(), recipe.sourceLine, null, RecipesKubeEvent.POST_SKIP_ERROR);
+		try {
+			var result = cv.key.codec.encodeStart(recipe.type.event.jsonOps, cv.value);
+
+			switch (result) {
+				case DataResult.Success<JsonElement> r -> json.add(cv.key.name, r.value());
+				case DataResult.Error<JsonElement> r -> ConsoleJS.SERVER.error("Failed to encode " + cv.key.name + " for recipe " + recipe.id + " from value" + cv.value + ": " + r.message(), recipe.sourceLine, null, RecipesKubeEvent.POST_SKIP_ERROR);
+			}
+		} catch (Exception ex) {
+			ConsoleJS.SERVER.error("Failed to encode " + cv.key.name + " for recipe " + recipe.id + " from value" + cv.value + ": " + ex, recipe.sourceLine, ex, RecipesKubeEvent.POST_SKIP_ERROR);
 		}
 	}
 
@@ -139,13 +146,13 @@ public interface RecipeComponent<T> {
 		var v = json.get(cv.key.name);
 
 		if (v != null) {
-			cv.value = recipe.type.event.registries.decodeJson(cv.key.codec, v);
+			cv.value = cv.key.codec.parse(recipe.type.event.jsonOps, v).getOrThrow();
 		} else if (cv.key.names.size() >= 2) {
 			for (var alt : cv.key.names) {
 				v = json.get(alt);
 
 				if (v != null) {
-					cv.value = recipe.type.event.registries.decodeJson(cv.key.codec, v);
+					cv.value = cv.key.codec.parse(recipe.type.event.jsonOps, v).getOrThrow();
 					return;
 				}
 			}
@@ -199,20 +206,24 @@ public interface RecipeComponent<T> {
 		builder.append(value.toString());
 	}
 
+	default String toString(T value) {
+		return value.toString();
+	}
+
 	default RecipeComponent<List<T>> asList() {
-		return ListRecipeComponent.create(this, false, false, false);
+		return ListRecipeComponent.create(this, false, false);
 	}
 
 	default RecipeComponent<List<T>> asListOrSelf() {
-		return ListRecipeComponent.create(this, true, false, false);
+		return ListRecipeComponent.create(this, true, false);
 	}
 
 	default RecipeComponent<List<T>> asConditionalList() {
-		return ListRecipeComponent.create(this, false, true, false);
+		return ListRecipeComponent.create(this, false, true);
 	}
 
 	default RecipeComponent<List<T>> asConditionalListOrSelf() {
-		return ListRecipeComponent.create(this, true, true, false);
+		return ListRecipeComponent.create(this, true, true);
 	}
 
 	default RecipeComponent<T> orSelf() {
@@ -220,19 +231,15 @@ public interface RecipeComponent<T> {
 	}
 
 	default <K> RecipeComponent<TinyMap<K, T>> asMap(RecipeComponent<K> key) {
-		return MapRecipeComponent.of(key, this);
+		return MapRecipeComponent.of(key, this, IntBounds.DEFAULT);
 	}
 
 	default RecipeComponent<TinyMap<Character, T>> asPatternKey() {
-		return MapRecipeComponent.patternOf(this);
+		return MapRecipeComponent.patternOf(this, IntBounds.DEFAULT);
 	}
 
 	default <O> EitherRecipeComponent<T, O> or(RecipeComponent<O> other) {
 		return new EitherRecipeComponent<>(this, other);
-	}
-
-	default <O> PairRecipeComponent<T, O> and(RecipeComponent<O> other) {
-		return new PairRecipeComponent<>(this, other);
 	}
 
 	default RecipeComponent<T> withCodec(Codec<T> codec) {
@@ -243,5 +250,9 @@ public interface RecipeComponent<T> {
 	@ApiStatus.Experimental
 	default RecipeComponentBuilder createBuilder() {
 		return null;
+	}
+
+	default List<?> spread(T value) {
+		return List.of(value);
 	}
 }
