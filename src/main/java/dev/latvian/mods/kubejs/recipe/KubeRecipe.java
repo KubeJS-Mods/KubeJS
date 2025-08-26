@@ -188,6 +188,19 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public final void afterLoaded(ValidationContext ctx) {
 		ctx.stack().push(this);
 
+		var postProcessors = type.schemaType.schema.postProcessors();
+
+		if (!postProcessors.isEmpty()) {
+			ctx.stack().push("Post Processors");
+
+			for (int i = 0; i < postProcessors.size(); i++) {
+				ctx.stack().setKey(i);
+				postProcessors.get(i).process(ctx, this);
+			}
+
+			ctx.stack().pop();
+		}
+
 		for (var v : valueMap.holders) {
 			ctx.stack().setKey(v.key.name);
 			v.validate(ctx, sourceLine);

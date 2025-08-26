@@ -16,9 +16,9 @@ import java.util.List;
 
 @SuppressWarnings("OptionalIsPresent")
 public record EitherRecipeComponent<H, L>(RecipeComponent<H> left, RecipeComponent<L> right, Codec<Either<H, L>> codec, TypeInfo typeInfo) implements RecipeComponent<Either<H, L>> {
-	public static final RecipeComponentType<Either<?, ?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("either"), (RecipeComponentCodecFactory<EitherRecipeComponent<?, ?>>) (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
-		ctx.codec().fieldOf("left").forGetter(EitherRecipeComponent::left),
-		ctx.codec().fieldOf("right").forGetter(EitherRecipeComponent::right)
+	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<EitherRecipeComponent<?, ?>>dynamic(KubeJS.id("either"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		ctx.recipeComponentCodec().fieldOf("left").forGetter(EitherRecipeComponent::left),
+		ctx.recipeComponentCodec().fieldOf("right").forGetter(EitherRecipeComponent::right)
 	).apply(instance, EitherRecipeComponent::new)));
 
 	public EitherRecipeComponent(RecipeComponent<H> high, RecipeComponent<L> low) {

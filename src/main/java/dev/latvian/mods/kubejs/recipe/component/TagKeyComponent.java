@@ -50,7 +50,7 @@ public record TagKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, 
 		}
 	}
 
-	public static final RecipeComponentType<TagKeyComponent<?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("tag"), RecordCodecBuilder.<TagKeyComponent<?>>mapCodec(instance -> instance.group(
+	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<TagKeyComponent<?>>dynamic(KubeJS.id("tag"), RecordCodecBuilder.mapCodec(instance -> instance.group(
 		KubeJSCodecs.REGISTRY_KEY_CODEC.fieldOf("registry").forGetter(TagKeyComponent::registry)
 	).apply(instance, TagKeyComponent::of)));
 

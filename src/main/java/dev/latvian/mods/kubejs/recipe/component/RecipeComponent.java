@@ -38,7 +38,6 @@ import java.util.List;
  *
  * @param <T> The value type of this component
  * @see RecipeComponentWithParent
- * @see PairRecipeComponent
  */
 public interface RecipeComponent<T> {
 	static CustomObjectRecipeComponent builder(List<CustomObjectRecipeComponent.Key> keys) {
@@ -254,5 +253,9 @@ public interface RecipeComponent<T> {
 
 	default List<?> spread(T value) {
 		return List.of(value);
+	}
+
+	default boolean isIgnored() {
+		return false;
 	}
 }

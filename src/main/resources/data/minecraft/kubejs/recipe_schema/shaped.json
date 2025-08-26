@@ -87,5 +87,10 @@
 			"key": "category",
 			"value": "equipment"
 		}
-	}
+	},
+	"post_processors": [
+		{
+			"type": "kubejs:key_pattern_cleanup"
+		}
+	]
 }

@@ -17,6 +17,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeMappingRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.function.CustomRecipeSchemaFunctionRegistry;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeSchemaFunctionRegistry;
+import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessorTypeRegistry;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.registry.ServerRegistryRegistry;
@@ -95,6 +96,9 @@ public interface KubeJSPlugin {
 	}
 
 	default void registerCustomRecipeSchemaFunctions(CustomRecipeSchemaFunctionRegistry registry) {
+	}
+
+	default void registerRecipePostProcessors(RecipePostProcessorTypeRegistry registry) {
 	}
 
 	default void registerBlockEntityAttachments(BlockEntityAttachmentRegistry registry) {

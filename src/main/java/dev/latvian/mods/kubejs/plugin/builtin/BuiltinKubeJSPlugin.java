@@ -112,6 +112,7 @@ import dev.latvian.mods.kubejs.recipe.component.EitherRecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.EnumComponent;
 import dev.latvian.mods.kubejs.recipe.component.FluidIngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.FluidStackComponent;
+import dev.latvian.mods.kubejs.recipe.component.IgnoreComponent;
 import dev.latvian.mods.kubejs.recipe.component.IngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.ItemStackComponent;
 import dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent;
@@ -144,6 +145,8 @@ import dev.latvian.mods.kubejs.recipe.schema.function.RecipeSchemaFunctionRegist
 import dev.latvian.mods.kubejs.recipe.schema.function.SetFunction;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapedKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessKubeRecipe;
+import dev.latvian.mods.kubejs.recipe.schema.postprocessing.KeyPatternCleanupPostProcessor;
+import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessorTypeRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.registry.ServerRegistryRegistry;
@@ -592,6 +595,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void registerRecipeComponents(RecipeComponentTypeRegistry registry) {
+		registry.register(IgnoreComponent.TYPE);
 		registry.register(BooleanComponent.BOOLEAN);
 		registry.register(StringComponent.STRING);
 		registry.register(StringComponent.OPTIONAL_STRING);
@@ -679,6 +683,11 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(BundleFunction.TYPE);
 		registry.register(SetFunction.TYPE);
 		registry.register(AddToListFunction.TYPE);
+	}
+
+	@Override
+	public void registerRecipePostProcessors(RecipePostProcessorTypeRegistry registry) {
+		registry.register(KeyPatternCleanupPostProcessor.TYPE);
 	}
 
 	@Override

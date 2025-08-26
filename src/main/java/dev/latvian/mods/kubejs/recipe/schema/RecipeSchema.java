@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
@@ -10,6 +12,7 @@ import dev.latvian.mods.kubejs.recipe.component.UniqueIdBuilder;
 import dev.latvian.mods.kubejs.recipe.schema.function.AddToListFunction;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeFunctionInstance;
 import dev.latvian.mods.kubejs.recipe.schema.function.SetFunction;
+import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessor;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ErrorStack;
@@ -17,9 +20,11 @@ import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,6 +57,7 @@ public class RecipeSchema {
 	private boolean constructorsGenerated;
 	private List<RecipeKey<?>> uniqueIds;
 	boolean hidden;
+	private List<RecipePostProcessor> postProcessors;
 
 	/**
 	 * Defines a new recipe schema that creates recipes of the given {@link KubeRecipe} subclass.
@@ -270,6 +276,15 @@ public class RecipeSchema {
 		return function(new RecipeFunctionInstance(name, new AddToListFunction.Resolved<>(key)));
 	}
 
+	public RecipeSchema postProcessor(RecipePostProcessor processor) {
+		if (postProcessors == null) {
+			postProcessors = new ArrayList<>(1);
+		}
+
+		postProcessors.add(processor);
+		return this;
+	}
+
 	@Nullable
 	public <T> RecipeKey<T> getOptionalKey(String id) {
 		for (var key : keys) {
@@ -289,5 +304,59 @@ public class RecipeSchema {
 		}
 
 		throw new NullPointerException("Key '" + id + "' not found");
+	}
+
+	public List<RecipePostProcessor> postProcessors() {
+		return postProcessors == null ? List.of() : postProcessors;
+	}
+
+	public JsonObject toJson(RecipeSchemaStorage storage, RecipeSchemaType schemaType, RegistryOps<JsonElement> ops) {
+		var json = new JsonObject();
+
+		if (keys != null && !keys.isEmpty()) {
+			var a = new JsonArray();
+
+			for (var key : keys) {
+				a.add(key.toJson(storage, schemaType, ops));
+			}
+
+			json.add("keys", a);
+		}
+
+		if (!uniqueIds.isEmpty()) {
+			var a = new JsonArray();
+
+			for (var key : uniqueIds) {
+				a.add(key.name);
+			}
+
+			if (!a.isEmpty()) {
+				json.add("unique", a);
+			}
+		}
+
+		if (!constructorsGenerated()) {
+			var a = new JsonArray();
+
+			for (var c : constructors().values()) {
+				a.add(c.toJson(schemaType, ops));
+			}
+
+			if (!a.isEmpty()) {
+				json.add("constructors", a);
+			}
+		}
+
+		if (postProcessors != null && !postProcessors.isEmpty()) {
+			var a = new JsonArray();
+
+			for (var p : postProcessors) {
+				a.add(storage.recipePostProcessorCodec.encodeStart(ops, p).getOrThrow());
+			}
+
+			json.add("post_processors", a);
+		}
+
+		return json;
 	}
 }

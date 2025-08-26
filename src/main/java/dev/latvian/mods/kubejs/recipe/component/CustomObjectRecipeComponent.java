@@ -10,6 +10,7 @@ import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.Context;
@@ -29,10 +30,10 @@ import java.util.stream.Stream;
 
 public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomObjectRecipeComponent.Value>> {
 	public record Key(String name, RecipeComponent<?> component, boolean optional, boolean alwaysWrite) {
-		public static Codec<Key> createCodec(RecipeComponentCodecFactory.Context ctx) {
+		public static Codec<Key> createCodec(RecipeTypeRegistryContext ctx) {
 			return RecordCodecBuilder.create(instance -> instance.group(
 				Codec.STRING.fieldOf("name").forGetter(Key::name),
-				ctx.codec().fieldOf("component").forGetter(Key::component),
+				ctx.recipeComponentCodec().fieldOf("component").forGetter(Key::component),
 				Codec.BOOL.optionalFieldOf("optional", false).forGetter(Key::optional),
 				Codec.BOOL.optionalFieldOf("always_write", false).forGetter(Key::alwaysWrite)
 			).apply(instance, Key::new));
@@ -74,7 +75,7 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 		}
 	}
 
-	public static final RecipeComponentType<List<Value>> TYPE = RecipeComponentType.dynamic(KubeJS.id("custom_object"), (RecipeComponentCodecFactory<CustomObjectRecipeComponent>) (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<CustomObjectRecipeComponent>dynamic(KubeJS.id("custom_object"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Key.createCodec(ctx).listOf().fieldOf("keys").forGetter(CustomObjectRecipeComponent::keys)
 	).apply(instance, CustomObjectRecipeComponent::new)));
 

@@ -48,12 +48,12 @@ public record ListRecipeComponent<T>(
 		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, conditional, bounds, spread);
 	}
 
-	public static final RecipeComponentType<List<?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("list"), (RecipeComponentCodecFactory<ListRecipeComponent<?>>) (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
-		ctx.codec().fieldOf("component").forGetter(ListRecipeComponent::component),
+	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<ListRecipeComponent<?>>dynamic(KubeJS.id("list"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		ctx.recipeComponentCodec().fieldOf("component").forGetter(ListRecipeComponent::component),
 		Codec.BOOL.optionalFieldOf("can_write_self", false).forGetter(ListRecipeComponent::canWriteSelf),
 		Codec.BOOL.optionalFieldOf("conditional", false).forGetter(ListRecipeComponent::conditional),
 		IntBounds.MAP_CODEC.forGetter(ListRecipeComponent::bounds),
-		ctx.codec().optionalFieldOf("spread").forGetter(ListRecipeComponent::spread)
+		ctx.recipeComponentCodec().optionalFieldOf("spread").forGetter(ListRecipeComponent::spread)
 	).apply(instance, ListRecipeComponent::create)));
 
 	@Override

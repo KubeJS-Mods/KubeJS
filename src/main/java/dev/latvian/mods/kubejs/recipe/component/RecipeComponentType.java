@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryContext;
 import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.resources.ResourceLocation;
 
@@ -35,7 +36,7 @@ public abstract class RecipeComponentType<T> {
 		}
 
 		@Override
-		public MapCodec<RecipeComponent<?>> mapCodec(RecipeComponentCodecFactory.Context ctx) {
+		public MapCodec<RecipeComponent<?>> mapCodec(RecipeTypeRegistryContext ctx) {
 			if (mapCodec == null) {
 				mapCodec = MapCodec.unit(instance);
 			}
@@ -46,11 +47,10 @@ public abstract class RecipeComponentType<T> {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static class Dynamic<T> extends RecipeComponentType<T> {
-		@SuppressWarnings({"rawtypes", "unchecked"})
-		private record Simple(MapCodec codec) implements RecipeComponentCodecFactory<RecipeComponent<?>> {
+		private record Simple(MapCodec mapCodec) implements RecipeComponentCodecFactory<RecipeComponent<?>> {
 			@Override
-			public MapCodec<RecipeComponent<?>> create(RecipeComponentType<?> type, Context ctx) {
-				return codec;
+			public MapCodec<RecipeComponent<?>> create(RecipeComponentType<?> type, RecipeTypeRegistryContext ctx) {
+				return mapCodec;
 			}
 		}
 
@@ -62,7 +62,7 @@ public abstract class RecipeComponentType<T> {
 		}
 
 		@Override
-		public MapCodec<RecipeComponent<?>> mapCodec(RecipeComponentCodecFactory.Context ctx) {
+		public MapCodec<RecipeComponent<?>> mapCodec(RecipeTypeRegistryContext ctx) {
 			return factory.create(this, ctx);
 		}
 	}
@@ -75,11 +75,11 @@ public abstract class RecipeComponentType<T> {
 		return new Unit<>(id, new Unit.Simple<>(instance));
 	}
 
-	public static <T> Dynamic<T> dynamic(ResourceLocation id, RecipeComponentCodecFactory<? extends RecipeComponent<?>> codecFactory) {
+	public static <CT extends RecipeComponent<?>> RecipeComponentType<?> dynamic(ResourceLocation id, RecipeComponentCodecFactory<CT> codecFactory) {
 		return new Dynamic<>(id, codecFactory);
 	}
 
-	public static <T> Dynamic<T> dynamic(ResourceLocation id, MapCodec<? extends RecipeComponent<?>> mapCodec) {
+	public static <CT extends RecipeComponent<?>> RecipeComponentType<?> dynamic(ResourceLocation id, MapCodec<CT> mapCodec) {
 		return new Dynamic<>(id, new Dynamic.Simple(mapCodec));
 	}
 
@@ -118,7 +118,7 @@ public abstract class RecipeComponentType<T> {
 		throw new NullPointerException("This recipe component type is not a unit type");
 	}
 
-	public abstract MapCodec<RecipeComponent<?>> mapCodec(RecipeComponentCodecFactory.Context ctx);
+	public abstract MapCodec<RecipeComponent<?>> mapCodec(RecipeTypeRegistryContext ctx);
 
 	/**
 	 * Creates a new {@link RecipeKey} for this component with the given name.

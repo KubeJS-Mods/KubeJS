@@ -21,7 +21,7 @@ public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> c
 	public static final RecipeComponentType<ItemStack> ITEM_STACK = RecipeComponentType.unit(KubeJS.id("item_stack"), type -> new ItemStackComponent(type, false, Ingredient.EMPTY));
 	public static final RecipeComponentType<ItemStack> OPTIONAL_ITEM_STACK = RecipeComponentType.unit(KubeJS.id("optional_item_stack"), type -> new ItemStackComponent(type, true, Ingredient.EMPTY));
 
-	public static final RecipeComponentType<ItemStack> FILTERED_ITEM_STACK = RecipeComponentType.dynamic(KubeJS.id("filtered_item_stack"), (RecipeComponentCodecFactory<ItemStackComponent>) (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final RecipeComponentType<?> FILTERED_ITEM_STACK = RecipeComponentType.<ItemStackComponent>dynamic(KubeJS.id("filtered_item_stack"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.BOOL.optionalFieldOf("allow_empty", false).forGetter(ItemStackComponent::allowEmpty),
 		Ingredient.CODEC.optionalFieldOf("filter", Ingredient.EMPTY).forGetter(ItemStackComponent::filter)
 	).apply(instance, (allowEmpty, filter) -> new ItemStackComponent(type, allowEmpty, filter))));
@@ -83,13 +83,11 @@ public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> c
 		if (count <= 0) {
 			return List.of();
 		} else if (count == 1) {
-			return List.of(value);
+			return List.of(value.copyWithCount(1));
 		} else {
-
 			var list = new ArrayList<ItemStack>(count);
 
 			for (int i = 0; i < count; i++) {
-				// technically we could get away with not copying it every time but better safe than sorry
 				list.add(value.copyWithCount(1));
 			}
 

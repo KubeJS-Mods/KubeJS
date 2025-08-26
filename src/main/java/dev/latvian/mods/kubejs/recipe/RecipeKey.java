@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.recipe;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
@@ -11,6 +10,7 @@ import dev.latvian.mods.kubejs.recipe.component.ComponentRole;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeOptional;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -225,7 +225,7 @@ public final class RecipeKey<T> {
 		return names.isEmpty() ? "" : names.getFirst();
 	}
 
-	public JsonObject toJson(RecipeSchemaType type, DynamicOps<JsonElement> ops) {
+	public JsonObject toJson(RecipeSchemaStorage storage, RecipeSchemaType type, DynamicOps<JsonElement> ops) {
 		var json = new JsonObject();
 		json.addProperty("name", name);
 
@@ -233,11 +233,11 @@ public final class RecipeKey<T> {
 			json.addProperty("role", role.getSerializedName());
 		}
 
-		json.addProperty("type", component.toString());
+		json.add("type", storage.recipeComponentCodec.encodeStart(ops, component).getOrThrow());
 
 		if (optional != null) {
 			if (optional.isDefault()) {
-				json.add("optional", JsonNull.INSTANCE);
+				json.addProperty("default_optional", true);
 			} else {
 				json.add("optional", codec.encodeStart(ops, optional.getDefaultValue(type)).getOrThrow());
 			}
@@ -255,14 +255,14 @@ public final class RecipeKey<T> {
 			json.add("alternative_names", a);
 		}
 
-		if (excluded) {
-			json.addProperty("excluded", true);
-		}
-
 		if (functionNames != null) {
 			var a = new JsonArray();
 			functionNames.forEach(a::add);
 			json.add("function_names", a);
+		}
+
+		if (excluded) {
+			json.addProperty("excluded", true);
 		}
 
 		if (alwaysWrite) {

@@ -28,7 +28,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
 
 public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<T> regType, Codec<Holder<T>> codec, TypeInfo typeInfo) implements RecipeComponent<Holder<T>> {
-	public static final RecipeComponentType<RegistryComponent<?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("registry_element"), (RecipeComponentCodecFactory<RegistryComponent<?>>) (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<RegistryComponent<?>>dynamic(KubeJS.id("registry_element"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		KubeJSCodecs.REGISTRY_KEY_CODEC.fieldOf("registry").forGetter(c -> c.registry.key())
 	).apply(instance, key -> new RegistryComponent<>(ctx.registries(), key))));
 

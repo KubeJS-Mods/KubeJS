@@ -5,9 +5,10 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.component.RecipeComponentCodecFactory;
+import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryContext;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeFunctionInstance;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeSchemaFunction;
+import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessor;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.JsonUtils;
@@ -23,10 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 public class JsonRecipeSchemaLoader {
-	private record Merge(boolean keys, boolean constructors, boolean unique) {
-		public static final Merge DEFAULT = new Merge(false, false, false);
-	}
-
 	private static final class RecipeSchemaBuilder {
 		private final ResourceLocation id;
 		private final RecipeSchemaData data;
@@ -41,6 +38,7 @@ public class JsonRecipeSchemaLoader {
 		private List<String> unique;
 		private Boolean hidden;
 		private Map<String, JsonElement> overrideKeys;
+		private List<RecipePostProcessor> postProcessors;
 
 		private RecipeSchemaBuilder(ResourceLocation id, RecipeSchemaData data) {
 			this.id = id;
@@ -142,6 +140,27 @@ public class JsonRecipeSchemaLoader {
 				return parent.isHidden();
 			} else {
 				return false;
+			}
+		}
+
+		private List<RecipePostProcessor> getPostProcessors() {
+			if (postProcessors != null) {
+				if (data.merge().postProcessors()) {
+					var list = new ArrayList<RecipePostProcessor>();
+
+					if (parent != null) {
+						list.addAll(parent.getPostProcessors());
+					}
+
+					list.addAll(postProcessors);
+					return list;
+				}
+
+				return postProcessors;
+			} else if (parent != null) {
+				return parent.getPostProcessors();
+			} else {
+				return List.of();
 			}
 		}
 
@@ -252,6 +271,10 @@ public class JsonRecipeSchemaLoader {
 					}
 
 					schema.hidden = isHidden();
+
+					for (var postProcessor : getPostProcessors()) {
+						schema.postProcessor(postProcessor);
+					}
 				} else if (parent != null) {
 					schema = parent.getSchema(jsonOps);
 				} else {
@@ -264,14 +287,15 @@ public class JsonRecipeSchemaLoader {
 		}
 	}
 
-	public static void load(RecipeSchemaStorage storage, RecipeComponentCodecFactory.Context recipeComponentCodecFactoryContext, DynamicOps<JsonElement> jsonOps, RecipeSchemaRegistry event, ResourceManager resourceManager) {
+	public static void load(RecipeTypeRegistryContext ctx, DynamicOps<JsonElement> jsonOps, RecipeSchemaRegistry event, ResourceManager resourceManager) {
 		var map = new HashMap<ResourceLocation, RecipeSchemaBuilder>();
+		var recipeSchemaDataCodec = RecipeSchemaData.CODEC.apply(ctx);
 
 		for (var entry : resourceManager.listResources("kubejs/recipe_schema", path -> path.getPath().endsWith(".json")).entrySet()) {
 			try (var reader = entry.getValue().openAsReader()) {
 				var json = JsonUtils.GSON.fromJson(reader, JsonObject.class);
 				var id = entry.getKey().withPath(entry.getKey().getPath().substring("kubejs/recipe_schema/".length(), entry.getKey().getPath().length() - ".json".length()));
-				var data = RecipeSchemaData.CODEC.parse(jsonOps, json);
+				var data = recipeSchemaDataCodec.parse(jsonOps, json);
 
 				if (data.isSuccess()) {
 					map.put(id, new RecipeSchemaBuilder(id, data.getOrThrow()));
@@ -285,7 +309,7 @@ public class JsonRecipeSchemaLoader {
 
 		for (var builder : map.values()) {
 			for (var m : builder.data.mappings()) {
-				storage.mappings.put(m, builder.id);
+				ctx.storage().mappings.put(m, builder.id);
 			}
 		}
 
@@ -296,7 +320,7 @@ public class JsonRecipeSchemaLoader {
 
 			if (builder.data.recipeFactory().isPresent()) {
 				var fname = builder.data.recipeFactory().get();
-				builder.recipeFactory = storage.recipeTypes.get(fname);
+				builder.recipeFactory = ctx.storage().recipeTypes.get(fname);
 
 				if (builder.recipeFactory == null) {
 					throw new NullPointerException("Recipe factory '" + fname + "' not found for recipe schema '" + builder.id + "'");
@@ -308,7 +332,7 @@ public class JsonRecipeSchemaLoader {
 
 				for (var keyData : builder.data.keys().get()) {
 					try {
-						var type = recipeComponentCodecFactoryContext.codec().decode(jsonOps, keyData.type()).getOrThrow().getFirst();
+						var type = keyData.type();
 						var key = type.key(keyData.name(), keyData.role());
 
 						if (keyData.defaultOptional()) {
@@ -355,6 +379,10 @@ public class JsonRecipeSchemaLoader {
 
 			if (!builder.data.overrideKeys().isEmpty()) {
 				builder.overrideKeys = builder.data.overrideKeys();
+			}
+
+			if (builder.data.postProcessors().isPresent()) {
+				builder.postProcessors = builder.data.postProcessors().get();
 			}
 		}
 

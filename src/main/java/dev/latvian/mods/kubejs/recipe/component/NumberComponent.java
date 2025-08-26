@@ -33,22 +33,22 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		return min == Double.NEGATIVE_INFINITY && max == Double.POSITIVE_INFINITY ? DOUBLE : DoubleRange.of(null, min, max);
 	}
 
-	RecipeComponentType<Integer> INT_TYPE = RecipeComponentType.dynamic(KubeJS.id("int"), RecordCodecBuilder.<IntRange>mapCodec(instance -> instance.group(
+	RecipeComponentType<?> INT_TYPE = RecipeComponentType.<IntRange>dynamic(KubeJS.id("int"), RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.INT.optionalFieldOf("min", Integer.MIN_VALUE).forGetter(IntRange::min),
 		Codec.INT.optionalFieldOf("max", Integer.MAX_VALUE).forGetter(IntRange::max)
 	).apply(instance, NumberComponent::intRange)));
 
-	RecipeComponentType<Long> LONG_TYPE = RecipeComponentType.dynamic(KubeJS.id("long"), RecordCodecBuilder.<LongRange>mapCodec(instance -> instance.group(
+	RecipeComponentType<?> LONG_TYPE = RecipeComponentType.<LongRange>dynamic(KubeJS.id("long"), RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.LONG.optionalFieldOf("min", Long.MIN_VALUE).forGetter(LongRange::min),
 		Codec.LONG.optionalFieldOf("max", Long.MAX_VALUE).forGetter(LongRange::max)
 	).apply(instance, NumberComponent::longRange)));
 
-	RecipeComponentType<Float> FLOAT_TYPE = RecipeComponentType.dynamic(KubeJS.id("float"), RecordCodecBuilder.<FloatRange>mapCodec(instance -> instance.group(
+	RecipeComponentType<?> FLOAT_TYPE = RecipeComponentType.<FloatRange>dynamic(KubeJS.id("float"), RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.FLOAT.optionalFieldOf("min", Float.NEGATIVE_INFINITY).forGetter(FloatRange::min),
 		Codec.FLOAT.optionalFieldOf("max", Float.POSITIVE_INFINITY).forGetter(FloatRange::max)
 	).apply(instance, NumberComponent::floatRange)));
 
-	RecipeComponentType<Double> DOUBLE_TYPE = RecipeComponentType.dynamic(KubeJS.id("double"), RecordCodecBuilder.<DoubleRange>mapCodec(instance -> instance.group(
+	RecipeComponentType<?> DOUBLE_TYPE = RecipeComponentType.<DoubleRange>dynamic(KubeJS.id("double"), RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.DOUBLE.optionalFieldOf("min", Double.NEGATIVE_INFINITY).forGetter(DoubleRange::min),
 		Codec.DOUBLE.optionalFieldOf("max", Double.POSITIVE_INFINITY).forGetter(DoubleRange::max)
 	).apply(instance, NumberComponent::doubleRange)));

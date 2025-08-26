@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.command;
 
 import com.google.common.base.Predicate;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -123,6 +121,12 @@ public class KubeJSCommands {
 				.then(Commands.literal("pack-folders")
 					.executes(context -> exportPacks(context.getSource(), false))
 				)
+				.then(Commands.literal("recipe-schema-json")
+					.requires(spOrOP)
+					.then(Commands.argument("recipe-type", ResourceKeyArgument.key(Registries.RECIPE_SERIALIZER))
+						.executes(ctx -> exportRecipeSchemaJson(ctx.getSource(), ctx.getArgument("recipe-type", ResourceKey.class)))
+					)
+				)
 			)
 			.then(Commands.literal("list-tag")
 				.then(Commands.argument("registry", ResourceLocationArgument.id())
@@ -214,13 +218,6 @@ public class KubeJSCommands {
 				.requires(spOrOP)
 				.then(Commands.argument("code", StringArgumentType.greedyString())
 					.executes(ctx -> eval(ctx.getSource(), StringArgumentType.getString(ctx, "code")))
-				)
-			);
-
-			cmd.then(Commands.literal("generate-recipe-schema-json")
-				.requires(spOrOP)
-				.then(Commands.argument("recipe-type", ResourceKeyArgument.key(Registries.RECIPE_SERIALIZER))
-					.executes(ctx -> generateRecipeSchemaJson(ctx.getSource(), ctx.getArgument("recipe-type", ResourceKey.class)))
 				)
 			);
 		}
@@ -553,46 +550,18 @@ public class KubeJSCommands {
 		return 1;
 	}
 
-	private static int generateRecipeSchemaJson(CommandSourceStack source, ResourceKey<?> id) {
+	private static int exportRecipeSchemaJson(CommandSourceStack source, ResourceKey<?> id) {
 		var storage = source.getServer().getServerResources().managers().kjs$getServerScriptManager().recipeSchemaStorage;
 		var schemaType = storage.namespace(id.location().getNamespace()).get(id.location().getPath());
 		var ops = source.getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE);
 
+		source.sendSuccess(() -> Component.literal("Check console/log for the exported JSON"), false);
+
 		if (schemaType != null) {
-			var schema = schemaType.schema;
-			var json = new JsonObject();
-			var keys = new JsonArray();
-			json.add("keys", keys);
-
-			for (var key : schema.keys) {
-				keys.add(key.toJson(schemaType, ops));
-			}
-
-			if (!schema.uniqueIds().isEmpty()) {
-				var a = new JsonArray();
-
-				for (var key : schema.uniqueIds()) {
-					a.add(key.name);
-				}
-
-				if (!a.isEmpty()) {
-					json.add("unique", a);
-				}
-			}
-
-			if (!schema.constructorsGenerated()) {
-				var a = new JsonArray();
-
-				for (var c : schema.constructors().values()) {
-					a.add(c.toJson(schemaType, ops));
-				}
-
-				if (!a.isEmpty()) {
-					json.add("constructors", a);
-				}
-			}
-
+			var json = schemaType.schema.toJson(storage, schemaType, ops);
 			ConsoleJS.SERVER.info("JSON of " + id.location() + ": (May be inaccurate!)\n" + JsonUtils.toPrettyString(json));
+		} else {
+			ConsoleJS.SERVER.info("Failed to generate JSON of " + id.location());
 		}
 
 		return 1;

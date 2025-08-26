@@ -36,7 +36,7 @@ public record ResourceKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverr
 		}
 	}
 
-	public static final RecipeComponentType<ResourceKeyComponent<?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("resource_key"), RecordCodecBuilder.<ResourceKeyComponent<?>>mapCodec(instance -> instance.group(
+	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<ResourceKeyComponent<?>>dynamic(KubeJS.id("resource_key"), RecordCodecBuilder.mapCodec(instance -> instance.group(
 		KubeJSCodecs.REGISTRY_KEY_CODEC.fieldOf("registry").forGetter(ResourceKeyComponent::registryKey)
 	).apply(instance, ResourceKeyComponent::of)));
 

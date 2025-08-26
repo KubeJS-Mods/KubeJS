@@ -23,14 +23,14 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 		return new MapRecipeComponent<>(CharacterComponent.CHARACTER.instance(), component, bounds, true);
 	}
 
-	public static final RecipeComponentType<TinyMap<?, ?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("map"), (RecipeComponentCodecFactory<MapRecipeComponent<?, ?>>) (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
-		ctx.codec().fieldOf("key").forGetter(MapRecipeComponent::key),
-		ctx.codec().fieldOf("component").forGetter(MapRecipeComponent::component),
+	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<MapRecipeComponent<?, ?>>dynamic(KubeJS.id("map"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		ctx.recipeComponentCodec().fieldOf("key").forGetter(MapRecipeComponent::key),
+		ctx.recipeComponentCodec().fieldOf("component").forGetter(MapRecipeComponent::component),
 		IntBounds.MAP_CODEC.forGetter(MapRecipeComponent::bounds)
 	).apply(instance, MapRecipeComponent::of)));
 
-	public static final RecipeComponentType<TinyMap<?, ?>> PATTERN_TYPE = RecipeComponentType.dynamic(KubeJS.id("pattern"), (RecipeComponentCodecFactory<MapRecipeComponent<?, ?>>) (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
-		ctx.codec().fieldOf("component").forGetter(MapRecipeComponent::component),
+	public static final RecipeComponentType<?> PATTERN_TYPE = RecipeComponentType.<MapRecipeComponent<?, ?>>dynamic(KubeJS.id("pattern"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		ctx.recipeComponentCodec().fieldOf("component").forGetter(MapRecipeComponent::component),
 		IntBounds.MAP_CODEC.forGetter(MapRecipeComponent::bounds)
 	).apply(instance, MapRecipeComponent::patternOf)));
 
@@ -161,8 +161,8 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	public String toString() {
 		if (patternKey) {
 			return "pattern<" + component + ">";
+		} else {
+			return "map<" + key + ", " + component + ">";
 		}
-
-		return "map<" + key + ", " + component + ">";
 	}
 }
