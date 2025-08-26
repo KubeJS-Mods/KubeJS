@@ -312,8 +312,13 @@ public interface DataComponentWrapper {
 				builder.append(',');
 			}
 
-			var value = codec == Codec.BOOL ? comp.value() : codec.encodeStart(ops == null ? NbtOps.INSTANCE : ops, Cast.to(comp.value())).getOrThrow();
-			builder.append(ID.reduce(id)).append('=').append(value);
+			builder.append(ID.reduce(id)).append('=');
+			try {
+				var value = codec == Codec.BOOL ? comp.value() : codec.encodeStart(ops == null ? NbtOps.INSTANCE : ops, Cast.to(comp.value())).getOrThrow();
+				builder.append(value);
+			} catch (Throwable ex) {
+				builder.append("ERROR[").append(ex.getMessage()).append("]");
+			}
 		}
 
 		builder.append(']');
@@ -340,8 +345,14 @@ public interface DataComponentWrapper {
 			}
 
 			if (comp.getValue().isPresent()) {
-				var value = codec == Codec.BOOL ? comp.getValue().get() : codec.encodeStart(ops == null ? NbtOps.INSTANCE : ops, Cast.to(comp.getValue().get())).result().get();
-				builder.append(ID.reduce(id)).append('=').append(value);
+				builder.append(ID.reduce(id)).append('=');
+
+				try {
+					var value = codec == Codec.BOOL ? comp.getValue().get() : codec.encodeStart(ops == null ? NbtOps.INSTANCE : ops, Cast.to(comp.getValue().get())).getOrThrow();
+					builder.append(value);
+				} catch (Throwable ex) {
+					builder.append("ERROR[").append(ex.getMessage()).append("]");
+				}
 			} else {
 				builder.append('!').append(ID.reduce(id));
 			}

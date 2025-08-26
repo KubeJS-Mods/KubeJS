@@ -4,6 +4,7 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -54,7 +55,7 @@ public record StringComponent(RecipeComponentType<?> type, Codec<String> codec, 
 	}
 
 	@Override
-	public String toString(String value) {
+	public String toString(OpsContainer ops, String value) {
 		return ScriptRuntime.escapeAndWrapString(value);
 	}
 }

@@ -11,6 +11,7 @@ import dev.latvian.mods.kubejs.error.MissingComponentException;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValueMap;
+import dev.latvian.mods.kubejs.recipe.component.ValidationContext;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ConsumeAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
@@ -24,7 +25,6 @@ import dev.latvian.mods.kubejs.recipe.special.KubeJSCraftingRecipe;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
-import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.KubeResourceLocation;
 import dev.latvian.mods.kubejs.util.SlotFilter;
 import dev.latvian.mods.rhino.Context;
@@ -185,25 +185,22 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		return valueMap.holders;
 	}
 
-	/**
-	 * Perform additional validation after the recipe has been loaded.
-	 * <p>
-	 * You probably want to call <code>super.afterLoaded()</code> as well
-	 * if you override this, in order to validate values.
-	 */
-	public void afterLoaded(ErrorStack stack) {
-		stack.push(this);
+	public final void afterLoaded(ValidationContext ctx) {
+		ctx.stack().push(this);
 
 		for (var v : valueMap.holders) {
-			stack.setKey(v.key.name);
-			v.validate(stack, sourceLine);
+			ctx.stack().setKey(v.key.name);
+			v.validate(ctx, sourceLine);
 		}
 
-		validate(stack);
-		stack.pop();
+		validate(ctx);
+		ctx.stack().pop();
 	}
 
-	public void validate(ErrorStack stack) {
+	/**
+	 * Perform additional validation after the recipe has been loaded.
+	 */
+	public void validate(ValidationContext ctx) {
 	}
 
 	public final void save() {
@@ -491,7 +488,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 
 			if (recipeIngredientActions != null && !recipeIngredientActions.isEmpty()) {
 				try {
-					json.add(KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, IngredientActionHolder.LIST_CODEC.encodeStart(type.event.jsonOps, recipeIngredientActions).getOrThrow());
+					json.add(KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, IngredientActionHolder.LIST_CODEC.encodeStart(type.event.ops.json(), recipeIngredientActions).getOrThrow());
 				} catch (Throwable ex) {
 					ConsoleJS.SERVER.error("Failed to encode " + KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, sourceLine, ex, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
 				}
@@ -520,7 +517,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			originalRecipe = new MutableObject<>();
 			try {
 				var serializer = type.schemaType.getSerializer();
-				var ops = type.event.jsonOps;
+				var ops = type.event.ops.json();
 
 				// people apparently violate the contract here?!
 				//noinspection OptionalOfNullableMisuse

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.component.RecipeComponentCodecFactory;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeFunctionInstance;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeSchemaFunction;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
@@ -263,7 +264,7 @@ public class JsonRecipeSchemaLoader {
 		}
 	}
 
-	public static void load(RecipeSchemaStorage.Ops<JsonElement> jsonOps, RecipeSchemaRegistry event, ResourceManager resourceManager) {
+	public static void load(RecipeSchemaStorage storage, RecipeComponentCodecFactory.Context recipeComponentCodecFactoryContext, DynamicOps<JsonElement> jsonOps, RecipeSchemaRegistry event, ResourceManager resourceManager) {
 		var map = new HashMap<ResourceLocation, RecipeSchemaBuilder>();
 
 		for (var entry : resourceManager.listResources("kubejs/recipe_schema", path -> path.getPath().endsWith(".json")).entrySet()) {
@@ -284,7 +285,7 @@ public class JsonRecipeSchemaLoader {
 
 		for (var builder : map.values()) {
 			for (var m : builder.data.mappings()) {
-				jsonOps.storage.mappings.put(m, builder.id);
+				storage.mappings.put(m, builder.id);
 			}
 		}
 
@@ -295,7 +296,7 @@ public class JsonRecipeSchemaLoader {
 
 			if (builder.data.recipeFactory().isPresent()) {
 				var fname = builder.data.recipeFactory().get();
-				builder.recipeFactory = jsonOps.storage.recipeTypes.get(fname);
+				builder.recipeFactory = storage.recipeTypes.get(fname);
 
 				if (builder.recipeFactory == null) {
 					throw new NullPointerException("Recipe factory '" + fname + "' not found for recipe schema '" + builder.id + "'");
@@ -307,7 +308,7 @@ public class JsonRecipeSchemaLoader {
 
 				for (var keyData : builder.data.keys().get()) {
 					try {
-						var type = jsonOps.recipeComponentCodecFactoryContext.codec().decode(jsonOps, keyData.type()).getOrThrow().getFirst();
+						var type = recipeComponentCodecFactoryContext.codec().decode(jsonOps, keyData.type()).getOrThrow().getFirst();
 						var key = type.key(keyData.name(), keyData.role());
 
 						if (keyData.defaultOptional()) {
@@ -359,19 +360,19 @@ public class JsonRecipeSchemaLoader {
 
 		for (var builder : map.values()) {
 			var schema = builder.getSchema(jsonOps);
-			System.out.println("SCHEMA " + builder.id);
+			// System.out.println("SCHEMA " + builder.id);
 
 			for (var constructor : schema.constructors().values()) {
 				for (var key : schema.keys) {
 					if (key.optional != null && !constructor.keys.contains(key) && !constructor.overrides.containsKey(key)) {
 						constructor.defaultValue(key, Cast.to(key.optional));
-						System.out.println("- V DEF " + key.toString());
+						// System.out.println("- V DEF " + key.toString());
 					} else {
-						System.out.println("- X NOP " + key.toString());
+						// System.out.println("- X NOP " + key.toString());
 					}
 				}
 
-				System.out.println("^ " + constructor);
+				// System.out.println("^ " + constructor);
 			}
 		}
 

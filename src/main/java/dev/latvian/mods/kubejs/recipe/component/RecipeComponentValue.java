@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.script.SourceLine;
-import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.Context;
 
@@ -95,10 +94,10 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 		return Objects.hash(key, value);
 	}
 
-	public void validate(ErrorStack stack, SourceLine sourceLine) {
+	public void validate(ValidationContext ctx, SourceLine sourceLine) {
 		if (value != null) {
 			try {
-				key.component.validate(stack, value);
+				key.component.validate(ctx, value);
 			} catch (Throwable cause) {
 				throw new InvalidRecipeComponentException(this, cause).source(sourceLine);
 			}

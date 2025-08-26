@@ -1,11 +1,8 @@
 package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
-import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.RegistryWrapper;
 import dev.latvian.mods.kubejs.recipe.CachedItemTagLookup;
 import dev.latvian.mods.kubejs.recipe.CachedTagLookup;
@@ -20,8 +17,6 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagLoader;
@@ -38,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class RegistryAccessContainer implements ICondition.IContext {
+public final class RegistryAccessContainer extends RegistryOpsContainer implements ICondition.IContext {
 	public static final RegistryAccessContainer BUILTIN = new RegistryAccessContainer(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
 
 	// Still necessary because STARTUP and CLIENT scripts need to know about registries
@@ -50,9 +45,6 @@ public final class RegistryAccessContainer implements ICondition.IContext {
 	}
 
 	private final RegistryAccess.Frozen access;
-	private final RegistryOps<Tag> nbt;
-	private final RegistryOps<JsonElement> json;
-	private final RegistryOps<Object> java;
 	private DamageSources damageSources;
 	private final Map<String, ItemStack> itemStackParseCache;
 	public final Map<ResourceKey<?>, CachedTagLookup.Entry<?>> cachedRegistryTags;
@@ -62,10 +54,13 @@ public final class RegistryAccessContainer implements ICondition.IContext {
 	private Map<ResourceLocation, RegistryWrapper> cachedRegistryWrappers;
 
 	public RegistryAccessContainer(RegistryAccess.Frozen access) {
+		super(
+			access.createSerializationContext(NbtOps.INSTANCE),
+			access.createSerializationContext(JsonOps.INSTANCE),
+			access.createSerializationContext(JavaOps.INSTANCE)
+		);
+
 		this.access = access;
-		this.nbt = access.createSerializationContext(NbtOps.INSTANCE);
-		this.json = access.createSerializationContext(JsonOps.INSTANCE);
-		this.java = access.createSerializationContext(JavaOps.INSTANCE);
 		this.damageSources = null;
 		this.itemStackParseCache = new HashMap<>();
 		this.cachedRegistryTags = new Reference2ObjectOpenHashMap<>();
@@ -73,18 +68,6 @@ public final class RegistryAccessContainer implements ICondition.IContext {
 
 	public RegistryAccess.Frozen access() {
 		return access;
-	}
-
-	public RegistryOps<Tag> nbt() {
-		return nbt;
-	}
-
-	public RegistryOps<JsonElement> json() {
-		return json;
-	}
-
-	public RegistryOps<Object> java() {
-		return java;
 	}
 
 	public DamageSources damageSources() {
@@ -144,22 +127,6 @@ public final class RegistryAccessContainer implements ICondition.IContext {
 				DataExport.export.addJson(loc + entry.getKey() + ".json", arr);
 			}
 		}
-	}
-
-	public <T> T decode(Context cx, Codec<T> codec, Object o) {
-		return (switch (o) {
-			case Tag tag -> codec.decode(nbt, tag);
-			case Map<?, ?> map -> codec.decode(java, map);
-			default -> codec.decode(json, JsonUtils.of(cx, o));
-		}).getOrThrow().getFirst();
-	}
-
-	public <T> T decodeMap(Context cx, MapCodec<T> codec, Object o) {
-		return (switch (o) {
-			case Tag tag -> codec.decode(nbt, nbt.getMap(tag).getOrThrow());
-			case Map<?, ?> map -> codec.decode(java, java.getMap(map).getOrThrow());
-			default -> codec.decode(json, json.getMap(JsonUtils.of(cx, o)).getOrThrow());
-		}).getOrThrow();
 	}
 
 	private <T> RegistryWrapper<T> createRegistryWrapper(ResourceLocation id) {

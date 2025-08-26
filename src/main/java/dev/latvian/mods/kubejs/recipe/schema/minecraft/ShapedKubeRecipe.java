@@ -4,9 +4,9 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
+import dev.latvian.mods.kubejs.recipe.component.ValidationContext;
 import dev.latvian.mods.kubejs.recipe.schema.KubeRecipeFactory;
 import dev.latvian.mods.kubejs.recipe.special.KubeJSCraftingRecipe;
-import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -18,11 +18,10 @@ public class ShapedKubeRecipe extends KubeRecipe {
 	public static final KubeRecipeFactory RECIPE_FACTORY = new KubeRecipeFactory(KubeJS.id("shaped"), ShapedKubeRecipe.class, ShapedKubeRecipe::new);
 
 	@Override
-	public void afterLoaded(ErrorStack stack) {
+	public void validate(ValidationContext ctx) {
 		RecipeKey<List<String>> patternKey = type.schemaType.schema.getKey("pattern");
 		RecipeKey<TinyMap<Character, Ingredient>> keyKey = type.schemaType.schema.getKey("key");
 
-		super.afterLoaded(stack);
 		var pattern = new ArrayList<>(getValue(patternKey));
 		var key = getValue(keyKey);
 

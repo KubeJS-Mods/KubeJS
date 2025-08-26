@@ -86,6 +86,12 @@
 		},
 		{
 			"type": "bitmap",
+			"file": "kubejs:font/icons/camera.png",
+			"ascent": 7,
+			"chars": ["M"]
+		},
+		{
+			"type": "bitmap",
 			"file": "kubejs:font/icons/no.png",
 			"ascent": 7,
 			"chars": ["N"]
@@ -101,6 +107,12 @@
 			"file": "kubejs:font/icons/patched_component.png",
 			"ascent": 7,
 			"chars": ["Q"]
+		},
+		{
+			"type": "bitmap",
+			"file": "kubejs:font/icons/fire.png",
+			"ascent": 7,
+			"chars": ["R"]
 		},
 		{
 			"type": "bitmap",

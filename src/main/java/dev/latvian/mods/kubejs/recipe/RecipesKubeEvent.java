@@ -15,6 +15,7 @@ import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
+import dev.latvian.mods.kubejs.recipe.component.ValidationContext;
 import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.IDFilter;
 import dev.latvian.mods.kubejs.recipe.filter.OrFilter;
@@ -37,12 +38,12 @@ import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.kubejs.util.RegistryOpsContainer;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
@@ -79,7 +80,7 @@ public class RecipesKubeEvent implements KubeEvent {
 	public final RecipeSchemaStorage recipeSchemaStorage;
 	public final RegistryAccessContainer registries;
 	public final ResourceManager resourceManager;
-	public final RegistryOps<JsonElement> jsonOps;
+	public final RegistryOpsContainer ops;
 	public final Map<ResourceLocation, KubeRecipe> originalRecipes;
 	public final Collection<KubeRecipe> addedRecipes;
 	public final Collection<KubeRecipe> removedRecipes;
@@ -110,7 +111,11 @@ public class RecipesKubeEvent implements KubeEvent {
 		this.recipeSchemaStorage = manager.recipeSchemaStorage;
 		this.registries = manager.getRegistries();
 		this.resourceManager = resourceManager;
-		this.jsonOps = new KubeRecipeEventOps<>(this, registries.json());
+		this.ops = new RegistryOpsContainer(
+			new KubeRecipeEventOps<>(this, registries.nbt()),
+			new KubeRecipeEventOps<>(this, registries.json()),
+			new KubeRecipeEventOps<>(this, registries.java())
+		);
 		this.originalRecipes = new HashMap<>();
 		this.addedRecipes = new ConcurrentLinkedQueue<>();
 		this.removedRecipes = new ConcurrentLinkedQueue<>();
@@ -211,7 +216,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			}
 
 			var codec = ConditionalOps.createConditionalCodec(Codec.unit(originalJson));
-			switch (codec.parse(jsonOps, originalJson)) {
+			switch (codec.parse(ops.json(), originalJson)) {
 				case DataResult.Success(var jsonResult, var lifecycle) -> {
 					if (jsonResult.isEmpty()) {
 						infoSkip("Skipping recipe %s, conditions not met".formatted(recipeId));
@@ -241,7 +246,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 		try {
 			var recipe = type.schemaType.schema.deserialize(SourceLine.UNKNOWN, type, recipeId, json);
-			recipe.afterLoaded(stack);
+			recipe.afterLoaded(new ValidationContext(this, stack));
 			originalRecipes.put(recipeId, recipe);
 
 			if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -542,7 +547,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 		try {
 			var r = type.schemaType.schema.deserialize(sourceLine, type, null, json);
-			r.afterLoaded(stack);
+			r.afterLoaded(new ValidationContext(this, stack));
 			return DataResult.success(addRecipe(r, true));
 		} catch (Throwable cause) {
 			var r = type.schemaType.schema.recipeFactory.create(type, sourceLine, true);

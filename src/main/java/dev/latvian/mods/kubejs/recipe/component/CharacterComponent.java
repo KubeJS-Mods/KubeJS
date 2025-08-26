@@ -4,6 +4,7 @@ import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
@@ -25,7 +26,7 @@ public class CharacterComponent extends SimpleRecipeComponent<Character> {
 	}
 
 	@Override
-	public String toString(Character value) {
+	public String toString(OpsContainer ops, Character value) {
 		return "'" + value + "'";
 	}
 }

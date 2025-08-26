@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -66,7 +67,7 @@ public record BlockComponent(boolean allowEmpty) implements RecipeComponent<Bloc
 	}
 
 	@Override
-	public String toString(Block value) {
+	public String toString(OpsContainer ops, Block value) {
 		return value.kjs$getId();
 	}
 }

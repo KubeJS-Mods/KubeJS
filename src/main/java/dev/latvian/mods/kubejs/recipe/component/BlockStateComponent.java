@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.JsonUtils;
+import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -77,7 +78,7 @@ public record BlockStateComponent(RecipeComponentType<?> type, boolean preferObj
 	}
 
 	@Override
-	public String toString(BlockState value) {
+	public String toString(OpsContainer ops, BlockState value) {
 		return value.kjs$toString();
 	}
 }

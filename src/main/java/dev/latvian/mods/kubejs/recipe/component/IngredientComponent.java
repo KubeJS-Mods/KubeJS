@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.item.Items;
@@ -118,7 +119,7 @@ public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient>
 	}
 
 	@Override
-	public String toString(Ingredient value) {
-		return value.kjs$toIngredientString(null);
+	public String toString(OpsContainer ops, Ingredient value) {
+		return value.kjs$toIngredientString(ops.nbt());
 	}
 }

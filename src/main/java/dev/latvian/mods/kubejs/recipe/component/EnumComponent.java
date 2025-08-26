@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.type.EnumTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -69,7 +70,7 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(@Nullable R
 	}
 
 	@Override
-	public String toString(T value) {
+	public String toString(OpsContainer ops, T value) {
 		return ScriptRuntime.escapeAndWrapString(value.getSerializedName());
 	}
 }

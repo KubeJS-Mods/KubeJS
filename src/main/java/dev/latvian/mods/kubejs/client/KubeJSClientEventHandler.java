@@ -357,8 +357,9 @@ public class KubeJSClientEventHandler {
 		}
 
 		var advanced = flags.isAdvanced();
+		var properties = ClientProperties.get();
 
-		if (mc.level != null && advanced && ClientProperties.get().showComponents && dynamicEvent.alt) {
+		if (mc.level != null && advanced && properties.showComponents && dynamicEvent.alt) {
 			var components = BuiltInRegistries.DATA_COMPONENT_TYPE;
 			var ops = mc.level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
 			var errors = new ArrayList<String>(0);
@@ -417,32 +418,49 @@ public class KubeJSClientEventHandler {
 				lastComponentError = errors;
 				errors.forEach(ConsoleJS.CLIENT::error);
 			}
-		} else if (advanced && ClientProperties.get().showTagNames && dynamicEvent.shift) {
-			var tempTagNames = new LinkedHashMap<ResourceLocation, TagInstance>();
-			TagInstance.Type.ITEM.append(tempTagNames, stack.getItem().builtInRegistryHolder().tags());
+		} else if (advanced && (properties.showTagNames || properties.showFuelValue) && dynamicEvent.shift) {
+			if (properties.showFuelValue) {
+				var fuel = stack.getBurnTime(null);
 
-			if (stack.getItem() instanceof BlockItem item) {
-				TagInstance.Type.BLOCK.append(tempTagNames, item.getBlock().builtInRegistryHolder().tags());
-			}
+				if (fuel > 0) {
+					var line = Component.empty();
+					line.append(TextIcons.icon(Component.literal("R.")));
+					line.append(Component.literal("Fuel: ").kjs$gold());
 
-			if (stack.getItem() instanceof BucketItem bucket) {
-				Fluid fluid = bucket.content;
+					var s = String.valueOf(fuel / 20F);
 
-				if (fluid != Fluids.EMPTY) {
-					TagInstance.Type.FLUID.append(tempTagNames, fluid.builtInRegistryHolder().tags());
+					line.append(Component.literal(fuel + " t / " + (s.endsWith(".0") ? s.substring(0, s.length() - 2) : s) + " s").kjs$yellow());
+					lines.add(line);
 				}
 			}
 
-			if (stack.getItem() instanceof SpawnEggItem item) {
-				var entityType = item.getType(stack);
+			if (properties.showTagNames) {
+				var tempTagNames = new LinkedHashMap<ResourceLocation, TagInstance>();
+				TagInstance.Type.ITEM.append(tempTagNames, stack.getItem().builtInRegistryHolder().tags());
 
-				if (entityType != null) {
-					TagInstance.Type.ENTITY.append(tempTagNames, entityType.builtInRegistryHolder().tags());
+				if (stack.getItem() instanceof BlockItem item) {
+					TagInstance.Type.BLOCK.append(tempTagNames, item.getBlock().builtInRegistryHolder().tags());
 				}
-			}
 
-			if (!tempTagNames.isEmpty()) {
-				tempTagNames.values().stream().sorted().map(TagInstance::toText).forEach(lines::add);
+				if (stack.getItem() instanceof BucketItem bucket) {
+					Fluid fluid = bucket.content;
+
+					if (fluid != Fluids.EMPTY) {
+						TagInstance.Type.FLUID.append(tempTagNames, fluid.builtInRegistryHolder().tags());
+					}
+				}
+
+				if (stack.getItem() instanceof SpawnEggItem item) {
+					var entityType = item.getType(stack);
+
+					if (entityType != null) {
+						TagInstance.Type.ENTITY.append(tempTagNames, entityType.builtInRegistryHolder().tags());
+					}
+				}
+
+				if (!tempTagNames.isEmpty()) {
+					tempTagNames.values().stream().sorted().map(TagInstance::toText).forEach(lines::add);
+				}
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.level.material.Fluid;
@@ -50,7 +51,7 @@ public record FluidIngredientComponent(RecipeComponentType<?> type, Codec<FluidI
 	}
 
 	@Override
-	public String toString(FluidIngredient value) {
+	public String toString(OpsContainer ops, FluidIngredient value) {
 		// Better toString?
 		return value.toString();
 	}

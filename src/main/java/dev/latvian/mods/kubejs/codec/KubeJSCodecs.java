@@ -85,6 +85,15 @@ public interface KubeJSCodecs {
 
 	Codec<Map<String, JsonElement>> JSON_MAP = Codec.unboundedMap(Codec.STRING, ExtraCodecs.JSON);
 
+	Codec<Integer> NON_NEGATIVE_INT = Codec.INT.validate(v -> v >= 0 ? DataResult.success(v) : DataResult.error(() -> "Value must be non-negative: " + v));
+	Codec<Integer> POSITIVE_INT = Codec.INT.validate(v -> v > 0 ? DataResult.success(v) : DataResult.error(() -> "Value must be positive: " + v));
+	Codec<Long> NON_NEGATIVE_LONG = Codec.LONG.validate(v -> v >= 0L ? DataResult.success(v) : DataResult.error(() -> "Value must be non-negative: " + v));
+	Codec<Long> POSITIVE_LONG = Codec.LONG.validate(v -> v > 0L ? DataResult.success(v) : DataResult.error(() -> "Value must be positive: " + v));
+	Codec<Float> NON_NEGATIVE_FLOAT = Codec.FLOAT.validate(v -> v >= 0F ? DataResult.success(v) : DataResult.error(() -> "Value must be non-negative: " + v));
+	Codec<Float> POSITIVE_FLOAT = Codec.FLOAT.validate(v -> v > 0F ? DataResult.success(v) : DataResult.error(() -> "Value must be positive: " + v));
+	Codec<Double> NON_NEGATIVE_DOUBLE = Codec.DOUBLE.validate(v -> v >= 0D ? DataResult.success(v) : DataResult.error(() -> "Value must be non-negative: " + v));
+	Codec<Double> POSITIVE_DOUBLE = Codec.DOUBLE.validate(v -> v > 0D ? DataResult.success(v) : DataResult.error(() -> "Value must be positive: " + v));
+
 	static <E> Codec<E> stringResolverCodec(Function<E, String> toStringFunction, Function<String, E> fromStringFunction) {
 		return Codec.STRING.flatXmap(str -> Optional.ofNullable(fromStringFunction.apply(str))
 				.map(DataResult::success)
@@ -141,5 +150,9 @@ public interface KubeJSCodecs {
 
 	static <V> Codec<V> or(Codec<? extends V> first, Codec<? extends V> second) {
 		return new OrCodec<>((List) List.of(first, second));
+	}
+
+	static Codec<Long> longRangeWithMessage(long min, long max, Function<Long, String> errorMessage) {
+		return Codec.LONG.validate(v -> v.compareTo(min) >= 0 && v.compareTo(max) <= 0 ? DataResult.success(v) : DataResult.error(() -> errorMessage.apply(v)));
 	}
 }

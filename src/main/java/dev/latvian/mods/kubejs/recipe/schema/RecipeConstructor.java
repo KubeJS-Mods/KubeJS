@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.Context;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 
@@ -57,6 +58,10 @@ public class RecipeConstructor {
 
 	@Override
 	public String toString() {
+		return toString(OpsContainer.DEFAULT);
+	}
+
+	public String toString(OpsContainer ops) {
 		var str = keys.stream().map(RecipeKey::toString).collect(Collectors.joining(", ", "(", ")"));
 
 		if (!overrides.isEmpty() || !defaultValues.isEmpty()) {
@@ -73,7 +78,7 @@ public class RecipeConstructor {
 					if (v == null) {
 						return k.name + " = ?";
 					} else {
-						return k.name + " = " + k.component.toString(Cast.to(v));
+						return k.name + " = " + k.component.toString(ops, Cast.to(v));
 					}
 				} catch (Throwable ex) {
 					return k.name + " = ?";

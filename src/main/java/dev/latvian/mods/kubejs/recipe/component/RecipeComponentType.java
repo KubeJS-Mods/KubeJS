@@ -47,9 +47,9 @@ public abstract class RecipeComponentType<T> {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static class Dynamic<T> extends RecipeComponentType<T> {
 		@SuppressWarnings({"rawtypes", "unchecked"})
-		private record Simple(MapCodec codec) implements RecipeComponentCodecFactory {
+		private record Simple(MapCodec codec) implements RecipeComponentCodecFactory<RecipeComponent<?>> {
 			@Override
-			public MapCodec<RecipeComponent<?>> create(Context ctx) {
+			public MapCodec<RecipeComponent<?>> create(RecipeComponentType<?> type, Context ctx) {
 				return codec;
 			}
 		}
@@ -63,7 +63,7 @@ public abstract class RecipeComponentType<T> {
 
 		@Override
 		public MapCodec<RecipeComponent<?>> mapCodec(RecipeComponentCodecFactory.Context ctx) {
-			return factory.create(ctx);
+			return factory.create(this, ctx);
 		}
 	}
 

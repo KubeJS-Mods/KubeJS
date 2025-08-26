@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.error.RecipeComponentTooLargeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
@@ -24,13 +23,13 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 		return new MapRecipeComponent<>(CharacterComponent.CHARACTER.instance(), component, bounds, true);
 	}
 
-	public static final RecipeComponentType<TinyMap<?, ?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("map"), (RecipeComponentCodecFactory<MapRecipeComponent<?, ?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final RecipeComponentType<TinyMap<?, ?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("map"), (RecipeComponentCodecFactory<MapRecipeComponent<?, ?>>) (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		ctx.codec().fieldOf("key").forGetter(MapRecipeComponent::key),
 		ctx.codec().fieldOf("component").forGetter(MapRecipeComponent::component),
 		IntBounds.MAP_CODEC.forGetter(MapRecipeComponent::bounds)
 	).apply(instance, MapRecipeComponent::of)));
 
-	public static final RecipeComponentType<TinyMap<?, ?>> PATTERN_TYPE = RecipeComponentType.dynamic(KubeJS.id("pattern"), (RecipeComponentCodecFactory<MapRecipeComponent<?, ?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final RecipeComponentType<TinyMap<?, ?>> PATTERN_TYPE = RecipeComponentType.dynamic(KubeJS.id("pattern"), (RecipeComponentCodecFactory<MapRecipeComponent<?, ?>>) (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		ctx.codec().fieldOf("component").forGetter(MapRecipeComponent::component),
 		IntBounds.MAP_CODEC.forGetter(MapRecipeComponent::bounds)
 	).apply(instance, MapRecipeComponent::patternOf)));
@@ -84,21 +83,21 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public void validate(ErrorStack stack, TinyMap<K, V> value) {
-		RecipeComponent.super.validate(stack, value);
+	public void validate(ValidationContext ctx, TinyMap<K, V> value) {
+		RecipeComponent.super.validate(ctx, value);
 
 		if (value.entries().length > bounds.max()) {
-			throw new RecipeComponentTooLargeException(this, value.entries().length, bounds.max());
+			throw new RecipeComponentTooLargeException(this, value, value.entries().length, bounds.max());
 		}
 
-		stack.push(this);
+		ctx.stack().push(this);
 
 		for (var entry : value.entries()) {
-			stack.setKey(entry.key());
-			component.validate(stack, entry.value());
+			ctx.stack().setKey(entry.key());
+			component.validate(ctx, entry.value());
 		}
 
-		stack.pop();
+		ctx.stack().pop();
 	}
 
 	@Override

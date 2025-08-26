@@ -12,7 +12,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.Cast;
-import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
 import dev.latvian.mods.rhino.type.JSOptionalParam;
@@ -75,7 +74,7 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 		}
 	}
 
-	public static final RecipeComponentType<List<Value>> TYPE = RecipeComponentType.dynamic(KubeJS.id("custom_object"), (RecipeComponentCodecFactory<CustomObjectRecipeComponent>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final RecipeComponentType<List<Value>> TYPE = RecipeComponentType.dynamic(KubeJS.id("custom_object"), (RecipeComponentCodecFactory<CustomObjectRecipeComponent>) (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Key.createCodec(ctx).listOf().fieldOf("keys").forGetter(CustomObjectRecipeComponent::keys)
 	).apply(instance, CustomObjectRecipeComponent::new)));
 
@@ -254,17 +253,17 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 	}
 
 	@Override
-	public void validate(ErrorStack stack, List<Value> value) {
-		RecipeComponent.super.validate(stack, value);
+	public void validate(ValidationContext ctx, List<Value> value) {
+		RecipeComponent.super.validate(ctx, value);
 
-		stack.push(this);
+		ctx.stack().push(this);
 
 		for (var entry : value) {
-			stack.setKey(entry.key.name);
-			entry.key.component.validate(stack, Cast.to(entry.value));
+			ctx.stack().setKey(entry.key.name);
+			entry.key.component.validate(ctx, Cast.to(entry.value));
 		}
 
-		stack.pop();
+		ctx.stack().pop();
 	}
 
 	@Override

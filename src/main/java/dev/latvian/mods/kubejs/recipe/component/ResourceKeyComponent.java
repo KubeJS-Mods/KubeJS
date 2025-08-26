@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ID;
+import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
@@ -59,7 +60,7 @@ public record ResourceKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverr
 	}
 
 	@Override
-	public String toString(ResourceKey<T> value) {
+	public String toString(OpsContainer ops, ResourceKey<T> value) {
 		return value.location().toString();
 	}
 }

@@ -6,12 +6,16 @@ public class InvalidRecipeComponentValueException extends KubeRuntimeException {
 	public final RecipeComponent<?> component;
 	public final Object value;
 
-	public InvalidRecipeComponentValueException(RecipeComponent<?> component, Object value) {
-		super("Component '" + component + "' has an invalid value!");
+	public InvalidRecipeComponentValueException(String message, RecipeComponent<?> component, Object value) {
+		super(message);
 		this.component = component;
 		this.value = value;
 
-		customData("invalid_component", component.toString());
-		customData("invalid_value", value.toString());
+		customData("component", component);
+		customData("value", value);
+	}
+
+	public InvalidRecipeComponentValueException(RecipeComponent<?> component, Object value) {
+		this("Component '" + component + "' has an invalid value!", component, value);
 	}
 }

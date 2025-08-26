@@ -8,6 +8,8 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.stream.JsonWriter;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.MapLike;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -21,6 +23,8 @@ import java.util.Map;
 public interface JsonUtils {
 	@HideFromJS
 	Gson GSON = new GsonBuilder().disableHtmlEscaping().setLenient().serializeNulls().create();
+
+	MapLike<JsonElement> MAP_LIKE = MapLike.forMap(Map.of(), JsonOps.INSTANCE);
 
 	static JsonElement copy(@Nullable JsonElement element) {
 		if (element == null || element.isJsonNull()) {

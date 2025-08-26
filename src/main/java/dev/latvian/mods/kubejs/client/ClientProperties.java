@@ -24,6 +24,7 @@ public class ClientProperties extends BaseProperties {
 	public String windowTitle;
 	public boolean showTagNames;
 	public boolean showComponents;
+	public boolean showFuelValue;
 	public boolean disableRecipeBook;
 	public boolean disableComponentCountTooltip;
 	public boolean disableTabNameTooltip;
@@ -46,6 +47,7 @@ public class ClientProperties extends BaseProperties {
 		windowTitle = get("window_title", "");
 		showTagNames = get("show_tag_names", true);
 		showComponents = get("show_components", true);
+		showFuelValue = get("show_fuel_value", true);
 		disableRecipeBook = get("disable_recipe_book", false);
 		disableComponentCountTooltip = get("disable_component_count_tooltip", true);
 		disableTabNameTooltip = get("disable_tab_name_tooltip", false);

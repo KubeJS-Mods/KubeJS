@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.recipe;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
+import dev.latvian.mods.kubejs.recipe.component.ValidationContext;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
@@ -67,7 +68,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			if (constructor == null) {
 				if (args.length == 1 && (args[0] instanceof Map<?, ?> || args[0] instanceof JsonObject)) {
 					var recipe = schemaType.schema.deserialize(sourceLine, this, null, JsonUtils.objectOf(cx, args[0]));
-					recipe.afterLoaded(stack);
+					recipe.afterLoaded(new ValidationContext(event, stack));
 					return event.addRecipe(recipe, true);
 					// throw new RecipeExceptionJS("Use event.custom(json) for json recipes!");
 				}
@@ -91,7 +92,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			}
 
 			var recipe = constructor.create(cx, sourceLine, this, schemaType, argMap);
-			recipe.afterLoaded(stack);
+			recipe.afterLoaded(new ValidationContext(event, stack));
 			return event.addRecipe(recipe, false);
 		} catch (KubeRuntimeException rex) {
 			throw rex.source(sourceLine);

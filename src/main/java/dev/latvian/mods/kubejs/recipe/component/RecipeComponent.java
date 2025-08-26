@@ -12,8 +12,8 @@ import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
-import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.IntBounds;
+import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -121,7 +121,7 @@ public interface RecipeComponent<T> {
 		}
 
 		try {
-			var result = cv.key.codec.encodeStart(recipe.type.event.jsonOps, cv.value);
+			var result = cv.key.codec.encodeStart(recipe.type.event.ops.json(), cv.value);
 
 			switch (result) {
 				case DataResult.Success<JsonElement> r -> json.add(cv.key.name, r.value());
@@ -146,13 +146,13 @@ public interface RecipeComponent<T> {
 		var v = json.get(cv.key.name);
 
 		if (v != null) {
-			cv.value = cv.key.codec.parse(recipe.type.event.jsonOps, v).getOrThrow();
+			cv.value = cv.key.codec.parse(recipe.type.event.ops.json(), v).getOrThrow();
 		} else if (cv.key.names.size() >= 2) {
 			for (var alt : cv.key.names) {
 				v = json.get(alt);
 
 				if (v != null) {
-					cv.value = cv.key.codec.parse(recipe.type.event.jsonOps, v).getOrThrow();
+					cv.value = cv.key.codec.parse(recipe.type.event.ops.json(), v).getOrThrow();
 					return;
 				}
 			}
@@ -189,9 +189,9 @@ public interface RecipeComponent<T> {
 		return false;
 	}
 
-	default void validate(ErrorStack stack, T value) {
+	default void validate(ValidationContext ctx, T value) {
 		if (!allowEmpty() && isEmpty(value)) {
-			throw new EmptyRecipeComponentException(this);
+			throw new EmptyRecipeComponentException(this, value);
 		}
 	}
 
@@ -206,7 +206,7 @@ public interface RecipeComponent<T> {
 		builder.append(value.toString());
 	}
 
-	default String toString(T value) {
+	default String toString(OpsContainer ops, T value) {
 		return value.toString();
 	}
 

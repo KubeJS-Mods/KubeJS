@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
-import dev.latvian.mods.kubejs.util.ErrorStack;
+import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
@@ -16,7 +16,7 @@ import java.util.List;
 
 @SuppressWarnings("OptionalIsPresent")
 public record EitherRecipeComponent<H, L>(RecipeComponent<H> left, RecipeComponent<L> right, Codec<Either<H, L>> codec, TypeInfo typeInfo) implements RecipeComponent<Either<H, L>> {
-	public static final RecipeComponentType<Either<?, ?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("either"), (RecipeComponentCodecFactory<EitherRecipeComponent<?, ?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final RecipeComponentType<Either<?, ?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("either"), (RecipeComponentCodecFactory<EitherRecipeComponent<?, ?>>) (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		ctx.codec().fieldOf("left").forGetter(EitherRecipeComponent::left),
 		ctx.codec().fieldOf("right").forGetter(EitherRecipeComponent::right)
 	).apply(instance, EitherRecipeComponent::new)));
@@ -85,20 +85,20 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> left, RecipeCompone
 	}
 
 	@Override
-	public void validate(ErrorStack stack, Either<H, L> value) {
-		stack.push(this);
+	public void validate(ValidationContext ctx, Either<H, L> value) {
+		ctx.stack().push(this);
 
 		var l = value.left();
 
 		if (l.isPresent()) {
-			stack.setKey("left");
-			left.validate(stack, l.get());
+			ctx.stack().setKey("left");
+			left.validate(ctx, l.get());
 		} else {
-			stack.setKey("right");
-			right.validate(stack, value.right().get());
+			ctx.stack().setKey("right");
+			right.validate(ctx, value.right().get());
 		}
 
-		stack.pop();
+		ctx.stack().pop();
 	}
 
 	@Override
@@ -107,13 +107,13 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> left, RecipeCompone
 	}
 
 	@Override
-	public String toString(Either<H, L> value) {
+	public String toString(OpsContainer ops, Either<H, L> value) {
 		var l = value.left();
 
 		if (l.isPresent()) {
-			return left.toString(l.get());
+			return left.toString(ops, l.get());
 		} else {
-			return right.toString(value.right().get());
+			return right.toString(ops, value.right().get());
 		}
 	}
 

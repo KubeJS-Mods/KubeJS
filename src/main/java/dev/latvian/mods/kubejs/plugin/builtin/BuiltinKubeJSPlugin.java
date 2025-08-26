@@ -606,6 +606,10 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(NumberComponent.POSITIVE_INT);
 		registry.register(NumberComponent.NON_NEGATIVE_LONG);
 		registry.register(NumberComponent.POSITIVE_LONG);
+		registry.register(NumberComponent.NON_NEGATIVE_FLOAT);
+		registry.register(NumberComponent.POSITIVE_FLOAT);
+		registry.register(NumberComponent.NON_NEGATIVE_DOUBLE);
+		registry.register(NumberComponent.POSITIVE_DOUBLE);
 
 		registry.register(ListRecipeComponent.TYPE);
 		registry.register(EnumComponent.TYPE);
@@ -625,6 +629,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		registry.register(ItemStackComponent.ITEM_STACK);
 		registry.register(ItemStackComponent.OPTIONAL_ITEM_STACK);
+		registry.register(ItemStackComponent.FILTERED_ITEM_STACK);
 
 		registry.register(FluidStackComponent.FLUID_STACK);
 		registry.register(FluidStackComponent.OPTIONAL_FLUID_STACK);

@@ -9,7 +9,6 @@ import dev.latvian.mods.kubejs.error.RecipeComponentTooLargeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.Cast;
-import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -49,7 +48,7 @@ public record ListRecipeComponent<T>(
 		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, conditional, bounds, spread);
 	}
 
-	public static final RecipeComponentType<List<?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("list"), (RecipeComponentCodecFactory<ListRecipeComponent<?>>) ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final RecipeComponentType<List<?>> TYPE = RecipeComponentType.dynamic(KubeJS.id("list"), (RecipeComponentCodecFactory<ListRecipeComponent<?>>) (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 		ctx.codec().fieldOf("component").forGetter(ListRecipeComponent::component),
 		Codec.BOOL.optionalFieldOf("can_write_self", false).forGetter(ListRecipeComponent::canWriteSelf),
 		Codec.BOOL.optionalFieldOf("conditional", false).forGetter(ListRecipeComponent::conditional),
@@ -200,21 +199,21 @@ public record ListRecipeComponent<T>(
 	}
 
 	@Override
-	public void validate(ErrorStack stack, List<T> value) {
-		RecipeComponent.super.validate(stack, value);
+	public void validate(ValidationContext ctx, List<T> value) {
+		RecipeComponent.super.validate(ctx, value);
 
 		if (value.size() > bounds.max()) {
-			throw new RecipeComponentTooLargeException(this, value.size(), bounds.max());
+			throw new RecipeComponentTooLargeException(this, value, value.size(), bounds.max());
 		}
 
-		stack.push(this);
+		ctx.stack().push(this);
 
 		for (int i = 0; i < value.size(); i++) {
-			stack.setKey(i);
-			component.validate(stack, value.get(i));
+			ctx.stack().setKey(i);
+			component.validate(ctx, value.get(i));
 		}
 
-		stack.pop();
+		ctx.stack().pop();
 	}
 
 	@Override

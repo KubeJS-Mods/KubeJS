@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import org.jetbrains.annotations.Nullable;
@@ -57,8 +56,8 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default void validate(ErrorStack stack, T value) {
-		parentComponent().validate(stack, value);
+	default void validate(ValidationContext ctx, T value) {
+		parentComponent().validate(ctx, value);
 	}
 
 	@Override
