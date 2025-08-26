@@ -46,7 +46,6 @@
 			"name": "show_notification",
 			"role": "other",
 			"type": "boolean",
-			"function_names": ["showNotification"],
 			"optional": true,
 			"excluded": true
 		}

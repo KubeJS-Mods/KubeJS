@@ -36,17 +36,13 @@ public class RecipeFunction extends NativeJavaObject {
 		this.builderFunctions = new HashMap<>();
 
 		for (var value : recipe.getRecipeComponentValues()) {
-			var names = value.key.functionNames == null ? value.key.names : value.key.functionNames;
+			var names = value.key.getValidFunctionNames();
 
 			if (!names.isEmpty()) {
 				var func = new RecipeComponentValueFunction(recipe, value);
 
 				for (var name : names) {
-					name = name.replace(':', '_').replace('/', '_');
-
-					if (isValidIdentifier(name.toCharArray())) {
-						builderFunctions.put(name, func);
-					}
+					builderFunctions.put(name, func);
 				}
 			}
 		}

@@ -24,7 +24,7 @@
 			"name": "cookingtime",
 			"role": "input",
 			"type": "ticks",
-			"function_names": ["cookingTime", "cookingtime"],
+			"function_names": ["time", "cookingTime"],
 			"optional": 200
 		},
 		{

@@ -6,6 +6,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.recipe.component.ComponentRole;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeOptional;
@@ -14,6 +15,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.SequencedSet;
@@ -52,6 +54,7 @@ public final class RecipeKey<T> {
 	public boolean excluded;
 	public List<String> functionNames;
 	public boolean alwaysWrite;
+	private List<String> validFunctionNames;
 
 	public RecipeKey(RecipeComponent<T> component, String name, ComponentRole role) {
 		this.component = component;
@@ -197,8 +200,29 @@ public final class RecipeKey<T> {
 		return this;
 	}
 
-	public String getPreferredBuilderKey() {
-		return functionNames == null || functionNames.isEmpty() ? name : functionNames.getFirst();
+	public List<String> getValidFunctionNames() {
+		if (validFunctionNames == null) {
+			var list = functionNames == null ? names : functionNames;
+
+			validFunctionNames = new ArrayList<>(list.size());
+
+			for (var n : list) {
+				n = StringUtilsWrapper.snakeCaseToCamelCase(n.replace(':', '_').replace('/', '_'));
+
+				if (RecipeFunction.isValidIdentifier(n.toCharArray())) {
+					validFunctionNames.add(n);
+				}
+			}
+
+			validFunctionNames = List.copyOf(validFunctionNames);
+		}
+
+		return validFunctionNames;
+	}
+
+	public String getPrimaryFunctionName() {
+		var names = getValidFunctionNames();
+		return names.isEmpty() ? "" : names.getFirst();
 	}
 
 	public JsonObject toJson(RecipeSchemaType type, DynamicOps<JsonElement> ops) {

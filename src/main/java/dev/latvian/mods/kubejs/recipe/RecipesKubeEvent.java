@@ -191,6 +191,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		var timer = Stopwatch.createStarted();
 
 		KubeJSPlugins.forEachPlugin(p -> p.beforeRecipeLoading(this, recipeManager, datapackRecipeMap));
+		int skippedRecipes = 0;
 
 		for (var entry : datapackRecipeMap.entrySet()) {
 			var recipeId = entry.getKey();
@@ -198,6 +199,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			//Forge: filter anything beginning with "_" as it's used for metadata.
 			if (recipeId == null || recipeId.getPath().startsWith("_")) {
 				infoSkip("Skipping recipe %s, filename starts with _".formatted(recipeId));
+				skippedRecipes++;
 				continue;
 			}
 
@@ -220,6 +222,7 @@ public class RecipesKubeEvent implements KubeEvent {
 				case DataResult.Success(var jsonResult, var lifecycle) -> {
 					if (jsonResult.isEmpty()) {
 						infoSkip("Skipping recipe %s, conditions not met".formatted(recipeId));
+						skippedRecipes++;
 					} else {
 						parseOriginalRecipe(jsonResult.get(), recipeId);
 					}
@@ -229,7 +232,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 
 		takenIds.putAll(originalRecipes);
-		ConsoleJS.SERVER.info("Found %d recipes in %s".formatted(originalRecipes.size(), timer.stop()));
+		ConsoleJS.SERVER.info("Found %,d recipes (skipped %,d) in %s".formatted(originalRecipes.size(), skippedRecipes, timer.stop()));
 	}
 
 	private void parseOriginalRecipe(JsonObject json, ResourceLocation recipeId) {
@@ -280,7 +283,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		if (DevProperties.get().logSkippedRecipes) {
 			ConsoleJS.SERVER.info(s);
 		} else {
-			RecipeManager.LOGGER.info(s);
+			RecipeManager.LOGGER.debug(s);
 		}
 	}
 
@@ -599,7 +602,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			}
 
 			for (var key : entry.getKey().keys) {
-				var name = key.getPreferredBuilderKey().replace(':', '_').replace('/', '_');
+				var name = key.getPrimaryFunctionName();
 
 				if (RecipeFunction.isValidIdentifier(name.toCharArray())) {
 					ConsoleJS.SERVER.info("  - ." + name + "(" + key.component + ")");
