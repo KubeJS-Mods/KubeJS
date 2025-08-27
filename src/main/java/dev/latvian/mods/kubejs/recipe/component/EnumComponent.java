@@ -5,7 +5,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
-import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.type.EnumTypeInfo;
@@ -24,9 +23,8 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(@Nullable R
 		return RecipeComponentType.unit(id, type -> new EnumComponent<>(type, (EnumTypeInfo) TypeInfo.of(enumClass), codec));
 	}
 
-	@SuppressWarnings("DataFlowIssue")
 	public static <T extends Enum<T> & StringRepresentable> RecipeComponentType<T> of(ResourceLocation id, Class<T> enumClass) {
-		return of(id, enumClass, StringRepresentable.fromEnum(Cast.to(enumClass.getEnumConstants())));
+		return of(id, enumClass, StringRepresentable.fromEnum(enumClass::getEnumConstants));
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
