@@ -7,7 +7,9 @@ import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.error.EmptyRecipeComponentException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
@@ -15,7 +17,6 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.kubejs.util.TinyMap;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -88,18 +89,29 @@ public interface RecipeComponent<T> {
 	TypeInfo typeInfo();
 
 	/**
+	 * Declares whether this component should take priority when being
+	 * considered by e.g. an {@link EitherRecipeComponent} during deserialization.
+	 *
+	 * @param cx   Script context
+	 * @param from The object to be deserialized from
+	 * @return Whether this component should take priority
+	 */
+	default boolean hasPriority(RecipeMatchContext cx, Object from) {
+		return false;
+	}
+
+	/**
 	 * Method to read the value contained within this component from an input object;
 	 * this may be some arbitrary value passed into a {@link RecipeSchema schema's}
 	 * constructor(s) or automatically generated builder methods. By default, it will
 	 * attempt to type wrap based on {@link #typeInfo()}
 	 *
-	 * @param cx     JavaScript context
-	 * @param recipe The recipe object used for context
-	 * @param from   An object to be converted to a value for this component
+	 * @param cx   Script context
+	 * @param from An object to be converted to a value for this component
 	 * @return The value read from the input
 	 */
-	default T wrap(Context cx, KubeRecipe recipe, Object from) {
-		return (T) cx.jsToJava(from, typeInfo());
+	default T wrap(RecipeScriptContext cx, Object from) {
+		return (T) cx.cx().jsToJava(from, typeInfo());
 	}
 
 	/**
@@ -159,36 +171,24 @@ public interface RecipeComponent<T> {
 	}
 
 	/**
-	 * Declares whether this component should take priority when being
-	 * considered by e.g. an {@link EitherRecipeComponent} during deserialization.
-	 *
-	 * @param recipe The recipe object used for context
-	 * @param from   The object to be deserialized from
-	 * @return Whether this component should take priority
-	 */
-	default boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
-		return false;
-	}
-
-	/**
-	 * @param recipe The recipe object used for context
-	 * @param value  The value to check
-	 * @param match  The replacement match to check against
+	 * @param cx    Script context
+	 * @param value The value to check
+	 * @param match The replacement match to check against
 	 * @return true if the given value matches the given replacement match.
 	 */
-	default boolean matches(Context cx, KubeRecipe recipe, T value, ReplacementMatchInfo match) {
+	default boolean matches(RecipeMatchContext cx, T value, ReplacementMatchInfo match) {
 		return false;
 	}
 
-	default T replace(Context cx, KubeRecipe recipe, T original, ReplacementMatchInfo match, Object with) {
-		return original instanceof Replaceable r && matches(cx, recipe, original, match) ? wrap(cx, recipe, r.replaceThisWith(cx, with)) : original;
+	default T replace(RecipeScriptContext cx, T original, ReplacementMatchInfo match, Object with) {
+		return original instanceof Replaceable r && matches(cx, original, match) ? this.wrap(cx, r.replaceThisWith(cx, with)) : original;
 	}
 
 	default boolean allowEmpty() {
 		return false;
 	}
 
-	default void validate(ValidationContext ctx, T value) {
+	default void validate(RecipeValidationContext ctx, T value) {
 		if (!allowEmpty() && isEmpty(value)) {
 			throw new EmptyRecipeComponentException(this, value);
 		}

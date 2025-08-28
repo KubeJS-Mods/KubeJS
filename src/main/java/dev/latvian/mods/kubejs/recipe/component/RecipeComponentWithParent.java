@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,23 +31,23 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default T wrap(Context cx, KubeRecipe recipe, Object from) {
-		return parentComponent().wrap(cx, recipe, from);
+	default T wrap(RecipeScriptContext cx, Object from) {
+		return parentComponent().wrap(cx, from);
 	}
 
 	@Override
-	default boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
-		return parentComponent().hasPriority(cx, recipe, from);
+	default boolean hasPriority(RecipeMatchContext cx, Object from) {
+		return parentComponent().hasPriority(cx, from);
 	}
 
 	@Override
-	default boolean matches(Context cx, KubeRecipe recipe, T value, ReplacementMatchInfo match) {
-		return parentComponent().matches(cx, recipe, value, match);
+	default boolean matches(RecipeMatchContext cx, T value, ReplacementMatchInfo match) {
+		return parentComponent().matches(cx, value, match);
 	}
 
 	@Override
-	default T replace(Context cx, KubeRecipe recipe, T original, ReplacementMatchInfo match, Object with) {
-		return parentComponent().replace(cx, recipe, original, match, with);
+	default T replace(RecipeScriptContext cx, T original, ReplacementMatchInfo match, Object with) {
+		return parentComponent().replace(cx, original, match, with);
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default void validate(ValidationContext ctx, T value) {
+	default void validate(RecipeValidationContext ctx, T value) {
 		parentComponent().validate(ctx, value);
 	}
 

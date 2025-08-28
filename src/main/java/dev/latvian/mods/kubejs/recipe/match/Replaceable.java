@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.recipe.match;
 
-import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 
 public interface Replaceable {
-	default Object replaceThisWith(Context cx, Object with) {
+	default Object replaceThisWith(RecipeScriptContext cx, Object with) {
 		return this;
 	}
 }

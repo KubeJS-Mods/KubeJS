@@ -624,7 +624,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		registry.register(IngredientComponent.INGREDIENT);
 		registry.register(IngredientComponent.OPTIONAL_INGREDIENT);
-		registry.register(IngredientComponent.UNWRAPPED_INGREDIENT_LIST);
 
 		registry.register(SizedIngredientComponent.SIZED_INGREDIENT);
 		registry.register(SizedIngredientComponent.OPTIONAL_SIZED_INGREDIENT);

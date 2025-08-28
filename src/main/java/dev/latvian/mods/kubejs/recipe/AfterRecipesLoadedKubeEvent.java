@@ -7,9 +7,13 @@ import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.kubejs.util.RegistryOpsContainer;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
 import java.util.ArrayList;
@@ -18,12 +22,25 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class AfterRecipesLoadedKubeEvent implements KubeEvent {
+	public record MatchCx(
+		Context cx,
+		RegistryAccessContainer registries,
+		RegistryOpsContainer ops,
+		RecipeLikeKJS recipe
+	) implements RecipeMatchContext {
+		public MatchCx(Context cx, AfterRecipesLoadedKubeEvent event, RecipeLikeKJS recipe) {
+			this(cx, event.registries, event.registries, recipe);
+		}
+	}
+
 	private final RecipeManagerKJS recipeManager;
+	private final RegistryAccessContainer registries;
 	private List<RecipeLikeKJS> originalRecipes;
 	private boolean changed;
 
-	public AfterRecipesLoadedKubeEvent(RecipeManagerKJS recipeManager) {
-		this.recipeManager = recipeManager;
+	public AfterRecipesLoadedKubeEvent(ReloadableServerResources resources) {
+		this.recipeManager = resources.getRecipeManager();
+		this.registries = resources.kjs$getServerScriptManager().getRegistries();
 		this.originalRecipes = null;
 		this.changed = false;
 	}
@@ -40,7 +57,7 @@ public class AfterRecipesLoadedKubeEvent implements KubeEvent {
 		if (filter == ConstantFilter.TRUE) {
 			getOriginalRecipes().forEach(consumer);
 		} else if (filter != ConstantFilter.FALSE) {
-			getOriginalRecipes().stream().filter(r -> filter.test(cx, r)).forEach(consumer);
+			getOriginalRecipes().stream().filter(r -> filter.test(new MatchCx(cx, this, r))).forEach(consumer);
 		}
 	}
 
@@ -48,7 +65,7 @@ public class AfterRecipesLoadedKubeEvent implements KubeEvent {
 		if (filter == ConstantFilter.TRUE) {
 			return getOriginalRecipes().size();
 		} else if (filter != ConstantFilter.FALSE) {
-			return (int) getOriginalRecipes().stream().filter(r -> filter.test(cx, r)).count();
+			return (int) getOriginalRecipes().stream().filter(r -> filter.test(new MatchCx(cx, this, r))).count();
 		}
 
 		return 0;
@@ -61,7 +78,7 @@ public class AfterRecipesLoadedKubeEvent implements KubeEvent {
 		while (itr.hasNext()) {
 			var r = itr.next();
 
-			if (filter.test(cx, r)) {
+			if (filter.test(new MatchCx(cx, this, r))) {
 				itr.remove();
 				count++;
 				changed = true;

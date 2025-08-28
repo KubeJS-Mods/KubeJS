@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 public class BooleanComponent implements RecipeComponent<Boolean> {
@@ -26,7 +26,7 @@ public class BooleanComponent implements RecipeComponent<Boolean> {
 	}
 
 	@Override
-	public Boolean wrap(Context cx, KubeRecipe recipe, Object from) {
+	public Boolean wrap(RecipeScriptContext cx, Object from) {
 		if (from instanceof Boolean n) {
 			return n;
 		} else if (from instanceof JsonPrimitive json) {
@@ -39,7 +39,7 @@ public class BooleanComponent implements RecipeComponent<Boolean> {
 	}
 
 	@Override
-	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, Object from) {
 		return from instanceof Boolean || from instanceof JsonPrimitive json && json.isBoolean();
 	}
 

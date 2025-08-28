@@ -5,11 +5,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.OpsContainer;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.util.List;
@@ -21,8 +21,8 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> left, RecipeCompone
 		ctx.recipeComponentCodec().fieldOf("right").forGetter(EitherRecipeComponent::right)
 	).apply(instance, EitherRecipeComponent::new)));
 
-	public EitherRecipeComponent(RecipeComponent<H> high, RecipeComponent<L> low) {
-		this(high, low, Codec.either(high.codec(), low.codec()), high.typeInfo().or(low.typeInfo()));
+	public EitherRecipeComponent(RecipeComponent<H> left, RecipeComponent<L> right) {
+		this(left, right, Codec.either(left.codec(), right.codec()), left.typeInfo().or(right.typeInfo()));
 	}
 
 	@Override
@@ -31,44 +31,65 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> left, RecipeCompone
 	}
 
 	@Override
-	public Either<H, L> wrap(Context cx, KubeRecipe recipe, Object from) {
-		if (left.hasPriority(cx, recipe, from)) {
-			// if high has priority, only try to read high
-			return Either.left(left.wrap(cx, recipe, from));
-		} else if (right.hasPriority(cx, recipe, from)) {
-			// if low has priority, only try to read low
-			return Either.right(right.wrap(cx, recipe, from));
-		} else {
-			// If neither has priority, try to read high, if it fails, fallback to low
-			try {
-				return Either.left(left.wrap(cx, recipe, from));
-			} catch (Exception ex1) {
-				try {
-					return Either.right(right.wrap(cx, recipe, from));
-				} catch (Exception ex2) {
-					ConsoleJS.SERVER.warn("Failed to read %s (left: %s)!".formatted(from, left), ex1);
-					ConsoleJS.SERVER.warn("Failed to read %s (right: %s)!".formatted(from, right), ex2);
-					throw new KubeRuntimeException("Failed to read %s as either %s or %s!".formatted(from, left, right)).source(recipe.sourceLine);
-				}
+	public Either<H, L> wrap(RecipeScriptContext cx, Object from) {
+		if (left.hasPriority(cx, from)) {
+			// if left has priority, only try to read left
+			var value = left.wrap(cx, from);
+
+			if (left.allowEmpty() || !left.isEmpty(value)) {
+				return Either.left(value);
 			}
 		}
+
+		if (right.hasPriority(cx, from)) {
+			// if right has priority, only try to read right
+			var value = right.wrap(cx, from);
+
+			if (right.allowEmpty() || !right.isEmpty(value)) {
+				return Either.right(value);
+			}
+		}
+
+		try {
+			// If neither has priority, try to read left, if it fails, fallback to right
+			var value = left.wrap(cx, from);
+
+			if (left.allowEmpty() || !left.isEmpty(value)) {
+				left.validate(cx, value);
+				return Either.left(value);
+			}
+		} catch (Exception ex1) {
+			try {
+				var value = right.wrap(cx, from);
+
+				if (right.allowEmpty() || !right.isEmpty(value)) {
+					// right.validate(cx, value);
+					return Either.right(value);
+				}
+			} catch (Exception ex2) {
+				ConsoleJS.SERVER.warn("Failed to read %s (left: %s)!".formatted(from, left), ex1);
+				ConsoleJS.SERVER.warn("Failed to read %s (right: %s)!".formatted(from, right), ex2);
+			}
+		}
+
+		throw new KubeRuntimeException("Failed to read %s as either %s or %s!".formatted(from, left, right)).source(cx.recipe().sourceLine);
 	}
 
 	@Override
-	public boolean matches(Context cx, KubeRecipe recipe, Either<H, L> value, ReplacementMatchInfo match) {
+	public boolean matches(RecipeMatchContext cx, Either<H, L> value, ReplacementMatchInfo match) {
 		var l = value.left();
-		return l.isPresent() ? left.matches(cx, recipe, l.get(), match) : right.matches(cx, recipe, value.right().get(), match);
+		return l.isPresent() ? left.matches(cx, l.get(), match) : right.matches(cx, value.right().get(), match);
 	}
 
 	@Override
-	public Either<H, L> replace(Context cx, KubeRecipe recipe, Either<H, L> original, ReplacementMatchInfo match, Object with) {
+	public Either<H, L> replace(RecipeScriptContext cx, Either<H, L> original, ReplacementMatchInfo match, Object with) {
 		var l = original.left();
 
 		if (l.isPresent()) {
-			var r = left.replace(cx, recipe, l.get(), match, with);
+			var r = left.replace(cx, l.get(), match, with);
 			return r == l.get() ? original : Either.left(r);
 		} else {
-			var r = right.replace(cx, recipe, original.right().get(), match, with);
+			var r = right.replace(cx, original.right().get(), match, with);
 			return r == original.right().get() ? original : Either.right(r);
 		}
 	}
@@ -85,20 +106,20 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> left, RecipeCompone
 	}
 
 	@Override
-	public void validate(ValidationContext ctx, Either<H, L> value) {
-		ctx.stack().push(this);
+	public void validate(RecipeValidationContext ctx, Either<H, L> value) {
+		ctx.errors().push(this);
 
 		var l = value.left();
 
 		if (l.isPresent()) {
-			ctx.stack().setKey("left");
+			ctx.errors().setKey("left");
 			left.validate(ctx, l.get());
 		} else {
-			ctx.stack().setKey("right");
+			ctx.errors().setKey("right");
 			right.validate(ctx, value.right().get());
 		}
 
-		ctx.stack().pop();
+		ctx.errors().pop();
 	}
 
 	@Override

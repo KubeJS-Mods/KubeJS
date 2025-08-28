@@ -316,7 +316,7 @@ public interface ItemWrapper {
 	}
 
 	static boolean isItemStackLike(Object from) {
-		return from instanceof ItemStack;
+		return from instanceof ItemStack || from instanceof ItemLike;
 	}
 
 	static ItemStack parseJson(DynamicOps<Tag> registryOps, @Nullable JsonElement json) {

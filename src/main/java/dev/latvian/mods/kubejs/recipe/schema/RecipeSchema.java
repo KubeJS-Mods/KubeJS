@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
+import dev.latvian.mods.kubejs.recipe.component.RecipeValidationContext;
 import dev.latvian.mods.kubejs.recipe.component.UniqueIdBuilder;
 import dev.latvian.mods.kubejs.recipe.schema.function.AddToListFunction;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeFunctionInstance;
@@ -15,7 +16,6 @@ import dev.latvian.mods.kubejs.recipe.schema.function.SetFunction;
 import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessor;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
-import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -37,7 +37,7 @@ import java.util.SequencedCollection;
  * (using the {@link #deserialize(SourceLine, RecipeTypeFunction, ResourceLocation, JsonObject)} method).
  * <p>
  * The schema also defines a {@link #recipeFactory} in order to create a {@link KubeRecipe} object that
- * implements serialization logic, post-load validation ({@link KubeRecipe#afterLoaded(ErrorStack)} ()}),
+ * implements serialization logic, post-load validation ({@link KubeRecipe#validate(RecipeValidationContext)}),
  * as well as entirely custom logic such as additional methods a developer may call from scripts.
  *
  * @see RecipeKey

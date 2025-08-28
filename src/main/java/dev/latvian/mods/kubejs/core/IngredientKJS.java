@@ -7,6 +7,8 @@ import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.SizedIngredientWrapper;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.WithCodec;
@@ -74,9 +76,9 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 	}
 
 	@Override
-	default Object replaceThisWith(Context cx, Object with) {
+	default Object replaceThisWith(RecipeScriptContext cx, Object with) {
 		var t = kjs$self();
-		var r = IngredientWrapper.wrap(cx, with);
+		var r = IngredientWrapper.wrap(cx.cx(), with);
 
 		if (!r.equals(t)) {
 			return r;
@@ -86,7 +88,7 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 	}
 
 	@Override
-	default boolean matches(Context cx, ItemStack item, boolean exact) {
+	default boolean matches(RecipeMatchContext cx, ItemStack item, boolean exact) {
 		if (item.isEmpty()) {
 			return false;
 		} else if (exact) {
@@ -98,7 +100,7 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 	}
 
 	@Override
-	default boolean matches(Context cx, Ingredient in, boolean exact) {
+	default boolean matches(RecipeMatchContext cx, Ingredient in, boolean exact) {
 		if (in == Ingredient.EMPTY) {
 			return false;
 		}

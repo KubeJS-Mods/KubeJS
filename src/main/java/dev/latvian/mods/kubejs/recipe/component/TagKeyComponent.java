@@ -5,10 +5,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ID;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -64,7 +64,12 @@ public record TagKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, 
 	}
 
 	@Override
-	public TagKey<T> wrap(Context cx, KubeRecipe recipe, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, Object from) {
+		return from instanceof TagKey<?> || (from instanceof CharSequence && from.toString().startsWith("#")) || (from instanceof JsonPrimitive json && json.isString() && json.getAsString().startsWith("#"));
+	}
+
+	@Override
+	public TagKey<T> wrap(RecipeScriptContext cx, Object from) {
 		if (from instanceof TagKey<?> k) {
 			return (TagKey<T>) k;
 		}
@@ -76,11 +81,6 @@ public record TagKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, 
 		}
 
 		return TagKey.create(registry, ResourceLocation.parse(s));
-	}
-
-	@Override
-	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
-		return from instanceof TagKey<?> || (from instanceof CharSequence && from.toString().startsWith("#")) || (from instanceof JsonPrimitive json && json.isString() && json.getAsString().startsWith("#"));
 	}
 
 	@Override

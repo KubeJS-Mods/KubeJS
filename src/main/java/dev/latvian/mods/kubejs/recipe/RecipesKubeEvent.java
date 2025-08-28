@@ -15,11 +15,11 @@ import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
-import dev.latvian.mods.kubejs.recipe.component.ValidationContext;
 import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.IDFilter;
 import dev.latvian.mods.kubejs.recipe.filter.OrFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.filter.RegexIDFilter;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
@@ -249,7 +249,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 		try {
 			var recipe = type.schemaType.schema.deserialize(SourceLine.UNKNOWN, type, recipeId, json);
-			recipe.afterLoaded(new ValidationContext(this, stack));
+			recipe.afterLoaded(stack);
 			originalRecipes.put(recipeId, recipe);
 
 			if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -415,9 +415,9 @@ public class RecipesKubeEvent implements KubeEvent {
 		addedRecipes.add(r);
 
 		if (DevProperties.get().logAddedRecipes) {
-			ConsoleJS.SERVER.info("+ " + r.getType() + ": " + r.getFromToString() + (json ? " [json]" : ""));
+			ConsoleJS.SERVER.info("+ " + r.kjs$getType() + ": " + r.getFromToString() + (json ? " [json]" : ""));
 		} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
-			ConsoleJS.SERVER.debug("+ " + r.getType() + ": " + r.getFromToString() + (json ? " [json]" : ""));
+			ConsoleJS.SERVER.debug("+ " + r.kjs$getType() + ": " + r.getFromToString() + (json ? " [json]" : ""));
 		}
 
 		return r;
@@ -426,7 +426,7 @@ public class RecipesKubeEvent implements KubeEvent {
 	private record RecipeStreamFilter(Context cx, RecipeFilter filter) implements Predicate<KubeRecipe> {
 		@Override
 		public boolean test(KubeRecipe r) {
-			return r != null && !r.removed && filter.test(cx, r);
+			return r != null && !r.removed && filter.test(new RecipeMatchContext.Impl(cx, r));
 		}
 	}
 
@@ -496,7 +496,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": IN " + match + " -> " + with) : "";
 
 		forEachRecipe(cx, filter, r -> {
-			if (r.replaceInput(cx, match, with)) {
+			if (r.replaceInput(new RecipeScriptContext.Impl(cx, r), match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -510,7 +510,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": OUT " + match + " -> " + with) : "";
 
 		forEachRecipe(cx, filter, r -> {
-			if (r.replaceOutput(cx, match, with)) {
+			if (r.replaceOutput(new RecipeScriptContext.Impl(cx, r), match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
 					ConsoleJS.SERVER.info("~ " + r + dstring);
 				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
@@ -549,19 +549,19 @@ public class RecipesKubeEvent implements KubeEvent {
 		var stack = new ErrorStack();
 
 		try {
-			var r = type.schemaType.schema.deserialize(sourceLine, type, null, json);
-			r.afterLoaded(new ValidationContext(this, stack));
-			return DataResult.success(addRecipe(r, true));
+			var recipe = type.schemaType.schema.deserialize(sourceLine, type, null, json);
+			recipe.afterLoaded(stack);
+			return DataResult.success(addRecipe(recipe, true));
 		} catch (Throwable cause) {
-			var r = type.schemaType.schema.recipeFactory.create(type, sourceLine, true);
-			r.creationError = true;
+			var recipe = type.schemaType.schema.recipeFactory.create(type, sourceLine, true);
+			recipe.creationError = true;
 			var errorString = "Failed to create custom recipe" + stack.atString() + " from json " + JsonUtils.toString(json);
 			ConsoleJS.SERVER.error(errorString, sourceLine, cause, POST_SKIP_ERROR);
-			r.json = json;
-			r.newRecipe = true;
+			recipe.json = json;
+			recipe.newRecipe = true;
 
 			// importantly, we return a partial result here!
-			return DataResult.error(() -> errorString, r);
+			return DataResult.error(() -> errorString, recipe);
 		}
 	}
 

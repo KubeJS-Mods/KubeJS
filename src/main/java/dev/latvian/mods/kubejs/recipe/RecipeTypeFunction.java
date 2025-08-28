@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
-import dev.latvian.mods.kubejs.recipe.component.ValidationContext;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
@@ -14,7 +13,9 @@ import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Wrapper;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -25,12 +26,14 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 	public static final Pattern SKIP_ERROR = ConsoleJS.methodPattern(RecipeTypeFunction.class, "call");
 
 	public final RecipesKubeEvent event;
+	public final ResourceKey<RecipeSerializer<?>> serializerKey;
 	public final ResourceLocation id;
 	public final String idString;
 	public final RecipeSchemaType schemaType;
 
 	public RecipeTypeFunction(RecipesKubeEvent event, RecipeSchemaType schemaType) {
 		this.event = event;
+		this.serializerKey = schemaType.serializerKey;
 		this.id = schemaType.id;
 		this.idString = id.toString();
 		this.schemaType = schemaType;
@@ -68,7 +71,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			if (constructor == null) {
 				if (args.length == 1 && (args[0] instanceof Map<?, ?> || args[0] instanceof JsonObject)) {
 					var recipe = schemaType.schema.deserialize(sourceLine, this, null, JsonUtils.objectOf(cx, args[0]));
-					recipe.afterLoaded(new ValidationContext(event, stack));
+					recipe.afterLoaded(stack);
 					return event.addRecipe(recipe, true);
 					// throw new RecipeExceptionJS("Use event.custom(json) for json recipes!");
 				}
@@ -92,7 +95,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			}
 
 			var recipe = constructor.create(cx, sourceLine, this, schemaType, argMap);
-			recipe.afterLoaded(new ValidationContext(event, stack));
+			recipe.afterLoaded(stack);
 			return event.addRecipe(recipe, false);
 		} catch (KubeRuntimeException rex) {
 			throw rex.source(sourceLine);

@@ -5,11 +5,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.error.RecipeComponentTooLargeException;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.kubejs.util.TinyMap;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.util.Map;
@@ -52,7 +52,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public TinyMap<K, V> wrap(Context cx, KubeRecipe recipe, Object from) {
+	public TinyMap<K, V> wrap(RecipeScriptContext cx, Object from) {
 		if (from instanceof TinyMap map) {
 			return map;
 		} else if (from instanceof JsonObject o) {
@@ -60,8 +60,8 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 			int i = 0;
 
 			for (var entry : o.entrySet()) {
-				var k = key.wrap(cx, recipe, entry.getKey());
-				var v = component.wrap(cx, recipe, entry.getValue());
+				var k = key.wrap(cx, entry.getKey());
+				var v = component.wrap(cx, entry.getValue());
 				map.entries()[i++] = new TinyMap.Entry<>(k, v);
 			}
 
@@ -71,8 +71,8 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 			int i = 0;
 
 			for (var entry : m.entrySet()) {
-				var k = key.wrap(cx, recipe, entry.getKey());
-				var v = component.wrap(cx, recipe, entry.getValue());
+				var k = key.wrap(cx, entry.getKey());
+				var v = component.wrap(cx, entry.getValue());
 				map.entries()[i++] = new TinyMap.Entry<>(k, v);
 			}
 
@@ -83,21 +83,21 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public void validate(ValidationContext ctx, TinyMap<K, V> value) {
+	public void validate(RecipeValidationContext ctx, TinyMap<K, V> value) {
 		RecipeComponent.super.validate(ctx, value);
 
 		if (value.entries().length > bounds.max()) {
 			throw new RecipeComponentTooLargeException(this, value, value.entries().length, bounds.max());
 		}
 
-		ctx.stack().push(this);
+		ctx.errors().push(this);
 
 		for (var entry : value.entries()) {
-			ctx.stack().setKey(entry.key());
+			ctx.errors().setKey(entry.key());
 			component.validate(ctx, entry.value());
 		}
 
-		ctx.stack().pop();
+		ctx.errors().pop();
 	}
 
 	@Override
@@ -111,9 +111,9 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public boolean matches(Context cx, KubeRecipe recipe, TinyMap<K, V> value, ReplacementMatchInfo match) {
+	public boolean matches(RecipeMatchContext cx, TinyMap<K, V> value, ReplacementMatchInfo match) {
 		for (var entry : value.entries()) {
-			if (component.matches(cx, recipe, entry.value(), match)) {
+			if (component.matches(cx, entry.value(), match)) {
 				return true;
 			}
 		}
@@ -122,11 +122,11 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public TinyMap<K, V> replace(Context cx, KubeRecipe recipe, TinyMap<K, V> original, ReplacementMatchInfo match, Object with) {
+	public TinyMap<K, V> replace(RecipeScriptContext cx, TinyMap<K, V> original, ReplacementMatchInfo match, Object with) {
 		var map = original;
 
 		for (int i = 0; i < original.entries().length; i++) {
-			var r = component.replace(cx, recipe, original.entries()[i].value(), match, with);
+			var r = component.replace(cx, original.entries()[i].value(), match, with);
 
 			if (r != original.entries()[i].value()) {
 				if (map == original) {

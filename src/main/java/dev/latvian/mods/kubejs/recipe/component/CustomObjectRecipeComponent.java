@@ -9,11 +9,11 @@ import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.Cast;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
 import dev.latvian.mods.rhino.type.JSOptionalParam;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -176,7 +176,7 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 	}
 
 	@Override
-	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, Object from) {
 		if (from instanceof Map m) {
 			if (hasPriority != null) {
 				return hasPriority.test(m.keySet());
@@ -207,9 +207,9 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 	}
 
 	@Override
-	public boolean matches(Context cx, KubeRecipe recipe, List<Value> value, ReplacementMatchInfo match) {
+	public boolean matches(RecipeMatchContext cx, List<Value> value, ReplacementMatchInfo match) {
 		for (var e : value) {
-			if (e.key.component.matches(cx, recipe, Cast.to(e.value), match)) {
+			if (e.key.component.matches(cx, Cast.to(e.value), match)) {
 				return true;
 			}
 		}
@@ -218,11 +218,11 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 	}
 
 	@Override
-	public List<Value> replace(Context cx, KubeRecipe recipe, List<Value> original, ReplacementMatchInfo match, Object with) {
+	public List<Value> replace(RecipeScriptContext cx, List<Value> original, ReplacementMatchInfo match, Object with) {
 		var replaced = original;
 
 		for (var e : original) {
-			var r = e.key.component.replace(cx, recipe, Cast.to(e.value), match, with);
+			var r = e.key.component.replace(cx, Cast.to(e.value), match, with);
 
 			if (r != e.value) {
 				if (replaced == original) {
@@ -254,17 +254,17 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 	}
 
 	@Override
-	public void validate(ValidationContext ctx, List<Value> value) {
+	public void validate(RecipeValidationContext ctx, List<Value> value) {
 		RecipeComponent.super.validate(ctx, value);
 
-		ctx.stack().push(this);
+		ctx.errors().push(this);
 
 		for (var entry : value) {
-			ctx.stack().setKey(entry.key.name);
+			ctx.errors().setKey(entry.key.name);
 			entry.key.component.validate(ctx, Cast.to(entry.value));
 		}
 
-		ctx.stack().pop();
+		ctx.errors().pop();
 	}
 
 	@Override

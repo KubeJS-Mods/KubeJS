@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.util.OpsContainer;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 public enum IgnoreComponent implements RecipeComponent<Object> {
@@ -31,7 +31,7 @@ public enum IgnoreComponent implements RecipeComponent<Object> {
 	}
 
 	@Override
-	public Object wrap(Context cx, KubeRecipe recipe, Object from) {
+	public Object wrap(RecipeScriptContext cx, Object from) {
 		return OBJECT;
 	}
 
@@ -44,7 +44,7 @@ public enum IgnoreComponent implements RecipeComponent<Object> {
 	}
 
 	@Override
-	public void validate(ValidationContext ctx, Object value) {
+	public void validate(RecipeValidationContext ctx, Object value) {
 	}
 
 	@Override

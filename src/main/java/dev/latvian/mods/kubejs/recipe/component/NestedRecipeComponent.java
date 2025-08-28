@@ -5,7 +5,8 @@ import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.KubeRecipeEventOps;
-import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 public class NestedRecipeComponent implements RecipeComponent<KubeRecipe> {
@@ -27,18 +28,18 @@ public class NestedRecipeComponent implements RecipeComponent<KubeRecipe> {
 	}
 
 	@Override
-	public KubeRecipe wrap(Context cx, KubeRecipe recipe, Object from) {
+	public KubeRecipe wrap(RecipeScriptContext cx, Object from) {
 		if (from instanceof KubeRecipe r) {
 			return KubeRecipeEventOps.MARK_SYNTHETIC.apply(r);
 		} else if (from instanceof JsonObject json && json.has("type")) {
-			return KubeRecipeEventOps.MARK_SYNTHETIC.apply(recipe.type.event.custom(cx, json));
+			return KubeRecipeEventOps.MARK_SYNTHETIC.apply(cx.recipe().type.event.custom(cx.cx(), json));
 		}
 
 		throw new IllegalArgumentException("Can't parse recipe from " + from);
 	}
 
 	@Override
-	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, Object from) {
 		return from instanceof KubeRecipe || from instanceof JsonObject json && json.has("type");
 	}
 

@@ -8,12 +8,12 @@ import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.holder.HolderWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -54,14 +54,14 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Holder<T> wrap(Context cx, KubeRecipe recipe, Object from) {
+	public Holder<T> wrap(RecipeScriptContext cx, Object from) {
 		if (registry == BuiltInRegistries.ITEM) {
 			if (from instanceof ItemStack is) {
 				return (Holder<T>) is.getItem().builtInRegistryHolder();
 			} else if (from instanceof Item item) {
 				return (Holder<T>) item.builtInRegistryHolder();
 			} else {
-				return (Holder<T>) ItemWrapper.wrap(cx, from).getItemHolder();
+				return (Holder<T>) ItemWrapper.wrap(cx.cx(), from).getItemHolder();
 			}
 		} else if (registry == BuiltInRegistries.FLUID) {
 			if (from instanceof FluidStack fs) {
@@ -69,7 +69,7 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 			} else if (from instanceof Fluid fluid) {
 				return (Holder<T>) fluid.builtInRegistryHolder();
 			} else {
-				return (Holder<T>) FluidWrapper.wrap(RegistryAccessContainer.of(cx), from).getFluidHolder();
+				return (Holder<T>) FluidWrapper.wrap(cx.registries(), from).getFluidHolder();
 			}
 		} else if (regType != null) {
 			return (Holder<T>) HolderWrapper.wrap((KubeJSContext) cx, from, regType.type());
@@ -83,7 +83,7 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 	}
 
 	@Override
-	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, Object from) {
 		return (regType != null && regType.baseClass().isInstance(from)) || (from instanceof CharSequence && ID.mc(from.toString()) != null) || (from instanceof JsonPrimitive json && json.isString() && ID.mc(json.getAsString()) != null);
 	}
 

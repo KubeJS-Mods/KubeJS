@@ -4,11 +4,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.registry.RegistryType;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.OpsContainer;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -46,7 +45,7 @@ public record ResourceKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverr
 	}
 
 	@Override
-	public ResourceKey<T> wrap(Context cx, KubeRecipe recipe, Object from) {
+	public ResourceKey<T> wrap(RecipeScriptContext cx, Object from) {
 		return ResourceKey.create(registryKey, ID.mc(from));
 	}
 

@@ -6,10 +6,12 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeFunction;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.Context;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
@@ -90,26 +92,40 @@ public class RecipeConstructor {
 	}
 
 	public KubeRecipe create(Context cx, SourceLine sourceLine, RecipeTypeFunction type, RecipeSchemaType schemaType, ComponentValueMap from) {
-		var r = schemaType.schema.recipeFactory.create(type, sourceLine, true);
-		r.json = new JsonObject();
-		r.json.addProperty("type", type.idString);
-		r.newRecipe = true;
-		setValues(cx, r, schemaType, from);
-		return r;
+		var recipe = schemaType.schema.recipeFactory.create(type, sourceLine, true);
+		recipe.json = new JsonObject();
+		recipe.json.addProperty("type", type.idString);
+		recipe.newRecipe = true;
+		setValues(new RecipeScriptContext.Impl(cx, recipe, new ErrorStack()), schemaType, from);
+		return recipe;
 	}
 
-	public void setValues(Context cx, KubeRecipe recipe, RecipeSchemaType schemaType, ComponentValueMap from) {
+	public void setValues(RecipeScriptContext cx, RecipeSchemaType schemaType, ComponentValueMap from) {
+		var recipe = cx.recipe();
+		cx.errors().push("keys");
+
 		for (var key : keys) {
-			recipe.setValue(key, Cast.to(from.getValue(cx, recipe, key)));
+			cx.errors().setKey(key.name);
+			recipe.setValue(key, Cast.to(from.getValue(cx, key)));
 		}
+
+		cx.errors().pop();
+		cx.errors().push("overrides");
 
 		for (var entry : overrides.entrySet()) {
+			cx.errors().setKey(entry.getKey().name);
 			recipe.setValue(entry.getKey(), Cast.to(entry.getValue().getDefaultValue(schemaType)));
 		}
 
+		cx.errors().pop();
+		cx.errors().push("key_overrides");
+
 		for (var entry : schemaType.schema.keyOverrides.entrySet()) {
+			cx.errors().setKey(entry.getKey().name);
 			recipe.setValue(entry.getKey(), Cast.to(entry.getValue().getDefaultValue(schemaType)));
 		}
+
+		cx.errors().pop();
 	}
 
 	public JsonObject toJson(RecipeSchemaType type, DynamicOps<JsonElement> ops) {

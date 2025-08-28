@@ -1,11 +1,16 @@
 package dev.latvian.mods.kubejs.core;
 
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
+@RemapPrefixForJS("kjs$")
 public interface RecipeLikeKJS {
 	String kjs$getGroup();
 
@@ -19,23 +24,27 @@ public interface RecipeLikeKJS {
 		return kjs$getOrCreateId().getNamespace();
 	}
 
-	ResourceLocation kjs$getType();
+	ResourceKey<RecipeSerializer<?>> kjs$getTypeKey();
+
+	default ResourceLocation kjs$getType() {
+		return kjs$getTypeKey().location();
+	}
 
 	RecipeSerializer<?> kjs$getSerializer();
 
-	default boolean hasInput(Context cx, ReplacementMatchInfo match) {
+	default boolean hasInput(RecipeMatchContext cx, ReplacementMatchInfo match) {
 		return false;
 	}
 
-	default boolean replaceInput(Context cx, ReplacementMatchInfo match, Object with) {
+	default boolean replaceInput(RecipeScriptContext cx, ReplacementMatchInfo match, Object with) {
 		return false;
 	}
 
-	default boolean hasOutput(Context cx, ReplacementMatchInfo match) {
+	default boolean hasOutput(RecipeMatchContext cx, ReplacementMatchInfo match) {
 		return false;
 	}
 
-	default boolean replaceOutput(Context cx, ReplacementMatchInfo match, Object with) {
+	default boolean replaceOutput(RecipeScriptContext cx, ReplacementMatchInfo match, Object with) {
 		return false;
 	}
 }

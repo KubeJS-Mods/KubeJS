@@ -7,12 +7,11 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.OpsContainer;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -36,16 +35,16 @@ public record BlockStateComponent(RecipeComponentType<?> type, boolean preferObj
 	}
 
 	@Override
-	public BlockState wrap(Context cx, KubeRecipe recipe, Object from) {
+	public BlockState wrap(RecipeScriptContext cx, Object from) {
 		return switch (from) {
 			case BlockState s -> s;
 			case Block b -> b.defaultBlockState();
-			case JsonPrimitive json -> BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), json.getAsString());
+			case JsonPrimitive json -> BlockWrapper.parseBlockState(cx.registries(), json.getAsString());
 			case null, default -> {
-				var map = cx.optionalMapOf(from);
+				var map = cx.cx().optionalMapOf(from);
 
 				if (map == null) {
-					yield BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), String.valueOf(from));
+					yield BlockWrapper.parseBlockState(cx.registries(), String.valueOf(from));
 				} else {
 					// this is formatted like so:
 					// { Name: "blockid", Properties: {Property: "value"}}
@@ -58,7 +57,7 @@ public record BlockStateComponent(RecipeComponentType<?> type, boolean preferObj
 	}
 
 	@Override
-	public boolean matches(Context cx, KubeRecipe recipe, BlockState value, ReplacementMatchInfo match) {
+	public boolean matches(RecipeMatchContext cx, BlockState value, ReplacementMatchInfo match) {
 		return match.match() instanceof BlockStatePredicate m2 && m2.test(value);
 	}
 

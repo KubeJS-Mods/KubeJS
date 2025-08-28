@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.IngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
-import dev.latvian.mods.kubejs.recipe.component.ValidationContext;
+import dev.latvian.mods.kubejs.recipe.component.RecipeValidationContext;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import it.unimi.dsi.fastutil.chars.CharArrayList;
@@ -30,7 +30,7 @@ public record KeyPatternCleanupPostProcessor(String patternName, String keyName,
 	}
 
 	@Override
-	public void process(ValidationContext ctx, KubeRecipe recipe) {
+	public void process(RecipeValidationContext ctx, KubeRecipe recipe) {
 		RecipeKey<TinyMap<Character, ?>> keyKey = recipe.type.schemaType.schema.getKey(keyName);
 		var key = recipe.getValue(keyKey);
 

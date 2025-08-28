@@ -4,9 +4,8 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import dev.latvian.mods.rhino.Context;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,9 +45,9 @@ public record BundleFunction(List<RecipeSchemaFunction> functions) implements Re
 
 	public record Resolved(List<ResolvedRecipeSchemaFunction> functions) implements ResolvedRecipeSchemaFunction {
 		@Override
-		public void execute(Context cx, KubeRecipe recipe, List<Object> args) {
+		public void execute(RecipeScriptContext cx, List<Object> args) {
 			for (var function : functions) {
-				function.execute(cx, recipe, args);
+				function.execute(cx, args);
 			}
 		}
 	}

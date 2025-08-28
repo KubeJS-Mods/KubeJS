@@ -2,12 +2,12 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import dev.latvian.mods.kubejs.error.InvalidRecipeComponentException;
 import dev.latvian.mods.kubejs.error.MissingRequiredValueException;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.WrappedJS;
-import dev.latvian.mods.rhino.Context;
 
 import java.util.Map;
 import java.util.Objects;
@@ -34,12 +34,12 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 		return copy;
 	}
 
-	public boolean matches(Context cx, KubeRecipe recipe, ReplacementMatchInfo match) {
-		return value != null && (match.componentType().isEmpty() || key.component.equals(match.componentType().get())) && key.component.matches(cx, recipe, value, match);
+	public boolean matches(RecipeMatchContext cx, ReplacementMatchInfo match) {
+		return value != null && (match.componentType().isEmpty() || key.component.equals(match.componentType().get())) && key.component.matches(cx, value, match);
 	}
 
-	public boolean replace(Context cx, KubeRecipe recipe, ReplacementMatchInfo match, Object with) {
-		var newValue = value == null ? null : key.component.replace(cx, recipe, value, match, with);
+	public boolean replace(RecipeScriptContext cx, ReplacementMatchInfo match, Object with) {
+		var newValue = value == null ? null : key.component.replace(cx, value, match, with);
 
 		if (value != newValue) {
 			value = newValue;
@@ -94,7 +94,7 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 		return Objects.hash(key, value);
 	}
 
-	public void validate(ValidationContext ctx, SourceLine sourceLine) {
+	public void validate(RecipeValidationContext ctx, SourceLine sourceLine) {
 		if (value != null) {
 			try {
 				key.component.validate(ctx, value);

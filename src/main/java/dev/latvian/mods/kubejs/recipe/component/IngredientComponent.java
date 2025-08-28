@@ -3,62 +3,17 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.OpsContainer;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.crafting.SizedIngredient;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient> codec, boolean allowEmpty) implements RecipeComponent<Ingredient> {
 	public static final RecipeComponentType<Ingredient> INGREDIENT = RecipeComponentType.unit(KubeJS.id("ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC_NONEMPTY, false));
 	public static final RecipeComponentType<Ingredient> OPTIONAL_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC, true));
-
-	public static final RecipeComponentType<List<Ingredient>> UNWRAPPED_INGREDIENT_LIST = RecipeComponentType.unit(KubeJS.id("spread_ingredient_list"), type -> new RecipeComponentWithParent<>() {
-		private static final RecipeComponent<List<Ingredient>> PARENT = OPTIONAL_INGREDIENT.instance().asList();
-		private static final TypeInfo WRAP_TYPE = TypeInfo.RAW_LIST.withParams(TypeInfo.of(SizedIngredient.class));
-
-		@Override
-		public RecipeComponentType<?> type() {
-			return type;
-		}
-
-		@Override
-		public RecipeComponent<List<Ingredient>> parentComponent() {
-			return PARENT;
-		}
-
-		@Override
-		public List<Ingredient> wrap(Context cx, KubeRecipe recipe, Object from) {
-			var list = new ArrayList<Ingredient>();
-
-			for (var in : (Iterable<SizedIngredient>) cx.jsToJava(from, WRAP_TYPE)) {
-				if (!in.ingredient().isEmpty()) {
-					for (int i = 0; i < in.count(); i++) {
-						list.add(in.ingredient());
-					}
-				}
-			}
-
-			return list;
-		}
-
-		@Override
-		public boolean isEmpty(List<Ingredient> value) {
-			return value.isEmpty();
-		}
-
-		@Override
-		public String toString() {
-			return type.toString();
-		}
-	});
 
 	@Override
 	public TypeInfo typeInfo() {
@@ -66,12 +21,12 @@ public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient>
 	}
 
 	@Override
-	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, Object from) {
 		return IngredientWrapper.isIngredientLike(from);
 	}
 
 	@Override
-	public boolean matches(Context cx, KubeRecipe recipe, Ingredient value, ReplacementMatchInfo match) {
+	public boolean matches(RecipeMatchContext cx, Ingredient value, ReplacementMatchInfo match) {
 		return match.match() instanceof ItemMatch m && !value.isEmpty() && m.matches(cx, value, match.exact());
 	}
 

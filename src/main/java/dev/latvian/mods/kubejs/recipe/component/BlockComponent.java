@@ -5,11 +5,10 @@ import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.OpsContainer;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
@@ -37,17 +36,17 @@ public record BlockComponent(boolean allowEmpty) implements RecipeComponent<Bloc
 	}
 
 	@Override
-	public Block wrap(Context cx, KubeRecipe recipe, Object from) {
+	public Block wrap(RecipeScriptContext cx, Object from) {
 		return switch (from) {
 			case Block b -> b;
 			case BlockState s -> s.getBlock();
-			case JsonPrimitive json -> BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), json.getAsString()).getBlock();
-			case null, default -> BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), String.valueOf(from)).getBlock();
+			case JsonPrimitive json -> BlockWrapper.parseBlockState(cx.registries(), json.getAsString()).getBlock();
+			case null, default -> BlockWrapper.parseBlockState(cx.registries(), String.valueOf(from)).getBlock();
 		};
 	}
 
 	@Override
-	public boolean matches(Context cx, KubeRecipe recipe, Block value, ReplacementMatchInfo match) {
+	public boolean matches(RecipeMatchContext cx, Block value, ReplacementMatchInfo match) {
 		return match.match() instanceof BlockStatePredicate m2 && m2.testBlock(value);
 	}
 

@@ -11,7 +11,8 @@ import dev.latvian.mods.kubejs.error.MissingComponentException;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValueMap;
-import dev.latvian.mods.kubejs.recipe.component.ValidationContext;
+import dev.latvian.mods.kubejs.recipe.component.RecipeValidationContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.ConsumeAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.CustomIngredientAction;
 import dev.latvian.mods.kubejs.recipe.ingredientaction.DamageAction;
@@ -25,6 +26,7 @@ import dev.latvian.mods.kubejs.recipe.special.KubeJSCraftingRecipe;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.KubeResourceLocation;
 import dev.latvian.mods.kubejs.util.SlotFilter;
 import dev.latvian.mods.rhino.Context;
@@ -33,6 +35,7 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -147,7 +150,8 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		for (var h : valueMap.holders) {
 			for (var name : h.key.names) {
 				if (name.equals(key)) {
-					h.value = Cast.to(h.key.component.wrap(cx, this, Wrapper.unwrapped(value)));
+					var errors = new ErrorStack();
+					h.value = Cast.to(h.key.component.wrap(new RecipeScriptContext.Impl(cx, this, errors), Wrapper.unwrapped(value)));
 					h.write();
 					save();
 					return this;
@@ -185,35 +189,39 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		return valueMap.holders;
 	}
 
-	public final void afterLoaded(ValidationContext ctx) {
-		ctx.stack().push(this);
+	public final void afterLoaded(ErrorStack stack) {
+		afterLoaded(new RecipeValidationContext.Impl(this, stack));
+	}
+
+	public final void afterLoaded(RecipeValidationContext cx) {
+		cx.errors().push(this);
 
 		var postProcessors = type.schemaType.schema.postProcessors();
 
 		if (!postProcessors.isEmpty()) {
-			ctx.stack().push("Post Processors");
+			cx.errors().push("Post Processors");
 
 			for (int i = 0; i < postProcessors.size(); i++) {
-				ctx.stack().setKey(i);
-				postProcessors.get(i).process(ctx, this);
+				cx.errors().setKey(i);
+				postProcessors.get(i).process(cx, this);
 			}
 
-			ctx.stack().pop();
+			cx.errors().pop();
 		}
 
 		for (var v : valueMap.holders) {
-			ctx.stack().setKey(v.key.name);
-			v.validate(ctx, sourceLine);
+			cx.errors().setKey(v.key.name);
+			v.validate(cx, sourceLine);
 		}
 
-		validate(ctx);
-		ctx.stack().pop();
+		validate(cx);
+		cx.errors().pop();
 	}
 
 	/**
 	 * Perform additional validation after the recipe has been loaded.
 	 */
-	public void validate(ValidationContext ctx) {
+	public void validate(RecipeValidationContext cx) {
 	}
 
 	public final void save() {
@@ -261,6 +269,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	// RecipeLikeKJS methods //
 
 	@Override
+	public ResourceKey<RecipeSerializer<?>> kjs$getTypeKey() {
+		return type.serializerKey;
+	}
+
+	@Override
 	@Deprecated
 	public final String kjs$getGroup() {
 		var e = json.get("group");
@@ -292,12 +305,6 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	@Deprecated
 	public final RecipeSchema kjs$getSchema(Context cx) {
 		return type.schemaType.schema;
-	}
-
-	@Override
-	@Deprecated
-	public final ResourceLocation kjs$getType() {
-		return getType();
 	}
 
 	@Override
@@ -348,9 +355,9 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean hasInput(Context cx, ReplacementMatchInfo match) {
+	public boolean hasInput(RecipeMatchContext cx, ReplacementMatchInfo match) {
 		for (var v : inputValues()) {
-			if (v.matches(cx, this, match)) {
+			if (v.matches(cx, match)) {
 				return true;
 			}
 		}
@@ -359,11 +366,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean replaceInput(Context cx, ReplacementMatchInfo match, Object with) {
+	public boolean replaceInput(RecipeScriptContext cx, ReplacementMatchInfo match, Object with) {
 		boolean replaced = false;
 
 		for (var v : inputValues()) {
-			replaced = v.replace(cx, this, match, with) || replaced;
+			replaced = v.replace(cx, match, with) || replaced;
 		}
 
 		if (replaced) {
@@ -374,9 +381,9 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean hasOutput(Context cx, ReplacementMatchInfo match) {
+	public boolean hasOutput(RecipeMatchContext cx, ReplacementMatchInfo match) {
 		for (var v : outputValues()) {
-			if (v.matches(cx, this, match)) {
+			if (v.matches(cx, match)) {
 				return true;
 			}
 		}
@@ -385,11 +392,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@Override
-	public boolean replaceOutput(Context cx, ReplacementMatchInfo match, Object with) {
+	public boolean replaceOutput(RecipeScriptContext cx, ReplacementMatchInfo match, Object with) {
 		boolean replaced = false;
 
 		for (var v : outputValues()) {
-			replaced = v.replace(cx, this, match, with) || replaced;
+			replaced = v.replace(cx, match, with) || replaced;
 		}
 
 		if (replaced) {
@@ -414,11 +421,6 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 
 	public String getPath() {
 		return getOrCreateId().getPath();
-	}
-
-	@HideFromJS
-	public ResourceLocation getType() {
-		return type.id;
 	}
 
 	@HideFromJS

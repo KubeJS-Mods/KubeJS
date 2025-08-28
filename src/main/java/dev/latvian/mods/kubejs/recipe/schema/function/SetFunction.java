@@ -5,10 +5,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import dev.latvian.mods.rhino.Context;
 import net.minecraft.util.ExtraCodecs;
 
 import java.util.List;
@@ -43,8 +42,8 @@ public record SetFunction(String key, JsonElement value) implements RecipeSchema
 
 	public record Resolved<T>(RecipeKey<T> key, T to) implements ResolvedRecipeSchemaFunction {
 		@Override
-		public void execute(Context cx, KubeRecipe recipe, List<Object> args) {
-			recipe.setValue(key, to);
+		public void execute(RecipeScriptContext cx, List<Object> args) {
+			cx.recipe().setValue(key, to);
 		}
 	}
 }

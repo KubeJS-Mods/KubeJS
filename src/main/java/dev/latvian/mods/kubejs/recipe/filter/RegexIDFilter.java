@@ -2,8 +2,6 @@ package dev.latvian.mods.kubejs.recipe.filter;
 
 import com.google.common.collect.Interner;
 import com.google.common.collect.Interners;
-import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
-import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Objects;
@@ -33,8 +31,8 @@ public class RegexIDFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(Context cx, RecipeLikeKJS recipe) {
-		return matchCache.computeIfAbsent(recipe.kjs$getOrCreateId(), location -> pattern.matcher(location.toString()).find());
+	public boolean test(RecipeMatchContext cx) {
+		return matchCache.computeIfAbsent(cx.recipe().kjs$getOrCreateId(), location -> pattern.matcher(location.toString()).find());
 	}
 
 	@Override

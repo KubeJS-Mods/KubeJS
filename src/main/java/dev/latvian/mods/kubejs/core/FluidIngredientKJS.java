@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
@@ -10,12 +10,12 @@ import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 @RemapPrefixForJS("kjs$")
 public interface FluidIngredientKJS extends FluidMatch {
 	@Override
-	default boolean matches(Context cx, FluidStack s, boolean exact) {
+	default boolean matches(RecipeMatchContext cx, FluidStack s, boolean exact) {
 		return !s.isEmpty() && ((FluidIngredient) this).test(s);
 	}
 
 	@Override
-	default boolean matches(Context cx, FluidIngredient in, boolean exact) {
+	default boolean matches(RecipeMatchContext cx, FluidIngredient in, boolean exact) {
 		if (in == FluidIngredient.empty()) {
 			return false;
 		}

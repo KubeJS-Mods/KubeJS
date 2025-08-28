@@ -6,6 +6,8 @@ import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.component.MutableDataComponentHolderFunctions;
 import dev.latvian.mods.kubejs.fluid.FluidLike;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.ID;
@@ -125,9 +127,9 @@ public interface FluidStackKJS extends
 	}
 
 	@Override
-	default Object replaceThisWith(Context cx, Object with) {
+	default Object replaceThisWith(RecipeScriptContext cx, Object with) {
 		var t = kjs$self();
-		var r = FluidWrapper.wrap(RegistryAccessContainer.of(cx), with);
+		var r = FluidWrapper.wrap(cx.registries(), with);
 
 		if (!FluidStack.isSameFluidSameComponents(t, r)) {
 			r.setAmount(t.getAmount());
@@ -138,12 +140,12 @@ public interface FluidStackKJS extends
 	}
 
 	@Override
-	default boolean matches(Context cx, FluidStack s, boolean exact) {
+	default boolean matches(RecipeMatchContext cx, FluidStack s, boolean exact) {
 		return kjs$self().getFluid() == s.getFluid();
 	}
 
 	@Override
-	default boolean matches(Context cx, FluidIngredient ingredient, boolean exact) {
+	default boolean matches(RecipeMatchContext cx, FluidIngredient ingredient, boolean exact) {
 		return ingredient.test(kjs$self());
 	}
 

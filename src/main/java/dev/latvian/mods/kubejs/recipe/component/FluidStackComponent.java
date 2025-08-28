@@ -3,10 +3,9 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -23,12 +22,12 @@ public record FluidStackComponent(RecipeComponentType<?> type, Codec<FluidStack>
 	}
 
 	@Override
-	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, Object from) {
 		return from instanceof SizedFluidIngredient || from instanceof FluidIngredient || from instanceof FluidStack || from instanceof Fluid;
 	}
 
 	@Override
-	public boolean matches(Context cx, KubeRecipe recipe, FluidStack value, ReplacementMatchInfo match) {
+	public boolean matches(RecipeMatchContext cx, FluidStack value, ReplacementMatchInfo match) {
 		return match.match() instanceof FluidMatch m && m.matches(cx, value, match.exact());
 	}
 

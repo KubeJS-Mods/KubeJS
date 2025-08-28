@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -48,7 +48,7 @@ public interface BlockKJS extends BlockBuilderProvider, BlockBehaviourKJS, Repla
 	}
 
 	@Override
-	default Object replaceThisWith(Context cx, Object with) {
-		return with instanceof Block block ? block : with instanceof BlockState state ? state.getBlock() : cx.jsToJava(with, BlockWrapper.TYPE_INFO);
+	default Object replaceThisWith(RecipeScriptContext cx, Object with) {
+		return with instanceof Block block ? block : with instanceof BlockState state ? state.getBlock() : cx.cx().jsToJava(with, BlockWrapper.TYPE_INFO);
 	}
 }

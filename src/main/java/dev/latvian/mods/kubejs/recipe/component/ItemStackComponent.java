@@ -5,11 +5,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.error.InvalidRecipeComponentValueException;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.OpsContainer;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -36,12 +35,12 @@ public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> c
 	}
 
 	@Override
-	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, Object from) {
 		return ItemWrapper.isItemStackLike(from);
 	}
 
 	@Override
-	public boolean matches(Context cx, KubeRecipe recipe, ItemStack value, ReplacementMatchInfo match) {
+	public boolean matches(RecipeMatchContext cx, ItemStack value, ReplacementMatchInfo match) {
 		return match.match() instanceof ItemMatch m && !value.isEmpty() && m.matches(cx, value, match.exact());
 	}
 
@@ -68,7 +67,7 @@ public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> c
 	}
 
 	@Override
-	public void validate(ValidationContext ctx, ItemStack value) {
+	public void validate(RecipeValidationContext ctx, ItemStack value) {
 		RecipeComponent.super.validate(ctx, value);
 
 		if (!filter.isEmpty() && !filter.test(value)) {

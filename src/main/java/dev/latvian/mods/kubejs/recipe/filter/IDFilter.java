@@ -1,7 +1,5 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
-import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
-import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.ResourceLocation;
 
 public class IDFilter implements RecipeFilter {
@@ -12,8 +10,8 @@ public class IDFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(Context cx, RecipeLikeKJS r) {
-		return r.kjs$getOrCreateId().equals(id);
+	public boolean test(RecipeMatchContext cx) {
+		return cx.recipe().kjs$getOrCreateId().equals(id);
 	}
 
 	@Override

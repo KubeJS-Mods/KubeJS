@@ -3,9 +3,10 @@ package dev.latvian.mods.kubejs.recipe.schema;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.rhino.Context;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -21,7 +22,7 @@ public class UnknownKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public boolean hasInput(Context cx, ReplacementMatchInfo match) {
+	public boolean hasInput(RecipeMatchContext cx, ReplacementMatchInfo match) {
 		if (CommonProperties.get().matchJsonRecipes && match.match() instanceof ItemMatch m) {
 			var original = getOriginalRecipe();
 
@@ -47,12 +48,12 @@ public class UnknownKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public boolean replaceInput(Context cx, ReplacementMatchInfo match, Object with) {
+	public boolean replaceInput(RecipeScriptContext cx, ReplacementMatchInfo match, Object with) {
 		return false;
 	}
 
 	@Override
-	public boolean hasOutput(Context cx, ReplacementMatchInfo match) {
+	public boolean hasOutput(RecipeMatchContext cx, ReplacementMatchInfo match) {
 		if (CommonProperties.get().matchJsonRecipes && match.match() instanceof ItemMatch m) {
 			var original = getOriginalRecipe();
 
@@ -69,7 +70,7 @@ public class UnknownKubeRecipe extends KubeRecipe {
 	}
 
 	@Override
-	public boolean replaceOutput(Context cx, ReplacementMatchInfo match, Object with) {
+	public boolean replaceOutput(RecipeScriptContext cx, ReplacementMatchInfo match, Object with) {
 		return false;
 	}
 }

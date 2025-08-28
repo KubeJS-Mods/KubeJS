@@ -4,10 +4,9 @@ import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.SizedIngredientWrapper;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
@@ -28,12 +27,12 @@ public record SizedIngredientComponent(RecipeComponentType<?> type, Codec<SizedI
 	}
 
 	@Override
-	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, Object from) {
 		return IngredientWrapper.isIngredientLike(from);
 	}
 
 	@Override
-	public boolean matches(Context cx, KubeRecipe recipe, SizedIngredient value, ReplacementMatchInfo match) {
+	public boolean matches(RecipeMatchContext cx, SizedIngredient value, ReplacementMatchInfo match) {
 		return match.match() instanceof ItemMatch m && m.matches(cx, value.ingredient(), match.exact());
 	}
 

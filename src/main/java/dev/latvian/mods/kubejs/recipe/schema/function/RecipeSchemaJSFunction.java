@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.schema.function;
 
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
@@ -23,7 +24,7 @@ public class RecipeSchemaJSFunction extends BaseFunction {
 	@Override
 	public KubeRecipe call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
 		if (argTypes.length == 0) {
-			func.execute(cx, recipe, List.of());
+			func.execute(new RecipeScriptContext.Impl(cx, recipe), List.of());
 			return recipe;
 		}
 
@@ -33,7 +34,7 @@ public class RecipeSchemaJSFunction extends BaseFunction {
 			argList.add(cx.jsToJava(args[i], argTypes[i]));
 		}
 
-		func.execute(cx, recipe, argList);
+		func.execute(new RecipeScriptContext.Impl(cx, recipe), argList);
 		return recipe;
 	}
 }

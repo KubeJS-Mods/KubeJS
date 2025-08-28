@@ -3,12 +3,12 @@ package dev.latvian.mods.kubejs.core;
 import dev.latvian.mods.kubejs.block.RandomTickKubeEvent;
 import dev.latvian.mods.kubejs.plugin.builtin.event.BlockEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.web.RelativeURL;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -70,8 +70,8 @@ public interface BlockStateKJS extends RegistryObjectKJS<Block>, Replaceable {
 	}
 
 	@Override
-	default Object replaceThisWith(Context cx, Object with) {
-		return with instanceof BlockState state ? state : with instanceof Block block ? block.defaultBlockState() : cx.jsToJava(with, BlockWrapper.STATE_TYPE_INFO);
+	default Object replaceThisWith(RecipeScriptContext cx, Object with) {
+		return with instanceof BlockState state ? state : with instanceof Block block ? block.defaultBlockState() : cx.cx().jsToJava(with, BlockWrapper.STATE_TYPE_INFO);
 	}
 
 	default RelativeURL kjs$getWebIconURL(int size) {

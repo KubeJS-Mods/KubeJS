@@ -1,8 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
-import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import dev.latvian.mods.rhino.Context;
 
 public class OutputFilter implements RecipeFilter {
 	private final ReplacementMatchInfo match;
@@ -12,8 +10,8 @@ public class OutputFilter implements RecipeFilter {
 	}
 
 	@Override
-	public boolean test(Context cx, RecipeLikeKJS r) {
-		return r.hasOutput(cx, match);
+	public boolean test(RecipeMatchContext cx) {
+		return cx.recipe().hasOutput(cx, match);
 	}
 
 	@Override

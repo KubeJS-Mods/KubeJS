@@ -1,9 +1,10 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
-import dev.latvian.mods.rhino.Context;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
@@ -14,8 +15,8 @@ public interface SizedIngredientKJS extends Replaceable, IngredientSupplierKJS, 
 	}
 
 	@Override
-	default Object replaceThisWith(Context cx, Object with) {
-		var ingredient = IngredientWrapper.wrap(cx, with);
+	default Object replaceThisWith(RecipeScriptContext cx, Object with) {
+		var ingredient = IngredientWrapper.wrap(cx.cx(), with);
 
 		if (!ingredient.equals(kjs$self().ingredient())) {
 			return new SizedIngredient(ingredient, kjs$self().count());
@@ -30,12 +31,12 @@ public interface SizedIngredientKJS extends Replaceable, IngredientSupplierKJS, 
 	}
 
 	@Override
-	default boolean matches(Context cx, ItemStack item, boolean exact) {
+	default boolean matches(RecipeMatchContext cx, ItemStack item, boolean exact) {
 		return kjs$self().ingredient().matches(cx, item, exact);
 	}
 
 	@Override
-	default boolean matches(Context cx, Ingredient in, boolean exact) {
+	default boolean matches(RecipeMatchContext cx, Ingredient in, boolean exact) {
 		return kjs$self().ingredient().matches(cx, in, exact);
 	}
 }

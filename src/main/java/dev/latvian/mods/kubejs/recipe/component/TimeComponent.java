@@ -3,9 +3,9 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.util.TickDuration;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 public record TimeComponent(RecipeComponentType<?> type, long scale, Codec<TickDuration> codec) implements RecipeComponent<TickDuration> {
@@ -25,12 +25,12 @@ public record TimeComponent(RecipeComponentType<?> type, long scale, Codec<TickD
 	}
 
 	@Override
-	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, Object from) {
 		return from instanceof Number || from instanceof JsonPrimitive json && json.isNumber();
 	}
 
 	@Override
-	public TickDuration wrap(Context cx, KubeRecipe recipe, Object from) {
+	public TickDuration wrap(RecipeScriptContext cx, Object from) {
 		if (from instanceof Number n) {
 			return TickDuration.of((long) (n.doubleValue() * scale));
 		} else {

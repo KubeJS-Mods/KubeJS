@@ -6,11 +6,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.error.RecipeComponentTooLargeException;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.IntBounds;
-import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
@@ -72,11 +72,11 @@ public record ListRecipeComponent<T>(
 	}
 
 	@Override
-	public boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, Object from) {
 		return from instanceof Iterable<?> || from != null && from.getClass().isArray();
 	}
 
-	public static <T> List<T> wrap0(Context cx, KubeRecipe recipe, RecipeComponent<T> component, Object from) {
+	public static <T> List<T> wrap0(RecipeScriptContext cx, RecipeComponent<T> component, Object from) {
 		if (from instanceof Iterable<?> iterable) {
 			int size;
 
@@ -91,15 +91,15 @@ public record ListRecipeComponent<T>(
 			if (size == 0) {
 				return List.of();
 			} else if (size == 1) {
-				return List.of(component.wrap(cx, recipe, iterable.iterator().next()));
+				return List.of(component.wrap(cx, iterable.iterator().next()));
 			} else if (size == 2) {
 				var itr = iterable.iterator();
-				return List.of(component.wrap(cx, recipe, itr.next()), component.wrap(cx, recipe, itr.next()));
+				return List.of(component.wrap(cx, itr.next()), component.wrap(cx, itr.next()));
 			} else if (size > 0) {
 				var arr = new ArrayList<T>(size);
 
 				for (var e : iterable) {
-					arr.add(component.wrap(cx, recipe, e));
+					arr.add(component.wrap(cx, e));
 				}
 
 				return arr;
@@ -107,7 +107,7 @@ public record ListRecipeComponent<T>(
 				var list = new ArrayList<T>();
 
 				for (var e : iterable) {
-					list.add(component.wrap(cx, recipe, e));
+					list.add(component.wrap(cx, e));
 				}
 
 				return list;
@@ -122,38 +122,38 @@ public record ListRecipeComponent<T>(
 			var arr = new ArrayList<T>(length);
 
 			for (int i = 0; i < length; i++) {
-				arr.add(component.wrap(cx, recipe, Array.get(from, i)));
+				arr.add(component.wrap(cx, Array.get(from, i)));
 			}
 
 			return arr;
 		}
 
-		return List.of(component.wrap(cx, recipe, from));
+		return List.of(component.wrap(cx, from));
 	}
 
 	@Override
-	public List<T> wrap(Context cx, KubeRecipe recipe, Object from) {
+	public List<T> wrap(RecipeScriptContext cx, Object from) {
 		if (spread.isPresent()) {
 			var spreadComponent = spread.get();
-			var original = wrap0(cx, recipe, spreadComponent, from);
+			var original = wrap0(cx, spreadComponent, from);
 			var result = new ArrayList<T>();
 
 			for (var o : original) {
 				for (var s : spreadComponent.spread(Cast.to(o))) {
-					result.add(component.wrap(cx, recipe, s));
+					result.add(component.wrap(cx, s));
 				}
 			}
 
 			return result;
 		} else {
-			return wrap0(cx, recipe, component, from);
+			return wrap0(cx, component, from);
 		}
 	}
 
 	@Override
-	public boolean matches(Context cx, KubeRecipe recipe, List<T> value, ReplacementMatchInfo match) {
+	public boolean matches(RecipeMatchContext cx, List<T> value, ReplacementMatchInfo match) {
 		for (var v : value) {
-			if (component.matches(cx, recipe, v, match)) {
+			if (component.matches(cx, v, match)) {
 				return true;
 			}
 		}
@@ -162,11 +162,11 @@ public record ListRecipeComponent<T>(
 	}
 
 	@Override
-	public List<T> replace(Context cx, KubeRecipe recipe, List<T> original, ReplacementMatchInfo match, Object with) {
+	public List<T> replace(RecipeScriptContext cx, List<T> original, ReplacementMatchInfo match, Object with) {
 		var arr = original;
 
 		for (int i = 0; i < original.size(); i++) {
-			var r = component.replace(cx, recipe, original.get(i), match, with);
+			var r = component.replace(cx, original.get(i), match, with);
 
 			if (arr.get(i) != r) {
 				if (arr == original) {
@@ -199,21 +199,21 @@ public record ListRecipeComponent<T>(
 	}
 
 	@Override
-	public void validate(ValidationContext ctx, List<T> value) {
+	public void validate(RecipeValidationContext ctx, List<T> value) {
 		RecipeComponent.super.validate(ctx, value);
 
 		if (value.size() > bounds.max()) {
 			throw new RecipeComponentTooLargeException(this, value, value.size(), bounds.max());
 		}
 
-		ctx.stack().push(this);
+		ctx.errors().push(this);
 
 		for (int i = 0; i < value.size(); i++) {
-			ctx.stack().setKey(i);
+			ctx.errors().setKey(i);
 			component.validate(ctx, value.get(i));
 		}
 
-		ctx.stack().pop();
+		ctx.errors().pop();
 	}
 
 	@Override

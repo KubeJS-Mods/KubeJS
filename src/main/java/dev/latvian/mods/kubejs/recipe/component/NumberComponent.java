@@ -5,8 +5,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
@@ -80,7 +80,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 	}
 
 	@Override
-	default boolean hasPriority(Context cx, KubeRecipe recipe, Object from) {
+	default boolean hasPriority(RecipeMatchContext cx, Object from) {
 		return from instanceof Number || from instanceof JsonPrimitive json && json.isNumber();
 	}
 
@@ -138,7 +138,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		}
 
 		@Override
-		public Integer wrap(Context cx, KubeRecipe recipe, Object from) {
+		public Integer wrap(RecipeScriptContext cx, Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).intValue(), min, max);
 		}
 
@@ -175,7 +175,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		}
 
 		@Override
-		public Long wrap(Context cx, KubeRecipe recipe, Object from) {
+		public Long wrap(RecipeScriptContext cx, Object from) {
 			long val = NumberComponent.numberOf(from).longValue();
 			return (val < min) ? min : Math.min(val, max);
 		}
@@ -212,7 +212,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		}
 
 		@Override
-		public Float wrap(Context cx, KubeRecipe recipe, Object from) {
+		public Float wrap(RecipeScriptContext cx, Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).floatValue(), min, max);
 		}
 
@@ -248,7 +248,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		}
 
 		@Override
-		public Double wrap(Context cx, KubeRecipe recipe, Object from) {
+		public Double wrap(RecipeScriptContext cx, Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).doubleValue(), min, max);
 		}
 

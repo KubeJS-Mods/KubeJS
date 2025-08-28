@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
-import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
@@ -15,11 +14,13 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 @FunctionalInterface
-public interface RecipeFilter {
-	boolean test(Context cx, RecipeLikeKJS r);
+public interface RecipeFilter extends Predicate<RecipeMatchContext> {
+	@Override
+	boolean test(RecipeMatchContext cx);
 
 	static RecipeFilter wrap(Context cx, @Nullable Object o) {
 		if (o == null || o == ConstantFilter.TRUE) {

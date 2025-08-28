@@ -5,11 +5,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import dev.latvian.mods.rhino.Context;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +41,11 @@ public record AddToListFunction(String key) implements RecipeSchemaFunction {
 		}
 
 		@Override
-		public void execute(Context cx, KubeRecipe recipe, List<Object> args) {
+		public void execute(RecipeScriptContext cx, List<Object> args) {
+			var recipe = cx.recipe();
 			var value = recipe.getValue(key);
 			var list = value == null ? new ArrayList<T>() : new ArrayList<>(value);
-			list.addAll(key.component.wrap(cx, recipe, args.getFirst()));
+			list.addAll(key.component.wrap(cx, args.getFirst()));
 			recipe.setValue(key, list);
 		}
 	}

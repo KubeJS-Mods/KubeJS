@@ -6,6 +6,8 @@ import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
+import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
+import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.Cast;
@@ -273,9 +275,9 @@ public interface ItemStackKJS extends
 	}
 
 	@Override
-	default Object replaceThisWith(Context cx, Object with) {
+	default Object replaceThisWith(RecipeScriptContext cx, Object with) {
 		var t = kjs$self();
-		var r = ItemWrapper.wrap(cx, with);
+		var r = ItemWrapper.wrap(cx.cx(), with);
 
 		if (!ItemStack.isSameItemSameComponents(t, r)) {
 			r.setCount(t.getCount());
@@ -286,17 +288,17 @@ public interface ItemStackKJS extends
 	}
 
 	@Override
-	default boolean matches(Context cx, ItemStack s, boolean exact) {
+	default boolean matches(RecipeMatchContext cx, ItemStack s, boolean exact) {
 		return kjs$self().getItem() == s.getItem();
 	}
 
 	@Override
-	default boolean matches(Context cx, Ingredient in, boolean exact) {
+	default boolean matches(RecipeMatchContext cx, Ingredient in, boolean exact) {
 		return in.test(kjs$self());
 	}
 
 	@Override
-	default boolean matches(Context cx, ItemLike itemLike, boolean exact) {
+	default boolean matches(RecipeMatchContext cx, ItemLike itemLike, boolean exact) {
 		return kjs$self().getItem() == itemLike.asItem();
 	}
 
