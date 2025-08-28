@@ -37,8 +37,8 @@ public interface TimeJS {
 					case "s" -> millis = amount * 1000D;
 					case "m" -> millis = amount * 60000D;
 					case "h" -> millis = amount * 60000D * 60L;
-					case "d" -> millis = amount * 24D * 86400L * 1000L;
-					case "w" -> millis = amount * 24D * 86400L * 7000L;
+					case "d" -> millis = amount * 86400L * 1000L;
+					case "w" -> millis = amount * 86400L * 7000L;
 					case "M" -> millis = amount * 31556952D / 12D * 1000L;
 					case "y" -> millis = amount * 31556952D * 1000L;
 					default -> throw new IllegalArgumentException("Invalid temporal unit: " + matcher.group(2));
