@@ -50,6 +50,8 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> left, RecipeCompone
 			}
 		}
 
+		Exception ex1 = null;
+
 		try {
 			// If neither has priority, try to read left, if it fails, fallback to right
 			var value = left.wrap(cx, from);
@@ -58,18 +60,20 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> left, RecipeCompone
 				left.validate(cx, value);
 				return Either.left(value);
 			}
-		} catch (Exception ex1) {
-			try {
-				var value = right.wrap(cx, from);
+		} catch (Exception ex) {
+			ex1 = ex;
+		}
 
-				if (right.allowEmpty() || !right.isEmpty(value)) {
-					// right.validate(cx, value);
-					return Either.right(value);
-				}
-			} catch (Exception ex2) {
-				ConsoleJS.SERVER.warn("Failed to read %s (left: %s)!".formatted(from, left), ex1);
-				ConsoleJS.SERVER.warn("Failed to read %s (right: %s)!".formatted(from, right), ex2);
+		try {
+			var value = right.wrap(cx, from);
+
+			if (right.allowEmpty() || !right.isEmpty(value)) {
+				// right.validate(cx, value);
+				return Either.right(value);
 			}
+		} catch (Exception ex) {
+			ConsoleJS.SERVER.warn("Failed to read %s (left: %s)!".formatted(from, left), ex1);
+			ConsoleJS.SERVER.warn("Failed to read %s (right: %s)!".formatted(from, right), ex);
 		}
 
 		throw new KubeRuntimeException("Failed to read %s as either %s or %s!".formatted(from, left, right)).source(cx.recipe().sourceLine);
