@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.util.ExtraCodecs;
 
 public enum IgnoreComponent implements RecipeComponent<Object> {
 	INSTANCE;
@@ -18,7 +19,7 @@ public enum IgnoreComponent implements RecipeComponent<Object> {
 
 	@Override
 	public Codec<Object> codec() {
-		throw new IllegalStateException();
+		return ExtraCodecs.JAVA;
 	}
 
 	@Override
