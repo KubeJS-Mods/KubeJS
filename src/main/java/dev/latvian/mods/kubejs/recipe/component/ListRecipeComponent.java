@@ -28,7 +28,8 @@ public record ListRecipeComponent<T>(
 	Codec<List<T>> listCodec,
 	boolean conditional,
 	IntBounds bounds,
-	Optional<RecipeComponent<?>> spread
+	Optional<RecipeComponent<?>> spread,
+	Optional<RecipeComponent<?>> spreadWrap
 ) implements RecipeComponent<List<T>> {
 	static <L> ListRecipeComponent<L> create(RecipeComponent<L> component, boolean canWriteSelf, boolean conditional) {
 		return create(component, canWriteSelf, conditional, IntBounds.DEFAULT, Optional.empty());
@@ -45,7 +46,15 @@ public record ListRecipeComponent<T>(
 			listTypeInfo = listTypeInfo.or(typeInfo);
 		}
 
-		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, conditional, bounds, spread);
+		Optional<RecipeComponent<?>> spreadWrap = spread;
+
+		if (spread.isPresent()) {
+			if (component instanceof EitherRecipeComponent<?, ?> either && spread.get() instanceof EitherRecipeComponent<?, ?> seither && (seither.left().isIgnored() || seither.right().isIgnored())) {
+				spreadWrap = Optional.of(seither.left().isIgnored() ? either.left().or(seither.right()) : seither.left().or(either.right()));
+			}
+		}
+
+		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, conditional, bounds, spread, spreadWrap);
 	}
 
 	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<ListRecipeComponent<?>>dynamic(KubeJS.id("list"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -133,9 +142,10 @@ public record ListRecipeComponent<T>(
 
 	@Override
 	public List<T> wrap(RecipeScriptContext cx, Object from) {
-		if (spread.isPresent()) {
-			var spreadComponent = spread.get();
-			var original = wrap0(cx, spreadComponent, from);
+		var spreadComponent = spread.orElse(null);
+
+		if (spreadComponent != null && spreadWrap.isPresent()) {
+			var original = wrap0(cx, spreadWrap.get(), from);
 			var result = new ArrayList<T>();
 
 			for (var o : original) {
