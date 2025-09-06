@@ -663,6 +663,12 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(TagKeyComponent.FLUID);
 		registry.register(TagKeyComponent.ENTITY_TYPE);
 		registry.register(TagKeyComponent.BIOME);
+		registry.register(TagKeyComponent.HASHED_BLOCK);
+		registry.register(TagKeyComponent.HASHED_ITEM);
+		registry.register(TagKeyComponent.HASHED_FLUID);
+		registry.register(TagKeyComponent.HASHED_ENTITY_TYPE);
+		registry.register(TagKeyComponent.HASHED_BIOME);
+
 		registry.register(NestedRecipeComponent.RECIPE);
 
 		registry.register(BookCategoryComponent.CRAFTING_BOOK_CATEGORY);
