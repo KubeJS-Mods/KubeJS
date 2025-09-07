@@ -7,8 +7,16 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public record SendDataFromServerPayload(String channel, CompoundTag data) implements CustomPacketPayload {
+	public SendDataFromServerPayload(String channel, @Nullable CompoundTag data) {
+		this.channel = channel;
+		this.data = Objects.requireNonNullElseGet(data, CompoundTag::new);
+	}
+
 	public static final StreamCodec<ByteBuf, SendDataFromServerPayload> STREAM_CODEC = StreamCodec.composite(
 		ByteBufCodecs.STRING_UTF8, SendDataFromServerPayload::channel,
 		ByteBufCodecs.COMPOUND_TAG, SendDataFromServerPayload::data,
