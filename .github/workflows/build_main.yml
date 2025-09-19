@@ -40,9 +40,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v3
-
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v3
         with:

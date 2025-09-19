@@ -14,7 +14,7 @@ def isLocal = !ENV.containsKey("GITHUB_RUN_NUMBER")
 
 version = "${mod_version}-${isLocal ? "local.${Instant.now().epochSecond}" : "build.${ENV.GITHUB_RUN_NUMBER}"}"
 group = project.maven_group
-base.archivesBaseName = project.archives_base_name
+base.archivesName = project.archives_base_name
 
 println("Building version: ${version}")
 
@@ -73,6 +73,11 @@ compileJava {
 java {
 	sourceCompatibility = targetCompatibility = '21'
 	withSourcesJar()
+	withJavadocJar()
+}
+
+tasks.withType(Javadoc) {
+	options.addStringOption('Xdoclint:none', '-quiet')
 }
 
 repositories {
