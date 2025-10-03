@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.error.MissingComponentException;
+import dev.latvian.mods.kubejs.error.RecipeComponentException;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValueMap;
@@ -82,7 +83,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			try {
 				v.key.component.readFromJson(this, Cast.to(v), json);
 			} catch (Exception ex) {
-				ConsoleJS.SERVER.error("Failed to read " + v.key + " from recipe " + this, sourceLine, ex, RecipesKubeEvent.POST_SKIP_ERROR);
+				if (v.key.optional()) {
+					ConsoleJS.SERVER.warn("Failed to read component '%s' from recipe %s, falling back to default value".formatted(v.key, this), sourceLine, ex, RecipesKubeEvent.POST_SKIP_ERROR);
+				} else {
+					throw new RecipeComponentException("Failed to read required component '%s'".formatted(v.key), ex, v).source(sourceLine);
+				}
 			}
 
 			if (v.value != null) {

@@ -9,8 +9,8 @@ import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
-import dev.latvian.mods.kubejs.error.InvalidRecipeComponentException;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.error.RecipeComponentException;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
@@ -261,20 +261,21 @@ public class RecipesKubeEvent implements KubeEvent {
 					ConsoleJS.SERVER.debug("Loaded recipe " + recipeIdAndType + ": " + recipe.getFromToString());
 				}
 			}
-		} catch (InvalidRecipeComponentException ignore) {
 		} catch (Throwable ex) {
-			if (DevProperties.get().logErroringRecipes) {
-				ConsoleJS.SERVER.warn("Failed to parse recipe '" + recipeIdAndType + "'" + stack.atString() + "! Falling back to vanilla", ex, POST_SKIP_ERROR);
+			var recipeStr = "'%s'%s".formatted(recipeIdAndType, stack.atString());
+
+			if (ex instanceof RecipeComponentException || DevProperties.get().logErroringParsedRecipes) {
+				ConsoleJS.SERVER.warn("Failed to parse recipe %s! Falling back to vanilla".formatted(recipeStr), ex, POST_SKIP_ERROR);
 			}
 
 			try {
 				originalRecipes.put(recipeId, UnknownRecipeSchema.SCHEMA.deserialize(SourceLine.UNKNOWN, type, recipeId, json));
 			} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
-				if (DevProperties.get().logErroringRecipes) {
-					ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType + stack.atString(), ex2, POST_SKIP_ERROR);
+				if (DevProperties.get().logErroringParsedRecipes) {
+					ConsoleJS.SERVER.error("Failed to parse recipe %s".formatted(recipeStr), ex2, POST_SKIP_ERROR);
 				}
 			} catch (Exception ex3) {
-				ConsoleJS.SERVER.warn("Failed to parse recipe " + recipeIdAndType + stack.atString(), ex3, POST_SKIP_ERROR);
+				ConsoleJS.SERVER.error("Failed to parse recipe %s".formatted(recipeStr), ex3, POST_SKIP_ERROR);
 			}
 		}
 	}
@@ -402,7 +403,9 @@ public class RecipesKubeEvent implements KubeEvent {
 		// only handle recipes that failed because of kubejs interfering
 		if (json.isJsonObject() && json.getAsJsonObject().has(KubeRecipe.CHANGED_MARKER)) {
 			json.getAsJsonObject().remove(KubeRecipe.CHANGED_MARKER); // cleanup for logging
-			ConsoleJS.SERVER.warn("Error parsing recipe %s: %s".formatted(id, json), ex);
+			if (DevProperties.get().logErroringRecipes) {
+				ConsoleJS.SERVER.error("Error parsing recipe %s: %s".formatted(id, json), ex);
+			}
 			failedCount++;
 		}
 	}
@@ -611,7 +614,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 			for (var f : entry.getKey().functions.values()) {
 				if (RecipeFunction.isValidIdentifier(f.name().toCharArray())) {
-					ConsoleJS.SERVER.info("  - ." + f.toString());
+					ConsoleJS.SERVER.info("  - ." + f);
 				}
 			}
 		}
