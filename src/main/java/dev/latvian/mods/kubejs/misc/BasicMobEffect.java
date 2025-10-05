@@ -49,7 +49,7 @@ public class BasicMobEffect extends MobEffect {
 		super.onMobRemoved(livingEntity, amplifier, reason);
 	}
 
-	private void applyAttributeModifications() {
+	void applyAttributeModifications() {
 		if (!modified) {
 			builder.attributeModifiers.forEach((r, m) -> BuiltInRegistries.ATTRIBUTE.getHolder(r).ifPresent(h -> attributeModifiers.put(h, m)));
 			modified = true;

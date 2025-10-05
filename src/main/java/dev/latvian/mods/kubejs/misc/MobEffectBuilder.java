@@ -35,7 +35,9 @@ public class MobEffectBuilder extends BuilderBase<MobEffect> {
 
 	@Override
 	public MobEffect createObject() {
-		return new BasicMobEffect(this);
+		var effect = new BasicMobEffect(this);
+		effect.applyAttributeModifications();
+		return effect;
 	}
 
 	@Override
