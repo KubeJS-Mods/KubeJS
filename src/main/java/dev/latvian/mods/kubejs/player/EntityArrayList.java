@@ -13,6 +13,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -31,6 +32,17 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 	public EntityArrayList(Iterable<? extends Entity> entities) {
 		this(entities instanceof Collection c ? c.size() : 4);
 		addAllIterable(entities);
+	}
+
+	/**
+	 * @deprecated polyfill for when EntityArrayList needed a Level, will be removed in a future version!
+	 */
+	@Deprecated(
+		forRemoval = true,
+		since = "7.2"
+	)
+	public EntityArrayList(Level level, Iterable<? extends Entity> entities) {
+		this(entities);
 	}
 
 	public void addAllIterable(Iterable<? extends Entity> entities) {
