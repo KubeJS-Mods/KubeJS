@@ -36,7 +36,7 @@ public class InventoryAttachment implements BlockEntityAttachment {
 	}
 
 	public static class Wrapped extends ItemStackHandler implements InventoryKJS {
-		private final InventoryAttachment attachment;
+		protected final InventoryAttachment attachment;
 
 		public Wrapped(InventoryAttachment attachment) {
 			super(attachment.width * attachment.height);
@@ -78,7 +78,11 @@ public class InventoryAttachment implements BlockEntityAttachment {
 		this.height = height;
 		this.blockEntity = blockEntity;
 		this.inputFilter = inputFilter;
-		this.inventory = new Wrapped(this);
+		this.inventory = createInventory();
+	}
+
+	protected Wrapped createInventory() {
+		return new Wrapped(this);
 	}
 
 	@Override
