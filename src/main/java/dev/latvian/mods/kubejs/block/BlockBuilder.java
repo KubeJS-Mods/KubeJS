@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.block;
 
-import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.block.callback.AfterEntityFallenOnBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.BlockExplodedCallback;
 import dev.latvian.mods.kubejs.block.callback.BlockStateMirrorCallback;
@@ -55,6 +54,7 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -178,14 +178,18 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 
 	@Override
 	public void generateData(KubeDataGenerator generator) {
-		var table = generateLootTable();
+		var table = generateLootTable(generator);
 
 		if (table != null) {
-			generator.json(id.withPath(ID.BLOCK_LOOT_TABLE), LootTable.CODEC.encodeStart(JsonOps.INSTANCE, new Holder.Direct<>(table)).getOrThrow());
+			generator.json(id.withPath(ID.BLOCK_LOOT_TABLE), generator.getRegistries().json().withEncoder(LootTable.CODEC).apply(new Holder.Direct<>(table)).getOrThrow());
 		}
 	}
 
-	@Nullable
+	/**
+	 * @deprecated Use the version with additional datagen parameter (used for registry access etc.)
+	 */
+	@Deprecated(forRemoval = true)
+	@ApiStatus.NonExtendable
 	public LootTable generateLootTable() {
 		if (drops == BlockDropSupplier.NO_DROPS) {
 			return null;
@@ -220,6 +224,11 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		}
 
 		return new LootTable.Builder().withPool(pool).build();
+	}
+
+	@Nullable
+	public LootTable generateLootTable(KubeDataGenerator generator) {
+		return generateLootTable();
 	}
 
 	@Override

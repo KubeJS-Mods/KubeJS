@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.block.drop.BlockDrops;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
@@ -181,7 +182,7 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
-	public LootTable generateLootTable() {
+	public LootTable generateLootTable(KubeDataGenerator generator) {
 		var blockDrops = drops == null ? BlockDrops.createDefault(get().asItem().getDefaultInstance()) : drops.get();
 
 		if (blockDrops.items().length == 0) {

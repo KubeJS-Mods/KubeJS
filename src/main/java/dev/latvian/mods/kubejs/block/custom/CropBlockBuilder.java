@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.block.callback.RandomTickCallback;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
+import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
@@ -227,11 +228,12 @@ public class CropBlockBuilder extends BlockBuilder {
 		return this;
 	}
 
-	// FIXME
-	// TODO: Get lookup for enchantments here to apply fortune bonus
 	@Override
 	@Nullable
-	public LootTable generateLootTable() {
+	public LootTable generateLootTable(KubeDataGenerator generator) {
+		// TODO: Use this lookup to apply fortune bonus
+		var registries = generator.getRegistries().access();
+
 		var mature = LootItemBlockStatePropertyCondition.hasBlockStateProperties(this.get())
 			.setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(CropBlock.AGE, age));
 
