@@ -72,7 +72,7 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 				return (Holder<T>) FluidWrapper.wrap(cx.registries(), from).getFluidHolder();
 			}
 		} else if (regType != null) {
-			return (Holder<T>) HolderWrapper.wrap((KubeJSContext) cx, from, regType.type());
+			return (Holder<T>) HolderWrapper.wrap((KubeJSContext) cx.cx(), from, regType.type());
 		} else if (from instanceof ResourceKey<?> key) {
 			return registry.getHolderOrThrow((ResourceKey) key);
 		} else if (from instanceof CharSequence || from instanceof ResourceLocation) {
