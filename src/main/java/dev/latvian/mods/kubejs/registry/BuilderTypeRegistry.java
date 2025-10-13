@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.registry;
 
+import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -11,6 +12,11 @@ public interface BuilderTypeRegistry {
 		void addDefault(Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory);
 
 		void add(ResourceLocation type, Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory);
+
+		@Deprecated(forRemoval = true)
+		default void add(String type, Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory) {
+			add(ID.kjs(type), builderType, factory);
+		}
 	}
 
 	<T> void of(ResourceKey<Registry<T>> registry, Consumer<Callback<T>> callback);
