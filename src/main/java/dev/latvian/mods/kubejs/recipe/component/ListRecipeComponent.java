@@ -31,11 +31,11 @@ public record ListRecipeComponent<T>(
 	Optional<RecipeComponent<?>> spread,
 	Optional<RecipeComponent<?>> spreadWrap
 ) implements RecipeComponent<List<T>> {
-	static <L> ListRecipeComponent<L> create(RecipeComponent<L> component, boolean canWriteSelf, boolean conditional) {
+	public static <L> ListRecipeComponent<L> create(RecipeComponent<L> component, boolean canWriteSelf, boolean conditional) {
 		return create(component, canWriteSelf, conditional, IntBounds.DEFAULT, Optional.empty());
 	}
 
-	static <L> ListRecipeComponent<L> create(RecipeComponent<L> component, boolean canWriteSelf, boolean conditional, IntBounds bounds, Optional<RecipeComponent<?>> spread) {
+	public static <L> ListRecipeComponent<L> create(RecipeComponent<L> component, boolean canWriteSelf, boolean conditional, IntBounds bounds, Optional<RecipeComponent<?>> spread) {
 		var typeInfo = component.typeInfo();
 		var codec = component.codec();
 		var listCodec = conditional ? NeoForgeExtraCodecs.listWithOptionalElements(ConditionalOps.createConditionalCodec(codec)) : codec.listOf();
@@ -58,12 +58,12 @@ public record ListRecipeComponent<T>(
 	}
 
 	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<ListRecipeComponent<?>>dynamic(KubeJS.id("list"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
-		ctx.recipeComponentCodec().fieldOf("component").forGetter(ListRecipeComponent::component),
-		Codec.BOOL.optionalFieldOf("can_write_self", false).forGetter(ListRecipeComponent::canWriteSelf),
-		Codec.BOOL.optionalFieldOf("conditional", false).forGetter(ListRecipeComponent::conditional),
-		IntBounds.MAP_CODEC.forGetter(ListRecipeComponent::bounds),
-		ctx.recipeComponentCodec().optionalFieldOf("spread").forGetter(ListRecipeComponent::spread)
-	).apply(instance, ListRecipeComponent::create)));
+		ctx.recipeComponentCodec().fieldOf("component").forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::component),
+		Codec.BOOL.optionalFieldOf("can_write_self", false).forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::canWriteSelf),
+		Codec.BOOL.optionalFieldOf("conditional", false).forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::conditional),
+		IntBounds.MAP_CODEC.forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::bounds),
+		ctx.recipeComponentCodec().optionalFieldOf("spread").forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::spread)
+	).apply(instance, dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::create)));
 
 	@Override
 	public RecipeComponentType<?> type() {
