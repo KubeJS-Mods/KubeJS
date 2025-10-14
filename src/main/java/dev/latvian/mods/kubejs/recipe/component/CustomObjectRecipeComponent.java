@@ -111,22 +111,20 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 		return copy;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<CustomObjectRecipeComponent.Value> wrap(RecipeScriptContext cx, Object from) {
-		// TODO: clean up this mess once javaToJs is working properly for JSObjectTypeInfo
-		if (from instanceof Map<?, ?> mapLike) {
-			boolean alreadyWrapped = mapLike.entrySet().stream()
-				.allMatch(entry -> entry.getKey() instanceof CustomObjectRecipeComponent.Key
-					&& entry.getValue() instanceof CustomObjectRecipeComponent.Value);
-
-			if (alreadyWrapped) {
-				return (List<CustomObjectRecipeComponent.Value>) mapLike.values().stream().toList();
-			}
-
-			var ops = cx.ops().java();
-			return mapCodec().decode(ops, MapLike.forMap(Cast.to(mapLike), ops)).getOrThrow();
+		// already wrapped
+		var list = cx.cx().optionalListOf(from, TypeInfo.of(Value.class));
+		if (list != null) {
+			return Cast.to(list);
 		}
+
+		if (cx.cx().isMapLike(from)) {
+			var ops = cx.ops().java();
+			var mapLike = MapLike.forMap(Cast.to(cx.cx().optionalMapOf(from)), ops);
+			return mapCodec().decode(ops, mapLike).getOrThrow();
+		}
+
 		throw new IllegalStateException("Unexpected value: " + from);
 	}
 
