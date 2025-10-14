@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -46,6 +47,12 @@ public record ListRecipeComponent<T>(
 			listTypeInfo = listTypeInfo.or(typeInfo);
 		}
 
+		Optional<RecipeComponent<?>> spreadWrap = wrapSpread(component, spread);
+
+		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, conditional, bounds, spread, spreadWrap);
+	}
+
+	private static <L> @NotNull Optional<RecipeComponent<?>> wrapSpread(RecipeComponent<L> component, Optional<RecipeComponent<?>> spread) {
 		Optional<RecipeComponent<?>> spreadWrap = spread;
 
 		if (spread.isPresent()) {
@@ -53,8 +60,7 @@ public record ListRecipeComponent<T>(
 				spreadWrap = Optional.of(seither.left().isIgnored() ? either.left().or(seither.right()) : seither.left().or(either.right()));
 			}
 		}
-
-		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, conditional, bounds, spread, spreadWrap);
+		return spreadWrap;
 	}
 
 	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<ListRecipeComponent<?>>dynamic(KubeJS.id("list"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -239,5 +245,22 @@ public record ListRecipeComponent<T>(
 	@Override
 	public List<?> spread(List<T> value) {
 		return value;
+	}
+
+	public ListRecipeComponent<T> withBounds(IntBounds bounds) {
+		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, conditional, bounds, spread, spreadWrap);
+	}
+
+	public ListRecipeComponent<T> orSelf() {
+		return new ListRecipeComponent<>(component, true, listTypeInfo, listCodec, conditional, bounds, spread, spreadWrap);
+	}
+
+	public ListRecipeComponent<T> asConditional() {
+		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, true, bounds, spread, spreadWrap);
+	}
+
+	public ListRecipeComponent<T> withSpread(Optional<RecipeComponent<?>> spread) {
+		var spreadWrap = wrapSpread(component, spread);
+		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, true, bounds, spread, spreadWrap);
 	}
 }
