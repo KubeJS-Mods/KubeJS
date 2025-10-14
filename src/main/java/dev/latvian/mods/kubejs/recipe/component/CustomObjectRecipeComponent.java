@@ -1,9 +1,12 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
@@ -108,6 +111,25 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 		return copy;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<CustomObjectRecipeComponent.Value> wrap(RecipeScriptContext cx, Object from) {
+		// TODO: clean up this mess once javaToJs is working properly for JSObjectTypeInfo
+		if (from instanceof Map<?, ?> mapLike) {
+			boolean alreadyWrapped = mapLike.entrySet().stream()
+				.allMatch(entry -> entry.getKey() instanceof CustomObjectRecipeComponent.Key
+					&& entry.getValue() instanceof CustomObjectRecipeComponent.Value);
+
+			if (alreadyWrapped) {
+				return (List<CustomObjectRecipeComponent.Value>) mapLike.values().stream().toList();
+			}
+
+			var ops = cx.ops().java();
+			return mapCodec().decode(ops, MapLike.forMap(Cast.to(mapLike), ops)).getOrThrow();
+		}
+		throw new IllegalStateException("Unexpected value: " + from);
+	}
+
 	public MapCodec<List<Value>> mapCodec() {
 		return new MapCodec<>() {
 			@Override
@@ -117,25 +139,51 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 
 			@Override
 			public <T> DataResult<List<Value>> decode(DynamicOps<T> ops, MapLike<T> input) {
-				var entries = input.entries().toList();
-				var list = new ArrayList<Value>(Math.min(keys.size(), entries.size()));
-				var keyMap = new HashMap<String, Key>();
+				List<Value> list = new ArrayList<>(keys.size());
+				Map<String, Key> keyMap = new HashMap<>();
 
 				keys.forEach(key -> keyMap.put(key.name, key));
 
-				for (var entry : entries) {
-					var key = keyMap.get(ops.getStringValue(entry.getFirst()).getOrThrow());
+				Stream.Builder<Pair<T, T>> failed = Stream.builder();
 
-					if (key != null) {
-						list.add(new Value(key, keys.indexOf(key), key.component.codec().decode(ops, entry.getSecond())));
-					}
-				}
+				var result = input.entries().reduce(
+					DataResult.success(Unit.INSTANCE, Lifecycle.stable()),
+					(r, pair) -> {
+						var keyResult = ops.getStringValue(pair.getFirst()).flatMap(k -> {
+							if (keyMap.containsKey(k)) {
+								return DataResult.success(keyMap.get(k));
+							} else {
+								return DataResult.error(() -> "Unknown key in custom object: " + k);
+							}
+						});
+
+						var valueResult = keyResult.map(k -> k.component.codec())
+							.flatMap(codec -> codec.decode(ops, pair.getSecond()))
+							.map(Pair::getFirst);
+
+						var entryResult = keyResult.apply2stable((k, v) -> new Value(k, keys.indexOf(k), v), valueResult);
+
+						entryResult.resultOrPartial().ifPresent(list::add);
+
+						if (entryResult.isError()) {
+							failed.add(pair);
+						}
+
+						return r.apply2stable((u, p) -> u, entryResult);
+					},
+					(r1, r2) -> r1.apply2stable((u1, u2) -> u1, r2)
+				);
+
 
 				if (list.size() >= 2) {
 					list.sort(null);
 				}
 
-				return DataResult.success(list);
+				var errors = ops.createMap(failed.build());
+
+				return result.map(unit -> list)
+					.setPartial(list)
+					.mapError(e -> e + " missed input: " + errors);
 			}
 
 			@Override
