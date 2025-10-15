@@ -39,6 +39,10 @@ public class TypeWrapperRegistry {
 		return type;
 	}
 
+	public <T> boolean hasTypeWrapper(Class<T> target) {
+		return typeWrappers.wrappers.containsKey(target);
+	}
+
 	public <T> void register(Class<T> target, TypeWrapperValidator validator, TypeWrapperFactory<T> factory) {
 		typeWrappers.register(target, validator, factory);
 	}
