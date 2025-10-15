@@ -14,9 +14,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.Nullable;
 
+// TODO: add enum component variant with custom serialisation that doesn't need the StringRepresentable bound
 public record EnumComponent<T extends Enum<T> & StringRepresentable>(@Nullable RecipeComponentType<?> typeOverride, EnumTypeInfo typeInfo, Codec<T> codec) implements RecipeComponent<T> {
 	public static final RecipeComponentType<?> TYPE = RecipeComponentType.dynamic(KubeJS.id("enum"), RecordCodecBuilder.<EnumComponent<?>>mapCodec(instance -> instance.group(
-		KubeJSCodecs.ENUM_TYPE_INFO.fieldOf("enum").forGetter(EnumComponent::typeInfo)
+		KubeJSCodecs.ENUM_TYPE_INFO.fieldOf("enum").validate(type -> {
+			if (type.asClass().isAssignableFrom(StringRepresentable.class)) {
+				return DataResult.success(type);
+			} else {
+				return DataResult.error(() -> "Enum class " + type + " is not StringRepresentable!");
+			}
+		}).forGetter(EnumComponent::typeInfo)
 	).apply(instance, EnumComponent::new)));
 
 	public static <T extends Enum<T> & StringRepresentable> RecipeComponentType<T> of(ResourceLocation id, Class<T> enumClass, Codec<T> codec) {
