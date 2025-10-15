@@ -12,6 +12,7 @@ import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.error.RecipeComponentException;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -112,17 +114,45 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 	}
 
 	@Override
-	public List<CustomObjectRecipeComponent.Value> wrap(RecipeScriptContext cx, Object from) {
+	public List<CustomObjectRecipeComponent.Value> wrap(RecipeScriptContext rcx, Object from) {
+		var cx = rcx.cx();
+
 		// already wrapped
-		var list = cx.cx().optionalListOf(from, TypeInfo.of(Value.class));
-		if (list != null) {
-			return Cast.to(list);
+		var wrapped = cx.optionalListOf(from, TypeInfo.of(Value.class));
+		if (wrapped != null) {
+			return Cast.to(wrapped);
 		}
 
-		if (cx.cx().isMapLike(from)) {
-			var ops = cx.ops().java();
-			var mapLike = MapLike.forMap(Cast.to(cx.cx().optionalMapOf(from)), ops);
-			return mapCodec().decode(ops, mapLike).getOrThrow();
+		if (cx.isMapLike(from)) {
+			Map<Object, Object> map = Objects.requireNonNull(cx.optionalMapOf(from, TypeInfo.NONE, TypeInfo.NONE));
+
+			List<Value> list = new ArrayList<>(keys.size());
+			Map<String, Key> keyMap = new HashMap<>();
+
+			keys.forEach(key -> keyMap.put(key.name, key));
+
+			for (var entry : map.entrySet()) {
+				var key = switch (entry.getKey()) {
+					case Key id -> id;
+					case CharSequence cs -> keyMap.get(cs.toString());
+					case null -> null;
+					default -> keyMap.get(Objects.toString(entry.getKey()));
+				};
+
+				if (key == null) {
+					throw new IllegalStateException("Unknown key in custom object: " + entry.getKey());
+				}
+
+				try {
+					var value = Objects.requireNonNull(key.component.wrap(rcx, entry.getValue()), "Wrapped value is null!");
+
+					list.add(new Value(key, keys.indexOf(key), value));
+				} catch (Throwable e) {
+					throw new RecipeComponentException("Failed to wrap key " + key + " for custom component!", e, this, null, cx.toString(entry.getValue()));
+				}
+			}
+
+			return list;
 		}
 
 		throw new IllegalStateException("Unexpected value: " + from);
