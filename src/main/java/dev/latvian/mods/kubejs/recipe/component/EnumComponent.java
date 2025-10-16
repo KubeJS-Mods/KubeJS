@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public record EnumComponent<T extends Enum<T> & StringRepresentable>(@Nullable RecipeComponentType<?> typeOverride, EnumTypeInfo typeInfo, Codec<T> codec) implements RecipeComponent<T> {
 	public static final RecipeComponentType<?> TYPE = RecipeComponentType.dynamic(KubeJS.id("enum"), RecordCodecBuilder.<EnumComponent<?>>mapCodec(instance -> instance.group(
 		KubeJSCodecs.ENUM_TYPE_INFO.fieldOf("enum").validate(type -> {
-			if (type.asClass().isAssignableFrom(StringRepresentable.class)) {
+			if (StringRepresentable.class.isAssignableFrom(type.asClass())) {
 				return DataResult.success(type);
 			} else {
 				return DataResult.error(() -> "Enum class " + type + " is not StringRepresentable!");
