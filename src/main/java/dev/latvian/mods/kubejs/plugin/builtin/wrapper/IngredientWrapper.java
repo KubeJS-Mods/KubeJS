@@ -6,13 +6,15 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.ingredient.CreativeTabIngredient;
 import dev.latvian.mods.kubejs.ingredient.NamespaceIngredient;
 import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
@@ -85,7 +87,7 @@ public interface IngredientWrapper {
 		} else if (o instanceof JsonElement json) {
 			return parseJson(cx, json);
 		} else if (o instanceof CharSequence) {
-			return parseString(RegistryAccessContainer.of(cx), o.toString());
+			return parseString(cx, o.toString());
 		}
 
 		List<?> list = ListJS.of(o);
@@ -133,22 +135,24 @@ public interface IngredientWrapper {
 		}
 	}
 
-	static Ingredient parseString(RegistryAccessContainer registries, String s) {
+	static Ingredient parseString(Context cx, String s) {
 		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
 			return Ingredient.EMPTY;
 		} else if (s.equals("*")) {
 			return IngredientWrapper.all;
 		} else {
 			try {
-				return read(registries, new StringReader(s));
+				return read(cx, new StringReader(s));
 			} catch (CommandSyntaxException e) {
-				KubeJS.LOGGER.error("Failed to read ingredient from '" + s + "': " + e);
+				ConsoleJS.getCurrent(cx).error("Failed to read ingredient from '" + s, e);
 				return Ingredient.EMPTY;
 			}
 		}
 	}
 
-	static Ingredient read(RegistryAccessContainer registries, StringReader reader) throws CommandSyntaxException {
+	static Ingredient read(Context cx, StringReader reader) throws CommandSyntaxException {
+		var registries = RegistryAccessContainer.of(cx);
+
 		if (!reader.canRead()) {
 			return Ingredient.EMPTY;
 		}
@@ -192,7 +196,7 @@ public interface IngredientWrapper {
 				var ingredients = new ArrayList<Ingredient>(2);
 
 				while (true) {
-					ingredients.add(read(registries, reader));
+					ingredients.add(read(cx, reader));
 					reader.skipWhitespace();
 
 					if (reader.canRead() && reader.peek() == ',') {
@@ -209,7 +213,9 @@ public interface IngredientWrapper {
 			}
 			default -> {
 				var itemId = ResourceLocation.read(reader);
-				var item = BuiltInRegistries.ITEM.get(itemId);
+				var item = BuiltInRegistries.ITEM.getHolder(itemId)
+					.orElseThrow(() -> new KubeRuntimeException("Item with ID " + itemId + " does not exist")
+						.source(SourceLine.of(cx)));
 
 				var next = reader.canRead() ? reader.peek() : 0;
 
@@ -217,11 +223,11 @@ public interface IngredientWrapper {
 					var components = DataComponentWrapper.readPredicate(registries.nbt(), reader);
 
 					if (components != DataComponentPredicate.EMPTY) {
-						yield new DataComponentIngredient(HolderSet.direct(item.builtInRegistryHolder()), components, false).toVanilla();
+						yield new DataComponentIngredient(HolderSet.direct(item), components, false).toVanilla();
 					}
 				}
 
-				yield Ingredient.of(item);
+				yield Ingredient.of(item.value());
 			}
 		};
 	}

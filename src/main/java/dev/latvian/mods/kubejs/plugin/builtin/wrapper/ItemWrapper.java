@@ -131,7 +131,7 @@ public interface ItemWrapper {
 			return itemLike.asItem().getDefaultInstance();
 		} else if (o instanceof JsonElement json) {
 			var registries = RegistryAccessContainer.of(cx);
-			return parseJson(registries.nbt(), json);
+			return parseJson(cx, registries.nbt(), json);
 		} else if (o instanceof StringTag tag) {
 			return wrap(cx, tag.getAsString());
 		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
@@ -160,7 +160,7 @@ public interface ItemWrapper {
 				s = s.substring(spaceIndex + 1);
 			}
 
-			cached = parseString(registries.nbt(), s);
+			cached = parseString(cx, registries.nbt(), s);
 			cached.setCount(count);
 			registries.itemStackParseCache().put(os, cached);
 			return cached.copy();
@@ -319,11 +319,11 @@ public interface ItemWrapper {
 		return from instanceof ItemStack || from instanceof ItemLike;
 	}
 
-	static ItemStack parseJson(DynamicOps<Tag> registryOps, @Nullable JsonElement json) {
+	static ItemStack parseJson(Context cx, DynamicOps<Tag> registryOps, @Nullable JsonElement json) {
 		if (json == null || json.isJsonNull()) {
 			return ItemStack.EMPTY;
 		} else if (json.isJsonPrimitive()) {
-			return parseString(registryOps, json.getAsString());
+			return parseString(cx, registryOps, json.getAsString());
 		} else if (json instanceof JsonObject) {
 			return ItemStack.OPTIONAL_CODEC.decode(JsonOps.INSTANCE, json).getOrThrow().getFirst();
 		}
@@ -331,7 +331,7 @@ public interface ItemWrapper {
 		return ItemStack.EMPTY;
 	}
 
-	static ItemStack parseString(DynamicOps<Tag> registryOps, String s) {
+	static ItemStack parseString(Context cx, DynamicOps<Tag> registryOps, String s) {
 		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
 			return ItemStack.EMPTY;
 		} else {
@@ -343,14 +343,14 @@ public interface ItemWrapper {
 					return ItemStack.EMPTY;
 				}
 
-				return read(registryOps, new StringReader(s));
+				return read(cx, registryOps, new StringReader(s));
 			} catch (CommandSyntaxException ex) {
-				throw new RuntimeException(ex);
+				throw new KubeRuntimeException("Error parsing item from string!", ex).source(SourceLine.of(cx));
 			}
 		}
 	}
 
-	static ItemStack read(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+	static ItemStack read(Context cx, DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
 		if (!reader.canRead()) {
 			return ItemStack.EMPTY;
 		}
@@ -368,12 +368,15 @@ public interface ItemWrapper {
 			reader.skipWhitespace();
 
 			if (count < 1) {
-				throw new IllegalArgumentException("Item count smaller than 1 is not allowed!");
+				throw new KubeRuntimeException("Item count smaller than 1 is not allowed!").source(SourceLine.of(cx));
 			}
 		}
 
 		var itemId = ResourceLocation.read(reader);
-		var itemStack = new ItemStack(BuiltInRegistries.ITEM.get(itemId), count);
+		var item = BuiltInRegistries.ITEM.getHolder(itemId)
+			.orElseThrow(() -> new KubeRuntimeException("Item with ID " + itemId + " does not exist")
+				.source(SourceLine.of(cx)));
+		var itemStack = new ItemStack(item, count);
 
 		var next = reader.canRead() ? reader.peek() : 0;
 

@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -50,8 +50,9 @@ public interface SizedIngredientWrapper {
 			return Ingredient.of(item).kjs$asStack();
 		} else if (from instanceof CharSequence) {
 			try {
-				return read(RegistryAccessContainer.of(cx), new StringReader(from.toString()));
+				return read(cx, new StringReader(from.toString()));
 			} catch (Exception ex) {
+				ConsoleJS.getCurrent(cx).error("Failed to read sized ingredient from '" + from, ex);
 				return empty;
 			}
 		}
@@ -60,7 +61,7 @@ public interface SizedIngredientWrapper {
 	}
 
 	@HideFromJS
-	static SizedIngredient read(RegistryAccessContainer registries, StringReader reader) throws CommandSyntaxException {
+	static SizedIngredient read(Context cx, StringReader reader) throws CommandSyntaxException {
 		int count = 1;
 
 		if (StringReader.isAllowedNumber(reader.peek())) {
@@ -74,6 +75,6 @@ public interface SizedIngredientWrapper {
 			}
 		}
 
-		return IngredientWrapper.read(registries, reader).kjs$withCount(count);
+		return IngredientWrapper.read(cx, reader).kjs$withCount(count);
 	}
 }
