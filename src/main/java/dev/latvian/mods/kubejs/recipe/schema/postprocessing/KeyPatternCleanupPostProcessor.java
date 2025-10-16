@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.recipe.schema.postprocessing;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.IngredientComponent;
@@ -48,7 +49,7 @@ public record KeyPatternCleanupPostProcessor(String patternName, String keyName,
 				airs.add(entry.key().charValue());
 				itr.remove();
 			} else if (component.isEmpty(Cast.to(entry.value()))) {
-				throw new dev.latvian.mods.kubejs.error.KubeRuntimeException(
+				throw new KubeRuntimeException(
 					"Empty stack for key '" + keyName + "' at '" + entry.key().charValue() + "' in recipe " + recipe.getOrCreateId()
 				).source(recipe.sourceLine);
 			}
