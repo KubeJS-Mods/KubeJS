@@ -41,13 +41,16 @@ public record KeyPatternCleanupPostProcessor(String patternName, String keyName,
 
 		while (itr.hasNext()) {
 			var entry = itr.next();
-			if (entry.value() == null || component.isEmpty(Cast.to(entry.value()))) {
+			if (entry.value() == null) {
 				if (airs == null) {
 					airs = new CharArrayList(1);
 				}
-
 				airs.add(entry.key().charValue());
 				itr.remove();
+			} else if (component.isEmpty(Cast.to(entry.value()))) {
+				throw new dev.latvian.mods.kubejs.error.KubeRuntimeException(
+					"Empty stack for key '" + keyName + "' at '" + entry.key().charValue() + "' in recipe " + recipe.getOrCreateId()
+				).source(recipe.sourceLine);
 			}
 		}
 
