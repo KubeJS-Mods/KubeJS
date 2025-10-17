@@ -1,21 +1,25 @@
 package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonPrimitive;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
-import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.core.ItemStackKJS;
 import dev.latvian.mods.kubejs.ingredient.CreativeTabIngredient;
 import dev.latvian.mods.kubejs.ingredient.NamespaceIngredient;
 import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
-import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
@@ -25,24 +29,27 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.core.HolderSet;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPredicate;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
+import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Info("Various Ingredient related helper methods")
 public interface IngredientWrapper {
@@ -65,138 +72,186 @@ public interface IngredientWrapper {
 	}
 
 	@HideFromJS
-	static Ingredient wrap(Context cx, @Nullable Object o) {
-		while (o instanceof Wrapper w) {
-			o = w.unwrap();
+	private static Ingredient wrapTrivial(@Nullable Object from) {
+		while (from instanceof Wrapper w) {
+			from = w.unwrap();
 		}
 
-		if (o == null || o == ItemStack.EMPTY || o == Items.AIR || o == Ingredient.EMPTY) {
-			return Ingredient.EMPTY;
-		} else if (o instanceof IngredientSupplierKJS ingr) {
-			return ingr.kjs$asIngredient();
-		} else if (o instanceof TagKey<?> tag) {
-			return Ingredient.of(ItemTags.create(tag.location()));
-		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
-			var reg = RegExpKJS.wrap(o);
+		return switch (from) {
+			case null -> Ingredient.EMPTY;
+			case Ingredient id -> id;
+			case ItemStack s when s.isEmpty() -> Ingredient.EMPTY;
+			case ItemLike i when i.asItem() == Items.AIR -> Ingredient.EMPTY;
+			case IngredientSupplierKJS ingr -> ingr.kjs$asIngredient();
+			case ItemLike i -> Ingredient.of(i);
+			case TagKey<?>(var reg, var location) -> Ingredient.of(ItemTags.create(location));
+			default -> null;
+		};
+	}
 
-			if (reg != null) {
-				return new RegExIngredient(reg).toVanilla();
-			}
+	@HideFromJS
+	static DataResult<Ingredient> wrapResult(Context cx, @Nullable Object from) {
+		while (from instanceof Wrapper w) {
+			from = w.unwrap();
+		}
 
-			return Ingredient.EMPTY;
-		} else if (o instanceof JsonElement json) {
+		var trivial = wrapTrivial(from);
+		if (trivial != null) {
+			return DataResult.success(trivial);
+		}
+
+		if (from instanceof Pattern || from instanceof NativeRegExp) {
+			var str = String.valueOf(from);
+			return Optional.ofNullable(RegExpKJS.wrap(from))
+				.map(DataResult::success)
+				.orElseGet(() -> DataResult.error(() -> "Invalid regex " + str))
+				.map(RegExIngredient::new)
+				.map(ICustomIngredient::toVanilla)
+				;
+		} else if (from instanceof JsonElement json) {
 			return parseJson(cx, json);
-		} else if (o instanceof CharSequence) {
-			return parseString(cx, o.toString());
+		} else if (from instanceof CharSequence) {
+			return parseString(cx, from.toString());
 		}
 
-		List<?> list = ListJS.of(o);
+		List<?> list = ListJS.of(from);
 
 		if (list != null) {
-			var inList = new ArrayList<Ingredient>(list.size());
+			List<Ingredient> results = new ArrayList<>(list.size());
+			var failed = false;
+			Stream.Builder<String> errors = Stream.builder();
 
 			for (var o1 : list) {
-				var ingredient = wrap(cx, o1);
+				var ingredient = wrapResult(cx, o1);
 
-				if (ingredient != Ingredient.EMPTY) {
-					inList.add(ingredient);
+				ingredient.resultOrPartial()
+					.filter(ingr -> ingr != Ingredient.EMPTY)
+					.ifPresent(results::add);
+
+				if (ingredient.isError()) {
+					failed = true;
+					errors.add(o1 + ": " + ingredient.error().orElseThrow().message());
 				}
 			}
 
-			if (inList.isEmpty()) {
-				return Ingredient.EMPTY;
-			} else if (inList.size() == 1) {
-				return inList.getFirst();
+			if (failed) {
+				var msg = errors.build().collect(Collectors.joining("; "));
+				return DataResult.error(() -> "Failed to parse ingredient list: " + msg);
 			} else {
-				return CompoundIngredient.of(inList.toArray(new Ingredient[0]));
+				return DataResult.success(switch (results.size()) {
+					case 0 -> Ingredient.EMPTY;
+					case 1 -> results.getFirst();
+					default -> new CompoundIngredient(results).toVanilla();
+				});
 			}
 		}
 
-		var map = cx.optionalMapOf(o);
+		var map = cx.optionalMapOf(from);
 
 		if (map != null) {
-			return Ingredient.CODEC.decode(JavaOps.INSTANCE, map).result().map(Pair::getFirst).orElse(Ingredient.EMPTY);
+			return Ingredient.CODEC.parse(JavaOps.INSTANCE, map);
 		}
 
-		return ItemWrapper.wrap(cx, o).kjs$asIngredient();
+		return ItemWrapper.wrapResult(cx, from).map(ItemStackKJS::kjs$asIngredient);
+	}
+
+	@HideFromJS
+	static Ingredient wrap(Context cx, @Nullable Object from) {
+		var trivial = wrapTrivial(from);
+		if (trivial != null) {
+			return trivial;
+		}
+
+		return wrapResult(cx, from)
+			.resultOrPartial(error -> ConsoleJS.getCurrent(cx).error("Failed to read ingredient from %s: %s".formatted(from, error)))
+			.orElse(Ingredient.EMPTY);
 	}
 
 	static boolean isIngredientLike(Object from) {
 		return from instanceof Ingredient || from instanceof SizedIngredient || from instanceof ItemStack;
 	}
 
-	static Ingredient parseJson(Context cx, JsonElement json) {
-		if (json == null || json.isJsonNull() || json.isJsonArray() && json.getAsJsonArray().isEmpty()) {
-			return Ingredient.EMPTY;
-		} else if (json.isJsonPrimitive()) {
-			return wrap(cx, json.getAsString());
-		} else {
-			return Ingredient.CODEC.decode(JsonOps.INSTANCE, json).result().map(Pair::getFirst).orElseThrow();
-		}
+	static DataResult<Ingredient> parseJson(Context cx, JsonElement json) {
+		return switch (json) {
+			case null -> DataResult.success(Ingredient.EMPTY);
+			case JsonNull jsonNull -> DataResult.success(Ingredient.EMPTY);
+			case JsonArray arr when arr.isEmpty() -> DataResult.success(Ingredient.EMPTY);
+			case JsonPrimitive primitive -> wrapResult(cx, json.getAsString());
+			default -> Ingredient.CODEC.decode(JsonOps.INSTANCE, json).map(Pair::getFirst);
+		};
 	}
 
-	static Ingredient parseString(Context cx, String s) {
-		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
-			return Ingredient.EMPTY;
-		} else if (s.equals("*")) {
-			return IngredientWrapper.all;
-		} else {
-			try {
-				return read(cx, new StringReader(s));
-			} catch (CommandSyntaxException e) {
-				ConsoleJS.getCurrent(cx).error("Failed to read ingredient from '" + s, e);
-				return Ingredient.EMPTY;
-			}
-		}
+	static DataResult<Ingredient> parseString(Context cx, String s) {
+		return switch (s) {
+			case "", "-", "air", "minecraft:air" -> DataResult.success(Ingredient.EMPTY);
+			case "*" -> DataResult.success(IngredientWrapper.all);
+			default -> read(cx, new StringReader(s));
+		};
 	}
 
-	static Ingredient read(Context cx, StringReader reader) throws CommandSyntaxException {
+	static DataResult<Ingredient> read(Context cx, StringReader reader) {
 		var registries = RegistryAccessContainer.of(cx);
 
+		reader.skipWhitespace();
+
 		if (!reader.canRead()) {
-			return Ingredient.EMPTY;
+			return DataResult.success(Ingredient.EMPTY);
 		}
 
 		return switch (reader.peek()) {
 			case '-' -> {
 				reader.skip();
-				yield Ingredient.EMPTY;
+				yield DataResult.success(Ingredient.EMPTY);
 			}
 			case '*' -> {
 				reader.skip();
-				yield IngredientWrapper.all;
+				yield DataResult.success(IngredientWrapper.all);
 			}
 			case '#' -> {
 				reader.skip();
-				// yield new TagIngredient(registries.cachedItemTags, ItemTags.create(ResourceLocation.read(reader))).toVanilla();
-				yield Ingredient.of(ItemTags.create(ResourceLocation.read(reader)));
+				// yield new TagIngredient(registries.cachedItemTags, ItemTags.create(ID.read(reader))).toVanilla();
+				yield ID.read(reader).map(ItemTags::create).map(Ingredient::of);
 			}
 			case '@' -> {
 				reader.skip();
-				yield new NamespaceIngredient(reader.readUnquotedString()).toVanilla();
+				yield DataResult.success(new NamespaceIngredient(reader.readUnquotedString()).toVanilla());
 			}
 			case '%' -> {
 				reader.skip();
-				var id = ResourceLocation.read(reader);
-				var group = UtilsJS.findCreativeTab(id);
-				yield group == null ? Ingredient.EMPTY : new CreativeTabIngredient(group).toVanilla();
+				yield ID.read(reader)
+					.flatMap(input -> {
+						var tab = UtilsJS.findCreativeTab(input);
+						return tab != null ? DataResult.success(tab) : DataResult.error(() -> "Creative tab " + input + " does not exist!");
+					})
+					.map(group -> new CreativeTabIngredient(group).toVanilla());
 			}
 			case '/' -> {
-				var regex = RegExpKJS.read(reader);
-				yield new RegExIngredient(regex).toVanilla();
+				try {
+					var regex = RegExpKJS.read(reader);
+					yield DataResult.success(new RegExIngredient(regex).toVanilla());
+				} catch (IllegalArgumentException e) {
+					yield DataResult.error(() -> "Could not parse regex ingredient: " + e);
+				}
 			}
 			case '[' -> {
 				reader.skip();
 				reader.skipWhitespace();
 
 				if (!reader.canRead() || reader.peek() == ']') {
-					yield Ingredient.EMPTY;
+					yield DataResult.success(Ingredient.EMPTY);
 				}
 
 				var ingredients = new ArrayList<Ingredient>(2);
 
 				while (true) {
-					ingredients.add(read(cx, reader));
+					var ingredient = read(cx, reader);
+
+					if (ingredient.isSuccess()) {
+						ingredients.add(ingredient.getOrThrow());
+					} else {
+						yield DataResult.error(() -> "Invalid ingredient in list: " + ingredient.error().orElseThrow().message());
+					}
+
 					reader.skipWhitespace();
 
 					if (reader.canRead() && reader.peek() == ',') {
@@ -207,27 +262,33 @@ public interface IngredientWrapper {
 					}
 				}
 
-				reader.expect(']');
+				if (!reader.canRead() || reader.peek() != ']') {
+					yield DataResult.error(() -> "Unterminated compound ingredient");
+				}
+
+				reader.skip();
 				reader.skipWhitespace();
-				yield CompoundIngredient.of(ingredients.toArray(new Ingredient[0]));
+
+				yield DataResult.success(new CompoundIngredient(ingredients).toVanilla());
 			}
 			default -> {
-				var itemId = ResourceLocation.read(reader);
-				var item = BuiltInRegistries.ITEM.getHolder(itemId)
-					.orElseThrow(() -> new KubeRuntimeException("Item with ID " + itemId + " does not exist")
-						.source(SourceLine.of(cx)));
+				var item = ID.read(reader).flatMap(ItemWrapper::findItem);
 
 				var next = reader.canRead() ? reader.peek() : 0;
 
 				if (next == '[' || next == '{') {
-					var components = DataComponentWrapper.readPredicate(registries.nbt(), reader);
+					try {
+						var components = DataComponentWrapper.readPredicate(registries.nbt(), reader);
 
-					if (components != DataComponentPredicate.EMPTY) {
-						yield new DataComponentIngredient(HolderSet.direct(item), components, false).toVanilla();
+						if (components != DataComponentPredicate.EMPTY) {
+							yield item.map(holder -> DataComponentIngredient.of(false, components, holder));
+						}
+					} catch (CommandSyntaxException e) {
+						yield DataResult.error(e::getMessage);
 					}
 				}
 
-				yield Ingredient.of(item.value());
+				yield item.map(Holder::value).map(Ingredient::of);
 			}
 		};
 	}
