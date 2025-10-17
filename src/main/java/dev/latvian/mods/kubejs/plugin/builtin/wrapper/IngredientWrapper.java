@@ -13,11 +13,12 @@ import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
 import dev.latvian.mods.kubejs.core.ItemStackKJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.ingredient.CreativeTabIngredient;
 import dev.latvian.mods.kubejs.ingredient.NamespaceIngredient;
 import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.ListJS;
@@ -163,8 +164,8 @@ public interface IngredientWrapper {
 		}
 
 		return wrapResult(cx, from)
-			.resultOrPartial(error -> ConsoleJS.getCurrent(cx).error("Failed to read ingredient from %s: %s".formatted(from, error)))
-			.orElse(Ingredient.EMPTY);
+			.getOrThrow(error -> new KubeRuntimeException("Failed to read ingredient from %s: %s".formatted(from, error))
+				.source(SourceLine.of(cx)));
 	}
 
 	static boolean isIngredientLike(Object from) {

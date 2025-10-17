@@ -15,7 +15,6 @@ import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ID;
@@ -191,8 +190,8 @@ public interface ItemWrapper {
 		}
 
 		return wrapResult(cx, from)
-			.resultOrPartial(error -> ConsoleJS.getCurrent(cx).error("Failed to read item stack from %s: %s".formatted(from, error)))
-			.orElse(ItemStack.EMPTY);
+			.getOrThrow(error -> new KubeRuntimeException("Failed to read sized item stack from %s: %s".formatted(from, error))
+				.source(SourceLine.of(cx)));
 	}
 
 	@HideFromJS
@@ -201,8 +200,8 @@ public interface ItemWrapper {
 			case null -> Items.AIR;
 			case ItemLike item -> item.asItem();
 			case CharSequence cs -> findItem(cs.toString())
-				.resultOrPartial(error -> ConsoleJS.getCurrent(cx).error("Failed to read item from %s: %s".formatted(cs, error)))
-				.orElse(Items.AIR);
+				.getOrThrow(error -> new KubeRuntimeException("Failed to read item from %s: %s".formatted(cs, error))
+					.source(SourceLine.of(cx)));
 			default -> wrap(cx, o).getItem();
 		};
 	}

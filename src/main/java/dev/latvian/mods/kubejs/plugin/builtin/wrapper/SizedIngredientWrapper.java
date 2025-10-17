@@ -4,7 +4,8 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.core.IngredientKJS;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -78,8 +79,8 @@ public interface SizedIngredientWrapper {
 		}
 
 		return wrapResult(cx, from)
-			.resultOrPartial(error -> ConsoleJS.getCurrent(cx).error("Failed to read sized ingredient from %s: %s".formatted(from, error)))
-			.orElse(empty);
+			.getOrThrow(error -> new KubeRuntimeException("Failed to read ingredient from %s: %s".formatted(from, error))
+				.source(SourceLine.of(cx)));
 	}
 
 	@HideFromJS
