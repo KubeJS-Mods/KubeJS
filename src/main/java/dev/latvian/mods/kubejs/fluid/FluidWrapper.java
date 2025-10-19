@@ -80,6 +80,10 @@ public interface FluidWrapper {
 		return of;
 	}
 
+	static SizedFluidIngredient sizedIngredientOf(FluidIngredient in, int amount) {
+		return new SizedFluidIngredient(in, amount);
+	}
+
 	@HideFromJS
 	static SizedFluidIngredient wrapSizedIngredient(Context cx, Object o) {
 		var registries = RegistryAccessContainer.of(cx);
