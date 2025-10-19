@@ -2,7 +2,10 @@ package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
+import com.mojang.serialization.DataResult;
+import dev.latvian.mods.kubejs.core.IngredientKJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -39,42 +42,65 @@ public interface SizedIngredientWrapper {
 	}
 
 	@HideFromJS
-	static SizedIngredient wrap(Context cx, Object from) {
-		if (from instanceof SizedIngredient s) {
-			return s;
-		} else if (from instanceof Ingredient ingredient) {
-			return ingredient.kjs$asStack();
-		} else if (from instanceof ItemStack stack) {
-			return Ingredient.of(stack.kjs$withCount(1)).kjs$withCount(stack.getCount());
-		} else if (from instanceof ItemLike item) {
-			return Ingredient.of(item).kjs$asStack();
-		} else if (from instanceof CharSequence) {
-			try {
-				return read(cx, new StringReader(from.toString()));
-			} catch (Exception ex) {
-				ConsoleJS.getCurrent(cx).error("Failed to read sized ingredient from '" + from, ex);
-				return empty;
-			}
-		}
+	private static SizedIngredient wrapTrivial(Context cx, Object from) {
+		return switch (from) {
+			case SizedIngredient s -> s;
+			case Ingredient ingredient -> ingredient.kjs$asStack();
+			case ItemStack stack -> Ingredient.of(stack.kjs$withCount(1)).kjs$withCount(stack.getCount());
+			case ItemLike item -> Ingredient.of(item).kjs$asStack();
+			case null, default -> null;
+		};
 
-		return IngredientWrapper.wrap(cx, from).kjs$asStack();
 	}
 
 	@HideFromJS
-	static SizedIngredient read(Context cx, StringReader reader) throws CommandSyntaxException {
-		int count = 1;
+	static DataResult<SizedIngredient> wrapResult(Context cx, Object from) {
+		var trivial = wrapTrivial(cx, from);
+		if (trivial != null) {
+			return DataResult.success(trivial);
+		}
+
+		if (from instanceof CharSequence) {
+			try {
+				return read(cx, new StringReader(from.toString()));
+			} catch (Exception ex) {
+				return DataResult.error(() -> "Error parsing sized ingredient: " + ex);
+			}
+		}
+
+		return IngredientWrapper.wrapResult(cx, from).map(IngredientKJS::kjs$asStack);
+	}
+
+	@HideFromJS
+	static SizedIngredient wrap(Context cx, Object from) {
+		var trivial = wrapTrivial(cx, from);
+		if (trivial != null) {
+			return trivial;
+		}
+
+		return wrapResult(cx, from)
+			.getOrThrow(error -> new KubeRuntimeException("Failed to read ingredient from %s: %s".formatted(from, error))
+				.source(SourceLine.of(cx)));
+	}
+
+	@HideFromJS
+	static DataResult<SizedIngredient> read(Context cx, StringReader reader) throws CommandSyntaxException {
+		int count;
 
 		if (StringReader.isAllowedNumber(reader.peek())) {
 			count = Mth.ceil(reader.readDouble());
+
 			reader.skipWhitespace();
 			reader.expect('x');
 			reader.skipWhitespace();
 
 			if (count < 1) {
-				throw new IllegalArgumentException("SizedIngredient count smaller than 1 is not allowed!");
+				return DataResult.error(() -> "SizedIngredient count smaller than 1 is not allowed!");
 			}
+		} else {
+			count = 1;
 		}
 
-		return IngredientWrapper.read(cx, reader).kjs$withCount(count);
+		return IngredientWrapper.read(cx, reader).map(ingredient -> ingredient.kjs$withCount(count));
 	}
 }

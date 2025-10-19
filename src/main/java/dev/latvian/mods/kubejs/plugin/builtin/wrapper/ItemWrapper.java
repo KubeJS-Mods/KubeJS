@@ -1,22 +1,25 @@
 package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
+import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
-import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.Lazy;
-import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
@@ -24,12 +27,12 @@ import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -52,6 +55,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 @Info("Various item related helper methods")
@@ -106,115 +110,117 @@ public interface ItemWrapper {
 	}
 
 	@HideFromJS
-	static ItemStack wrap(Context cx, @Nullable Object o) {
-		if (o instanceof Wrapper w) {
-			o = w.unwrap();
+	private static ItemStack wrapTrivial(Context cx, @Nullable Object from) {
+		while (from instanceof Wrapper w) {
+			from = w.unwrap();
 		}
 
-		if (o == null || o == ItemStack.EMPTY || o == Items.AIR) {
-			return ItemStack.EMPTY;
-		} else if (o instanceof ItemStack stack) {
-			return stack.isEmpty() ? ItemStack.EMPTY : stack;
-		} else if (o == Ingredient.EMPTY) {
-			throw new KubeRuntimeException("Tried to convert empy ingredient to ItemStack!").source(SourceLine.of(cx));
-		} else if (o instanceof Ingredient) {
-			throw new KubeRuntimeException("Use .first of an ingredient to get its ItemStack!").source(SourceLine.of(cx));
-		} else if (o instanceof ResourceLocation id) {
-			var item = BuiltInRegistries.ITEM.get(id);
+		return switch (from) {
+			case null -> ItemStack.EMPTY;
+			case ItemStack s -> s.isEmpty() ? ItemStack.EMPTY : s;
+			case ItemLike i when i.asItem() == Items.AIR -> ItemStack.EMPTY;
+			case Ingredient i -> throw new KubeRuntimeException("Use .first of an ingredient to get its ItemStack!").source(SourceLine.of(cx));
+			case ItemLike i -> i.asItem().getDefaultInstance();
+			default -> null;
+		};
+	}
 
-			if (item == null || item == Items.AIR) {
-				return ItemStack.EMPTY;
-			}
+	@HideFromJS
+	static DataResult<ItemStack> wrapResult(Context cx, @Nullable Object from) {
+		if (from instanceof Wrapper w) {
+			from = w.unwrap();
+		}
 
-			return item.getDefaultInstance();
-		} else if (o instanceof ItemLike itemLike) {
-			return itemLike.asItem().getDefaultInstance();
-		} else if (o instanceof JsonElement json) {
-			var registries = RegistryAccessContainer.of(cx);
+		var trivial = wrapTrivial(cx, from);
+		if (trivial != null) {
+			return DataResult.success(trivial);
+		}
+
+		var registries = RegistryAccessContainer.of(cx);
+
+		if (from instanceof ResourceLocation id) {
+			return findItem(id).map(Holder::value).map(Item::getDefaultInstance);
+		} else if (from instanceof JsonElement json) {
 			return parseJson(cx, registries.nbt(), json);
-		} else if (o instanceof StringTag tag) {
-			return wrap(cx, tag.getAsString());
-		} else if (o instanceof Pattern || o instanceof NativeRegExp) {
-			var reg = RegExpKJS.wrap(o);
-
-			if (reg != null) {
-				return new RegExIngredient(reg).toVanilla().kjs$getFirst();
-			}
-
-			return ItemStack.EMPTY;
-		} else if (o instanceof CharSequence) {
-			var os = o.toString().trim();
+		} else if (from instanceof StringTag tag) {
+			return wrapResult(cx, tag.getAsString());
+		} else if (from instanceof Pattern || from instanceof NativeRegExp) {
+			return IngredientWrapper.wrapResult(cx, from).map(IngredientKJS::kjs$getFirst);
+		} else if (from instanceof CharSequence) {
+			var os = from.toString().trim();
 			var s = os;
-			var registries = RegistryAccessContainer.of(cx);
 			var cached = registries.itemStackParseCache().get(os);
 
 			if (cached != null) {
-				return cached.copy();
+				return DataResult.success(cached.copy());
 			}
 
-			var count = 1;
+			int count;
 			var spaceIndex = s.indexOf(' ');
 
 			if (spaceIndex >= 2 && s.indexOf('x') == spaceIndex - 1) {
 				count = Integer.parseInt(s.substring(0, spaceIndex - 1));
 				s = s.substring(spaceIndex + 1);
+			} else {
+				count = 1;
 			}
 
-			cached = parseString(cx, registries.nbt(), s);
-			cached.setCount(count);
-			registries.itemStackParseCache().put(os, cached);
-			return cached.copy();
+			return parseString(cx, registries.nbt(), s)
+				.map(stack -> stack.kjs$withCount(count))
+				.ifSuccess(stack -> registries.itemStackParseCache().put(os, stack.copy()))
+				;
 		}
 
-		var map = cx.optionalMapOf(o);
+		var map = cx.optionalMapOf(from);
 
 		if (map != null) {
-			if (map.containsKey("item")) {
-				var id = ID.mc(map.get("item").toString());
-				var item = BuiltInRegistries.ITEM.get(id);
-
-				if (item == null || item == Items.AIR) {
-					return ItemStack.EMPTY;
-				}
-
-				var stack = new ItemStack(item);
-
-				if (map.get("count") instanceof Number number) {
-					stack.setCount(number.intValue());
-				}
-
-				return stack;
-			} else if (map.containsKey("tag")) {
-				// var stack = new TagIngredient(registries.cachedItemTags, ItemTags.create(ID.mc(map.get("tag")))).toVanilla().kjs$getFirst();
-				var stack = Ingredient.of(ItemTags.create(ID.mc(map.get("tag")))).kjs$getFirst();
-
-				if (map.containsKey("count")) {
-					stack.setCount(StringUtilsWrapper.parseInt(map.get("count"), 1));
-				}
-
-				return stack;
-			}
+			// todo: if someone does something weird here, improve upon this parser
+			return ItemStack.CODEC.parse(registries.java(), map);
 		}
 
-		return ItemStack.EMPTY;
+		var invalid = from;
+		return DataResult.error(() -> "Could not parse input %s for item stack".formatted(invalid));
+	}
+
+	@HideFromJS
+	static ItemStack wrap(Context cx, @Nullable Object from) {
+		var trivial = wrapTrivial(cx, from);
+		if (trivial != null) {
+			return trivial;
+		}
+
+		return wrapResult(cx, from)
+			.getOrThrow(error -> new KubeRuntimeException("Failed to read sized item stack from %s: %s".formatted(from, error))
+				.source(SourceLine.of(cx)));
 	}
 
 	@HideFromJS
 	static Item wrapItem(Context cx, @Nullable Object o) {
-		if (o == null) {
-			return Items.AIR;
-		} else if (o instanceof ItemLike item) {
-			return item.asItem();
-		} else if (o instanceof CharSequence) {
-			var s = o.toString();
-			if (s.isEmpty()) {
-				return Items.AIR;
-			} else if (s.charAt(0) != '#') {
-				return BuiltInRegistries.ITEM.get(ID.mc(s));
-			}
-		}
+		return switch (o) {
+			case null -> Items.AIR;
+			case ItemLike item -> item.asItem();
+			case CharSequence cs -> findItem(cs.toString())
+				.getOrThrow(error -> new KubeRuntimeException("Failed to read item from %s: %s".formatted(cs, error))
+					.source(SourceLine.of(cx)));
+			default -> wrap(cx, o).getItem();
+		};
+	}
 
-		return wrap(cx, o).getItem();
+	static DataResult<Item> findItem(String s) {
+		s = s.trim();
+		return switch (s) {
+			case "", "-", "air", "minecraft:air" -> DataResult.success(Items.AIR);
+			default -> ResourceLocation.read(s).flatMap(ItemWrapper::findItem).map(Holder::value);
+		};
+	}
+
+	@HideFromJS
+	static DataResult<Holder<Item>> findItem(ResourceLocation id) {
+		return BuiltInRegistries.ITEM
+			.getHolder(id)
+			.map(DataResult::success)
+			.orElseGet(() -> DataResult.error(() -> "Item with ID " + id + " does not exist!"))
+			.map(Function.identity());
 	}
 
 	@Info("Get a list of most items in the game. Items not in a creative tab are ignored")
@@ -319,47 +325,37 @@ public interface ItemWrapper {
 		return from instanceof ItemStack || from instanceof ItemLike;
 	}
 
-	static ItemStack parseJson(Context cx, DynamicOps<Tag> registryOps, @Nullable JsonElement json) {
-		if (json == null || json.isJsonNull()) {
-			return ItemStack.EMPTY;
-		} else if (json.isJsonPrimitive()) {
-			return parseString(cx, registryOps, json.getAsString());
-		} else if (json instanceof JsonObject) {
-			return ItemStack.OPTIONAL_CODEC.decode(JsonOps.INSTANCE, json).getOrThrow().getFirst();
-		}
-
-		return ItemStack.EMPTY;
+	static DataResult<ItemStack> parseJson(Context cx, DynamicOps<Tag> registryOps, @Nullable JsonElement json) {
+		return switch (json) {
+			case null -> DataResult.success(ItemStack.EMPTY);
+			case JsonNull jsonNull -> DataResult.success(ItemStack.EMPTY);
+			case JsonPrimitive primitive -> parseString(cx, registryOps, primitive.getAsString());
+			case JsonObject obj -> ItemStack.OPTIONAL_CODEC.decode(JsonOps.INSTANCE, obj).map(Pair::getFirst);
+			default -> DataResult.error(() -> "Could not parse item stack from JSON " + json);
+		};
 	}
 
-	static ItemStack parseString(Context cx, DynamicOps<Tag> registryOps, String s) {
-		if (s.isEmpty() || s.equals("-") || s.equals("air") || s.equals("minecraft:air")) {
-			return ItemStack.EMPTY;
-		} else {
-			try {
-				var reader = new StringReader(s);
-				reader.skipWhitespace();
-
-				if (!reader.canRead()) {
-					return ItemStack.EMPTY;
+	static DataResult<ItemStack> parseString(Context cx, DynamicOps<Tag> registryOps, String s) {
+		return switch (s) {
+			case "", "-", "air", "minecraft:air" -> DataResult.success(ItemStack.EMPTY);
+			default -> {
+				try {
+					yield read(cx, registryOps, new StringReader(s));
+				} catch (CommandSyntaxException ex) {
+					yield DataResult.error(() -> "Error parsing item from string: " + ex);
 				}
-
-				return read(cx, registryOps, new StringReader(s));
-			} catch (CommandSyntaxException ex) {
-				throw new KubeRuntimeException("Error parsing item from string!", ex).source(SourceLine.of(cx));
 			}
-		}
+		};
 	}
 
-	static ItemStack read(Context cx, DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
-		if (!reader.canRead()) {
-			return ItemStack.EMPTY;
+	static DataResult<ItemStack> read(Context cx, DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+		reader.skipWhitespace();
+
+		if (!reader.canRead() || reader.peek() == '-') {
+			return DataResult.success(ItemStack.EMPTY);
 		}
 
-		if (reader.peek() == '-') {
-			return ItemStack.EMPTY;
-		}
-
-		int count = 1;
+		int count;
 
 		if (reader.canRead() && StringReader.isAllowedNumber(reader.peek())) {
 			count = Mth.ceil(reader.readDouble());
@@ -368,20 +364,28 @@ public interface ItemWrapper {
 			reader.skipWhitespace();
 
 			if (count < 1) {
-				throw new KubeRuntimeException("Item count smaller than 1 is not allowed!").source(SourceLine.of(cx));
+				return DataResult.error(() -> "Item count smaller than 1 is not allowed!");
 			}
+		} else {
+			count = 1;
 		}
 
-		var itemId = ResourceLocation.read(reader);
-		var item = BuiltInRegistries.ITEM.getHolder(itemId)
-			.orElseThrow(() -> new KubeRuntimeException("Item with ID " + itemId + " does not exist")
-				.source(SourceLine.of(cx)));
-		var itemStack = new ItemStack(item, count);
+		var itemStack = ID.read(reader)
+			.flatMap(ItemWrapper::findItem)
+			.map(item -> new ItemStack(item, count));
 
 		var next = reader.canRead() ? reader.peek() : 0;
 
 		if (next == '[' || next == '{') {
-			itemStack.applyComponents(DataComponentWrapper.readPatch(registryOps, reader));
+			return itemStack.flatMap(stack -> {
+				try {
+					var components = DataComponentWrapper.readPatch(registryOps, reader);
+					stack.applyComponents(components);
+					return DataResult.success(stack);
+				} catch (CommandSyntaxException e) {
+					return DataResult.error(e::getMessage);
+				}
+			});
 		}
 
 		return itemStack;

@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonPrimitive;
+import com.mojang.brigadier.StringReader;
+import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.RegistryObjectKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
@@ -119,5 +121,19 @@ public interface ID {
 
 	static String resourcePath(ResourceLocation id) {
 		return id.getNamespace().equals("minecraft") ? id.getPath() : (id.getNamespace() + "/" + id.getPath());
+	}
+
+	static DataResult<ResourceLocation> read(StringReader reader) {
+		return ResourceLocation.read(readGreedy(reader));
+	}
+
+	private static String readGreedy(StringReader reader) {
+		int i = reader.getCursor();
+
+		while (reader.canRead() && ResourceLocation.isAllowedInResourceLocation(reader.peek())) {
+			reader.skip();
+		}
+
+		return reader.getString().substring(i, reader.getCursor());
 	}
 }
