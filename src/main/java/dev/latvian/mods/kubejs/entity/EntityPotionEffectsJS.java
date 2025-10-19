@@ -4,6 +4,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.common.CommonHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -59,6 +60,7 @@ public class EntityPotionEffectsJS {
 	}
 
 	public boolean isApplicable(MobEffectInstance effect) {
-		return entity.canBeAffected(effect);
+		// TODO: source?
+		return CommonHooks.canMobEffectBeApplied(entity, effect, null);
 	}
 }

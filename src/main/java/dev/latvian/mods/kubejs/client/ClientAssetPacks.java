@@ -162,7 +162,7 @@ public class ClientAssetPacks {
 		}
 
 		if (!FMLLoader.isProduction()) {
-			KubeJS.LOGGER.info("Loaded " + packs.size() + " asset packs: " + packs.stream().map(PackResources::packId).collect(Collectors.joining(", ")));
+			KubeJS.LOGGER.info("Loaded {} asset packs: {}", packs.size(), packs.stream().map(PackResources::packId).collect(Collectors.joining(", ")));
 		}
 
 		return packs;

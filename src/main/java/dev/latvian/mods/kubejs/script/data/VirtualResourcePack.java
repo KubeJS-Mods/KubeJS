@@ -208,7 +208,7 @@ public class VirtualResourcePack extends AbstractPackResources implements KubeRe
 	@Override
 	public void close() {
 		if (!FMLLoader.isProduction()) {
-			KubeJS.LOGGER.info("Closed " + packId());
+			KubeJS.LOGGER.info("Closed {}", packId());
 		}
 	}
 }

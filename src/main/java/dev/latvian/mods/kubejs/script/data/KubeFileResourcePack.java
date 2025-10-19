@@ -163,7 +163,7 @@ public class KubeFileResourcePack implements PackResources {
 					var ns = dir.getFileName().toString();
 
 					if (debug) {
-						KubeJS.LOGGER.info("# Walking namespace '" + ns + "'");
+						KubeJS.LOGGER.info("# Walking namespace '{}'", ns);
 					}
 
 					for (var path : Files.walk(dir).filter(Files::isRegularFile).filter(Files::isReadable).toList()) {
@@ -185,12 +185,12 @@ public class KubeFileResourcePack implements PackResources {
 						});
 
 						if (debug) {
-							KubeJS.LOGGER.info("- File found: '" + data.id() + "' (" + data.data().get().length + " bytes)");
+							KubeJS.LOGGER.info("- File found: '{}' ({} bytes)", data.id(), data.data().get().length);
 						}
 
 						if (skipFile(data)) {
 							if (debug) {
-								KubeJS.LOGGER.info("- Skipping '" + data.id() + "'");
+								KubeJS.LOGGER.info("- Skipping '{}'", data.id());
 							}
 
 							continue;
@@ -200,7 +200,7 @@ public class KubeFileResourcePack implements PackResources {
 					}
 				}
 			} catch (Exception ex) {
-				KubeJS.LOGGER.error("Failed to load files from kubejs/" + packType.getDirectory(), ex);
+				KubeJS.LOGGER.error("Failed to load files from kubejs/{}", packType.getDirectory(), ex);
 			}
 
 			generated.put(GeneratedData.INTERNAL_RELOAD.id(), GeneratedData.INTERNAL_RELOAD);
@@ -208,7 +208,7 @@ public class KubeFileResourcePack implements PackResources {
 			generated = Map.copyOf(generated);
 
 			if (debug) {
-				KubeJS.LOGGER.info("Generated " + packType + " data (" + generated.size() + " files)");
+				KubeJS.LOGGER.info("Generated {} data ({} files)", packType, generated.size());
 			}
 		}
 

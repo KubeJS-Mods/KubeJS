@@ -37,7 +37,7 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 		CLASS_MAP.computeIfAbsent(t.baseClass, c -> new ArrayList<>(1)).add(t);
 
 		if (DevProperties.get().logRegistryTypes) {
-			KubeJS.LOGGER.info("Registered RegistryType '" + key.location() + "': " + type);
+			KubeJS.LOGGER.info("Registered RegistryType '{}': {}", key.location(), type);
 		}
 	}
 
@@ -160,7 +160,7 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 							}
 						}
 					} catch (Exception ex) {
-						KubeJS.LOGGER.error("Error while trying to get registry from field " + field.getName() + " from class " + field.getType().getName(), ex);
+						KubeJS.LOGGER.error("Error while trying to get registry from field {} from class {}", field.getName(), field.getType().getName(), ex);
 					}
 				});
 		}

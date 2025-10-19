@@ -6,7 +6,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
-@EventBusSubscriber(modid = KubeJS.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = KubeJS.MOD_ID)
 public interface KubeJSNet {
 	private static <T extends CustomPacketPayload> CustomPacketPayload.Type<T> type(String id) {
 		return new CustomPacketPayload.Type<>(KubeJS.id(id));

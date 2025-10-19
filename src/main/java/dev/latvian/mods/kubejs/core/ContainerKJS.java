@@ -92,11 +92,10 @@ public interface ContainerKJS extends InventoryKJS {
 				if (!simulate) {
 					this.kjs$self().setItem(slot, stack.split(m));
 					this.kjs$self().setChanged();
-					return stack;
 				} else {
 					stack.shrink(m);
-					return stack;
 				}
+				return stack;
 			} else {
 				if (!simulate) {
 					this.kjs$self().setItem(slot, stack);

@@ -108,7 +108,7 @@ public class DataExport {
 			appendLine(logStringBuilder, calendar, line);
 		}
 
-		if (logStringBuilder.length() > 0) {
+		if (!logStringBuilder.isEmpty()) {
 			logStringBuilder.setLength(logStringBuilder.length() - 1);
 			addString("errors.log", logStringBuilder.toString());
 		}
@@ -119,7 +119,7 @@ public class DataExport {
 			appendLine(logStringBuilder, calendar, line);
 		}
 
-		if (logStringBuilder.length() > 0) {
+		if (!logStringBuilder.isEmpty()) {
 			logStringBuilder.setLength(logStringBuilder.length() - 1);
 			addString("warnings.log", logStringBuilder.toString());
 		}
@@ -174,10 +174,10 @@ public class DataExport {
 			.forEach(file -> {
 				if (file.isFile()) {
 					file.delete();
-					KubeJS.LOGGER.info("Deleted old file " + file.getPath());
+					KubeJS.LOGGER.info("Deleted old file {}", file.getPath());
 				} else if (file.isDirectory() && file.list().length == 0) {
 					file.delete();
-					KubeJS.LOGGER.info("Deleted empty directory " + file.getPath());
+					KubeJS.LOGGER.info("Deleted empty directory {}", file.getPath());
 				}
 			});
 

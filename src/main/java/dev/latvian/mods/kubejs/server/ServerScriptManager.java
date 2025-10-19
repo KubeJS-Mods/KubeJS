@@ -66,7 +66,7 @@ public class ServerScriptManager extends ScriptManager {
 		staticInstance = manager;
 
 		if (!FMLLoader.isProduction()) {
-			KubeJS.LOGGER.info("Loaded " + packs.size() + " data packs: " + packs.stream().map(PackResources::packId).collect(Collectors.joining(", ")));
+			KubeJS.LOGGER.info("Loaded {} data packs: {}", packs.size(), packs.stream().map(PackResources::packId).collect(Collectors.joining(", ")));
 		}
 
 		return packs;

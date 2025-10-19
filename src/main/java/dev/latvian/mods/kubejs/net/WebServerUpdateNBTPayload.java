@@ -34,11 +34,11 @@ public record WebServerUpdateNBTPayload(String event, String requiredTag, Option
 		if (count == 0 && event.equals("highlight/items")) {
 			for (var e : ((CompoundTag) payload.get()).getList("items", Tag.TAG_COMPOUND)) {
 				var t = (CompoundTag) e;
-				KubeJS.LOGGER.info("[Highlighted Item] " + t.getString("string"));
+				KubeJS.LOGGER.info("[Highlighted Item] {}", t.getString("string"));
 
 				if (t.get("tags") instanceof ListTag l) {
 					for (var tag : l) {
-						KubeJS.LOGGER.info("[Highlighted Item] - #" + tag.getAsString());
+						KubeJS.LOGGER.info("[Highlighted Item] - #{}", tag.getAsString());
 					}
 				}
 			}

@@ -17,7 +17,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
-@EventBusSubscriber(modid = KubeJS.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class RegistryEventHandler {
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@SubscribeEvent(priority = EventPriority.LOW)
@@ -32,6 +32,7 @@ public class RegistryEventHandler {
 		event.getTypes().forEach(type -> predicatePair.stream().filter(p -> p.getFirst().test(type)).forEach(p -> event.add(type, p.getSecond())));
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static <T> void handleRegistryEvent(ResourceKey<Registry<T>> registryKey, RegisterEvent event) {
 		StartupEvents.REGISTRY.post(ScriptType.STARTUP, (ResourceKey) registryKey, new RegistryKubeEvent<>(registryKey));
 
@@ -39,14 +40,14 @@ public class RegistryEventHandler {
 
 		if (objStorage.objects.isEmpty()) {
 			if (DevProperties.get().logRegistryEventObjects) {
-				KubeJS.LOGGER.info("Skipping " + registryKey.location() + " registry - no objects to build");
+				KubeJS.LOGGER.info("Skipping {} registry - no objects to build", registryKey.location());
 			}
 
 			return;
 		}
 
 		if (DevProperties.get().logRegistryEventObjects) {
-			KubeJS.LOGGER.info("Building " + objStorage.objects.size() + " objects of " + registryKey.location() + " registry");
+			KubeJS.LOGGER.info("Building {} objects of {} registry", objStorage.objects.size(), registryKey.location());
 		}
 
 		int added = 0;
@@ -64,7 +65,7 @@ public class RegistryEventHandler {
 		}
 
 		if (!objStorage.objects.isEmpty() && DevProperties.get().logRegistryEventObjects) {
-			KubeJS.LOGGER.info("Registered " + added + "/" + objStorage.objects.size() + " objects of " + registryKey.location());
+			KubeJS.LOGGER.info("Registered {}/{} objects of {}", added, objStorage.objects.size(), registryKey.location());
 		}
 	}
 }

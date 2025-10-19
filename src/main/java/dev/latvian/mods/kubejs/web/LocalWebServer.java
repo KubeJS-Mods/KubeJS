@@ -74,7 +74,7 @@ public record LocalWebServer(KJSHTTPServer server, String url, List<Endpoint> en
 					(publicAddress.isEmpty() ? ("p=" + port) : ("a=" + URLEncoder.encode(publicAddress, StandardCharsets.UTF_8))) + (server.auth.isEmpty() ? "" : ("&c=" + server.encodedAuth))
 				);
 
-				KubeJS.LOGGER.info("Started the local web server at " + url);
+				KubeJS.LOGGER.info("Started the local web server at {}", url);
 			} catch (BindFailedException ex) {
 				KubeJS.LOGGER.warn("Failed to start the local web server - all ports occupied");
 			} catch (Exception ex) {

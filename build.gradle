@@ -76,7 +76,7 @@ java {
 	withJavadocJar()
 }
 
-tasks.withType(Javadoc) {
+tasks.withType(Javadoc).configureEach {
 	options.addStringOption('Xdoclint:none', '-quiet')
 }
 

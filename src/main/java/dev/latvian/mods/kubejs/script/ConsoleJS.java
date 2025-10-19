@@ -152,9 +152,9 @@ public class ConsoleJS {
 
 			if (!FMLLoader.isProduction()) {
 				if (capturingErrors) {
-					logger.info("Capturing errors for " + scriptType.name + " scripts enabled");
+					logger.info("Capturing errors for {} scripts enabled", scriptType.name);
 				} else {
-					logger.info("Capturing errors for " + scriptType.name + " scripts disabled");
+					logger.info("Capturing errors for {} scripts disabled", scriptType.name);
 				}
 			}
 		}
@@ -168,7 +168,7 @@ public class ConsoleJS {
 			try {
 				Files.write(logFile, List.of());
 			} catch (Exception ex) {
-				logger.error("Failed to clear the log file: " + ex);
+				logger.error("Failed to clear the log file: {}", String.valueOf(ex));
 			}
 		});
 	}
@@ -306,14 +306,14 @@ public class ConsoleJS {
 			try {
 				Files.write(logFile, lines, StandardOpenOption.APPEND);
 			} catch (Exception ex) {
-				logger.error("Failed to write to the log file: " + ex);
+				logger.error("Failed to write to the log file: {}", String.valueOf(ex));
 			}
 		} else {
 			scriptType.executor.execute(() -> {
 				try {
 					Files.write(logFile, lines, StandardOpenOption.APPEND);
 				} catch (Exception ex) {
-					logger.error("Failed to write to the log file: " + ex);
+					logger.error("Failed to write to the log file: {}", String.valueOf(ex));
 				}
 			});
 		}
@@ -482,7 +482,7 @@ public class ConsoleJS {
 					f.params.add(method.getParameters()[i].getType());
 				}
 
-				if (f.name.length() >= 4 && f.name.startsWith("get") && Character.isUpperCase(f.name.charAt(3)) && f.params.size() == 0) {
+				if (f.name.length() >= 4 && f.name.startsWith("get") && Character.isUpperCase(f.name.charAt(3)) && f.params.isEmpty()) {
 					var n = Character.toLowerCase(f.name.charAt(3)) + f.name.substring(4);
 					var f0 = vars.get(n);
 

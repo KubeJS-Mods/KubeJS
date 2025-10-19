@@ -48,7 +48,7 @@ public class JEIRemoveRecipesKubeEvent implements RemoveRecipesKubeEvent {
 		var cat = categories.get(category);
 
 		if (cat == null) {
-			KubeJS.LOGGER.info("Failed to remove recipes for type '" + category + "': Category doesn't exist! Use event.categories to get a list of all categories.");
+			KubeJS.LOGGER.info("Failed to remove recipes for type '{}': Category doesn't exist! Use event.categories to get a list of all categories.", category);
 			return;
 		}
 

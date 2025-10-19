@@ -32,6 +32,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -85,7 +86,7 @@ public interface IngredientWrapper {
 			case ItemLike i when i.asItem() == Items.AIR -> Ingredient.EMPTY;
 			case IngredientSupplierKJS ingr -> ingr.kjs$asIngredient();
 			case ItemLike i -> Ingredient.of(i);
-			case TagKey<?>(var reg, var location) -> Ingredient.of(ItemTags.create(location));
+			case TagKey<?>(ResourceKey<?> reg, var location) -> Ingredient.of(ItemTags.create(location));
 			default -> null;
 		};
 	}

@@ -212,7 +212,7 @@ public class RecipeSchema {
 			boolean dev = DevProperties.get().logRecipeDebug;
 
 			if (dev) {
-				KubeJS.LOGGER.info("Generating constructors for " + new RecipeConstructor(includedKeys));
+				KubeJS.LOGGER.info("Generating constructors for {}", new RecipeConstructor(includedKeys));
 			}
 
 			for (int a = minRequiredArguments; a <= includedKeys.size(); a++) {
@@ -220,7 +220,7 @@ public class RecipeSchema {
 				constructors.put(a, c);
 
 				if (dev) {
-					KubeJS.LOGGER.info("> " + a + ": " + c);
+					KubeJS.LOGGER.info("> {}: {}", a, c);
 				}
 			}
 		}

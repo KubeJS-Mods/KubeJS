@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.core.TagLoaderKJS;
 import dev.latvian.mods.kubejs.core.TagManagerKJS;
@@ -8,7 +9,6 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess.RegistryEntry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.TagLoader;
@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -35,10 +34,10 @@ public abstract class TagManagerMixin implements TagManagerKJS {
 		target = "Lnet/minecraft/tags/TagLoader;<init>(Ljava/util/function/Function;Ljava/lang/String;)V",
 		shift = At.Shift.BY,
 		by = 2
-	), locals = LocalCapture.CAPTURE_FAILHARD)
+	))
 	private <T> void kjs$saveRegistryToTagLoader(ResourceManager rm, Executor executor, RegistryEntry<T> reg,
 												 CallbackInfoReturnable<CompletableFuture<TagManager.LoadResult<T>>> cir,
-												 ResourceKey<? extends Registry<T>> key, Registry<T> registry, TagLoader<Holder<T>> loader) {
+												 @Local Registry<T> registry, @Local TagLoader<Holder<T>> loader) {
 		((TagLoaderKJS<T>) loader).kjs$init(kjs$resources, registry);
 	}
 

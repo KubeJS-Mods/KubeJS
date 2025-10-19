@@ -84,9 +84,7 @@ public class KubeJSServerEventHandler {
 								var slot = ((CompoundTag) tag2).getShort("Slot");
 								var stack = ItemStack.parse(server.registryAccess(), tag2);
 
-								if (stack.isPresent()) {
-									map.put((int) slot, stack.get());
-								}
+								stack.ifPresent(itemStack -> map.put((int) slot, itemStack));
 							}
 						}
 					}

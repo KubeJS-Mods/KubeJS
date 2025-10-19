@@ -140,7 +140,7 @@ public class EnergyStorageAttachment implements BlockEntityAttachment {
 			var list = new ArrayList<IEnergyStorage>(1);
 
 			for (var dir : autoOutputDirections) {
-				var c = Capabilities.EnergyStorage.BLOCK.getCapability(entity.getLevel(), entity.getBlockPos().relative(dir), null, null, dir.getOpposite());
+				var c = entity.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, entity.getBlockPos().relative(dir), dir.getOpposite());
 
 				if (c != null && c != energyStorage) {
 					list.add(c);

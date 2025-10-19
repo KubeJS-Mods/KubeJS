@@ -120,7 +120,7 @@ public class KubeJS {
 		allMods.remove(thisModFile);
 		allMods.addFirst(thisModFile);
 		KubeJSPlugins.load(allMods, dist == Dist.CLIENT);
-		LOGGER.info("Done in " + pluginTimer.stop());
+		LOGGER.info("Done in {}", pluginTimer.stop());
 
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);
 

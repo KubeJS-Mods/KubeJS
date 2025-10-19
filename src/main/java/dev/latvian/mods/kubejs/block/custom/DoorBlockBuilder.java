@@ -158,9 +158,8 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 			for (var open : openValues) {
 				for (var facing : facingValues) {
 					for (var hinge : hingeValues) {
-						bs.variant("facing=" + facing.getSerializedName() + ",half=" + half.getSerializedName() + ",hinge=" + hinge.getSerializedName() + ",open=" + open, v -> {
-							v.model(modelMap.get(half).get(hinge).get(open)).y(rotationMap.get(facing).get(hinge).get(open));
-						});
+						bs.variant("facing=" + facing.getSerializedName() + ",half=" + half.getSerializedName() + ",hinge=" + hinge.getSerializedName() + ",open=" + open,
+							v -> v.model(modelMap.get(half).get(hinge).get(open)).y(rotationMap.get(facing).get(hinge).get(open)));
 					}
 				}
 			}

@@ -151,7 +151,7 @@ public class BlockStateModifyPlacementCallback extends BlockStateModifyCallback 
 	}
 
 	@Info("""
-		Checks if the block currently occupying the position this is being placed in is the same block type. 
+		Checks if the block currently occupying the position this is being placed in is the same block type.
 		Used for things like candles, where multiple can be in the same block-space.
 		""")
 	public boolean isReplacingSelf() {

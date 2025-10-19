@@ -339,7 +339,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 			double d1;
 			AABB aabb = entity1.getBoundingBox();
 			Optional<Vec3> optional = aabb.clip(start, end);
-			if (!optional.isPresent() || !((d1 = start.distanceToSqr(optional.get())) < d0)) {
+			if (optional.isEmpty() || !((d1 = start.distanceToSqr(optional.get())) < d0)) {
 				continue;
 			}
 			entity = entity1;

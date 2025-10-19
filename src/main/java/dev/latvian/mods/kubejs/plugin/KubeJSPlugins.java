@@ -62,14 +62,14 @@ public class KubeJSPlugins {
 					if (line[i].equalsIgnoreCase("client")) {
 						if (!loadClientPlugins) {
 							if (DevProperties.get().logSkippedPlugins) {
-								KubeJS.LOGGER.warn("Plugin " + line[0] + " does not load on server side, skipping");
+								KubeJS.LOGGER.warn("Plugin {} does not load on server side, skipping", line[0]);
 							}
 
 							return Stream.empty();
 						}
 					} else if (!ModList.get().isLoaded(line[i])) {
 						if (DevProperties.get().logSkippedPlugins) {
-							KubeJS.LOGGER.warn("Plugin " + line[0] + " does not have required mod '" + line[i] + "' loaded, skipping");
+							KubeJS.LOGGER.warn("Plugin {} does not have required mod '{}' loaded, skipping", line[0], line[i]);
 						}
 
 						return Stream.empty();

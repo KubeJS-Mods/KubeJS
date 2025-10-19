@@ -90,7 +90,6 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 		method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V",
 		at = @At(value = "TAIL")
 	)
-	@SuppressWarnings("removal")
 	private void addServerData(CallbackInfo ci) {
 		if (kjs$event != null) {
 			kjs$event.finishEvent();

@@ -245,7 +245,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	public KubeRecipe merge(JsonObject j) {
-		if (j != null && j.size() > 0) {
+		if (j != null && !j.isEmpty()) {
 			for (var entry : j.entrySet()) {
 				json.add(entry.getKey(), entry.getValue());
 			}
