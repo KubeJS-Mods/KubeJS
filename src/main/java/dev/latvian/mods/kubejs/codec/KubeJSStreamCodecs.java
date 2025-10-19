@@ -43,7 +43,7 @@ public interface KubeJSStreamCodecs {
 
 		@Override
 		public void encode(ByteBuf buffer, @Nullable JsonElement value) {
-			if (value == null || value.isJsonNull()) {
+			if (value == null || value instanceof JsonNull) {
 				Utf8String.write(buffer, "", Integer.MAX_VALUE);
 			} else {
 				Utf8String.write(buffer, JsonUtils.toString(value), Integer.MAX_VALUE);

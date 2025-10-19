@@ -9,6 +9,9 @@ import org.spongepowered.asm.mixin.Mixin;
 public abstract class ResourceLocationMixin implements SpecialEquality {
 	@Override
 	public boolean specialEquals(Context cx, Object o, boolean shallow) {
-		return equals(o instanceof ResourceLocation ? o : toString().equals(String.valueOf(o)));
+		return switch (o) {
+			case ResourceLocation _id -> equals(o);
+			case null, default -> toString().equals(String.valueOf(o));
+		};
 	}
 }

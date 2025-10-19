@@ -27,27 +27,29 @@ public interface JsonUtils {
 	MapLike<JsonElement> MAP_LIKE = MapLike.forMap(Map.of(), JsonOps.INSTANCE);
 
 	static JsonElement copy(@Nullable JsonElement element) {
-		if (element == null || element.isJsonNull()) {
-			return JsonNull.INSTANCE;
-		} else if (element instanceof JsonArray) {
-			var a = new JsonArray();
+		return switch (element) {
+			case null -> JsonNull.INSTANCE;
+			case JsonNull jsonNull -> JsonNull.INSTANCE;
+			case JsonArray jsonElements -> {
+				var a = new JsonArray();
 
-			for (var e : (JsonArray) element) {
-				a.add(copy(e));
+				for (var e : jsonElements) {
+					a.add(copy(e));
+				}
+
+				yield a;
 			}
+			case JsonObject jsonObject -> {
+				var o = new JsonObject();
 
-			return a;
-		} else if (element instanceof JsonObject) {
-			var o = new JsonObject();
+				for (var entry : jsonObject.entrySet()) {
+					o.add(entry.getKey(), copy(entry.getValue()));
+				}
 
-			for (var entry : ((JsonObject) element).entrySet()) {
-				o.add(entry.getKey(), copy(entry.getValue()));
+				yield o;
 			}
-
-			return o;
-		}
-
-		return element;
+			default -> element;
+		};
 	}
 
 	static JsonElement of(Context cx, @Nullable Object o) {
@@ -116,52 +118,53 @@ public interface JsonUtils {
 
 	@Nullable
 	static JsonArray arrayOf(Context cx, @Nullable Object array) {
-		if (array instanceof JsonArray arr) {
-			return arr;
-		} else if (array instanceof CharSequence) {
-			try {
-				return JsonUtils.GSON.fromJson(array.toString(), JsonArray.class);
-			} catch (Exception ex) {
-				return null;
+		return switch (array) {
+			case JsonArray arr -> arr;
+			case CharSequence cs -> {
+				try {
+					yield JsonUtils.GSON.fromJson(cs.toString(), JsonArray.class);
+				} catch (Exception ex) {
+					yield null;
+				}
 			}
-		} else if (array instanceof Iterable<?> itr) {
-			JsonArray json = new JsonArray();
+			case Iterable<?> itr -> {
+				JsonArray json = new JsonArray();
 
-			for (Object o1 : itr) {
-				json.add(JsonUtils.of(cx, o1));
+				for (Object o1 : itr) {
+					json.add(JsonUtils.of(cx, o1));
+				}
+
+				yield json;
 			}
-
-			return json;
-		}
-
-		return null;
+			case null, default -> null;
+		};
 	}
 
 	@Nullable
 	static Object toObject(@Nullable JsonElement json) {
-		if (json == null || json.isJsonNull()) {
-			return null;
-		} else if (json.isJsonObject()) {
-			var map = new LinkedHashMap<String, Object>();
-			var o = json.getAsJsonObject();
+		return switch (json) {
+			case null -> null;
+			case JsonNull jsonNull -> null;
+			case JsonObject o -> {
+				var map = new LinkedHashMap<String, Object>();
 
-			for (var entry : o.entrySet()) {
-				map.put(entry.getKey(), toObject(entry.getValue()));
+				for (var entry : o.entrySet()) {
+					map.put(entry.getKey(), toObject(entry.getValue()));
+				}
+
+				yield map;
 			}
+			case JsonArray a -> {
+				var objects = new ArrayList<>(a.size());
 
-			return map;
-		} else if (json.isJsonArray()) {
-			var a = json.getAsJsonArray();
-			var objects = new ArrayList<>(a.size());
+				for (var e : a) {
+					objects.add(toObject(e));
+				}
 
-			for (var e : a) {
-				objects.add(toObject(e));
+				yield objects;
 			}
-
-			return objects;
-		}
-
-		return toPrimitive(json);
+			default -> toPrimitive(json);
+		};
 	}
 
 	static String toString(JsonElement json) {
@@ -192,25 +195,22 @@ public interface JsonUtils {
 
 	@Nullable
 	static Object toPrimitive(@Nullable JsonElement element) {
-		if (element == null || element.isJsonNull()) {
-			return null;
-		} else if (element.isJsonPrimitive()) {
-			var p = element.getAsJsonPrimitive();
+		return switch (element) {
+			case JsonPrimitive p -> {
+				if (p.isBoolean()) {
+					yield p.getAsBoolean();
+				} else if (p.isNumber()) {
+					yield p.getAsNumber();
+				}
 
-			if (p.isBoolean()) {
-				return p.getAsBoolean();
-			} else if (p.isNumber()) {
-				return p.getAsNumber();
+				try {
+					Double.parseDouble(p.getAsString());
+					yield p.getAsNumber();
+				} catch (Exception ex) {
+					yield p.getAsString();
+				}
 			}
-
-			try {
-				Double.parseDouble(p.getAsString());
-				return p.getAsNumber();
-			} catch (Exception ex) {
-				return p.getAsString();
-			}
-		}
-
-		return null;
+			case null, default -> null;
+		};
 	}
 }

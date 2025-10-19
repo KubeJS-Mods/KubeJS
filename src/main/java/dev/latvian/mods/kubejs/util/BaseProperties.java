@@ -61,7 +61,7 @@ public class BaseProperties {
 	public String get(String key, String def) {
 		var s = get(key);
 
-		if (s.isJsonNull()) {
+		if (s instanceof JsonNull) {
 			properties.addProperty(key, def);
 			writeProperties = true;
 			return def;
@@ -73,7 +73,7 @@ public class BaseProperties {
 	public JsonElement get(String key, JsonElement def) {
 		var s = get(key);
 
-		if (s.isJsonNull()) {
+		if (s instanceof JsonNull) {
 			properties.add(key, def);
 			writeProperties = true;
 			return def;

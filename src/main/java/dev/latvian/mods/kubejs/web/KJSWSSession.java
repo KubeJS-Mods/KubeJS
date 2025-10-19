@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.web;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import dev.latvian.apps.tinyserver.ws.WSSession;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 
@@ -18,8 +19,8 @@ public class KJSWSSession extends WSSession<KJSHTTPRequest> {
 				var payload = json.has("payload") ? json.get("payload") : JsonNull.INSTANCE;
 
 				if (type.equals("$")) {
-					if (payload.isJsonObject()) {
-						info = SessionInfo.fromJson(info, payload.getAsJsonObject());
+					if (payload instanceof JsonObject o) {
+						info = SessionInfo.fromJson(info, o);
 					}
 				} else if (!type.isBlank()) {
 					onEvent(type, payload);

@@ -12,13 +12,13 @@ public interface ReplacementMatch {
 	};
 
 	static ReplacementMatch wrap(Context cx, Object o) {
-		if (o == null) {
-			return NONE;
-		} else if (o instanceof ReplacementMatch m) {
-			return m;
-		} else {
-			var in = IngredientWrapper.wrap(cx, o);
-			return in.isEmpty() ? NONE : in;
-		}
+		return switch (o) {
+			case null -> NONE;
+			case ReplacementMatch m -> m;
+			default -> {
+				var in = IngredientWrapper.wrap(cx, o);
+				yield in.isEmpty() ? NONE : in;
+			}
+		};
 	}
 }

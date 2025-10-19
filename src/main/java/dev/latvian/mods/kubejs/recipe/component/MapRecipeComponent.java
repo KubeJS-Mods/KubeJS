@@ -53,33 +53,23 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public TinyMap<K, V> wrap(RecipeScriptContext cx, Object from) {
-		if (from instanceof TinyMap map) {
-			return map;
-		} else if (from instanceof JsonObject o) {
-			var map = new TinyMap<K, V>(new TinyMap.Entry[o.size()]);
-			int i = 0;
+		return switch (from) {
+			case TinyMap map -> map;
+			case JsonObject o -> wrap(cx, o.asMap());
+			case Map<?, ?> m -> {
+				var map = new TinyMap<K, V>(new TinyMap.Entry[m.size()]);
+				int i = 0;
 
-			for (var entry : o.entrySet()) {
-				var k = key.wrap(cx, entry.getKey());
-				var v = component.wrap(cx, entry.getValue());
-				map.entries()[i++] = new TinyMap.Entry<>(k, v);
+				for (var entry : m.entrySet()) {
+					var k = key.wrap(cx, entry.getKey());
+					var v = component.wrap(cx, entry.getValue());
+					map.entries()[i++] = new TinyMap.Entry<>(k, v);
+				}
+
+				yield map;
 			}
-
-			return map;
-		} else if (from instanceof Map<?, ?> m) {
-			var map = new TinyMap<K, V>(new TinyMap.Entry[m.size()]);
-			int i = 0;
-
-			for (var entry : m.entrySet()) {
-				var k = key.wrap(cx, entry.getKey());
-				var v = component.wrap(cx, entry.getValue());
-				map.entries()[i++] = new TinyMap.Entry<>(k, v);
-			}
-
-			return map;
-		} else {
-			throw new IllegalArgumentException("Expected JSON object!");
-		}
+			case null, default -> throw new IllegalArgumentException("Expected JSON object!");
+		};
 	}
 
 	@Override

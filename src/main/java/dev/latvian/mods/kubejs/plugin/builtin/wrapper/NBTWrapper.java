@@ -87,77 +87,72 @@ public interface NBTWrapper {
 		return tag;
 	}
 
+	@SuppressWarnings("DuplicateBranchesInSwitch")
 	@Nullable
 	static Tag wrap(Context cx, @Nullable Object v) {
-		if (v == null || v instanceof EndTag) {
-			return null;
-		} else if (v instanceof Tag tag) {
-			return tag;
-		} else if (v instanceof NBTSerializable s) {
-			return s.toNBT(cx);
-		} else if (v instanceof CharSequence || v instanceof Character) {
-			return StringTag.valueOf(v.toString());
-		} else if (v instanceof Boolean b) {
-			return ByteTag.valueOf(b);
-		} else if (v instanceof Number number) {
-			if (number instanceof Byte) {
-				return ByteTag.valueOf(number.byteValue());
-			} else if (number instanceof Short) {
-				return ShortTag.valueOf(number.shortValue());
-			} else if (number instanceof Integer) {
-				return IntTag.valueOf(number.intValue());
-			} else if (number instanceof Long) {
-				return LongTag.valueOf(number.longValue());
-			} else if (number instanceof Float) {
-				return FloatTag.valueOf(number.floatValue());
-			}
-
-			return DoubleTag.valueOf(number.doubleValue());
-		} else if (v instanceof JsonPrimitive json) {
-			if (json.isNumber()) {
-				return wrap(cx, json.getAsNumber());
-			} else if (json.isBoolean()) {
-				return ByteTag.valueOf(json.getAsBoolean());
-			} else {
-				return StringTag.valueOf(json.getAsString());
-			}
-		} else if (v instanceof Map<?, ?> map) {
-			CompoundTag tag = new OrderedCompoundTag();
-
-			for (Map.Entry<?, ?> entry : map.entrySet()) {
-				Tag nbt1 = wrap(cx, entry.getValue());
-
-				if (nbt1 != null) {
-					tag.put(String.valueOf(entry.getKey()), nbt1);
+		return switch (v) {
+			case null -> null;
+			case EndTag endTag -> null;
+			case Tag tag -> tag;
+			case NBTSerializable s -> s.toNBT(cx);
+			case CharSequence cs -> StringTag.valueOf(cs.toString());
+			case Character c -> StringTag.valueOf(c.toString());
+			case Boolean b -> ByteTag.valueOf(b);
+			case Number number -> switch (number) {
+				case Byte b -> ByteTag.valueOf(b);
+				case Short s -> ShortTag.valueOf(s);
+				case Integer i -> IntTag.valueOf(i);
+				case Long l -> LongTag.valueOf(l);
+				case Float f -> FloatTag.valueOf(f);
+				default -> DoubleTag.valueOf(number.doubleValue());
+			};
+			case JsonPrimitive json -> {
+				if (json.isNumber()) {
+					yield wrap(cx, json.getAsNumber());
+				} else if (json.isBoolean()) {
+					yield ByteTag.valueOf(json.getAsBoolean());
+				} else {
+					yield StringTag.valueOf(json.getAsString());
 				}
 			}
+			case Map<?, ?> map -> {
+				CompoundTag tag = new OrderedCompoundTag();
 
-			return tag;
-		} else if (v instanceof JsonObject json) {
-			CompoundTag tag = new OrderedCompoundTag();
+				for (Map.Entry<?, ?> entry : map.entrySet()) {
+					Tag nbt1 = wrap(cx, entry.getValue());
 
-			for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-				Tag nbt1 = wrap(cx, entry.getValue());
-
-				if (nbt1 != null) {
-					tag.put(entry.getKey(), nbt1);
+					if (nbt1 != null) {
+						tag.put(String.valueOf(entry.getKey()), nbt1);
+					}
 				}
+
+				yield tag;
 			}
+			case JsonObject json -> {
+				CompoundTag tag = new OrderedCompoundTag();
 
-			return tag;
-		} else if (v instanceof Collection<?> c) {
-			return wrapCollection0(cx, c);
-		} else if (v instanceof JsonArray array) {
-			List<Tag> list = new ArrayList<>(array.size());
+				for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
+					Tag nbt1 = wrap(cx, entry.getValue());
 
-			for (JsonElement element : array) {
-				list.add(wrap(cx, element));
+					if (nbt1 != null) {
+						tag.put(entry.getKey(), nbt1);
+					}
+				}
+
+				yield tag;
 			}
+			case Collection<?> c -> wrapCollection0(cx, c);
+			case JsonArray array -> {
+				List<Tag> list = new ArrayList<>(array.size());
 
-			return wrapCollection0(cx, list);
-		}
+				for (JsonElement element : array) {
+					list.add(wrap(cx, element));
+				}
 
-		return null;
+				yield wrapCollection0(cx, list);
+			}
+			default -> null;
+		};
 	}
 
 	@Nullable

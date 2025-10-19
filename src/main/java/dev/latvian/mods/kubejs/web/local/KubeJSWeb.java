@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.web.local;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import dev.latvian.apps.tinyserver.ServerRegistry;
 import dev.latvian.apps.tinyserver.content.MimeType;
@@ -84,7 +85,7 @@ public class KubeJSWeb {
 
 				var p = payload == null ? null : payload.get();
 
-				if (p != null && !p.isJsonNull()) {
+				if (p != null && !(p instanceof JsonNull)) {
 					json.add("payload", p);
 				}
 

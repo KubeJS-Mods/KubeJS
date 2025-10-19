@@ -66,15 +66,12 @@ public interface ItemStackKJS extends
 
 	@Override
 	default boolean specialEquals(Context cx, Object o, boolean shallow) {
-		if (o instanceof CharSequence) {
-			return kjs$getId().equals(ID.string(o.toString()));
-		} else if (o instanceof ResourceLocation) {
-			return kjs$getIdLocation().equals(o);
-		} else if (o instanceof ItemStack s) {
-			return kjs$equalsIgnoringCount(s);
-		}
-
-		return kjs$equalsIgnoringCount(ItemWrapper.wrap(cx, o));
+		return switch (o) {
+			case CharSequence cs -> kjs$getId().equals(ID.string(cs.toString()));
+			case ResourceLocation id -> kjs$getIdLocation().equals(id);
+			case ItemStack s -> kjs$equalsIgnoringCount(s);
+			case null, default -> kjs$equalsIgnoringCount(ItemWrapper.wrap(cx, o));
+		};
 	}
 
 	default boolean kjs$equalsIgnoringCount(ItemStack stack) {

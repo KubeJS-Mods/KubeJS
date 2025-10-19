@@ -29,21 +29,15 @@ public interface AABBWrapper {
 	}
 
 	static AABB wrap(Object o) {
-		if (o instanceof AABB) {
-			return (AABB) o;
-		} else if (o instanceof BlockPos) {
-			return ofBlock((BlockPos) o);
-		} else if (o instanceof double[] d) {
-
-			if (d.length == 0) {
-				return EMPTY;
-			} else if (d.length == 3) {
-				return ofSize(d[0], d[1], d[2]);
-			} else if (d.length == 6) {
-				return of(d[0], d[1], d[2], d[3], d[4], d[5]);
-			}
-		}
-
-		return EMPTY;
+		return switch (o) {
+			case AABB aabb -> aabb;
+			case BlockPos blockPos -> ofBlock(blockPos);
+			case double[] d -> switch (d.length) {
+				case 3 -> ofSize(d[0], d[1], d[2]);
+				case 6 -> of(d[0], d[1], d[2], d[3], d[4], d[5]);
+				default -> EMPTY;
+			};
+			case null, default -> EMPTY;
+		};
 	}
 }

@@ -16,13 +16,12 @@ import java.util.List;
 public interface RegistryObjectKJS<T> extends SpecialEquality {
 	@Override
 	default boolean specialEquals(Context cx, Object o, boolean shallow) {
-		if (o instanceof CharSequence) {
-			return kjs$getId().equals(o.toString());
-		} else if (o instanceof ResourceLocation) {
-			return kjs$getIdLocation().equals(o);
-		}
+		return switch (o) {
+			case CharSequence cs -> kjs$getId().equals(cs.toString());
+			case ResourceLocation id -> kjs$getIdLocation().equals(id);
+			case null, default -> equals(o);
+		};
 
-		return equals(o);
 	}
 
 	default ResourceKey<Registry<T>> kjs$getRegistryId() {

@@ -69,7 +69,7 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 			} else if (from instanceof Fluid fluid) {
 				return (Holder<T>) fluid.builtInRegistryHolder();
 			} else {
-				return (Holder<T>) FluidWrapper.wrap(cx.registries(), from).getFluidHolder();
+				return (Holder<T>) FluidWrapper.wrap(cx.cx(), from).getFluidHolder();
 			}
 		} else if (regType != null) {
 			return (Holder<T>) HolderWrapper.wrap((KubeJSContext) cx.cx(), from, regType.type());

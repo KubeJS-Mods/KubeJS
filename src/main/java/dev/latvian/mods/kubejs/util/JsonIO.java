@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
@@ -43,26 +44,7 @@ public class JsonIO {
 
 	@Nullable
 	public static Object toPrimitive(@Nullable JsonElement element) {
-		if (element == null || element.isJsonNull()) {
-			return null;
-		} else if (element.isJsonPrimitive()) {
-			var p = element.getAsJsonPrimitive();
-
-			if (p.isBoolean()) {
-				return p.getAsBoolean();
-			} else if (p.isNumber()) {
-				return p.getAsNumber();
-			}
-
-			try {
-				Double.parseDouble(p.getAsString());
-				return p.getAsNumber();
-			} catch (Exception ex) {
-				return p.getAsString();
-			}
-		}
-
-		return null;
+		return JsonUtils.toPrimitive(element);
 	}
 
 	@Nullable
@@ -86,7 +68,7 @@ public class JsonIO {
 	}
 
 	public static void write(Path path, @Nullable JsonElement json) throws IOException {
-		if (json == null || json.isJsonNull()) {
+		if (json == null || json instanceof JsonNull) {
 			Files.deleteIfExists(path);
 		} else {
 			Files.writeString(path, JsonUtils.toPrettyString(json));
@@ -94,41 +76,47 @@ public class JsonIO {
 	}
 
 	public static JsonArray toArray(JsonElement element) {
-		if (element.isJsonArray()) {
-			return element.getAsJsonArray();
-		}
-
-		var a = new JsonArray();
-		a.add(element);
-		return a;
+		return switch (element) {
+			case JsonArray a -> a;
+			case null, default -> {
+				var a = new JsonArray();
+				a.add(element);
+				yield a;
+			}
+		};
 	}
 
 	public static void writeJsonHash(DataOutputStream stream, @Nullable JsonElement element) throws IOException {
-		if (element == null || element.isJsonNull()) {
-			stream.writeByte('-');
-		} else if (element instanceof JsonArray arr) {
-			stream.writeByte('[');
-			for (var e : arr) {
-				writeJsonHash(stream, e);
+		switch (element) {
+			case null -> stream.writeByte('-');
+			case JsonNull jsonNull -> stream.writeByte('-');
+			case JsonArray arr -> {
+				stream.writeByte('[');
+				for (var e : arr) {
+					writeJsonHash(stream, e);
+				}
 			}
-		} else if (element instanceof JsonObject obj) {
-			stream.writeByte('{');
-			for (var e : obj.entrySet()) {
-				stream.writeBytes(e.getKey());
-				writeJsonHash(stream, e.getValue());
+			case JsonObject obj -> {
+				stream.writeByte('{');
+				for (var e : obj.entrySet()) {
+					stream.writeBytes(e.getKey());
+					writeJsonHash(stream, e.getValue());
+				}
 			}
-		} else if (element instanceof JsonPrimitive primitive) {
-			stream.writeByte('=');
-			if (primitive.isBoolean()) {
-				stream.writeBoolean(element.getAsBoolean());
-			} else if (primitive.isNumber()) {
-				stream.writeDouble(element.getAsDouble());
-			} else {
-				stream.writeBytes(element.getAsString());
+			case JsonPrimitive primitive -> {
+				stream.writeByte('=');
+				if (primitive.isBoolean()) {
+					stream.writeBoolean(element.getAsBoolean());
+				} else if (primitive.isNumber()) {
+					stream.writeDouble(element.getAsDouble());
+				} else {
+					stream.writeBytes(element.getAsString());
+				}
 			}
-		} else {
-			stream.writeByte('?');
-			stream.writeInt(element.hashCode());
+			default -> {
+				stream.writeByte('?');
+				stream.writeInt(element.hashCode());
+			}
 		}
 	}
 

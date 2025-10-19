@@ -205,12 +205,10 @@ public class RecipesKubeEvent implements KubeEvent {
 
 			var originalJsonElement = entry.getValue();
 
-			if (!originalJsonElement.isJsonObject()) {
+			if (!(originalJsonElement instanceof JsonObject originalJson)) {
 				warnSkip("Skipping recipe %s, not a json object".formatted(recipeId));
 				continue;
 			}
-
-			var originalJson = originalJsonElement.getAsJsonObject();
 
 			if (!originalJson.has("type")) {
 				warnSkip("Skipping recipe %s, not a json object".formatted(recipeId));
@@ -401,8 +399,8 @@ public class RecipesKubeEvent implements KubeEvent {
 	@HideFromJS
 	public void handleFailedRecipe(ResourceLocation id, JsonElement json, Throwable ex) {
 		// only handle recipes that failed because of kubejs interfering
-		if (json.isJsonObject() && json.getAsJsonObject().has(KubeRecipe.CHANGED_MARKER)) {
-			json.getAsJsonObject().remove(KubeRecipe.CHANGED_MARKER); // cleanup for logging
+		if (json instanceof JsonObject obj && obj.has(KubeRecipe.CHANGED_MARKER)) {
+			obj.remove(KubeRecipe.CHANGED_MARKER); // cleanup for logging
 			if (DevProperties.get().logErroringRecipes) {
 				ConsoleJS.SERVER.error("Error parsing recipe %s: %s".formatted(id, json), ex);
 			}

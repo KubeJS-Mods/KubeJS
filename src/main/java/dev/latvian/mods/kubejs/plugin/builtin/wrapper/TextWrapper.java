@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -39,91 +40,85 @@ public interface TextWrapper {
 
 	@HideFromJS
 	static MutableComponent wrap(Context cx, @Nullable Object o) {
-		o = UtilsJS.wrap(o, JSObjectType.ANY);
-		if (o == null) {
-			return Component.literal("null");
-		} else if (o instanceof MutableComponent component) {
-			return component;
-		} else if (o instanceof Component component) {
-			return component.copy();
-		} else if (o instanceof CharSequence || o instanceof Number || o instanceof Character) {
-			return ofString(o.toString());
-		} else if (o instanceof Enum<?> e) {
-			return ofString(e.name());
-		} else if (o instanceof StringTag tag) {
-			var s = tag.getAsString();
-			if (s.startsWith("{") && s.endsWith("}")) {
-				try {
-					return (MutableComponent) ComponentSerialization.CODEC.decode(JsonOps.INSTANCE, JsonUtils.GSON.fromJson(s, JsonObject.class)).getOrThrow().getFirst();
-				} catch (JsonParseException ex) {
-					return Component.literal("Error: " + ex);
-				}
-			} else {
-				return ofString(s);
-			}
-		} else if (o instanceof Tag tag) {
-			return (MutableComponent) NbtUtils.toPrettyComponent(tag);
-		} else if (o instanceof Map<?, ?> map && (map.containsKey("text") || map.containsKey("translate"))) {
-			MutableComponent text;
+		var from = UtilsJS.wrap(o, JSObjectType.ANY);
 
-			if (map.containsKey("text")) {
-				text = ofString(map.get("text").toString());
-			} else {
-				Object[] with;
-
-				if (map.get("with") instanceof Collection<?> a) {
-					with = new Object[a.size()];
-					var i = 0;
-
-					for (var e1 : a) {
-						with[i] = e1;
-
-						if (with[i] instanceof Map<?, ?> || with[i] instanceof Collection<?>) {
-							with[i] = wrap(cx, e1);
-						}
-
-						i++;
-					}
+		return switch (from) {
+			case null -> Component.literal("null");
+			case MutableComponent component -> component;
+			case Component component -> component.copy();
+			case Enum<?> e -> ofString(e.name());
+			case StringTag tag -> {
+				var s = tag.getAsString();
+				if (s.startsWith("{") && s.endsWith("}")) {
+					yield ComponentSerialization.CODEC.decode(JsonOps.INSTANCE, JsonUtils.GSON.fromJson(s, JsonObject.class))
+						.mapOrElse(Pair::getFirst, error -> Component.literal("Error: " + error))
+						.copy();
 				} else {
-					with = new Object[0];
-				}
-
-				text = Component.translatable(map.get("translate").toString(), with);
-			}
-
-			if (map.containsKey("color")) {
-				text.kjs$color(ColorWrapper.wrap(map.get("color")));
-			}
-
-			text.kjs$bold((Boolean) map.getOrDefault("bold", null));
-			text.kjs$italic((Boolean) map.getOrDefault("italic", null));
-			text.kjs$underlined((Boolean) map.getOrDefault("underlined", null));
-			text.kjs$strikethrough((Boolean) map.getOrDefault("strikethrough", null));
-			text.kjs$obfuscated((Boolean) map.getOrDefault("obfuscated", null));
-
-			text.kjs$insertion((String) map.getOrDefault("insertion", null));
-			text.kjs$font(map.containsKey("font") ? ResourceLocation.parse(map.get("font").toString()) : null);
-			text.kjs$click(map.containsKey("click") ? wrapClickEvent(cx, map.get("click")) : null);
-			text.kjs$hover(map.containsKey("hover") ? wrap(cx, map.get("hover")) : null);
-
-			if (map.get("extra") instanceof Iterable<?> itr) {
-				for (var e : itr) {
-					text.append(wrap(cx, e));
+					yield ofString(s);
 				}
 			}
+			case Tag tag -> (MutableComponent) NbtUtils.toPrettyComponent(tag);
+			case Map<?, ?> map when map.containsKey("text") || map.containsKey("translate") -> {
+				MutableComponent text;
 
-			return text;
-		} else if (o instanceof Iterable<?> list) {
-			var text = Component.empty();
+				if (map.containsKey("text")) {
+					text = ofString(map.get("text").toString());
+				} else {
+					Object[] with;
 
-			for (var e1 : list) {
-				text.append(wrap(cx, e1));
+					if (map.get("with") instanceof Collection<?> a) {
+						with = new Object[a.size()];
+						var i = 0;
+
+						for (var e1 : a) {
+							with[i] = e1;
+
+							if (with[i] instanceof Map<?, ?> || with[i] instanceof Collection<?>) {
+								with[i] = wrap(cx, e1);
+							}
+
+							i++;
+						}
+					} else {
+						with = new Object[0];
+					}
+
+					text = Component.translatable(map.get("translate").toString(), with);
+				}
+
+				if (map.containsKey("color")) {
+					text.kjs$color(ColorWrapper.wrap(map.get("color")));
+				}
+
+				text.kjs$bold((Boolean) map.getOrDefault("bold", null));
+				text.kjs$italic((Boolean) map.getOrDefault("italic", null));
+				text.kjs$underlined((Boolean) map.getOrDefault("underlined", null));
+				text.kjs$strikethrough((Boolean) map.getOrDefault("strikethrough", null));
+				text.kjs$obfuscated((Boolean) map.getOrDefault("obfuscated", null));
+
+				text.kjs$insertion((String) map.getOrDefault("insertion", null));
+				text.kjs$font(map.containsKey("font") ? ResourceLocation.parse(map.get("font").toString()) : null);
+				text.kjs$click(map.containsKey("click") ? wrapClickEvent(cx, map.get("click")) : null);
+				text.kjs$hover(map.containsKey("hover") ? wrap(cx, map.get("hover")) : null);
+
+				if (map.get("extra") instanceof Iterable<?> itr) {
+					for (var e : itr) {
+						text.append(wrap(cx, e));
+					}
+				}
+
+				yield text;
 			}
+			case Iterable<?> list -> {
+				var text = Component.empty();
+				for (var e1 : list) {
+					text.append(wrap(cx, e1));
+				}
+				yield text;
+			}
+			default -> ofString(from.toString());
+		};
 
-			return text;
-		}
-
-		return ofString(o.toString());
 	}
 
 	static Component ofTag(Tag tag) {

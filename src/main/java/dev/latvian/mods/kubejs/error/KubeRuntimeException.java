@@ -24,6 +24,11 @@ public class KubeRuntimeException extends RuntimeException implements MutedError
 		this.sourceLine = SourceLine.UNKNOWN;
 	}
 
+	public KubeRuntimeException(Throwable cause) {
+		super(cause);
+		this.sourceLine = SourceLine.UNKNOWN;
+	}
+
 	@Override
 	public String toString() {
 		var sb = new StringBuilder();

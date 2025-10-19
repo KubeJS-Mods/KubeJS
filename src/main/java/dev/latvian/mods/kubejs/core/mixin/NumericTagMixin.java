@@ -16,14 +16,11 @@ public abstract class NumericTagMixin implements SpecialEquality {
 
 	@Override
 	public boolean specialEquals(Context cx, Object o, boolean shallow) {
-		if (o instanceof Boolean b) {
-			return b == (getAsByte() != 0);
-		} else if (o instanceof Number n1) {
-			return getAsDouble() == n1.doubleValue();
-		} else if (!shallow && o instanceof NumericTag n1) {
-			return getAsDouble() == n1.getAsDouble();
-		}
-
-		return equals(o);
+		return switch (o) {
+			case Boolean b -> b == (getAsByte() != 0);
+			case Number n1 -> getAsDouble() == n1.doubleValue();
+			case NumericTag n1 when !shallow -> getAsDouble() == n1.getAsDouble();
+			case null, default -> equals(o);
+		};
 	}
 }

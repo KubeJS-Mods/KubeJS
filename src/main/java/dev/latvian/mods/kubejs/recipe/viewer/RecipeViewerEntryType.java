@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
 import dev.latvian.mods.kubejs.util.Lazy;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.registries.Registries;
@@ -60,12 +59,12 @@ public class RecipeViewerEntryType {
 	) {
 		@Override
 		public Object wrapEntry(Context cx, Object from) {
-			return FluidWrapper.wrap(RegistryAccessContainer.of(cx), from);
+			return FluidWrapper.wrap(cx, from);
 		}
 
 		@Override
 		public Object wrapPredicate(Context cx, Object from) {
-			return FluidWrapper.wrapIngredient(RegistryAccessContainer.of(cx), from);
+			return FluidWrapper.wrapIngredient(cx, from);
 		}
 
 		@Override

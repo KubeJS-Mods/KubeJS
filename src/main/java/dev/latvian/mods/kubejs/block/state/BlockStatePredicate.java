@@ -53,27 +53,19 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 	}
 
 	static BlockStatePredicate fromString(Context cx, String s) {
-		if (s.equals("*")) {
-			return Simple.ALL;
-		} else if (s.equals("-")) {
-			return Simple.NONE;
-		} else if (s.startsWith("#")) {
-			return new TagMatch(Tags.block(ResourceLocation.parse(s.substring(1))));
-		} else if (s.indexOf('[') != -1) {
-			var state = BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), s);
-
-			if (state != Blocks.AIR.defaultBlockState()) {
-				return new StateMatch(state);
+		return switch (s) {
+			case "*" -> Simple.ALL;
+			case "-" -> Simple.NONE;
+			case String str when str.startsWith("#") -> new TagMatch(Tags.block(ResourceLocation.parse(str.substring(1))));
+			case String str when str.indexOf('[') != -1 -> {
+				var state = BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), str);
+				yield state != Blocks.AIR.defaultBlockState() ? new StateMatch(state) : Simple.NONE;
 			}
-		} else {
-			var block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(s));
-
-			if (block != Blocks.AIR) {
-				return new BlockMatch(block);
+			default -> {
+				var block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(s));
+				yield block != Blocks.AIR ? new BlockMatch(block) : Simple.NONE;
 			}
-		}
-
-		return Simple.NONE;
+		};
 	}
 
 	static BlockStatePredicate wrap(Context cx, Object o) {
@@ -127,35 +119,30 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 	}
 
 	static RuleTest wrapRuleTest(Context cx, Object o) {
-		if (o instanceof RuleTest rule) {
-			return rule;
-		} else if (o instanceof BlockStatePredicate bsp && bsp.asRuleTest() != null) {
-			return bsp.asRuleTest();
-		}
-
 		var nbt = RegistryAccessContainer.of(cx).nbt();
-
-		return Optional.ofNullable(NBTWrapper.wrapCompound(cx, o))
-			.map(tag -> RuleTest.CODEC.parse(nbt, tag))
-			.flatMap(DataResult::result)
-			.or(() -> Optional.ofNullable(wrap(cx, o).asRuleTest()))
-			.orElseThrow(() -> new IllegalArgumentException("Could not parse valid rule test from " + o + "!"));
+		return switch (o) {
+			case RuleTest rule -> rule;
+			case BlockStatePredicate bsp when bsp.asRuleTest() != null -> bsp.asRuleTest();
+			default -> Optional.ofNullable(NBTWrapper.wrapCompound(cx, o))
+				.map(tag -> RuleTest.CODEC.parse(nbt, tag))
+				.flatMap(DataResult::result)
+				.or(() -> Optional.ofNullable(wrap(cx, o).asRuleTest()))
+				.orElseThrow(() -> new IllegalArgumentException("Could not parse valid rule test from " + o + "!"));
+		};
 	}
 
 	@SuppressWarnings("unchecked")
 	private static BlockStatePredicate ofSingle(Context cx, Object o) {
-		if (o instanceof BlockStatePredicate bsp) {
-			return bsp;
-		} else if (o instanceof Block block) {
-			return new BlockMatch(block);
-		} else if (o instanceof BlockState state) {
-			return new StateMatch(state);
-		} else if (o instanceof TagKey tag) {
-			return new TagMatch((TagKey<Block>) tag);
-		}
-
-		var pattern = RegExpKJS.wrap(o);
-		return pattern == null ? BlockStatePredicate.fromString(cx, o.toString()) : new RegexMatch(pattern);
+		return switch (o) {
+			case BlockStatePredicate bsp -> bsp;
+			case Block block -> new BlockMatch(block);
+			case BlockState state -> new StateMatch(state);
+			case TagKey tag -> new TagMatch((TagKey<Block>) tag);
+			default -> {
+				var pattern = RegExpKJS.wrap(o);
+				yield pattern == null ? BlockStatePredicate.fromString(cx, o.toString()) : new RegexMatch(pattern);
+			}
+		};
 	}
 
 	default Collection<BlockState> getBlockStates() {

@@ -72,7 +72,7 @@ public class CommonProperties extends BaseProperties {
 	}
 
 	public Component getCreativeModeTabName() {
-		if (!creativeModeTabName.isJsonNull()) {
+		if (!(creativeModeTabName instanceof JsonNull)) {
 			return ComponentSerialization.CODEC.decode(RegistryAccessContainer.BUILTIN.json(), creativeModeTabName).result().map(Pair::getFirst).orElse(TextIcons.NAME);
 		}
 

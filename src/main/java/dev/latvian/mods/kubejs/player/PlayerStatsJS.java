@@ -20,14 +20,12 @@ public class PlayerStatsJS {
 	}
 
 	public static Stat<?> wrapStat(Object o) {
-		if (o instanceof Stat s) {
-			return s;
-		} else if (o instanceof ResourceLocation rl) {
-			return Stats.CUSTOM.get(rl);
-		} else if (o instanceof CharSequence cs) {
-			return Stats.CUSTOM.get(ResourceLocation.parse(cs.toString()));
-		}
-		return null;
+		return switch (o) {
+			case Stat<?> s -> s;
+			case ResourceLocation rl -> Stats.CUSTOM.get(rl);
+			case CharSequence cs -> Stats.CUSTOM.get(ResourceLocation.parse(cs.toString()));
+			case null, default -> null;
+		};
 	}
 
 	public int get(Stat<?> stat) {

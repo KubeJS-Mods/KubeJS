@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.color.SimpleColorWithAlpha;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ColorWrapper;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -65,24 +66,22 @@ public interface BlockTintFunction {
 
 	@Nullable
 	static BlockTintFunction wrap(Context cx, Object o) {
-		if (o == null || Undefined.isUndefined(o)) {
-			return null;
-		} else if (o instanceof BlockTintFunction f) {
-			return f;
-		} else if (o instanceof List<?> list) {
-			var map = new Mapped();
-
-			for (int i = 0; i < list.size(); i++) {
-				var f = wrap(cx, list.get(i));
-
-				if (f != null) {
-					map.map.put(i, f);
+		return switch (o) {
+			case null -> null;
+			case Undefined undefined -> null;
+			case Scriptable s when Undefined.isUndefined(s) -> null;
+			case BlockTintFunction f -> f;
+			case List<?> list -> {
+				var map = new Mapped();
+				for (int i = 0; i < list.size(); i++) {
+					var f = wrap(cx, list.get(i));
+					if (f != null) {
+						map.map.put(i, f);
+					}
 				}
+				yield map;
 			}
-
-			return map;
-		} else if (o instanceof CharSequence) {
-			var f = switch (o.toString()) {
+			case CharSequence cs -> switch (cs.toString()) {
 				case "grass" -> GRASS;
 				case "foliage" -> FOLIAGE;
 				case "evergreen_foliage" -> EVERGREEN_FOLIAGE;
@@ -90,16 +89,11 @@ public interface BlockTintFunction {
 				case "mangrove_foliage" -> MANGROVE_FOLIAGE;
 				case "water" -> WATER;
 				case "redstone" -> REDSTONE;
-				default -> null;
+				default -> new Fixed(ColorWrapper.wrap(o));
 			};
+			case BaseFunction function -> (BlockTintFunction) cx.createInterfaceAdapter(TYPE_INFO, function);
+			default -> new Fixed(ColorWrapper.wrap(o));
+		};
 
-			if (f != null) {
-				return f;
-			}
-		} else if (o instanceof BaseFunction function) {
-			return (BlockTintFunction) cx.createInterfaceAdapter(TYPE_INFO, function);
-		}
-
-		return new Fixed(ColorWrapper.wrap(o));
 	}
 }

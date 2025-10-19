@@ -27,33 +27,26 @@ public interface ColorWrapper {
 	});
 
 	static KubeColor wrap(Object o) {
-		if (o instanceof KubeColor) {
-			return (KubeColor) o;
-		} else if (o instanceof String) {
-			String s = o.toString();
-			KubeColor c = MAP.get(s);
+		return switch (o) {
+			case KubeColor kubeColor -> kubeColor;
+			case CharSequence cs -> {
+				String s = cs.toString();
+				KubeColor c = MAP.get(s);
 
-			if (c != null) {
-				return c;
+				if (c != null) {
+					yield c;
+				}
+
+				if (s.startsWith("#")) {
+					int col = Long.decode(s).intValue();
+					yield s.length() == 7 ? new SimpleColor(col) : new SimpleColorWithAlpha(col);
+				}
+
+				yield NONE;
 			}
-
-			if (s.startsWith("#")) {
-				int col = Long.decode(s).intValue();
-				return s.length() == 7 ? new SimpleColor(col) : new SimpleColorWithAlpha(col);
-			}
-
-			return NONE;
-		} else if (o instanceof Number) {
-			int i = ((Number) o).intValue();
-
-			if (i == 0) {
-				return NONE;
-			} else {
-				return new SimpleColor(i);
-			}
-		}
-
-		return NONE;
+			case Number number when number.intValue() != 0 -> new SimpleColor(number.intValue());
+			case null, default -> NONE;
+		};
 	}
 
 	static TextColor wrapTextColor(Object o) {

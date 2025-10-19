@@ -82,31 +82,28 @@ public class EventTargetType<T> {
 	}
 
 	private static ResourceKey<?> toKey(ResourceKey registry, Object object) {
-		if (object == null) {
-			return null;
-		} else if (object instanceof ResourceKey<?> rl) {
-			return rl;
-		} else if (object instanceof RegistryObjectKJS<?> wrk) {
-			return wrk.kjs$getKey();
-		} else if (object instanceof ResourceLocation rl) {
-			return ResourceKey.create(registry, rl);
-		} else {
-			var s = object.toString();
-			return s.isBlank() ? null : ResourceKey.create(registry, ResourceLocation.parse(s));
-		}
+		return switch (object) {
+			case null -> null;
+			case ResourceKey<?> rl -> rl;
+			case RegistryObjectKJS<?> wrk -> wrk.kjs$getKey();
+			case ResourceLocation rl -> ResourceKey.create(registry, rl);
+			default -> {
+				var s = object.toString();
+				yield s.isBlank() ? null : ResourceKey.create(registry, ResourceLocation.parse(s));
+			}
+		};
 	}
 
 	private static ResourceKey<? extends Registry<?>> toRegistryKey(Object object) {
-		if (object == null) {
-			return null;
-		} else if (object instanceof ResourceKey rl) {
-			return rl;
-		} else if (object instanceof ResourceLocation rl) {
-			return ResourceKey.createRegistryKey(rl);
-		}
-
-		var s = object.toString();
-		return s.isBlank() ? null : ResourceKey.createRegistryKey(ResourceLocation.parse(s));
+		return switch (object) {
+			case null -> null;
+			case ResourceKey rl -> rl;
+			case ResourceLocation rl -> ResourceKey.createRegistryKey(rl);
+			default -> {
+				var s = object.toString();
+				yield s.isBlank() ? null : ResourceKey.createRegistryKey(ResourceLocation.parse(s));
+			}
+		};
 	}
 
 	public final Class<T> type;

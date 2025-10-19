@@ -124,33 +124,26 @@ public interface MiscWrappers {
 	}
 
 	static Vec3 wrapVec3(@Nullable Object o) {
-		if (o instanceof Vec3 vec) {
-			return vec;
-		} else if (o instanceof Entity entity) {
-			return entity.position();
-		} else if (o instanceof List<?> list && list.size() >= 3) {
-			return new Vec3(StringUtilsWrapper.parseDouble(list.get(0), 0), StringUtilsWrapper.parseDouble(list.get(1), 0), StringUtilsWrapper.parseDouble(list.get(2), 0));
-		} else if (o instanceof BlockPos pos) {
-			return new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
-		} else if (o instanceof LevelBlock block) {
-			return new Vec3(block.getCenterX(), block.getCenterY(), block.getCenterZ());
-		}
+		return switch (o) {
+			case Vec3 vec -> vec;
+			case Entity entity -> entity.position();
+			case List<?> list when list.size() >= 3 -> new Vec3(StringUtilsWrapper.parseDouble(list.get(0), 0), StringUtilsWrapper.parseDouble(list.get(1), 0), StringUtilsWrapper.parseDouble(list.get(2), 0));
+			case BlockPos pos -> new Vec3(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
+			case LevelBlock block -> new Vec3(block.getCenterX(), block.getCenterY(), block.getCenterZ());
+			case null, default -> Vec3.ZERO;
+		};
 
-		return Vec3.ZERO;
 	}
 
 	static BlockPos wrapBlockPos(@Nullable Object o) {
-		if (o instanceof BlockPos pos) {
-			return pos;
-		} else if (o instanceof List<?> list && list.size() >= 3) {
-			return new BlockPos(StringUtilsWrapper.parseInt(list.get(0), 0), StringUtilsWrapper.parseInt(list.get(1), 0), StringUtilsWrapper.parseInt(list.get(2), 0));
-		} else if (o instanceof LevelBlock block) {
-			return block.getPos();
-		} else if (o instanceof Vec3 vec) {
-			return BlockPos.containing(vec.x, vec.y, vec.z);
-		}
+		return switch (o) {
+			case BlockPos pos -> pos;
+			case List<?> list when list.size() >= 3 -> new BlockPos(StringUtilsWrapper.parseInt(list.get(0), 0), StringUtilsWrapper.parseInt(list.get(1), 0), StringUtilsWrapper.parseInt(list.get(2), 0));
+			case LevelBlock block -> block.getPos();
+			case Vec3 vec -> BlockPos.containing(vec.x, vec.y, vec.z);
+			case null, default -> BlockPos.ZERO;
+		};
 
-		return BlockPos.ZERO;
 	}
 
 	private static UniformInt parseIntBounds(Map<String, Object> m) {

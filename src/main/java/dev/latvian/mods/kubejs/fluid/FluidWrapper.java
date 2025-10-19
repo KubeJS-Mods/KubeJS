@@ -4,8 +4,11 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.HolderSet;
@@ -20,7 +23,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
-import net.neoforged.neoforge.fluids.crafting.EmptyFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
@@ -36,20 +38,21 @@ public interface FluidWrapper {
 	SizedFluidIngredient EMPTY_SIZED = new SizedFluidIngredient(FluidIngredient.empty(), FluidType.BUCKET_VOLUME);
 
 	@HideFromJS
-	static FluidStack wrap(RegistryAccessContainer registries, Object o) {
-		if (o == null || o == FluidStack.EMPTY || o == Fluids.EMPTY || o == EmptyFluidIngredient.INSTANCE) {
-			return FluidStack.EMPTY;
-		} else if (o instanceof FluidStack stack) {
-			return stack;
-		} else if (o instanceof Fluid fluid) {
-			return new FluidStack(fluid, FluidType.BUCKET_VOLUME);
-		} else if (o instanceof FluidIngredient in) {
-			return in.hasNoFluids() ? FluidStack.EMPTY : in.getStacks()[0];
-		} else if (o instanceof SizedFluidIngredient s) {
-			return s.getFluids()[0];
-		} else {
-			return ofString(registries.nbt(), o.toString());
-		}
+	static FluidStack wrap(Context cx, Object o) {
+		var registries = RegistryAccessContainer.of(cx);
+
+		return switch (o) {
+			case null -> FluidStack.EMPTY;
+			case FluidStack stack -> stack.isEmpty() ? FluidStack.EMPTY : stack;
+			case Fluid fluid when fluid.kjs$isEmpty() -> FluidStack.EMPTY;
+			case Fluid fluid -> new FluidStack(fluid, FluidType.BUCKET_VOLUME);
+			// TODO: fail on FluidIngredient like we do for items?
+			//  the big problem here is that these last three calls DISSOLVE the ingredient!
+			case FluidIngredient in when in.isEmpty() || in.hasNoFluids() -> FluidStack.EMPTY;
+			case FluidIngredient in -> in.getStacks()[0];
+			case SizedFluidIngredient s -> s.getFluids()[0];
+			default -> ofString(cx, registries.nbt(), o.toString());
+		};
 	}
 
 	static FluidIngredient ingredientOf(FluidIngredient of) {
@@ -57,20 +60,20 @@ public interface FluidWrapper {
 	}
 
 	@HideFromJS
-	static FluidIngredient wrapIngredient(RegistryAccessContainer registries, Object o) {
-		if (o == null || o == FluidStack.EMPTY || o == Fluids.EMPTY || o == EmptyFluidIngredient.INSTANCE) {
-			return EmptyFluidIngredient.INSTANCE;
-		} else if (o instanceof FluidStack stack) {
-			return FluidIngredient.of(stack);
-		} else if (o instanceof Fluid fluid) {
-			return FluidIngredient.of(fluid);
-		} else if (o instanceof FluidIngredient in) {
-			return in;
-		} else if (o instanceof SizedFluidIngredient s) {
-			return s.ingredient();
-		} else {
-			return ingredientOfString(registries.nbt(), o.toString());
-		}
+	static FluidIngredient wrapIngredient(Context cx, Object o) {
+		var registries = RegistryAccessContainer.of(cx);
+
+		return switch (o) {
+			case null -> FluidIngredient.empty();
+			case FluidStack stack when stack.isEmpty() -> FluidIngredient.empty();
+			case Fluid fluid when fluid.kjs$isEmpty() -> FluidIngredient.empty();
+			case FluidIngredient in when in.isEmpty() -> FluidIngredient.empty();
+			case FluidStack stack -> FluidIngredient.of(stack);
+			case Fluid fluid -> FluidIngredient.of(fluid);
+			case FluidIngredient in -> in;
+			case SizedFluidIngredient s -> s.ingredient();
+			default -> ingredientOfString(cx, registries.nbt(), o.toString());
+		};
 	}
 
 	static SizedFluidIngredient sizedIngredientOf(SizedFluidIngredient of) {
@@ -78,20 +81,20 @@ public interface FluidWrapper {
 	}
 
 	@HideFromJS
-	static SizedFluidIngredient wrapSizedIngredient(RegistryAccessContainer registries, Object o) {
-		if (o == null || o == FluidStack.EMPTY || o == Fluids.EMPTY || o == EmptyFluidIngredient.INSTANCE) {
-			return EMPTY_SIZED;
-		} else if (o instanceof SizedFluidIngredient s) {
-			return s;
-		} else if (o instanceof FluidStack stack) {
-			return SizedFluidIngredient.of(stack);
-		} else if (o instanceof Fluid fluid) {
-			return SizedFluidIngredient.of(fluid, FluidType.BUCKET_VOLUME);
-		} else if (o instanceof FluidIngredient in) {
-			return new SizedFluidIngredient(in, FluidType.BUCKET_VOLUME);
-		} else {
-			return sizedIngredientOfString(registries.nbt(), o.toString());
-		}
+	static SizedFluidIngredient wrapSizedIngredient(Context cx, Object o) {
+		var registries = RegistryAccessContainer.of(cx);
+
+		return switch (o) {
+			case null -> EMPTY_SIZED;
+			case FluidStack stack when stack.isEmpty() -> EMPTY_SIZED;
+			case Fluid fluid when fluid.kjs$isEmpty() -> EMPTY_SIZED;
+			case FluidIngredient in when in.isEmpty() -> EMPTY_SIZED;
+			case FluidStack stack -> SizedFluidIngredient.of(stack);
+			case Fluid fluid -> SizedFluidIngredient.of(fluid, FluidType.BUCKET_VOLUME);
+			case FluidIngredient in -> new SizedFluidIngredient(in, FluidType.BUCKET_VOLUME);
+			case SizedFluidIngredient s -> s;
+			default -> sizedIngredientOfString(cx, registries.nbt(), o.toString());
+		};
 	}
 
 	static FluidStack of(FluidStack o) {
@@ -156,23 +159,26 @@ public interface FluidWrapper {
 		return BuiltInRegistries.FLUID.getKey(fluid);
 	}
 
-	static FluidStack ofString(DynamicOps<Tag> registryOps, String s) {
-		if (s.isEmpty() || s.equals("-") || s.equals("empty") || s.equals("minecraft:empty")) {
-			return FluidStack.EMPTY;
-		} else {
-			try {
-				var reader = new StringReader(s);
-				reader.skipWhitespace();
+	interface ReadFn<T> {
+		T read(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException;
+	}
 
-				if (!reader.canRead()) {
-					return FluidStack.EMPTY;
-				}
+	static <T> T readWithContext(Context cx, DynamicOps<Tag> registryOps, String s, ReadFn<T> fn) {
+		try {
+			var reader = new StringReader(s);
+			reader.skipWhitespace();
 
-				return read(registryOps, new StringReader(s));
-			} catch (CommandSyntaxException ex) {
-				throw new RuntimeException(ex);
-			}
+			return fn.read(registryOps, reader);
+		} catch (CommandSyntaxException e) {
+			throw new KubeRuntimeException(e).source(SourceLine.of(cx));
 		}
+	}
+
+	static FluidStack ofString(Context cx, DynamicOps<Tag> registryOps, String s) {
+		return switch (s) {
+			case "", "-", "empty", "minecraft:empty" -> FluidStack.EMPTY;
+			default -> readWithContext(cx, registryOps, s, FluidWrapper::read);
+		};
 	}
 
 	static FluidStack read(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
@@ -197,23 +203,11 @@ public interface FluidWrapper {
 		return fluidStack;
 	}
 
-	static FluidIngredient ingredientOfString(DynamicOps<Tag> registryOps, String s) {
-		if (s.isEmpty() || s.equals("-") || s.equals("empty") || s.equals("minecraft:empty")) {
-			return FluidIngredient.empty();
-		} else {
-			try {
-				var reader = new StringReader(s);
-				reader.skipWhitespace();
-
-				if (!reader.canRead()) {
-					return FluidIngredient.empty();
-				}
-
-				return readIngredient(registryOps, new StringReader(s));
-			} catch (CommandSyntaxException ex) {
-				throw new RuntimeException(ex);
-			}
-		}
+	static FluidIngredient ingredientOfString(Context cx, DynamicOps<Tag> registryOps, String s) {
+		return switch (s) {
+			case "", "-", "empty", "minecraft:empty" -> FluidIngredient.empty();
+			default -> readWithContext(cx, registryOps, s, FluidWrapper::readIngredient);
+		};
 	}
 
 	static FluidIngredient readIngredient(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
@@ -221,20 +215,25 @@ public interface FluidWrapper {
 			return FluidIngredient.empty();
 		}
 
-		if (reader.peek() == '-') {
-			return FluidIngredient.empty();
-		} else if (reader.peek() == '#') {
-			reader.skip();
-			var tag = ResourceLocation.read(reader);
-			return FluidIngredient.tag(FluidTags.create(tag));
-		} else if (reader.peek() == '@') {
-			reader.skip();
-			var id = reader.readString();
-			return new NamespaceFluidIngredient(id);
-		} else if (reader.peek() == '/') {
-			reader.skip();
-			var pattern = RegExpKJS.read(reader);
-			return new RegExFluidIngredient(pattern);
+		switch (reader.peek()) {
+			case '-' -> {
+				return FluidIngredient.empty();
+			}
+			case '#' -> {
+				reader.skip();
+				var tag = ResourceLocation.read(reader);
+				return FluidIngredient.tag(FluidTags.create(tag));
+			}
+			case '@' -> {
+				reader.skip();
+				var id = reader.readString();
+				return new NamespaceFluidIngredient(id);
+			}
+			case '/' -> {
+				reader.skip();
+				var pattern = RegExpKJS.read(reader);
+				return new RegExFluidIngredient(pattern);
+			}
 		}
 
 		var fluidId = ResourceLocation.read(reader);
@@ -246,30 +245,18 @@ public interface FluidWrapper {
 			var components = DataComponentWrapper.readPredicate(registryOps, reader);
 
 			if (components != DataComponentPredicate.EMPTY) {
-				return new DataComponentFluidIngredient(HolderSet.direct(fluid.builtInRegistryHolder()), components, false);
+				return new DataComponentFluidIngredient(HolderSet.direct(fluid.kjs$asHolder()), components, false);
 			}
 		}
 
 		return FluidIngredient.of(fluid);
 	}
 
-	static SizedFluidIngredient sizedIngredientOfString(DynamicOps<Tag> registryOps, String s) {
-		if (s.isEmpty() || s.equals("-") || s.equals("empty") || s.equals("minecraft:empty")) {
-			return EMPTY_SIZED;
-		} else {
-			try {
-				var reader = new StringReader(s);
-				reader.skipWhitespace();
-
-				if (!reader.canRead()) {
-					return EMPTY_SIZED;
-				}
-
-				return readSizedIngredient(registryOps, new StringReader(s));
-			} catch (CommandSyntaxException ex) {
-				throw new RuntimeException(ex);
-			}
-		}
+	static SizedFluidIngredient sizedIngredientOfString(Context cx, DynamicOps<Tag> registryOps, String s) {
+		return switch (s) {
+			case "", "-", "empty", "minecraft:empty" -> EMPTY_SIZED;
+			default -> readWithContext(cx, registryOps, s, FluidWrapper::readSizedIngredient);
+		};
 	}
 
 	static SizedFluidIngredient readSizedIngredient(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {

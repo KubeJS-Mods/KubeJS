@@ -26,18 +26,14 @@ public class KubeRecipeEventOps<T> extends ConditionalOps<T> {
 		new Decoder<>() {
 			@Override
 			public <V> DataResult<Pair<KubeRecipe, V>> decode(DynamicOps<V> ops, V input) {
-				if (!(ops instanceof KubeRecipeEventOps<?> recipeOps)) {
+				if (ops instanceof KubeRecipeEventOps<?> recipeOps) {
+					var json = ops.convertTo(JsonOps.INSTANCE, input);
+					return json instanceof JsonObject obj
+						? recipeOps.event.parseJson(obj, SourceLine.UNKNOWN).map(recipe -> Pair.of(recipe, ops.empty()))
+						: DataResult.error(() -> "Not a JSON object: " + input);
+				} else {
 					return DataResult.error(() -> "Component requires recipe event context, but wasn't specified!");
 				}
-
-				var json = ops.convertTo(JsonOps.INSTANCE, input);
-				if (!(json instanceof JsonObject)) {
-					return DataResult.error(() -> "Not a JSON object: " + input);
-				}
-
-				return recipeOps.event
-					.parseJson(json.getAsJsonObject(), SourceLine.UNKNOWN)
-					.map(recipe -> Pair.of(recipe, ops.empty()));
 			}
 		}
 	);

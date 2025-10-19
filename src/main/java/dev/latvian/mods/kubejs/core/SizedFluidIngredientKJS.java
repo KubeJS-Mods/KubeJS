@@ -18,7 +18,7 @@ public interface SizedFluidIngredientKJS extends Replaceable, FluidMatch {
 
 	@Override
 	default Object replaceThisWith(RecipeScriptContext cx, Object with) {
-		var ingredient = FluidWrapper.wrapIngredient(cx.registries(), with);
+		var ingredient = FluidWrapper.wrapIngredient(cx.cx(), with);
 
 		if (!ingredient.equals(kjs$self().ingredient())) {
 			return new SizedFluidIngredient(ingredient, kjs$self().amount());

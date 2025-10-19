@@ -39,14 +39,10 @@ public abstract class ResourceKeyMixin implements SpecialEquality {
 
 	@Override
 	public boolean specialEquals(Context cx, Object o, boolean shallow) {
-		if (this == o) {
-			return true;
-		} else if (o instanceof ResourceKey) {
-			return false;
-		} else if (o instanceof ResourceLocation) {
-			return location.equals(o);
-		} else {
-			return location.toString().equals(String.valueOf(o));
-		}
+		return switch (o) {
+			case ResourceKey<?> _key -> o == this;
+			case ResourceLocation id -> location.equals(id);
+			default -> location.toString().equals(o.toString());
+		};
 	}
 }

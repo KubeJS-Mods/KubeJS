@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe.viewer.server;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.viewer.RegisterSubtypesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.viewer.SubtypeInterpreter;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.component.DataComponentType;
 
@@ -23,6 +22,6 @@ public class ServerRegisterFluidSubtypesKubeEvent implements RegisterSubtypesKub
 
 	@Override
 	public void useComponents(Context cx, Object filter, List<DataComponentType<?>> components) {
-		list.add(new FluidData.DataComponentSubtypes(FluidWrapper.wrapIngredient(RegistryAccessContainer.of(cx), filter), components));
+		list.add(new FluidData.DataComponentSubtypes(FluidWrapper.wrapIngredient(cx, filter), components));
 	}
 }

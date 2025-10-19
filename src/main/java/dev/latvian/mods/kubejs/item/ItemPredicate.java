@@ -21,30 +21,25 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 	ItemPredicate NONE = stack -> false;
 	ItemPredicate ALL = stack -> true;
 
+	@Override
+	boolean test(ItemStack itemStack);
+
+	private static ItemPredicate simplify(Ingredient in) {
+		return in.isEmpty() ? NONE : in.kjs$isWildcard() ? ALL : in;
+	}
+
 	static ItemPredicate wrap(Context cx, Object from) {
-		if (from == null) {
-			return NONE;
-		} else if (from instanceof BaseFunction func) {
-			return (ItemPredicate) cx.createInterfaceAdapter(TYPE_INFO, func);
-		} else {
-			if (from instanceof CharSequence s) {
-				if (s.equals("*")) {
-					return ALL;
-				} else if (s.isEmpty() || s.equals("-")) {
-					return NONE;
-				}
-			}
-
-			var in = IngredientWrapper.wrap(cx, from);
-
-			if (in.isEmpty()) {
-				return NONE;
-			} else if (in.kjs$isWildcard()) {
-				return ALL;
-			} else {
-				return in;
-			}
-		}
+		return switch (from) {
+			case null -> NONE;
+			case BaseFunction func -> (ItemPredicate) cx.createInterfaceAdapter(TYPE_INFO, func);
+			case String s -> switch (s) {
+				case "*" -> ALL;
+				case "", "-" -> NONE;
+				case String s1 when s1.isBlank() -> NONE;
+				default -> simplify(IngredientWrapper.wrap(cx, from));
+			};
+			default -> simplify(IngredientWrapper.wrap(cx, from));
+		};
 	}
 
 	default boolean kjs$testItem(Item item) {

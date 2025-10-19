@@ -11,7 +11,6 @@ import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.ID;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.kubejs.web.RelativeURL;
 import dev.latvian.mods.rhino.Context;
@@ -43,15 +42,12 @@ public interface FluidStackKJS extends
 
 	@Override
 	default boolean specialEquals(Context cx, Object o, boolean shallow) {
-		if (o instanceof CharSequence) {
-			return kjs$getId().equals(ID.string(o.toString()));
-		} else if (o instanceof ResourceLocation) {
-			return kjs$getIdLocation().equals(o);
-		} else if (o instanceof FluidStack s) {
-			return kjs$equalsIgnoringCount(s);
-		}
-
-		return kjs$equalsIgnoringCount(FluidWrapper.wrap(RegistryAccessContainer.of(cx), o));
+		return switch (o) {
+			case CharSequence cs -> kjs$getId().equals(ID.string(cs.toString()));
+			case ResourceLocation id -> kjs$getIdLocation().equals(id);
+			case FluidStack s -> kjs$equalsIgnoringCount(s);
+			case null, default -> kjs$equalsIgnoringCount(FluidWrapper.wrap(cx, o));
+		};
 	}
 
 	default boolean kjs$equalsIgnoringCount(FluidStack stack) {
@@ -129,7 +125,7 @@ public interface FluidStackKJS extends
 	@Override
 	default Object replaceThisWith(RecipeScriptContext cx, Object with) {
 		var t = kjs$self();
-		var r = FluidWrapper.wrap(cx.registries(), with);
+		var r = FluidWrapper.wrap(cx.cx(), with);
 
 		if (!FluidStack.isSameFluidSameComponents(t, r)) {
 			r.setAmount(t.getAmount());

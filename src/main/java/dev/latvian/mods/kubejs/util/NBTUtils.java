@@ -65,32 +65,33 @@ public interface NBTUtils {
 		return tagType == CompoundTag.TYPE ? COMPOUND_TYPE : tagType == ListTag.TYPE ? LIST_TYPE : tagType;
 	}
 
+	@SuppressWarnings("DuplicateBranchesInSwitch")
 	static JsonElement toJson(@Nullable Tag t) {
-		if (t == null || t instanceof EndTag) {
-			return JsonNull.INSTANCE;
-		} else if (t instanceof StringTag) {
-			return new JsonPrimitive(t.getAsString());
-		} else if (t instanceof NumericTag) {
-			return new JsonPrimitive(((NumericTag) t).getAsNumber());
-		} else if (t instanceof CollectionTag<?> l) {
-			JsonArray array = new JsonArray();
+		return switch (t) {
+			case null -> JsonNull.INSTANCE;
+			case EndTag endTag -> JsonNull.INSTANCE;
+			case StringTag stringTag -> new JsonPrimitive(stringTag.getAsString());
+			case NumericTag numericTag -> new JsonPrimitive(numericTag.getAsNumber());
+			case CollectionTag<?> l -> {
+				JsonArray array = new JsonArray();
 
-			for (Tag tag : l) {
-				array.add(toJson(tag));
+				for (Tag tag : l) {
+					array.add(toJson(tag));
+				}
+
+				yield array;
 			}
+			case CompoundTag c -> {
+				JsonObject object = new JsonObject();
 
-			return array;
-		} else if (t instanceof CompoundTag c) {
-			JsonObject object = new JsonObject();
+				for (String key : c.getAllKeys()) {
+					object.add(key, toJson(c.get(key)));
+				}
 
-			for (String key : c.getAllKeys()) {
-				object.add(key, toJson(c.get(key)));
+				yield object;
 			}
-
-			return object;
-		}
-
-		return JsonNull.INSTANCE;
+			default -> JsonNull.INSTANCE;
+		};
 	}
 
 	@Nullable
