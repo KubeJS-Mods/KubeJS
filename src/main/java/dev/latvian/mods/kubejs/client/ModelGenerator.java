@@ -130,11 +130,48 @@ public class ModelGenerator {
 		}
 	}
 
+	public static class Override {
+
+		private final ResourceLocation model;
+		private final List<OverridePredicate> predicates = new ArrayList<>();
+
+		public Override(ResourceLocation model) {
+			this.model = model;
+		}
+
+		public JsonObject toJson() {
+			var json = new JsonObject();
+			json.addProperty("model", model.toString());
+
+			var p = new JsonObject();
+			for (var predicate : predicates) {
+				predicate.toJson(p);
+			}
+
+			json.add("predicate", p);
+
+			return json;
+		}
+
+		public void predicate(ResourceLocation property, float value) {
+			predicates.add(new OverridePredicate(property, value));
+		}
+	}
+
+	public record OverridePredicate(ResourceLocation property, float value) {
+
+		public void toJson(JsonObject json) {
+			json.addProperty(property.toString(), value);
+		}
+	}
+
 	private static final ResourceLocation CUBE = ResourceLocation.withDefaultNamespace("block/cube");
 
 	private ResourceLocation parent = CUBE;
 	private final Map<String, String> textures = new HashMap<>(1);
 	private final List<Element> elements = new ArrayList<>();
+	private final List<Override> overrides = new ArrayList<>();
+	private Consumer<JsonObject> customJson = null;
 
 	public JsonObject toJson() {
 		var json = new JsonObject();
@@ -163,6 +200,20 @@ public class ModelGenerator {
 			json.add("elements", a);
 		}
 
+		if (!overrides.isEmpty()) {
+			var a = new JsonArray();
+
+			for (var override : overrides) {
+				a.add(override.toJson());
+			}
+
+			json.add("overrides", a);
+		}
+
+		if (customJson != null) {
+			customJson.accept(json);
+		}
+
 		return json;
 	}
 
@@ -189,5 +240,15 @@ public class ModelGenerator {
 		var e = new Element();
 		consumer.accept(e);
 		elements.add(e);
+	}
+
+	public void override(ResourceLocation model, Consumer<Override> override) {
+		var o = new Override(model);
+		override.accept(o);
+		overrides.add(o);
+	}
+
+	public void custom(Consumer<JsonObject> json) {
+		customJson = json;
 	}
 }
