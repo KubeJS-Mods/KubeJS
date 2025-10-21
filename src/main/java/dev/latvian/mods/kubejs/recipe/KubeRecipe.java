@@ -525,7 +525,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				json = staged;
 			}
 
-			json.addProperty(CHANGED_MARKER, true);
+			json.add(CHANGED_MARKER, sourceLine.toJson());
 		}
 
 		return this;

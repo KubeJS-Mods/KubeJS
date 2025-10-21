@@ -400,9 +400,12 @@ public class RecipesKubeEvent implements KubeEvent {
 	public void handleFailedRecipe(ResourceLocation id, JsonElement json, Throwable ex) {
 		// only handle recipes that failed because of kubejs interfering
 		if (json instanceof JsonObject obj && obj.has(KubeRecipe.CHANGED_MARKER)) {
-			obj.remove(KubeRecipe.CHANGED_MARKER); // cleanup for logging
+			var sourceLine = SourceLine.fromJson(obj.remove(KubeRecipe.CHANGED_MARKER).getAsJsonObject());
 			if (DevProperties.get().logErroringRecipes) {
-				ConsoleJS.SERVER.error("Error parsing recipe %s: %s".formatted(id, json), ex);
+				ConsoleJS.SERVER.error("Error parsing recipe %s (details below this line)".formatted(id), sourceLine, ex, null);
+				ConsoleJS.SERVER.stopCapturingErrors();
+				ConsoleJS.SERVER.error("Recipe JSON for %s: %s".formatted(id, json), sourceLine, null, null);
+				ConsoleJS.SERVER.startCapturingErrors();
 			}
 			failedCount++;
 		}

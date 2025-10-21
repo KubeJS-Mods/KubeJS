@@ -1,7 +1,9 @@
 package dev.latvian.mods.kubejs.script;
 
+import com.google.gson.JsonObject;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.Nullable;
 
 public record SourceLine(String source, int line) {
@@ -13,6 +15,19 @@ public record SourceLine(String source, int line) {
 		} else {
 			return new SourceLine(source == null || source.isEmpty() ? "" : source, Math.max(line, 0));
 		}
+	}
+
+	public static SourceLine fromJson(JsonObject json) {
+		var source = GsonHelper.getAsString(json, "source", "");
+		var line = GsonHelper.getAsInt(json, "line", 0);
+		return of(source, line);
+	}
+
+	public JsonObject toJson() {
+		var json = new JsonObject();
+		json.addProperty("source", source);
+		json.addProperty("line", line);
+		return json;
 	}
 
 	public static SourceLine read(FriendlyByteBuf buf) {
