@@ -59,7 +59,7 @@ public class ConsoleJS {
 		return STARTUP;
 	}
 
-	private static final Pattern GARBAGE_PATTERN = Pattern.compile("(?:TRANSFORMER|LAYER PLUGIN)/\\w+@[^/]+/");
+	private static final Pattern GARBAGE_PATTERN = Pattern.compile("(?:TRANSFORMER|LAYER PLUGIN|MC-BOOTSTRAP)/\\w+@[^/]+/");
 
 	@HideFromJS
 	public static final Function<String, String> ERROR_REDUCE = s -> {
