@@ -44,6 +44,7 @@ import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
@@ -120,6 +121,7 @@ public interface ItemWrapper {
 			case ItemStack s -> s.isEmpty() ? ItemStack.EMPTY : s;
 			case ItemLike i when i.asItem() == Items.AIR -> ItemStack.EMPTY;
 			case Ingredient i -> throw new KubeRuntimeException("Use .first of an ingredient to get its ItemStack!").source(SourceLine.of(cx));
+			case SizedIngredient sized -> throw new KubeRuntimeException("Use .ingredient.first on a sized ingredient to get its ItemStack!").source(SourceLine.of(cx));
 			case ItemLike i -> i.asItem().getDefaultInstance();
 			default -> null;
 		};
@@ -138,48 +140,51 @@ public interface ItemWrapper {
 
 		var registries = RegistryAccessContainer.of(cx);
 
-		if (from instanceof ResourceLocation id) {
-			return findItem(id).map(Holder::value).map(Item::getDefaultInstance);
-		} else if (from instanceof JsonElement json) {
-			return parseJson(cx, registries.nbt(), json);
-		} else if (from instanceof StringTag tag) {
-			return wrapResult(cx, tag.getAsString());
-		} else if (from instanceof Pattern || from instanceof NativeRegExp) {
-			return IngredientWrapper.wrapResult(cx, from).map(IngredientKJS::kjs$getFirst);
-		} else if (from instanceof CharSequence) {
-			var os = from.toString().trim();
-			var s = os;
-			var cached = registries.itemStackParseCache().get(os);
+		// safe because wrapTrivial has handled the null case
+		assert from != null;
+		return switch (from) {
+			case ResourceLocation id -> findItem(id).map(Holder::value).map(Item::getDefaultInstance);
+			case JsonElement json -> parseJson(cx, registries.nbt(), json);
+			case StringTag tag -> wrapResult(cx, tag.getAsString());
+			// these two wrappers are safe because RegExIngredient is a safe ingredient to unwrap
+			case Pattern pattern -> IngredientWrapper.wrapResult(cx, from).map(IngredientKJS::kjs$getFirst);
+			case NativeRegExp nativeRegExp -> IngredientWrapper.wrapResult(cx, from).map(IngredientKJS::kjs$getFirst);
+			case CharSequence charSequence -> {
+				var os = from.toString().trim();
+				var s = os;
+				var cached = registries.itemStackParseCache().get(os);
 
-			if (cached != null) {
-				return DataResult.success(cached.copy());
+				if (cached != null) {
+					yield DataResult.success(cached.copy());
+				}
+
+				int count;
+				var spaceIndex = s.indexOf(' ');
+
+				if (spaceIndex >= 2 && s.indexOf('x') == spaceIndex - 1) {
+					count = Integer.parseInt(s.substring(0, spaceIndex - 1));
+					s = s.substring(spaceIndex + 1);
+				} else {
+					count = 1;
+				}
+
+				yield parseString(cx, registries.nbt(), s)
+					.map(stack -> stack.kjs$withCount(count))
+					.ifSuccess(stack -> registries.itemStackParseCache().put(os, stack.copy()))
+					;
 			}
+			default -> {
+				var map = cx.optionalMapOf(from);
 
-			int count;
-			var spaceIndex = s.indexOf(' ');
+				if (map != null) {
+					// todo: if someone does something weird here, improve upon this parser
+					yield ItemStack.CODEC.parse(registries.java(), map);
+				}
 
-			if (spaceIndex >= 2 && s.indexOf('x') == spaceIndex - 1) {
-				count = Integer.parseInt(s.substring(0, spaceIndex - 1));
-				s = s.substring(spaceIndex + 1);
-			} else {
-				count = 1;
+				var invalid = from;
+				yield DataResult.error(() -> "Could not parse input %s for item stack".formatted(invalid));
 			}
-
-			return parseString(cx, registries.nbt(), s)
-				.map(stack -> stack.kjs$withCount(count))
-				.ifSuccess(stack -> registries.itemStackParseCache().put(os, stack.copy()))
-				;
-		}
-
-		var map = cx.optionalMapOf(from);
-
-		if (map != null) {
-			// todo: if someone does something weird here, improve upon this parser
-			return ItemStack.CODEC.parse(registries.java(), map);
-		}
-
-		var invalid = from;
-		return DataResult.error(() -> "Could not parse input %s for item stack".formatted(invalid));
+		};
 	}
 
 	@HideFromJS
@@ -190,7 +195,7 @@ public interface ItemWrapper {
 		}
 
 		return wrapResult(cx, from)
-			.getOrThrow(error -> new KubeRuntimeException("Failed to read sized item stack from %s: %s".formatted(from, error))
+			.getOrThrow(error -> new KubeRuntimeException("Failed to read item stack from %s: %s".formatted(from, error))
 				.source(SourceLine.of(cx)));
 	}
 
