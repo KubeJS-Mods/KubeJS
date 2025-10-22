@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.util;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import io.netty.buffer.ByteBuf;
@@ -123,5 +124,13 @@ public interface RegExpKJS {
 		}
 
 		return Pattern.compile(pattern.toString(), getFlags(flags.toString()));
+	}
+
+	static DataResult<Pattern> tryRead(StringReader reader) {
+		try {
+			return DataResult.success(read(reader));
+		} catch (IllegalArgumentException ex) {
+			return DataResult.error(() -> "Failed to parse regex from string: " + ex);
+		}
 	}
 }

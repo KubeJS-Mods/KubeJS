@@ -227,14 +227,7 @@ public interface IngredientWrapper {
 					})
 					.map(group -> new CreativeTabIngredient(group).toVanilla());
 			}
-			case '/' -> {
-				try {
-					var regex = RegExpKJS.read(reader);
-					yield DataResult.success(new RegExIngredient(regex).toVanilla());
-				} catch (IllegalArgumentException e) {
-					yield DataResult.error(() -> "Could not parse regex ingredient: " + e);
-				}
-			}
+			case '/' -> RegExpKJS.tryRead(reader).map(RegExIngredient::new).map(ICustomIngredient::toVanilla);
 			case '[' -> {
 				reader.skip();
 				reader.skipWhitespace();
