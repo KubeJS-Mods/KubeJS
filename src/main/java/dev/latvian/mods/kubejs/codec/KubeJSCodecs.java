@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public interface KubeJSCodecs {
 	Codec<Character> CHARACTER = Codec.STRING.comapFlatMap(str -> {
@@ -154,5 +155,16 @@ public interface KubeJSCodecs {
 
 	static Codec<Long> longRangeWithMessage(long min, long max, Function<Long, String> errorMessage) {
 		return Codec.LONG.validate(v -> v.compareTo(min) >= 0 && v.compareTo(max) <= 0 ? DataResult.success(v) : DataResult.error(() -> errorMessage.apply(v)));
+	}
+
+	static <T> boolean filter(DataResult<T> result, Predicate<T> ifSuccess) {
+		return filter(result, ifSuccess, false);
+	}
+
+	static <T> boolean filter(DataResult<T> result, Predicate<T> ifSuccess, boolean orElse) {
+		return switch (result) {
+			case DataResult.Success<T>(var obj, var lifecycle) -> ifSuccess.test(obj);
+			case DataResult.Error<T> error -> orElse;
+		};
 	}
 }

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
+import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
 import dev.latvian.mods.kubejs.level.LevelBlock;
@@ -70,7 +71,7 @@ public interface ItemStackKJS extends
 			case CharSequence cs -> kjs$getId().equals(ID.string(cs.toString()));
 			case ResourceLocation id -> kjs$getIdLocation().equals(id);
 			case ItemStack s -> kjs$equalsIgnoringCount(s);
-			case null, default -> kjs$equalsIgnoringCount(ItemWrapper.wrap(cx, o));
+			case null, default -> KubeJSCodecs.filter(ItemWrapper.wrapResult(cx, o), this::kjs$equalsIgnoringCount);
 		};
 	}
 
