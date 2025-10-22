@@ -225,9 +225,9 @@ public interface FluidWrapper {
 			return success(FluidStack.EMPTY);
 		}
 
-		var fluidStack = ID.read(reader)
-			.flatMap(FluidWrapper::findFluid)
-			.apply2(FluidStack::new, readFluidAmount(reader));
+		var amount = readFluidAmount(reader);
+		var fluid = ID.read(reader).flatMap(FluidWrapper::findFluid);
+		var fluidStack = fluid.apply2(FluidStack::new, amount);
 
 		var next = reader.canRead() ? reader.peek() : 0;
 
