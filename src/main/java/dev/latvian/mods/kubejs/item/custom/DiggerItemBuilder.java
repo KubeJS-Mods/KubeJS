@@ -19,11 +19,11 @@ public class DiggerItemBuilder extends HandheldItemBuilder {
 	public DiggerItemBuilder(ResourceLocation i, float d, float s, BiFunction<Tier, Item.Properties, DiggerItem> f) {
 		super(i, d, s);
 		function = f;
-		itemAttributeModifiers = DiggerItem.createAttributes(toolTier, attackDamageBaseline, speedBaseline);
 	}
 
 	@Override
 	public Item createObject() {
+		itemAttributeModifiers = DiggerItem.createAttributes(toolTier, attackDamageBaseline, speedBaseline);
 		return function.apply(toolTier, createItemProperties());
 	}
 

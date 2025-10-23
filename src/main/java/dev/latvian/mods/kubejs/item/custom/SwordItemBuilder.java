@@ -14,13 +14,13 @@ public class SwordItemBuilder extends HandheldItemBuilder {
 
 	public SwordItemBuilder(ResourceLocation i) {
 		super(i, 3F, -2.4F);
-		itemAttributeModifiers = SwordItem.createAttributes(toolTier, attackDamageBaseline, speedBaseline);
 		parentModel = SWORD_MODEL;
 		tag(SWORD_TAGS);
 	}
 
 	@Override
 	public Item createObject() {
+		itemAttributeModifiers = SwordItem.createAttributes(toolTier, attackDamageBaseline, speedBaseline);
 		return new SwordItem(toolTier, createItemProperties());
 	}
 }
