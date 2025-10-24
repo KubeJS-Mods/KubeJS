@@ -58,6 +58,10 @@ public class ItemStackSet implements Iterable<ItemStack> {
 		return key != ItemStackKey.EMPTY && map.containsKey(key);
 	}
 
+	public void addAll(ItemStackSet other) {
+		map.putAll(other.map);
+	}
+
 	public List<ItemStack> toList() {
 		return map.isEmpty() ? List.of() : new ArrayList<>(map.values());
 	}
@@ -90,5 +94,10 @@ public class ItemStackSet implements Iterable<ItemStack> {
 
 	public Stream<ItemStack> stream() {
 		return map.isEmpty() ? Stream.of() : map.values().stream();
+	}
+
+	public static ItemStackSet merge(ItemStackSet first, ItemStackSet second) {
+		first.addAll(second);
+		return second;
 	}
 }
