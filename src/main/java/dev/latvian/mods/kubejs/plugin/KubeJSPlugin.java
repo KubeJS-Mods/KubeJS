@@ -30,6 +30,7 @@ import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.NameProvider;
+import dev.latvian.mods.kubejs.web.LocalWebServer;
 import dev.latvian.mods.kubejs.web.LocalWebServerAPIRegistry;
 import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.rhino.Context;
@@ -120,6 +121,9 @@ public interface KubeJSPlugin {
 	}
 
 	default void registerLocalWebServerWithAuth(LocalWebServerRegistry registry) {
+	}
+
+	default void localWebServerStarted(LocalWebServer server) {
 	}
 
 	default void registerItemNameProviders(NameProvider.Registry<Item, ItemStack> registry) {

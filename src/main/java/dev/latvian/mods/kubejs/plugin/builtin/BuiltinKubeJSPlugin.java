@@ -176,6 +176,7 @@ import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.kubejs.util.Tristate;
 import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
+import dev.latvian.mods.kubejs.web.LocalWebServer;
 import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import dev.latvian.mods.rhino.type.RecordTypeInfo;
@@ -733,6 +734,11 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	@Override
 	public void registerLocalWebServerWithAuth(LocalWebServerRegistry registry) {
 		KubeJSWeb.registerWithAuth(registry);
+	}
+
+	@Override
+	public void localWebServerStarted(LocalWebServer server) {
+		KubeJSWeb.serverStarted(server);
 	}
 
 	@Override

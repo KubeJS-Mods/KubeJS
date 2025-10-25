@@ -12,6 +12,7 @@ import dev.latvian.apps.tinyserver.http.response.error.client.NotFoundError;
 import dev.latvian.apps.tinyserver.http.response.error.server.InternalError;
 import dev.latvian.apps.tinyserver.ws.Frame;
 import dev.latvian.apps.tinyserver.ws.WSHandler;
+import dev.latvian.apps.tinyserver.ws.WSKeepAliveThread;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
@@ -143,6 +144,10 @@ public class KubeJSWeb {
 		registry.get("/api/browse", KubeJSWeb::getBrowse);
 		registry.get("/api/browse/{directory}", KubeJSWeb::getBrowseDir);
 		registry.get("/api/browse/{directory}/<file>", KubeJSWeb::getBrowseFile);
+	}
+
+	public static void serverStarted(LocalWebServer instance) {
+		new WSKeepAliveThread(instance.server(), UPDATES, "/api/updates").start();
 	}
 
 	private static void reloadStartupScripts() {
