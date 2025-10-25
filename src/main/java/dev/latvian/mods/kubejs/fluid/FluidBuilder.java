@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.fluid;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockRenderType;
+import dev.latvian.mods.kubejs.client.LoadedTexture;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
@@ -159,13 +160,13 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public void generateAssets(KubeAssetGenerator generator) {
 		var stillTexture = generator.loadTexture(fluidType.stillTexture);
 
-		if (stillTexture != null) {
+		if (stillTexture != LoadedTexture.EMPTY) {
 			generator.texture(fluidType.actualStillTexture, stillTexture.tint(fluidType.tint));
 		}
 
 		var flowingTexture = generator.loadTexture(fluidType.flowingTexture);
 
-		if (flowingTexture != null) {
+		if (flowingTexture != LoadedTexture.EMPTY) {
 			generator.texture(fluidType.actualFlowingTexture, flowingTexture.tint(fluidType.tint));
 		}
 
