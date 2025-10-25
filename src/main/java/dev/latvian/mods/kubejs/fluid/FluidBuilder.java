@@ -160,13 +160,13 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public void generateAssets(KubeAssetGenerator generator) {
 		var stillTexture = generator.loadTexture(fluidType.stillTexture);
 
-		if (stillTexture != LoadedTexture.EMPTY) {
+		if (!(stillTexture.width <= 0 || stillTexture.height <= 0)) {
 			generator.texture(fluidType.actualStillTexture, stillTexture.tint(fluidType.tint));
 		}
 
 		var flowingTexture = generator.loadTexture(fluidType.flowingTexture);
 
-		if (flowingTexture != LoadedTexture.EMPTY) {
+		if (!(stillTexture.width <= 0 || stillTexture.height <= 0)) {
 			generator.texture(fluidType.actualFlowingTexture, flowingTexture.tint(fluidType.tint));
 		}
 
