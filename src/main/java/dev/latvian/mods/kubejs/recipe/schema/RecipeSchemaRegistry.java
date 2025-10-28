@@ -17,4 +17,8 @@ public class RecipeSchemaRegistry implements KubeEvent {
 	public void register(ResourceLocation id, RecipeSchema schema) {
 		namespace(id.getNamespace()).register(id.getPath(), schema);
 	}
+
+	public void register(ResourceLocation id, RegistryAwareSchema schema) {
+		namespace(id.getNamespace()).register(id.getPath(), schema);
+	}
 }

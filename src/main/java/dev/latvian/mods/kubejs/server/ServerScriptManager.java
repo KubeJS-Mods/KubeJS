@@ -89,7 +89,7 @@ public class ServerScriptManager extends ScriptManager {
 	private ServerScriptManager() {
 		super(ScriptType.SERVER);
 		this.preTagEvents = new ConcurrentHashMap<>();
-		this.recipeSchemaStorage = new RecipeSchemaStorage();
+		this.recipeSchemaStorage = new RecipeSchemaStorage(this);
 		this.serverData = null;
 
 		this.internalDataPack = new VirtualDataPack(GeneratedDataStage.INTERNAL, this::getRegistries);

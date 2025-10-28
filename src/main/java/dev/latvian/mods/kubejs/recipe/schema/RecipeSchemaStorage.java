@@ -18,6 +18,7 @@ import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
 import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessor;
 import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessorType;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
@@ -31,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class RecipeSchemaStorage {
+
 	public static final class StoredRecipeComponentType {
 		private final RecipeComponentType<?> type;
 		private MapCodec<RecipeComponent<?>> mapCodec;
@@ -51,6 +53,8 @@ public class RecipeSchemaStorage {
 		}
 	}
 
+	private final ServerScriptManager manager;
+
 	public final Map<ResourceLocation, KubeRecipeFactory> recipeTypes;
 	public final Map<String, RecipeNamespace> namespaces;
 	public final Map<String, ResourceLocation> mappings;
@@ -61,7 +65,8 @@ public class RecipeSchemaStorage {
 	public Codec<RecipeComponent<?>> recipeComponentCodec;
 	public Codec<RecipePostProcessor> recipePostProcessorCodec;
 
-	public RecipeSchemaStorage() {
+	public RecipeSchemaStorage(ServerScriptManager manager) {
+		this.manager = manager;
 		this.recipeTypes = new HashMap<>();
 		this.namespaces = new HashMap<>();
 		this.mappings = new HashMap<>();
@@ -70,6 +75,10 @@ public class RecipeSchemaStorage {
 
 	public RecipeNamespace namespace(String namespace) {
 		return namespaces.computeIfAbsent(namespace, n -> new RecipeNamespace(this, n));
+	}
+
+	RegistryAccessContainer getRegistries() {
+		return manager.getRegistries();
 	}
 
 	public void fireEvents(RegistryAccessContainer registries, ResourceManager resourceManager) {
