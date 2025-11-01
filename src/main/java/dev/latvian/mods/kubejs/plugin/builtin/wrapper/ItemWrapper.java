@@ -13,7 +13,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
-import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
@@ -23,7 +22,6 @@ import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
-import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
@@ -57,7 +55,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
 @Info("Various item related helper methods")
 public interface ItemWrapper {
@@ -146,9 +143,6 @@ public interface ItemWrapper {
 			case ResourceLocation id -> findItem(id).map(Holder::value).map(Item::getDefaultInstance);
 			case JsonElement json -> parseJson(cx, registries.nbt(), json);
 			case StringTag tag -> wrapResult(cx, tag.getAsString());
-			// these two wrappers are safe because RegExIngredient is a safe ingredient to unwrap
-			case Pattern pattern -> IngredientWrapper.wrapResult(cx, from).map(IngredientKJS::kjs$getFirst);
-			case NativeRegExp nativeRegExp -> IngredientWrapper.wrapResult(cx, from).map(IngredientKJS::kjs$getFirst);
 			case CharSequence charSequence -> {
 				var os = from.toString().trim();
 				var s = os;
