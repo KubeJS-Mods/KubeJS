@@ -838,8 +838,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 		if (ServerEvents.COMPOSTABLE_RECIPES.hasListeners()) {
 			ServerEvents.COMPOSTABLE_RECIPES.post(ScriptType.SERVER, new CompostableRecipesKubeEvent());
-
-			CompostableRecipesKubeEvent.newEntries.forEach((k, v) -> generator.setCompostable(k, v.chance(), v.canVillagerCompost()));
+			CompostableRecipesKubeEvent.generateData(generator);
 		}
 	}
 }
