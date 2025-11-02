@@ -51,11 +51,6 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 	private void customRecipesHead(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
 		var manager = kjs$resources.kjs$getServerScriptManager();
 
-		// FIXME: data maps!
-		if (ServerEvents.COMPOSTABLE_RECIPES.hasListeners()) {
-			ServerEvents.COMPOSTABLE_RECIPES.post(ScriptType.SERVER, new CompostableRecipesKubeEvent());
-		}
-
 		for (var entry : manager.getRegistries().cachedRegistryTags.values()) {
 			if (entry.registry() == null || entry.lookup() == null) {
 				continue;

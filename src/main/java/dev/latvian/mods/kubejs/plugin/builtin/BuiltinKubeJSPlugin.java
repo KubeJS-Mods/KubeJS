@@ -102,6 +102,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.UUIDWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.UtilsWrapper;
+import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.component.BlockComponent;
 import dev.latvian.mods.kubejs.recipe.component.BlockStateComponent;
 import dev.latvian.mods.kubejs.recipe.component.BookCategoryComponent;
@@ -833,5 +834,11 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 				}
 			}
 		});
+
+		if (ServerEvents.COMPOSTABLE_RECIPES.hasListeners()) {
+			ServerEvents.COMPOSTABLE_RECIPES.post(new CompostableRecipesKubeEvent());
+
+			CompostableRecipesKubeEvent.newEntries.forEach((k, v) -> generator.setCompostable(k, v.chance(), v.canVillagerCompost()));
+		}
 	}
 }
