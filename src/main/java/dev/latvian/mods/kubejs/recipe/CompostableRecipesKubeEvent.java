@@ -33,7 +33,7 @@ public class CompostableRecipesKubeEvent implements KubeEvent {
 	}
 
 	public void add(ItemPredicate match, float chance) {
-		add(match, chance, true);
+		add(match, chance, false);
 	}
 
 	public void add(ItemPredicate match, float chance, boolean canVillagerCompost) {
@@ -42,12 +42,12 @@ public class CompostableRecipesKubeEvent implements KubeEvent {
 	}
 
 	public void modify(ItemPredicate match, float newChance) {
-		Compostable existing = newEntries.getOrDefault(match, new Compostable(0f, true));
+		Compostable existing = newEntries.getOrDefault(match, new Compostable(0f, false));
 		toModify.put(match, new Compostable(newChance, existing.canVillagerCompost()));
 	}
 
 	public void modify(ItemPredicate match, boolean canVillagerCompost) {
-		Compostable existing = newEntries.getOrDefault(match, new Compostable(0f, true));
+		Compostable existing = newEntries.getOrDefault(match, new Compostable(0f, false));
 		toModify.put(match, new Compostable(existing.chance(), canVillagerCompost));
 	}
 
