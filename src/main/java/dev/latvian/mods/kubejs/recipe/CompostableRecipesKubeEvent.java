@@ -99,9 +99,5 @@ public class CompostableRecipesKubeEvent implements KubeEvent {
 		root.add("values", values);
 
 		generator.add(GeneratedData.json(ResourceLocation.parse("neoforge:data_maps/item/compostables.json"), () -> root));
-
-
-		System.out.println("JSON DATA");
-		System.out.println(root);
 	}
 }
