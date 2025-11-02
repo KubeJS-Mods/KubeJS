@@ -155,6 +155,7 @@ import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.DataComponentTypeInfoRegistry;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.RecordDefaultsRegistry;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
@@ -836,7 +837,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		});
 
 		if (ServerEvents.COMPOSTABLE_RECIPES.hasListeners()) {
-			ServerEvents.COMPOSTABLE_RECIPES.post(new CompostableRecipesKubeEvent());
+			ServerEvents.COMPOSTABLE_RECIPES.post(ScriptType.SERVER, new CompostableRecipesKubeEvent());
 
 			CompostableRecipesKubeEvent.newEntries.forEach((k, v) -> generator.setCompostable(k, v.chance(), v.canVillagerCompost()));
 		}
