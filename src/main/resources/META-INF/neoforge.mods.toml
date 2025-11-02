@@ -19,7 +19,7 @@ displayURL = "https://kubejs.com"
 modId = "neoforge"
 type = "required"
 versionRange = "[${neoforge_version},)"
-ordering = "NONE"
+ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.kubejs]]
