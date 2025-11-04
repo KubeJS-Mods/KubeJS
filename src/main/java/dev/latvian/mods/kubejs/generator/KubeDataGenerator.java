@@ -1,18 +1,23 @@
 package dev.latvian.mods.kubejs.generator;
 
 import dev.latvian.mods.kubejs.item.ItemPredicate;
+import dev.latvian.mods.kubejs.script.data.VirtualDataMapFile;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.random.Weight;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import net.neoforged.neoforge.registries.datamaps.builtin.BiomeVillagerType;
 import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
 import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
@@ -24,25 +29,62 @@ import net.neoforged.neoforge.registries.datamaps.builtin.RaidHeroGift;
 import net.neoforged.neoforge.registries.datamaps.builtin.VibrationFrequency;
 import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
 
-public interface KubeDataGenerator extends KubeResourceGenerator {
-	default void setCompostable(ItemPredicate items, float chance, boolean canVillagerCompost) {
-		dataMap(NeoForgeDataMaps.COMPOSTABLES, callback -> {
-			var data = new Compostable(chance, canVillagerCompost);
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-			for (var item : items.kjs$getItemTypes()) {
-				callback.accept(item.kjs$getIdLocation(), data);
-			}
-		});
+public interface KubeDataGenerator extends KubeResourceGenerator {
+	<R, T> void dataMap(DataMapType<R, T> type, Consumer<VirtualDataMapFile<R, T>> consumer);
+
+	default void setCompostable(ItemPredicate items, float chance, boolean canVillagerCompost) {
+		dataMap(NeoForgeDataMaps.COMPOSTABLES, callback -> add(callback, items, new Compostable(chance, canVillagerCompost)));
+	}
+
+	default void removeCompostable(ItemPredicate items) {
+		dataMap(NeoForgeDataMaps.COMPOSTABLES, callback -> remove(callback, items));
 	}
 
 	default void setFurnaceFuel(ItemPredicate items, TickDuration ticks) {
-		dataMap(NeoForgeDataMaps.FURNACE_FUELS, callback -> {
-			var data = new FurnaceFuel(ticks.intTicks());
+		dataMap(NeoForgeDataMaps.FURNACE_FUELS, callback -> add(callback, items, new FurnaceFuel(ticks.intTicks())));
+	}
 
-			for (var item : items.kjs$getItemTypes()) {
-				callback.accept(item.kjs$getIdLocation(), data);
+	default void removeFurnaceFuel(ItemPredicate items) {
+		dataMap(NeoForgeDataMaps.FURNACE_FUELS, callback -> remove(callback, items));
+	}
+
+	private static <T> void add(VirtualDataMapFile<Item, T> dataMap, ItemPredicate filter, T data) {
+		var tag = filter instanceof Ingredient ingredient ? ingredient.kjs$getTagKey() : null;
+
+		if (tag != null) {
+			dataMap.addTag(tag, data);
+		} else {
+			for (var item : filter.kjs$getItemTypes()) {
+				dataMap.add(item, data);
 			}
-		});
+		}
+	}
+
+	private static void remove(VirtualDataMapFile<Item, ?> dataMap, ItemPredicate filter) {
+		var tag = filter instanceof Ingredient ingredient ? ingredient.kjs$getTagKey() : null;
+
+		if (tag != null) {
+			dataMap.removeTag(tag);
+		} else {
+			for (var item : filter.kjs$getItemTypes()) {
+				dataMap.remove(item);
+			}
+		}
+	}
+
+	private static <T> void use(ItemPredicate filter, BiConsumer<TagKey<Item>, T> ifTag, BiConsumer<Item, T> ifItem, T data) {
+		var tag = filter instanceof Ingredient ingredient ? ingredient.kjs$getTagKey() : null;
+
+		if (tag != null) {
+			ifTag.accept(tag, data);
+		} else {
+			for (var item : filter.kjs$getItemTypes()) {
+				ifItem.accept(item, data);
+			}
+		}
 	}
 
 	default void setMonsterRoomMobs(EntityType<?> entityType, int weight) {

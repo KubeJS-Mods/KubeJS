@@ -11,9 +11,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @RemapPrefixForJS("kjs$")
 public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierKJS {
@@ -68,6 +70,10 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 
 	default boolean kjs$isWildcard() {
 		return this == ALL;
+	}
+
+	default Stream<Item> kjs$getItemStream() {
+		return Arrays.stream(kjs$getStackArray()).map(ItemStack::getItem);
 	}
 
 	default Set<Item> kjs$getItemTypes() {

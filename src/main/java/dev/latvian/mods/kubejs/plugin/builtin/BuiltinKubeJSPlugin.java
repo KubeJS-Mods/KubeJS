@@ -102,6 +102,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.UUIDWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.UtilsWrapper;
+import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.component.BlockComponent;
 import dev.latvian.mods.kubejs.recipe.component.BlockStateComponent;
 import dev.latvian.mods.kubejs.recipe.component.BookCategoryComponent;
@@ -154,6 +155,7 @@ import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.DataComponentTypeInfoRegistry;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.RecordDefaultsRegistry;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
@@ -822,6 +824,14 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void generateData(KubeDataGenerator generator) {
+		if (ServerEvents.COMPOSTABLE_RECIPES.hasListeners()) {
+			generator.dataMap(NeoForgeDataMaps.COMPOSTABLES,
+				map -> {
+					var event = new CompostableRecipesKubeEvent(map);
+					ServerEvents.COMPOSTABLE_RECIPES.post(ScriptType.SERVER, event);
+				});
+		}
+
 		generator.dataMap(NeoForgeDataMaps.FURNACE_FUELS, callback -> {
 			for (var entry : ItemModificationKubeEvent.ItemModifications.BURN_TIME_OVERRIDES.reference2IntEntrySet()) {
 				callback.accept(entry.getKey().kjs$getIdLocation(), new FurnaceFuel(entry.getIntValue()));
