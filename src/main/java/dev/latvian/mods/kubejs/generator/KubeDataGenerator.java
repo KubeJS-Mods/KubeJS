@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.util.TickDuration;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.random.Weight;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -29,7 +28,6 @@ import net.neoforged.neoforge.registries.datamaps.builtin.RaidHeroGift;
 import net.neoforged.neoforge.registries.datamaps.builtin.VibrationFrequency;
 import net.neoforged.neoforge.registries.datamaps.builtin.Waxable;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public interface KubeDataGenerator extends KubeResourceGenerator {
@@ -71,18 +69,6 @@ public interface KubeDataGenerator extends KubeResourceGenerator {
 		} else {
 			for (var item : filter.kjs$getItemTypes()) {
 				dataMap.remove(item);
-			}
-		}
-	}
-
-	private static <T> void use(ItemPredicate filter, BiConsumer<TagKey<Item>, T> ifTag, BiConsumer<Item, T> ifItem, T data) {
-		var tag = filter instanceof Ingredient ingredient ? ingredient.kjs$getTagKey() : null;
-
-		if (tag != null) {
-			ifTag.accept(tag, data);
-		} else {
-			for (var item : filter.kjs$getItemTypes()) {
-				ifItem.accept(item, data);
 			}
 		}
 	}
