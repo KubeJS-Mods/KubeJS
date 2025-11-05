@@ -134,7 +134,7 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 		return new RegistryWrapper<>(access.registryOrThrow(key), ResourceKey.create(key, ID.UNKNOWN));
 	}
 
-	public RegistryWrapper wrapRegistry(ResourceLocation id) {
+	public RegistryWrapper<?> wrapRegistry(ResourceLocation id) {
 		if (cachedRegistryWrappers == null) {
 			cachedRegistryWrappers = new HashMap<>();
 		}

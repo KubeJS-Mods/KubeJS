@@ -85,6 +85,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.AABBWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ColorWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.DamageSourceWrapper;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.DataMapWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.DirectionWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.EntitySelectorWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
@@ -453,6 +454,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		bindings.add("SizedIngredient", SizedIngredientWrapper.class);
 		bindings.add("ParticleOptions", ParticleOptionsWrapper.class);
 		bindings.add("Registry", RegistryWrapper.class);
+		bindings.add("DataMap", DataMapWrapper.class);
 		bindings.add("EntitySelector", EntitySelectorWrapper.class);
 
 		bindings.add("Fluid", FluidWrapper.class);

@@ -29,7 +29,7 @@ public interface RegistryObjectKJS<T> extends SpecialEquality {
 	}
 
 	default Registry<T> kjs$getRegistry() {
-		return RegistryAccessContainer.current.wrapRegistry(kjs$getRegistryId().location()).registry();
+		return RegistryAccessContainer.current.access().registryOrThrow(kjs$getRegistryId());
 	}
 
 	@SuppressWarnings("unchecked")

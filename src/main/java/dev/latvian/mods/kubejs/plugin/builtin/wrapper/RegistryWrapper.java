@@ -10,7 +10,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
-import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,17 +55,12 @@ public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey
 		return new HolderSetWrapper<>(registry, Objects.requireNonNullElseGet(holderSet, HolderSet::empty));
 	}
 
-	private <A> DataMapWrapper<T, A> getDataMap(DataMapType<T, A> type) {
+	<A> DataMapWrapper<T, A> getDataMap(DataMapType<T, A> type) {
 		return new DataMapWrapper<>(registry, type);
 	}
 
-	@Nullable
 	public DataMapWrapper<T, ?> getDataMap(ResourceLocation id) {
-		return getDataMap(getDataMapType(id));
-	}
-
-	public DataMapType<T, ?> getDataMapType(ResourceLocation id) {
-		return RegistryManager.getDataMap(registry.key(), id);
+		return DataMapWrapper.of(this, id);
 	}
 
 	public List<T> getValues() {
