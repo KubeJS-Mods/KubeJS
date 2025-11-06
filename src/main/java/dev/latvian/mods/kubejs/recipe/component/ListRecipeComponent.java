@@ -248,19 +248,18 @@ public record ListRecipeComponent<T>(
 	}
 
 	public ListRecipeComponent<T> withBounds(IntBounds bounds) {
-		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, conditional, bounds, spread, spreadWrap);
+		return ListRecipeComponent.create(component, canWriteSelf, conditional, bounds, spread);
 	}
 
 	public ListRecipeComponent<T> orSelf() {
-		return new ListRecipeComponent<>(component, true, listTypeInfo, listCodec, conditional, bounds, spread, spreadWrap);
+		return ListRecipeComponent.create(component, true, conditional, bounds, spread);
 	}
 
 	public ListRecipeComponent<T> asConditional() {
-		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, true, bounds, spread, spreadWrap);
+		return ListRecipeComponent.create(component, canWriteSelf, true, bounds, spread);
 	}
 
 	public ListRecipeComponent<T> withSpread(Optional<RecipeComponent<?>> spread) {
-		var spreadWrap = wrapSpread(component, spread);
-		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, true, bounds, spread, spreadWrap);
+		return ListRecipeComponent.create(component, canWriteSelf, conditional, bounds, spread);
 	}
 }
