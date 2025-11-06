@@ -342,7 +342,7 @@ public interface FluidWrapper {
 			reader.skipWhitespace();
 
 			if (amount < 1) {
-				throw new IllegalArgumentException("Fluid amount smaller than 1 is not allowed!");
+				return error(() -> "Fluid amount smaller than 1 is not allowed!");
 			}
 
 			return success(amount);
