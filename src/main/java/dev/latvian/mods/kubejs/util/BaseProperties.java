@@ -3,10 +3,17 @@ package dev.latvian.mods.kubejs.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
+import net.minecraft.CrashReport;
+import net.minecraft.CrashReportCategory;
+import net.minecraft.ReportedException;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -23,24 +30,32 @@ public class BaseProperties {
 		this.name = name;
 		this.properties = new JsonObject();
 
-		try {
-			writeProperties = false;
+		writeProperties = false;
 
-			if (Files.exists(path)) {
-				try (var reader = Files.newBufferedReader(path)) {
-					properties = GSON.fromJson(reader, JsonObject.class);
-				}
-			} else {
-				writeProperties = true;
+		if (Files.exists(path)) {
+			try (var reader = Files.newBufferedReader(path)) {
+				properties = GSON.fromJson(reader, JsonObject.class);
+			} catch (IOException | JsonIOException e) {
+				CrashReport crashreport = CrashReport.forThrowable(e, "[KubeJS] Loading settings");
+				CrashReportCategory crashreportcategory = crashreport.addCategory("File being loaded");
+				crashreportcategory.setDetail("Name", () -> name);
+				crashreportcategory.setDetail("File Path", path::toString);
+				crashreportcategory.setDetail("Readable?", () -> String.valueOf(Files.isReadable(path)));
+				crashreportcategory.setDetail("Writable?", () -> String.valueOf(Files.isWritable(path)));
+				crashreportcategory.setDetail("Executable?", () -> String.valueOf(Files.isExecutable(path)));
+
+				throw new ReportedException(crashreport);
+			} catch (JsonSyntaxException e) {
+				ConsoleJS.STARTUP.error("Error parsing properties JSON for file %s! Default settings will be loaded, and changes won't be saved!".formatted(path), e);
 			}
+		} else {
+			writeProperties = true;
+		}
 
-			load();
+		load();
 
-			if (writeProperties) {
-				save();
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		if (writeProperties) {
+			save();
 		}
 	}
 
@@ -103,7 +118,7 @@ public class BaseProperties {
 		try (var writer = Files.newBufferedWriter(path)) {
 			GSON.toJson(properties, writer);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			ConsoleJS.STARTUP.error("Error saving properties file %s! Settings will not be saved!".formatted(path), ex);
 		}
 	}
 
