@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
 import com.mojang.brigadier.StringReader;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.commands.arguments.selector.EntitySelector;
@@ -21,7 +23,7 @@ public class EntitySelectorWrapper {
 	}
 
 	@HideFromJS
-	public static EntitySelector wrap(@Nullable Object o) {
+	public static EntitySelector wrap(Context cx, @Nullable Object o) {
 		if (o == null) {
 			return ALL_ENTITIES_SELECTOR;
 		} else if (o instanceof EntitySelector s) {
@@ -34,19 +36,20 @@ public class EntitySelectorWrapper {
 			return ALL_ENTITIES_SELECTOR;
 		}
 
-		var sel = ENTITY_SELECTOR_CACHE.get(s);
+		EntitySelector sel;
 
-		if (sel == null) {
-			sel = ALL_ENTITIES_SELECTOR;
-
+		if (ENTITY_SELECTOR_CACHE.containsKey(s)) {
+			sel = ENTITY_SELECTOR_CACHE.get(s);
+		} else {
 			try {
 				sel = new EntitySelectorParser(new StringReader(s), true).parse();
+				ENTITY_SELECTOR_CACHE.put(s, sel);
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				ConsoleJS.getCurrent(cx).error("Error parsing entity selector, falling back to all", ex);
+				return ALL_ENTITIES_SELECTOR;
 			}
 		}
 
-		ENTITY_SELECTOR_CACHE.put(s, sel);
 		return sel;
 	}
 }

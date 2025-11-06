@@ -183,7 +183,7 @@ public class RecipeSchemaStorage {
 					}
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				KubeJS.LOGGER.error("Failed to load recipe component file {}: {}", entry.getKey(), ex);
 			}
 		}
 

@@ -74,7 +74,7 @@ public class KubeJSClient extends KubeJSCommon {
 					printwriter.print(Files.readString(defOptions));
 					printwriter.close();
 				} catch (IOException ex) {
-					ex.printStackTrace();
+					KubeJS.LOGGER.error("Failed to save default options to options.txt!");
 				}
 			}
 		}
