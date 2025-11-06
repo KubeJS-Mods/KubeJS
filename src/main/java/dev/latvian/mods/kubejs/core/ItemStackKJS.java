@@ -1,16 +1,19 @@
 package dev.latvian.mods.kubejs.core;
 
+import com.google.errorprone.annotations.DoNotCall;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
@@ -206,6 +209,12 @@ public interface ItemStackKJS extends
 
 	default String kjs$toItemString(Context cx) {
 		return kjs$toItemString0(RegistryAccessContainer.of(cx).nbt());
+	}
+
+	@DoNotCall
+	@Deprecated
+	default ItemStack kjs$withChance(Context cx, float chance) {
+		throw new KubeRuntimeException(".withChance() is no longer supported on Minecraft 1.21! Please use the chance item implementation of the relevant mod addon (such as CreateItem.of(item, chance) for KubeJS Create) instead!").source(SourceLine.of(cx));
 	}
 
 	default String kjs$toItemString0(@Nullable DynamicOps<Tag> dynamicOps) {
