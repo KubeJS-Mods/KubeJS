@@ -51,6 +51,7 @@ public class VSCodeExt {
 	}
 
 	public static void openFile(Path path, int line, int column) {
-		Util.getPlatform().openUri(URI.create("vscode://file/" + path.toAbsolutePath().toString().replace('\\', '/') + ":" + line + ":" + column));
+		var uri = path.toAbsolutePath().toUri();
+		Util.getPlatform().openUri(URI.create("vscode://file" + uri.getRawPath() + ":" + line + ":" + column));
 	}
 }
