@@ -19,6 +19,7 @@ import net.neoforged.neoforge.registries.holdersets.OrHolderSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -89,9 +90,9 @@ public interface HolderWrapper {
 				};
 			} else {
 				if (complex.isEmpty()) {
-					return HolderSet.direct(compressedDirects);
+					return HolderSet.direct((List) compressedDirects);
 				} else {
-					complex.add(HolderSet.direct(compressedDirects));
+					complex.add(HolderSet.direct((List) compressedDirects));
 					return new OrHolderSet<>(complex);
 				}
 			}
