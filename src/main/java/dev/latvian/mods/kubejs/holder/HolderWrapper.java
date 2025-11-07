@@ -125,7 +125,10 @@ public interface HolderWrapper {
 						yield registry.getOrCreateTag(tagKey);
 					}
 					case '/' -> wrapSimpleSet(registry, RegExpKJS.wrap(from));
-					default -> null;
+					default -> ResourceLocation.read(s)
+						.result()
+						.map(id -> wrapSimpleSet(registry, id))
+						.orElse(null);
 				};
 			}
 			case null, default -> null;
