@@ -56,7 +56,6 @@ public interface HolderWrapper {
 		return holder.isEmpty() ? DeferredHolder.create(registry.key(), id) : holder.get();
 	}
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
 	static HolderSet<?> wrapSet(KubeJSContext cx, Object from, TypeInfo param) {
 		var registry = cx.lookupRegistry(param, from);
 
@@ -86,14 +85,14 @@ public interface HolderWrapper {
 				return switch (complex.size()) {
 					case 0 -> HolderSet.empty();
 					case 1 -> complex.getFirst();
-					default -> new OrHolderSet<>(complex);
+					default -> new OrHolderSet(complex);
 				};
 			} else {
 				if (complex.isEmpty()) {
 					return HolderSet.direct((List) compressedDirects);
 				} else {
 					complex.add(HolderSet.direct((List) compressedDirects));
-					return new OrHolderSet<>(complex);
+					return new OrHolderSet(complex);
 				}
 			}
 		} else {
@@ -102,7 +101,6 @@ public interface HolderWrapper {
 		}
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Nullable
 	static <T> HolderSet<T> wrapSimpleSet(Registry<T> registry, Object from) {
 		return switch (from) {
