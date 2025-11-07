@@ -11,14 +11,22 @@ public record CreativeTabCallbackForge(BuildCreativeModeTabContentsEvent event) 
 	@Override
 	public void addAfter(ItemStack order, ItemStack[] items, CreativeModeTab.TabVisibility visibility) {
 		for (var item : items) {
-			event.insertAfter(order, item, visibility);
+			if (order.isEmpty()) {
+				event.accept(item, visibility);
+			} else {
+				event.insertAfter(order, item, visibility);
+			}
 		}
 	}
 
 	@Override
 	public void addBefore(ItemStack order, ItemStack[] items, CreativeModeTab.TabVisibility visibility) {
 		for (var item : items) {
-			event.insertBefore(order, item, visibility);
+			if (order.isEmpty()) {
+				event.insertFirst(item, visibility);
+			} else {
+				event.insertBefore(order, item, visibility);
+			}
 		}
 	}
 
