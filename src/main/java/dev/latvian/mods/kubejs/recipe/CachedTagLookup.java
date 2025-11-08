@@ -96,7 +96,7 @@ public class CachedTagLookup<T> {
 
 			for (var entry : map.entrySet()) {
 				var k = TagKey.create(registry.key(), entry.getKey());
-				keyToValue.put(k, Set.copyOf(entry.getValue()));
+				keyToValue.put(k, new LinkedHashSet<>(entry.getValue()));
 			}
 		}
 
