@@ -31,6 +31,9 @@ import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
@@ -71,6 +74,16 @@ public interface IngredientWrapper {
 	@Info("Returns an ingredient of the input, with the specified count")
 	static SizedIngredient of(Ingredient ingredient, int count) {
 		return ingredient.kjs$withCount(count);
+	}
+
+	@Info("Returns an ingredient that accepts the given set of items under the given component filter.")
+	static Ingredient withData(HolderSet<Item> base, DataComponentMap data) {
+		return withData(base, data, false);
+	}
+
+	@Info("Returns an ingredient that accepts the given set of items under the given (optionally strict) component filter.")
+	static Ingredient withData(HolderSet<Item> base, DataComponentMap data, boolean strict) {
+		return DataComponentIngredient.of(strict, data, base);
 	}
 
 	@HideFromJS
