@@ -171,7 +171,6 @@ import dev.latvian.mods.kubejs.util.NBTIOWrapper;
 import dev.latvian.mods.kubejs.util.NameProvider;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
-import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.RotationAxis;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.kubejs.util.SlotFilter;
@@ -510,8 +509,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ListTag.class, (from, target) -> NBTWrapper.isTagCollection(from), NBTWrapper::wrapListTag);
 		registry.register(Tag.class, NBTWrapper::wrap);
 		registry.register(DataComponentType.class, DataComponentWrapper::wrapType);
-		registry.register(DataComponentMap.class, DataComponentWrapper::filter, (cx, from, target) -> DataComponentWrapper.mapOf(RegistryAccessContainer.of(cx).nbt(), from));
-		registry.register(DataComponentPatch.class, DataComponentWrapper::filter, (cx, from, target) -> DataComponentWrapper.patchOf(RegistryAccessContainer.of(cx).nbt(), from));
+		registry.register(DataComponentMap.class, DataComponentWrapper::filter, DataComponentWrapper::mapOf);
+		registry.register(DataComponentPatch.class, DataComponentWrapper::filter, DataComponentWrapper::patchOf);
 
 		registry.register(BlockPos.class, MiscWrappers::wrapBlockPos);
 		registry.register(Vec3.class, MiscWrappers::wrapVec3);

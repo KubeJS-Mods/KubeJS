@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.web;
 
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.apps.tinyserver.http.HTTPRequest;
@@ -46,7 +47,7 @@ public class KJSHTTPRequest extends HTTPRequest {
 
 	public DataComponentPatch components(DynamicOps<Tag> ops) throws CommandSyntaxException {
 		var str = query("components").asString();
-		return str.isEmpty() ? DataComponentPatch.EMPTY : DataComponentWrapper.patchOrEmptyOf(ops, "[" + str + "]");
+		return str.isEmpty() ? DataComponentPatch.EMPTY : DataComponentWrapper.readPatch(ops, new StringReader("[" + str + "]"));
 	}
 
 	@Override
