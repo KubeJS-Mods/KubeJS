@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.component;
 
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
@@ -32,6 +33,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
@@ -345,13 +347,15 @@ public interface DataComponentWrapper {
 	}
 
 	static DataResult<DataComponentMap> tryMapOf(Context cx, @Nullable Object o) {
+		var reg = RegistryAccessContainer.of(cx);
 		return switch (o) {
 			case DataComponentMap map -> success(map);
 			case DataComponentPatch patch -> success(PatchedDataComponentMap.fromPatch(DataComponentMap.EMPTY, patch));
 			case BaseFunction fn -> fnToBuilder(cx, MapBuilder.class, fn,
 				builder -> Util.make(DataComponentMap.builder(), builder).build());
+			case JsonObject json -> DataComponentMap.CODEC.parse(reg.json(), json);
+			case CompoundTag tag -> DataComponentMap.CODEC.parse(reg.nbt(), tag);
 			case Map<?, ?> map -> {
-				var reg = RegistryAccessContainer.of(cx);
 				var builder = DataComponentMap.builder();
 
 				var failed = false;
@@ -416,7 +420,6 @@ public interface DataComponentWrapper {
 			case null -> success(DataComponentMap.EMPTY);
 			case String s -> {
 				try {
-					var reg = RegistryAccessContainer.of(cx);
 					yield success(readMap(reg.nbt(), new StringReader(s)));
 				} catch (CommandSyntaxException ex) {
 					yield error(() -> "Error parsing DataComponentMap from %s: %s".formatted(s, ex.getMessage()));
@@ -427,12 +430,14 @@ public interface DataComponentWrapper {
 	}
 
 	static DataResult<DataComponentPatch> tryPatchOf(Context cx, @Nullable Object o) {
+		var reg = RegistryAccessContainer.of(cx);
 		return switch (o) {
 			case DataComponentPatch patch -> success(patch);
 			case BaseFunction fn -> fnToBuilder(cx, PatchBuilder.class, fn,
 				builder -> Util.make(DataComponentPatch.builder(), builder).build());
+			case JsonObject json -> DataComponentPatch.CODEC.parse(reg.json(), json);
+			case CompoundTag tag -> DataComponentPatch.CODEC.parse(reg.nbt(), tag);
 			case Map<?, ?> map -> {
-				var reg = RegistryAccessContainer.of(cx);
 				var builder = DataComponentPatch.builder();
 
 				var failed = false;
@@ -502,7 +507,6 @@ public interface DataComponentWrapper {
 			case null -> success(DataComponentPatch.EMPTY);
 			case String s -> {
 				try {
-					var reg = RegistryAccessContainer.of(cx);
 					yield success(readPatch(reg.nbt(), new StringReader(s)));
 				} catch (CommandSyntaxException ex) {
 					yield error(() -> "Error parsing DataComponentPatch from %s: %s".formatted(s, ex.getMessage()));
