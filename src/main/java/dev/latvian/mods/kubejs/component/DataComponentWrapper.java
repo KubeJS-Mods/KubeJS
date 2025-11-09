@@ -324,13 +324,13 @@ public interface DataComponentWrapper {
 
 	static DataComponentMap mapOf(Context cx, Object from) {
 		return tryMapOf(cx, from)
-			.getOrThrow(error -> new KubeRuntimeException("Failed to warp DataComponentMap: %s".formatted(error))
+			.getOrThrow(error -> new KubeRuntimeException("Failed to wrap DataComponentMap: %s".formatted(error))
 				.source(SourceLine.of(cx)));
 	}
 
 	static DataComponentPatch patchOf(Context cx, Object from) {
 		return tryPatchOf(cx, from)
-			.getOrThrow(error -> new KubeRuntimeException("Failed to warp DataComponentMap: %s".formatted(error))
+			.getOrThrow(error -> new KubeRuntimeException("Failed to wrap DataComponentPatch: %s".formatted(error))
 				.source(SourceLine.of(cx)));
 	}
 
@@ -379,7 +379,7 @@ public interface DataComponentWrapper {
 							}
 						} catch (EvaluatorException e) {
 							failed = true;
-							errors.add(Pair.of(type, "Failed to parse data component from input '%s': %s".formatted(value, e)));
+							errors.add(Pair.of(type, "Failed to parse input as data component: %s".formatted(e.details())));
 							continue;
 						}
 					}
@@ -410,9 +410,9 @@ public interface DataComponentWrapper {
 
 						var id = reg.access().registryOrThrow(Registries.DATA_COMPONENT_TYPE).getKeyOrNull(type);
 
-						return "'%s': %s".formatted(id, error);
+						return "'%s' -> %s".formatted(id, error);
 					}).collect(Collectors.joining("; "));
-					yield error(() -> "Failed to parse DataComponentMap: " + msg, builder.build());
+					yield error(() -> "Invalid component map format, errored input: [%s]".formatted(msg), builder.build());
 				} else {
 					yield success(builder.build());
 				}
@@ -422,7 +422,7 @@ public interface DataComponentWrapper {
 				try {
 					yield success(readMap(reg.nbt(), new StringReader(s)));
 				} catch (CommandSyntaxException ex) {
-					yield error(() -> "Error parsing DataComponentMap from %s: %s".formatted(s, ex.getMessage()));
+					yield error(() -> "Invalid string format '%s' for DataComponentMap: %s".formatted(s, ex.getMessage()));
 				}
 			}
 			default -> error(() -> "Don't know how to convert %s to DataComponentMap!".formatted(o));
@@ -466,7 +466,7 @@ public interface DataComponentWrapper {
 							}
 						} catch (EvaluatorException e) {
 							failed = true;
-							errors.add(Pair.of(type, "Failed to parse data component from input '%s': %s".formatted(value, e)));
+							errors.add(Pair.of(type, "Failed to parse input as data component: %s".formatted(e.details())));
 							continue;
 						}
 					}
@@ -497,9 +497,9 @@ public interface DataComponentWrapper {
 
 						var id = reg.access().registryOrThrow(Registries.DATA_COMPONENT_TYPE).getKeyOrNull(type);
 
-						return "'%s': %s".formatted(id, error);
+						return "'%s' -> %s".formatted(id, error);
 					}).collect(Collectors.joining("; "));
-					yield error(() -> "Failed to parse DataComponentPatch: " + msg, builder.build());
+					yield error(() -> "Invalid component map format, errored input: [%s]".formatted(msg), builder.build());
 				} else {
 					yield success(builder.build());
 				}
@@ -509,7 +509,7 @@ public interface DataComponentWrapper {
 				try {
 					yield success(readPatch(reg.nbt(), new StringReader(s)));
 				} catch (CommandSyntaxException ex) {
-					yield error(() -> "Error parsing DataComponentPatch from %s: %s".formatted(s, ex.getMessage()));
+					yield error(() -> "Invalid string format '%s' for DataComponentPatch: %s".formatted(s, ex.getMessage()));
 				}
 			}
 			default -> error(() -> "Don't know how to convert %s to DataComponentPatch!".formatted(o));
