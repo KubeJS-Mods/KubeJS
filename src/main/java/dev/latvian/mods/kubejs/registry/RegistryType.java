@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.registry;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.JavaWrapper;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.Util;
@@ -42,33 +43,26 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 	}
 
 	@Nullable
-	public static synchronized RegistryType<?> ofKey(ResourceKey<?> key) {
-		return (RegistryType<?>) of(key);
+	public static synchronized <T> RegistryType<T> ofKey(ResourceKey<? extends Registry<T>> key) {
+		Scanner.startIfNotFrozen();
+		return Cast.to(KEY_MAP.get(key));
 	}
 
 	@Nullable
 	public static synchronized RegistryType<?> ofType(TypeInfo typeInfo) {
-		return (RegistryType<?>) of(typeInfo);
+		Scanner.startIfNotFrozen();
+		return TYPE_MAP.get(typeInfo);
 	}
 
 	@Nullable
-	public static synchronized RegistryType<?> ofClass(Class<?> type) {
-		var regList = ((List<RegistryType<?>>) of(type));
+	public static synchronized <T> RegistryType<T> ofClass(Class<T> type) {
+		var regList = allOfClass(type);
 		return regList != null && regList.size() == 1 ? regList.getFirst() : null;
 	}
 
-	public static synchronized List<RegistryType<?>> allOfClass(Class<?> type) {
-		return (List<RegistryType<?>>) of(type);
-	}
-
-	private static synchronized Object of(Object obj) {
+	public static synchronized <T> List<RegistryType<T>> allOfClass(Class<T> type) {
 		Scanner.startIfNotFrozen();
-		return switch (obj) {
-			case ResourceKey key -> KEY_MAP.get(key);
-			case Class clazz -> CLASS_MAP.getOrDefault(clazz, List.of());
-			case TypeInfo info -> TYPE_MAP.get(info);
-			default -> List.of();
-		};
+		return Cast.to(CLASS_MAP.getOrDefault(type, List.of()));
 	}
 
 	@Nullable

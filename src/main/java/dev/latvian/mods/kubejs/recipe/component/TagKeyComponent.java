@@ -51,7 +51,7 @@ public record TagKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, 
 		} else if (key == Registries.FLUID) {
 			return (TagKeyComponent<?>) (hashed ? HASHED_FLUID : FLUID).instance();
 		} else {
-			var r = RegistryType.ofKey(registry);
+			var r = RegistryType.ofKey(key);
 			return new TagKeyComponent<>(null, key, r != null ? r.type() : TypeInfo.NONE, hashed);
 		}
 	}
