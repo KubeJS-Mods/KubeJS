@@ -6,7 +6,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -45,14 +44,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.mojang.serialization.DataResult.error;
 import static com.mojang.serialization.DataResult.success;
@@ -359,68 +359,20 @@ public interface DataComponentWrapper {
 			case Map<?, ?> map -> {
 				var builder = DataComponentMap.builder();
 
-				var failed = false;
-				Stream.Builder<Pair<DataComponentType<?>, String>> errors = Stream.builder();
-
 				Map<DataComponentType<?>, ?> wrapped = Objects.requireNonNull(cx.optionalMapOf(map, COMPONENT_TYPE, TypeInfo.NONE));
+				Map<DataComponentType<?>, String> errors = new HashMap<>();
 
 				for (var entry : wrapped.entrySet()) {
-					var type = entry.getKey();
-					var valueType = getTypeInfo(type);
-
-					var value = entry.getValue();
-					EvaluatorException evalError = null;
-
-					if (value == null || value instanceof Undefined) {
-						continue;
-					}
-
-					// TODO: remove once shouldConvert check is in Rhino
-					if (valueType != TypeInfo.NONE && cx.canConvert(value, valueType)) {
-						try {
-							Object converted = cx.jsToJava(value, valueType);
-							if (converted != null) {
-								//noinspection rawtypes, unchecked
-								builder.set((DataComponentType) type, converted);
-								continue;
-							}
-						} catch (EvaluatorException e) {
-							evalError = e;
-						}
-					}
-
-					var codec = type.codec();
-
-					if (codec == null) {
-						failed = true;
-						errors.add(Pair.of(type, "Component has non-serializable type"));
-						continue;
-					}
-
-					switch (codec.parse(reg.json(), JsonUtils.of(cx, value))) {
-						case DataResult.Success<?> success ->
-							//noinspection rawtypes, unchecked
-							builder.set((DataComponentType) type, success.value());
-						case DataResult.Error<?> error -> {
-							failed = true;
-							String message = evalError != null
-								? "Failed to parse component from type wrappers and codec! Native: %s, Codec: %s".formatted(evalError.details(), error.message())
-								: "Failed to parse component from codec: %s!".formatted(error.message());
-							errors.add(Pair.of(type, message));
-						}
-					}
+					wrapEntry(cx, entry, null, builder::set, errors::put);
 				}
 
-				if (failed) {
-					var msg = errors.build().map(pair -> {
-						var type = pair.getFirst();
-						var error = pair.getSecond();
-
+				if (!errors.isEmpty()) {
+					var joiner = new StringJoiner("; ");
+					errors.forEach((type, error) -> {
 						var id = reg.access().registryOrThrow(Registries.DATA_COMPONENT_TYPE).getKeyOrNull(type);
-
-						return "'%s' -> %s".formatted(id, error);
-					}).collect(Collectors.joining("; "));
-					yield error(() -> "Invalid component map format, errored input: [%s]".formatted(msg), builder.build());
+						joiner.add("'%s' -> %s".formatted(id, error));
+					});
+					yield error(() -> "Invalid component map format, errored input: [%s]".formatted(joiner.toString()), builder.build());
 				} else {
 					yield success(builder.build());
 				}
@@ -448,69 +400,20 @@ public interface DataComponentWrapper {
 			case Map<?, ?> map -> {
 				var builder = DataComponentPatch.builder();
 
-				var failed = false;
-				Stream.Builder<Pair<DataComponentType<?>, String>> errors = Stream.builder();
-
 				Map<DataComponentType<?>, ?> wrapped = Objects.requireNonNull(cx.optionalMapOf(map, COMPONENT_TYPE, TypeInfo.NONE));
+				Map<DataComponentType<?>, String> errors = new HashMap<>();
 
 				for (var entry : wrapped.entrySet()) {
-					var type = entry.getKey();
-					var valueType = getTypeInfo(type);
-
-					var value = entry.getValue();
-					EvaluatorException evalError = null;
-
-					if (value == null || value instanceof Undefined) {
-						builder.remove(type);
-						continue;
-					}
-
-					// TODO: remove once shouldConvert check is in Rhino
-					if (valueType != TypeInfo.NONE && cx.canConvert(value, valueType)) {
-						try {
-							Object converted = cx.jsToJava(value, valueType);
-							if (converted != null) {
-								//noinspection rawtypes, unchecked
-								builder.set((DataComponentType) type, converted);
-								continue;
-							}
-						} catch (EvaluatorException e) {
-							evalError = e;
-						}
-					}
-
-					var codec = type.codec();
-
-					if (codec == null) {
-						failed = true;
-						errors.add(Pair.of(type, "Component has non-serializable type"));
-						continue;
-					}
-
-					switch (codec.parse(reg.json(), JsonUtils.of(cx, value))) {
-						case DataResult.Success<?> success ->
-							//noinspection rawtypes, unchecked
-							builder.set((DataComponentType) type, success.value());
-						case DataResult.Error<?> error -> {
-							failed = true;
-							String message = evalError != null
-								? "Failed to parse component from type wrappers and codec! Native: %s, Codec: %s".formatted(evalError.details(), error.message())
-								: "Failed to parse component from codec: %s!".formatted(error.message());
-							errors.add(Pair.of(type, message));
-						}
-					}
+					wrapEntry(cx, entry, builder::remove, builder::set, errors::put);
 				}
 
-				if (failed) {
-					var msg = errors.build().map(pair -> {
-						var type = pair.getFirst();
-						var error = pair.getSecond();
-
+				if (!errors.isEmpty()) {
+					var joiner = new StringJoiner("; ");
+					errors.forEach((type, error) -> {
 						var id = reg.access().registryOrThrow(Registries.DATA_COMPONENT_TYPE).getKeyOrNull(type);
-
-						return "'%s' -> %s".formatted(id, error);
-					}).collect(Collectors.joining("; "));
-					yield error(() -> "Invalid component map format, errored input: [%s]".formatted(msg), builder.build());
+						joiner.add("'%s' -> %s".formatted(id, error));
+					});
+					yield error(() -> "Invalid component map format, errored input: [%s]".formatted(joiner.toString()), builder.build());
 				} else {
 					yield success(builder.build());
 				}
@@ -525,6 +428,56 @@ public interface DataComponentWrapper {
 			}
 			default -> error(() -> "Don't know how to convert %s to DataComponentPatch!".formatted(o));
 		};
+	}
+
+	private static void wrapEntry(
+		Context cx,
+		Map.Entry<DataComponentType<?>, ?> entry,
+		@Nullable Consumer<DataComponentType<?>> ifNull,
+		@SuppressWarnings("rawtypes") BiConsumer<DataComponentType, Object> builder,
+		BiConsumer<DataComponentType<?>, String> error
+	) {
+		var reg = RegistryAccessContainer.of(cx);
+
+		var type = entry.getKey();
+		var valueType = getTypeInfo(type);
+
+		var value = entry.getValue();
+
+		if (value == null || value instanceof Undefined) {
+			if (ifNull != null) {
+				ifNull.accept(type);
+			}
+
+			return;
+		}
+
+		EvaluatorException evalError = null;
+
+		if (valueType.shouldConvert() && cx.canConvert(value, valueType)) {
+			try {
+				Object converted = cx.jsToJava(value, valueType);
+				if (converted != null) {
+					builder.accept(type, converted);
+					return;
+				}
+			} catch (EvaluatorException e) {
+				evalError = e;
+			}
+		}
+
+		var codec = type.codec();
+
+		if (codec != null) {
+			switch (codec.parse(reg.json(), JsonUtils.of(cx, value))) {
+				case DataResult.Success<?> success -> builder.accept(type, success.value());
+				case DataResult.Error<?> err -> error.accept(type, evalError != null
+					? "Failed to parse component from type wrappers and codec! Native: %s, Codec: %s".formatted(evalError.details(), err.message())
+					: "Failed to parse component from codec: %s!".formatted(err.message()));
+			}
+		} else {
+			error.accept(type, "Component has non-serializable type");
+		}
 	}
 
 	private static <B, T> DataResult<T> fnToBuilder(Context cx, Class<B> builderType, BaseFunction fn, Function<B, T> build) {
