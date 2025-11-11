@@ -29,7 +29,6 @@ import net.minecraft.world.item.component.BlockItemStateProperties;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.component.DyedItemColor;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.component.SeededContainerLoot;
@@ -139,14 +138,6 @@ public interface ComponentFunctions {
 
 	default void kjs$setLore(List<Component> lines, List<Component> styledLines) {
 		kjs$override(DataComponents.LORE, new ItemLore(List.copyOf(lines), List.copyOf(styledLines)));
-	}
-
-	default void kjs$setAttributeModifiers(List<ItemAttributeModifiers.Entry> modifiers) {
-		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(modifiers, false));
-	}
-
-	default void kjs$setAttributeModifiersWithTooltip(List<ItemAttributeModifiers.Entry> modifiers) {
-		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(modifiers, true));
 	}
 
 	default void kjs$setCustomModelData(int data) {

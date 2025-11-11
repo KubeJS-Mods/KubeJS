@@ -62,15 +62,15 @@ public class ItemModificationKubeEvent implements KubeEvent {
 			this.item.kjs$setCraftingRemainder(item);
 		}
 
-		public void setTier(Consumer<MutableToolTier> c) {
+		public void setTier(Consumer<MutableToolTier> builder) {
 			if (item instanceof TieredItem tiered) {
 				var oldTier = tiered.tier;
-				var tier = Util.make(new MutableToolTier(tiered.tier), c);
+				var tier = Util.make(new MutableToolTier(tiered.tier), builder);
 				tiered.tier = tier;
 
 				// need to update modifiers for attack dmg; this is quite messy but oh well
 				var modifiers = ItemAttributeModifiers.builder();
-				for (var entry : kjs$get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers()) {
+				for (var entry : kjs$getAttributeModifiers().modifiers()) {
 					if (entry.matches(Attributes.ATTACK_DAMAGE, BASE_ATTACK_DAMAGE_ID)) {
 						double base = entry.modifier().amount() - oldTier.getAttackDamageBonus();
 						modifiers.add(entry.attribute(),

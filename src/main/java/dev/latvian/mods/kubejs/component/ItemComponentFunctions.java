@@ -7,6 +7,10 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Instrument;
 import net.minecraft.world.item.ItemStack;
@@ -15,11 +19,18 @@ import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.FireworkExplosion;
 import net.minecraft.world.item.component.Fireworks;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.MapItemColor;
 import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.item.component.Unbreakable;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
+import static net.minecraft.world.item.Item.BASE_ATTACK_DAMAGE_ID;
+import static net.minecraft.world.item.Item.BASE_ATTACK_SPEED_ID;
 
 @RemapPrefixForJS("kjs$")
 public interface ItemComponentFunctions extends ComponentFunctions {
@@ -102,4 +113,87 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 	default void kjs$setNoteBlockSound(ResourceLocation id) {
 		kjs$override(DataComponents.NOTE_BLOCK_SOUND, id);
 	}
+
+	default ItemAttributeModifiers kjs$getAttributeModifiers() {
+		var mods = kjs$get(DataComponents.ATTRIBUTE_MODIFIERS);
+		return mods == null ? new ItemAttributeModifiers(List.of(), true) : mods;
+	}
+
+	default boolean kjs$hasAttributeModifier(Holder<Attribute> attribute, ResourceLocation id) {
+		for (var modifier : kjs$getAttributeModifiers().modifiers()) {
+			if (modifier.matches(attribute, id)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Nullable
+	default AttributeModifier kjs$getAttributeModifier(Holder<Attribute> attribute, ResourceLocation id) {
+		for (var modifier : kjs$getAttributeModifiers().modifiers()) {
+			if (modifier.matches(attribute, id)) {
+				return modifier.modifier();
+			}
+		}
+		return null;
+	}
+
+	default void kjs$setAttributeModifiers(List<ItemAttributeModifiers.Entry> modifiers) {
+		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(modifiers, false));
+	}
+
+	default void kjs$setAttributeModifiersWithTooltip(List<ItemAttributeModifiers.Entry> modifiers) {
+		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(modifiers, true));
+	}
+
+	default void kjs$setAttackSpeed(double speed) {
+		var oldMods = kjs$getAttributeModifiers();
+
+		var list = new ArrayList<ItemAttributeModifiers.Entry>(oldMods.modifiers().size());
+		for (var modifier : oldMods.modifiers()) {
+			if (modifier.attribute().equals(Attributes.ATTACK_SPEED)) {
+				continue;
+			}
+
+			list.add(modifier);
+		}
+		list.add(new ItemAttributeModifiers.Entry(Attributes.ATTACK_SPEED,
+			new AttributeModifier(BASE_ATTACK_SPEED_ID, speed, Operation.ADD_VALUE),
+			EquipmentSlotGroup.MAINHAND));
+
+		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(list, oldMods.showInTooltip()));
+	}
+
+	default void kjs$setAttackDamage(double dmg) {
+		var oldMods = kjs$getAttributeModifiers();
+
+		var list = new ArrayList<ItemAttributeModifiers.Entry>(oldMods.modifiers().size());
+		for (var modifier : oldMods.modifiers()) {
+			if (modifier.attribute().equals(Attributes.ATTACK_DAMAGE)) {
+				continue;
+			}
+
+			list.add(modifier);
+		}
+		list.add(new ItemAttributeModifiers.Entry(Attributes.ATTACK_DAMAGE,
+			new AttributeModifier(BASE_ATTACK_DAMAGE_ID, dmg, Operation.ADD_VALUE),
+			EquipmentSlotGroup.MAINHAND));
+
+		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(list, oldMods.showInTooltip()));
+	}
+
+	default void kjs$setBaseAttackSpeed(double speed) {
+		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, kjs$getAttributeModifiers()
+			.withModifierAdded(Attributes.ATTACK_SPEED,
+				new AttributeModifier(BASE_ATTACK_SPEED_ID, speed, Operation.ADD_VALUE),
+				EquipmentSlotGroup.MAINHAND));
+	}
+
+	default void kjs$setBaseAttackDamage(double dmg) {
+		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, kjs$getAttributeModifiers()
+			.withModifierAdded(Attributes.ATTACK_DAMAGE,
+				new AttributeModifier(BASE_ATTACK_DAMAGE_ID, dmg, Operation.ADD_VALUE),
+				EquipmentSlotGroup.MAINHAND));
+	}
+
 }
