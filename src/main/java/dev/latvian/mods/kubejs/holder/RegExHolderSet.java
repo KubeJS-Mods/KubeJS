@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.holder;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -43,9 +44,17 @@ public class RegExHolderSet<T> extends HolderSet.ListBacked<T> implements ICusto
 	@Nullable
 	private List<Holder<T>> list = null;
 
-	public RegExHolderSet(HolderLookup.RegistryLookup<T> registryLookup, Pattern pattern) {
+	private RegExHolderSet(HolderLookup.RegistryLookup<T> registryLookup, Pattern pattern) {
 		this.registryLookup = registryLookup;
 		this.pattern = pattern;
+	}
+
+	public static <T> HolderSet<T> of(HolderLookup.RegistryLookup<T> registryLookup, Pattern pattern) {
+		var set = new RegExHolderSet<>(registryLookup, pattern);
+		if (CommonProperties.get().serverOnly) {
+			return HolderSet.direct(set.contents());
+		}
+		return set;
 	}
 
 	@Override

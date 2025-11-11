@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.CommonProperties;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
@@ -42,9 +43,17 @@ public class NamespaceHolderSet<T> extends HolderSet.ListBacked<T> implements IC
 	@Nullable
 	private List<Holder<T>> list = null;
 
-	public NamespaceHolderSet(HolderLookup.RegistryLookup<T> registryLookup, String namespace) {
+	private NamespaceHolderSet(HolderLookup.RegistryLookup<T> registryLookup, String namespace) {
 		this.registryLookup = registryLookup;
 		this.namespace = namespace;
+	}
+
+	public static <T> HolderSet<T> of(HolderLookup.RegistryLookup<T> registryLookup, String namespace) {
+		var set = new NamespaceHolderSet<>(registryLookup, namespace);
+		if (CommonProperties.get().serverOnly) {
+			return HolderSet.direct(set.contents());
+		}
+		return set;
 	}
 
 	@Override

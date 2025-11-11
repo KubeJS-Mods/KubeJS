@@ -106,8 +106,8 @@ public interface HolderWrapper {
 		return switch (from) {
 			case HolderSet set -> set;
 			case Holder holder when holder.canSerializeIn(registry.holderOwner()) -> HolderSet.direct(holder);
-			case NativeRegExp regex -> new RegExHolderSet<>(registry.asLookup(), RegExpKJS.wrap(regex));
-			case Pattern regex -> new RegExHolderSet<>(registry.asLookup(), regex);
+			case NativeRegExp regex -> RegExHolderSet.of(registry.asLookup(), RegExpKJS.wrap(regex));
+			case Pattern regex -> RegExHolderSet.of(registry.asLookup(), regex);
 			case RegistryObjectKJS registered -> wrapSimpleSet(registry, registered.kjs$asHolder());
 			case TagKey tag when tag.isFor(registry.key()) -> orEmpty(registry.getTag(tag));
 			case ResourceKey<?> key when key.isFor(registry.key()) -> orEmpty(key.cast(registry.key())
@@ -118,7 +118,7 @@ public interface HolderWrapper {
 			case CharSequence cs -> {
 				var s = cs.toString();
 				yield switch (s.charAt(0)) {
-					case '@' -> new NamespaceHolderSet<>(registry.asLookup(), s.substring(1));
+					case '@' -> NamespaceHolderSet.of(registry.asLookup(), s.substring(1));
 					case '#' -> {
 						var tagKey = TagKey.create(registry.key(), ResourceLocation.parse(s.substring(1)));
 						yield registry.getOrCreateTag(tagKey);
