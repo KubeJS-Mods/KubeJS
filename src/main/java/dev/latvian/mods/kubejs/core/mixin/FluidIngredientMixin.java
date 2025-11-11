@@ -8,4 +8,8 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(value = FluidIngredient.class, remap = false)
 @RemapPrefixForJS("kjs$")
 public abstract class FluidIngredientMixin implements FluidIngredientKJS {
+	@Override
+	public FluidIngredient kjs$self() {
+		return (FluidIngredient) (Object) this;
+	}
 }
