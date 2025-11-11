@@ -120,8 +120,8 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 	}
 
 	default boolean kjs$hasAttributeModifier(Holder<Attribute> attribute, ResourceLocation id) {
-		for (var modifier : kjs$getAttributeModifiers().modifiers()) {
-			if (modifier.matches(attribute, id)) {
+		for (var entry : kjs$getAttributeModifiers().modifiers()) {
+			if (entry.matches(attribute, id)) {
 				return true;
 			}
 		}
@@ -130,9 +130,9 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 
 	@Nullable
 	default AttributeModifier kjs$getAttributeModifier(Holder<Attribute> attribute, ResourceLocation id) {
-		for (var modifier : kjs$getAttributeModifiers().modifiers()) {
-			if (modifier.matches(attribute, id)) {
-				return modifier.modifier();
+		for (var entry : kjs$getAttributeModifiers().modifiers()) {
+			if (entry.matches(attribute, id)) {
+				return entry.modifier();
 			}
 		}
 		return null;
@@ -150,12 +150,12 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 		var oldMods = kjs$getAttributeModifiers();
 
 		var list = new ArrayList<ItemAttributeModifiers.Entry>(oldMods.modifiers().size());
-		for (var modifier : oldMods.modifiers()) {
-			if (modifier.attribute().equals(Attributes.ATTACK_SPEED)) {
+		for (var entry : oldMods.modifiers()) {
+			if (entry.attribute().equals(Attributes.ATTACK_SPEED)) {
 				continue;
 			}
 
-			list.add(modifier);
+			list.add(entry);
 		}
 		list.add(new ItemAttributeModifiers.Entry(Attributes.ATTACK_SPEED,
 			new AttributeModifier(BASE_ATTACK_SPEED_ID, speed, Operation.ADD_VALUE),
@@ -168,18 +168,60 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 		var oldMods = kjs$getAttributeModifiers();
 
 		var list = new ArrayList<ItemAttributeModifiers.Entry>(oldMods.modifiers().size());
-		for (var modifier : oldMods.modifiers()) {
-			if (modifier.attribute().equals(Attributes.ATTACK_DAMAGE)) {
+		for (var entry : oldMods.modifiers()) {
+			if (entry.attribute().equals(Attributes.ATTACK_DAMAGE)) {
 				continue;
 			}
 
-			list.add(modifier);
+			list.add(entry);
 		}
 		list.add(new ItemAttributeModifiers.Entry(Attributes.ATTACK_DAMAGE,
 			new AttributeModifier(BASE_ATTACK_DAMAGE_ID, dmg, Operation.ADD_VALUE),
 			EquipmentSlotGroup.MAINHAND));
 
 		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(list, oldMods.showInTooltip()));
+	}
+
+	default double kjs$getAttackDamage() {
+		var base = kjs$getBaseAttackDamage();
+		var sum = 0.0;
+
+		for (var entry : kjs$getAttributeModifiers().modifiers()) {
+			if (entry.matches(Attributes.ATTACK_DAMAGE, BASE_ATTACK_DAMAGE_ID)) {
+				continue;
+			}
+
+			var mod = entry.modifier();
+			double d1 = mod.amount();
+
+			sum += switch (mod.operation()) {
+				case ADD_VALUE -> d1;
+				case ADD_MULTIPLIED_BASE -> d1 * base;
+				case ADD_MULTIPLIED_TOTAL -> d1 * sum;
+			};
+		}
+		return sum;
+	}
+
+	default double kjs$getAttackSpeed() {
+		var base = kjs$getBaseAttackSpeed();
+		var sum = 0.0;
+
+		for (var entry : kjs$getAttributeModifiers().modifiers()) {
+			if (entry.matches(Attributes.ATTACK_SPEED, BASE_ATTACK_SPEED_ID)) {
+				continue;
+			}
+
+			var mod = entry.modifier();
+			double d1 = mod.amount();
+
+			sum += switch (mod.operation()) {
+				case ADD_VALUE -> d1;
+				case ADD_MULTIPLIED_BASE -> d1 * base;
+				case ADD_MULTIPLIED_TOTAL -> d1 * sum;
+			};
+		}
+		return sum;
 	}
 
 	default void kjs$setBaseAttackSpeed(double speed) {
@@ -194,6 +236,24 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 			.withModifierAdded(Attributes.ATTACK_DAMAGE,
 				new AttributeModifier(BASE_ATTACK_DAMAGE_ID, dmg, Operation.ADD_VALUE),
 				EquipmentSlotGroup.MAINHAND));
+	}
+
+	default double kjs$getBaseAttackDamage() {
+		for (var modifier : kjs$getAttributeModifiers().modifiers()) {
+			if (modifier.matches(Attributes.ATTACK_DAMAGE, BASE_ATTACK_DAMAGE_ID)) {
+				return modifier.modifier().amount();
+			}
+		}
+		return 0.0;
+	}
+
+	default double kjs$getBaseAttackSpeed() {
+		for (var modifier : kjs$getAttributeModifiers().modifiers()) {
+			if (modifier.matches(Attributes.ATTACK_SPEED, BASE_ATTACK_SPEED_ID)) {
+				return modifier.modifier().amount();
+			}
+		}
+		return 0.0;
 	}
 
 }
