@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.client.highlight;
 
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
+import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.net.WebServerUpdateNBTPayload;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.OrderedCompoundTag;
@@ -21,7 +22,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -98,7 +98,7 @@ public class KubedexPayloadHandler {
 
 			payload.put("block", payloadBlock);
 
-			PacketDistributor.sendToPlayer(player, new WebServerUpdateNBTPayload("highlight/block", "highlight", Optional.of(payload)));
+			KubeJSNet.safeSendToPlayer(player, new WebServerUpdateNBTPayload("highlight/block", "highlight", Optional.of(payload)));
 		}
 	}
 
@@ -130,7 +130,7 @@ public class KubedexPayloadHandler {
 
 			payload.put("entity", payloadEntity);
 
-			PacketDistributor.sendToPlayer(player, new WebServerUpdateNBTPayload("highlight/entity", "highlight", Optional.of(payload)));
+			KubeJSNet.safeSendToPlayer(player, new WebServerUpdateNBTPayload("highlight/entity", "highlight", Optional.of(payload)));
 		}
 	}
 
@@ -218,6 +218,6 @@ public class KubedexPayloadHandler {
 
 		payload.put("items", payloadItems);
 
-		PacketDistributor.sendToPlayer(player, new WebServerUpdateNBTPayload("highlight/items", "highlight", Optional.of(payload)));
+		KubeJSNet.safeSendToPlayer(player, new WebServerUpdateNBTPayload("highlight/items", "highlight", Optional.of(payload)));
 	}
 }

@@ -1,9 +1,12 @@
 package dev.latvian.mods.kubejs.net;
 
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID)
@@ -56,4 +59,22 @@ public interface KubeJSNet {
 		reg.playToServer(Kubedex.REQUEST_BLOCK, RequestBlockKubedexPayload.STREAM_CODEC, RequestBlockKubedexPayload::handle);
 		reg.playToServer(Kubedex.REQUEST_ENTITY, RequestEntityKubedexPayload.STREAM_CODEC, RequestEntityKubedexPayload::handle);
 	}
+
+	static void safeSendToPlayer(ServerPlayer player, CustomPacketPayload payload, CustomPacketPayload... payloads) {
+		if (CommonProperties.get().serverOnly) {
+			return;
+		}
+		PacketDistributor.sendToPlayer(player, payload, payloads);
+	}
+
+	/**
+	 * Send the given payload(s) to all players on the server
+	 */
+	static void sendToAllPlayers(CustomPacketPayload payload, CustomPacketPayload... payloads) {
+		if (CommonProperties.get().serverOnly) {
+			return;
+		}
+		PacketDistributor.sendToAllPlayers(payload, payloads);
+	}
+
 }

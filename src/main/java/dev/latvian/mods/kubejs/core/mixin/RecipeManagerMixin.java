@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
 import com.llamalad7.mixinextras.sugar.Local;
+import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.net.KubeServerData;
@@ -91,7 +92,9 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 
 		kjs$event = null;
 
-		kjs$getResources().kjs$getServerScriptManager().serverData = new SyncServerDataPayload(KubeServerData.collect());
+		if (!CommonProperties.get().serverOnly) {
+			kjs$getResources().kjs$getServerScriptManager().serverData = new SyncServerDataPayload(KubeServerData.collect());
+		}
 	}
 
 	@Override

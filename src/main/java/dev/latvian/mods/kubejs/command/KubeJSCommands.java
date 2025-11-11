@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.event.TargetedEventHandler;
 import dev.latvian.mods.kubejs.net.DisplayClientErrorsPayload;
 import dev.latvian.mods.kubejs.net.DisplayServerErrorsPayload;
+import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.net.ReloadStartupScriptsPayload;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
@@ -46,7 +47,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -302,7 +302,7 @@ public class KubeJSCommands {
 	private static int errors(CommandSourceStack source, ScriptType type) throws CommandSyntaxException {
 		if (type == ScriptType.CLIENT) {
 			var player = source.getPlayerOrException();
-			PacketDistributor.sendToPlayer(player, new DisplayClientErrorsPayload());
+			KubeJSNet.safeSendToPlayer(player, new DisplayClientErrorsPayload());
 			return 1;
 		}
 
@@ -315,7 +315,7 @@ public class KubeJSCommands {
 		var errors = new ArrayList<>(type.console.errors);
 		var warnings = new ArrayList<>(type.console.warnings);
 		player.sendSystemMessage(Component.literal("You need KubeJS on client side!").withStyle(ChatFormatting.RED), true);
-		PacketDistributor.sendToPlayer(player, new DisplayServerErrorsPayload(type.ordinal(), errors, warnings));
+		KubeJSNet.safeSendToPlayer(player, new DisplayServerErrorsPayload(type.ordinal(), errors, warnings));
 
 		// FIXME
 		/*
@@ -358,7 +358,7 @@ public class KubeJSCommands {
 	private static int reloadStartup(CommandSourceStack source) {
 		KubeJS.getStartupScriptManager().reload();
 		source.sendSystemMessage(Component.literal("Done!"));
-		PacketDistributor.sendToAllPlayers(new ReloadStartupScriptsPayload(source.getServer().isDedicatedServer()));
+		KubeJSNet.sendToAllPlayers(new ReloadStartupScriptsPayload(source.getServer().isDedicatedServer()));
 		return 1;
 	}
 

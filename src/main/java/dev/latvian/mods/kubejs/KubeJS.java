@@ -152,13 +152,13 @@ public class KubeJS {
 			// KubeJSComponents.REGISTRY.register(bus);
 			KubeJSRecipeSerializers.REGISTRY.register(bus);
 			KubeJSMenus.REGISTRY.register(bus);
+			KubeJSIngredients.REGISTRY.register(bus);
+			KubeJSFluidIngredients.REGISTRY.register(bus);
+			KubeJSHolderSets.REGISTRY.register(bus);
 		}
 
-		KubeJSIngredients.REGISTRY.register(bus);
-		KubeJSFluidIngredients.REGISTRY.register(bus);
 		KubeJSCreativeTabs.REGISTRY.register(bus);
 		KubeJSRuleTests.REGISTRY.register(bus);
-		KubeJSHolderSets.REGISTRY.register(bus);
 
 		StartupEvents.INIT.post(ScriptType.STARTUP, KubeStartupEvent.BASIC);
 		// KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);

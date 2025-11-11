@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
+import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.net.SendDataFromServerPayload;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
@@ -22,7 +23,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -150,7 +150,7 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 
 	@Override
 	default void kjs$sendData(String channel, @Nullable CompoundTag data) {
-		PacketDistributor.sendToAllPlayers(new SendDataFromServerPayload(channel, data));
+		KubeJSNet.sendToAllPlayers(new SendDataFromServerPayload(channel, data));
 	}
 
 	@HideFromJS

@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.gui.KubeJSMenu;
 import dev.latvian.mods.kubejs.gui.chest.ChestMenuData;
 import dev.latvian.mods.kubejs.gui.chest.CustomChestMenu;
 import dev.latvian.mods.kubejs.level.LevelBlock;
+import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.net.NotificationPayload;
 import dev.latvian.mods.kubejs.net.SendDataFromServerPayload;
 import dev.latvian.mods.kubejs.net.SetActivePostShaderPayload;
@@ -26,7 +27,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
@@ -44,7 +44,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	@Override
 	default void kjs$sendData(String channel, @Nullable CompoundTag data) {
 		if (!channel.isEmpty()) {
-			PacketDistributor.sendToPlayer(kjs$self(), new SendDataFromServerPayload(channel, data));
+			KubeJSNet.safeSendToPlayer(kjs$self(), new SendDataFromServerPayload(channel, data));
 		}
 	}
 
@@ -150,7 +150,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 
 	@Override
 	default void kjs$notify(NotificationToastData builder) {
-		PacketDistributor.sendToPlayer(kjs$self(), new NotificationPayload(builder));
+		KubeJSNet.safeSendToPlayer(kjs$self(), new NotificationPayload(builder));
 	}
 
 	default void kjs$openChestGUI(Consumer<KubeJSGUI> gui) {
@@ -256,6 +256,6 @@ public interface ServerPlayerKJS extends PlayerKJS {
 
 	@Override
 	default void kjs$setActivePostShader(@Nullable ResourceLocation id) {
-		PacketDistributor.sendToPlayer(kjs$self(), new SetActivePostShaderPayload(Optional.ofNullable(id)));
+		KubeJSNet.safeSendToPlayer(kjs$self(), new SetActivePostShaderPayload(Optional.ofNullable(id)));
 	}
 }

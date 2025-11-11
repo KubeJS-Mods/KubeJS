@@ -1,13 +1,13 @@
 package dev.latvian.mods.kubejs.stages;
 
 import dev.latvian.mods.kubejs.net.AddStagePayload;
+import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.net.RemoveStagePayload;
 import dev.latvian.mods.kubejs.net.SyncStagesPayload;
 import dev.latvian.mods.kubejs.player.StageChangedEvent;
 import dev.latvian.mods.kubejs.plugin.builtin.event.PlayerEvents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +28,7 @@ public interface Stages {
 	default boolean add(String stage) {
 		if (addNoUpdate(stage)) {
 			if (getPlayer() instanceof ServerPlayer player) {
-				PacketDistributor.sendToAllPlayers(new AddStagePayload(player.getUUID(), stage));
+				KubeJSNet.sendToAllPlayers(new AddStagePayload(player.getUUID(), stage));
 			}
 
 			if (PlayerEvents.STAGE_ADDED.hasListeners(stage)) {
@@ -44,7 +44,7 @@ public interface Stages {
 	default boolean remove(String stage) {
 		if (removeNoUpdate(stage)) {
 			if (getPlayer() instanceof ServerPlayer player) {
-				PacketDistributor.sendToAllPlayers(new RemoveStagePayload(player.getUUID(), stage));
+				KubeJSNet.sendToAllPlayers(new RemoveStagePayload(player.getUUID(), stage));
 			}
 
 			if (PlayerEvents.STAGE_REMOVED.hasListeners(stage)) {
@@ -81,7 +81,7 @@ public interface Stages {
 
 	default void sync() {
 		if (getPlayer() instanceof ServerPlayer player) {
-			PacketDistributor.sendToPlayer(player, new SyncStagesPayload(getAll()));
+			KubeJSNet.safeSendToPlayer(player, new SyncStagesPayload(getAll()));
 		}
 	}
 
