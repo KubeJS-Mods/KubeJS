@@ -16,6 +16,7 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
+import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.BaseFunction;
@@ -368,8 +369,14 @@ public interface DataComponentWrapper {
 					var valueType = getTypeInfo(type);
 
 					var value = entry.getValue();
+					EvaluatorException evalError = null;
 
-					if (cx.canConvert(value, valueType)) {
+					if (value == null || value instanceof Undefined) {
+						continue;
+					}
+
+					// TODO: remove once shouldConvert check is in Rhino
+					if (valueType != TypeInfo.NONE && cx.canConvert(value, valueType)) {
 						try {
 							Object converted = cx.jsToJava(value, valueType);
 							if (converted != null) {
@@ -378,9 +385,7 @@ public interface DataComponentWrapper {
 								continue;
 							}
 						} catch (EvaluatorException e) {
-							failed = true;
-							errors.add(Pair.of(type, "Failed to parse input as data component: %s".formatted(e.details())));
-							continue;
+							evalError = e;
 						}
 					}
 
@@ -392,13 +397,16 @@ public interface DataComponentWrapper {
 						continue;
 					}
 
-					switch (codec.parse(reg.java(), value)) {
+					switch (codec.parse(reg.json(), JsonUtils.of(cx, value))) {
 						case DataResult.Success<?> success ->
 							//noinspection rawtypes, unchecked
 							builder.set((DataComponentType) type, success.value());
 						case DataResult.Error<?> error -> {
 							failed = true;
-							errors.add(Pair.of(type, error.message()));
+							String message = evalError != null
+								? "Failed to parse component from type wrappers and codec! Native: %s, Codec: %s".formatted(evalError.details(), error.message())
+								: "Failed to parse component from codec: %s!".formatted(error.message());
+							errors.add(Pair.of(type, message));
 						}
 					}
 				}
@@ -450,13 +458,15 @@ public interface DataComponentWrapper {
 					var valueType = getTypeInfo(type);
 
 					var value = entry.getValue();
+					EvaluatorException evalError = null;
 
 					if (value == null || value instanceof Undefined) {
 						builder.remove(type);
 						continue;
 					}
 
-					if (cx.canConvert(value, valueType)) {
+					// TODO: remove once shouldConvert check is in Rhino
+					if (valueType != TypeInfo.NONE && cx.canConvert(value, valueType)) {
 						try {
 							Object converted = cx.jsToJava(value, valueType);
 							if (converted != null) {
@@ -465,9 +475,7 @@ public interface DataComponentWrapper {
 								continue;
 							}
 						} catch (EvaluatorException e) {
-							failed = true;
-							errors.add(Pair.of(type, "Failed to parse input as data component: %s".formatted(e.details())));
-							continue;
+							evalError = e;
 						}
 					}
 
@@ -479,13 +487,16 @@ public interface DataComponentWrapper {
 						continue;
 					}
 
-					switch (codec.parse(reg.java(), value)) {
+					switch (codec.parse(reg.json(), JsonUtils.of(cx, value))) {
 						case DataResult.Success<?> success ->
 							//noinspection rawtypes, unchecked
 							builder.set((DataComponentType) type, success.value());
 						case DataResult.Error<?> error -> {
 							failed = true;
-							errors.add(Pair.of(type, error.message()));
+							String message = evalError != null
+								? "Failed to parse component from type wrappers and codec! Native: %s, Codec: %s".formatted(evalError.details(), error.message())
+								: "Failed to parse component from codec: %s!".formatted(error.message());
+							errors.add(Pair.of(type, message));
 						}
 					}
 				}
