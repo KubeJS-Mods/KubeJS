@@ -33,7 +33,6 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;

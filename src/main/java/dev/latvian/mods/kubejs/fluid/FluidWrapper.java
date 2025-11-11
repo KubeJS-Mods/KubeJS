@@ -7,6 +7,7 @@ import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.script.SourceLine;
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
@@ -15,6 +16,7 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -75,6 +77,17 @@ public interface FluidWrapper {
 	static FluidIngredient ingredientOf(FluidIngredient of) {
 		return of;
 	}
+
+	@Info("Returns an ingredient that accepts the given set of fluids under the given component filter.")
+	static FluidIngredient ingredientOf(HolderSet<Fluid> base, DataComponentMap data) {
+		return ingredientOf(base, data, false);
+	}
+
+	@Info("Returns an ingredient that accepts the given set of items under the given (optionally strict) component filter.")
+	static FluidIngredient ingredientOf(HolderSet<Fluid> base, DataComponentMap data, boolean strict) {
+		return DataComponentFluidIngredient.of(strict, data, base);
+	}
+
 
 	@HideFromJS
 	static DataResult<FluidIngredient> tryWrapIngredient(Context cx, Object from) {
