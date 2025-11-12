@@ -3,10 +3,11 @@ package dev.latvian.mods.kubejs.component;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
 import dev.latvian.mods.kubejs.color.KubeColor;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
@@ -40,6 +41,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static dev.latvian.mods.kubejs.component.DataComponentWrapper.tryWrapComponent;
+
 @RemapPrefixForJS("kjs$")
 @ReturnsSelf
 public interface ComponentFunctions {
@@ -56,10 +59,16 @@ public interface ComponentFunctions {
 	<T> ComponentFunctions kjs$override(DataComponentType<T> type, @Nullable T value);
 
 	default ComponentFunctions kjs$set(Context cx, DataComponentType<?> component, Object value) {
-		if (value == null || Undefined.isUndefined(value)) {
-			return kjs$remove(component);
+		var wrapped = tryWrapComponent(cx, component, value)
+			.getOrThrow(msg ->
+				new KubeRuntimeException("Failed to wrap data component %s from '%s': %s".formatted(component, value, msg))
+					.source(SourceLine.of(cx))
+			);
+
+		if (wrapped.isPresent()) {
+			return kjs$override((DataComponentType) component, wrapped.get());
 		} else {
-			return kjs$override((DataComponentType) component, cx.jsToJava(value, DataComponentWrapper.getTypeInfo(component)));
+			return kjs$remove(component);
 		}
 	}
 

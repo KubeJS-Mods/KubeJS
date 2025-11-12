@@ -40,6 +40,7 @@ import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.CustomData;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Modifier;
@@ -48,6 +49,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.BiConsumer;
@@ -430,54 +432,63 @@ public interface DataComponentWrapper {
 		};
 	}
 
-	private static void wrapEntry(
-		Context cx,
-		Map.Entry<DataComponentType<?>, ?> entry,
-		@Nullable Consumer<DataComponentType<?>> ifNull,
-		@SuppressWarnings("rawtypes") BiConsumer<DataComponentType, Object> builder,
-		BiConsumer<DataComponentType<?>, String> error
-	) {
+	static <T> DataResult<Optional<T>> tryWrapComponent(Context cx, DataComponentType<T> type, Object value) {
 		var reg = RegistryAccessContainer.of(cx);
 
-		var type = entry.getKey();
 		var valueType = getTypeInfo(type);
 
-		var value = entry.getValue();
-
 		if (value == null || value instanceof Undefined) {
-			if (ifNull != null) {
-				ifNull.accept(type);
-			}
-
-			return;
+			return success(Optional.empty());
 		}
 
-		EvaluatorException evalError = null;
+		var evalError = new MutableObject<EvaluatorException>();
 
 		if (valueType.shouldConvert() && cx.canConvert(value, valueType)) {
 			try {
 				Object converted = cx.jsToJava(value, valueType);
 				if (converted != null) {
-					builder.accept(type, converted);
-					return;
+					return success(Optional.of(Cast.to(converted)));
 				}
 			} catch (EvaluatorException e) {
-				evalError = e;
+				evalError.setValue(e);
 			}
 		}
+
 
 		var codec = type.codec();
 
 		if (codec != null) {
-			switch (codec.parse(reg.json(), JsonUtils.of(cx, value))) {
-				case DataResult.Success<?> success -> builder.accept(type, success.value());
-				case DataResult.Error<?> err -> error.accept(type, evalError != null
-					? "Failed to parse component from type wrappers and codec! Native: %s, Codec: %s".formatted(evalError.details(), err.message())
-					: "Failed to parse component from codec: %s!".formatted(err.message()));
-			}
+			//noinspection unchecked
+			return (DataResult<Optional<T>>) switch (codec.parse(reg.json(), JsonUtils.of(cx, value))) {
+				case DataResult.Success<?> success -> success.map(Optional::of);
+				case DataResult.Error<?> error -> error.mapError(err -> evalError.getValue() != null
+					? "Failed to parse component from type wrappers and codec! Native: %s, Codec: %s".formatted(evalError.getValue().details(), err)
+					: "Failed to parse component from codec: %s!".formatted(err));
+			};
 		} else {
-			error.accept(type, "Component has non-serializable type");
+			return error(() -> "Component has non-serializable type");
 		}
+	}
+
+	private static void wrapEntry(
+		Context cx,
+		Map.Entry<DataComponentType<?>, ?> entry,
+		@Nullable Consumer<DataComponentType<?>> ifNull,
+		@SuppressWarnings("rawtypes") BiConsumer<DataComponentType, Object> builder,
+		BiConsumer<DataComponentType<?>, String> errorBuilder
+	) {
+		var type = entry.getKey();
+		var value = entry.getValue();
+
+		tryWrapComponent(cx, type, value)
+			.ifSuccess(success -> {
+				if (success.isPresent()) {
+					builder.accept(type, success.get());
+				} else if (ifNull != null) {
+					ifNull.accept(type);
+				}
+			})
+			.ifError(error -> errorBuilder.accept(type, error.message()));
 	}
 
 	private static <B, T> DataResult<T> fnToBuilder(Context cx, Class<B> builderType, BaseFunction fn, Function<B, T> build) {
