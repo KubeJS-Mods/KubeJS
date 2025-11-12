@@ -2,7 +2,9 @@ package dev.latvian.mods.kubejs.component;
 
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -32,86 +34,91 @@ import static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operati
 import static net.minecraft.world.item.Item.BASE_ATTACK_DAMAGE_ID;
 import static net.minecraft.world.item.Item.BASE_ATTACK_SPEED_ID;
 
+@ReturnsSelf
 @RemapPrefixForJS("kjs$")
 public interface ItemComponentFunctions extends ComponentFunctions {
-	default void kjs$setMaxStackSize(int size) {
-		kjs$override(DataComponents.MAX_STACK_SIZE, size);
+	@Override
+	<T> ItemComponentFunctions kjs$override(DataComponentType<T> type, @Nullable T value);
+
+	default ItemComponentFunctions kjs$setMaxStackSize(int size) {
+		return kjs$override(DataComponents.MAX_STACK_SIZE, size);
 	}
 
-	default void kjs$setMaxDamage(int maxDamage) {
-		kjs$override(DataComponents.MAX_DAMAGE, maxDamage);
+	default ItemComponentFunctions kjs$setMaxDamage(int maxDamage) {
+		return kjs$override(DataComponents.MAX_DAMAGE, maxDamage);
 	}
 
-	default void kjs$setDamage(int damage) {
-		kjs$override(DataComponents.DAMAGE, damage);
+	default ItemComponentFunctions kjs$setDamage(int damage) {
+		return kjs$override(DataComponents.DAMAGE, damage);
 	}
 
-	default void kjs$setUnbreakable() {
-		kjs$override(DataComponents.UNBREAKABLE, new Unbreakable(false));
+	default ItemComponentFunctions kjs$setUnbreakable() {
+		return kjs$override(DataComponents.UNBREAKABLE, new Unbreakable(false));
 	}
 
-	default void kjs$setUnbreakableWithTooltip() {
-		kjs$override(DataComponents.UNBREAKABLE, new Unbreakable(true));
+	default ItemComponentFunctions kjs$setUnbreakableWithTooltip() {
+		return kjs$override(DataComponents.UNBREAKABLE, new Unbreakable(true));
 	}
 
-	default void kjs$setItemName(Component component) {
-		kjs$override(DataComponents.ITEM_NAME, component);
+	default ItemComponentFunctions kjs$setItemName(Component component) {
+		return kjs$override(DataComponents.ITEM_NAME, component);
 	}
 
-	default void kjs$setRepairCost(int repairCost) {
-		kjs$override(DataComponents.REPAIR_COST, repairCost);
+	default ItemComponentFunctions kjs$setRepairCost(int repairCost) {
+		return kjs$override(DataComponents.REPAIR_COST, repairCost);
 	}
 
-	default void kjs$setFood(FoodProperties foodProperties) {
-		kjs$override(DataComponents.FOOD, foodProperties);
+	default ItemComponentFunctions kjs$setFood(FoodProperties foodProperties) {
+		return kjs$override(DataComponents.FOOD, foodProperties);
 	}
 
-	default void kjs$setFood(int nutrition, float saturation) {
-		kjs$setFood(new FoodProperties.Builder().nutrition(nutrition).saturationModifier(saturation).build());
+	default ItemComponentFunctions kjs$setFood(int nutrition, float saturation) {
+		return kjs$setFood(new FoodProperties.Builder().nutrition(nutrition).saturationModifier(saturation).build());
 	}
 
-	default void kjs$setFireResistant() {
+	default ItemComponentFunctions kjs$setFireResistant() {
 		kjs$setUnit(DataComponents.FIRE_RESISTANT);
+		return this;
 	}
 
-	default void kjs$setTool(Tool tool) {
-		kjs$override(DataComponents.TOOL, tool);
+	default ItemComponentFunctions kjs$setTool(Tool tool) {
+		return kjs$override(DataComponents.TOOL, tool);
 	}
 
-	default void kjs$setMapItemColor(KubeColor color) {
-		kjs$override(DataComponents.MAP_COLOR, new MapItemColor(color.kjs$getRGB()));
+	default ItemComponentFunctions kjs$setMapItemColor(KubeColor color) {
+		return kjs$override(DataComponents.MAP_COLOR, new MapItemColor(color.kjs$getRGB()));
 	}
 
-	default void kjs$setChargedProjectiles(List<ItemStack> items) {
-		kjs$override(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.of(items));
+	default ItemComponentFunctions kjs$setChargedProjectiles(List<ItemStack> items) {
+		return kjs$override(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.of(items));
 	}
 
-	default void kjs$setBundleContents(List<ItemStack> items) {
-		kjs$override(DataComponents.BUNDLE_CONTENTS, new BundleContents(items));
+	default ItemComponentFunctions kjs$setBundleContents(List<ItemStack> items) {
+		return kjs$override(DataComponents.BUNDLE_CONTENTS, new BundleContents(items));
 	}
 
-	default void kjs$setBucketEntityData(CompoundTag tag) {
-		kjs$override(DataComponents.BUCKET_ENTITY_DATA, CustomData.of(tag));
+	default ItemComponentFunctions kjs$setBucketEntityData(CompoundTag tag) {
+		return kjs$override(DataComponents.BUCKET_ENTITY_DATA, CustomData.of(tag));
 	}
 
-	default void kjs$setBlockEntityData(CompoundTag tag) {
-		kjs$override(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(tag));
+	default ItemComponentFunctions kjs$setBlockEntityData(CompoundTag tag) {
+		return kjs$override(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(tag));
 	}
 
-	default void kjs$setInstrument(Holder<Instrument> instrument) {
-		kjs$override(DataComponents.INSTRUMENT, instrument);
+	default ItemComponentFunctions kjs$setInstrument(Holder<Instrument> instrument) {
+		return kjs$override(DataComponents.INSTRUMENT, instrument);
 	}
 
-	default void kjs$setFireworkExplosion(FireworkExplosion explosion) {
-		kjs$override(DataComponents.FIREWORK_EXPLOSION, explosion);
+	default ItemComponentFunctions kjs$setFireworkExplosion(FireworkExplosion explosion) {
+		return kjs$override(DataComponents.FIREWORK_EXPLOSION, explosion);
 	}
 
-	default void kjs$setFireworks(Fireworks fireworks) {
-		kjs$override(DataComponents.FIREWORKS, fireworks);
+	default ItemComponentFunctions kjs$setFireworks(Fireworks fireworks) {
+		return kjs$override(DataComponents.FIREWORKS, fireworks);
 	}
 
-	default void kjs$setNoteBlockSound(ResourceLocation id) {
-		kjs$override(DataComponents.NOTE_BLOCK_SOUND, id);
+	default ItemComponentFunctions kjs$setNoteBlockSound(ResourceLocation id) {
+		return kjs$override(DataComponents.NOTE_BLOCK_SOUND, id);
 	}
 
 	default ItemAttributeModifiers kjs$getAttributeModifiers() {
@@ -138,15 +145,15 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 		return null;
 	}
 
-	default void kjs$setAttributeModifiers(List<ItemAttributeModifiers.Entry> modifiers) {
-		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(modifiers, false));
+	default ItemComponentFunctions kjs$setAttributeModifiers(List<ItemAttributeModifiers.Entry> modifiers) {
+		return kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(modifiers, false));
 	}
 
-	default void kjs$setAttributeModifiersWithTooltip(List<ItemAttributeModifiers.Entry> modifiers) {
-		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(modifiers, true));
+	default ItemComponentFunctions kjs$setAttributeModifiersWithTooltip(List<ItemAttributeModifiers.Entry> modifiers) {
+		return kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(modifiers, true));
 	}
 
-	default void kjs$setAttackSpeed(double speed) {
+	default ItemComponentFunctions kjs$setAttackSpeed(double speed) {
 		var oldMods = kjs$getAttributeModifiers();
 
 		var list = new ArrayList<ItemAttributeModifiers.Entry>(oldMods.modifiers().size());
@@ -161,10 +168,10 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 			new AttributeModifier(BASE_ATTACK_SPEED_ID, speed, Operation.ADD_VALUE),
 			EquipmentSlotGroup.MAINHAND));
 
-		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(list, oldMods.showInTooltip()));
+		return kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(list, oldMods.showInTooltip()));
 	}
 
-	default void kjs$setAttackDamage(double dmg) {
+	default ItemComponentFunctions kjs$setAttackDamage(double dmg) {
 		var oldMods = kjs$getAttributeModifiers();
 
 		var list = new ArrayList<ItemAttributeModifiers.Entry>(oldMods.modifiers().size());
@@ -179,7 +186,7 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 			new AttributeModifier(BASE_ATTACK_DAMAGE_ID, dmg, Operation.ADD_VALUE),
 			EquipmentSlotGroup.MAINHAND));
 
-		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(list, oldMods.showInTooltip()));
+		return kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(list, oldMods.showInTooltip()));
 	}
 
 	default double kjs$getAttackDamage() {
@@ -224,15 +231,15 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 		return sum;
 	}
 
-	default void kjs$setBaseAttackSpeed(double speed) {
-		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, kjs$getAttributeModifiers()
+	default ItemComponentFunctions kjs$setBaseAttackSpeed(double speed) {
+		return kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, kjs$getAttributeModifiers()
 			.withModifierAdded(Attributes.ATTACK_SPEED,
 				new AttributeModifier(BASE_ATTACK_SPEED_ID, speed, Operation.ADD_VALUE),
 				EquipmentSlotGroup.MAINHAND));
 	}
 
-	default void kjs$setBaseAttackDamage(double dmg) {
-		kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, kjs$getAttributeModifiers()
+	default ItemComponentFunctions kjs$setBaseAttackDamage(double dmg) {
+		return kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, kjs$getAttributeModifiers()
 			.withModifierAdded(Attributes.ATTACK_DAMAGE,
 				new AttributeModifier(BASE_ATTACK_DAMAGE_ID, dmg, Operation.ADD_VALUE),
 				EquipmentSlotGroup.MAINHAND));

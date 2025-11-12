@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.component.ComponentFunctions;
 import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
 import dev.latvian.mods.kubejs.core.DiggerItemKJS;
 import dev.latvian.mods.kubejs.event.KubeEvent;
@@ -49,7 +48,7 @@ public class ItemModificationKubeEvent implements KubeEvent {
 
 		@Override
 		@HideFromJS
-		public <T> ComponentFunctions kjs$override(DataComponentType<T> type, @Nullable T value) {
+		public <T> ItemComponentFunctions kjs$override(DataComponentType<T> type, @Nullable T value) {
 			item.kjs$overrideComponent(type, value);
 			return this;
 		}

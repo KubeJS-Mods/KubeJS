@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
 import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.component.ComponentFunctions;
 import dev.latvian.mods.kubejs.core.ItemStackKJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -49,7 +48,7 @@ public abstract class ItemStackMixin implements ItemStackKJS {
 
 	@Override
 	@ReturnsSelf
-	public ComponentFunctions kjs$resetComponents(Context cx) {
+	public ItemStackKJS kjs$resetComponents(Context cx) {
 		components.restorePatch(DataComponentPatch.EMPTY);
 		return this;
 	}
