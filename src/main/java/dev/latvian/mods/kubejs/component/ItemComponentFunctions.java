@@ -184,7 +184,7 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 
 	default double kjs$getAttackDamage() {
 		var base = kjs$getBaseAttackDamage();
-		var sum = 0.0;
+		var sum = base;
 
 		for (var entry : kjs$getAttributeModifiers().modifiers()) {
 			if (entry.matches(Attributes.ATTACK_DAMAGE, BASE_ATTACK_DAMAGE_ID)) {
@@ -205,7 +205,7 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 
 	default double kjs$getAttackSpeed() {
 		var base = kjs$getBaseAttackSpeed();
-		var sum = 0.0;
+		var sum = base;
 
 		for (var entry : kjs$getAttributeModifiers().modifiers()) {
 			if (entry.matches(Attributes.ATTACK_SPEED, BASE_ATTACK_SPEED_ID)) {
