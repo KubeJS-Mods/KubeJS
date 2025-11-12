@@ -149,20 +149,24 @@ public interface FluidWrapper {
 				.source(SourceLine.of(cx)));
 	}
 
+	@Info("Returns a FluidStack of the input")
 	static FluidStack of(FluidStack o) {
 		return o;
 	}
 
+	@Info("Returns a FluidStack of the input, with the specified amount")
 	static FluidStack of(FluidStack o, int amount) {
 		o.setAmount(amount);
 		return o;
 	}
 
+	@Info("Returns a FluidStack of the input, with the specified data components")
 	static FluidStack of(FluidStack o, DataComponentMap components) {
 		o.applyComponents(components);
 		return o;
 	}
 
+	@Info("Returns a FluidStack of the input, with the specified amount and data components")
 	static FluidStack of(FluidStack o, int amount, DataComponentMap components) {
 		o.setAmount(amount);
 		o.applyComponents(components);

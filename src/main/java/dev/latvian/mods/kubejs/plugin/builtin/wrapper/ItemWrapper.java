@@ -26,6 +26,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.StringTag;
@@ -102,9 +103,22 @@ public interface ItemWrapper {
 		return in;
 	}
 
+	@Info("Returns an ItemStack of the input, with the specified data components")
+	static ItemStack of(ItemStack in, DataComponentMap components) {
+		in.applyComponents(components);
+		return in;
+	}
+
 	@Info("Returns an ItemStack of the input, with the specified count")
 	static ItemStack of(ItemStack in, int count) {
 		return in.kjs$withCount(count);
+	}
+
+	@Info("Returns an ItemStack of the input, with the specified count and data components")
+	static ItemStack of(ItemStack in, int count, DataComponentMap components) {
+		in.setCount(count);
+		in.applyComponents(components);
+		return in;
 	}
 
 	@HideFromJS
