@@ -24,14 +24,6 @@ public interface FluidIngredientKJS extends WithCodec, FluidMatch {
 		return FluidIngredient.CODEC;
 	}
 
-	default SizedFluidIngredient kjs$asBucket() {
-		if (kjs$self().isEmpty()) {
-			return FluidWrapper.EMPTY_SIZED;
-		}
-
-		return new SizedFluidIngredient(kjs$self(), FluidType.BUCKET_VOLUME);
-	}
-
 	default SizedFluidIngredient kjs$withAmount(int amount) {
 		return new SizedFluidIngredient(kjs$self(), amount);
 	}
