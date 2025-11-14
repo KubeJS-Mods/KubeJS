@@ -18,6 +18,8 @@
 		"ContainerMixin",
 		"CreativeModeTabMixin",
 		"DamageSourceMixin",
+		"DataComponentMapBuilderMixin",
+		"DataComponentPatchBuilderMixin",
 		"DataComponentsMixin",
 		"DifferenceIngredientMixin",
 		"DiggerItemMixin",
