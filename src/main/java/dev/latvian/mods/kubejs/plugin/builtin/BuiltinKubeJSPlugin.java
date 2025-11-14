@@ -232,6 +232,7 @@ import net.minecraft.world.item.component.BlockItemStateProperties;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.component.Fireworks;
+import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -289,6 +290,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 public class BuiltinKubeJSPlugin implements KubeJSPlugin {
@@ -561,11 +563,12 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(Tristate.class, Tristate::wrap);
 
 		// components //
-		registry.register(Component.class, TextWrapper::wrap);
 		registry.register(MutableComponent.class, TextWrapper::wrap);
 		registry.register(KubeColor.class, ColorWrapper::wrap);
 		registry.register(TextColor.class, ColorWrapper::wrapTextColor);
 		registry.register(ClickEvent.class, TextWrapper::wrapClickEvent);
+		registry.registerAlias(Component.class, TextWrapper.TYPE_INFO, Function.identity());
+		registry.registerAlias(ItemLore.class, TypeInfo.RAW_LIST.withParams(TextWrapper.TYPE_INFO), TextWrapper::lore);
 
 		// codecs
 		registry.registerCodec(Fireworks.class, Fireworks.CODEC);

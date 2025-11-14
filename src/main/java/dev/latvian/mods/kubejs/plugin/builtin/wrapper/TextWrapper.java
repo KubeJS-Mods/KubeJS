@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Pair;
@@ -10,6 +11,7 @@ import dev.latvian.mods.kubejs.util.JSObjectType;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
@@ -35,6 +37,8 @@ import java.util.Optional;
 
 @Info("The hub for all things text components. Format text to your hearts content!")
 public interface TextWrapper {
+	TypeInfo TYPE_INFO = TypeInfo.of(MutableComponent.class);
+
 	@Info("Returns a Component of the input")
 	static MutableComponent of(MutableComponent component) {
 		return component;
@@ -64,6 +68,9 @@ public interface TextWrapper {
 				}
 			}
 			case Tag tag -> (MutableComponent) NbtUtils.toPrettyComponent(tag);
+			case JsonElement json -> ComponentSerialization.CODEC.decode(JsonOps.INSTANCE, json)
+				.mapOrElse(Pair::getFirst, error -> Component.literal("Error: " + error))
+				.copy();
 			case Map<?, ?> map when map.containsKey("text") || map.containsKey("translate") -> {
 				MutableComponent text;
 
@@ -115,6 +122,7 @@ public interface TextWrapper {
 
 				yield text;
 			}
+			case Map<?, ?> map -> wrap(cx, JsonUtils.of(cx, map));
 			case Iterable<?> list -> {
 				var text = Component.empty();
 				for (var e1 : list) {
