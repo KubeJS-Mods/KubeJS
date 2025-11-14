@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.component;
 
 import dev.latvian.mods.kubejs.color.KubeColor;
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
@@ -153,6 +154,11 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 		return kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(modifiers, true));
 	}
 
+	@Info("""
+		Sets the attack speed of this item to the given value, **removing** all other modifiers to attack speed.
+		Note that players have a default attack speed of 4.0, so this modifier is added on top of that.
+		(Example: Swords have an attack speed of -2.4, leading to a total value of 1.6 without any other changes.)
+		""")
 	default ItemComponentFunctions kjs$setAttackSpeed(double speed) {
 		var oldMods = kjs$getAttributeModifiers();
 
@@ -171,6 +177,11 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 		return kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(list, oldMods.showInTooltip()));
 	}
 
+	@Info("""
+		Sets the attack damage of this item to the given value, **removing** all other modifiers to attack damage.
+		Note that since players have a default attack damage of 1.0, total damage will be (dmg + 1.0) before other modifiers.
+		(In practice, this simply means that most weapons have this value set to 1 less than what you might think.)
+		""")
 	default ItemComponentFunctions kjs$setAttackDamage(double dmg) {
 		var oldMods = kjs$getAttributeModifiers();
 
@@ -231,6 +242,10 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 		return sum;
 	}
 
+	@Info("""
+		Overrides the *base* attack speed of this item to be the given value, keeping other modifiers intact.
+		Note that players have a default attack speed of 4.0, so this modifier is added on top of that.
+		""")
 	default ItemComponentFunctions kjs$setBaseAttackSpeed(double speed) {
 		return kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, kjs$getAttributeModifiers()
 			.withModifierAdded(Attributes.ATTACK_SPEED,
@@ -238,6 +253,10 @@ public interface ItemComponentFunctions extends ComponentFunctions {
 				EquipmentSlotGroup.MAINHAND));
 	}
 
+	@Info("""
+		Overrides the *base* attack damage of this item to be the given value, keeping other modifiers intact.
+		Note that since players have a default attack damage of 1.0, total damage will be (dmg + 1.0) before other modifiers.
+		""")
 	default ItemComponentFunctions kjs$setBaseAttackDamage(double dmg) {
 		return kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, kjs$getAttributeModifiers()
 			.withModifierAdded(Attributes.ATTACK_DAMAGE,
