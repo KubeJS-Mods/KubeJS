@@ -24,10 +24,12 @@ import net.minecraft.network.chat.contents.ScoreContents;
 import net.minecraft.network.chat.contents.SelectorContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -36,6 +38,10 @@ public interface TextWrapper {
 	@Info("Returns a Component of the input")
 	static MutableComponent of(MutableComponent component) {
 		return component;
+	}
+
+	static ItemLore lore(List<Component> lore) {
+		return new ItemLore(lore);
 	}
 
 	@HideFromJS
