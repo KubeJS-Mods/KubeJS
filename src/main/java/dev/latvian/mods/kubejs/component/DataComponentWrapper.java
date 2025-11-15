@@ -12,6 +12,7 @@ import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
+import dev.latvian.mods.kubejs.script.DataComponentTypeInfoRegistry;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
@@ -43,8 +44,6 @@ import net.minecraft.world.item.component.CustomData;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -67,23 +66,10 @@ public interface DataComponentWrapper {
 	TypeInfo COMPONENT_TYPE = TypeInfo.of(DataComponentType.class);
 
 	Lazy<Map<DataComponentType<?>, TypeInfo>> TYPE_INFOS = Lazy.identityMap(map -> {
-		try {
-			for (var field : DataComponents.class.getDeclaredFields()) {
-				if (field.getType() == DataComponentType.class
-					&& Modifier.isPublic(field.getModifiers())
-					&& Modifier.isStatic(field.getModifiers())
-					&& field.getGenericType() instanceof ParameterizedType t
-				) {
-					@SuppressWarnings("rawtypes") var key = (DataComponentType) field.get(null);
-					var typeInfo = TypeInfo.of(t.getActualTypeArguments()[0]);
-					map.put(key, typeInfo);
-				}
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		DataComponentTypeInfoRegistry registry = map::put;
 
-		KubeJSPlugins.forEachPlugin(map::put, KubeJSPlugin::registerDataComponentTypeDescriptions);
+		registry.scanClass(DataComponents.class);
+		KubeJSPlugins.forEachPlugin(registry, KubeJSPlugin::registerDataComponentTypeDescriptions);
 	});
 
 	Lazy<Set<DataComponentType<?>>> VISUAL_DIFFERENCE = Lazy.of(() -> {
