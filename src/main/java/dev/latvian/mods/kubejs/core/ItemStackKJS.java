@@ -6,8 +6,10 @@ import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
+import dev.latvian.mods.kubejs.component.MutableDataComponentHolderFunctions;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.level.LevelBlock;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
@@ -28,7 +30,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -47,7 +48,6 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -62,6 +62,7 @@ public interface ItemStackKJS extends
 	ToStringJS,
 	Replaceable,
 	ItemComponentFunctions,
+	MutableDataComponentHolderFunctions,
 	ItemMatch,
 	RegistryObjectKJS<Item> {
 	default ItemStack kjs$self() {
@@ -259,7 +260,7 @@ public interface ItemStackKJS extends
 			}
 		}
 
-		return new DataComponentIngredient(HolderSet.direct(kjs$asHolder()), DataComponentPredicate.allOf(map.build()), false).toVanilla();
+		return IngredientWrapper.withData(HolderSet.direct(kjs$asHolder()), map.build());
 	}
 
 	@Override
