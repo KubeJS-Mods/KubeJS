@@ -527,6 +527,7 @@ public class KubeJSClientEventHandler {
 
 		if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
 			HighlightRenderer.INSTANCE.clearBuffers(mc);
+			mc.getMainRenderTarget().bindWrite(true);
 		} else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
 			HighlightRenderer.INSTANCE.renderAfterEntities(mc, event);
 		} else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
