@@ -20,6 +20,11 @@ public interface RecipeOptional<T> {
 		}
 
 		@Override
+		public T getValueForDataGeneration() {
+			return value;
+		}
+
+		@Override
 		@NotNull
 		public String toString() {
 			return String.valueOf(value);
@@ -30,6 +35,16 @@ public interface RecipeOptional<T> {
 
 	@Nullable
 	default T getInformativeValue() {
+		return null;
+	}
+
+	/**
+	 * Gets a value that can be encoded into json by a recipe key's codec.
+	 * For use in {@link dev.latvian.mods.kubejs.recipe.RecipeSchemaProvider data generation}
+	 * <p>
+	 * This <strong>must</strong> be implemented if you intend to use data generation with a custom optional type
+	 */
+	default T getValueForDataGeneration() {
 		return null;
 	}
 
