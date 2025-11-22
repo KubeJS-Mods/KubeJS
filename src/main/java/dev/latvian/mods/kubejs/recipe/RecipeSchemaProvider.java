@@ -55,7 +55,7 @@ public abstract class RecipeSchemaProvider implements DataProvider {
                 registryAccessContainer,
                 scriptManager.recipeSchemaStorage
         );
-        scriptManager.recipeSchemaStorage.fireEvents(registryAccessContainer(), event.getResourceManager(PackType.SERVER_DATA));
+        scriptManager.recipeSchemaStorage.fireEvents(registryAccessContainer, event.getResourceManager(PackType.SERVER_DATA));
         codec = RecipeSchemaData.CODEC.apply(regCtx);
     }
 
@@ -95,7 +95,7 @@ public abstract class RecipeSchemaProvider implements DataProvider {
                 key.component,
                 Optional.ofNullable(key.optional)
                         .map(o -> key.codec.encodeStart(
-                                registryAccessContainer().json(),
+                                registryAccessContainer.json(),
                                 Cast.to(o.getValueForDataGeneration())
                         ).getOrThrow()),
                 key.optional(),
