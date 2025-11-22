@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeFactoryRegistry;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeOptional;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaData;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeSchemaFunction;
 import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessor;
@@ -98,7 +99,7 @@ public abstract class RecipeSchemaProvider implements DataProvider {
                                 registryAccessContainer.json(),
                                 Cast.to(o.getValueForDataGeneration())
                         ).getOrThrow()),
-                key.optional(),
+                key.optional == RecipeOptional.DEFAULT,
                 new ArrayList<>(key.names),
                 key.excluded,
                 key.functionNames,
