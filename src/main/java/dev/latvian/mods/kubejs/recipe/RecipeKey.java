@@ -193,7 +193,7 @@ public final class RecipeKey<T> {
 	 * The first one of these names will be the preferred one that documentation should recommend.
 	 */
 	public RecipeKey<T> functionNames(String... names) {
-		return functionNames(List.of(name));
+		return functionNames(List.of(names));
 	}
 
 	/**
