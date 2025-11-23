@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.OpsContainer;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 
@@ -46,7 +47,7 @@ public class RecipeConstructor {
 	}
 
 	public <T> RecipeConstructor overrideValue(RecipeKey<T> key, T value) {
-		return override(key, new RecipeOptional.Constant<>(value));
+		return override(key, RecipeOptional.unit(value));
 	}
 
 	public <T> RecipeConstructor defaultValue(RecipeKey<T> key, RecipeOptional<T> value) {
@@ -60,7 +61,7 @@ public class RecipeConstructor {
 
 	@Override
 	public String toString() {
-		return toString(OpsContainer.DEFAULT);
+		return toString(RegistryAccessContainer.current);
 	}
 
 	public String toString(OpsContainer ops) {

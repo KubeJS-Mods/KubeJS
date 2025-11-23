@@ -34,7 +34,7 @@ import java.util.SequencedSet;
  * be serialized or written to the value map unless it is declared as {@link #alwaysWrite}.
  * <p>
  * By default, each key will have a "builder" method generated for scripts using the first {@link #functionNames} name.
- * You can disable this by setting {@link #noFunctions()} to true.
+ * You can disable this by setting {@link #noFunctions()}.
  * <p>
  * Finally, some types of components such as items or fluids may perform validation to ensure that they
  * aren't holding empty data.
@@ -96,13 +96,12 @@ public final class RecipeKey<T> {
 	 * @param value The default value of this key; note that the instance supplied here
 	 *              will be used directly and across multiple recipes, so make sure
 	 *              to only pass immutable objects!
-	 * @apiNote Note that this method <i>does not</i> actually set the value during
-	 * recipe initialization unless {@link #alwaysWrite} is also set! This is mostly
-	 * meant to be used as information for mods like ProbeJS.
+	 * @apiNote This that this method <i>does not</i> write the default value during
+	 * recipe initialization unless {@link #alwaysWrite} is also set!
 	 * @see #optional(RecipeOptional)
 	 */
 	public RecipeKey<T> optional(T value) {
-		return optional(new RecipeOptional.Constant<>(value));
+		return optional(RecipeOptional.unit(value));
 	}
 
 	/**
@@ -112,9 +111,8 @@ public final class RecipeKey<T> {
 	 * @param value The default value of this key; unlike in {@link #optional(Object)},
 	 *              the value will be computed at recipe initialization time, which makes
 	 *              it safe to pass mutable objects here.
-	 * @apiNote Note that this method <i>does not</i> actually set the value during
-	 * recipe initialization unless {@link #alwaysWrite} is also set! This is mostly
-	 * meant to be used as information for mods like ProbeJS.
+	 * @apiNote This method <i>does not</i> write the default value during
+	 * recipe initialization unless {@link #alwaysWrite} is also set!
 	 * @see #optional(RecipeOptional)
 	 */
 	public RecipeKey<T> optional(RecipeOptional<T> value) {
@@ -164,7 +162,7 @@ public final class RecipeKey<T> {
 
 	/**
 	 * Excludes this key from auto-generated constructors.
-	 * <i>Requires</i> optional() value to also be set.
+	 * <b>Requires</b> optional() value to also be set.
 	 * <p>
 	 * This method does nothing if a custom constructor has been set.
 	 */
@@ -183,7 +181,7 @@ public final class RecipeKey<T> {
 
 	/**
 	 * Sets a list of names that are used to auto-generate builder functions in JS, e.g. <code>.xp(value)</code>.
-	 * The first one will be the preferred one that ProbeJS and other third-party documentation should recommend.
+	 * The first one of these names will be the preferred one that documentation should recommend.
 	 */
 	public RecipeKey<T> functionNames(List<String> names) {
 		functionNames = names;
@@ -192,7 +190,7 @@ public final class RecipeKey<T> {
 
 	/**
 	 * Sets a list of names that are used to auto-generate builder functions in JS, e.g. <code>.xp(value)</code>.
-	 * The first one will be the preferred one that ProbeJS and other third-party documentation should recommend.
+	 * The first one of these names will be the preferred one that documentation should recommend.
 	 */
 	public RecipeKey<T> functionNames(String... names) {
 		return functionNames(List.of(name));

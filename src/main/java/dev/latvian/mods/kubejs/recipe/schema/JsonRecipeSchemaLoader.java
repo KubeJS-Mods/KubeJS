@@ -177,15 +177,17 @@ public class JsonRecipeSchemaLoader {
 					var functionMap = new HashMap<String, RecipeSchemaFunction>();
 					gatherFunctions(functionMap);
 
-					var keyOverrides = new Reference2ObjectOpenHashMap<RecipeKey<?>, RecipeOptional<?>>(overrideKeys == null ? 0 : overrideKeys.size());
+					Map<RecipeKey<?>, RecipeOptional<?>> keyOverrides = Map.of();
 
 					if (overrideKeys != null) {
+						keyOverrides = new Reference2ObjectOpenHashMap<>(overrideKeys.size());
+
 						for (var entry : overrideKeys.entrySet()) {
 							var key = keyMap.get(entry.getKey());
 
 							if (key != null) {
 								try {
-									keyOverrides.put(key, new RecipeOptional.Constant(key.codec.decode(jsonOps, entry.getValue()).getOrThrow().getFirst()));
+									keyOverrides.put(key, RecipeOptional.unit(key.codec.decode(jsonOps, entry.getValue()).getOrThrow().getFirst()));
 								} catch (Exception ex) {
 									throw new IllegalArgumentException("Failed to create optional value for key '" + key + "' of '" + id + "' from " + entry.getValue(), ex);
 								}
@@ -341,7 +343,8 @@ public class JsonRecipeSchemaLoader {
 							var optionalJson = keyData.optional().get();
 
 							try {
-								key.optional = new RecipeOptional.Constant(key.codec.decode(jsonOps, optionalJson).getOrThrow().getFirst());
+								//noinspection unchecked, rawtypes
+								key.optional = (RecipeOptional) RecipeOptional.unit(key.codec.decode(jsonOps, optionalJson).getOrThrow().getFirst());
 							} catch (Exception ex) {
 								throw new IllegalArgumentException("Failed to create optional value for key '" + key + "' of '" + builder.id + "' from " + optionalJson, ex);
 							}

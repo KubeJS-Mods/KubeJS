@@ -103,12 +103,12 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 			key.role,
 			key.component,
 			Optional.ofNullable(key.optional)
-				.map(o -> o.isDefault() ?
-					null :
-					key.codec.encodeStart(
-						registryAccessContainer.json(),
-						Cast.to(o.getValueForDataGeneration())
-					).getOrThrow()),
+				// this is `null` for default so we can safely ignore it
+				.map(RecipeOptional::getInformativeValue)
+				.map(value -> key.codec.encodeStart(
+					registryAccessContainer.json(),
+					Cast.to(value)
+				).getOrThrow()),
 			key.optional == RecipeOptional.DEFAULT,
 			new ArrayList<>(key.names),
 			key.excluded,
