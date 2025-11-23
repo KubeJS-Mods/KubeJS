@@ -45,20 +45,20 @@ public interface AttributeModifierFunctions {
 	}
 
 	@HideFromJS
-	AttributeModifierFunctions kjs$setAttributeModifiers(ItemAttributeModifiers modifiers);
+	void kjs$setAttributeModifiers(ItemAttributeModifiers modifiers);
 
-	default AttributeModifierFunctions kjs$addAttributeModifier(Holder<Attribute> attribute, AttributeModifier mod, EquipmentSlotGroup slot) {
-		return kjs$setAttributeModifiers(kjs$getAttributeModifiers().withModifierAdded(attribute, mod, slot));
+	default void kjs$addAttributeModifier(Holder<Attribute> attribute, AttributeModifier mod, EquipmentSlotGroup slot) {
+		kjs$setAttributeModifiers(kjs$getAttributeModifiers().withModifierAdded(attribute, mod, slot));
 	}
 
 	@ApiStatus.NonExtendable
-	default AttributeModifierFunctions kjs$setAttributeModifiers(List<ItemAttributeModifiers.Entry> modifiers) {
-		return kjs$setAttributeModifiers(new ItemAttributeModifiers(modifiers, false));
+	default void kjs$setAttributeModifiers(List<ItemAttributeModifiers.Entry> modifiers) {
+		kjs$setAttributeModifiers(new ItemAttributeModifiers(modifiers, false));
 	}
 
 	@ApiStatus.NonExtendable
-	default AttributeModifierFunctions kjs$setAttributeModifiersWithTooltip(List<ItemAttributeModifiers.Entry> modifiers) {
-		return kjs$setAttributeModifiers(new ItemAttributeModifiers(modifiers, true));
+	default void kjs$setAttributeModifiersWithTooltip(List<ItemAttributeModifiers.Entry> modifiers) {
+		kjs$setAttributeModifiers(new ItemAttributeModifiers(modifiers, true));
 	}
 
 	@Info("""
@@ -66,7 +66,7 @@ public interface AttributeModifierFunctions {
 		Note that players have a default attack speed of 4.0, so this modifier is added on top of that.
 		(Example: Swords have an attack speed of -2.4, leading to a total value of 1.6 without any other changes.)
 		""")
-	default AttributeModifierFunctions kjs$setAttackSpeed(double speed) {
+	default void kjs$setAttackSpeed(double speed) {
 		var oldMods = kjs$getAttributeModifiers();
 
 		var list = new ArrayList<ItemAttributeModifiers.Entry>(oldMods.modifiers().size());
@@ -81,7 +81,7 @@ public interface AttributeModifierFunctions {
 			new AttributeModifier(BASE_ATTACK_SPEED_ID, speed, AttributeModifier.Operation.ADD_VALUE),
 			EquipmentSlotGroup.MAINHAND));
 
-		return kjs$setAttributeModifiers(new ItemAttributeModifiers(list, oldMods.showInTooltip()));
+		kjs$setAttributeModifiers(new ItemAttributeModifiers(list, oldMods.showInTooltip()));
 	}
 
 	@Info("""
@@ -89,7 +89,7 @@ public interface AttributeModifierFunctions {
 		Note that since players have a default attack damage of 1.0, total damage will be (dmg + 1.0) before other modifiers.
 		(In practice, this simply means that most weapons have this value set to 1 less than what you might think.)
 		""")
-	default AttributeModifierFunctions kjs$setAttackDamage(double dmg) {
+	default void kjs$setAttackDamage(double dmg) {
 		var oldMods = kjs$getAttributeModifiers();
 
 		var list = new ArrayList<ItemAttributeModifiers.Entry>(oldMods.modifiers().size());
@@ -104,7 +104,7 @@ public interface AttributeModifierFunctions {
 			new AttributeModifier(BASE_ATTACK_DAMAGE_ID, dmg, AttributeModifier.Operation.ADD_VALUE),
 			EquipmentSlotGroup.MAINHAND));
 
-		return kjs$setAttributeModifiers(new ItemAttributeModifiers(list, oldMods.showInTooltip()));
+		kjs$setAttributeModifiers(new ItemAttributeModifiers(list, oldMods.showInTooltip()));
 	}
 
 	default double kjs$getAttackDamage() {
@@ -153,8 +153,8 @@ public interface AttributeModifierFunctions {
 		Overrides the *base* attack speed of this item to be the given value, keeping other modifiers intact.
 		Note that players have a default attack speed of 4.0, so this modifier is added on top of that.
 		""")
-	default AttributeModifierFunctions kjs$setBaseAttackSpeed(double speed) {
-		return kjs$addAttributeModifier(Attributes.ATTACK_SPEED,
+	default void kjs$setBaseAttackSpeed(double speed) {
+		kjs$addAttributeModifier(Attributes.ATTACK_SPEED,
 			new AttributeModifier(BASE_ATTACK_SPEED_ID, speed, AttributeModifier.Operation.ADD_VALUE),
 			EquipmentSlotGroup.MAINHAND);
 	}
@@ -163,8 +163,8 @@ public interface AttributeModifierFunctions {
 		Overrides the *base* attack damage of this item to be the given value, keeping other modifiers intact.
 		Note that since players have a default attack damage of 1.0, total damage will be (dmg + 1.0) before other modifiers.
 		""")
-	default AttributeModifierFunctions kjs$setBaseAttackDamage(double dmg) {
-		return kjs$addAttributeModifier(Attributes.ATTACK_DAMAGE,
+	default void kjs$setBaseAttackDamage(double dmg) {
+		kjs$addAttributeModifier(Attributes.ATTACK_DAMAGE,
 			new AttributeModifier(BASE_ATTACK_DAMAGE_ID, dmg, AttributeModifier.Operation.ADD_VALUE),
 			EquipmentSlotGroup.MAINHAND);
 	}
