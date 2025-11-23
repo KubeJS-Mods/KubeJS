@@ -79,8 +79,9 @@ public class ItemModificationKubeEvent implements KubeEvent {
 						modifiers.add(entry.attribute(), entry.modifier(), entry.slot());
 					}
 				}
-				kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, modifiers.build());
+				kjs$setAttributeModifiers(modifiers.build());
 
+				kjs$setMaxDamage(tier.getUses());
 				// if it's a digger item we also need to modify the tool properties
 				if (tiered instanceof DiggerItemKJS dig) {
 					kjs$setTool(tier.createToolProperties(dig.kjs$getMineableTag()));
