@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.LinkedHashMap;
+import java.util.NoSuchElementException;
 
 public class RecipeNamespace extends LinkedHashMap<String, RecipeSchemaType> {
 	public final RecipeSchemaStorage storage;
@@ -28,15 +29,28 @@ public class RecipeNamespace extends LinkedHashMap<String, RecipeSchemaType> {
 	}
 
 	public RecipeNamespace shaped(String id) {
-		return register(id, storage.shapedSchema);
+		return withExistingParent(id, ResourceLocation.withDefaultNamespace("shaped"));
 	}
 
 	public RecipeNamespace shapeless(String id) {
-		return register(id, storage.shapelessSchema);
+		return withExistingParent(id, ResourceLocation.withDefaultNamespace("shapeless"));
 	}
 
 	public RecipeNamespace special(String id) {
-		return register(id, storage.specialSchema);
+		return withExistingParent(id, ResourceLocation.withDefaultNamespace("special"));
+	}
+
+	public RecipeNamespace withExistingParent(String id, ResourceLocation parent) {
+		return register(id, storage.namespace(parent.getNamespace()).getRegisteredOrThrow(parent.getPath()).schema);
+	}
+
+	public RecipeSchemaType getRegisteredOrThrow(String id) {
+		var value = get(id);
+		if (value != null) {
+			return value;
+		} else {
+			throw new NoSuchElementException("Required schema %s not found!".formatted(id));
+		}
 	}
 
 	@Override

@@ -29,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class RecipeSchemaStorage {
 
@@ -59,9 +58,7 @@ public class RecipeSchemaStorage {
 	public final Map<String, RecipeNamespace> namespaces;
 	public final Map<String, ResourceLocation> mappings;
 	public final Map<String, RecipeSchemaType> schemaTypes;
-	public RecipeSchema shapedSchema;
-	public RecipeSchema shapelessSchema;
-	public RecipeSchema specialSchema;
+
 	public Codec<RecipeComponent<?>> recipeComponentCodec;
 	public Codec<RecipePostProcessor> recipePostProcessorCodec;
 
@@ -86,9 +83,6 @@ public class RecipeSchemaStorage {
 		namespaces.clear();
 		mappings.clear();
 		schemaTypes.clear();
-		shapedSchema = null;
-		shapelessSchema = null;
-		specialSchema = null;
 
 		var jsonOps = registries.json();
 
@@ -196,10 +190,6 @@ public class RecipeSchemaStorage {
 
 		var schemaRegistry = new RecipeSchemaRegistry(this);
 		JsonRecipeSchemaLoader.load(rcCtx, jsonOps, schemaRegistry, resourceManager);
-
-		shapedSchema = Objects.requireNonNull(namespace("minecraft").get("shaped").schema);
-		shapelessSchema = Objects.requireNonNull(namespace("minecraft").get("shapeless").schema);
-		specialSchema = Objects.requireNonNull(namespace("minecraft").get("special").schema);
 
 		KubeJSPlugins.forEachPlugin(schemaRegistry, KubeJSPlugin::registerRecipeSchemas);
 		ServerEvents.RECIPE_SCHEMA_REGISTRY.post(ScriptType.SERVER, schemaRegistry);
