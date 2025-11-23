@@ -191,6 +191,14 @@ public final class RecipeKey<T> {
 	}
 
 	/**
+	 * Sets a list of names that are used to auto-generate builder functions in JS, e.g. <code>.xp(value)</code>.
+	 * The first one will be the preferred one that ProbeJS and other third-party documentation should recommend.
+	 */
+	public RecipeKey<T> functionNames(String... names) {
+		return functionNames(List.of(name));
+	}
+
+	/**
 	 * Set this in order to always write optional keys, even if their value hasn't changed.
 	 * <p>
 	 * This can also be used to always populate the value map with a default value for an optional key.

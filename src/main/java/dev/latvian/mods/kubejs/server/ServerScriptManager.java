@@ -32,6 +32,7 @@ import net.minecraft.server.packs.PackType;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -43,6 +44,13 @@ import java.util.stream.Collectors;
 
 public class ServerScriptManager extends ScriptManager {
 	private static ServerScriptManager staticInstance;
+
+	@ApiStatus.Internal
+	public static ServerScriptManager createForDataGen() {
+		var manager = new ServerScriptManager();
+		manager.reload(); // Is this needed?
+		return manager;
+	}
 
 	public static List<PackResources> createPackResources(List<PackResources> original) {
 		var packs = new ArrayList<>(original);
