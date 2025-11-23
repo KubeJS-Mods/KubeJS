@@ -45,6 +45,36 @@ public record RecipeSchemaData(
 		MergeData.CODEC.optionalFieldOf("merge", MergeData.DEFAULT).forGetter(RecipeSchemaData::merge)
 	).apply(instance, RecipeSchemaData::new));
 
+	public RecipeSchemaData(
+		ResourceLocation parent,
+		ResourceLocation overrideType,
+		ResourceLocation recipeFactory,
+		List<RecipeKeyData> keys,
+		List<ConstructorData> constructors,
+		Map<String, RecipeSchemaFunction> functions,
+		Map<String, JsonElement> overrideKeys,
+		boolean hidden,
+		List<String> mappings,
+		List<String> unique,
+		List<RecipePostProcessor> postProcessors,
+		MergeData merge
+	) {
+		this(
+			Optional.ofNullable(parent),
+			Optional.ofNullable(overrideType),
+			Optional.ofNullable(recipeFactory),
+			Optional.ofNullable(keys),
+			Optional.ofNullable(constructors),
+			Optional.ofNullable(functions),
+			overrideKeys,
+			Optional.of(hidden),
+			mappings,
+			Optional.ofNullable(unique),
+			Optional.ofNullable(postProcessors),
+			merge
+		);
+	}
+
 	public record RecipeKeyData(
 		String name,
 		ComponentRole role,
