@@ -515,7 +515,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			}
 
 			if (newRecipe) {
-				json.addProperty("type", getSerializationTypeFunction().schemaType.serializerKey.location().toString());
+				json.addProperty("type", getSerializationTypeFunction().schemaType.serializerType);
 			}
 
 			if (type.event.stageSerializer != null && json.has(KubeJSCraftingRecipe.STAGE_KEY) && !type.idString.equals("recipestages:stage")) {

@@ -14,6 +14,7 @@ public class RecipeSchemaType {
 	public final ResourceLocation id;
 	public final RecipeSchema schema;
 	public final ResourceKey<RecipeSerializer<?>> serializerKey;
+	public final String serializerType;
 	public RecipeSchemaType parent;
 	protected Optional<RecipeSerializer<?>> serializer;
 
@@ -22,6 +23,7 @@ public class RecipeSchemaType {
 		this.id = id;
 		this.schema = schema;
 		this.serializerKey = ResourceKey.create(Registries.RECIPE_SERIALIZER, schema.typeOverride == null ? id : schema.typeOverride);
+		serializerType = serializerKey.location().toString();
 	}
 
 	public RecipeSerializer<?> getSerializer() {
