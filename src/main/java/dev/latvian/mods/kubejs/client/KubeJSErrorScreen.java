@@ -290,16 +290,15 @@ public class KubeJSErrorScreen extends Screen {
 					}
 
 					if (ln > 0) {
-						if (VSCodeExt.isInstalled()) {
-							var comp = Component.empty();
-							comp.append("Double-click to Open in ");
+						var comp = Component.empty();
+						comp.append("Double-click to open file");
+
+						if (EditorExt.isKnownVSCode()) {
+							comp.append(" in ");
 							comp.append(TextIcons.icons("V."));
 							comp.append(Component.literal("VSCode").withColor(0x22A7F2));
-							lines.addAll(minecraft.font.split(comp, 1000));
-
-						} else {
-							lines.add(FormattedCharSequence.forward("Double-click to Open File", Style.EMPTY));
 						}
+						lines.addAll(minecraft.font.split(comp, 1000));
 					}
 
 					for (var line : line.sourceLines) {
@@ -365,20 +364,16 @@ public class KubeJSErrorScreen extends Screen {
 						path = path.getParent();
 					}
 
-					if (VSCodeExt.isInstalled()) {
-						int ln = 1;
+					int ln = 1;
 
-						for (var line : line.sourceLines) {
-							if (line.line() > 0 && line.source().endsWith(".js")) {
-								ln = line.line();
-								break;
-							}
+					for (var line : line.sourceLines) {
+						if (line.line() > 0 && line.source().endsWith(".js")) {
+							ln = line.line();
+							break;
 						}
-
-						VSCodeExt.openFile(path, ln, 0);
-					} else {
-						errorList.screen.handleComponentClicked(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toAbsolutePath().toString())));
 					}
+
+					EditorExt.openFile(path, ln, 0);
 				}
 			}
 		}

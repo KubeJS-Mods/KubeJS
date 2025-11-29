@@ -100,10 +100,6 @@ public class KubeJSClientEventHandler {
 	public static void setupClient(FMLClientSetupEvent event) {
 		KubeJS.PROXY = new KubeJSClient();
 		event.enqueueWork(KubeJSClientEventHandler::setupClient0);
-
-		if (VSCodeExt.isInstalled()) {
-			ConsoleJS.CLIENT.info("VSCode " + VSCodeExt.getVersion() + " detected");
-		}
 	}
 
 	@SubscribeEvent

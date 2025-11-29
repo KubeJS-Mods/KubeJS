@@ -2,6 +2,10 @@ package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.util.BaseProperties;
 
+import java.util.Locale;
+
+import static dev.latvian.mods.kubejs.client.EditorExt.*;
+
 public class DevProperties extends BaseProperties {
 	private static DevProperties instance;
 
@@ -36,6 +40,7 @@ public class DevProperties extends BaseProperties {
 	public boolean strictTags;
 	public boolean alwaysCaptureErrors;
 	public boolean reloadOnFileSave;
+	public String openUriFormat;
 	public String kubedexSound;
 
 	private DevProperties() {
@@ -64,5 +69,13 @@ public class DevProperties extends BaseProperties {
 		alwaysCaptureErrors = get("always_capture_errors", false);
 		reloadOnFileSave = get("reload_on_file_save", false);
 		kubedexSound = get("kubedex_sound", "entity.experience_orb.pickup");
+
+		var format = get("open_uri_format", "vscode");
+		openUriFormat = switch (format.toLowerCase(Locale.ROOT)) {
+			case "vscode" -> VSCODE;
+			case "vscodium" -> VSCODIUM;
+			case "vscode-oss" -> VSCODE_OSS;
+			default -> format;
+		};
 	}
 }
