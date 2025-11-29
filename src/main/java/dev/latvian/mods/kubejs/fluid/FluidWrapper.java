@@ -342,13 +342,13 @@ public interface FluidWrapper {
 			var amountd = reader.readDouble();
 			reader.skipWhitespace();
 
-			if (reader.peek() == 'b' || reader.peek() == 'B') {
+			if (reader.canRead() && (reader.peek() == 'b' || reader.peek() == 'B')) {
 				reader.skip();
 				reader.skipWhitespace();
 				amountd *= FluidType.BUCKET_VOLUME;
 			}
 
-			if (reader.peek() == '/') {
+			if (reader.canRead() && reader.peek() == '/') {
 				reader.skip();
 				reader.skipWhitespace();
 				amountd = amountd / reader.readDouble();
