@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.DataResult;
@@ -48,19 +49,31 @@ public class JsonRecipeSchemaLoader {
 		private List<RecipeKey<?>> getKeys() {
 			if (keys != null) {
 				if (data.merge().keys()) {
-					var mergedKeys = new LinkedHashMap<String, RecipeKey<?>>();
+					var required = new ArrayList<RecipeKey<?>>();
+					var optional = new ArrayList<RecipeKey<?>>();
 
 					if (parent != null) {
 						for (var key : parent.getKeys()) {
-							mergedKeys.put(key.name, key);
+							(key.optional() ? optional : required).add(key);
 						}
 					}
 
+					var expectedOptionals = optional.size();
+
 					for (var key : keys) {
-						mergedKeys.put(key.name, key);
+						if (key.optional()) {
+							optional.add(key);
+						} else if (expectedOptionals != optional.size()) {
+							throw new IllegalArgumentException("Required key '" + key.name + "' must be before optional keys " + optional.subList(expectedOptionals - 1, optional.size()).stream().map(k -> k.name).toList());
+						} else {
+							required.add(key);
+						}
 					}
 
-					return List.copyOf(mergedKeys.values());
+					var ret = ImmutableList.<RecipeKey<?>>builder();
+					ret.addAll(required);
+					ret.addAll(optional);
+					return ret.build();
 				}
 
 				return keys;
