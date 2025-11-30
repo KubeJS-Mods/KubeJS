@@ -48,7 +48,8 @@ repositories {
 You can then declare KubeJS as a regular compile-time dependency in your `dependencies` block:
 
 ```groovy
-api("dev.latvian.mods:kubejs-neoforge:$kubejs_version")
+api("dev.latvian.mods:kubejs-neoforge:$kubejs_version") { transitive = false }
+api("dev.latvian.mods:rhino:$rhino_version")
 interfaceInjectionData("dev.latvian.mods:kubejs-neoforge:$kubejs_version") // optional
 ```
 
