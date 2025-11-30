@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.DataResult;
@@ -23,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.SequencedMap;
 
 public class JsonRecipeSchemaLoader {
 	private static final class RecipeSchemaBuilder {
@@ -48,32 +48,29 @@ public class JsonRecipeSchemaLoader {
 
 		private List<RecipeKey<?>> getKeys() {
 			if (keys != null) {
-				if (data.merge().keys()) {
-					var required = new ArrayList<RecipeKey<?>>();
-					var optional = new ArrayList<RecipeKey<?>>();
+				if (data.mergeKeys()) {
+					var merged = new LinkedHashMap<String, RecipeKey<?>>();
 
 					if (parent != null) {
 						for (var key : parent.getKeys()) {
-							(key.optional() ? optional : required).add(key);
+							merged.put(key.name, key);
 						}
 					}
 
-					var expectedOptionals = optional.size();
-
+					var newOptionals = 0;
 					for (var key : keys) {
+						if (newOptionals != 0 && !key.optional()) {
+							throw new IllegalArgumentException("Required key '%s' must be before optional keys %s".formatted(key.name,
+								requiredFirst(merged).stream().skip(merged.size() - newOptionals).map(k -> k.name).toList()));
+						}
+
+						merged.put(key.name, key);
 						if (key.optional()) {
-							optional.add(key);
-						} else if (expectedOptionals != optional.size()) {
-							throw new IllegalArgumentException("Required key '" + key.name + "' must be before optional keys " + optional.subList(expectedOptionals - 1, optional.size()).stream().map(k -> k.name).toList());
-						} else {
-							required.add(key);
+							newOptionals++;
 						}
 					}
 
-					var ret = ImmutableList.<RecipeKey<?>>builder();
-					ret.addAll(required);
-					ret.addAll(optional);
-					return ret.build();
+					return requiredFirst(merged);
 				}
 
 				return keys;
@@ -84,9 +81,21 @@ public class JsonRecipeSchemaLoader {
 			}
 		}
 
+		private List<RecipeKey<?>> requiredFirst(SequencedMap<String, RecipeKey<?>> map) {
+			var required = new ArrayList<RecipeKey<?>>(map.size());
+			var optional = new ArrayList<RecipeKey<?>>(map.size());
+
+			for (RecipeKey<?> key : map.sequencedValues()) {
+				(key.optional() ? optional : required).add(key);
+			}
+
+			required.addAll(optional);
+			return required;
+		}
+
 		private List<RecipeSchemaData.ConstructorData> getConstructors() {
 			if (constructors != null) {
-				if (data.merge().constructors()) {
+				if (data.mergeConstructors()) {
 					var list = new ArrayList<RecipeSchemaData.ConstructorData>();
 
 					if (parent != null) {
@@ -127,7 +136,7 @@ public class JsonRecipeSchemaLoader {
 
 		private List<String> getUnique() {
 			if (unique != null) {
-				if (data.merge().unique()) {
+				if (data.mergeUnique()) {
 					var u = new LinkedHashSet<String>();
 
 					if (parent != null) {
@@ -158,7 +167,7 @@ public class JsonRecipeSchemaLoader {
 
 		private List<RecipePostProcessor> getPostProcessors() {
 			if (postProcessors != null) {
-				if (data.merge().postProcessors()) {
+				if (data.mergePostProcessors()) {
 					var list = new ArrayList<RecipePostProcessor>();
 
 					if (parent != null) {

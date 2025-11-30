@@ -75,6 +75,22 @@ public record RecipeSchemaData(
 		);
 	}
 
+	public boolean mergeKeys() {
+		return merge.keys;
+	}
+
+	public boolean mergeConstructors() {
+		return merge.constructors;
+	}
+
+	public boolean mergeUnique() {
+		return merge.unique;
+	}
+
+	public boolean mergePostProcessors() {
+		return merge.postProcessors;
+	}
+
 	public record RecipeKeyData(
 		String name,
 		ComponentRole role,
