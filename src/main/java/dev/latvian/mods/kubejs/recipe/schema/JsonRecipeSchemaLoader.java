@@ -64,10 +64,15 @@ public class JsonRecipeSchemaLoader {
 								requiredFirst(merged).stream().skip(merged.size() - newOptionals).map(k -> k.name).toList()));
 						}
 
-						merged.put(key.name, key);
-						if (key.optional()) {
+
+						var oldKeyOptional = merged.containsKey(key.name) && merged.get(key.name).optional();
+						if (!key.optional() && oldKeyOptional) {
+							throw new IllegalArgumentException("Optional key '%s' from parent may not be replaced by required key!".formatted(key.name));
+						} else if (!oldKeyOptional) {
 							newOptionals++;
 						}
+
+						merged.put(key.name, key);
 					}
 
 					return requiredFirst(merged);
