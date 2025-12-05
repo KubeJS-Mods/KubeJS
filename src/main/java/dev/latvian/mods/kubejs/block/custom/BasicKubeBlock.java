@@ -11,6 +11,7 @@ import dev.latvian.mods.kubejs.block.callback.BlockStateModifyPlacementCallback;
 import dev.latvian.mods.kubejs.block.callback.BlockStateRotateCallback;
 import dev.latvian.mods.kubejs.block.callback.CanBeReplacedCallback;
 import dev.latvian.mods.kubejs.block.callback.EntityFallenOnBlockCallback;
+import dev.latvian.mods.kubejs.block.callback.EntityInsideBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.EntitySteppedOnBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.RandomTickCallback;
 import dev.latvian.mods.kubejs.block.entity.KubeBlockEntity;
@@ -252,6 +253,16 @@ public class BasicKubeBlock extends Block implements SimpleWaterloggedBlock {
 		}
 
 		return Optional.empty();
+	}
+
+	@Override
+	protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+		if (blockBuilder.insideCallback != null) {
+			var callbackJS = new EntityInsideBlockCallback(level, entity, pos, state);
+			safeCallback(level, blockBuilder.insideCallback, callbackJS, "Error while an entity was inside a custom block ");
+		} else {
+			super.entityInside(state, level, pos, entity);
+		}
 	}
 
 	@Override
