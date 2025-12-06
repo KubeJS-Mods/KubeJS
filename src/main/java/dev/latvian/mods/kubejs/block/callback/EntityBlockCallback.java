@@ -7,13 +7,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class EntitySteppedOnBlockCallback {
+public class EntityBlockCallback {
 	protected final Level level;
 	protected final Entity entity;
 	protected final LevelBlock block;
 	protected final BlockState state;
 
-	public EntitySteppedOnBlockCallback(Level level, Entity entity, BlockPos pos, BlockState state) {
+	public EntityBlockCallback(Level level, Entity entity, BlockPos pos, BlockState state) {
 		this.level = level;
 		this.entity = entity;
 		this.block = level.kjs$getBlock(pos);

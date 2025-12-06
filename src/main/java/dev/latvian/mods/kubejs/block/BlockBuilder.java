@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.block.callback.BlockStateRotateCallback;
 import dev.latvian.mods.kubejs.block.callback.CanBeReplacedCallback;
 import dev.latvian.mods.kubejs.block.callback.EntityFallenOnBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.EntityInsideBlockCallback;
-import dev.latvian.mods.kubejs.block.callback.EntitySteppedOnBlockCallback;
+import dev.latvian.mods.kubejs.block.callback.EntityBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.RandomTickCallback;
 import dev.latvian.mods.kubejs.block.drop.BlockDropSupplier;
 import dev.latvian.mods.kubejs.block.drop.BlockDrops;
@@ -103,7 +103,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	public transient Consumer<BlockStateModifyPlacementCallback> placementStateModification;
 	public transient Predicate<CanBeReplacedCallback> canBeReplacedFunction;
 	public transient Consumer<EntityInsideBlockCallback> insideCallback;
-	public transient Consumer<EntitySteppedOnBlockCallback> stepOnCallback;
+	public transient Consumer<EntityBlockCallback> stepOnCallback;
 	public transient Consumer<EntityFallenOnBlockCallback> fallOnCallback;
 	public transient Consumer<AfterEntityFallenOnBlockCallback> afterFallenOnCallback;
 	public transient Consumer<BlockExplodedCallback> explodedCallback;
@@ -688,7 +688,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	@Info("""
 		Set what happens when an entity is inside the block
 		This is called every tick for every entity inside the block, so be careful what you do here.
-		This will never be called if the block is a solid full cube.
+		This will only be called if the entity's bounding box overlaps with the block's collision.
 		""")
 	public BlockBuilder entityInside(Consumer<EntityInsideBlockCallback> callbackJS) {
 		insideCallback = callbackJS;
@@ -699,7 +699,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		Set what happens when an entity steps on the block
 		This is called every tick for every entity standing on the block, so be careful what you do here.
 		""")
-	public BlockBuilder steppedOn(Consumer<EntitySteppedOnBlockCallback> callbackJS) {
+	public BlockBuilder steppedOn(Consumer<EntityBlockCallback> callbackJS) {
 		stepOnCallback = callbackJS;
 		return this;
 	}
