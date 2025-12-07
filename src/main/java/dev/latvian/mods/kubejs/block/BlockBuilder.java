@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.block.callback.BlockStateModifyPlacementCallback;
 import dev.latvian.mods.kubejs.block.callback.BlockStateRotateCallback;
 import dev.latvian.mods.kubejs.block.callback.CanBeReplacedCallback;
 import dev.latvian.mods.kubejs.block.callback.EntityFallenOnBlockCallback;
-import dev.latvian.mods.kubejs.block.callback.EntityInsideBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.EntityBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.RandomTickCallback;
 import dev.latvian.mods.kubejs.block.drop.BlockDropSupplier;
@@ -102,7 +101,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	public transient Consumer<BlockStateModifyCallback> defaultStateModification;
 	public transient Consumer<BlockStateModifyPlacementCallback> placementStateModification;
 	public transient Predicate<CanBeReplacedCallback> canBeReplacedFunction;
-	public transient Consumer<EntityInsideBlockCallback> insideCallback;
+	public transient Consumer<EntityBlockCallback> insideCallback;
 	public transient Consumer<EntityBlockCallback> stepOnCallback;
 	public transient Consumer<EntityFallenOnBlockCallback> fallOnCallback;
 	public transient Consumer<AfterEntityFallenOnBlockCallback> afterFallenOnCallback;
@@ -690,7 +689,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		This is called every tick for every entity inside the block, so be careful what you do here.
 		This will only be called if the entity's bounding box overlaps with the block's collision.
 		""")
-	public BlockBuilder entityInside(Consumer<EntityInsideBlockCallback> callbackJS) {
+	public BlockBuilder entityInside(Consumer<EntityBlockCallback> callbackJS) {
 		insideCallback = callbackJS;
 		return this;
 	}
