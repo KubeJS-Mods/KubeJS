@@ -12,4 +12,10 @@ public record BindingRegistry(KubeJSContext context, Scriptable scope) {
 			context.addToScope(scope, name, value);
 		}
 	}
+
+	public void add(Class<?> value) {
+		if (value != null) {
+			context.addToScope(scope, value.getSimpleName(), value);
+		}
+	}
 }
