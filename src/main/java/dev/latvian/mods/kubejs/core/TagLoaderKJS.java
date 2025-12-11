@@ -36,6 +36,8 @@ public interface TagLoaderKJS<T> {
 			}
 		}
 
+		hasDefaultTags |= !kjs$getResources().kjs$getServerScriptManager().serverRegistryTags.isEmpty();
+
 		if (hasDefaultTags || ServerEvents.TAGS.hasListeners(objStorage.key)) {
 			var preEvent = kjs$getResources().kjs$getServerScriptManager().preTagEvents.get(reg.key());
 
@@ -53,6 +55,12 @@ public interface TagLoaderKJS<T> {
 			for (var builder : (Collection<BuilderBase<?>>) objStorage.objects.values()) {
 				for (var s : builder.defaultTags) {
 					event.add(s, new TagEventFilter.ID(builder.id));
+				}
+			}
+
+			for (var e : kjs$getResources().kjs$getServerScriptManager().serverRegistryTags.entrySet()) {
+				for (var tag : e.getValue()) {
+					event.add(tag, new TagEventFilter.ID(e.getKey()));
 				}
 			}
 
