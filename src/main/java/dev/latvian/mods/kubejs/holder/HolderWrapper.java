@@ -56,6 +56,25 @@ public interface HolderWrapper {
 		return holder.isEmpty() ? DeferredHolder.create(registry.key(), id) : holder.get();
 	}
 
+	static Holder.Reference<?> wrapRef(KubeJSContext cx, Object from, TypeInfo param) {
+		if (from instanceof Holder.Reference<?> h) {
+			return h;
+		} else if (from == null) {
+			throw Context.reportRuntimeError("Can't interpret 'null' as a holder", cx);
+		}
+
+		var registry = cx.lookupRegistry(param, from);
+
+		if (from instanceof Holder<?> h) {
+			return Holder.Reference.createStandAlone(Cast.to(registry.holderOwner()), h.getKey());
+		} else if (!ID.isKey(from)) {
+			throw Context.reportRuntimeError("Can't interpret '" + from + "' as a reference holder", cx);
+		}
+
+		var id = ID.mc(from);
+		return Holder.Reference.createStandAlone(Cast.to(registry.holderOwner()), ResourceKey.create(registry.key(), id));
+	}
+
 	static HolderSet<?> wrapSet(KubeJSContext cx, Object from, TypeInfo param) {
 		var registry = cx.lookupRegistry(param, from);
 
