@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
-import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.client.ClientProperties;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
@@ -12,12 +14,11 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(GuiGraphics.class)
 public abstract class GuiGraphicsMixin {
-	@WrapWithCondition(method = "renderItemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)I"))
-	private boolean kjs$drawSize(GuiGraphics instance, Font font, String text, int x, int y, int color, boolean dropShadow, Font pFont, ItemStack stack, int pX, int pY, String pText) {
+	@WrapOperation(method = "renderItemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)I"))
+	private int kjs$drawSize(GuiGraphics instance, Font font, String text, int x, int y, int color, boolean dropShadow, Operation<Integer> original, @Local(argsOnly = true) String pText, @Local(argsOnly = true) ItemStack stack, @Local(argsOnly = true, ordinal = 0) int pX, @Local(argsOnly = true, ordinal = 1) int pY) {
 		if (pText == null && CommonProperties.get().removeSlotLimit && ClientProperties.get().customStackSizeText && stack.getCount() > 1) {
-			KubeJSClient.drawStackSize(instance, font, stack.getCount(), pX, pY, color, dropShadow);
-			return false;
+			return KubeJSClient.drawStackSize(instance, font, stack.getCount(), pX, pY, color, dropShadow);
 		}
-		return true;
+		return original.call(instance, font, text, x, y, color, dropShadow);
 	}
 }
