@@ -6,7 +6,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.phys.Vec3;
 
-public class AfterEntityFallenOnBlockCallback extends EntitySteppedOnBlockCallback {
+public class AfterEntityFallenOnBlockCallback extends EntityBlockCallback {
 	private boolean hasChangedVelocity;
 
 	public AfterEntityFallenOnBlockCallback(BlockGetter blockGetter, Entity entity) {
