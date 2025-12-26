@@ -88,7 +88,7 @@ public class KubeJSContext extends Context {
 	public int internalConversionWeightLast(Object fromObj, TypeInfo target) {
 		var c = target.asClass();
 
-		if (c == Optional.class || c == ResourceKey.class || c == Holder.class || c == HolderSet.class || c == TagKey.class) {
+		if (c == Optional.class || c == ResourceKey.class || c == Holder.class || c == HolderSet.class || c == TagKey.class || c == Holder.Reference.class) {
 			return CONVERSION_TRIVIAL;
 		} else if (c != Object.class) {
 			var reg = RegistryType.allOfClass(target.asClass());
@@ -144,6 +144,8 @@ public class KubeJSContext extends Context {
 			return ResourceKey.create(registryType.key(), id);
 		} else if (c == Holder.class) {
 			return HolderWrapper.wrap(this, from, target.param(0));
+		} else if (c == Holder.Reference.class) {
+			return HolderWrapper.wrapRef(this, from, target.param(0));
 		} else if (c == HolderSet.class) {
 			return HolderWrapper.wrapSet(this, from, target.param(0));
 		} else if (c == TagKey.class) {

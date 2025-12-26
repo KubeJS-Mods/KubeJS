@@ -36,8 +36,12 @@ public interface TagLoaderKJS<T> {
 			}
 		}
 
+		var ssm = kjs$getResources().kjs$getServerScriptManager();
+
+		hasDefaultTags |= !ssm.serverRegistryTags.isEmpty();
+
 		if (hasDefaultTags || ServerEvents.TAGS.hasListeners(objStorage.key)) {
-			var preEvent = kjs$getResources().kjs$getServerScriptManager().preTagEvents.get(reg.key());
+			var preEvent = ssm.preTagEvents.get(reg.key());
 
 			var event = new TagKubeEvent(objStorage.key, reg);
 
@@ -53,6 +57,12 @@ public interface TagLoaderKJS<T> {
 			for (var builder : (Collection<BuilderBase<?>>) objStorage.objects.values()) {
 				for (var s : builder.defaultTags) {
 					event.add(s, new TagEventFilter.ID(builder.id));
+				}
+			}
+
+			for (var e : ssm.serverRegistryTags.entrySet()) {
+				for (var tag : e.getValue()) {
+					event.add(tag, new TagEventFilter.ID(e.getKey()));
 				}
 			}
 
@@ -75,7 +85,7 @@ public interface TagLoaderKJS<T> {
 			}
 		}
 
-		kjs$resources.kjs$getServerScriptManager().getRegistries().cacheTags(reg, map);
+		ssm.getRegistries().cacheTags(reg, map);
 	}
 
 	void kjs$init(ReloadableServerResourcesKJS resources, Registry<T> registry);

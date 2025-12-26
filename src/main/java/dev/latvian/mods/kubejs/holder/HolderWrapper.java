@@ -56,6 +56,22 @@ public interface HolderWrapper {
 		return holder.isEmpty() ? DeferredHolder.create(registry.key(), id) : holder.get();
 	}
 
+	static Holder.Reference<?> wrapRef(KubeJSContext cx, Object from, TypeInfo param) {
+		var h = wrap(cx, from, param);
+
+		// Self or wrapped holder
+		if (h.getDelegate() instanceof Holder.Reference<?> ref) {
+			return ref;
+		} else if (h instanceof Holder.Direct<?>) {
+			// Create intrusive instead?
+			throw Context.reportRuntimeError("Can't interpret '" + from + "' as a Reference Holder: cannot obtain its registry id", cx);
+		}
+
+		var registry = cx.lookupRegistry(param, from);
+
+		return Holder.Reference.createStandAlone(Cast.to(registry.holderOwner()), h.getKey()); // Only null with direct holders
+	}
+
 	static HolderSet<?> wrapSet(KubeJSContext cx, Object from, TypeInfo param) {
 		var registry = cx.lookupRegistry(param, from);
 
