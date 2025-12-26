@@ -143,10 +143,6 @@ public abstract class EntityMixin implements EntityKJS {
 	public abstract void clearFire();
 
 	@Shadow
-	@RemapForJS("attack")
-	public abstract boolean hurt(DamageSource source, float hp);
-
-	@Shadow
 	@RemapForJS("getDistanceSq")
 	public abstract double distanceToSqr(double x, double y, double z);
 
