@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
@@ -91,29 +93,28 @@ public interface UtilsWrapper {
 
 	@Info("Gets a random object from the list using the passed in random")
 	static Object randomOf(Random random, Collection<Object> objects) {
-		if (objects.isEmpty()) {
-			return null;
-		}
-
-		if (objects instanceof List<?> list) {
-			return list.get(random.nextInt(objects.size()));
-		} else {
-			return new ArrayList<>(objects).get(random.nextInt(objects.size()));
-		}
+		return randomOf(objects, random::nextInt);
 	}
 
-	@Info("Gets a random object from the list using the passed in random")
+	@Info("Gets a random object from the list using the passed in random source")
 	static Object randomOf(RandomSource random, Collection<Object> objects) {
-		if (objects.isEmpty()) {
+		return randomOf(objects, random::nextInt);
+	}
+
+	@HideFromJS
+	static Object randomOf(Collection<Object> objects, IntFunction<Integer> nextInt) {
+		if (objects == null || objects.isEmpty()) {
 			return null;
 		}
 
-		if (objects instanceof List<?> list) {
-			return list.get(random.nextInt(objects.size()));
-		} else {
-			return new ArrayList<>(objects).get(random.nextInt(objects.size()));
+		int index = nextInt.apply(objects.size());
+
+		if (objects instanceof List<Object> list) {
+			return list.get(index);
 		}
-	} 
+
+		return new ArrayList<>(objects).get(index);
+	}
 
 	@Info("Gets the current system time, in milliseconds")
 	static long getSystemTime() {
