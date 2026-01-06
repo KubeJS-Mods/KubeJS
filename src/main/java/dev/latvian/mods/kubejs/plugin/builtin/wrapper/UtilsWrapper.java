@@ -102,6 +102,19 @@ public interface UtilsWrapper {
 		}
 	}
 
+	@Info("Gets a random object from the list using the passed in random")
+	static Object randomOf(RandomSource random, Collection<Object> objects) {
+		if (objects.isEmpty()) {
+			return null;
+		}
+
+		if (objects instanceof List<?> list) {
+			return list.get(random.nextInt(objects.size()));
+		} else {
+			return new ArrayList<>(objects).get(random.nextInt(objects.size()));
+		}
+	} 
+
 	@Info("Gets the current system time, in milliseconds")
 	static long getSystemTime() {
 		return System.currentTimeMillis();
