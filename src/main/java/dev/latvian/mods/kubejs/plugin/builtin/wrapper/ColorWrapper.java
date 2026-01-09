@@ -98,7 +98,7 @@ public interface ColorWrapper {
 	KubeColor LIME_DYE = createMapped(DyeColor.LIME, "LIME_DYE", "lime_dye", "limeDye");
 	KubeColor PINK_DYE = createMapped(DyeColor.PINK, "PINK_DYE", "pink_dye", "pinkDye");
 	KubeColor GRAY_DYE = createMapped(DyeColor.GRAY, "GRAY_DYE", "gray_dye", "grayDye");
-	KubeColor LIGHT_GRAY_DYE = createMapped(DyeColor.LIGHT_GRAY, "LIGHT_GRAY_DYE", "lightGrayDye", "lightGrayDye");
+	KubeColor LIGHT_GRAY_DYE = createMapped(DyeColor.LIGHT_GRAY, "LIGHT_GRAY_DYE", "light_gray_dye", "lightGrayDye");
 	KubeColor CYAN_DYE = createMapped(DyeColor.CYAN, "CYAN_DYE", "cyan_dye", "cyanDye");
 	KubeColor PURPLE_DYE = createMapped(DyeColor.PURPLE, "PURPLE_DYE", "purple_dye", "purpleDye");
 	KubeColor BLUE_DYE = createMapped(DyeColor.BLUE, "BLUE_DYE", "blue_dye", "blueDye");
