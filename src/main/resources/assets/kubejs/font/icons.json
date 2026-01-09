@@ -2,81 +2,9 @@
 	"providers": [
 		{
 			"type": "bitmap",
-			"file": "kubejs:font/icons/small_space.png",
-			"ascent": 7,
-			"chars": ["."]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/error.png",
-			"ascent": 7,
-			"chars": ["!"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/plus.png",
-			"ascent": 7,
-			"chars": ["+"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/minus.png",
-			"ascent": 7,
-			"chars": ["-"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/tilde.png",
-			"ascent": 7,
-			"chars": ["~"]
-		},
-		{
-			"type": "bitmap",
 			"file": "kubejs:font/icons/crafting.png",
 			"ascent": 7,
 			"chars": ["A"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/block_tag.png",
-			"ascent": 7,
-			"chars": ["B"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/copy.png",
-			"ascent": 7,
-			"chars": ["C"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/id.png",
-			"ascent": 7,
-			"chars": ["D"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/entity_type_tag.png",
-			"ascent": 7,
-			"chars": ["E"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/fluid_tag.png",
-			"ascent": 7,
-			"chars": ["F"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/info.png",
-			"ascent": 7,
-			"chars": ["I"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/item_tag.png",
-			"ascent": 7,
-			"chars": ["J"]
 		},
 		{
 			"type": "bitmap",
@@ -86,57 +14,9 @@
 		},
 		{
 			"type": "bitmap",
-			"file": "kubejs:font/icons/camera.png",
-			"ascent": 7,
-			"chars": ["M"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/no.png",
-			"ascent": 7,
-			"chars": ["N"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/prototype_component.png",
-			"ascent": 7,
-			"chars": ["P"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/patched_component.png",
-			"ascent": 7,
-			"chars": ["Q"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/fire.png",
-			"ascent": 7,
-			"chars": ["R"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/tag.png",
-			"ascent": 7,
-			"chars": ["T"]
-		},
-		{
-			"type": "bitmap",
 			"file": "kubejs:font/icons/vscode.png",
 			"ascent": 7,
 			"chars": ["V"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/warn.png",
-			"ascent": 7,
-			"chars": ["W"]
-		},
-		{
-			"type": "bitmap",
-			"file": "kubejs:font/icons/yes.png",
-			"ascent": 7,
-			"chars": ["Y"]
 		}
 	]
 }

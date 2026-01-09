@@ -8,6 +8,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.betteradvancedtooltips.BATIcons;
+import dev.latvian.mods.betteradvancedtooltips.TooltipTagType;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
@@ -276,7 +278,7 @@ public class KubeJSCommands {
 		var server = LocalWebServer.instance();
 
 		if (server != null && !server.explorerCode().isEmpty() && source.getServer().isSingleplayer()) {
-			link(source, ChatFormatting.LIGHT_PURPLE, TextIcons.entityTypeTag(), "Explore", null, "https://kubejs.com/explorer#" + server.explorerCode());
+			link(source, ChatFormatting.LIGHT_PURPLE, TooltipTagType.ENTITY_TYPE.component(), "Explore", null, "https://kubejs.com/explorer#" + server.explorerCode());
 		}
 
 		return Command.SINGLE_SUCCESS;
@@ -455,7 +457,7 @@ public class KubeJSCommands {
 				success++;
 			} catch (IOException e) {
 				e.printStackTrace();
-				source.sendFailure(Component.empty().append(TextIcons.no().kjs$white()).append("Failed to export %s!".formatted(packName)).withStyle(style ->
+				source.sendFailure(Component.empty().append(BATIcons.NO).append("Failed to export %s!".formatted(packName)).withStyle(style ->
 					style.withColor(ChatFormatting.RED)
 						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(e.getMessage())))));
 			}

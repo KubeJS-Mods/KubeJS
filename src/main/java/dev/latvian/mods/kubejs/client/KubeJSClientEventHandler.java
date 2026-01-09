@@ -20,7 +20,6 @@ import dev.latvian.mods.kubejs.item.ModifyItemTooltipsKubeEvent;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ClientEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.event.KeyBindEvents;
-import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
@@ -44,19 +43,12 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -87,14 +79,13 @@ import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT)
 public class KubeJSClientEventHandler {
 	public static final Pattern COMPONENT_ERROR = ConsoleJS.methodPattern(KubeJSClientEventHandler.class, "onItemTooltip");
-	private static List<String> lastComponentError = List.of();
+	private static final List<String> lastComponentError = List.of();
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void setupClient(FMLClientSetupEvent event) {
@@ -349,114 +340,6 @@ public class KubeJSClientEventHandler {
 		if (sessionData != null) {
 			for (var tooltip : sessionData.itemTooltips) {
 				handleItemTooltips(mc, tooltip, dynamicEvent);
-			}
-		}
-
-		var advanced = flags.isAdvanced();
-		var properties = ClientProperties.get();
-
-		if (mc.level != null && advanced && properties.showComponents && dynamicEvent.alt) {
-			var components = BuiltInRegistries.DATA_COMPONENT_TYPE;
-			var ops = mc.level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
-			var errors = new ArrayList<String>(0);
-
-			for (var entry : stack.getComponentsPatch().entrySet()) {
-				var id = components.getKey(entry.getKey());
-
-				if (id != null) {
-					var line = Component.empty();
-					line.append(TextIcons.icon(Component.literal("Q.")));
-
-					if (entry.getValue().isEmpty()) {
-						line.append(Component.literal("!"));
-					}
-
-					line.append(Component.literal(ID.reduce(id)).kjs$yellow());
-
-					if (entry.getValue().isPresent()) {
-						line.append(Component.literal("="));
-						var errors0 = appendComponentValue(ops, line, (DataComponentType) entry.getKey(), entry.getValue().get());
-
-						if (!errors0.isEmpty()) {
-							lines.add(Component.literal(ID.reduce(id) + " errored, see log").kjs$darkRed());
-							errors.add("Failed to encode value of " + id + ": " + entry.getValue().get());
-							errors.addAll(errors0);
-						}
-					}
-
-					lines.add(line);
-				}
-			}
-
-			if (dynamicEvent.shift) {
-				for (var type : stack.getPrototype()) {
-					var id = components.getKey(type.type());
-
-					if (id != null && stack.getComponentsPatch().get(type.type()) == null) {
-						var line = Component.empty();
-						line.append(TextIcons.icon(Component.literal("P.")));
-						line.append(Component.literal(ID.reduce(id)).kjs$gray());
-						line.append(Component.literal("="));
-						var errors0 = appendComponentValue(ops, line, (DataComponentType) type.type(), type.value());
-
-						if (!errors0.isEmpty()) {
-							lines.add(Component.literal(ID.reduce(id) + " errored, see log").kjs$darkRed());
-							errors.add("Failed to encode value of " + id + ": " + type.value());
-							errors.addAll(errors0);
-						}
-
-						lines.add(line);
-					}
-				}
-			}
-
-			if (!errors.isEmpty() && !lastComponentError.equals(errors)) {
-				lastComponentError = errors;
-				errors.forEach(ConsoleJS.CLIENT::error);
-			}
-		} else if (advanced && (properties.showTagNames || properties.showFuelValue) && dynamicEvent.shift) {
-			if (properties.showFuelValue) {
-				var fuel = stack.getBurnTime(null);
-
-				if (fuel > 0) {
-					var line = Component.empty();
-					line.append(TextIcons.icon(Component.literal("R.")));
-					line.append(Component.literal("Fuel: ").kjs$gold());
-
-					var s = String.valueOf(fuel / 20F);
-
-					line.append(Component.literal(fuel + " t / " + (s.endsWith(".0") ? s.substring(0, s.length() - 2) : s) + " s").kjs$yellow());
-					lines.add(line);
-				}
-			}
-
-			if (properties.showTagNames) {
-				var tempTagNames = new LinkedHashMap<ResourceLocation, TagInstance>();
-				TagInstance.Type.ITEM.append(tempTagNames, stack.getItem().builtInRegistryHolder().tags());
-
-				if (stack.getItem() instanceof BlockItem item) {
-					TagInstance.Type.BLOCK.append(tempTagNames, item.getBlock().builtInRegistryHolder().tags());
-				}
-
-				if (stack.getItem() instanceof BucketItem bucket) {
-					Fluid fluid = bucket.content;
-
-					if (fluid != Fluids.EMPTY) {
-						TagInstance.Type.FLUID.append(tempTagNames, fluid.builtInRegistryHolder().tags());
-					}
-				}
-
-				if (stack.getItem() instanceof SpawnEggItem item) {
-					var entityType = item.getType(stack);
-
-					if (entityType != null) {
-						TagInstance.Type.ENTITY.append(tempTagNames, entityType.builtInRegistryHolder().tags());
-					}
-				}
-
-				if (!tempTagNames.isEmpty()) {
-					tempTagNames.values().stream().sorted().map(TagInstance::toText).forEach(lines::add);
-				}
 			}
 		}
 	}

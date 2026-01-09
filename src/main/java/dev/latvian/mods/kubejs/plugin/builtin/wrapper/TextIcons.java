@@ -1,119 +1,101 @@
 package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
+import dev.latvian.mods.betteradvancedtooltips.BATIcons;
 import dev.latvian.mods.kubejs.KubeJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 
 public interface TextIcons {
 	ResourceLocation FONT = KubeJS.id("icons");
 	Style STYLE = Style.EMPTY.withFont(FONT).applyFormat(ChatFormatting.WHITE);
-	Component NAME = Component.empty().append(icons("K.")).append(Component.literal(KubeJS.MOD_NAME));
-	String ALL_ICONS = "!+~ABCDEFIJKMNPQRTVWY";
 
-	static MutableComponent icon(MutableComponent character) {
-		return character.setStyle(STYLE);
+	Component CRAFTING = Component.literal("A").setStyle(STYLE);
+	Component LOGO = Component.literal("K").setStyle(STYLE);
+	Component VSCODE = Component.literal("V").setStyle(STYLE);
+
+	Component NAME = Component.empty().append(LOGO).append(BATIcons.SMALL_SPACE).append(Component.literal(KubeJS.MOD_NAME));
+
+	String ALL_ICONS = "AKV";
+
+	static Component smallSpace() {
+		return BATIcons.SMALL_SPACE;
 	}
 
-	static MutableComponent icons(String characters) {
-		return Component.literal(characters).setStyle(STYLE);
+	static Component error() {
+		return BATIcons.ERROR;
 	}
 
-	static MutableComponent smallSpace() {
-		return icons(".");
+	static Component plus() {
+		return BATIcons.PLUS;
 	}
 
-	static MutableComponent error() {
-		return icons("!");
+	static Component minus() {
+		return BATIcons.MINUS;
 	}
 
-	static MutableComponent plus() {
-		return icons("+");
+	static Component tilde() {
+		return BATIcons.TILDE;
 	}
 
-	static MutableComponent minus() {
-		return icons("-");
+	static Component crafting() {
+		return CRAFTING;
 	}
 
-	static MutableComponent tilde() {
-		return icons("~");
+	static Component copy() {
+		return BATIcons.COPY;
 	}
 
-	static MutableComponent crafting() {
-		return icons("A");
+	static Component id() {
+		return BATIcons.ID;
 	}
 
-	static MutableComponent blockTagIcon() {
-		return icons("B");
+	static Component info() {
+		return BATIcons.INFO;
 	}
 
-	static MutableComponent copy() {
-		return icons("C");
+	static Component logo() {
+		return LOGO;
 	}
 
-	static MutableComponent id() {
-		return icons("D");
+	static Component camera() {
+		return BATIcons.CAMERA;
 	}
 
-	static MutableComponent entityTypeTag() {
-		return icons("E");
+	static Component no() {
+		return BATIcons.NO;
 	}
 
-	static MutableComponent fluidTag() {
-		return icons("F");
+	static Component prototypeComponent() {
+		return BATIcons.PROTOTYPE_COMPONENT;
 	}
 
-	static MutableComponent info() {
-		return icons("I");
+	static Component patchedComponent() {
+		return BATIcons.PATCHED_COMPONENT;
 	}
 
-	static MutableComponent itemTag() {
-		return icons("J");
+	static Component fire() {
+		return BATIcons.FIRE;
 	}
 
-	static MutableComponent logo() {
-		return icons("K");
+	static Component tag() {
+		return BATIcons.TAG;
 	}
 
-	static MutableComponent camera() {
-		return icons("M");
+	static Component vscode() {
+		return VSCODE;
 	}
 
-	static MutableComponent no() {
-		return icons("N");
+	static Component warn() {
+		return BATIcons.WARN;
 	}
 
-	static MutableComponent prototypeComponent() {
-		return icons("P");
+	static Component yes() {
+		return BATIcons.YES;
 	}
 
-	static MutableComponent patchedComponent() {
-		return icons("Q");
-	}
-
-	static MutableComponent fire() {
-		return icons("R");
-	}
-
-	static MutableComponent tag() {
-		return icons("T");
-	}
-
-	static MutableComponent vscode() {
-		return icons("V");
-	}
-
-	static MutableComponent warn() {
-		return icons("W");
-	}
-
-	static MutableComponent yes() {
-		return icons("Y");
-	}
-
-	static MutableComponent yes(boolean yes) {
-		return icons(yes ? "Y" : "N");
+	static Component yes(boolean yes) {
+		return yes ? BATIcons.YES : BATIcons.NO;
 	}
 }

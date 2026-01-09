@@ -50,5 +50,12 @@ versionRange = "[${emi_version},)"
 ordering = "AFTER"
 side = "CLIENT"
 
+[[dependencies.kubejs]]
+modId = "betteradvancedtooltips"
+type = "optional"
+versionRange = "[${bat_version},)"
+ordering = "BEFORE"
+side = "CLIENT"
+
 [[mixins]]
 config = "kubejs.mixins.json"

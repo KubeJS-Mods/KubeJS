@@ -22,12 +22,7 @@ public class ClientProperties extends BaseProperties {
 	// private static final ColourScheme.Colour DEFAULT_FOREGROUND_COLOR = new ColourScheme.Colour(236, 239, 244); // #ECEFF4
 
 	public String windowTitle;
-	public boolean showTagNames;
-	public boolean showComponents;
-	public boolean showFuelValue;
 	public boolean disableRecipeBook;
-	public boolean disableComponentCountTooltip;
-	public boolean disableTabNameTooltip;
 	public boolean exportAtlases;
 	// public ColourScheme.Colour launchBackgroundColor;
 	// public ColourScheme.Colour launchForegroundColor;
@@ -45,12 +40,7 @@ public class ClientProperties extends BaseProperties {
 	@Override
 	protected void load() {
 		windowTitle = get("window_title", "");
-		showTagNames = get("show_tag_names", true);
-		showComponents = get("show_components", true);
-		showFuelValue = get("show_fuel_value", true);
 		disableRecipeBook = get("disable_recipe_book", false);
-		disableComponentCountTooltip = get("disable_component_count_tooltip", true);
-		disableTabNameTooltip = get("disable_tab_name_tooltip", false);
 		exportAtlases = get("export_atlases", false);
 		// launchBackgroundColor = getColor("launch_background_color", DEFAULT_BACKGROUND_COLOR);
 		// launchForegroundColor = getColor("launch_foreground_color", DEFAULT_FOREGROUND_COLOR);
