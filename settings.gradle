@@ -77,4 +77,4 @@ dependencyResolutionManagement {
 		mavenCentral()
 	}
 }
-rootProject.name = 'KubeJS-1.21.1'
+rootProject.name = 'KubeJS-26.1'
