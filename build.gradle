@@ -5,7 +5,7 @@ plugins {
 	id 'java'
 	id 'idea'
 	id 'maven-publish'
-	id 'net.neoforged.moddev' version "2.0.137"
+	id 'net.neoforged.moddev'
 	id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
@@ -24,7 +24,7 @@ neoForge {
 		version = project.neoforge_version
 		validateAccessTransformers = !CI
 		disableRecompilation = CI
-
+		validateAccessTransformers = false
 		accessTransformers {
 			publish(project.file('src/main/resources/META-INF/accesstransformer.cfg'))
 		}
@@ -70,12 +70,12 @@ neoForge {
 
 compileJava {
 	options.encoding = "UTF-8"
-	options.release.set(21)
+	options.release.set(25)
 	options.compilerArgs << '-parameters' << '-Xmaxerrs' << '1000'
 }
 
 java {
-	sourceCompatibility = targetCompatibility = '21'
+	sourceCompatibility = targetCompatibility = '25'
 	withSourcesJar()
 	withJavadocJar()
 }
@@ -84,53 +84,17 @@ tasks.withType(Javadoc).configureEach {
 	options.addStringOption('Xdoclint:none', '-quiet')
 }
 
-repositories {
-	mavenLocal()
-	mavenCentral()
 
-	maven {
-		url "https://maven.neoforged.net/releases"
-	}
-
-	maven {
-		name = 'ParchmentMC'
-		url = 'https://maven.parchmentmc.org'
-		content {
-			includeGroup "org.parchmentmc.data"
-		}
-	}
-
-	maven {
-		url "https://maven.latvian.dev/releases"
-		content {
-			includeGroup "dev.latvian.mods"
-			includeGroup "dev.latvian.apps"
-		}
-	}
-
-	maven {
-		url "https://maven.latvian.dev/mirror"
-		content {
-			includeGroup "dev.architectury"
-			includeGroup "me.shedaniel"
-			includeGroup "me.shedaniel.cloth"
-			includeGroup "mezz.jei"
-			includeGroup "net.darkhax.bookshelf"
-			includeGroup "net.darkhax.gamestages"
-			includeGroup "dev.emi"
-			includeGroup "com.github.rtyley"
-		}
-	}
-}
 
 dependencies {
 	api("dev.latvian.mods:rhino:$rhino_version") { transitive(false) }
 
-	compileOnly("dev.architectury:architectury-neoforge:$architectury_version")
+	// not updated to 26.1 yet
+	/*compileOnly("dev.architectury:architectury-neoforge:$architectury_version")
 	compileOnly("mezz.jei:jei-1.21.1-neoforge:$jei_version")
 	compileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version")
-	compileOnly("dev.emi:emi-neoforge:$emi_version+1.21.1:api")
-
+	compileOnly("dev.emi:emi-neoforge:$emi_version+1.21.1:api")*/
+/*
 	additionalRuntimeClasspath(jarJar(implementation('dev.latvian.apps:tiny-java-server'))) {
 		version {
 			strictly "[$tiny_server_version,)"
@@ -150,7 +114,7 @@ dependencies {
 			strictly "[$bat_version,)"
 			prefer "$bat_version"
 		}
-	}
+	}*/
 }
 
 processResources {
