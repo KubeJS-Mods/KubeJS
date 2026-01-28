@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +21,7 @@ import java.util.Map;
 public class LoadedTexture {
 	public static final LoadedTexture EMPTY = new LoadedTexture(0, 0, new int[0], null);
 
-	public static LoadedTexture load(ResourceLocation id) {
+	public static LoadedTexture load(Identifier id) {
 		try {
 			var path = KubeJSPaths.ASSETS.resolve(id.getNamespace() + "/textures/" + id.getPath() + ".png");
 

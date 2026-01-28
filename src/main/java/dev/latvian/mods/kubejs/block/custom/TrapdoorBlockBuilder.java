@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.TrapDoorBlock;
@@ -17,17 +17,17 @@ import java.util.List;
 
 @ReturnsSelf
 public class TrapdoorBlockBuilder extends ShapedBlockBuilder {
-	public static final ResourceLocation[] TRAPDOOR_TAGS = {
+	public static final Identifier[] TRAPDOOR_TAGS = {
 		BlockTags.TRAPDOORS.location(),
 	};
 
-	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/template_trapdoor_bottom");
-	private static final ResourceLocation TOP_MODEL = ResourceLocation.withDefaultNamespace("block/template_trapdoor_top");
-	private static final ResourceLocation OPEN_MODEL = ResourceLocation.withDefaultNamespace("block/template_trapdoor_open");
+	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/template_trapdoor_bottom");
+	private static final Identifier TOP_MODEL = Identifier.withDefaultNamespace("block/template_trapdoor_top");
+	private static final Identifier OPEN_MODEL = Identifier.withDefaultNamespace("block/template_trapdoor_open");
 
 	public transient BlockSetType behaviour;
 
-	public TrapdoorBlockBuilder(ResourceLocation i) {
+	public TrapdoorBlockBuilder(Identifier i) {
 		super(i);
 		renderType(BlockRenderType.CUTOUT);
 		noValidSpawns(true);

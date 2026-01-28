@@ -3,23 +3,23 @@ package dev.latvian.mods.kubejs.block.custom;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WallBlock;
 
 // FIXME: fix connection
 public class WallBlockBuilder extends ShapedBlockBuilder {
-	public static final ResourceLocation[] WALL_TAGS = {
+	public static final Identifier[] WALL_TAGS = {
 		BlockTags.WALLS.location(),
 	};
 
-	private static final ResourceLocation POST_MODEL = ResourceLocation.withDefaultNamespace("block/template_wall_post");
-	private static final ResourceLocation SIDE_MODEL = ResourceLocation.withDefaultNamespace("block/template_wall_side");
-	private static final ResourceLocation TALL_SIDE_MODEL = ResourceLocation.withDefaultNamespace("block/template_wall_side_tall");
-	private static final ResourceLocation INVENTORY_MODEL = ResourceLocation.withDefaultNamespace("block/wall_inventory");
+	private static final Identifier POST_MODEL = Identifier.withDefaultNamespace("block/template_wall_post");
+	private static final Identifier SIDE_MODEL = Identifier.withDefaultNamespace("block/template_wall_side");
+	private static final Identifier TALL_SIDE_MODEL = Identifier.withDefaultNamespace("block/template_wall_side_tall");
+	private static final Identifier INVENTORY_MODEL = Identifier.withDefaultNamespace("block/wall_inventory");
 
-	public WallBlockBuilder(ResourceLocation i) {
+	public WallBlockBuilder(Identifier i) {
 		super(i, "_wall");
 		tagBoth(WALL_TAGS);
 	}

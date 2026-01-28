@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.registry;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,12 +11,12 @@ import java.util.function.Consumer;
 
 @ReturnsSelf
 public abstract class ModelledBuilderBase<T> extends BuilderBase<T> {
-	public transient ResourceLocation parentModel;
+	public transient Identifier parentModel;
 	public transient Map<String, String> textures;
 	public transient String baseTexture;
 	public transient Consumer<ModelGenerator> modelGenerator;
 
-	public ModelledBuilderBase(ResourceLocation id) {
+	public ModelledBuilderBase(Identifier id) {
 		super(id);
 		this.parentModel = null;
 		this.textures = new HashMap<>(0);
@@ -46,7 +46,7 @@ public abstract class ModelledBuilderBase<T> extends BuilderBase<T> {
 	}
 
 	@Info("Sets the parent model.")
-	public ModelledBuilderBase<T> parentModel(ResourceLocation id) {
+	public ModelledBuilderBase<T> parentModel(Identifier id) {
 		parentModel = id;
 		return this;
 	}

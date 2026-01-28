@@ -15,11 +15,13 @@ import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMaps;
 import it.unimi.dsi.fastutil.objects.Object2ShortMap;
 import it.unimi.dsi.fastutil.objects.Object2ShortMaps;
-import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.advancements.critereon.GameTypePredicate;
-import net.minecraft.advancements.critereon.MinMaxBounds;
-import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.advancements.criterion.EntityPredicate;
+import net.minecraft.advancements.criterion.GameTypePredicate;
+import net.minecraft.advancements.criterion.MinMaxBounds;
+import net.minecraft.core.component.DataComponentExactPredicate;
+import net.minecraft.core.component.predicates.DataComponentPredicate;
 
+import java.util.List;
 import java.util.Optional;
 
 public class RecordDefaults {
@@ -38,7 +40,8 @@ public class RecordDefaults {
 
 		add(MinMaxBounds.Ints.class, MinMaxBounds.Ints.ANY);
 		add(MinMaxBounds.Doubles.class, MinMaxBounds.Doubles.ANY);
-		add(DataComponentPredicate.class, DataComponentPredicate.EMPTY);
+		//TODO Used to be DataComponentPredicate, Review this to make sure it's correct equivalent
+		add(DataComponentExactPredicate.class, DataComponentExactPredicate.EMPTY);
 		add(EntityPredicate.LocationWrapper.class, new EntityPredicate.LocationWrapper(Optional.empty(), Optional.empty(), Optional.empty()));
 		add(GameTypePredicate.class, GameTypePredicate.ANY);
 		add(Tristate.class, Tristate.DEFAULT);

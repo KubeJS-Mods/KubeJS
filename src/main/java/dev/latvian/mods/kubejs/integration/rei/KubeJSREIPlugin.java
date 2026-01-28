@@ -24,7 +24,7 @@ import me.shedaniel.rei.api.common.util.EntryIngredients;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import me.shedaniel.rei.forge.REIPluginClient;
 import me.shedaniel.rei.plugin.client.BuiltinClientPlugin;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
@@ -44,7 +44,7 @@ import java.util.Set;
 @SuppressWarnings("UnstableApiUsage")
 public class KubeJSREIPlugin implements REIClientPlugin {
 	private final Set<CategoryIdentifier<?>> categoriesRemoved = new HashSet<>();
-	private final Map<CategoryIdentifier<?>, Collection<ResourceLocation>> recipesRemoved = new HashMap<>();
+	private final Map<CategoryIdentifier<?>, Collection<Identifier>> recipesRemoved = new HashMap<>();
 	private RecipeViewerData remote = null;
 
 	public KubeJSREIPlugin() {

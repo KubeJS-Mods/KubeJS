@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -28,7 +28,7 @@ import java.util.function.Predicate;
 
 @RemapPrefixForJS("kjs$")
 public interface LivingEntityKJS extends EntityKJS {
-	ResourceLocation KJS_PLAYER_CUSTOM_SPEED = KubeJS.id("player.speed.modifier");
+	Identifier KJS_PLAYER_CUSTOM_SPEED = KubeJS.id("player.speed.modifier");
 
 	@Override
 	default LivingEntity kjs$self() {
@@ -256,7 +256,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		}
 	}
 
-	default void kjs$modifyAttribute(Holder<Attribute> attribute, ResourceLocation id, double amount, AttributeModifier.Operation operation) {
+	default void kjs$modifyAttribute(Holder<Attribute> attribute, Identifier id, double amount, AttributeModifier.Operation operation) {
 		AttributeInstance instance = kjs$self().getAttribute(attribute);
 		if (instance != null) {
 			instance.removeModifier(id);
@@ -264,7 +264,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		}
 	}
 
-	default void kjs$removeAttribute(Holder<Attribute> attribute, ResourceLocation id) {
+	default void kjs$removeAttribute(Holder<Attribute> attribute, Identifier id) {
 		AttributeInstance instance = kjs$self().getAttribute(attribute);
 		if (instance != null) {
 			instance.removeModifier(id);

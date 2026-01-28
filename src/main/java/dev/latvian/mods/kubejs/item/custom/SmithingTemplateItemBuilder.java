@@ -7,7 +7,7 @@ import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.SmithingTemplateItem;
 
 import java.util.ArrayList;
@@ -22,21 +22,21 @@ import static net.minecraft.world.item.SmithingTemplateItem.*;
 @ReturnsSelf
 public class SmithingTemplateItemBuilder extends ItemBuilder {
 
-	private static final List<ResourceLocation> ARMOR_ICONS = SmithingTemplateItem.createTrimmableArmorIconList();
-	private static final List<ResourceLocation> INGOTS_AND_CRYSTALS_ICONS = SmithingTemplateItem.createTrimmableMaterialIconList();
-	private static final List<ResourceLocation> EQUIPMENT_ICONS = SmithingTemplateItem.createNetheriteUpgradeIconList();
-	private static final List<ResourceLocation> TOOL_ICONS = List.of(EMPTY_SLOT_HOE, EMPTY_SLOT_AXE, EMPTY_SLOT_SWORD, EMPTY_SLOT_SHOVEL, EMPTY_SLOT_PICKAXE);
-	private static final List<ResourceLocation> CRYSTAL_ICONS = List.of(EMPTY_SLOT_REDSTONE_DUST, EMPTY_SLOT_QUARTZ, EMPTY_SLOT_EMERALD, EMPTY_SLOT_DIAMOND, EMPTY_SLOT_LAPIS_LAZULI, EMPTY_SLOT_AMETHYST_SHARD);
+	private static final List<Identifier> ARMOR_ICONS = SmithingTemplateItem.createTrimmableArmorIconList();
+	private static final List<Identifier> INGOTS_AND_CRYSTALS_ICONS = SmithingTemplateItem.createTrimmableMaterialIconList();
+	private static final List<Identifier> EQUIPMENT_ICONS = SmithingTemplateItem.createNetheriteUpgradeIconList();
+	private static final List<Identifier> TOOL_ICONS = List.of(EMPTY_SLOT_HOE, EMPTY_SLOT_AXE, EMPTY_SLOT_SWORD, EMPTY_SLOT_SHOVEL, EMPTY_SLOT_PICKAXE);
+	private static final List<Identifier> CRYSTAL_ICONS = List.of(EMPTY_SLOT_REDSTONE_DUST, EMPTY_SLOT_QUARTZ, EMPTY_SLOT_EMERALD, EMPTY_SLOT_DIAMOND, EMPTY_SLOT_LAPIS_LAZULI, EMPTY_SLOT_AMETHYST_SHARD);
 
 	private final Map<String, String> translations = new HashMap<>();
 	public Component appliesToText = Component.literal("set with .appliesToDescription(string) on your smithing_template type item").withStyle(ChatFormatting.BLUE);
 	public Component ingredientsText = Component.literal("set with .ingredientsDescription(string) on your smithing_template type item").withStyle(ChatFormatting.BLUE);
 	public Component appliesToSlotDescriptionText = Component.literal("set with .appliesToSlotDescription(string) on your smithing_template type item");
 	public Component ingredientSlotDescriptionText = Component.literal("set with .ingredientsSlotDescription(string) on your smithing_template type item");
-	public final List<ResourceLocation> appliesToEmptyIcons = new ArrayList<>();
-	public final List<ResourceLocation> ingredientsSlotEmptyIcons = new ArrayList<>();
+	public final List<Identifier> appliesToEmptyIcons = new ArrayList<>();
+	public final List<Identifier> ingredientsSlotEmptyIcons = new ArrayList<>();
 
-	public SmithingTemplateItemBuilder(ResourceLocation i) {
+	public SmithingTemplateItemBuilder(Identifier i) {
 		super(i);
 	}
 
@@ -107,13 +107,13 @@ public class SmithingTemplateItemBuilder extends ItemBuilder {
 	}
 
 	@Info("Adds the specified texture location to the list of base slot icons that the smithing table cycles through when this smithing template is put in.")
-	public SmithingTemplateItemBuilder addAppliesToSlotIcon(ResourceLocation location) {
+	public SmithingTemplateItemBuilder addAppliesToSlotIcon(Identifier location) {
 		appliesToEmptyIcons.add(location);
 		return this;
 	}
 
 	@Info("Adds the specified texture location to the list of ingredient slot icons that the smithing table cycles through when this smithing template is put in")
-	public SmithingTemplateItemBuilder addIngredientsSlotIcon(ResourceLocation location) {
+	public SmithingTemplateItemBuilder addIngredientsSlotIcon(Identifier location) {
 		ingredientsSlotEmptyIcons.add(location);
 		return this;
 	}

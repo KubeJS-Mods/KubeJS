@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.MutableToolTier;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.Tiers;
 
@@ -17,7 +17,7 @@ public abstract class HandheldItemBuilder extends ItemBuilder {
 	public transient float attackDamageBaseline;
 	public transient float speedBaseline;
 
-	public HandheldItemBuilder(ResourceLocation i, float d, float s) {
+	public HandheldItemBuilder(Identifier i, float d, float s) {
 		super(i);
 		toolTier = new MutableToolTier(Tiers.IRON);
 		attackDamageBaseline = d;

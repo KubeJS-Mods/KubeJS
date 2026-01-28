@@ -7,15 +7,15 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryContext;
 import dev.latvian.mods.kubejs.util.Lazy;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Map;
 import java.util.function.Function;
 
-public record RecipePostProcessorType<T extends RecipePostProcessor>(ResourceLocation id, Function<RecipeTypeRegistryContext, MapCodec<T>> mapCodec) {
-	public static final Lazy<Map<ResourceLocation, RecipePostProcessorType<?>>> MAP = Lazy.map(map -> KubeJSPlugins.forEachPlugin(type -> map.put(type.id, type), KubeJSPlugin::registerRecipePostProcessors));
+public record RecipePostProcessorType<T extends RecipePostProcessor>(Identifier id, Function<RecipeTypeRegistryContext, MapCodec<T>> mapCodec) {
+	public static final Lazy<Map<Identifier, RecipePostProcessorType<?>>> MAP = Lazy.map(map -> KubeJSPlugins.forEachPlugin(type -> map.put(type.id, type), KubeJSPlugin::registerRecipePostProcessors));
 
-	public static final Codec<RecipePostProcessorType<?>> CODEC = ResourceLocation.CODEC.comapFlatMap(id -> {
+	public static final Codec<RecipePostProcessorType<?>> CODEC = Identifier.CODEC.comapFlatMap(id -> {
 		var type = MAP.get().get(id);
 
 		if (type != null) {

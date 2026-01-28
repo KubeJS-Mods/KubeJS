@@ -2,10 +2,10 @@ package dev.latvian.mods.kubejs.fluid;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockRenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class ThinFluidBuilder extends FluidBuilder {
-	public ThinFluidBuilder(ResourceLocation i) {
+	public ThinFluidBuilder(Identifier i) {
 		super(i);
 		fluidType.tint(WATER_COLOR);
 		fluidType.stillTexture(KubeJS.id("block/thin_fluid_still"));

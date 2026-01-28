@@ -13,7 +13,7 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.util.ArrayList;
@@ -26,12 +26,12 @@ import java.util.SequencedMap;
 
 public class JsonRecipeSchemaLoader {
 	private static final class RecipeSchemaBuilder {
-		private final ResourceLocation id;
+		private final Identifier id;
 		private final RecipeSchemaData data;
 		private RecipeSchema schema;
 
 		private RecipeSchemaBuilder parent;
-		private ResourceLocation overrideType;
+		private Identifier overrideType;
 		private List<RecipeKey<?>> keys;
 		private List<RecipeSchemaData.ConstructorData> constructors;
 		private Map<String, RecipeSchemaFunction> functions;
@@ -41,7 +41,7 @@ public class JsonRecipeSchemaLoader {
 		private Map<String, JsonElement> overrideKeys;
 		private List<RecipePostProcessor> postProcessors;
 
-		private RecipeSchemaBuilder(ResourceLocation id, RecipeSchemaData data) {
+		private RecipeSchemaBuilder(Identifier id, RecipeSchemaData data) {
 			this.id = id;
 			this.data = data;
 		}
@@ -317,7 +317,7 @@ public class JsonRecipeSchemaLoader {
 	}
 
 	public static void load(RecipeTypeRegistryContext ctx, DynamicOps<JsonElement> jsonOps, RecipeSchemaRegistry event, ResourceManager resourceManager) {
-		var map = new HashMap<ResourceLocation, RecipeSchemaBuilder>();
+		var map = new HashMap<Identifier, RecipeSchemaBuilder>();
 		var recipeSchemaDataCodec = RecipeSchemaData.CODEC.apply(ctx);
 
 		for (var entry : resourceManager.listResources("kubejs/recipe_schema", path -> path.getPath().endsWith(".json")).entrySet()) {

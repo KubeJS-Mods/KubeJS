@@ -1,27 +1,27 @@
 package dev.latvian.mods.kubejs.server.tag;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class PreTagWrapper extends TagWrapper {
-	public record AddAction(ResourceLocation tag, Object[] filters) implements Consumer<TagKubeEvent> {
+	public record AddAction(Identifier tag, Object[] filters) implements Consumer<TagKubeEvent> {
 		@Override
 		public void accept(TagKubeEvent e) {
 			e.add(tag, filters);
 		}
 	}
 
-	public record RemoveAction(ResourceLocation tag, Object[] filters) implements Consumer<TagKubeEvent> {
+	public record RemoveAction(Identifier tag, Object[] filters) implements Consumer<TagKubeEvent> {
 		@Override
 		public void accept(TagKubeEvent e) {
 			e.remove(tag, filters);
 		}
 	}
 
-	public record RemoveAllAction(ResourceLocation tag) implements Consumer<TagKubeEvent> {
+	public record RemoveAllAction(Identifier tag) implements Consumer<TagKubeEvent> {
 		@Override
 		public void accept(TagKubeEvent e) {
 			e.removeAll(tag);
@@ -29,9 +29,9 @@ public class PreTagWrapper extends TagWrapper {
 	}
 
 	public final PreTagKubeEvent preEvent;
-	public final ResourceLocation id;
+	public final Identifier id;
 
-	public PreTagWrapper(PreTagKubeEvent e, ResourceLocation i) {
+	public PreTagWrapper(PreTagKubeEvent e, Identifier i) {
 		super(e, i, null);
 		preEvent = e;
 		id = i;
@@ -56,7 +56,7 @@ public class PreTagWrapper extends TagWrapper {
 	}
 
 	@Override
-	public List<ResourceLocation> getObjectIds() {
+	public List<Identifier> getObjectIds() {
 		preEvent.invalid = true;
 		return new ArrayList<>(0);
 	}

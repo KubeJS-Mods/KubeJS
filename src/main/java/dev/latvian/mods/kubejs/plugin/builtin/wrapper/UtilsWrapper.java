@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
@@ -76,16 +76,16 @@ public interface UtilsWrapper {
 	}
 
 	@Info("""
-		Returns a Stat of the passed in ResourceLocation.
-		Note that this requires the same ResourceLocation to get the same stat, so should not be used unless you want to make your own stat, and are storing an actual ResourceLocation somewhere to access it.
+		Returns a Stat of the passed in Identifier.
+		Note that this requires the same Identifier to get the same stat, so should not be used unless you want to make your own stat, and are storing an actual Identifier somewhere to access it.
 		""")
-	static Stat<ResourceLocation> getStat(ResourceLocation id) {
+	static Stat<Identifier> getStat(Identifier id) {
 		return Stats.CUSTOM.get(id);
 	}
 
 	@Nullable
 	@Info("Gets a SoundEvent from the id")
-	static SoundEvent getSound(ResourceLocation id) {
+	static SoundEvent getSound(Identifier id) {
 		return BuiltInRegistries.SOUND_EVENT.get(id);
 	}
 
@@ -124,7 +124,7 @@ public interface UtilsWrapper {
 
 	@Nullable
 	@Info("Returns the creative tab associated with the id")
-	static CreativeModeTab findCreativeTab(ResourceLocation id) {
+	static CreativeModeTab findCreativeTab(Identifier id) {
 		return UtilsJS.findCreativeTab(id);
 	}
 

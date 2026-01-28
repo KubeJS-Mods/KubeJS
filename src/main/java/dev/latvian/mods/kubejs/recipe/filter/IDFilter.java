@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.recipe.filter;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class IDFilter implements RecipeFilter {
-	public final ResourceLocation id;
+	public final Identifier id;
 
-	public IDFilter(ResourceLocation i) {
+	public IDFilter(Identifier i) {
 		id = i;
 	}
 

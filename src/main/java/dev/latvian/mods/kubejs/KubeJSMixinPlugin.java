@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs;
 
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.LoadingModList;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.ClassNode;
@@ -22,11 +23,11 @@ public class KubeJSMixinPlugin implements IMixinConfigPlugin {
 	@Override
 	public boolean shouldApplyMixin(@NotNull String targetClassName, @NotNull String mixinClassName) {
 		if (targetClassName.contains("mezz/modnametooltip")) {
-			return LoadingModList.get().getModFileById("modnametooltip") != null;
+			return FMLLoader.getCurrent().getLoadingModList().getModFileById("modnametooltip") != null;
 		}
 
 		if (targetClassName.contains("me/shedaniel/rei")) {
-			return LoadingModList.get().getModFileById("roughlyenoughitems") != null;
+			return FMLLoader.getCurrent().getLoadingModList().getModFileById("roughlyenoughitems") != null;
 		}
 
 		return true;

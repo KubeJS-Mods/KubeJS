@@ -18,7 +18,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
@@ -59,7 +59,7 @@ import java.util.function.Consumer;
 
 public class BasicKubeBlock extends Block implements SimpleWaterloggedBlock {
 	public static class Builder extends BlockBuilder {
-		public Builder(ResourceLocation i) {
+		public Builder(Identifier i) {
 			super(i);
 		}
 

@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodConstants;
@@ -88,12 +88,12 @@ public class FoodBuilder {
 		Adds an effect to the food. Note that the effect duration is in ticks (20 ticks = 1 second).
 		""",
 		params = {
-			@Param(name = "mobEffectId", value = "The id of the effect. Can be either a string or a ResourceLocation."),
+			@Param(name = "mobEffectId", value = "The id of the effect. Can be either a string or a Identifier."),
 			@Param(name = "duration", value = "The duration of the effect in ticks."),
 			@Param(name = "amplifier", value = "The amplifier of the effect. 0 means level 1, 1 means level 2, etc."),
 			@Param(name = "probability", value = "The probability of the effect being applied. 1 = 100%.")
 		})
-	public FoodBuilder effect(ResourceLocation mobEffectId, int duration, int amplifier, float probability) {
+	public FoodBuilder effect(Identifier mobEffectId, int duration, int amplifier, float probability) {
 		effects.add(new FoodProperties.PossibleEffect(new EffectSupplier(mobEffectId, duration, amplifier), probability));
 		return this;
 	}
@@ -124,13 +124,13 @@ public class FoodBuilder {
 	}
 
 	private static class EffectSupplier implements Supplier<MobEffectInstance> {
-		private final ResourceLocation id;
+		private final Identifier id;
 		private final int duration;
 		private final int amplifier;
 
 		private Holder<MobEffect> cachedEffect;
 
-		public EffectSupplier(ResourceLocation id, int duration, int amplifier) {
+		public EffectSupplier(Identifier id, int duration, int amplifier) {
 			this.id = id;
 			this.duration = duration;
 			this.amplifier = amplifier;

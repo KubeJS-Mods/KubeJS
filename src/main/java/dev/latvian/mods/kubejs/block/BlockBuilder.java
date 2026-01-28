@@ -34,7 +34,7 @@ import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -111,7 +111,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	public transient Consumer<BlockRightClickedKubeEvent> rightClick;
 	public transient BlockEntityInfo blockEntityInfo;
 
-	public BlockBuilder(ResourceLocation id) {
+	public BlockBuilder(Identifier id) {
 		super(id);
 		this.baseTexture = id.withPath(ID.BLOCK).toString();
 
@@ -643,25 +643,25 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 
 	@Override
 	@Info("Tags both the block and the item with the given tag.")
-	public BlockBuilder tag(ResourceLocation[] tag) {
+	public BlockBuilder tag(Identifier[] tag) {
 		return tagBoth(tag);
 	}
 
 	@Info("Tags both the block and the item with the given tag.")
-	public BlockBuilder tagBoth(ResourceLocation[] tag) {
+	public BlockBuilder tagBoth(Identifier[] tag) {
 		tagBlock(tag);
 		tagItem(tag);
 		return this;
 	}
 
 	@Info("Tags the block with the given tag.")
-	public BlockBuilder tagBlock(ResourceLocation[] tag) {
+	public BlockBuilder tagBlock(Identifier[] tag) {
 		super.tag(tag);
 		return this;
 	}
 
 	@Info("Tags the item with the given tag.")
-	public BlockBuilder tagItem(ResourceLocation[] tag) {
+	public BlockBuilder tagItem(Identifier[] tag) {
 		itemBuilder.tag(tag);
 		return this;
 	}

@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.block.predicate.BlockPredicate;
 import dev.latvian.mods.kubejs.registry.RegistryKubeEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.Cast;
-import dev.latvian.mods.kubejs.util.KubeResourceLocation;
+import dev.latvian.mods.kubejs.util.KubeIdentifier;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.rhino.Context;
@@ -17,7 +17,7 @@ import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -40,11 +40,11 @@ public class BlockWrapper {
 	public static final TypeInfo STATE_TYPE_INFO = TypeInfo.of(BlockState.class);
 	private static Collection<BlockState> ALL_STATE_CACHE = null;
 
-	public static BlockIDPredicate id(ResourceLocation id) {
+	public static BlockIDPredicate id(Identifier id) {
 		return new BlockIDPredicate(id);
 	}
 
-	public static BlockIDPredicate id(ResourceLocation id, Map<String, Object> properties) {
+	public static BlockIDPredicate id(Identifier id, Map<String, Object> properties) {
 		var b = id(id);
 
 		for (var entry : properties.entrySet()) {
@@ -54,7 +54,7 @@ public class BlockWrapper {
 		return b;
 	}
 
-	public static BlockEntityPredicate entity(ResourceLocation id) {
+	public static BlockEntityPredicate entity(Identifier id) {
 		return new BlockEntityPredicate(id);
 	}
 
@@ -78,13 +78,13 @@ public class BlockWrapper {
 	}
 
 	@Info("Gets a Block from a block id")
-	public static Block getBlock(ResourceLocation id) {
+	public static Block getBlock(Identifier id) {
 		return BuiltInRegistries.BLOCK.get(id);
 	}
 
 	@Info("Gets a blocks id from the Block")
 	@Nullable
-	public static ResourceLocation getId(Block block) {
+	public static Identifier getId(Block block) {
 		return BuiltInRegistries.BLOCK.getKey(block);
 	}
 
@@ -100,7 +100,7 @@ public class BlockWrapper {
 	}
 
 	@Info("Gets a list of all blocks with tags")
-	public static List<ResourceLocation> getTaggedIds(ResourceLocation tag) {
+	public static List<Identifier> getTaggedIds(Identifier tag) {
 		return Util.make(new LinkedList<>(), list -> {
 			for (var holder : BuiltInRegistries.BLOCK.getTagOrEmpty(Tags.block(tag))) {
 				var l = holder.getKey();
@@ -185,11 +185,11 @@ public class BlockWrapper {
 		return state;
 	}
 
-	public static void registerBuildingMaterial(Context cx, RegistryKubeEvent<Block> event, KubeResourceLocation id, BuildingMaterialProperties properties) {
+	public static void registerBuildingMaterial(Context cx, RegistryKubeEvent<Block> event, KubeIdentifier id, BuildingMaterialProperties properties) {
 		properties.register(cx, event, id);
 	}
 
-	public static void registerBuildingMaterial(Context cx, RegistryKubeEvent<Block> event, KubeResourceLocation id) {
+	public static void registerBuildingMaterial(Context cx, RegistryKubeEvent<Block> event, KubeIdentifier id) {
 		registerBuildingMaterial(cx, event, id, (BuildingMaterialProperties) cx.jsToJava(Map.of(), BuildingMaterialProperties.TYPE_INFO));
 	}
 }

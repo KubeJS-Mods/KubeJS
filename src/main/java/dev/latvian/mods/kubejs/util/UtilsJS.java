@@ -15,7 +15,8 @@ import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.CreativeModeTab;
 import org.jetbrains.annotations.Nullable;
@@ -43,16 +44,16 @@ public class UtilsJS {
 		//Primitives and already normalized objects
 		if (o == null || o instanceof WrappedJS || o instanceof Number || o instanceof Character || o instanceof String || o instanceof Enum || o.getClass().isPrimitive() && !o.getClass().isArray()) {
 			return o;
-		} else if (o instanceof CharSequence || o instanceof ResourceLocation) {
+		} else if (o instanceof CharSequence || o instanceof Identifier) {
 			return o.toString();
 		} else if (o instanceof EndTag || o instanceof JsonNull) {
 			return null;
 		} else if (o instanceof Wrapper w) {
 			return wrap(w.unwrap(), type);
 		} else if (o instanceof NumericTag tag) {
-			return tag.getAsNumber();
+			return tag.asNumber();
 		} else if (o instanceof StringTag tag) {
-			return tag.getAsString();
+			return tag.asString();
 		} else if (o instanceof Tag) {
 			return o;
 		}
@@ -198,7 +199,7 @@ public class UtilsJS {
 	}
 
 	@Nullable
-	public static CreativeModeTab findCreativeTab(ResourceLocation id) {
-		return BuiltInRegistries.CREATIVE_MODE_TAB.get(id);
+	public static CreativeModeTab findCreativeTab(Identifier id) {
+		return BuiltInRegistries.CREATIVE_MODE_TAB.get(id).get().value();
 	}
 }

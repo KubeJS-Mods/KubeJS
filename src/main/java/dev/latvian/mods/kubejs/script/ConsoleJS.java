@@ -150,7 +150,7 @@ public class ConsoleJS {
 		} else if (capturingErrors != enabled) {
 			capturingErrors = enabled;
 
-			if (!FMLLoader.isProduction()) {
+			if (!FMLLoader.getCurrent().isProduction()) {
 				if (capturingErrors) {
 					logger.info("Capturing errors for {} scripts enabled", scriptType.name);
 				} else {

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
@@ -22,7 +22,7 @@ public record UniqueIdBuilder(StringBuilder builder) {
 		}
 	}
 
-	public void append(@Nullable ResourceLocation id) {
+	public void append(@Nullable Identifier id) {
 		if (id == null) {
 			return;
 		}

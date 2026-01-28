@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.LinkedHashMap;
 import java.util.NoSuchElementException;
@@ -16,7 +16,7 @@ public class RecipeNamespace extends LinkedHashMap<String, RecipeSchemaType> {
 	}
 
 	public RecipeNamespace register(String id, RecipeSchema type) {
-		put(id, new RecipeSchemaType(this, ResourceLocation.fromNamespaceAndPath(name, id), type));
+		put(id, new RecipeSchemaType(this, Identifier.fromNamespaceAndPath(name, id), type));
 		return this;
 	}
 
@@ -29,18 +29,18 @@ public class RecipeNamespace extends LinkedHashMap<String, RecipeSchemaType> {
 	}
 
 	public RecipeNamespace shaped(String id) {
-		return withExistingParent(id, ResourceLocation.withDefaultNamespace("shaped"));
+		return withExistingParent(id, Identifier.withDefaultNamespace("shaped"));
 	}
 
 	public RecipeNamespace shapeless(String id) {
-		return withExistingParent(id, ResourceLocation.withDefaultNamespace("shapeless"));
+		return withExistingParent(id, Identifier.withDefaultNamespace("shapeless"));
 	}
 
 	public RecipeNamespace special(String id) {
-		return withExistingParent(id, ResourceLocation.withDefaultNamespace("special"));
+		return withExistingParent(id, Identifier.withDefaultNamespace("special"));
 	}
 
-	public RecipeNamespace withExistingParent(String id, ResourceLocation parent) {
+	public RecipeNamespace withExistingParent(String id, Identifier parent) {
 		return register(id, storage.namespace(parent.getNamespace()).getRegisteredOrThrow(parent.getPath()).schema);
 	}
 

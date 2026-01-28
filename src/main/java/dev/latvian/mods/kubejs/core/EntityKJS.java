@@ -17,7 +17,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.commands.TeleportCommand;
 import net.minecraft.server.level.ServerLevel;
@@ -166,7 +166,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		kjs$self().setDeltaMovement(m.x, m.y, z);
 	}
 
-	default void kjs$teleportTo(ResourceLocation dimension, double x, double y, double z, float yaw, float pitch) {
+	default void kjs$teleportTo(Identifier dimension, double x, double y, double z, float yaw, float pitch) {
 		var previousLevel = kjs$getLevel();
 		var level = kjs$getServer().getLevel(ResourceKey.create(Registries.DIMENSION, dimension));
 

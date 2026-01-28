@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.event.BlockEvents;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -18,12 +18,12 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 public class DetectorBlock extends Block {
 	@ReturnsSelf
 	public static class Builder extends BlockBuilder {
-		private static final ResourceLocation OFF_MODEL = KubeJS.id("block/detector");
-		private static final ResourceLocation ON_MODEL = KubeJS.id("block/detector_on");
+		private static final Identifier OFF_MODEL = KubeJS.id("block/detector");
+		private static final Identifier ON_MODEL = KubeJS.id("block/detector_on");
 
 		public transient String detectorId;
 
-		public Builder(ResourceLocation i) {
+		public Builder(Identifier i) {
 			super(i);
 			detectorId = (id.getNamespace().equals(KubeJS.MOD_ID) ? "" : (id.getNamespace() + ".")) + id.getPath().replace('/', '.');
 

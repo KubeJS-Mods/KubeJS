@@ -11,7 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -74,13 +74,13 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Ent
 	}
 
 	@Override
-	default void kjs$setActivePostShader(@Nullable ResourceLocation id) {
+	default void kjs$setActivePostShader(@Nullable Identifier id) {
 		for (var entity : kjs$self().players()) {
 			entity.kjs$setActivePostShader(id);
 		}
 	}
 
-	default ResourceLocation kjs$getDimension() {
+	default Identifier kjs$getDimension() {
 		return kjs$self().dimension().location();
 	}
 

@@ -20,7 +20,7 @@ import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
 import dev.latvian.mods.kubejs.util.RecordDefaults;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -48,8 +48,8 @@ public class KubeJS {
 	public static String VERSION = "0";
 	public static String DISPLAY_NAME = "KubeJS";
 
-	public static ResourceLocation id(String path) {
-		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+	public static Identifier id(String path) {
+		return Identifier.fromNamespaceAndPath(MOD_ID, path);
 	}
 
 	public static IEventBus modEventBus;
@@ -161,6 +161,6 @@ public class KubeJS {
 		KubeJSRuleTests.REGISTRY.register(bus);
 
 		StartupEvents.INIT.post(ScriptType.STARTUP, KubeStartupEvent.BASIC);
-		// KubeJSRegistries.chunkGenerators().register(new ResourceLocation(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);
+		// KubeJSRegistries.chunkGenerators().register(new Identifier(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);
 	}
 }

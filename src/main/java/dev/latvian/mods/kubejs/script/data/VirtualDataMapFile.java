@@ -9,7 +9,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.registries.datamaps.DataMapEntry;
@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-public class VirtualDataMapFile<RT, DT> implements BiConsumer<ResourceLocation, DT> {
+public class VirtualDataMapFile<RT, DT> implements BiConsumer<Identifier, DT> {
 	public final KubeDataGenerator pack;
 	public final RegistryAccessContainer registryAccess;
 	public final Registry<RT> registry;
@@ -140,7 +140,7 @@ public class VirtualDataMapFile<RT, DT> implements BiConsumer<ResourceLocation, 
 
 	@Override
 	@HideFromJS
-	public void accept(ResourceLocation id, DT data) {
+	public void accept(Identifier id, DT data) {
 		add(registry.getHolderOrThrow(ResourceKey.create(registry.key(), id)), data);
 	}
 }

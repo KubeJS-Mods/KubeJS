@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class PreTagKubeEvent extends TagKubeEvent {
 		}
 	}
 
-	public final Map<ResourceLocation, PreTagWrapper> tags;
+	public final Map<Identifier, PreTagWrapper> tags;
 	public final List<Consumer<TagKubeEvent>> actions;
 	public boolean invalid;
 
@@ -57,7 +57,7 @@ public class PreTagKubeEvent extends TagKubeEvent {
 	}
 
 	@Override
-	protected TagWrapper createTagWrapper(ResourceLocation id) {
+	protected TagWrapper createTagWrapper(Identifier id) {
 		return new PreTagWrapper(this, id);
 	}
 
@@ -67,7 +67,7 @@ public class PreTagKubeEvent extends TagKubeEvent {
 	}
 
 	@Override
-	public Set<ResourceLocation> getElementIds() {
+	public Set<Identifier> getElementIds() {
 		return Set.of();
 	}
 }

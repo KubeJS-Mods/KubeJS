@@ -17,7 +17,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
@@ -58,7 +58,7 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 	}
 
 	@Override
-	default void kjs$setActivePostShader(@Nullable ResourceLocation id) {
+	default void kjs$setActivePostShader(@Nullable Identifier id) {
 		kjs$self().player.kjs$setActivePostShader(id);
 	}
 
@@ -169,11 +169,11 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 		ConsoleJS.CLIENT.info("Client resource reload complete!");
 	}
 
-	default Function<ResourceLocation, TextureAtlasSprite> kjs$getBlockTextureAtlas() {
+	default Function<Identifier, TextureAtlasSprite> kjs$getBlockTextureAtlas() {
 		return kjs$self().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS);
 	}
 
-	default Function<ResourceLocation, TextureAtlasSprite> kjs$getParticleTextureAtlas() {
+	default Function<Identifier, TextureAtlasSprite> kjs$getParticleTextureAtlas() {
 		return kjs$self().getTextureAtlas(TextureAtlas.LOCATION_PARTICLES);
 	}
 }

@@ -7,7 +7,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Instrument;
 import net.minecraft.world.item.ItemStack;
@@ -102,7 +102,7 @@ public interface ItemComponentFunctions extends ComponentFunctions, AttributeMod
 		kjs$override(DataComponents.FIREWORKS, fireworks);
 	}
 
-	default void kjs$setNoteBlockSound(ResourceLocation id) {
+	default void kjs$setNoteBlockSound(Identifier id) {
 		kjs$override(DataComponents.NOTE_BLOCK_SOUND, id);
 	}
 

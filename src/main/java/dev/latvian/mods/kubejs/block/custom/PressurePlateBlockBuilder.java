@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.PressurePlateBlock;
@@ -13,12 +13,12 @@ import net.minecraft.world.level.block.state.properties.BlockSetType;
 
 @ReturnsSelf
 public class PressurePlateBlockBuilder extends ShapedBlockBuilder implements ButtonOrPressurePlateBuilder {
-	public static final ResourceLocation[] PRESSURE_PLATE_TAGS = {
+	public static final Identifier[] PRESSURE_PLATE_TAGS = {
 		BlockTags.PRESSURE_PLATES.location(),
 	};
 
-	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/pressure_plate_up");
-	private static final ResourceLocation PRESSED_MODEL = ResourceLocation.withDefaultNamespace("block/pressure_plate_down");
+	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/pressure_plate_up");
+	private static final Identifier PRESSED_MODEL = Identifier.withDefaultNamespace("block/pressure_plate_down");
 
 	private static class KubePressurePlateBlock extends PressurePlateBlock {
 		private final int pressedTime;
@@ -37,7 +37,7 @@ public class PressurePlateBlockBuilder extends ShapedBlockBuilder implements But
 	public transient BlockSetType behaviour;
 	public transient int ticksToStayPressed;
 
-	public PressurePlateBlockBuilder(ResourceLocation i) {
+	public PressurePlateBlockBuilder(Identifier i) {
 		super(i, "_pressure_plate");
 		noCollision();
 		tagBoth(PRESSURE_PLATE_TAGS);

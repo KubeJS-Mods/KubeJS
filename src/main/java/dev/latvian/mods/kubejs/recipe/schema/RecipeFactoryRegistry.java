@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.function.Supplier;
 
@@ -16,7 +16,7 @@ public class RecipeFactoryRegistry {
 		storage.recipeTypes.put(type.id(), type);
 	}
 
-	public void register(ResourceLocation id, Class<?> typeClass, Supplier<? extends KubeRecipe> factory) {
+	public void register(Identifier id, Class<?> typeClass, Supplier<? extends KubeRecipe> factory) {
 		register(new KubeRecipeFactory(id, typeClass, factory));
 	}
 }

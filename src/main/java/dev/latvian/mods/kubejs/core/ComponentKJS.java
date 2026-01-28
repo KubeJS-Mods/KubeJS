@@ -15,7 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -197,7 +197,7 @@ public interface ComponentKJS extends Component, WithCodec, WrappedJS {
 		return kjs$self().setStyle(getStyle().withInsertion(s));
 	}
 
-	default MutableComponent kjs$font(@Nullable ResourceLocation s) {
+	default MutableComponent kjs$font(@Nullable Identifier s) {
 		return kjs$self().setStyle(getStyle().withFont(s));
 	}
 

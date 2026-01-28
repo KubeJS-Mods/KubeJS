@@ -6,7 +6,7 @@ import dev.latvian.mods.rhino.Context;
 import me.shedaniel.rei.api.client.registry.entry.CollapsibleEntryRegistry;
 import me.shedaniel.rei.api.common.entry.type.EntryType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.function.Predicate;
 
@@ -24,7 +24,7 @@ public class REIGroupEntriesKubeEvent implements GroupEntriesKubeEvent {
 
 	@Override
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void group(Context cx, Object filter, ResourceLocation groupId, Component description) {
+	public void group(Context cx, Object filter, Identifier groupId, Component description) {
 		var predicate = (Predicate) type.wrapPredicate(cx, filter);
 		registry.group(groupId, description, e -> e.getType() == entryType && predicate.test(e.getValue()));
 	}

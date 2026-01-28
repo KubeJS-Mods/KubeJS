@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.recipe.special;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.NeoForge;
@@ -16,7 +16,7 @@ public class SpecialRecipeSerializerManager implements KubeEvent {
 	}
 
 	public static final SpecialRecipeSerializerManager INSTANCE = new SpecialRecipeSerializerManager();
-	private final Map<ResourceLocation, Boolean> data = new HashMap<>();
+	private final Map<Identifier, Boolean> data = new HashMap<>();
 
 	public void reset() {
 		synchronized (data) {
@@ -33,13 +33,13 @@ public class SpecialRecipeSerializerManager implements KubeEvent {
 		return data.getOrDefault(BuiltInRegistries.RECIPE_SERIALIZER.getKey(recipe.getSerializer()), recipe.isSpecial());
 	}
 
-	public void ignoreSpecialFlag(ResourceLocation id) {
+	public void ignoreSpecialFlag(Identifier id) {
 		synchronized (data) {
 			data.put(id, false);
 		}
 	}
 
-	public void addSpecialFlag(ResourceLocation id) {
+	public void addSpecialFlag(Identifier id) {
 		synchronized (data) {
 			data.put(id, true);
 		}

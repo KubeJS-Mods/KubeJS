@@ -21,7 +21,7 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -189,7 +189,7 @@ public interface FluidWrapper {
 		return new FluidStack(Fluids.LAVA, amount);
 	}
 
-	static Fluid getType(ResourceLocation id) {
+	static Fluid getType(Identifier id) {
 		return BuiltInRegistries.FLUID.get(id);
 	}
 
@@ -207,11 +207,11 @@ public interface FluidWrapper {
 		return FluidStack.EMPTY;
 	}
 
-	static boolean exists(ResourceLocation id) {
+	static boolean exists(Identifier id) {
 		return BuiltInRegistries.FLUID.containsKey(id);
 	}
 
-	static ResourceLocation getId(Fluid fluid) {
+	static Identifier getId(Fluid fluid) {
 		return BuiltInRegistries.FLUID.getKey(fluid);
 	}
 
@@ -328,7 +328,7 @@ public interface FluidWrapper {
 	}
 
 	@HideFromJS
-	static DataResult<Holder<Fluid>> findFluid(ResourceLocation id) {
+	static DataResult<Holder<Fluid>> findFluid(Identifier id) {
 		return BuiltInRegistries.FLUID
 			.getHolder(id)
 			.map(DataResult::success)

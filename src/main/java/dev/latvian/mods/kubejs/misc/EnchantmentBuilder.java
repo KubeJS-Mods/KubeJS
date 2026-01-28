@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import it.unimi.dsi.fastutil.objects.Object2BooleanFunction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
@@ -69,7 +69,7 @@ public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 
 	public transient DamageProtectionFunction damageProtection;
 	public transient DamageBonusFunction damageBonus;
-	public transient Object2BooleanFunction<ResourceLocation> checkCompatibility;
+	public transient Object2BooleanFunction<Identifier> checkCompatibility;
 	public transient Object2BooleanFunction<ItemStack> canEnchant;
 	public transient PostFunction postAttack;
 	public transient PostFunction postHurt;
@@ -78,7 +78,7 @@ public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 	public transient boolean tradeable;
 	public transient boolean discoverable;
 
-	public EnchantmentBuilder(ResourceLocation i) {
+	public EnchantmentBuilder(Identifier i) {
 		super(i);
 		supportedItems = null;
 		primaryItems = Optional.empty();
@@ -112,12 +112,12 @@ public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 		return new BasicEnchantment(this);
 	}
 
-	public EnchantmentBuilder supportedItems(ResourceLocation tag) {
+	public EnchantmentBuilder supportedItems(Identifier tag) {
 		supportedItems = ItemTags.create(tag);
 		return this;
 	}
 
-	public EnchantmentBuilder primaryItems(ResourceLocation tag) {
+	public EnchantmentBuilder primaryItems(Identifier tag) {
 		primaryItems = Optional.of(ItemTags.create(tag));
 		return this;
 	}
@@ -195,7 +195,7 @@ public class EnchantmentBuilder extends BuilderBase<Enchantment> {
 		return this;
 	}
 
-	public EnchantmentBuilder checkCompatibility(Object2BooleanFunction<ResourceLocation> i) {
+	public EnchantmentBuilder checkCompatibility(Object2BooleanFunction<Identifier> i) {
 		checkCompatibility = i;
 		return this;
 	}

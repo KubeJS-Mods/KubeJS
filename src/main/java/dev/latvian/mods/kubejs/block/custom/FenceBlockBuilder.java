@@ -3,23 +3,23 @@ package dev.latvian.mods.kubejs.block.custom;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FenceBlock;
 import net.neoforged.neoforge.common.Tags;
 
 public class FenceBlockBuilder extends ShapedBlockBuilder {
-	public static final ResourceLocation[] FENCE_TAGS = {
+	public static final Identifier[] FENCE_TAGS = {
 		BlockTags.FENCES.location(),
 		Tags.Blocks.FENCES.location(),
 	};
 
-	private static final ResourceLocation SIDE_MODEL = ResourceLocation.withDefaultNamespace("block/fence_side");
-	private static final ResourceLocation POST_MODEL = ResourceLocation.withDefaultNamespace("block/fence_post");
-	private static final ResourceLocation INVENTORY_MODEL = ResourceLocation.withDefaultNamespace("block/fence_inventory");
+	private static final Identifier SIDE_MODEL = Identifier.withDefaultNamespace("block/fence_side");
+	private static final Identifier POST_MODEL = Identifier.withDefaultNamespace("block/fence_post");
+	private static final Identifier INVENTORY_MODEL = Identifier.withDefaultNamespace("block/fence_inventory");
 
-	public FenceBlockBuilder(ResourceLocation i) {
+	public FenceBlockBuilder(Identifier i) {
 		super(i, "_fence");
 		tagBoth(FENCE_TAGS);
 	}

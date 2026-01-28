@@ -118,11 +118,11 @@ public class PlatformWrapper {
 	}
 
 	public static boolean isDevelopmentEnvironment() {
-		return !FMLLoader.isProduction();
+		return !FMLLoader.getCurrent().isProduction();
 	}
 
 	public static boolean isClientEnvironment() {
-		return FMLLoader.getDist().isClient();
+		return FMLLoader.getCurrent().getDist().isClient();
 	}
 
 	public static void setModName(String modId, String name) {

@@ -5,7 +5,7 @@ import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.JukeboxSong;
@@ -17,7 +17,7 @@ public class JukeboxSongBuilder extends BuilderBase<JukeboxSong> {
 	public transient Component description;
 	public transient int comparatorOutput;
 
-	public JukeboxSongBuilder(ResourceLocation id) {
+	public JukeboxSongBuilder(Identifier id) {
 		super(id);
 		this.sound = SoundEvents.MUSIC_DISC_11;
 		this.lengthInSeconds = 71F;

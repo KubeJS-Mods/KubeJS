@@ -16,7 +16,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -71,13 +71,13 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 	}
 
 	@Override
-	default void kjs$setActivePostShader(@Nullable ResourceLocation id) {
+	default void kjs$setActivePostShader(@Nullable Identifier id) {
 		for (var player : kjs$self().getPlayerList().getPlayers()) {
 			player.kjs$setActivePostShader(id);
 		}
 	}
 
-	default ServerLevel kjs$getLevel(ResourceLocation dimension) {
+	default ServerLevel kjs$getLevel(Identifier dimension) {
 		return kjs$self().getLevel(ResourceKey.create(Registries.DIMENSION, dimension));
 	}
 
@@ -144,7 +144,7 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 	}
 
 	@Nullable
-	default AdvancementNode kjs$getAdvancement(ResourceLocation id) {
+	default AdvancementNode kjs$getAdvancement(Identifier id) {
 		return kjs$self().getAdvancements().tree().get(id);
 	}
 

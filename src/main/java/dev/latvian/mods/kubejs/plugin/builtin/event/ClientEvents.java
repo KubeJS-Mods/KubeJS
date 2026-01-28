@@ -15,7 +15,7 @@ import dev.latvian.mods.kubejs.event.EventTargetType;
 import dev.latvian.mods.kubejs.event.TargetedEventHandler;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface ClientEvents {
 	EventGroup GROUP = EventGroup.of("ClientEvents");
@@ -29,7 +29,7 @@ public interface ClientEvents {
 	EventHandler TICK = GROUP.client("tick", () -> ClientPlayerKubeEvent.class);
 	EventHandler DEBUG_LEFT = GROUP.client("leftDebugInfo", () -> DebugInfoKubeEvent.class);
 	EventHandler DEBUG_RIGHT = GROUP.client("rightDebugInfo", () -> DebugInfoKubeEvent.class);
-	TargetedEventHandler<ResourceLocation> ATLAS_SPRITE_REGISTRY = GROUP.client("atlasSpriteRegistry", () -> AtlasSpriteRegistryKubeEvent.class).requiredTarget(EventTargetType.ID);
+	TargetedEventHandler<Identifier> ATLAS_SPRITE_REGISTRY = GROUP.client("atlasSpriteRegistry", () -> AtlasSpriteRegistryKubeEvent.class).requiredTarget(EventTargetType.ID);
 	TargetedEventHandler<String> LANG = GROUP.client("lang", () -> LangKubeEvent.class).requiredTarget(EventTargetType.STRING);
 	EventHandler PARTICLE_PROVIDER_REGISTRY = GROUP.client("particleProviderRegistry", () -> ParticleProviderRegistryKubeEvent.class);
 	EventHandler HIGHLIGHT = GROUP.client("highlight", () -> HighlightKubeEvent.class);

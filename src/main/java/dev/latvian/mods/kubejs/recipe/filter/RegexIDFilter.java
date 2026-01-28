@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.recipe.filter;
 
 import com.google.common.collect.Interner;
 import com.google.common.collect.Interners;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class RegexIDFilter implements RecipeFilter {
 	private final Pattern pattern;
-	private final ConcurrentHashMap<ResourceLocation, Boolean> matchCache = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<Identifier, Boolean> matchCache = new ConcurrentHashMap<>();
 
 	private static Interner<RegexIDFilter> INTERNER;
 

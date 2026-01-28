@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FallingBlock;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class FallingBlockBuilder extends BlockBuilder {
 	private KubeColor dustColor = new SimpleColor(0x807C7B);
 
-	public FallingBlockBuilder(ResourceLocation i) {
+	public FallingBlockBuilder(Identifier i) {
 		super(i);
 	}
 

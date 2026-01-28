@@ -31,7 +31,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -75,7 +75,7 @@ public interface ItemWrapper {
 	});
 
 	@HideFromJS
-	Lazy<Map<ResourceLocation, Collection<ItemStack>>> CACHED_ITEM_MAP = Lazy.map(map -> {
+	Lazy<Map<Identifier, Collection<ItemStack>>> CACHED_ITEM_MAP = Lazy.map(map -> {
 		var stackList = ItemStackLinkedSet.createTypeAndComponentsSet();
 
 		stackList.addAll(CreativeModeTabs.searchTab().getDisplayItems());
@@ -90,7 +90,7 @@ public interface ItemWrapper {
 		}
 
 		for (var itemId : CACHED_ITEM_TYPE_LIST.get()) {
-			var itemRl = ResourceLocation.parse(itemId);
+			var itemRl = Identifier.parse(itemId);
 			map.computeIfAbsent(itemRl, id -> Set.of(BuiltInRegistries.ITEM.get(id).getDefaultInstance()));
 		}
 	});
@@ -154,7 +154,7 @@ public interface ItemWrapper {
 		// safe because wrapTrivial has handled the null case
 		assert from != null;
 		return switch (from) {
-			case ResourceLocation id -> findItem(id).map(Holder::value).map(Item::getDefaultInstance);
+			case Identifier id -> findItem(id).map(Holder::value).map(Item::getDefaultInstance);
 			case JsonElement json -> parseJson(cx, registries.nbt(), json);
 			case StringTag tag -> wrapResult(cx, tag.getAsString());
 			case CharSequence charSequence -> {
@@ -223,12 +223,12 @@ public interface ItemWrapper {
 		s = s.trim();
 		return switch (s) {
 			case "", "-", "air", "minecraft:air" -> DataResult.success(Items.AIR);
-			default -> ResourceLocation.read(s).flatMap(ItemWrapper::findItem).map(Holder::value);
+			default -> Identifier.read(s).flatMap(ItemWrapper::findItem).map(Holder::value);
 		};
 	}
 
 	@HideFromJS
-	static DataResult<Holder<Item>> findItem(ResourceLocation id) {
+	static DataResult<Holder<Item>> findItem(Identifier id) {
 		return BuiltInRegistries.ITEM
 			.getHolder(id)
 			.map(DataResult::success)
@@ -246,7 +246,7 @@ public interface ItemWrapper {
 		return CACHED_ITEM_TYPE_LIST.get();
 	}
 
-	static Map<ResourceLocation, Collection<ItemStack>> getTypeToStackMap() {
+	static Map<Identifier, Collection<ItemStack>> getTypeToStackMap() {
 		return CACHED_ITEM_MAP.get();
 	}
 
@@ -265,17 +265,17 @@ public interface ItemWrapper {
 	}
 
 	@Info("Gets an Item from an item id")
-	static Item getItem(ResourceLocation id) {
+	static Item getItem(Identifier id) {
 		return BuiltInRegistries.ITEM.get(id);
 	}
 
 	@Info("Gets an items id from the Item")
-	static ResourceLocation getId(Item item) {
+	static Identifier getId(Item item) {
 		return BuiltInRegistries.ITEM.getKey(item);
 	}
 
 	@Info("Checks if the provided item id exists in the registry")
-	static boolean exists(ResourceLocation id) {
+	static boolean exists(Identifier id) {
 		return BuiltInRegistries.ITEM.containsKey(id);
 	}
 

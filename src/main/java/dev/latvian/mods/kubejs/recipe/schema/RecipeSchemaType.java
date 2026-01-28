@@ -4,21 +4,21 @@ import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import java.util.Optional;
 
 public class RecipeSchemaType {
 	public final RecipeNamespace namespace;
-	public final ResourceLocation id;
+	public final Identifier id;
 	public final RecipeSchema schema;
 	public final ResourceKey<RecipeSerializer<?>> serializerKey;
 	public final String serializerType;
 	public RecipeSchemaType parent;
 	protected Optional<RecipeSerializer<?>> serializer;
 
-	public RecipeSchemaType(RecipeNamespace namespace, ResourceLocation id, RecipeSchema schema) {
+	public RecipeSchemaType(RecipeNamespace namespace, Identifier id, RecipeSchema schema) {
 		this.namespace = namespace;
 		this.id = id;
 		this.schema = schema;

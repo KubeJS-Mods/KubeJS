@@ -15,7 +15,7 @@ import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
 import dev.latvian.mods.kubejs.script.data.VirtualAssetPack;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.fml.loading.FMLLoader;
@@ -143,7 +143,7 @@ public class ClientAssetPacks {
 
 		for (var e1 : finalMap.entrySet()) { // namespaces
 			for (var e2 : e1.getValue().entrySet()) { // languages
-				internalAssetPack.json(ResourceLocation.parse(e1.getKey() + ":lang/" + e2.getKey()), e2.getValue());
+				internalAssetPack.json(Identifier.parse(e1.getKey() + ":lang/" + e2.getKey()), e2.getValue());
 			}
 		}
 
@@ -161,7 +161,7 @@ public class ClientAssetPacks {
 			}
 		}
 
-		if (!FMLLoader.isProduction()) {
+		if (!FMLLoader.getCurrent().isProduction()) {
 			KubeJS.LOGGER.info("Loaded {} asset packs: {}", packs.size(), packs.stream().map(PackResources::packId).collect(Collectors.joining(", ")));
 		}
 

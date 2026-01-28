@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
@@ -33,7 +33,7 @@ public class VirtualResourcePack extends AbstractPackResources implements KubeRe
 	public final Supplier<RegistryAccessContainer> registries;
 	public final String info;
 	public final Component component;
-	private final Map<ResourceLocation, GeneratedData> locationToData;
+	private final Map<Identifier, GeneratedData> locationToData;
 	private final Map<String, GeneratedData> pathToData;
 	private final Set<String> namespaces;
 
@@ -75,7 +75,7 @@ public class VirtualResourcePack extends AbstractPackResources implements KubeRe
 
 	@Override
 	@Nullable
-	public GeneratedData getGenerated(ResourceLocation id) {
+	public GeneratedData getGenerated(Identifier id) {
 		return locationToData.get(id);
 	}
 
@@ -91,7 +91,7 @@ public class VirtualResourcePack extends AbstractPackResources implements KubeRe
 
 	@Override
 	@Nullable
-	public IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
+	public IoSupplier<InputStream> getResource(PackType type, Identifier location) {
 		if (type != packType) {
 			return null;
 		}
@@ -115,7 +115,7 @@ public class VirtualResourcePack extends AbstractPackResources implements KubeRe
 			path = path + "/";
 		}
 
-		for (ResourceLocation r : locationToData.keySet()) {
+		for (Identifier r : locationToData.keySet()) {
 			if (r.getNamespace().equals(namespace) && r.getPath().startsWith(path)) {
 				visitor.accept(r, getResource(packType, r));
 			}
@@ -164,7 +164,7 @@ public class VirtualResourcePack extends AbstractPackResources implements KubeRe
 
 	@Override
 	public void close() {
-		if (!FMLLoader.isProduction()) {
+		if (!FMLLoader.getCurrent().isProduction()) {
 			KubeJS.LOGGER.info("Closed {}", packId());
 		}
 	}

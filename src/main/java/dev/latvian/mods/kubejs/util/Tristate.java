@@ -17,10 +17,11 @@ public enum Tristate implements StringRepresentable {
 
 	public static final Tristate[] VALUES = values();
 
-	public static final Codec<Tristate> CODEC = Codec.either(Codec.BOOL, Codec.unit("default")).xmap(
+	public static final Codec<Tristate> CODEC = Codec.either(Codec.BOOL, Codec.STRING).xmap(
 		either -> either.map(b -> b ? TRUE : FALSE, s -> s.equalsIgnoreCase("true") ? TRUE : s.equalsIgnoreCase("false") ? FALSE : DEFAULT),
 		t -> t == DEFAULT ? Either.right("default") : Either.left(t == TRUE)
 	);
+
 
 	public static final StreamCodec<ByteBuf, Tristate> STREAM_CODEC = ByteBufCodecs.idMapper(i -> VALUES[i], Enum::ordinal);
 

@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jetbrains.annotations.NotNull;
@@ -15,23 +15,23 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public record DataMapWrapper<T, A>(Registry<T> registry, DataMapType<T, A> type) implements Iterable<DataMapWrapper.Data<T, A>> {
-	public static DataMapWrapper<?, ?> of(Context cx, ResourceLocation registry, ResourceLocation id) {
+	public static DataMapWrapper<?, ?> of(Context cx, Identifier registry, Identifier id) {
 		var reg = RegistryAccessContainer.of(cx).wrapRegistry(registry);
 		return of(reg, id);
 	}
 
-	public static DataMapType<?, ?> typeOf(Context cx, ResourceLocation registry, ResourceLocation id) {
+	public static DataMapType<?, ?> typeOf(Context cx, Identifier registry, Identifier id) {
 		var reg = RegistryAccessContainer.of(cx).wrapRegistry(registry);
 		return typeOf(reg, id);
 	}
 
-	public static <T> DataMapWrapper<T, ?> of(RegistryWrapper<T> registry, ResourceLocation id) {
+	public static <T> DataMapWrapper<T, ?> of(RegistryWrapper<T> registry, Identifier id) {
 		var type = typeOf(registry, id);
 		return new DataMapWrapper<>(registry.registry(), type);
 	}
 
 	@SuppressWarnings("UnstableApiUsage")
-	public static <T> DataMapType<T, ?> typeOf(RegistryWrapper<T> registry, ResourceLocation id) {
+	public static <T> DataMapType<T, ?> typeOf(RegistryWrapper<T> registry, Identifier id) {
 		return RegistryManager.getDataMap(registry.registry().key(), id);
 	}
 

@@ -3,23 +3,23 @@ package dev.latvian.mods.kubejs.recipe.viewer.server;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 public record CategoryData(
-	ResourceLocation category,
-	List<ResourceLocation> removedRecipes
+	Identifier category,
+	List<Identifier> removedRecipes
 ) {
 	public static final StreamCodec<RegistryFriendlyByteBuf, CategoryData> STREAM_CODEC = StreamCodec.composite(
-		ResourceLocation.STREAM_CODEC, CategoryData::category,
-		ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()), CategoryData::removedRecipes,
+		Identifier.STREAM_CODEC, CategoryData::category,
+		Identifier.STREAM_CODEC.apply(ByteBufCodecs.list()), CategoryData::removedRecipes,
 		CategoryData::new
 	);
 
-	public CategoryData(ResourceLocation category) {
+	public CategoryData(Identifier category) {
 		this(category, new ArrayList<>());
 	}
 

@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -13,15 +13,15 @@ import java.util.HashSet;
 import java.util.List;
 
 public record RecipeViewerData(
-	List<ResourceLocation> removedCategories,
-	List<ResourceLocation> removedGlobalRecipes,
+	List<Identifier> removedCategories,
+	List<Identifier> removedGlobalRecipes,
 	List<CategoryData> categoryData,
 	ItemData itemData,
 	FluidData fluidData
 ) {
 	public static final StreamCodec<RegistryFriendlyByteBuf, RecipeViewerData> STREAM_CODEC = StreamCodec.composite(
-		ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()), RecipeViewerData::removedCategories,
-		ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()), RecipeViewerData::removedGlobalRecipes,
+		Identifier.STREAM_CODEC.apply(ByteBufCodecs.list()), RecipeViewerData::removedCategories,
+		Identifier.STREAM_CODEC.apply(ByteBufCodecs.list()), RecipeViewerData::removedGlobalRecipes,
 		CategoryData.STREAM_CODEC.apply(ByteBufCodecs.list()), RecipeViewerData::categoryData,
 		ItemData.STREAM_CODEC, RecipeViewerData::itemData,
 		FluidData.STREAM_CODEC, RecipeViewerData::fluidData,
@@ -30,9 +30,9 @@ public record RecipeViewerData(
 
 	@Nullable
 	public static RecipeViewerData collect() {
-		var removedCategories = new HashSet<ResourceLocation>();
-		var removedGlobalRecipes = new HashSet<ResourceLocation>();
-		var categoryData = new HashMap<ResourceLocation, CategoryData>();
+		var removedCategories = new HashSet<Identifier>();
+		var removedGlobalRecipes = new HashSet<Identifier>();
+		var categoryData = new HashMap<Identifier, CategoryData>();
 
 		if (RecipeViewerEvents.REMOVE_CATEGORIES.hasListeners()) {
 			RecipeViewerEvents.REMOVE_CATEGORIES.post(ScriptType.SERVER, new ServerRemoveCategoriesKubeEvent(removedCategories));

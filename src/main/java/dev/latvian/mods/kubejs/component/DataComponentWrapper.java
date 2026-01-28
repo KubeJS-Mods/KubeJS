@@ -39,7 +39,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.component.CustomData;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
@@ -256,13 +256,13 @@ public interface DataComponentWrapper {
 		}
 
 		int i = stringReader.getCursor();
-		ResourceLocation resourceLocation = ResourceLocation.read(stringReader);
-		DataComponentType<?> dataComponentType = BuiltInRegistries.DATA_COMPONENT_TYPE.get(resourceLocation);
+		Identifier Identifier = Identifier.read(stringReader);
+		DataComponentType<?> dataComponentType = BuiltInRegistries.DATA_COMPONENT_TYPE.get(Identifier);
 		if (dataComponentType != null && !dataComponentType.isTransient()) {
 			return dataComponentType;
 		} else {
 			stringReader.setCursor(i);
-			throw ERROR_UNKNOWN_COMPONENT.createWithContext(stringReader, resourceLocation);
+			throw ERROR_UNKNOWN_COMPONENT.createWithContext(stringReader, Identifier);
 		}
 	}
 

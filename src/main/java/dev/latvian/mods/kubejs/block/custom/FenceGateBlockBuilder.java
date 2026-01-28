@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FenceGateBlock;
@@ -13,19 +13,19 @@ import net.neoforged.neoforge.common.Tags;
 
 @ReturnsSelf
 public class FenceGateBlockBuilder extends ShapedBlockBuilder {
-	public static final ResourceLocation[] FENCE_GATE_TAGS = {
+	public static final Identifier[] FENCE_GATE_TAGS = {
 		BlockTags.FENCE_GATES.location(),
 		Tags.Blocks.FENCE_GATES.location()
 	};
 
-	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/template_fence_gate");
-	private static final ResourceLocation OPEN_MODEL = ResourceLocation.withDefaultNamespace("block/template_fence_gate_open");
-	private static final ResourceLocation WALL_MODEL = ResourceLocation.withDefaultNamespace("block/template_fence_gate_wall");
-	private static final ResourceLocation OPEN_WALL_MODEL = ResourceLocation.withDefaultNamespace("block/template_fence_gate_wall_open");
+	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/template_fence_gate");
+	private static final Identifier OPEN_MODEL = Identifier.withDefaultNamespace("block/template_fence_gate_open");
+	private static final Identifier WALL_MODEL = Identifier.withDefaultNamespace("block/template_fence_gate_wall");
+	private static final Identifier OPEN_WALL_MODEL = Identifier.withDefaultNamespace("block/template_fence_gate_wall_open");
 
 	public transient WoodType behaviour;
 
-	public FenceGateBlockBuilder(ResourceLocation i) {
+	public FenceGateBlockBuilder(Identifier i) {
 		super(i, "_fence_gate");
 		tagBoth(FENCE_GATE_TAGS);
 		behaviour = WoodType.OAK;

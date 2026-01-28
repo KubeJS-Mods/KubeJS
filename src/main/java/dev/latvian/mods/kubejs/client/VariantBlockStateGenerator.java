@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class VariantBlockStateGenerator {
 		private String key;
 		private final List<Model> models = new ArrayList<>();
 
-		public Model model(ResourceLocation s) {
+		public Model model(Identifier s) {
 			var model = new Model();
 			model.model(s);
 			models.add(model);
@@ -39,12 +39,12 @@ public class VariantBlockStateGenerator {
 	}
 
 	public static class Model {
-		private ResourceLocation model = ID.UNKNOWN;
+		private Identifier model = ID.UNKNOWN;
 		private int x = 0;
 		private int y = 0;
 		private boolean uvlock = false;
 
-		public Model model(ResourceLocation s) {
+		public Model model(Identifier s) {
 			model = s;
 			return this;
 		}
@@ -95,11 +95,11 @@ public class VariantBlockStateGenerator {
 
 	@HideFromJS
 	@Deprecated
-	public void variant(String key, ResourceLocation model) {
+	public void variant(String key, Identifier model) {
 		simpleVariant(key, model);
 	}
 
-	public void simpleVariant(String key, ResourceLocation model) {
+	public void simpleVariant(String key, Identifier model) {
 		variant(key, v -> v.model(model));
 	}
 

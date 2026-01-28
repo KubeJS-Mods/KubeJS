@@ -15,7 +15,7 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.util.Mth;
@@ -87,12 +87,12 @@ public interface ServerPlayerKJS extends PlayerKJS {
 		kjs$kick(Component.translatable("multiplayer.disconnect.banned"));
 	}
 
-	default boolean kjs$isAdvancementDone(ResourceLocation id) {
+	default boolean kjs$isAdvancementDone(Identifier id) {
 		var a = kjs$self().server.kjs$getAdvancement(id);
 		return a != null && kjs$self().getAdvancements().getOrStartProgress(a.holder()).isDone();
 	}
 
-	default void kjs$unlockAdvancement(ResourceLocation id) {
+	default void kjs$unlockAdvancement(Identifier id) {
 		var a = kjs$self().server.kjs$getAdvancement(id);
 
 		if (a != null) {
@@ -104,7 +104,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 		}
 	}
 
-	default void kjs$revokeAdvancement(ResourceLocation id) {
+	default void kjs$revokeAdvancement(Identifier id) {
 		var a = kjs$self().server.kjs$getAdvancement(id);
 
 		if (a != null) {
@@ -255,7 +255,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	}
 
 	@Override
-	default void kjs$setActivePostShader(@Nullable ResourceLocation id) {
+	default void kjs$setActivePostShader(@Nullable Identifier id) {
 		KubeJSNet.safeSendToPlayer(kjs$self(), new SetActivePostShaderPayload(Optional.ofNullable(id)));
 	}
 }

@@ -34,7 +34,7 @@ import dev.latvian.mods.kubejs.web.LocalWebServer;
 import dev.latvian.mods.kubejs.web.LocalWebServerAPIRegistry;
 import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.rhino.Context;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -157,7 +157,7 @@ public interface KubeJSPlugin {
 	default void exportServerData(DataExport export) {
 	}
 
-	default void beforeRecipeLoading(RecipesKubeEvent event, RecipeManagerKJS manager, Map<ResourceLocation, JsonElement> recipeJsons) {
+	default void beforeRecipeLoading(RecipesKubeEvent event, RecipeManagerKJS manager, Map<Identifier, JsonElement> recipeJsons) {
 	}
 
 	default void beforeScriptsLoaded(ScriptManager manager) {

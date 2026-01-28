@@ -13,7 +13,7 @@ public class StartupScriptManager extends ScriptManager {
 	public void loadFromDirectory() {
 		super.loadFromDirectory();
 
-		if (FMLLoader.getDist().isDedicatedServer()) {
+		if (FMLLoader.getCurrent().getDist().isDedicatedServer()) {
 			loadPackFromDirectory(KubeJSPaths.LOCAL_STARTUP_SCRIPTS, "local startup", true);
 		}
 	}

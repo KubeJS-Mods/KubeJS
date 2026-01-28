@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.util.KubeResourceLocation;
+import dev.latvian.mods.kubejs.util.KubeIdentifier;
 import net.minecraft.client.renderer.item.ClampedItemPropertyFunction;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -14,7 +14,7 @@ public class ItemModelPropertiesKubeEvent implements KubeStartupEvent {
 		
 		More about model properties: https://minecraft.wiki/w/Tutorials/Models#Item_predicates
 		""")
-	public void register(Ingredient ingredient, KubeResourceLocation overwriteId, ClampedItemPropertyFunction callback) {
+	public void register(Ingredient ingredient, KubeIdentifier overwriteId, ClampedItemPropertyFunction callback) {
 		var id = overwriteId.wrapped();
 
 		if (ingredient.kjs$isWildcard()) {
@@ -28,7 +28,7 @@ public class ItemModelPropertiesKubeEvent implements KubeStartupEvent {
 	}
 
 	@Info("Register a model property for all items.")
-	public void registerAll(KubeResourceLocation overwriteId, ClampedItemPropertyFunction callback) {
+	public void registerAll(KubeIdentifier overwriteId, ClampedItemPropertyFunction callback) {
 		ItemProperties.registerGeneric(overwriteId.wrapped(), callback);
 	}
 }

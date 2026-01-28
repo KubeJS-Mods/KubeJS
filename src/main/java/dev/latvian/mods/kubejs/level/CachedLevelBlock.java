@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.level;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -83,7 +83,7 @@ public class CachedLevelBlock implements LevelBlock {
 			return true;
 		} else if (obj instanceof CharSequence) {
 			return kjs$getId().equals(obj.toString());
-		} else if (obj instanceof ResourceLocation) {
+		} else if (obj instanceof Identifier) {
 			return kjs$getIdLocation().equals(obj);
 		}
 

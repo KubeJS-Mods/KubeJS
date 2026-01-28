@@ -5,7 +5,7 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -25,7 +25,7 @@ import static net.minecraft.world.item.Item.BASE_ATTACK_SPEED_ID;
 public interface AttributeModifierFunctions {
 	ItemAttributeModifiers kjs$getAttributeModifiers();
 
-	default boolean kjs$hasAttributeModifier(Holder<Attribute> attribute, ResourceLocation id) {
+	default boolean kjs$hasAttributeModifier(Holder<Attribute> attribute, Identifier id) {
 		for (var entry : kjs$getAttributeModifiers().modifiers()) {
 			if (entry.matches(attribute, id)) {
 				return true;
@@ -35,7 +35,7 @@ public interface AttributeModifierFunctions {
 	}
 
 	@Nullable
-	default AttributeModifier kjs$getAttributeModifier(Holder<Attribute> attribute, ResourceLocation id) {
+	default AttributeModifier kjs$getAttributeModifier(Holder<Attribute> attribute, Identifier id) {
 		for (var entry : kjs$getAttributeModifiers().modifiers()) {
 			if (entry.matches(attribute, id)) {
 				return entry.modifier();

@@ -94,7 +94,7 @@ public class ScriptFile implements Comparable<ScriptFile> {
 			return "Ignored";
 		}
 
-		if (requiredClient && !FMLLoader.getDist().isClient()) {
+		if (requiredClient && !FMLLoader.getCurrent().getDist().isClient()) {
 			return "Client only";
 		}
 

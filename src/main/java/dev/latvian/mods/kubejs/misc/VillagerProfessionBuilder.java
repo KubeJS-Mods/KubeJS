@@ -7,7 +7,7 @@ import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.PoiTypeTags;
 import net.minecraft.tags.TagKey;
@@ -27,7 +27,7 @@ public class VillagerProfessionBuilder extends BuilderBase<VillagerProfession> {
 	public transient ImmutableSet<Block> secondaryPoi;
 	public transient @Nullable SoundEvent workSound;
 
-	public VillagerProfessionBuilder(ResourceLocation i) {
+	public VillagerProfessionBuilder(Identifier i) {
 		super(i);
 		poiType = Either.right(PoiTypeTags.ACQUIRABLE_JOB_SITE);
 		requestedItems = ImmutableSet.of();
@@ -41,12 +41,12 @@ public class VillagerProfessionBuilder extends BuilderBase<VillagerProfession> {
 		return new VillagerProfession(id.getPath(), validPois, validPois, requestedItems, secondaryPoi, workSound);
 	}
 
-	public VillagerProfessionBuilder poiType(ResourceLocation t) {
+	public VillagerProfessionBuilder poiType(Identifier t) {
 		poiType = Either.left(ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE, t));
 		return this;
 	}
 
-	public VillagerProfessionBuilder poiTypeTag(ResourceLocation t) {
+	public VillagerProfessionBuilder poiTypeTag(Identifier t) {
 		poiType = Either.right(TagKey.create(Registries.POINT_OF_INTEREST_TYPE, t));
 		return this;
 	}

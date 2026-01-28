@@ -1,7 +1,8 @@
 package dev.latvian.mods.kubejs.web;
 
-import net.minecraft.resources.ResourceLocation;
+
+import net.minecraft.resources.Identifier;
 
 public interface LocalWebServerAPIRegistry {
-	void register(ResourceLocation id, int version);
+	void register(Identifier id, int version);
 }

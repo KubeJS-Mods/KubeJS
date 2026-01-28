@@ -21,7 +21,7 @@ import dev.latvian.mods.rhino.util.RemapForJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import java.util.SequencedCollection;
 /**
  * A recipe schema is a set of keys that defines how a recipe is constructed
  * from both KubeJS scripts (through the {@link #constructors}) and JSON files
- * (using the {@link #deserialize(SourceLine, RecipeTypeFunction, ResourceLocation, JsonObject)} method).
+ * (using the {@link #deserialize(SourceLine, RecipeTypeFunction, Identifier, JsonObject)} method).
  * <p>
  * The schema also defines a {@link #recipeFactory} in order to create a {@link KubeRecipe} object that
  * implements serialization logic, post-load validation ({@link KubeRecipe#validate(RecipeValidationContext)}),
@@ -45,7 +45,7 @@ import java.util.SequencedCollection;
  */
 public class RecipeSchema {
 	public KubeRecipeFactory recipeFactory;
-	public ResourceLocation typeOverride;
+	public Identifier typeOverride;
 	public final List<RecipeKey<?>> keys;
 	public final List<RecipeKey<?>> includedKeys;
 	public final Map<RecipeKey<?>, RecipeOptional<?>> keyOverrides;
@@ -123,7 +123,7 @@ public class RecipeSchema {
 		return this;
 	}
 
-	public RecipeSchema typeOverride(ResourceLocation id) {
+	public RecipeSchema typeOverride(Identifier id) {
 		this.typeOverride = id;
 		return this;
 	}
@@ -253,7 +253,7 @@ public class RecipeSchema {
 		return constructorsGenerated;
 	}
 
-	public KubeRecipe deserialize(SourceLine sourceLine, RecipeTypeFunction type, @Nullable ResourceLocation id, JsonObject json) {
+	public KubeRecipe deserialize(SourceLine sourceLine, RecipeTypeFunction type, @Nullable Identifier id, JsonObject json) {
 		var r = recipeFactory.create(type, sourceLine, id == null);
 		r.id = id;
 		r.json = json;

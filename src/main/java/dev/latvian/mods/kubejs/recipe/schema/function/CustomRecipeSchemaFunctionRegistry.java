@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.recipe.schema.function;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 @FunctionalInterface
 public interface CustomRecipeSchemaFunctionRegistry {
-	void register(ResourceLocation id, ResolvedRecipeSchemaFunction function);
+	void register(Identifier id, ResolvedRecipeSchemaFunction function);
 }

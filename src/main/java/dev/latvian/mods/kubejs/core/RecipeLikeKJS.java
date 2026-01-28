@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 @RemapPrefixForJS("kjs$")
@@ -16,7 +16,7 @@ public interface RecipeLikeKJS {
 
 	void kjs$setGroup(String group);
 
-	ResourceLocation kjs$getOrCreateId();
+	Identifier kjs$getOrCreateId();
 
 	RecipeSchema kjs$getSchema(Context cx);
 
@@ -26,7 +26,7 @@ public interface RecipeLikeKJS {
 
 	ResourceKey<RecipeSerializer<?>> kjs$getTypeKey();
 
-	default ResourceLocation kjs$getType() {
+	default Identifier kjs$getType() {
 		return kjs$getTypeKey().location();
 	}
 

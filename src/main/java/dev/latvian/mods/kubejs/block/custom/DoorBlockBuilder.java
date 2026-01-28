@@ -10,7 +10,7 @@ import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
@@ -33,28 +33,28 @@ import java.util.Map;
 
 @ReturnsSelf
 public class DoorBlockBuilder extends ShapedBlockBuilder {
-	public static final ResourceLocation[] DOOR_TAGS = {
+	public static final Identifier[] DOOR_TAGS = {
 		BlockTags.DOORS.location()
 	};
 
-	public static final ResourceLocation[] WOODEN_DOOR_TAGS = {
+	public static final Identifier[] WOODEN_DOOR_TAGS = {
 		BlockTags.WOODEN_DOORS.location()
 	};
 
-	private static final Map<String, ResourceLocation> MODELS = Map.of(
-		"top_right", ResourceLocation.withDefaultNamespace("block/door_top_right"),
-		"top_right_open", ResourceLocation.withDefaultNamespace("block/door_top_right_open"),
-		"top_left", ResourceLocation.withDefaultNamespace("block/door_top_left"),
-		"top_left_open", ResourceLocation.withDefaultNamespace("block/door_top_left_open"),
-		"bottom_right", ResourceLocation.withDefaultNamespace("block/door_bottom_right"),
-		"bottom_right_open", ResourceLocation.withDefaultNamespace("block/door_bottom_right_open"),
-		"bottom_left", ResourceLocation.withDefaultNamespace("block/door_bottom_left"),
-		"bottom_left_open", ResourceLocation.withDefaultNamespace("block/door_bottom_left_open")
+	private static final Map<String, Identifier> MODELS = Map.of(
+		"top_right", Identifier.withDefaultNamespace("block/door_top_right"),
+		"top_right_open", Identifier.withDefaultNamespace("block/door_top_right_open"),
+		"top_left", Identifier.withDefaultNamespace("block/door_top_left"),
+		"top_left_open", Identifier.withDefaultNamespace("block/door_top_left_open"),
+		"bottom_right", Identifier.withDefaultNamespace("block/door_bottom_right"),
+		"bottom_right_open", Identifier.withDefaultNamespace("block/door_bottom_right_open"),
+		"bottom_left", Identifier.withDefaultNamespace("block/door_bottom_left"),
+		"bottom_left_open", Identifier.withDefaultNamespace("block/door_bottom_left_open")
 	);
 
 	public transient BlockSetType behaviour;
 
-	public DoorBlockBuilder(ResourceLocation i) {
+	public DoorBlockBuilder(Identifier i) {
 		super(i);
 		renderType(BlockRenderType.CUTOUT);
 		noValidSpawns(true);

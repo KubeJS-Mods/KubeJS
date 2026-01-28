@@ -24,7 +24,7 @@ public class FakeClientWorld implements BlockAndTintGetter {
 	public FakeClientWorld(LevelReader parent, BlockState blockState, ResourceKey<Biome> biome) {
 		this.parent = parent;
 		this.blockState = blockState;
-		this.biome = parent.registryAccess().registryOrThrow(Registries.BIOME).get(biome);
+		this.biome = parent.registryAccess().get(biome).get().value();
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class FakeClientWorld implements BlockAndTintGetter {
 	}
 
 	@Override
-	public int getMinBuildHeight() {
+	public int getMinY() {
 		return 0;
 	}
 }

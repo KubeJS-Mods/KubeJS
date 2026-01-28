@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.recipe.component.ComponentRole;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeSchemaFunction;
 import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessor;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 
 import java.util.List;
@@ -17,9 +17,9 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public record RecipeSchemaData(
-	Optional<ResourceLocation> parent,
-	Optional<ResourceLocation> overrideType,
-	Optional<ResourceLocation> recipeFactory,
+	Optional<Identifier> parent,
+	Optional<Identifier> overrideType,
+	Optional<Identifier> recipeFactory,
 	Optional<List<RecipeKeyData>> keys,
 	Optional<List<ConstructorData>> constructors,
 	Optional<Map<String, RecipeSchemaFunction>> functions,
@@ -31,9 +31,9 @@ public record RecipeSchemaData(
 	MergeData merge
 ) {
 	public static Function<RecipeTypeRegistryContext, Codec<RecipeSchemaData>> CODEC = ctx -> RecordCodecBuilder.create(instance -> instance.group(
-		ResourceLocation.CODEC.optionalFieldOf("parent").forGetter(RecipeSchemaData::parent),
-		ResourceLocation.CODEC.optionalFieldOf("override_type").forGetter(RecipeSchemaData::overrideType),
-		ResourceLocation.CODEC.optionalFieldOf("recipe_factory").forGetter(RecipeSchemaData::recipeFactory),
+		Identifier.CODEC.optionalFieldOf("parent").forGetter(RecipeSchemaData::parent),
+		Identifier.CODEC.optionalFieldOf("override_type").forGetter(RecipeSchemaData::overrideType),
+		Identifier.CODEC.optionalFieldOf("recipe_factory").forGetter(RecipeSchemaData::recipeFactory),
 		RecipeKeyData.CODEC.apply(ctx).listOf().optionalFieldOf("keys").forGetter(RecipeSchemaData::keys),
 		ConstructorData.CODEC.listOf().optionalFieldOf("constructors").forGetter(RecipeSchemaData::constructors),
 		Codec.unboundedMap(Codec.STRING, RecipeSchemaFunction.CODEC).optionalFieldOf("functions").forGetter(RecipeSchemaData::functions),
@@ -46,9 +46,9 @@ public record RecipeSchemaData(
 	).apply(instance, RecipeSchemaData::new));
 
 	public RecipeSchemaData(
-		ResourceLocation parent,
-		ResourceLocation overrideType,
-		ResourceLocation recipeFactory,
+		Identifier parent,
+		Identifier overrideType,
+		Identifier recipeFactory,
 		List<RecipeKeyData> keys,
 		List<ConstructorData> constructors,
 		Map<String, RecipeSchemaFunction> functions,

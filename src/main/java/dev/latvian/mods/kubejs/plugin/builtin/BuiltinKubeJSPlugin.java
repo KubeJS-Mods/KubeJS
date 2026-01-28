@@ -165,7 +165,7 @@ import dev.latvian.mods.kubejs.util.FluidAmounts;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.JsonUtils;
-import dev.latvian.mods.kubejs.util.KubeResourceLocation;
+import dev.latvian.mods.kubejs.util.KubeIdentifier;
 import dev.latvian.mods.kubejs.util.MobEffectUtil;
 import dev.latvian.mods.kubejs.util.NBTIOWrapper;
 import dev.latvian.mods.kubejs.util.NameProvider;
@@ -206,7 +206,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ColorRGBA;
@@ -504,8 +504,8 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(Duration.class, TimeJS::wrapDuration);
 		registry.register(TickDuration.class, TickDuration::wrap);
 
-		registry.register(ResourceLocation.class, ID::mc);
-		registry.register(KubeResourceLocation.class, KubeResourceLocation::wrap);
+		registry.register(Identifier.class, ID::mc);
+		registry.register(KubeIdentifier.class, KubeIdentifier::wrap);
 		registry.register(CompoundTag.class, (from, target) -> NBTWrapper.isTagCompound(from), NBTWrapper::wrapCompound);
 		registry.register(CollectionTag.class, (from, target) -> NBTWrapper.isTagCollection(from), NBTWrapper::wrapCollection);
 		registry.register(ListTag.class, (from, target) -> NBTWrapper.isTagCollection(from), NBTWrapper::wrapListTag);

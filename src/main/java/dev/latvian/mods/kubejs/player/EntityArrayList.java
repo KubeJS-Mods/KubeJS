@@ -7,7 +7,8 @@ import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -94,7 +95,7 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 	}
 
 	@Override
-	public void kjs$setActivePostShader(@Nullable ResourceLocation id) {
+	public void kjs$setActivePostShader(@Nullable Identifier id) {
 		for (var entity : this) {
 			entity.kjs$setActivePostShader(id);
 		}
@@ -102,7 +103,7 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 
 	public void kill() {
 		for (var entity : this) {
-			entity.kill();
+			entity.kill((ServerLevel) entity.level());
 		}
 	}
 

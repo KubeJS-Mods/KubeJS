@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryContext;
 import dev.latvian.mods.kubejs.util.ID;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.function.Function;
 
@@ -20,7 +20,7 @@ public abstract class RecipeComponentType<T> {
 		private final RecipeComponent<T> instance;
 		private MapCodec<RecipeComponent<?>> mapCodec;
 
-		private Unit(ResourceLocation id, Function<RecipeComponentType<T>, RecipeComponent<T>> instanceGetter) {
+		private Unit(Identifier id, Function<RecipeComponentType<T>, RecipeComponent<T>> instanceGetter) {
 			super(id);
 			this.instance = instanceGetter.apply(this);
 		}
@@ -56,7 +56,7 @@ public abstract class RecipeComponentType<T> {
 
 		private final RecipeComponentCodecFactory factory;
 
-		private Dynamic(ResourceLocation id, RecipeComponentCodecFactory factory) {
+		private Dynamic(Identifier id, RecipeComponentCodecFactory factory) {
 			super(id);
 			this.factory = factory;
 		}
@@ -67,31 +67,31 @@ public abstract class RecipeComponentType<T> {
 		}
 	}
 
-	public static <T> Unit<T> unit(ResourceLocation id, Function<RecipeComponentType<T>, RecipeComponent<T>> instanceGetter) {
+	public static <T> Unit<T> unit(Identifier id, Function<RecipeComponentType<T>, RecipeComponent<T>> instanceGetter) {
 		return new Unit<>(id, instanceGetter);
 	}
 
-	public static <T> Unit<T> unit(ResourceLocation id, RecipeComponent<T> instance) {
+	public static <T> Unit<T> unit(Identifier id, RecipeComponent<T> instance) {
 		return new Unit<>(id, new Unit.Simple<>(instance));
 	}
 
-	public static <CT extends RecipeComponent<?>> RecipeComponentType<?> dynamic(ResourceLocation id, RecipeComponentCodecFactory<CT> codecFactory) {
+	public static <CT extends RecipeComponent<?>> RecipeComponentType<?> dynamic(Identifier id, RecipeComponentCodecFactory<CT> codecFactory) {
 		return new Dynamic<>(id, codecFactory);
 	}
 
-	public static <CT extends RecipeComponent<?>> RecipeComponentType<?> dynamic(ResourceLocation id, MapCodec<CT> mapCodec) {
+	public static <CT extends RecipeComponent<?>> RecipeComponentType<?> dynamic(Identifier id, MapCodec<CT> mapCodec) {
 		return new Dynamic<>(id, new Dynamic.Simple(mapCodec));
 	}
 
-	private final ResourceLocation id;
+	private final Identifier id;
 	private final String idString;
 
-	public RecipeComponentType(ResourceLocation id) {
+	public RecipeComponentType(Identifier id) {
 		this.id = id;
 		this.idString = ID.reduceKjs(id);
 	}
 
-	public final ResourceLocation id() {
+	public final Identifier id() {
 		return id;
 	}
 

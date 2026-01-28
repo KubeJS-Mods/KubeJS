@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.block;
 import dev.latvian.mods.kubejs.block.custom.BasicCropBlockJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemNameBlockItem;
@@ -37,7 +37,7 @@ public class SeedItemBuilder extends BlockItemBuilder {
 		}
 	}
 
-	public SeedItemBuilder(ResourceLocation i) {
+	public SeedItemBuilder(Identifier i) {
 		super(i);
 	}
 

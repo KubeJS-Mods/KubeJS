@@ -15,7 +15,7 @@ import dev.latvian.mods.kubejs.player.SimplePlayerKubeEvent;
 import dev.latvian.mods.kubejs.player.StageChangedEvent;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 
@@ -30,7 +30,7 @@ public interface PlayerEvents {
 	EventHandler TICK = GROUP.common("tick", () -> SimplePlayerKubeEvent.class);
 	EventHandler DECORATE_CHAT = GROUP.server("decorateChat", () -> PlayerChatReceivedKubeEvent.class).hasResult();
 	EventHandler CHAT = GROUP.server("chat", () -> PlayerChatReceivedKubeEvent.class).hasResult();
-	TargetedEventHandler<ResourceLocation> ADVANCEMENT = GROUP.server("advancement", () -> PlayerAdvancementKubeEvent.class).hasResult().supportsTarget(EventTargetType.ID);
+	TargetedEventHandler<Identifier> ADVANCEMENT = GROUP.server("advancement", () -> PlayerAdvancementKubeEvent.class).hasResult().supportsTarget(EventTargetType.ID);
 	TargetedEventHandler<ResourceKey<MenuType<?>>> INVENTORY_OPENED = GROUP.common("inventoryOpened", () -> InventoryKubeEvent.class).supportsTarget(MENU_TARGET);
 	TargetedEventHandler<ResourceKey<MenuType<?>>> INVENTORY_CLOSED = GROUP.common("inventoryClosed", () -> InventoryKubeEvent.class).supportsTarget(MENU_TARGET);
 	TargetedEventHandler<ResourceKey<Item>> INVENTORY_CHANGED = GROUP.common("inventoryChanged", () -> InventoryChangedKubeEvent.class).supportsTarget(ItemEvents.TARGET);

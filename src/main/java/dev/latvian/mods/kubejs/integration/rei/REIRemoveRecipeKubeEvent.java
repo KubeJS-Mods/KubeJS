@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.rhino.Context;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -14,16 +14,16 @@ import java.util.List;
 import java.util.Map;
 
 public class REIRemoveRecipeKubeEvent implements RemoveRecipesKubeEvent {
-	private final Map<CategoryIdentifier<?>, Collection<ResourceLocation>> recipesRemoved;
+	private final Map<CategoryIdentifier<?>, Collection<Identifier>> recipesRemoved;
 	private final CategoryRegistry categories;
 
-	public REIRemoveRecipeKubeEvent(Map<CategoryIdentifier<?>, Collection<ResourceLocation>> recipesRemoved) {
+	public REIRemoveRecipeKubeEvent(Map<CategoryIdentifier<?>, Collection<Identifier>> recipesRemoved) {
 		this.recipesRemoved = recipesRemoved;
 		this.categories = CategoryRegistry.getInstance();
 	}
 
 	@Override
-	public void remove(Context cx, ResourceLocation[] recipesToRemove) {
+	public void remove(Context cx, Identifier[] recipesToRemove) {
 		var asList = List.of(recipesToRemove);
 
 		for (var catId : categories) {
@@ -32,7 +32,7 @@ public class REIRemoveRecipeKubeEvent implements RemoveRecipesKubeEvent {
 	}
 
 	@Override
-	public void removeFromCategory(Context cx, @Nullable ResourceLocation category, ResourceLocation[] recipesToRemove) {
+	public void removeFromCategory(Context cx, @Nullable Identifier category, Identifier[] recipesToRemove) {
 		if (category == null) {
 			remove(cx, recipesToRemove);
 			return;

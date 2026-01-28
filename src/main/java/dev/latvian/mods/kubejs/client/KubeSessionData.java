@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.recipe.viewer.server.RemoteRecipeViewerDataUpdate
 import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ public class KubeSessionData {
 		return mc == null ? null : of(mc.getConnection());
 	}
 
-	public ResourceLocation activePostShader = null;
+	public Identifier activePostShader = null;
 	public RecipeViewerData recipeViewerData = null;
 	public List<ItemTooltipData> itemTooltips = List.of();
 	// FIXME public final Map<String, KGUI> kgui = new HashMap<>();

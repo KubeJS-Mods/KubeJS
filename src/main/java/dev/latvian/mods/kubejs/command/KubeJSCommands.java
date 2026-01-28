@@ -36,7 +36,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceKeyArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ClickEvent;
@@ -44,7 +44,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
@@ -131,28 +131,28 @@ public class KubeJSCommands {
 				)
 			)
 			.then(Commands.literal("list-tag")
-				.then(Commands.argument("registry", ResourceLocationArgument.id())
+				.then(Commands.argument("registry", IdentifierArgument.id())
 					.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
 						ctx.getSource().registryAccess()
 							.registries()
 							.map(entry -> entry.key().location().toString()), builder)
 					)
 					.executes(ctx -> listTagsFor(ctx.getSource(), registry(ctx, "registry")))
-					.then(Commands.argument("tag", ResourceLocationArgument.id())
+					.then(Commands.argument("tag", IdentifierArgument.id())
 						.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
 							allTags(ctx.getSource(), registry(ctx, "registry"))
 								.map(TagKey::location)
-								.map(ResourceLocation::toString), builder)
+								.map(Identifier::toString), builder)
 						)
 						.executes(ctx -> tagObjects(ctx.getSource(), TagKey.create(registry(ctx, "registry"),
-							ResourceLocationArgument.getId(ctx, "tag")))
+							IdentifierArgument.getId(ctx, "tag")))
 						)
 					)
 				)
 			)
 			.then(Commands.literal("dump")
 				.then(Commands.literal("registry")
-					.then(Commands.argument("registry", ResourceLocationArgument.id())
+					.then(Commands.argument("registry", IdentifierArgument.id())
 						.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
 							ctx.getSource().registryAccess()
 								.registries()
@@ -215,7 +215,7 @@ public class KubeJSCommands {
 					.then(PersistentDataCommands.addPersistentDataCommands(Commands.argument("entity", EntityArgument.entities()), ctx -> EntityArgument.getEntities(ctx, "entity"))))
 			);
 
-		if (!FMLLoader.isProduction()) {
+		if (!FMLLoader.getCurrent().isProduction()) {
 			cmd.then(Commands.literal("eval")
 				.requires(spOrOP)
 				.then(Commands.argument("code", StringArgumentType.greedyString())
@@ -248,7 +248,7 @@ public class KubeJSCommands {
 	}
 
 	private static <T> ResourceKey<Registry<T>> registry(CommandContext<CommandSourceStack> ctx, String arg) {
-		return ResourceKey.createRegistryKey(ResourceLocationArgument.getId(ctx, arg));
+		return ResourceKey.createRegistryKey(IdentifierArgument.getId(ctx, arg));
 	}
 
 	private static <T> Stream<TagKey<T>> allTags(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {

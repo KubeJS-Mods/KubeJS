@@ -8,7 +8,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey) implements Iterable<T> {
-	public static RegistryWrapper<?> of(Context cx, ResourceLocation id) {
+	public static RegistryWrapper<?> of(Context cx, Identifier id) {
 		return RegistryAccessContainer.of(cx).wrapRegistry(id);
 	}
 
@@ -30,11 +30,11 @@ public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey
 		return RegistryAccessContainer.current;
 	}
 
-	public T get(ResourceLocation id) {
+	public T get(Identifier id) {
 		return registry.get(id);
 	}
 
-	public boolean contains(ResourceLocation id) {
+	public boolean contains(Identifier id) {
 		return registry.containsKey(id);
 	}
 
@@ -42,11 +42,11 @@ public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey
 		return registry.containsValue(value);
 	}
 
-	public Set<Map.Entry<ResourceLocation, T>> getEntrySet() {
+	public Set<Map.Entry<Identifier, T>> getEntrySet() {
 		return registry.entrySet().stream().map(e -> Map.entry(e.getKey().location(), e.getValue())).collect(Collectors.toSet());
 	}
 
-	public Map<ResourceLocation, T> getValueMap() {
+	public Map<Identifier, T> getValueMap() {
 		return registry.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().location(), Map.Entry::getValue));
 	}
 
@@ -59,7 +59,7 @@ public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey
 		return new DataMapWrapper<>(registry, type);
 	}
 
-	public DataMapWrapper<T, ?> getDataMap(ResourceLocation id) {
+	public DataMapWrapper<T, ?> getDataMap(Identifier id) {
 		return DataMapWrapper.of(this, id);
 	}
 
@@ -67,7 +67,7 @@ public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey
 		return registry.stream().collect(Collectors.toList());
 	}
 
-	public Set<ResourceLocation> getKeys() {
+	public Set<Identifier> getKeys() {
 		return registry.keySet();
 	}
 
@@ -82,7 +82,7 @@ public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey
 	}
 
 	@Nullable
-	public ResourceLocation getId(T value) {
+	public Identifier getId(T value) {
 		return registry.getKey(value);
 	}
 

@@ -14,7 +14,7 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Wrapper;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import java.util.Arrays;
@@ -27,7 +27,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 
 	public final RecipesKubeEvent event;
 	public final ResourceKey<RecipeSerializer<?>> serializerKey;
-	public final ResourceLocation id;
+	public final Identifier id;
 	public final String idString;
 	public final RecipeSchemaType schemaType;
 

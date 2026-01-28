@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ButtonBlock;
@@ -13,18 +13,18 @@ import net.minecraft.world.level.block.state.properties.BlockSetType;
 
 @ReturnsSelf
 public class ButtonBlockBuilder extends ShapedBlockBuilder implements ButtonOrPressurePlateBuilder {
-	public static final ResourceLocation[] BUTTON_TAGS = {
+	public static final Identifier[] BUTTON_TAGS = {
 		BlockTags.BUTTONS.location(),
 	};
 
-	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/button");
-	private static final ResourceLocation PRESSED_MODEL = ResourceLocation.withDefaultNamespace("block/button_pressed");
-	private static final ResourceLocation INVENTORY_MODEL = ResourceLocation.withDefaultNamespace("block/button_inventory");
+	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/button");
+	private static final Identifier PRESSED_MODEL = Identifier.withDefaultNamespace("block/button_pressed");
+	private static final Identifier INVENTORY_MODEL = Identifier.withDefaultNamespace("block/button_inventory");
 
 	public transient BlockSetType behaviour;
 	public transient int ticksToStayPressed;
 
-	public ButtonBlockBuilder(ResourceLocation i) {
+	public ButtonBlockBuilder(Identifier i) {
 		super(i, "_button");
 		noCollision();
 		tagBoth(BUTTON_TAGS);

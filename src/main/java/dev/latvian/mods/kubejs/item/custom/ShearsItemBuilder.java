@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.dispenser.ShearsDispenseItemBehavior;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +16,7 @@ import net.neoforged.neoforge.common.Tags;
 
 @ReturnsSelf
 public class ShearsItemBuilder extends ItemBuilder {
-	public static final ResourceLocation[] SHEAR_TAGS = {
+	public static final Identifier[] SHEAR_TAGS = {
 		Tags.Items.TOOLS_SHEAR.location(),
 	};
 
@@ -26,7 +26,7 @@ public class ShearsItemBuilder extends ItemBuilder {
 
 	public transient float speedBaseline;
 
-	public ShearsItemBuilder(ResourceLocation i) {
+	public ShearsItemBuilder(Identifier i) {
 		super(i);
 		speedBaseline(5f);
 		parentModel(KubeAssetGenerator.HANDHELD_ITEM_MODEL);

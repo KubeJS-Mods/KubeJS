@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.server.tag;
 
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagLoader;
 
 import java.util.ArrayList;
@@ -11,10 +11,10 @@ import java.util.List;
 
 public class TagWrapper {
 	public final TagKubeEvent event;
-	public final ResourceLocation id;
+	public final Identifier id;
 	public final List<TagLoader.EntryWithSource> entries;
 
-	public TagWrapper(TagKubeEvent e, ResourceLocation i, List<TagLoader.EntryWithSource> t) {
+	public TagWrapper(TagKubeEvent e, Identifier i, List<TagLoader.EntryWithSource> t) {
 		event = e;
 		id = i;
 		entries = t;
@@ -74,8 +74,8 @@ public class TagWrapper {
 		return this;
 	}
 
-	public List<ResourceLocation> getObjectIds() {
-		var set = new LinkedHashSet<ResourceLocation>();
+	public List<Identifier> getObjectIds() {
+		var set = new LinkedHashSet<Identifier>();
 
 		for (var proxy : entries) {
 			event.gatherIdsFor(this, set, proxy);

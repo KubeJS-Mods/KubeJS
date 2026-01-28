@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +26,7 @@ public record HolderSetWrapper<T>(Registry<T> registry, HolderSet<T> holders) im
 		return holders.size() == 0;
 	}
 
-	public boolean contains(ResourceLocation id) {
+	public boolean contains(Identifier id) {
 		return registry.getHolder(id).filter(holders::contains).isPresent();
 	}
 
@@ -38,7 +38,7 @@ public record HolderSetWrapper<T>(Registry<T> registry, HolderSet<T> holders) im
 		return holders.stream().map(Holder::value).toList();
 	}
 
-	public Set<ResourceLocation> getKeys() {
+	public Set<Identifier> getKeys() {
 		return holders.stream().map(holder -> {
 			var key = holder.getKey();
 			if (key == null) {

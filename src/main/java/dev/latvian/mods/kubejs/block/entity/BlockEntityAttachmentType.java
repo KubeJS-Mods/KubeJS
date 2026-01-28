@@ -4,14 +4,14 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Map;
 
-public record BlockEntityAttachmentType(ResourceLocation id, TypeInfo typeInfo) {
-	public static final Lazy<Map<ResourceLocation, BlockEntityAttachmentType>> ALL = Lazy.map(map -> KubeJSPlugins.forEachPlugin(type -> map.put(type.id, type), KubeJSPlugin::registerBlockEntityAttachments));
+public record BlockEntityAttachmentType(Identifier id, TypeInfo typeInfo) {
+	public static final Lazy<Map<Identifier, BlockEntityAttachmentType>> ALL = Lazy.map(map -> KubeJSPlugins.forEachPlugin(type -> map.put(type.id, type), KubeJSPlugin::registerBlockEntityAttachments));
 
-	public BlockEntityAttachmentType(ResourceLocation id, Class<?> type) {
+	public BlockEntityAttachmentType(Identifier id, Class<?> type) {
 		this(id, TypeInfo.of(type));
 	}
 

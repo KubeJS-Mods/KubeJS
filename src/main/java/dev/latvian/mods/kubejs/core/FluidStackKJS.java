@@ -21,7 +21,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
@@ -44,7 +44,7 @@ public interface FluidStackKJS extends
 	default boolean specialEquals(Context cx, Object o, boolean shallow) {
 		return switch (o) {
 			case CharSequence cs -> kjs$getId().equals(ID.string(cs.toString()));
-			case ResourceLocation id -> kjs$getIdLocation().equals(id);
+			case Identifier id -> kjs$getIdLocation().equals(id);
 			case FluidStack s -> kjs$equalsIgnoringCount(s);
 			case null, default -> kjs$equalsIgnoringCount(FluidWrapper.wrap(cx, o));
 		};
@@ -73,7 +73,7 @@ public interface FluidStackKJS extends
 	}
 
 	@Override
-	default ResourceLocation kjs$getIdLocation() {
+	default Identifier kjs$getIdLocation() {
 		return kjs$self().getFluid().kjs$getIdLocation();
 	}
 

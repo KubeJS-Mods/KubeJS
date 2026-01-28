@@ -10,7 +10,7 @@ import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.thread.BlockableEventLoop;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,12 +36,12 @@ public class KJSHTTPRequest extends HTTPRequest {
 		return CompletableFuture.supplyAsync(task, eventLoop).join();
 	}
 
-	public ResourceLocation id(String ns, String path) {
-		return ResourceLocation.fromNamespaceAndPath(variable(ns).asString(), variable(path).asString());
+	public Identifier id(String ns, String path) {
+		return Identifier.fromNamespaceAndPath(variable(ns).asString(), variable(path).asString());
 	}
 
 	@Nullable
-	public ResourceLocation id() {
+	public Identifier id() {
 		return id("namespace", "path");
 	}
 

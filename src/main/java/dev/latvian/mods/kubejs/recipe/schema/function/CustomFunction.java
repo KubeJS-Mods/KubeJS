@@ -7,16 +7,16 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.util.Lazy;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Map;
 
-public record CustomFunction(ResourceLocation id) implements RecipeSchemaFunction {
+public record CustomFunction(Identifier id) implements RecipeSchemaFunction {
 	public static final RecipeSchemaFunctionType<CustomFunction> TYPE = new RecipeSchemaFunctionType<>("custom", RecordCodecBuilder.mapCodec(instance -> instance.group(
-		ResourceLocation.CODEC.fieldOf("id").forGetter(CustomFunction::id)
+		Identifier.CODEC.fieldOf("id").forGetter(CustomFunction::id)
 	).apply(instance, CustomFunction::new)));
 
-	public static final Lazy<Map<ResourceLocation, ResolvedRecipeSchemaFunction>> MAP = Lazy.map(map -> KubeJSPlugins.forEachPlugin(p -> p.registerCustomRecipeSchemaFunctions(map::put)));
+	public static final Lazy<Map<Identifier, ResolvedRecipeSchemaFunction>> MAP = Lazy.map(map -> KubeJSPlugins.forEachPlugin(p -> p.registerCustomRecipeSchemaFunctions(map::put)));
 
 	@Override
 	public RecipeSchemaFunctionType<?> type() {

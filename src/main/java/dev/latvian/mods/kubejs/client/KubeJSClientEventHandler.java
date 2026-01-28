@@ -47,7 +47,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
@@ -197,23 +197,23 @@ public class KubeJSClientEventHandler {
 			if (builder instanceof FluidTypeBuilder b) {
 				event.registerFluidType(new IClientFluidTypeExtensions() {
 					@Override
-					public ResourceLocation getStillTexture() {
+					public Identifier getStillTexture() {
 						return b.actualStillTexture;
 					}
 
 					@Override
-					public ResourceLocation getFlowingTexture() {
+					public Identifier getFlowingTexture() {
 						return b.actualFlowingTexture;
 					}
 
 					@Override
-					public ResourceLocation getOverlayTexture() {
+					public Identifier getOverlayTexture() {
 						return b.blockOverlayTexture;
 					}
 
 					@Override
 					@Nullable
-					public ResourceLocation getRenderOverlayTexture(Minecraft mc) {
+					public Identifier getRenderOverlayTexture(Minecraft mc) {
 						return b.screenOverlayTexture;
 					}
 				}, b.get());

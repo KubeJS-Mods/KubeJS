@@ -6,8 +6,8 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public interface RegistryObjectKJS<T> extends SpecialEquality {
 	default boolean specialEquals(Context cx, Object o, boolean shallow) {
 		return switch (o) {
 			case CharSequence cs -> kjs$getId().equals(cs.toString());
-			case ResourceLocation id -> kjs$getIdLocation().equals(id);
+			case Identifier id -> kjs$getIdLocation().equals(id);
 			case null, default -> equals(o);
 		};
 
@@ -29,7 +29,7 @@ public interface RegistryObjectKJS<T> extends SpecialEquality {
 	}
 
 	default Registry<T> kjs$getRegistry() {
-		return RegistryAccessContainer.current.access().registryOrThrow(kjs$getRegistryId());
+		return RegistryAccessContainer.current.access().get(kjs$getRegistryId()).get().value();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -49,8 +49,8 @@ public interface RegistryObjectKJS<T> extends SpecialEquality {
 		}
 	}
 
-	default ResourceLocation kjs$getIdLocation() {
-		return kjs$getKey().location();
+	default Identifier kjs$getIdLocation() {
+		return kjs$getKey().identifier();
 	}
 
 	default String kjs$getId() {
@@ -65,11 +65,11 @@ public interface RegistryObjectKJS<T> extends SpecialEquality {
 		return kjs$asHolder().tags().toList();
 	}
 
-	default List<ResourceLocation> kjs$getTags() {
+	default List<Identifier> kjs$getTags() {
 		return kjs$asHolder().tags().map(TagKey::location).toList();
 	}
 
-	default boolean kjs$hasTag(ResourceLocation tag) {
+	default boolean kjs$hasTag(Identifier tag) {
 		return kjs$asHolder().is(TagKey.create(kjs$getRegistryId(), tag));
 	}
 }

@@ -18,7 +18,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.item.ItemStack;
@@ -51,7 +52,7 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 	public CachedItemTagLookup cachedItemTags;
 	public CachedTagLookup<Block> cachedBlockTags;
 	public CachedTagLookup<Fluid> cachedFluidTags;
-	private Map<ResourceLocation, RegistryWrapper> cachedRegistryWrappers;
+	private Map<Identifier, RegistryWrapper> cachedRegistryWrappers;
 
 	public RegistryAccessContainer(RegistryAccess.Frozen access) {
 		super(
@@ -83,7 +84,7 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 	}
 
 	// Currently this is the best way I can think of to have tags available at the time of recipe loading
-	public synchronized <T> void cacheTags(Registry<T> registry, Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
+	public synchronized <T> void cacheTags(Registry<T> registry, Map<Identifier, List<TagLoader.EntryWithSource>> map) {
 		var key1 = registry == null ? null : (ResourceKey) registry.key();
 
 		if (key1 == null) {
@@ -108,7 +109,7 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 		}
 
 		if (DataExport.export != null) {
-			var loc = "tags/" + key1.location() + "/";
+			var loc = "tags/" + key1.identifier() + "/";
 
 			for (var entry : map.entrySet()) {
 				var list = new ArrayList<String>();
@@ -129,27 +130,26 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 		}
 	}
 
-	private <T> RegistryWrapper<T> createRegistryWrapper(ResourceLocation id) {
+	private <T> RegistryWrapper<T> createRegistryWrapper(Identifier id) {
 		var key = ResourceKey.<T>createRegistryKey(id);
-		return new RegistryWrapper<>(access.registryOrThrow(key), ResourceKey.create(key, ID.UNKNOWN));
+		return new RegistryWrapper<>(access.get(key).get().value(), ResourceKey.create(key, ID.UNKNOWN));
 	}
 
-	public RegistryWrapper<?> wrapRegistry(ResourceLocation id) {
+	public RegistryWrapper<?> wrapRegistry(Identifier id) {
 		if (cachedRegistryWrappers == null) {
 			cachedRegistryWrappers = new HashMap<>();
 		}
 
 		return cachedRegistryWrappers.computeIfAbsent(id, this::createRegistryWrapper);
 	}
+	@Override
+	public <T> boolean isTagLoaded(TagKey<T> key) {
+		var cached = cachedRegistryTags.get(key.registry());
+		return cached != null && cached.lookup().tagMap().containsKey(key.location());
+	}
 
 	@Override
-	public <T> Map<ResourceLocation, Collection<Holder<T>>> getAllTags(ResourceKey<? extends Registry<T>> key) {
-		var cached = cachedRegistryTags.get(key);
-
-		if (cached != null) {
-			return (Map) cached.lookup().tagMap();
-		}
-
-		return Map.of();
+	public RegistryAccess registryAccess() {
+		return access;
 	}
 }

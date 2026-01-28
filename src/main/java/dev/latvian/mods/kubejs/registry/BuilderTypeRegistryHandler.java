@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -31,7 +31,7 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 
 	public static class Info<T> {
 		private BuilderType<T> defaultType;
-		private Map<ResourceLocation, BuilderType<T>> types;
+		private Map<Identifier, BuilderType<T>> types;
 		private Map<String, BuilderType<T>> fallbackLookup;
 		private Codec<T> directCodec;
 		private TypeInfo typeInfo;
@@ -46,7 +46,7 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 		}
 
 		@Nullable
-		public BuilderType<T> namedType(ResourceLocation name) {
+		public BuilderType<T> namedType(Identifier name) {
 			var t = types == null ? null : types.get(name);
 			return t != null ? t : fallbackLookup == null ? null : fallbackLookup.get(name.getPath());
 		}
@@ -75,7 +75,7 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 	}
 
 	private record RegConsumer<T>(Info<T> info) implements BuilderTypeRegistry.Callback<T> {
-		private static final ResourceLocation DEFAULT = KubeJS.id("default");
+		private static final Identifier DEFAULT = KubeJS.id("default");
 
 		@Override
 		public void addDefault(Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory) {
@@ -87,7 +87,7 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 		}
 
 		@Override
-		public void add(ResourceLocation type, Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory) {
+		public void add(Identifier type, Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory) {
 			if (info.types == null) {
 				info.types = new LinkedHashMap<>();
 			}

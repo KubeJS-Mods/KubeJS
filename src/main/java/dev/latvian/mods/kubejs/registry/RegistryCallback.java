@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.registry;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.function.Supplier;
 
 public interface RegistryCallback<T> {
-	void accept(ResourceLocation id, Supplier<T> obj);
+	void accept(Identifier id, Supplier<T> obj);
 }

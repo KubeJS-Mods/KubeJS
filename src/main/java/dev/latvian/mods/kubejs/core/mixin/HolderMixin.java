@@ -6,7 +6,7 @@ import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,11 +41,11 @@ public interface HolderMixin<T> {
 
 	@Shadow
 	@Info("Test if the holder holds an object registered with given resource location.")
-	boolean is(ResourceLocation location);
+	boolean is(Identifier location);
 
 	@Unique
 	@Info("Test if a tag matches the object this holder holds.")
-	default boolean kjs$isTag(ResourceLocation tagKey) {
+	default boolean kjs$isTag(Identifier tagKey) {
 		return this.unwrapKey().map(resourceKey -> is(TagKey.create(resourceKey.registryKey(), tagKey))).orElse(false);
 	}
 }

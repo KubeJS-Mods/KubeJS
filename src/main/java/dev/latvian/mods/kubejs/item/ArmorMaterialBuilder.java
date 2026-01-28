@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.item;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ArmorItem;
@@ -25,7 +25,7 @@ public class ArmorMaterialBuilder extends BuilderBase<ArmorMaterial> {
 	public transient float toughness;
 	public transient float knockbackResistance;
 
-	public ArmorMaterialBuilder(ResourceLocation i) {
+	public ArmorMaterialBuilder(Identifier i) {
 		super(i);
 		defense = Map.of();
 		enchantmentValue = 9;

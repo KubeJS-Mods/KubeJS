@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.block.predicate;
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,12 +19,12 @@ public class BlockIDPredicate implements BlockPredicate {
 	public record PropertyObject(Property<?> property, Object value) {
 	}
 
-	private final ResourceLocation id;
+	private final Identifier id;
 	private final Map<String, String> properties;
 	private Block cachedBlock;
 	private List<PropertyObject> cachedProperties;
 
-	public BlockIDPredicate(ResourceLocation i) {
+	public BlockIDPredicate(Identifier i) {
 		id = i;
 		properties = new HashMap<>();
 	}

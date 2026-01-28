@@ -1,18 +1,18 @@
 package dev.latvian.mods.kubejs.misc;
 
 import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.util.KubeResourceLocation;
+import dev.latvian.mods.kubejs.util.KubeIdentifier;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 
 @ReturnsSelf
 public class PaintingVariantBuilder extends BuilderBase<PaintingVariant> {
 	public transient int width;
 	public transient int height;
-	public transient ResourceLocation assetId;
+	public transient Identifier assetId;
 
-	public PaintingVariantBuilder(ResourceLocation id) {
+	public PaintingVariantBuilder(Identifier id) {
 		super(id);
 		this.width = 1;
 		this.height = 1;
@@ -30,7 +30,7 @@ public class PaintingVariantBuilder extends BuilderBase<PaintingVariant> {
 		return this;
 	}
 
-	public PaintingVariantBuilder assetId(KubeResourceLocation assetId) {
+	public PaintingVariantBuilder assetId(KubeIdentifier assetId) {
 		this.assetId = assetId.wrapped();
 		return this;
 	}

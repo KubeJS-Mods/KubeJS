@@ -13,7 +13,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
@@ -36,8 +36,8 @@ public class KubedexPayloadHandler {
 	private static ListTag sortedTagList(Stream<? extends TagKey<?>> stream) {
 		return stream
 			.map(TagKey::location)
-			.sorted(ResourceLocation::compareNamespaced)
-			.map(ResourceLocation::toString)
+			.sorted(Identifier::compareNamespaced)
+			.map(Identifier::toString)
 			.map(StringTag::valueOf)
 			.collect(ListTag::new, ListTag::add, ListTag::addAll);
 	}

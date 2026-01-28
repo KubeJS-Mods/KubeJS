@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -36,10 +36,10 @@ import java.util.Map;
 @ReturnsSelf
 // Cardinal blocks that can face any horizontal direction (NSEW).
 public class CardinalBlockBuilder extends BlockBuilder {
-	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/orientable");
-	private static final ResourceLocation BOTTOM_MODEL = ResourceLocation.withDefaultNamespace("block/orientable_with_bottom");
+	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/orientable");
+	private static final Identifier BOTTOM_MODEL = Identifier.withDefaultNamespace("block/orientable_with_bottom");
 
-	public CardinalBlockBuilder(ResourceLocation i) {
+	public CardinalBlockBuilder(Identifier i) {
 		super(i);
 	}
 

@@ -12,7 +12,7 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.RegistryOpsContainer;
 import dev.latvian.mods.rhino.Context;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
@@ -97,7 +97,7 @@ public class AfterRecipesLoadedKubeEvent implements KubeEvent {
 	@Override
 	public void afterPosted(EventResult result) {
 		if (changed) {
-			var map = new HashMap<ResourceLocation, RecipeHolder<?>>();
+			var map = new HashMap<Identifier, RecipeHolder<?>>();
 
 			for (var r : getOriginalRecipes()) {
 				map.put(r.kjs$getOrCreateId(), (RecipeHolder) r);

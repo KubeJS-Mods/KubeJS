@@ -3,22 +3,22 @@ package dev.latvian.mods.kubejs.block.custom;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.util.ID;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.StairBlock;
 
 public class StairBlockBuilder extends ShapedBlockBuilder {
-	public static final ResourceLocation[] STAIR_TAGS = {
+	public static final Identifier[] STAIR_TAGS = {
 		BlockTags.STAIRS.location(),
 	};
 
-	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/stairs");
-	private static final ResourceLocation INNER_MODEL = ResourceLocation.withDefaultNamespace("block/inner_stairs");
-	private static final ResourceLocation OUTER_MODEL = ResourceLocation.withDefaultNamespace("block/outer_stairs");
+	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/stairs");
+	private static final Identifier INNER_MODEL = Identifier.withDefaultNamespace("block/inner_stairs");
+	private static final Identifier OUTER_MODEL = Identifier.withDefaultNamespace("block/outer_stairs");
 
-	public StairBlockBuilder(ResourceLocation i) {
+	public StairBlockBuilder(Identifier i) {
 		super(i, "_stairs");
 		tagBoth(STAIR_TAGS);
 	}

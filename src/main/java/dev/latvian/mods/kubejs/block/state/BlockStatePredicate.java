@@ -15,7 +15,7 @@ import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -56,13 +56,13 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		return switch (s) {
 			case "*" -> Simple.ALL;
 			case "-" -> Simple.NONE;
-			case String str when str.startsWith("#") -> new TagMatch(Tags.block(ResourceLocation.parse(str.substring(1))));
+			case String str when str.startsWith("#") -> new TagMatch(Tags.block(Identifier.parse(str.substring(1))));
 			case String str when str.indexOf('[') != -1 -> {
 				var state = BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), str);
 				yield state != Blocks.AIR.defaultBlockState() ? new StateMatch(state) : Simple.NONE;
 			}
 			default -> {
-				var block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(s));
+				var block = BuiltInRegistries.BLOCK.get(Identifier.parse(s));
 				yield block != Blocks.AIR ? new BlockMatch(block) : Simple.NONE;
 			}
 		};
@@ -163,8 +163,8 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		return blocks;
 	}
 
-	default Set<ResourceLocation> getBlockIds() {
-		Set<ResourceLocation> set = new LinkedHashSet<>();
+	default Set<Identifier> getBlockIds() {
+		Set<Identifier> set = new LinkedHashSet<>();
 
 		for (var block : getBlocks()) {
 			set.add(block.kjs$getIdLocation());
@@ -236,7 +236,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		}
 
 		@Override
-		public Set<ResourceLocation> getBlockIds() {
+		public Set<Identifier> getBlockIds() {
 			return Set.of(block.kjs$getIdLocation());
 		}
 
@@ -268,7 +268,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		}
 
 		@Override
-		public Set<ResourceLocation> getBlockIds() {
+		public Set<Identifier> getBlockIds() {
 			return Set.of(state.getBlock().kjs$getIdLocation());
 		}
 
@@ -389,8 +389,8 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		}
 
 		@Override
-		public Set<ResourceLocation> getBlockIds() {
-			Set<ResourceLocation> set = new LinkedHashSet<>();
+		public Set<Identifier> getBlockIds() {
+			Set<Identifier> set = new LinkedHashSet<>();
 
 			for (var predicate : list) {
 				set.addAll(predicate.getBlockIds());
@@ -452,8 +452,8 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		}
 
 		@Override
-		public Set<ResourceLocation> getBlockIds() {
-			var set = new HashSet<ResourceLocation>();
+		public Set<Identifier> getBlockIds() {
+			var set = new HashSet<Identifier>();
 
 			for (var block : getBlocks()) {
 				set.add(block.kjs$getIdLocation());

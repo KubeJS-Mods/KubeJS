@@ -17,7 +17,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.ApiStatus;
@@ -44,7 +44,7 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 	private final String name;
 	private final RegistryAccessContainer registryAccessContainer;
 	private final PackOutput.PathProvider path;
-	private final ImmutableMap.Builder<ResourceLocation, RecipeSchemaData> map;
+	private final ImmutableMap.Builder<Identifier, RecipeSchemaData> map;
 	private final ServerScriptManager scriptManager;
 	private final RecipeTypeRegistryContext regCtx;
 	private final Codec<RecipeSchemaData> codec;
@@ -82,15 +82,15 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 
 	public abstract void add(HolderLookup.Provider lookup);
 
-	public void add(ResourceLocation id, RecipeSchemaData schema) {
+	public void add(Identifier id, RecipeSchemaData schema) {
 		map.put(id, schema);
 	}
 
-	public void add(ResourceLocation id, Consumer<SchemaDataBuilder> builder) {
+	public void add(Identifier id, Consumer<SchemaDataBuilder> builder) {
 		add(id, Util.make(new SchemaDataBuilder(), builder).build());
 	}
 
-	public void onlyKeys(ResourceLocation id, RecipeKey<?>... keys) {
+	public void onlyKeys(Identifier id, RecipeKey<?>... keys) {
 		add(id, b -> b.keys(keys));
 	}
 
@@ -135,7 +135,7 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 	}
 
 	public class SchemaDataBuilder {
-		private ResourceLocation parent, overrideType, recipeFactory;
+		private Identifier parent, overrideType, recipeFactory;
 		private List<RecipeSchemaData.RecipeKeyData> keys;
 		private List<RecipeSchemaData.ConstructorData> constructors;
 		private Map<String, RecipeSchemaFunction> functions;
@@ -150,7 +150,7 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 		 * Sets the parent recipe type, which acts as a fallback/proxy for recipe methods. See vanilla's smoking &
 		 * blasting recipe types for examples.
 		 */
-		public SchemaDataBuilder parent(ResourceLocation parent) {
+		public SchemaDataBuilder parent(Identifier parent) {
 			this.parent = parent;
 			return this;
 		}
@@ -158,7 +158,7 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 		/**
 		 * Specifies an alternative recipe serializer to use instead of the one associated with this recipe
 		 */
-		public SchemaDataBuilder overrideType(ResourceLocation type) {
+		public SchemaDataBuilder overrideType(Identifier type) {
 			overrideType = type;
 			return this;
 		}
@@ -168,7 +168,7 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 		 * type. See {@link dev.latvian.mods.kubejs.plugin.KubeJSPlugin#registerRecipeFactories(RecipeFactoryRegistry) #registerRecipeFactories}
 		 * for registering custom factories
 		 */
-		public SchemaDataBuilder recipeFactory(ResourceLocation factory) {
+		public SchemaDataBuilder recipeFactory(Identifier factory) {
 			recipeFactory = factory;
 			return this;
 		}
@@ -324,7 +324,7 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 		}
 
 		/**
-		 * If values from {@link #parent(ResourceLocation) parent schemas} should be merged when baking the recipe schema
+		 * If values from {@link #parent(Identifier) parent schemas} should be merged when baking the recipe schema
 		 */
 		public SchemaDataBuilder mergeData(boolean keys, boolean constructors, boolean unique, boolean postProcessors) {
 			mergeData = new RecipeSchemaData.MergeData(keys, constructors, unique, postProcessors);

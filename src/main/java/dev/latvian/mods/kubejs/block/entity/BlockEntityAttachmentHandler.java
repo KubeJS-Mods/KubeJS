@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.block.entity;
 
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
-import dev.latvian.mods.kubejs.util.KubeResourceLocation;
+import dev.latvian.mods.kubejs.util.KubeIdentifier;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Direction;
@@ -18,7 +18,7 @@ public interface BlockEntityAttachmentHandler {
 	@HideFromJS
 	void attach(String id, BlockEntityAttachmentType type, Set<Direction> directions, BlockEntityAttachmentFactory factory);
 
-	default void attach(Context cx, String id, KubeResourceLocation type, Set<Direction> directions, Object args) {
+	default void attach(Context cx, String id, KubeIdentifier type, Set<Direction> directions, Object args) {
 		var att = BlockEntityAttachmentType.ALL.get().get(type.wrapped());
 
 		if (att != null) {

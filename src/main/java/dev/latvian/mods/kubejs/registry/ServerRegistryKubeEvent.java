@@ -6,7 +6,7 @@ import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.script.SourceLine;
-import dev.latvian.mods.kubejs.util.KubeResourceLocation;
+import dev.latvian.mods.kubejs.util.KubeIdentifier;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -29,7 +29,7 @@ public class ServerRegistryKubeEvent<T> implements KubeEvent {
 		this.builders = builders;
 	}
 
-	public BuilderBase<? extends T> create(Context cx, KubeResourceLocation id, KubeResourceLocation type) {
+	public BuilderBase<? extends T> create(Context cx, KubeIdentifier id, KubeIdentifier type) {
 		var sourceLine = SourceLine.of(cx);
 
 		var t = builderInfo.namedType(type.wrapped());
@@ -50,7 +50,7 @@ public class ServerRegistryKubeEvent<T> implements KubeEvent {
 		}
 	}
 
-	public BuilderBase<? extends T> create(Context cx, KubeResourceLocation id) {
+	public BuilderBase<? extends T> create(Context cx, KubeIdentifier id) {
 		var sourceLine = SourceLine.of(cx);
 		var t = builderInfo.defaultType();
 
@@ -70,7 +70,7 @@ public class ServerRegistryKubeEvent<T> implements KubeEvent {
 		}
 	}
 
-	public CustomBuilderObject createCustom(Context cx, KubeResourceLocation id, Supplier<Object> object) {
+	public CustomBuilderObject createCustom(Context cx, KubeIdentifier id, Supplier<Object> object) {
 		var sourceLine = SourceLine.of(cx);
 
 		if (object == null) {
@@ -84,7 +84,7 @@ public class ServerRegistryKubeEvent<T> implements KubeEvent {
 		return b;
 	}
 
-	public CustomBuilderObject createFromJson(Context cx, KubeResourceLocation id, JsonElement json) {
+	public CustomBuilderObject createFromJson(Context cx, KubeIdentifier id, JsonElement json) {
 		var sourceLine = SourceLine.of(cx);
 
 		var b = new CustomBuilderObject(id.wrapped(), () -> codec.parse(jsonOps, json).result().orElseThrow());

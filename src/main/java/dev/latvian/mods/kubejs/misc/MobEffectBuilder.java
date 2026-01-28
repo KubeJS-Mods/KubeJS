@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.misc;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,11 +21,11 @@ public class MobEffectBuilder extends BuilderBase<MobEffect> {
 
 	public transient MobEffectCategory category;
 	public transient EffectEntityCallback effectTick;
-	public transient Map<ResourceLocation, MobEffect.AttributeTemplate> attributeModifiers;
+	public transient Map<Identifier, MobEffect.AttributeTemplate> attributeModifiers;
 	public transient int color;
 	public transient boolean instant;
 
-	public MobEffectBuilder(ResourceLocation i) {
+	public MobEffectBuilder(Identifier i) {
 		super(i);
 		category = MobEffectCategory.NEUTRAL;
 		color = 0xFFFFFF;
@@ -45,7 +45,7 @@ public class MobEffectBuilder extends BuilderBase<MobEffect> {
 		return "effect";
 	}
 
-	public MobEffectBuilder modifyAttribute(ResourceLocation attribute, ResourceLocation id, double amount, AttributeModifier.Operation operation) {
+	public MobEffectBuilder modifyAttribute(Identifier attribute, Identifier id, double amount, AttributeModifier.Operation operation) {
 		attributeModifiers.put(attribute, new MobEffect.AttributeTemplate(id, amount, operation));
 		return this;
 	}

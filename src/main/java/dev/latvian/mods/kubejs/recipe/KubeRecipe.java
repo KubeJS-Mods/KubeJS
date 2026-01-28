@@ -28,7 +28,7 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ErrorStack;
-import dev.latvian.mods.kubejs.util.KubeResourceLocation;
+import dev.latvian.mods.kubejs.util.KubeIdentifier;
 import dev.latvian.mods.kubejs.util.SlotFilter;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
@@ -37,7 +37,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -54,7 +54,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public static final String CHANGED_MARKER = "_kubejs_changed_marker";
 	public static final TypeInfo TYPE_INFO = TypeInfo.of(KubeRecipe.class);
 
-	public ResourceLocation id;
+	public Identifier id;
 	public RecipeTypeFunction type;
 	public boolean newRecipe;
 	public boolean removed;
@@ -233,7 +233,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		changed = true;
 	}
 
-	public KubeRecipe id(KubeResourceLocation id) {
+	public KubeRecipe id(KubeIdentifier id) {
 		this.id = id.wrapped();
 		save();
 		return this;
@@ -302,7 +302,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 
 	@Override
 	@Deprecated
-	public final ResourceLocation kjs$getOrCreateId() {
+	public final Identifier kjs$getOrCreateId() {
 		return getOrCreateId();
 	}
 
@@ -429,7 +429,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	}
 
 	@HideFromJS
-	public ResourceLocation getOrCreateId() {
+	public Identifier getOrCreateId() {
 		if (id == null) {
 			var js = getSerializationTypeFunction();
 			var ids = CommonProperties.get().ignoreCustomUniqueRecipeIds ? null : js.schemaType.schema.buildUniqueId(this);

@@ -44,7 +44,7 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -81,13 +81,13 @@ public class RecipesKubeEvent implements KubeEvent {
 	public final RegistryAccessContainer registries;
 	public final ResourceManager resourceManager;
 	public final RegistryOpsContainer ops;
-	public final Map<ResourceLocation, KubeRecipe> originalRecipes;
+	public final Map<Identifier, KubeRecipe> originalRecipes;
 	public final Collection<KubeRecipe> addedRecipes;
 	public final Collection<KubeRecipe> removedRecipes;
 
 	int modifiedCount, failedCount;
 
-	private final Map<ResourceLocation, KubeRecipe> takenIds;
+	private final Map<Identifier, KubeRecipe> takenIds;
 
 	private final Map<String, Object> recipeFunctions;
 	public final transient RecipeTypeFunction vanillaShaped;
@@ -176,18 +176,18 @@ public class RecipesKubeEvent implements KubeEvent {
 		recipeFunctions.put("smithing", smithing);
 		recipeFunctions.put("smithingTrim", smithingTrim);
 
-		stageSerializer = BuiltInRegistries.RECIPE_SERIALIZER.get(ResourceLocation.parse("recipestages:stage"));
+		stageSerializer = BuiltInRegistries.RECIPE_SERIALIZER.get(Identifier.parse("recipestages:stage"));
 	}
 
 	@HideFromJS
-	public void post(RecipeManagerKJS recipeManager, Map<ResourceLocation, JsonElement> datapackRecipeMap) {
+	public void post(RecipeManagerKJS recipeManager, Map<Identifier, JsonElement> datapackRecipeMap) {
 		discoverRecipes(recipeManager, datapackRecipeMap);
 		postEvent();
 		applyChanges(datapackRecipeMap);
 	}
 
 	@HideFromJS
-	public void discoverRecipes(RecipeManagerKJS recipeManager, Map<ResourceLocation, JsonElement> datapackRecipeMap) {
+	public void discoverRecipes(RecipeManagerKJS recipeManager, Map<Identifier, JsonElement> datapackRecipeMap) {
 		var timer = Stopwatch.createStarted();
 
 		KubeJSPlugins.forEachPlugin(p -> p.beforeRecipeLoading(this, recipeManager, datapackRecipeMap));
@@ -233,7 +233,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		ConsoleJS.SERVER.info("Found %,d recipes (skipped %,d) in %s".formatted(originalRecipes.size(), skippedRecipes, timer.stop()));
 	}
 
-	private void parseOriginalRecipe(JsonObject json, ResourceLocation recipeId) {
+	private void parseOriginalRecipe(JsonObject json, Identifier recipeId) {
 		var typeStr = GsonHelper.getAsString(json, "type");
 		var recipeIdAndType = recipeId + "[" + typeStr + "]";
 		var type = getRecipeFunction(typeStr);
@@ -320,7 +320,7 @@ public class RecipesKubeEvent implements KubeEvent {
 	}
 
 	@HideFromJS
-	public void applyChanges(Map<ResourceLocation, JsonElement> map) {
+	public void applyChanges(Map<Identifier, JsonElement> map) {
 		var timer = Stopwatch.createStarted();
 		addedRecipes.removeIf(RECIPE_IS_SYNTHETIC);
 
@@ -397,7 +397,7 @@ public class RecipesKubeEvent implements KubeEvent {
 	}
 
 	@HideFromJS
-	public void handleFailedRecipe(ResourceLocation id, JsonElement json, Throwable ex) {
+	public void handleFailedRecipe(Identifier id, JsonElement json, Throwable ex) {
 		// only handle recipes that failed because of kubejs interfering
 		if (json instanceof JsonObject obj && obj.has(KubeRecipe.CHANGED_MARKER)) {
 			var sourceLine = SourceLine.fromJson(obj.remove(KubeRecipe.CHANGED_MARKER).getAsJsonObject());
@@ -488,7 +488,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		return reduceRecipesAsync(cx, filter, Stream::toList);
 	}
 
-	public Collection<ResourceLocation> findRecipeIds(Context cx, RecipeFilter filter) {
+	public Collection<Identifier> findRecipeIds(Context cx, RecipeFilter filter) {
 		return reduceRecipesAsync(cx, filter, s -> s.map(KubeRecipe::getOrCreateId).toList());
 	}
 
@@ -571,7 +571,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	private void printTypes(Predicate<RecipeSchemaType> predicate, boolean all) {
 		int t = 0;
-		var map = new Reference2ObjectLinkedOpenHashMap<RecipeSchema, Set<ResourceLocation>>();
+		var map = new Reference2ObjectLinkedOpenHashMap<RecipeSchema, Set<Identifier>>();
 
 		for (var ns : recipeSchemaStorage.namespaces.values()) {
 			for (var type : ns.values()) {
@@ -599,7 +599,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 
 		for (var entry : map.entrySet()) {
-			ConsoleJS.SERVER.info("- " + entry.getValue().stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")));
+			ConsoleJS.SERVER.info("- " + entry.getValue().stream().map(Identifier::toString).collect(Collectors.joining(", ")));
 
 			for (var c : entry.getKey().constructors().values()) {
 				ConsoleJS.SERVER.info("  - " + c.toString());
@@ -646,12 +646,12 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 	}
 
-	public synchronized ResourceLocation takeId(KubeRecipe recipe, String prefix, String ids) {
+	public synchronized Identifier takeId(KubeRecipe recipe, String prefix, String ids) {
 		int i = 2;
-		var id = ResourceLocation.parse(prefix + ids);
+		var id = Identifier.parse(prefix + ids);
 
 		while (takenIds.containsKey(id)) {
-			id = ResourceLocation.parse(prefix + ids + '_' + i);
+			id = Identifier.parse(prefix + ids + '_' + i);
 			i++;
 		}
 

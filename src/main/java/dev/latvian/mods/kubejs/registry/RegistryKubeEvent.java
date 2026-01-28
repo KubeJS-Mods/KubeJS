@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
-import dev.latvian.mods.kubejs.util.KubeResourceLocation;
+import dev.latvian.mods.kubejs.util.KubeIdentifier;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -26,7 +26,7 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 		this.created = new LinkedList<>();
 	}
 
-	public BuilderBase<? extends T> create(Context cx, KubeResourceLocation id, KubeResourceLocation type) {
+	public BuilderBase<? extends T> create(Context cx, KubeIdentifier id, KubeIdentifier type) {
 		var sourceLine = SourceLine.of(cx);
 		var t = builderInfo.namedType(type.wrapped());
 
@@ -50,7 +50,7 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 		return b;
 	}
 
-	public BuilderBase<? extends T> create(Context cx, KubeResourceLocation id) {
+	public BuilderBase<? extends T> create(Context cx, KubeIdentifier id) {
 		var sourceLine = SourceLine.of(cx);
 		var t = builderInfo.defaultType();
 
@@ -72,7 +72,7 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 		return b;
 	}
 
-	public CustomBuilderObject createCustom(Context cx, KubeResourceLocation id, Supplier<Object> object) {
+	public CustomBuilderObject createCustom(Context cx, KubeIdentifier id, Supplier<Object> object) {
 		var sourceLine = SourceLine.of(cx);
 
 		if (object == null) {

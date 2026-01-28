@@ -24,7 +24,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -43,8 +43,8 @@ import java.util.List;
 import java.util.Map;
 
 public class KubeJSClient extends KubeJSCommon {
-	public static final ResourceLocation WHITE_TEXTURE = ResourceLocation.parse("textures/misc/white.png");
-	public static final ResourceLocation RECIPE_BUTTON_TEXTURE = ResourceLocation.parse("textures/gui/recipe_button.png");
+	public static final Identifier WHITE_TEXTURE = Identifier.parse("textures/misc/white.png");
+	public static final Identifier RECIPE_BUTTON_TEXTURE = Identifier.parse("textures/gui/recipe_button.png");
 
 	public static final Map<GeneratedDataStage, VirtualAssetPack> CLIENT_PACKS = new EnumMap<>(GeneratedDataStage.class);
 	public static List<ItemTooltipData> clientItemTooltips = List.of();

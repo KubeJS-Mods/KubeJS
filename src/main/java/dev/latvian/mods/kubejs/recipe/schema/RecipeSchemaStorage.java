@@ -23,7 +23,7 @@ import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,9 +54,9 @@ public class RecipeSchemaStorage {
 
 	private final ServerScriptManager manager;
 
-	public final Map<ResourceLocation, KubeRecipeFactory> recipeTypes;
+	public final Map<Identifier, KubeRecipeFactory> recipeTypes;
 	public final Map<String, RecipeNamespace> namespaces;
-	public final Map<String, ResourceLocation> mappings;
+	public final Map<String, Identifier> mappings;
 	public final Map<String, RecipeSchemaType> schemaTypes;
 
 	public Codec<RecipeComponent<?>> recipeComponentCodec;
@@ -94,7 +94,7 @@ public class RecipeSchemaStorage {
 				var json = JsonUtils.GSON.fromJson(reader, JsonObject.class);
 
 				for (var entry1 : json.entrySet()) {
-					var id = ResourceLocation.fromNamespaceAndPath(entry.getKey().getNamespace(), entry1.getKey());
+					var id = Identifier.fromNamespaceAndPath(entry.getKey().getNamespace(), entry1.getKey());
 
 					if (entry1.getValue() instanceof JsonArray arr) {
 						for (var n : arr) {
@@ -113,7 +113,7 @@ public class RecipeSchemaStorage {
 		KubeJSPlugins.forEachPlugin(mappingRegistry, KubeJSPlugin::registerRecipeMappings);
 		ServerEvents.RECIPE_MAPPING_REGISTRY.post(ScriptType.SERVER, mappingRegistry);
 
-		var componentTypes = new HashMap<ResourceLocation, StoredRecipeComponentType>();
+		var componentTypes = new HashMap<Identifier, StoredRecipeComponentType>();
 		Codec<StoredRecipeComponentType> typeCodec = KubeJSCodecs.KUBEJS_ID.comapFlatMap(id -> {
 			var stored = componentTypes.get(id);
 

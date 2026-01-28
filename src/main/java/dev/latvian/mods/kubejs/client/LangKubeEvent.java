@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
-import dev.latvian.mods.kubejs.util.KubeResourceLocation;
-import net.minecraft.resources.ResourceLocation;
+import dev.latvian.mods.kubejs.util.KubeIdentifier;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -58,15 +58,15 @@ public record LangKubeEvent(String lang, Map<Key, String> map) implements KubeEv
 		}
 	}
 
-	public void renameEntity(ResourceLocation id, String name) {
+	public void renameEntity(Identifier id, String name) {
 		add(id.getNamespace(), "entity." + id.getNamespace() + "." + id.getPath().replace('/', '.'), name);
 	}
 
-	public void renameBiome(ResourceLocation id, String name) {
+	public void renameBiome(Identifier id, String name) {
 		add(id.getNamespace(), "biome." + id.getNamespace() + "." + id.getPath().replace('/', '.'), name);
 	}
 
-	public void painting(KubeResourceLocation paintingId, String title, String author) {
+	public void painting(KubeIdentifier paintingId, String title, String author) {
 		var id = "painting." + paintingId.wrapped().getNamespace() + "." + paintingId.wrapped().getPath();
 		add(paintingId.wrapped().getNamespace(), id + ".title", title);
 		add(paintingId.wrapped().getNamespace(), id + ".author", author);

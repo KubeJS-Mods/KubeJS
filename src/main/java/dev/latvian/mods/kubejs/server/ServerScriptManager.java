@@ -26,7 +26,7 @@ import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.fml.loading.FMLLoader;
@@ -73,7 +73,7 @@ public class ServerScriptManager extends ScriptManager {
 		manager.reload();
 		staticInstance = manager;
 
-		if (!FMLLoader.isProduction()) {
+		if (!FMLLoader.getCurrent().isProduction()) {
 			KubeJS.LOGGER.info("Loaded {} data packs: {}", packs.size(), packs.stream().map(PackResources::packId).collect(Collectors.joining(", ")));
 		}
 
@@ -120,7 +120,7 @@ public class ServerScriptManager extends ScriptManager {
 		ConsoleJS.SERVER.startCapturingErrors();
 		super.loadFromDirectory();
 
-		if (FMLLoader.getDist().isDedicatedServer()) {
+		if (FMLLoader.getCurrent().getDist().isDedicatedServer()) {
 			loadPackFromDirectory(KubeJSPaths.LOCAL_SERVER_SCRIPTS, "local server", true);
 		}
 	}
@@ -167,7 +167,7 @@ public class ServerScriptManager extends ScriptManager {
 		if (furnaceFuelsJson.size() > 0) {
 			var json = new JsonObject();
 			json.add("values", furnaceFuelsJson);
-			internalDataPack.json(ResourceLocation.fromNamespaceAndPath("neoforge", "data_maps/item/furnace_fuels.json"), json);
+			internalDataPack.json(Identifier.fromNamespaceAndPath("neoforge", "data_maps/item/furnace_fuels.json"), json);
 		}
 		 */
 
@@ -216,9 +216,9 @@ public class ServerScriptManager extends ScriptManager {
 						var k = b.registryKey.location();
 
 						if (k.getNamespace().equals("minecraft")) {
-							registriesDataPack.json(ResourceLocation.fromNamespaceAndPath(b.id.getNamespace(), k.getPath() + "/" + b.id.getPath()), json);
+							registriesDataPack.json(Identifier.fromNamespaceAndPath(b.id.getNamespace(), k.getPath() + "/" + b.id.getPath()), json);
 						} else {
-							registriesDataPack.json(ResourceLocation.fromNamespaceAndPath(b.id.getNamespace(), k.getNamespace() + "/" + k.getPath() + "/" + b.id.getPath()), json);
+							registriesDataPack.json(Identifier.fromNamespaceAndPath(b.id.getNamespace(), k.getNamespace() + "/" + k.getPath() + "/" + b.id.getPath()), json);
 						}
 					} catch (Exception ex) {
 						ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to register object '" + b.id + "' of registry '" + b.registryKey.location() + "'!", ex).source(b.sourceLine));

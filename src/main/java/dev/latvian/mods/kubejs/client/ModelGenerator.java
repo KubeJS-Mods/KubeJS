@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.AABBWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.DirectionWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
@@ -132,10 +132,10 @@ public class ModelGenerator {
 
 	public static class Override {
 
-		private final ResourceLocation model;
+		private final Identifier model;
 		private final List<OverridePredicate> predicates = new ArrayList<>();
 
-		public Override(ResourceLocation model) {
+		public Override(Identifier model) {
 			this.model = model;
 		}
 
@@ -153,21 +153,21 @@ public class ModelGenerator {
 			return json;
 		}
 
-		public void predicate(ResourceLocation property, float value) {
+		public void predicate(Identifier property, float value) {
 			predicates.add(new OverridePredicate(property, value));
 		}
 	}
 
-	public record OverridePredicate(ResourceLocation property, float value) {
+	public record OverridePredicate(Identifier property, float value) {
 
 		public void toJson(JsonObject json) {
 			json.addProperty(property.toString(), value);
 		}
 	}
 
-	private static final ResourceLocation CUBE = ResourceLocation.withDefaultNamespace("block/cube");
+	private static final Identifier CUBE = Identifier.withDefaultNamespace("block/cube");
 
-	private ResourceLocation parent = CUBE;
+	private Identifier parent = CUBE;
 	private final Map<String, String> textures = new HashMap<>(1);
 	private final List<Element> elements = new ArrayList<>();
 	private final List<Override> overrides = new ArrayList<>();
@@ -217,7 +217,7 @@ public class ModelGenerator {
 		return json;
 	}
 
-	public void parent(@Nullable ResourceLocation s) {
+	public void parent(@Nullable Identifier s) {
 		parent = s;
 	}
 
@@ -242,7 +242,7 @@ public class ModelGenerator {
 		elements.add(e);
 	}
 
-	public void override(ResourceLocation model, Consumer<Override> override) {
+	public void override(Identifier model, Consumer<Override> override) {
 		var o = new Override(model);
 		override.accept(o);
 		overrides.add(o);

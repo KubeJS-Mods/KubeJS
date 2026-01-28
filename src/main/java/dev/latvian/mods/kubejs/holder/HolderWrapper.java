@@ -12,7 +12,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.holdersets.OrHolderSet;
@@ -113,18 +113,18 @@ public interface HolderWrapper {
 			case ResourceKey<?> key when key.isFor(registry.key()) -> orEmpty(key.cast(registry.key())
 				.flatMap(registry::getHolder)
 				.map(HolderSet::direct));
-			case ResourceLocation id -> orEmpty(registry.getHolder(id).map(HolderSet::direct));
+			case Identifier id -> orEmpty(registry.getHolder(id).map(HolderSet::direct));
 			case CharSequence cs when cs.isEmpty() -> HolderSet.empty();
 			case CharSequence cs -> {
 				var s = cs.toString();
 				yield switch (s.charAt(0)) {
 					case '@' -> NamespaceHolderSet.of(registry.asLookup(), s.substring(1));
 					case '#' -> {
-						var tagKey = TagKey.create(registry.key(), ResourceLocation.parse(s.substring(1)));
+						var tagKey = TagKey.create(registry.key(), Identifier.parse(s.substring(1)));
 						yield registry.getOrCreateTag(tagKey);
 					}
 					case '/' -> wrapSimpleSet(registry, RegExpKJS.wrap(from));
-					default -> ResourceLocation.read(s)
+					default -> Identifier.read(s)
 						.result()
 						.map(id -> wrapSimpleSet(registry, id))
 						.orElse(null);

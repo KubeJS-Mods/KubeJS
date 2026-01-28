@@ -15,7 +15,7 @@ import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.EventPriority;
@@ -42,7 +42,7 @@ import java.util.ArrayList;
 public class KubeJSModEventHandler {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void creativeTab(BuildCreativeModeTabContentsEvent event) {
-		var tabId = event.getTabKey().location();
+		var tabId = event.getTabKey().registry();
 
 		if (StartupEvents.MODIFY_CREATIVE_TAB.hasListeners(tabId)) {
 			StartupEvents.MODIFY_CREATIVE_TAB.post(ScriptType.STARTUP, tabId, new CreativeTabKubeEvent(event.getTab(), event.hasPermissions(), new CreativeTabCallbackForge(event)));
@@ -74,7 +74,7 @@ public class KubeJSModEventHandler {
 
 			ConsoleJS.STARTUP.flush(true);
 
-			if (FMLLoader.getDist().isDedicatedServer() || !CommonProperties.get().startupErrorGUI) {
+			if (FMLLoader.getCurrent().getDist().isDedicatedServer() || !CommonProperties.get().startupErrorGUI) {
 				throw new RuntimeException("There were KubeJS startup script syntax errors! See logs/kubejs/startup.log for more info");
 			}
 		}

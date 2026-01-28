@@ -13,7 +13,7 @@ import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 @ReturnsSelf
 public abstract class BuilderBase<T> implements Supplier<T> {
-	public final ResourceLocation id;
+	public final Identifier id;
 	public SourceLine sourceLine;
 	public ResourceKey<Registry<T>> registryKey;
 	protected T object;
@@ -30,9 +30,9 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	public Component displayName;
 	public boolean formattedDisplayName;
 	public transient boolean dummyBuilder;
-	public transient Set<ResourceLocation> defaultTags;
+	public transient Set<Identifier> defaultTags;
 
-	public BuilderBase(ResourceLocation id) {
+	public BuilderBase(Identifier id) {
 		this.id = id;
 		this.sourceLine = SourceLine.UNKNOWN;
 		this.object = null;
@@ -112,13 +112,13 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	@Info("""
 		Adds a tag to this object, e.g. `minecraft:stone`.
 		""")
-	public BuilderBase<T> tag(ResourceLocation[] tag) {
+	public BuilderBase<T> tag(Identifier[] tag) {
 		defaultTags.addAll(Arrays.asList(tag));
 		return this;
 	}
 
 	@HideFromJS
-	public ResourceLocation newID(String pre, String post) {
+	public Identifier newID(String pre, String post) {
 		if (pre.isEmpty() && post.isEmpty()) {
 			return id;
 		}

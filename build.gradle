@@ -94,15 +94,14 @@ dependencies {
 	compileOnly("mezz.jei:jei-1.21.1-neoforge:$jei_version")
 	compileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version")
 	compileOnly("dev.emi:emi-neoforge:$emi_version+1.21.1:api")*/
-/*
-	additionalRuntimeClasspath(jarJar(implementation('dev.latvian.apps:tiny-java-server'))) {
+	implementation(jarJar(implementation('dev.latvian.apps:tiny-java-server'))) {
 		version {
 			strictly "[$tiny_server_version,)"
 			prefer "$tiny_server_version"
 		}
 	}
 
-	additionalRuntimeClasspath(jarJar(implementation("com.github.rtyley:animated-gif-lib-for-java"))) {
+	implementation(jarJar(implementation("com.github.rtyley:animated-gif-lib-for-java"))) {
 		version {
 			strictly "[animated-gif-lib-$gif_lib_version,)"
 			prefer "animated-gif-lib-$gif_lib_version"
@@ -114,7 +113,7 @@ dependencies {
 			strictly "[$bat_version,)"
 			prefer "$bat_version"
 		}
-	}*/
+	}
 }
 
 processResources {

@@ -7,7 +7,7 @@ import dev.latvian.mods.rhino.type.EnumTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -26,7 +26,7 @@ public class EventTargetType<T> {
 	}
 
 	public static final EventTargetType<String> STRING = create(String.class).transformer(EventTargetType::toString).describeType(TypeInfo.STRING);
-	public static final EventTargetType<ResourceLocation> ID = create(ResourceLocation.class).transformer(EventTargetType::toResourceLocation).describeType(TypeInfo.of(ResourceLocation.class));
+	public static final EventTargetType<Identifier> ID = create(Identifier.class).transformer(EventTargetType::toIdentifier).describeType(TypeInfo.of(Identifier.class));
 	public static final EventTargetType<ResourceKey<Registry<?>>> REGISTRY = Cast.to(create(ResourceKey.class).transformer(EventTargetType::toRegistryKey).identity().describeType(TypeInfo.of(ResourceKey.class).withParams(TypeInfo.of(Registry.class))));
 
 	public static <T> EventTargetType<ResourceKey<T>> registryKey(ResourceKey<Registry<T>> registry, Class<?> type) {
@@ -70,15 +70,15 @@ public class EventTargetType<T> {
 		return s.isBlank() ? null : s;
 	}
 
-	private static ResourceLocation toResourceLocation(Object object) {
+	private static Identifier toIdentifier(Object object) {
 		if (object == null) {
 			return null;
-		} else if (object instanceof ResourceLocation rl) {
+		} else if (object instanceof Identifier rl) {
 			return rl;
 		}
 
 		var s = object.toString();
-		return s.isBlank() ? null : ResourceLocation.tryParse(s);
+		return s.isBlank() ? null : Identifier.tryParse(s);
 	}
 
 	private static ResourceKey<?> toKey(ResourceKey registry, Object object) {
@@ -86,10 +86,10 @@ public class EventTargetType<T> {
 			case null -> null;
 			case ResourceKey<?> rl -> rl;
 			case RegistryObjectKJS<?> wrk -> wrk.kjs$getKey();
-			case ResourceLocation rl -> ResourceKey.create(registry, rl);
+			case Identifier rl -> ResourceKey.create(registry, rl);
 			default -> {
 				var s = object.toString();
-				yield s.isBlank() ? null : ResourceKey.create(registry, ResourceLocation.parse(s));
+				yield s.isBlank() ? null : ResourceKey.create(registry, Identifier.parse(s));
 			}
 		};
 	}
@@ -98,10 +98,10 @@ public class EventTargetType<T> {
 		return switch (object) {
 			case null -> null;
 			case ResourceKey rl -> rl;
-			case ResourceLocation rl -> ResourceKey.createRegistryKey(rl);
+			case Identifier rl -> ResourceKey.createRegistryKey(rl);
 			default -> {
 				var s = object.toString();
-				yield s.isBlank() ? null : ResourceKey.createRegistryKey(ResourceLocation.parse(s));
+				yield s.isBlank() ? null : ResourceKey.createRegistryKey(Identifier.parse(s));
 			}
 		};
 	}

@@ -2,20 +2,20 @@ package dev.latvian.mods.kubejs.block.custom;
 
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CarpetBlock;
 
 @ReturnsSelf
 public class CarpetBlockBuilder extends ShapedBlockBuilder {
-	public static final ResourceLocation[] CARPET_TAGS = {
+	public static final Identifier[] CARPET_TAGS = {
 		BlockTags.WOOL_CARPETS.location(),
 	};
 
-	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/carpet");
+	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/carpet");
 
-	public CarpetBlockBuilder(ResourceLocation i) {
+	public CarpetBlockBuilder(Identifier i) {
 		super(i, "_carpet");
 		tagBoth(CARPET_TAGS);
 	}

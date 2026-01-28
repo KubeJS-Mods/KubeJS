@@ -24,7 +24,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.chat.contents.ScoreContents;
 import net.minecraft.network.chat.contents.SelectorContents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.Nullable;
@@ -110,7 +110,7 @@ public interface TextWrapper {
 				text.kjs$obfuscated((Boolean) map.getOrDefault("obfuscated", null));
 
 				text.kjs$insertion((String) map.getOrDefault("insertion", null));
-				text.kjs$font(map.containsKey("font") ? ResourceLocation.parse(map.get("font").toString()) : null);
+				text.kjs$font(map.containsKey("font") ? Identifier.parse(map.get("font").toString()) : null);
 				text.kjs$click(map.containsKey("click") ? wrapClickEvent(cx, map.get("click")) : null);
 				text.kjs$hover(map.containsKey("hover") ? wrap(cx, map.get("hover")) : null);
 

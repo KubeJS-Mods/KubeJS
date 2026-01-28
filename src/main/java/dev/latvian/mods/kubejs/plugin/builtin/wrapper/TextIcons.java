@@ -5,10 +5,10 @@ import dev.latvian.mods.kubejs.KubeJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface TextIcons {
-	ResourceLocation FONT = KubeJS.id("icons");
+	Identifier FONT = KubeJS.id("icons");
 	Style STYLE = Style.EMPTY.withFont(FONT).applyFormat(ChatFormatting.WHITE);
 
 	Component CRAFTING = Component.literal("A").setStyle(STYLE);

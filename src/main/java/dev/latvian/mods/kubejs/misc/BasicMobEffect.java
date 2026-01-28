@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.misc;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class BasicMobEffect extends MobEffect {
 	public final transient MobEffectBuilder builder;
 	private boolean modified = false;
-	private final ResourceLocation id;
+	private final Identifier id;
 	private final boolean instant;
 
 	public BasicMobEffect(MobEffectBuilder builder) {
@@ -63,7 +63,7 @@ public class BasicMobEffect extends MobEffect {
 	}
 
 	@Override
-	public MobEffect addAttributeModifier(Holder<Attribute> attribute, ResourceLocation id, double d, AttributeModifier.Operation operation) {
+	public MobEffect addAttributeModifier(Holder<Attribute> attribute, Identifier id, double d, AttributeModifier.Operation operation) {
 		applyAttributeModifications();
 		return super.addAttributeModifier(attribute, id, d, operation);
 	}

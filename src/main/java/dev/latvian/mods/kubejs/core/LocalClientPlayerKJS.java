@@ -9,7 +9,7 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,7 +63,7 @@ public interface LocalClientPlayerKJS extends ClientPlayerKJS {
 	}
 
 	@Override
-	default void kjs$setActivePostShader(@Nullable ResourceLocation id) {
+	default void kjs$setActivePostShader(@Nullable Identifier id) {
 		var sessionData = KubeSessionData.of(kjs$self().connection);
 
 		if (sessionData != null) {

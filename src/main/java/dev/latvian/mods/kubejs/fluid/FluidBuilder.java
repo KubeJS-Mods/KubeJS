@@ -12,7 +12,7 @@ import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public static final KubeColor WATER_COLOR = new SimpleColor(0xFF3F76E4);
 
-	private static final ResourceLocation GENERATED_BUCKET_MODEL = KubeJS.id("item/generated_bucket");
+	private static final Identifier GENERATED_BUCKET_MODEL = KubeJS.id("item/generated_bucket");
 
 	public transient int slopeFindDistance = 4;
 	public transient int levelDecreasePerBlock = 1;
@@ -37,7 +37,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public FluidBucketItemBuilder bucketItem;
 	private BaseFlowingFluid.Properties properties;
 
-	public FluidBuilder(ResourceLocation i) {
+	public FluidBuilder(Identifier i) {
 		super(i);
 		fluidType = new FluidTypeBuilder(id);
 		flowingFluid = new FlowingFluidBuilder(this);
@@ -92,7 +92,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	}
 
 	@Override
-	public BuilderBase<FlowingFluid> tag(ResourceLocation[] tag) {
+	public BuilderBase<FlowingFluid> tag(Identifier[] tag) {
 		this.flowingFluid.tag(tag);
 		return super.tag(tag);
 	}
@@ -107,12 +107,12 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		return this;
 	}
 
-	public FluidBuilder stillTexture(ResourceLocation id) {
+	public FluidBuilder stillTexture(Identifier id) {
 		fluidType.stillTexture = id;
 		return this;
 	}
 
-	public FluidBuilder flowingTexture(ResourceLocation id) {
+	public FluidBuilder flowingTexture(Identifier id) {
 		fluidType.flowingTexture = id;
 		return this;
 	}

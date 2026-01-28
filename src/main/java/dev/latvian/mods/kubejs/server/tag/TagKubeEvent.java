@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagLoader;
 
 import java.util.ArrayList;
@@ -40,10 +40,10 @@ public class TagKubeEvent implements KubeEvent {
 
 	public final ResourceKey<?> registryKey;
 	public final Registry<?> vanillaRegistry;
-	public final Map<ResourceLocation, TagWrapper> tags;
+	public final Map<Identifier, TagWrapper> tags;
 	public int totalAdded;
 	public int totalRemoved;
-	private Set<ResourceLocation> elementIds;
+	private Set<Identifier> elementIds;
 
 	public TagKubeEvent(ResourceKey<?> registryKey, Registry<?> vr) {
 		this.registryKey = registryKey;
@@ -53,27 +53,27 @@ public class TagKubeEvent implements KubeEvent {
 		this.totalRemoved = 0;
 	}
 
-	public ResourceLocation getType() {
+	public Identifier getType() {
 		return registryKey.location();
 	}
 
-	public TagWrapper get(ResourceLocation id) {
+	public TagWrapper get(Identifier id) {
 		return tags.computeIfAbsent(id, this::createTagWrapper);
 	}
 
-	protected TagWrapper createTagWrapper(ResourceLocation id) {
+	protected TagWrapper createTagWrapper(Identifier id) {
 		return new TagWrapper(this, id, new ArrayList<>());
 	}
 
-	public TagWrapper add(ResourceLocation tag, Object... filters) {
+	public TagWrapper add(Identifier tag, Object... filters) {
 		return get(tag).add(filters);
 	}
 
-	public TagWrapper remove(ResourceLocation tag, Object... filters) {
+	public TagWrapper remove(Identifier tag, Object... filters) {
 		return get(tag).remove(filters);
 	}
 
-	public TagWrapper removeAll(ResourceLocation tag) {
+	public TagWrapper removeAll(Identifier tag) {
 		return get(tag).removeAll();
 	}
 
@@ -85,7 +85,7 @@ public class TagKubeEvent implements KubeEvent {
 		}
 	}
 
-	public Set<ResourceLocation> getElementIds() {
+	public Set<Identifier> getElementIds() {
 		if (elementIds == null) {
 			elementIds = Cast.to(vanillaRegistry.holders().map(Holder.Reference::key).map(ResourceKey::location).collect(Collectors.toSet()));
 		}
@@ -93,7 +93,7 @@ public class TagKubeEvent implements KubeEvent {
 		return elementIds;
 	}
 
-	void gatherIdsFor(TagWrapper excluded, Collection<ResourceLocation> collection, TagLoader.EntryWithSource entry) {
+	void gatherIdsFor(TagWrapper excluded, Collection<Identifier> collection, TagLoader.EntryWithSource entry) {
 		var id = entry.entry().elementOrTag();
 
 		if (id.tag()) {

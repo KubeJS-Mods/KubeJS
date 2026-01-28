@@ -15,11 +15,11 @@ import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.rhino.type.ClassTypeInfo;
 import dev.latvian.mods.rhino.type.EnumTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import net.minecraft.ResourceLocationException;
+import net.minecraft.IdentifierException;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.EntityType;
@@ -42,14 +42,14 @@ public interface KubeJSCodecs {
 		}
 	}, Object::toString);
 
-	Codec<ResourceLocation> KUBEJS_ID = Codec.STRING.comapFlatMap(s -> {
+	Codec<Identifier> KUBEJS_ID = Codec.STRING.comapFlatMap(s -> {
 		try {
 			if (s.indexOf(':') == -1) {
 				return DataResult.success(KubeJS.id(s));
 			} else {
-				return DataResult.success(ResourceLocation.parse(s));
+				return DataResult.success(Identifier.parse(s));
 			}
-		} catch (ResourceLocationException ex) {
+		} catch (IdentifierException ex) {
 			return DataResult.error(() -> "Not a valid resource location: " + s + " " + ex.getMessage());
 		}
 	}, ID::reduceKjs).stable();
@@ -76,13 +76,13 @@ public interface KubeJSCodecs {
 		}
 	}, ClassTypeInfo::asClass);
 
-	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY = ResourceLocation.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::location);
+	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY = Identifier.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::location);
 
 	MapCodec<EntityType<?>> ENTITY_TYPE_FIELD = BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("id");
 
 	Codec<Duration> DURATION = KubeJSCodecs.stringResolverCodec(Duration::toString, TimeJS::wrapDuration);
 
-	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY_CODEC = ResourceLocation.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::location);
+	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY_CODEC = Identifier.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::location);
 
 	Codec<Map<String, JsonElement>> JSON_MAP = Codec.unboundedMap(Codec.STRING, ExtraCodecs.JSON);
 

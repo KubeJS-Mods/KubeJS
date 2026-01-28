@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackLocationInfo;
@@ -132,7 +132,7 @@ public class KubeFileResourcePack implements PackResources {
 	}
 
 	private final PackType packType;
-	private Map<ResourceLocation, GeneratedData> generated;
+	private Map<Identifier, GeneratedData> generated;
 	private Set<String> generatedNamespaces;
 
 	public KubeFileResourcePack(PackType t) {
@@ -149,7 +149,7 @@ public class KubeFileResourcePack implements PackResources {
 		};
 	}
 
-	public Map<ResourceLocation, GeneratedData> getGenerated() {
+	public Map<Identifier, GeneratedData> getGenerated() {
 		if (generated == null) {
 			generated = new HashMap<>();
 			generate(generated);
@@ -175,7 +175,7 @@ public class KubeFileResourcePack implements PackResources {
 							continue;
 						}
 
-						var data = new GeneratedData(ResourceLocation.fromNamespaceAndPath(ns, pathStr), () -> {
+						var data = new GeneratedData(Identifier.fromNamespaceAndPath(ns, pathStr), () -> {
 							try {
 								return Files.readAllBytes(path);
 							} catch (Exception ex) {
@@ -225,7 +225,7 @@ public class KubeFileResourcePack implements PackResources {
 
 	@Override
 	@Nullable
-	public IoSupplier<InputStream> getResource(PackType type, ResourceLocation location) {
+	public IoSupplier<InputStream> getResource(PackType type, Identifier location) {
 		var r = type == packType ? getGenerated().get(location) : null;
 
 		if (r == GeneratedData.INTERNAL_RELOAD) {
@@ -235,7 +235,7 @@ public class KubeFileResourcePack implements PackResources {
 		return r;
 	}
 
-	public void generate(Map<ResourceLocation, GeneratedData> map) {
+	public void generate(Map<Identifier, GeneratedData> map) {
 	}
 
 	@Override

@@ -36,7 +36,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -71,7 +71,7 @@ public class HighlightRenderer {
 
 	public record ShaderChain(PostChain postChain, RenderTarget renderInput, RenderTarget mcDepthInput, RenderTarget renderOutput, MutableBoolean renderAnything) {
 		@Nullable
-		public static ShaderChain load(Minecraft mc, ResourceLocation id) {
+		public static ShaderChain load(Minecraft mc, Identifier id) {
 			try {
 				var postChain = new PostChain(mc.getTextureManager(), mc.getResourceManager(), mc.getMainRenderTarget(), id);
 				postChain.resize(mc.getWindow().getWidth(), mc.getWindow().getHeight());
@@ -228,7 +228,7 @@ public class HighlightRenderer {
 			guiChain.close();
 		}
 
-		var id = ResourceLocation.withDefaultNamespace("shaders/post/kubejs/highlight.json");
+		var id = Identifier.withDefaultNamespace("shaders/post/kubejs/highlight.json");
 		worldChain = ShaderChain.load(mc, id);
 		guiChain = ShaderChain.load(mc, id);
 	}
@@ -274,7 +274,7 @@ public class HighlightRenderer {
 		var sound = DevProperties.get().kubedexSound;
 
 		if (!sound.isEmpty()) {
-			mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvent.createVariableRangeEvent(ResourceLocation.parse(sound)), 1F));
+			mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvent.createVariableRangeEvent(Identifier.parse(sound)), 1F));
 		}
 	}
 

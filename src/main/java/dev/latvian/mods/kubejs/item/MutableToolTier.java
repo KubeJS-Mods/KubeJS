@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.rhino.util.RemapForJS;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Tier;
@@ -53,11 +53,11 @@ public class MutableToolTier implements Tier {
 		return attackDamageBonus;
 	}
 
-	public void setIncorrectBlocksForDropsTag(ResourceLocation tag) {
+	public void setIncorrectBlocksForDropsTag(Identifier tag) {
 		incorrectBlocksForDrops = BlockTags.create(tag);
 	}
 
-	public ResourceLocation getIncorrectBlocksForDropsTag() {
+	public Identifier getIncorrectBlocksForDropsTag() {
 		return incorrectBlocksForDrops.location();
 	}
 

@@ -15,7 +15,7 @@ import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.Cast;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -33,7 +33,7 @@ import java.util.Map;
 @Mixin(value = RecipeManager.class, priority = 1100)
 public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 	@Shadow
-	private Map<ResourceLocation, RecipeHolder<?>> byName;
+	private Map<Identifier, RecipeHolder<?>> byName;
 
 	@Shadow
 	private Multimap<RecipeType<?>, RecipeHolder<?>> byType;
@@ -48,7 +48,7 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 		method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V",
 		at = @At("HEAD")
 	)
-	private void customRecipesHead(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
+	private void customRecipesHead(Map<Identifier, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
 		var manager = kjs$resources.kjs$getServerScriptManager();
 
 		for (var entry : manager.getRegistries().cachedRegistryTags.values()) {
@@ -75,7 +75,7 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 		method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V",
 		at = @At(value = "INVOKE", target = "Lorg/slf4j/Logger;error(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V")
 	)
-	private void catchFailingRecipes(CallbackInfo ci, @Local Map.Entry<ResourceLocation, JsonElement> entry, @Local RuntimeException ex) {
+	private void catchFailingRecipes(CallbackInfo ci, @Local Map.Entry<Identifier, JsonElement> entry, @Local RuntimeException ex) {
 		if (kjs$event != null) {
 			kjs$event.handleFailedRecipe(entry.getKey(), entry.getValue(), ex);
 		}
@@ -108,12 +108,12 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 	}
 
 	@Override
-	public Map<ResourceLocation, RecipeHolder<?>> kjs$getRecipeIdMap() {
+	public Map<Identifier, RecipeHolder<?>> kjs$getRecipeIdMap() {
 		return byName;
 	}
 
 	@Override
-	public void kjs$replaceRecipes(Map<ResourceLocation, RecipeHolder<?>> map) {
+	public void kjs$replaceRecipes(Map<Identifier, RecipeHolder<?>> map) {
 		byName = map;
 
 		var recipesByType = ImmutableMultimap.<RecipeType<?>, RecipeHolder<?>>builder();

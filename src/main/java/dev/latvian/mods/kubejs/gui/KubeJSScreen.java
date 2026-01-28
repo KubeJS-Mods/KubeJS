@@ -4,11 +4,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 public class KubeJSScreen extends AbstractContainerScreen<KubeJSMenu> implements MenuAccess<KubeJSMenu> {
-	private static final ResourceLocation CONTAINER_BACKGROUND = ResourceLocation.parse("kubejs:textures/gui/container/generic_background.png");
+	private static final Identifier CONTAINER_BACKGROUND = Identifier.parse("kubejs:textures/gui/container/generic_background.png");
 
 	public final int containerRows;
 	public final int containerColumns;

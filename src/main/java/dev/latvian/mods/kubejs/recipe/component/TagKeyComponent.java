@@ -13,7 +13,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -87,7 +87,7 @@ public record TagKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, 
 			s = s.substring(1);
 		}
 
-		return TagKey.create(registry, ResourceLocation.parse(s));
+		return TagKey.create(registry, Identifier.parse(s));
 	}
 
 	@Override

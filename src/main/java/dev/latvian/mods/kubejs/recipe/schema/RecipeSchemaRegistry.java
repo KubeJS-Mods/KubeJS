@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class RecipeSchemaRegistry implements KubeEvent {
 	private final RecipeSchemaStorage storage;
@@ -14,11 +14,11 @@ public class RecipeSchemaRegistry implements KubeEvent {
 		return storage.namespace(namespace);
 	}
 
-	public void register(ResourceLocation id, RecipeSchema schema) {
+	public void register(Identifier id, RecipeSchema schema) {
 		namespace(id.getNamespace()).register(id.getPath(), schema);
 	}
 
-	public void register(ResourceLocation id, RegistryAwareSchema schema) {
+	public void register(Identifier id, RegistryAwareSchema schema) {
 		namespace(id.getNamespace()).register(id.getPath(), schema);
 	}
 }

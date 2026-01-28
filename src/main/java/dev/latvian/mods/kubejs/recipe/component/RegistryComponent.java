@@ -20,7 +20,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.RegistryFixedCodec;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
@@ -75,7 +75,7 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 			return (Holder<T>) HolderWrapper.wrap((KubeJSContext) cx.cx(), from, regType.type());
 		} else if (from instanceof ResourceKey<?> key) {
 			return registry.getHolderOrThrow((ResourceKey) key);
-		} else if (from instanceof CharSequence || from instanceof ResourceLocation) {
+		} else if (from instanceof CharSequence || from instanceof Identifier) {
 			return registry.getHolderOrThrow(ResourceKey.create(registry.key(), ID.mc(from.toString())));
 		} else {
 			throw new IllegalStateException("Missing key in " + registry.key() + ": " + from);

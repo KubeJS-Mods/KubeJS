@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 
@@ -24,10 +24,10 @@ public record FluidData(
 	List<Info> info,
 	List<DataComponentSubtypes> dataComponentSubtypes
 ) {
-	public record Group(FluidIngredient filter, ResourceLocation groupId, Component description) {
+	public record Group(FluidIngredient filter, Identifier groupId, Component description) {
 		public static final StreamCodec<RegistryFriendlyByteBuf, Group> STREAM_CODEC = StreamCodec.composite(
 			FluidIngredient.STREAM_CODEC, Group::filter,
-			ResourceLocation.STREAM_CODEC, Group::groupId,
+			Identifier.STREAM_CODEC, Group::groupId,
 			ComponentSerialization.STREAM_CODEC, Group::description,
 			Group::new
 		);

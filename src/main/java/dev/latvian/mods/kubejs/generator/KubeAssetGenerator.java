@@ -11,56 +11,56 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.Util;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Map;
 import java.util.function.Consumer;
 
 public interface KubeAssetGenerator extends KubeResourceGenerator {
-	ResourceLocation GENERATED_ITEM_MODEL = ResourceLocation.withDefaultNamespace("item/generated");
-	ResourceLocation HANDHELD_ITEM_MODEL = ResourceLocation.withDefaultNamespace("item/handheld");
-	ResourceLocation CUBE_BLOCK_MODEL = ResourceLocation.withDefaultNamespace("block/cube");
-	ResourceLocation CUBE_ALL_BLOCK_MODEL = ResourceLocation.withDefaultNamespace("block/cube_all");
+	Identifier GENERATED_ITEM_MODEL = Identifier.withDefaultNamespace("item/generated");
+	Identifier HANDHELD_ITEM_MODEL = Identifier.withDefaultNamespace("item/handheld");
+	Identifier CUBE_BLOCK_MODEL = Identifier.withDefaultNamespace("block/cube");
+	Identifier CUBE_ALL_BLOCK_MODEL = Identifier.withDefaultNamespace("block/cube_all");
 
-	default LoadedTexture loadTexture(ResourceLocation id) {
+	default LoadedTexture loadTexture(Identifier id) {
 		return LoadedTexture.load(id);
 	}
 
-	default void blockState(ResourceLocation id, Consumer<VariantBlockStateGenerator> consumer) {
+	default void blockState(Identifier id, Consumer<VariantBlockStateGenerator> consumer) {
 		var gen = Util.make(new VariantBlockStateGenerator(), consumer);
 		json(id.withPath(ID.BLOCKSTATE), gen.toJson());
 	}
 
-	default void multipartState(ResourceLocation id, Consumer<MultipartBlockStateGenerator> consumer) {
+	default void multipartState(Identifier id, Consumer<MultipartBlockStateGenerator> consumer) {
 		var gen = Util.make(new MultipartBlockStateGenerator(), consumer);
 		json(id.withPath(ID.BLOCKSTATE), gen.toJson());
 	}
 
-	default void blockModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
+	default void blockModel(Identifier id, Consumer<ModelGenerator> consumer) {
 		var gen = Util.make(new ModelGenerator(), consumer);
 		json(id.withPath(ID.BLOCK_MODEL), gen.toJson());
 	}
 
-	default void itemModel(ResourceLocation id, Consumer<ModelGenerator> consumer) {
+	default void itemModel(Identifier id, Consumer<ModelGenerator> consumer) {
 		var gen = Util.make(new ModelGenerator(), consumer);
 		json(id.withPath(ID.ITEM_MODEL), gen.toJson());
 	}
 
-	default void defaultItemModel(ResourceLocation id) {
+	default void defaultItemModel(Identifier id) {
 		itemModel(id, model -> {
 			model.parent(GENERATED_ITEM_MODEL);
 			model.texture("layer0", id.withPath(ID.ITEM).toString());
 		});
 	}
 
-	default void defaultHandheldItemModel(ResourceLocation id) {
+	default void defaultHandheldItemModel(Identifier id) {
 		itemModel(id, model -> {
 			model.parent(HANDHELD_ITEM_MODEL);
 			model.texture("layer0", id.withPath(ID.ITEM).toString());
 		});
 	}
 
-	default void texture(ResourceLocation target, LoadedTexture texture) {
+	default void texture(Identifier target, LoadedTexture texture) {
 		if (texture.width <= 0 || texture.height <= 0) {
 			ConsoleJS.CLIENT.error("Failed to save texture " + target);
 			return;
@@ -73,7 +73,7 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 		}
 	}
 
-	default void stencil(ResourceLocation target, ResourceLocation stencil, Map<KubeColor, KubeColor> colors) {
+	default void stencil(Identifier target, Identifier stencil, Map<KubeColor, KubeColor> colors) {
 		var stencilTexture = loadTexture(stencil);
 
 		if (stencilTexture.width == 0 || stencilTexture.height == 0) {
@@ -84,7 +84,7 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 		texture(target, stencilTexture.remap(colors));
 	}
 
-	default boolean mask(ResourceLocation target, ResourceLocation mask, ResourceLocation input) {
+	default boolean mask(Identifier target, Identifier mask, Identifier input) {
 		var maskTexture = loadTexture(mask);
 
 		if (maskTexture.height != maskTexture.width || maskTexture.width == 0) {
@@ -135,7 +135,7 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 		return true;
 	}
 
-	default void particle(ResourceLocation id, Consumer<ParticleGenerator> consumer) {
+	default void particle(Identifier id, Consumer<ParticleGenerator> consumer) {
 		json(id.withPath(ID.PARTICLE), Util.make(new ParticleGenerator(), consumer).toJson());
 	}
 

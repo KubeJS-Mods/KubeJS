@@ -4,7 +4,7 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,7 +20,7 @@ import static dev.latvian.mods.kubejs.registry.RegistryType.Scanner;
 public abstract class ResourceKeyMixin implements SpecialEquality {
 	@Shadow
 	@Final
-	private ResourceLocation location;
+	private Identifier location;
 
 	@Unique
 	public String kjs$getNamespace() {
@@ -33,7 +33,7 @@ public abstract class ResourceKeyMixin implements SpecialEquality {
 	}
 
 	@Inject(method = "<init>", at = @At(value = "RETURN"))
-	private void kjs$getKeyStackTraces(ResourceLocation registryName, ResourceLocation location, CallbackInfo ci) {
+	private void kjs$getKeyStackTraces(Identifier registryName, Identifier location, CallbackInfo ci) {
 		Scanner.scan(registryName, location);
 	}
 
@@ -41,7 +41,7 @@ public abstract class ResourceKeyMixin implements SpecialEquality {
 	public boolean specialEquals(Context cx, Object o, boolean shallow) {
 		return switch (o) {
 			case ResourceKey<?> _key -> o == this;
-			case ResourceLocation id -> location.equals(id);
+			case Identifier id -> location.equals(id);
 			default -> location.toString().equals(o.toString());
 		};
 	}

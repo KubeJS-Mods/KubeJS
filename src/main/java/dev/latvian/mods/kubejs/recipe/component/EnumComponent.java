@@ -10,7 +10,7 @@ import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.type.EnumTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.RemappedEnumConstant;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,11 +26,11 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(@Nullable R
 		}).forGetter(EnumComponent::typeInfo)
 	).apply(instance, EnumComponent::new)));
 
-	public static <T extends Enum<T> & StringRepresentable> RecipeComponentType<T> of(ResourceLocation id, Class<T> enumClass, Codec<T> codec) {
+	public static <T extends Enum<T> & StringRepresentable> RecipeComponentType<T> of(Identifier id, Class<T> enumClass, Codec<T> codec) {
 		return RecipeComponentType.unit(id, type -> new EnumComponent<>(type, (EnumTypeInfo) TypeInfo.of(enumClass), codec));
 	}
 
-	public static <T extends Enum<T> & StringRepresentable> RecipeComponentType<T> of(ResourceLocation id, Class<T> enumClass) {
+	public static <T extends Enum<T> & StringRepresentable> RecipeComponentType<T> of(Identifier id, Class<T> enumClass) {
 		return of(id, enumClass, StringRepresentable.fromEnum(enumClass::getEnumConstants));
 	}
 

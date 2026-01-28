@@ -36,7 +36,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -73,7 +73,7 @@ public interface ItemStackKJS extends
 	default boolean specialEquals(Context cx, Object o, boolean shallow) {
 		return switch (o) {
 			case CharSequence cs -> kjs$getId().equals(ID.string(cs.toString()));
-			case ResourceLocation id -> kjs$getIdLocation().equals(id);
+			case Identifier id -> kjs$getIdLocation().equals(id);
 			case ItemStack s -> kjs$equalsIgnoringCount(s);
 			case null, default -> KubeJSCodecs.filter(ItemWrapper.wrapResult(cx, o), this::kjs$equalsIgnoringCount);
 		};
@@ -102,7 +102,7 @@ public interface ItemStackKJS extends
 	}
 
 	@Override
-	default ResourceLocation kjs$getIdLocation() {
+	default Identifier kjs$getIdLocation() {
 		return kjs$self().getItem().kjs$getIdLocation();
 	}
 

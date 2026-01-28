@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -24,10 +24,10 @@ public record ItemData(
 	List<Info> info,
 	List<DataComponentSubtypes> dataComponentSubtypes
 ) {
-	public record Group(Ingredient filter, ResourceLocation groupId, Component description) {
+	public record Group(Ingredient filter, Identifier groupId, Component description) {
 		public static final StreamCodec<RegistryFriendlyByteBuf, Group> STREAM_CODEC = StreamCodec.composite(
 			Ingredient.CONTENTS_STREAM_CODEC, Group::filter,
-			ResourceLocation.STREAM_CODEC, Group::groupId,
+			Identifier.STREAM_CODEC, Group::groupId,
 			ComponentSerialization.STREAM_CODEC, Group::description,
 			Group::new
 		);

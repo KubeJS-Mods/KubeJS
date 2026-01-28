@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.JsonIO;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -139,7 +139,7 @@ public interface StringUtilsWrapper {
 		return new String(chars);
 	}
 
-	static String stripIdForEvent(ResourceLocation id) {
+	static String stripIdForEvent(Identifier id) {
 		return stripEventName(id.toString());
 	}
 

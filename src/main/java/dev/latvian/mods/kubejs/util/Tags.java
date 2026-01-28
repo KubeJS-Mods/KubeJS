@@ -5,7 +5,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -19,23 +19,23 @@ import net.minecraft.world.level.material.Fluid;
 import java.util.stream.Stream;
 
 public class Tags {
-	public static TagKey<Item> item(ResourceLocation id) {
+	public static TagKey<Item> item(Identifier id) {
 		return generic(id, Registries.ITEM);
 	}
 
-	public static TagKey<Block> block(ResourceLocation id) {
+	public static TagKey<Block> block(Identifier id) {
 		return generic(id, Registries.BLOCK);
 	}
 
-	public static TagKey<Fluid> fluid(ResourceLocation id) {
+	public static TagKey<Fluid> fluid(Identifier id) {
 		return generic(id, Registries.FLUID);
 	}
 
-	public static TagKey<EntityType<?>> entityType(ResourceLocation id) {
+	public static TagKey<EntityType<?>> entityType(Identifier id) {
 		return generic(id, Registries.ENTITY_TYPE);
 	}
 
-	public static TagKey<Biome> biome(ResourceLocation id) {
+	public static TagKey<Biome> biome(Identifier id) {
 		return generic(id, Registries.BIOME);
 	}
 
@@ -69,12 +69,13 @@ public class Tags {
 
 	public static <T> Stream<TagKey<T>> forType(Context cx, T object, Registry<T> registry) {
 		return registry.getResourceKey(object)
-			.flatMap(registry::getHolder)
+			.flatMap(k -> registry.get(k.identifier()))
 			.stream()
 			.flatMap(Holder::tags);
 	}
 
-	private static <T> TagKey<T> generic(ResourceLocation id, ResourceKey<Registry<T>> registry) {
+
+	private static <T> TagKey<T> generic(Identifier id, ResourceKey<Registry<T>> registry) {
 		return TagKey.create(registry, id);
 	}
 

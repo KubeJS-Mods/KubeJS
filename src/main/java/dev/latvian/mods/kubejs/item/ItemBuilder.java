@@ -14,7 +14,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -52,7 +52,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 	public transient int maxStackSize;
 	public transient int maxDamage;
 	public transient int burnTime;
-	private ResourceLocation containerItem;
+	private Identifier containerItem;
 	public transient Function<ItemStack, Collection<ItemStack>> subtypes;
 	public transient Rarity rarity;
 	public transient boolean fireResistant;
@@ -77,7 +77,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 	public transient ItemAttributeModifiers itemAttributeModifiers;
 	public transient boolean canRepair;
 
-	public ItemBuilder(ResourceLocation id) {
+	public ItemBuilder(Identifier id) {
 		super(id);
 		this.baseTexture = id.withPath(ID.ITEM).toString();
 
@@ -169,7 +169,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 	}
 
 	@Info("Sets the item's container item, e.g. a bucket for a milk bucket.")
-	public ItemBuilder containerItem(ResourceLocation id) {
+	public ItemBuilder containerItem(Identifier id) {
 		containerItem = id;
 		return this;
 	}

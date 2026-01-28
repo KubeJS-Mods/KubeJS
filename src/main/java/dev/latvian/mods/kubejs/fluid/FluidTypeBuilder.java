@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Rarity;
@@ -28,16 +28,16 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 	}
 
 	public transient FluidType.Properties properties;
-	public transient ResourceLocation stillTexture;
-	public transient ResourceLocation flowingTexture;
-	public transient ResourceLocation actualStillTexture;
-	public transient ResourceLocation actualFlowingTexture;
-	public transient ResourceLocation screenOverlayTexture;
-	public transient ResourceLocation blockOverlayTexture;
+	public transient Identifier stillTexture;
+	public transient Identifier flowingTexture;
+	public transient Identifier actualStillTexture;
+	public transient Identifier actualFlowingTexture;
+	public transient Identifier screenOverlayTexture;
+	public transient Identifier blockOverlayTexture;
 	public transient KubeColor tint;
 	public transient BlockRenderType renderType;
 
-	public FluidTypeBuilder(ResourceLocation id) {
+	public FluidTypeBuilder(Identifier id) {
 		super(id);
 		this.properties = FluidType.Properties.create();
 		this.stillTexture = newID("block/", "_still");
@@ -57,22 +57,22 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 		return new KubeFluidType(this);
 	}
 
-	public FluidTypeBuilder stillTexture(ResourceLocation stillTexture) {
+	public FluidTypeBuilder stillTexture(Identifier stillTexture) {
 		this.stillTexture = stillTexture;
 		return this;
 	}
 
-	public FluidTypeBuilder flowingTexture(ResourceLocation flowingTexture) {
+	public FluidTypeBuilder flowingTexture(Identifier flowingTexture) {
 		this.flowingTexture = flowingTexture;
 		return this;
 	}
 
-	public FluidTypeBuilder screenOverlayTexture(ResourceLocation screenOverlayTexture) {
+	public FluidTypeBuilder screenOverlayTexture(Identifier screenOverlayTexture) {
 		this.screenOverlayTexture = screenOverlayTexture;
 		return this;
 	}
 
-	public FluidTypeBuilder blockOverlayTexture(ResourceLocation blockOverlayTexture) {
+	public FluidTypeBuilder blockOverlayTexture(Identifier blockOverlayTexture) {
 		this.blockOverlayTexture = blockOverlayTexture;
 		return this;
 	}

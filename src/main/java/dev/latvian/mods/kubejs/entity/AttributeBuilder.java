@@ -5,7 +5,7 @@ import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -28,7 +28,7 @@ public class AttributeBuilder extends BuilderBase<Attribute> {
 	public boolean syncable = true;
 	public Attribute.Sentiment sentiment;
 
-	public AttributeBuilder(ResourceLocation id) {
+	public AttributeBuilder(Identifier id) {
 		super(id);
 	}
 

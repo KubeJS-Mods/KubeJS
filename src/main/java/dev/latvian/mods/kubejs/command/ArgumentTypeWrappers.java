@@ -11,7 +11,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
-import net.minecraft.Util;
+
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.AngleArgument;
@@ -22,6 +22,7 @@ import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.GameProfileArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.MessageArgument;
 import net.minecraft.commands.arguments.NbtPathArgument;
 import net.minecraft.commands.arguments.NbtTagArgument;
@@ -29,7 +30,6 @@ import net.minecraft.commands.arguments.ObjectiveArgument;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.commands.arguments.RangeArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.commands.arguments.TimeArgument;
 import net.minecraft.commands.arguments.UuidArgument;
@@ -46,8 +46,9 @@ import net.minecraft.commands.arguments.item.ItemPredicateArgument;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Util;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -92,7 +93,7 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 	ITEM_PREDICATE(ItemPredicateArgument::itemPredicate, ItemPredicateArgument::getItemPredicate),
 	// message / chat types
 	COLOR(ColorArgument::color, ColorArgument::getColor),
-	COMPONENT(ComponentArgument::textComponent, ComponentArgument::getComponent),
+	COMPONENT(ComponentArgument::textComponent, ComponentArgument::getRawComponent),
 	MESSAGE(MessageArgument::message, MessageArgument::getMessage),
 	// nbt
 	NBT_COMPOUND(CompoundTagArgument::compoundTag, CompoundTagArgument::getCompoundTag),
@@ -104,7 +105,7 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 	ROTATION(RotationArgument::rotation, RotationArgument::getRotation),
 	SWIZZLE(SwizzleArgument::swizzle, SwizzleArgument::getSwizzle), // i have no idea wtf this is
 	ITEM_SLOT(SlotArgument::slot, SlotArgument::getSlot),
-	RESOURCE_LOCATION(ResourceLocationArgument::id, ResourceLocationArgument::getId),
+	RESOURCE_LOCATION(IdentifierArgument::id, IdentifierArgument::getId),
 	ENTITY_ANCHOR(EntityAnchorArgument::anchor, EntityAnchorArgument::getAnchor),
 	INT_RANGE(RangeArgument::intRange, RangeArgument.Ints::getRange),
 	FLOAT_RANGE(RangeArgument::floatRange, RangeArgument.Floats::getRange),
@@ -117,9 +118,9 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 	private final Function<CommandBuildContext, ? extends ArgumentType<?>> factory;
 	private final ArgumentFunction<?> getter;
 
-	private static Map<ResourceLocation, ClassWrapper<?>> byNameCache;
+	private static Map<Identifier, ClassWrapper<?>> byNameCache;
 
-	public static ClassWrapper<?> byName(ResourceLocation name) {
+	public static ClassWrapper<?> byName(Identifier name) {
 		var wrapper = getOrCacheByName().get(name);
 		if (wrapper == null) {
 			throw new IllegalStateException("No argument type found for " + name);
@@ -127,7 +128,7 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 		return wrapper;
 	}
 
-	public static <T> ArgumentTypeWrapper registry(CommandRegistryKubeEvent event, ResourceLocation reg) {
+	public static <T> ArgumentTypeWrapper registry(CommandRegistryKubeEvent event, Identifier reg) {
 		return new ArgumentTypeWrapper() {
 			final ResourceKey<Registry<T>> key = ResourceKey.createRegistryKey(reg);
 
@@ -163,7 +164,7 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 		}
 	}
 
-	private static Map<ResourceLocation, ClassWrapper<?>> getOrCacheByName() {
+	private static Map<Identifier, ClassWrapper<?>> getOrCacheByName() {
 		if (byNameCache == null) {
 			return byNameCache = Util.make(new HashMap<>(), map -> {
 				for (var entry : ArgumentTypeInfos.BY_CLASS.entrySet()) {

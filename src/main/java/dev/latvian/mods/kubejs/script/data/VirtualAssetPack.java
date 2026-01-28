@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.Util;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 
 import java.util.HashMap;
@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class VirtualAssetPack extends VirtualResourcePack implements KubeAssetGenerator {
-	private final Map<ResourceLocation, LoadedTexture> loadedTextures;
+	private final Map<Identifier, LoadedTexture> loadedTextures;
 	private final Map<String, SoundsGenerator> sounds;
 
 	public VirtualAssetPack(GeneratedDataStage stage, Supplier<RegistryAccessContainer> registries) {
@@ -25,12 +25,12 @@ public class VirtualAssetPack extends VirtualResourcePack implements KubeAssetGe
 	}
 
 	@Override
-	public LoadedTexture loadTexture(ResourceLocation id) {
+	public LoadedTexture loadTexture(Identifier id) {
 		return loadedTextures.computeIfAbsent(id, KubeAssetGenerator.super::loadTexture);
 	}
 
 	@Override
-	public void texture(ResourceLocation target, LoadedTexture texture) {
+	public void texture(Identifier target, LoadedTexture texture) {
 		KubeAssetGenerator.super.texture(target, texture);
 
 		if (texture.width > 0 && texture.height > 0) {
@@ -52,7 +52,7 @@ public class VirtualAssetPack extends VirtualResourcePack implements KubeAssetGe
 	@Override
 	public void flush() {
 		super.flush();
-		sounds.forEach((mod, gen) -> json(ResourceLocation.fromNamespaceAndPath(mod, "sounds.json"), gen.toJson()));
+		sounds.forEach((mod, gen) -> json(Identifier.fromNamespaceAndPath(mod, "sounds.json"), gen.toJson()));
 		sounds.clear();
 	}
 }

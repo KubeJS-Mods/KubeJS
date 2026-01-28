@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.server.tag.TagKubeEvent;
 import dev.latvian.mods.kubejs.server.tag.TagWrapper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagLoader;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface TagLoaderKJS<T> {
-	default void kjs$customTags(ReloadableServerResourcesKJS kjs$resources, Map<ResourceLocation, List<TagLoader.EntryWithSource>> map) {
+	default void kjs$customTags(ReloadableServerResourcesKJS kjs$resources, Map<Identifier, List<TagLoader.EntryWithSource>> map) {
 		var reg = kjs$getRegistry();
 
 		if (reg == null) {

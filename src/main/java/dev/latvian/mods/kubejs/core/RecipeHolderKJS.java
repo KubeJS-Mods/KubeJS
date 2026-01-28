@@ -11,7 +11,7 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -37,7 +37,7 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	}
 
 	@Override
-	default ResourceLocation kjs$getOrCreateId() {
+	default Identifier kjs$getOrCreateId() {
 		return kjs$self().id();
 	}
 

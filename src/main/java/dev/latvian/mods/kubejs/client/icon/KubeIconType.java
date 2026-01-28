@@ -11,12 +11,12 @@ import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Map;
 
-public record KubeIconType<T extends KubeIcon>(ResourceLocation id, MapCodec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
-	public static final Lazy<Map<ResourceLocation, KubeIconType<?>>> TYPES = Lazy.map(map -> KubeJSPlugins.forEachPlugin(type -> map.put(type.id, type), KubeJSPlugin::registerIconTypes));
+public record KubeIconType<T extends KubeIcon>(Identifier id, MapCodec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+	public static final Lazy<Map<Identifier, KubeIconType<?>>> TYPES = Lazy.map(map -> KubeJSPlugins.forEachPlugin(type -> map.put(type.id, type), KubeJSPlugin::registerIconTypes));
 
 	public static final Codec<KubeIconType<?>> CODEC = KubeJSCodecs.KUBEJS_ID.comapFlatMap(id -> {
 		var type = TYPES.get().get(id);
@@ -30,7 +30,7 @@ public record KubeIconType<T extends KubeIcon>(ResourceLocation id, MapCodec<T> 
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, KubeIconType<?>> STREAM_CODEC = KubeJSStreamCodecs.KUBEJS_ID.map(s -> TYPES.get().get(s), KubeIconType::id);
 
-	public KubeIconType(ResourceLocation id, MapCodec<T> codec) {
+	public KubeIconType(Identifier id, MapCodec<T> codec) {
 		this(id, codec, ByteBufCodecs.fromCodecWithRegistries(codec.codec()));
 	}
 }

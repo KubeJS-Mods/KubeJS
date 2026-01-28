@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.core.mixin;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.core.TagLoaderKJS;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.TagLoader;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +26,7 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 	private Registry<T> kjs$storedRegistry;
 
 	@Inject(method = "load", at = @At("RETURN"))
-	private void customTags(ResourceManager resourceManager, CallbackInfoReturnable<Map<ResourceLocation, List<TagLoader.EntryWithSource>>> cir) {
+	private void customTags(ResourceManager resourceManager, CallbackInfoReturnable<Map<Identifier, List<TagLoader.EntryWithSource>>> cir) {
 		kjs$customTags(kjs$resources, cir.getReturnValue());
 	}
 

@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.error.EmptyTagTargetException;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.util.ExtraCodecs;
@@ -38,9 +38,9 @@ public interface TagEventFilter {
 
 			if (!s.isEmpty()) {
 				return switch (s.charAt(0)) {
-					case '#' -> new Tag(event.get(ResourceLocation.parse(s.substring(1))));
+					case '#' -> new Tag(event.get(Identifier.parse(s.substring(1))));
 					case '@' -> new Namespace(s.substring(1));
-					default -> new ID(ResourceLocation.parse(s));
+					default -> new ID(Identifier.parse(s));
 				};
 			}
 
@@ -66,7 +66,7 @@ public interface TagEventFilter {
 		return filter;
 	}
 
-	boolean testElementId(ResourceLocation id);
+	boolean testElementId(Identifier id);
 
 	default boolean testTagOrElementLocation(ExtraCodecs.TagOrElementLocation element) {
 		return !element.tag() && testElementId(element.id());
@@ -109,7 +109,7 @@ public interface TagEventFilter {
 		public static final Empty INSTANCE = new Empty();
 
 		@Override
-		public boolean testElementId(ResourceLocation resourceLocation) {
+		public boolean testElementId(Identifier Identifier) {
 			return false;
 		}
 
@@ -131,9 +131,9 @@ public interface TagEventFilter {
 
 	record Or(List<TagEventFilter> filters) implements TagEventFilter {
 		@Override
-		public boolean testElementId(ResourceLocation resourceLocation) {
+		public boolean testElementId(Identifier Identifier) {
 			for (var filter : filters) {
-				if (filter.testElementId(resourceLocation)) {
+				if (filter.testElementId(Identifier)) {
 					return true;
 				}
 			}
@@ -180,9 +180,9 @@ public interface TagEventFilter {
 		}
 	}
 
-	record ID(ResourceLocation id) implements TagEventFilter {
+	record ID(Identifier id) implements TagEventFilter {
 		@Override
-		public boolean testElementId(ResourceLocation id) {
+		public boolean testElementId(Identifier id) {
 			return this.id.equals(id);
 		}
 
@@ -207,7 +207,7 @@ public interface TagEventFilter {
 
 	record Tag(TagWrapper tag) implements TagEventFilter {
 		@Override
-		public boolean testElementId(ResourceLocation id) {
+		public boolean testElementId(Identifier id) {
 			return false;
 		}
 
@@ -242,14 +242,14 @@ public interface TagEventFilter {
 
 	record Namespace(String namespace) implements TagEventFilter {
 		@Override
-		public boolean testElementId(ResourceLocation id) {
+		public boolean testElementId(Identifier id) {
 			return id.getNamespace().equals(namespace);
 		}
 	}
 
 	record RegEx(Pattern pattern) implements TagEventFilter {
 		@Override
-		public boolean testElementId(ResourceLocation id) {
+		public boolean testElementId(Identifier id) {
 			return pattern.matcher(id.toString()).find();
 		}
 	}

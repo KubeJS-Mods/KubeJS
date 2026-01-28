@@ -11,7 +11,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.Utf8String;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.valueproviders.IntProvider;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,15 +21,15 @@ import java.util.function.Function;
 public interface KubeJSStreamCodecs {
 	StreamCodec<? super RegistryFriendlyByteBuf, IntProvider> INT_PROVIDER = ByteBufCodecs.fromCodecWithRegistries(IntProvider.CODEC);
 
-	StreamCodec<RegistryFriendlyByteBuf, ResourceLocation> KUBEJS_ID = new StreamCodec<>() {
+	StreamCodec<RegistryFriendlyByteBuf, Identifier> KUBEJS_ID = new StreamCodec<>() {
 		@Override
-		public ResourceLocation decode(RegistryFriendlyByteBuf buf) {
+		public Identifier decode(RegistryFriendlyByteBuf buf) {
 			var str = Utf8String.read(buf, Short.MAX_VALUE);
-			return str.indexOf(':') == -1 ? KubeJS.id(str) : ResourceLocation.parse(str);
+			return str.indexOf(':') == -1 ? KubeJS.id(str) : Identifier.parse(str);
 		}
 
 		@Override
-		public void encode(RegistryFriendlyByteBuf buf, ResourceLocation value) {
+		public void encode(RegistryFriendlyByteBuf buf, Identifier value) {
 			Utf8String.write(buf, value.getNamespace().equals(KubeJS.MOD_ID) ? value.getPath() : value.toString(), Short.MAX_VALUE);
 		}
 	};

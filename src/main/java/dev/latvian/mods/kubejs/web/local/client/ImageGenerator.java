@@ -36,7 +36,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
@@ -76,7 +76,7 @@ public class ImageGenerator {
 		new Vector3f(0.625F, 0.625F, 0.625F)
 	);
 
-	public static final ResourceLocation WILDCARD_TEXTURE = KubeJS.id("textures/misc/wildcard.png");
+	public static final Identifier WILDCARD_TEXTURE = KubeJS.id("textures/misc/wildcard.png");
 
 	private record RenderImage(Minecraft mc, GuiGraphics graphics, int size) {
 	}

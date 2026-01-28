@@ -15,6 +15,11 @@ public record MovedVertexConsumer(VertexConsumer parent, PoseStack.Pose pose) im
 	}
 
 	@Override
+	public VertexConsumer setColor(int i) {
+		return parent.setColor(i);
+	}
+
+	@Override
 	public VertexConsumer setUv(float u, float v) {
 		return parent.setUv(u, v);
 	}
@@ -32,5 +37,10 @@ public record MovedVertexConsumer(VertexConsumer parent, PoseStack.Pose pose) im
 	@Override
 	public VertexConsumer setNormal(float normalX, float normalY, float normalZ) {
 		return parent.setNormal(pose, normalX, normalY, normalZ);
+	}
+
+	@Override
+	public VertexConsumer setLineWidth(float v) {
+		return parent.setLineWidth(v);
 	}
 }

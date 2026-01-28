@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.misc;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.alchemy.Potion;
@@ -16,7 +16,7 @@ import java.util.List;
 public class PotionBuilder extends BuilderBase<Potion> {
 	public transient List<MobEffectInstance> mobEffects;
 
-	public PotionBuilder(ResourceLocation i) {
+	public PotionBuilder(Identifier i) {
 		super(i);
 		mobEffects = new ArrayList<>();
 	}

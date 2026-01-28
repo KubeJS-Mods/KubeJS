@@ -15,7 +15,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 @JeiPlugin
 public class KubeJSJEIPlugin implements IModPlugin {
-	public static final ResourceLocation ID = KubeJS.id("jei");
+	public static final Identifier ID = KubeJS.id("jei");
 	public static final boolean DISABLED = ModList.get().isLoaded("emi");
 	private RecipeViewerData remote = null;
 
@@ -44,7 +44,7 @@ public class KubeJSJEIPlugin implements IModPlugin {
 	}
 
 	@Override
-	public ResourceLocation getPluginUid() {
+	public Identifier getPluginUid() {
 		return ID;
 	}
 

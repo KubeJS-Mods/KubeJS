@@ -15,7 +15,7 @@ import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.LevelReader;
@@ -45,15 +45,15 @@ import java.util.function.ToIntFunction;
 
 @ReturnsSelf
 public class CropBlockBuilder extends BlockBuilder {
-	public static final ResourceLocation[] CROP_BLOCK_TAGS = {
+	public static final Identifier[] CROP_BLOCK_TAGS = {
 		BlockTags.CROPS.location(),
 	};
 
-	public static final ResourceLocation[] CROP_ITEM_TAGS = {
+	public static final Identifier[] CROP_ITEM_TAGS = {
 		Tags.Items.SEEDS.location(),
 	};
 
-	private static final ResourceLocation MODEL = ResourceLocation.withDefaultNamespace("block/crop");
+	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/crop");
 
 	@FunctionalInterface
 	public interface SurviveCallback {
@@ -128,7 +128,7 @@ public class CropBlockBuilder extends BlockBuilder {
 	public transient List<Pair<Holder<Item>, NumberProvider>> outputs;
 	public transient boolean noSeeds;
 
-	public CropBlockBuilder(ResourceLocation id) {
+	public CropBlockBuilder(Identifier id) {
 		super(id);
 		age = 7;
 		shapeByAge = Collections.nCopies(8, Shapes.block());
@@ -203,7 +203,7 @@ public class CropBlockBuilder extends BlockBuilder {
 	}
 
 	public CropBlockBuilder farmersCanPlant() {
-		this.tagItem(new ResourceLocation[]{ResourceLocation.withDefaultNamespace("villager_plantable_seeds")});
+		this.tagItem(new Identifier[]{Identifier.withDefaultNamespace("villager_plantable_seeds")});
 		return this;
 	}
 
