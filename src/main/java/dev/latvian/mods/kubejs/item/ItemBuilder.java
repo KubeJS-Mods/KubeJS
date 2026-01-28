@@ -25,7 +25,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.JukeboxPlayable;
 import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.level.Level;
@@ -65,7 +65,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 	public transient ToIntFunction<ItemStack> barWidth;
 	public transient NameCallback nameGetter;
 
-	public transient UseAnim anim;
+	public transient ItemUseAnimation anim;
 	public transient ToIntBiFunction<ItemStack, LivingEntity> useDuration;
 	public transient UseCallback use;
 	public transient FinishUsingCallback finishUsing;
@@ -279,7 +279,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 	}
 
 	@Info("Determines the animation of the item when used, e.g. eating food.")
-	public ItemBuilder useAnimation(UseAnim animation) {
+	public ItemBuilder useAnimation(ItemUseAnimation animation) {
 		this.anim = animation;
 		return this;
 	}
@@ -339,13 +339,8 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 		return this;
 	}
 
-	public ItemBuilder jukeboxPlayable(ResourceKey<JukeboxSong> song, boolean showInTooltip) {
-		this.jukeboxPlayable = new JukeboxPlayable(new EitherHolder<>(song), showInTooltip);
-		return this;
-	}
-
 	public ItemBuilder jukeboxPlayable(ResourceKey<JukeboxSong> song) {
-		return jukeboxPlayable(song, true);
+		return jukeboxPlayable(song);
 	}
 
 	public ItemBuilder disableRepair() {
@@ -425,7 +420,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 		}
 
 		if (!canRepair) {
-			properties.setNoRepair();
+			properties.setNoCombineRepair();
 		}
 
 		return properties;

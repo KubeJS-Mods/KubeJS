@@ -27,7 +27,7 @@ public abstract class LootDataTypeMixin<T> {
 	private <V> void kjs$exportLootTable(Identifier id, DynamicOps<V> dynamicOps, V object, CallbackInfoReturnable<Optional<T>> cir) {
 		if (DataExport.export != null && object instanceof JsonObject json) {
 			try {
-				var fileName = "%s/%s/%s/%s.json".formatted(registryKey.location().getNamespace(), registryKey.location().getPath(), id.getNamespace(), id.getPath());
+				var fileName = "%s/%s/%s/%s.json".formatted(registryKey.identifier().getNamespace(), registryKey.identifier().getPath(), id.getNamespace(), id.getPath());
 				DataExport.export.addJson(fileName, json);
 			} catch (Exception ex) {
 				ConsoleJS.SERVER.error("Failed to export loot table %s as JSON!".formatted(id), ex);

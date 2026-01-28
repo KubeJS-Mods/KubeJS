@@ -49,7 +49,7 @@ public class InformationCommands {
 		// item tags
 		var itemTags = holder.tags().toList();
 		for (var tag : itemTags) {
-			var id = "'#%s'".formatted(tag.location());
+			var id = "'#%s'".formatted(tag.identifier());
 			var size = itemRegistry.getTag(tag).map(HolderSet::size).orElse(0);
 			player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Item Tag [" + size + " items]"));
 		}
@@ -77,7 +77,7 @@ public class InformationCommands {
 			// block tags
 			var blockTags = blockHolder.tags().toList();
 			for (var tag : blockTags) {
-				var id = "'#%s'".formatted(tag.location());
+				var id = "'#%s'".formatted(tag.identifier());
 				var size = blockRegistry.getTag(tag).map(HolderSet::size).orElse(0);
 				player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Block Tag [" + size + " items]"));
 			}
@@ -90,11 +90,11 @@ public class InformationCommands {
 			var fluid = containedFluid.orElseThrow();
 			var fluidHolder = fluid.getFluid().builtInRegistryHolder();
 			// id
-			player.sendSystemMessage(copy(fluidHolder.key().location().toString(), ChatFormatting.GREEN, "Fluid ID"));
+			player.sendSystemMessage(copy(fluidHolder.key().identifier().toString(), ChatFormatting.GREEN, "Fluid ID"));
 			// fluid tags
 			var fluidTags = fluidHolder.tags().toList();
 			for (var tag : fluidTags) {
-				var id = "'#%s'".formatted(tag.location());
+				var id = "'#%s'".formatted(tag.identifier());
 				var size = fluidRegistry.getTag(tag).map(HolderSet::size).orElse(0);
 				player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Fluid Tag [" + size + " items]"));
 			}

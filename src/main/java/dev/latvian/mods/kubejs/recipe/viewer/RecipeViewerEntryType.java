@@ -54,7 +54,7 @@ public class RecipeViewerEntryType {
 
 	public static final RecipeViewerEntryType FLUID = new RecipeViewerEntryType("fluid",
 		new Component<>(FluidWrapper.TYPE_INFO, FluidStack.STREAM_CODEC, FluidStack::isEmpty),
-		new Component<>(FluidWrapper.INGREDIENT_TYPE_INFO, FluidIngredient.STREAM_CODEC, FluidIngredient::isEmpty),
+		new Component<>(FluidWrapper.INGREDIENT_TYPE_INFO, FluidIngredient.STREAM_CODEC, fi -> fi.fluids().isEmpty()),
 		new Component<>(FluidWrapper.FLUID_TYPE_INFO, ByteBufCodecs.registry(Registries.FLUID), FluidKJS::kjs$isEmpty)
 	) {
 		@Override

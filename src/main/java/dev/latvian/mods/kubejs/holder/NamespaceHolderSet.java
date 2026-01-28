@@ -64,7 +64,7 @@ public class NamespaceHolderSet<T> extends HolderSet.ListBacked<T> implements IC
 	@Override
 	protected List<Holder<T>> contents() {
 		if (list == null) {
-			list = List.copyOf(registryLookup.listElements().filter(ref -> ref.key().location().getNamespace().equals(namespace)).toList());
+			list = List.copyOf(registryLookup.listElements().filter(ref -> ref.key().identifier().getNamespace().equals(namespace)).toList());
 		}
 
 		return list;

@@ -192,7 +192,7 @@ public interface TagEventFilter {
 				wrapper.entries.add(new TagLoader.EntryWithSource(TagEntry.element(id), TagKubeEvent.SOURCE));
 				return 1;
 			} else {
-				var msg = "No such element %s in registry %s".formatted(id, wrapper.event.registryKey.location());
+				var msg = "No such element %s in registry %s".formatted(id, wrapper.event.registryKey.identifier());
 
 				if (DevProperties.get().strictTags) {
 					throw new EmptyTagTargetException(msg);

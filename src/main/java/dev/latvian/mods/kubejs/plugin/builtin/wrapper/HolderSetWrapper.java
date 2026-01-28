@@ -45,7 +45,7 @@ public record HolderSetWrapper<T>(Registry<T> registry, HolderSet<T> holders) im
 				return null;
 			}
 
-			return key.location();
+			return key.identifier();
 		}).filter(Objects::nonNull).collect(Collectors.toSet());
 	}
 

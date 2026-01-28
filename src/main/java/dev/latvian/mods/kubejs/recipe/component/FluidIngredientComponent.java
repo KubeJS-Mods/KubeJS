@@ -14,7 +14,7 @@ import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 public record FluidIngredientComponent(RecipeComponentType<?> type, Codec<FluidIngredient> codec, boolean allowEmpty) implements RecipeComponent<FluidIngredient> {
-	public static final RecipeComponentType<FluidIngredient> FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("fluid_ingredient"), type -> new FluidIngredientComponent(type, FluidIngredient.CODEC_NON_EMPTY, false));
+	public static final RecipeComponentType<FluidIngredient> FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("fluid_ingredient"), type -> new FluidIngredientComponent(type, FluidIngredient.CODEC, false));
 	public static final RecipeComponentType<FluidIngredient> OPTIONAL_FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_fluid_ingredient"), type -> new FluidIngredientComponent(type, FluidIngredient.CODEC, true));
 
 	@Override
@@ -34,13 +34,14 @@ public record FluidIngredientComponent(RecipeComponentType<?> type, Codec<FluidI
 
 	@Override
 	public boolean isEmpty(FluidIngredient value) {
-		return value.isEmpty();
+		return value.fluids().isEmpty();
 	}
+
 
 	@Override
 	public void buildUniqueId(UniqueIdBuilder builder, FluidIngredient value) {
-		if (!value.isEmpty()) {
-			builder.append(value.getStacks()[0].getFluid().kjs$getIdLocation());
+		if (!value.fluids().isEmpty()) {
+			builder.append(value.fluids().get(0).value().kjs$getIdLocation());
 		}
 	}
 

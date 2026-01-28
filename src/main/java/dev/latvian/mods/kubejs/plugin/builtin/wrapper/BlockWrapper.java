@@ -12,7 +12,7 @@ import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.RecordTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -106,7 +106,7 @@ public class BlockWrapper {
 				var l = holder.getKey();
 
 				if (l != null) {
-					list.add(l.location());
+					list.add(l.identifier());
 				}
 			}
 		});

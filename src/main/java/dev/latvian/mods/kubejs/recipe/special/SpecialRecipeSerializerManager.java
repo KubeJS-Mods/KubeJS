@@ -48,8 +48,8 @@ public class SpecialRecipeSerializerManager implements KubeEvent {
 	public void ignoreSpecialMod(String modid) {
 		synchronized (data) {
 			for (var entry : BuiltInRegistries.RECIPE_SERIALIZER.entrySet()) {
-				if (entry.getKey().location().getNamespace().equals(modid)) {
-					data.put(entry.getKey().location(), false);
+				if (entry.getKey().identifier().getNamespace().equals(modid)) {
+					data.put(entry.getKey().identifier(), false);
 				}
 			}
 		}
@@ -58,8 +58,8 @@ public class SpecialRecipeSerializerManager implements KubeEvent {
 	public void addSpecialMod(String modid) {
 		synchronized (data) {
 			for (var entry : BuiltInRegistries.RECIPE_SERIALIZER.entrySet()) {
-				if (entry.getKey().location().getNamespace().equals(modid)) {
-					data.put(entry.getKey().location(), true);
+				if (entry.getKey().identifier().getNamespace().equals(modid)) {
+					data.put(entry.getKey().identifier(), true);
 				}
 			}
 		}

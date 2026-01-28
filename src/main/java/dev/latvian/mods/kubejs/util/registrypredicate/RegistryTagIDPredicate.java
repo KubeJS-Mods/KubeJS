@@ -10,7 +10,7 @@ public record RegistryTagIDPredicate<T>(TagKeyPredicate predicate) implements Re
 	private record TagKeyPredicate(Identifier tag) implements Predicate<TagKey<?>> {
 		@Override
 		public boolean test(TagKey<?> key) {
-			return key.location().equals(tag);
+			return key.identifier().equals(tag);
 		}
 
 		@Override

@@ -7,7 +7,7 @@ import net.minecraft.world.item.SwordItem;
 
 public class SwordItemBuilder extends HandheldItemBuilder {
 	public static final Identifier[] SWORD_TAGS = {
-		ItemTags.SWORDS.location(),
+		ItemTags.SWORDS.identifier(),
 	};
 
 	public static final Identifier SWORD_MODEL = Identifier.withDefaultNamespace("item/iron_sword");

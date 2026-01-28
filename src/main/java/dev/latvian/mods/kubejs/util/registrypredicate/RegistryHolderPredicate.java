@@ -12,9 +12,9 @@ public record RegistryHolderPredicate<T>(Holder<T> value) implements RegistryPre
 	public String toString() {
 		try {
 			if (value instanceof Holder.Reference<T> ref) {
-				return ref.key().location().toString();
+				return ref.key().identifier().toString();
 			} else {
-				return value.getKey().location().toString();
+				return value.getKey().identifier().toString();
 			}
 		} catch (Exception ex) {
 			return String.valueOf(value.value());

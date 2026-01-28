@@ -35,7 +35,7 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public RegistryComponent(RegistryAccessContainer registries, @Nullable RegistryType<T> regType, ResourceKey key) {
 		this(
-			(Registry) registries.access().registry(key).orElseThrow(),
+			(Registry) registries.access().lookup(key).orElseThrow(),
 			regType,
 			RegistryFixedCodec.create(key),
 			regType == null || regType.type() == TypeInfo.STRING ? TypeInfo.STRING : TypeInfo.STRING.or(regType.type())
@@ -61,7 +61,7 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 			} else if (from instanceof Item item) {
 				return (Holder<T>) item.builtInRegistryHolder();
 			} else {
-				return (Holder<T>) ItemWrapper.wrap(cx.cx(), from).getItemHolder();
+				return (Holder<T>) ItemWrapper.wrap(cx.cx(), from).typeHolder();
 			}
 		} else if (registry == BuiltInRegistries.FLUID) {
 			if (from instanceof FluidStack fs) {
@@ -69,14 +69,19 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 			} else if (from instanceof Fluid fluid) {
 				return (Holder<T>) fluid.builtInRegistryHolder();
 			} else {
-				return (Holder<T>) FluidWrapper.wrap(cx.cx(), from).getFluidHolder();
+				return (Holder<T>) FluidWrapper.wrap(cx.cx(), from).typeHolder();
 			}
 		} else if (regType != null) {
 			return (Holder<T>) HolderWrapper.wrap((KubeJSContext) cx.cx(), from, regType.type());
 		} else if (from instanceof ResourceKey<?> key) {
-			return registry.getHolderOrThrow((ResourceKey) key);
+			return registry.get((ResourceKey<T>) key).orElseThrow(() ->
+				new IllegalStateException("Missing key in " + registry.key() + ": " + key)
+			);
 		} else if (from instanceof CharSequence || from instanceof Identifier) {
-			return registry.getHolderOrThrow(ResourceKey.create(registry.key(), ID.mc(from.toString())));
+			var rk = ResourceKey.create(registry.key(), ID.mc(from.toString()));
+			return registry.get(rk).orElseThrow(() ->
+				new IllegalStateException("Missing key in " + registry.key() + ": " + rk)
+			);
 		} else {
 			throw new IllegalStateException("Missing key in " + registry.key() + ": " + from);
 		}
@@ -92,12 +97,12 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 		var id = value.getKey();
 
 		if (id != null) {
-			builder.append(id.location());
+			builder.append(id.identifier());
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "registry_element<" + ID.reduce(registry.key().location()) + ">";
+		return "registry_element<" + ID.reduce(registry.key().identifier()) + ">";
 	}
 }

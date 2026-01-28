@@ -81,7 +81,7 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Ent
 	}
 
 	default Identifier kjs$getDimension() {
-		return kjs$self().dimension().location();
+		return kjs$self().dimension().identifier();
 	}
 
 	default boolean kjs$isOverworld() {

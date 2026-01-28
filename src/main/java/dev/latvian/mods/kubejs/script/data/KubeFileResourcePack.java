@@ -12,10 +12,11 @@ import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.VanillaPackResources;
-import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
+import net.minecraft.server.packs.resources.ResourceMetadata;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -273,17 +274,19 @@ public class KubeFileResourcePack implements PackResources {
 
 	@Nullable
 	@Override
-	public <T> T getMetadataSection(MetadataSectionSerializer<T> serializer) throws IOException {
+	public <T> T getMetadataSection(MetadataSectionType<T> type) throws IOException {
 		var inputSupplier = this.getRootResource(PACK_META);
-
-		if (inputSupplier != null) {
-			try (var input = inputSupplier.get()) {
-				return AbstractPackResources.getMetadataFromStream(serializer, input);
-			}
+		if (inputSupplier == null) {
+			return null;
 		}
 
-		return null;
+		try (var in = inputSupplier.get()) {
+			var metadata = ResourceMetadata.fromJsonStream(in);
+			return metadata.getSection(type).orElse(null);
+		}
 	}
+
+
 
 	@Override
 	@NotNull

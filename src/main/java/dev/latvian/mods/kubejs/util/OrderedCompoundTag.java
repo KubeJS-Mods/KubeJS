@@ -8,30 +8,16 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class OrderedCompoundTag extends CompoundTag {
-	public final Map<String, Tag> tagMap;
-
-	public OrderedCompoundTag(Map<String, Tag> map) {
-		super(map);
-		tagMap = map;
+public final class OrderedCompoundTag {
+	private OrderedCompoundTag() {
 	}
 
-	public OrderedCompoundTag() {
-		this(new LinkedHashMap<>());
+	public static CompoundTag create() {
+		return new CompoundTag(new LinkedHashMap<>());
 	}
 
-	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		for (Map.Entry<String, Tag> entry : tagMap.entrySet()) {
-			Tag tag = entry.getValue();
-			dataOutput.writeByte(tag.getId());
-
-			if (tag.getId() != 0) {
-				dataOutput.writeUTF(entry.getKey());
-				tag.write(dataOutput);
-			}
-		}
-
-		dataOutput.writeByte(0);
+	public static CompoundTag create(Map<String, Tag> map) {
+		return new CompoundTag(map instanceof LinkedHashMap<String, Tag> ? map : new LinkedHashMap<>(map));
 	}
 }
+

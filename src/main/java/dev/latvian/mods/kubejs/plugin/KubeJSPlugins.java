@@ -35,13 +35,13 @@ public class KubeJSPlugins {
 	}
 
 	private static void loadMod(String modId, IModFile mod, boolean loadClientPlugins) throws IOException {
-		var pp = mod.findResource("kubejs.plugins.txt");
+		var pp = mod.getFilePath().resolve("kubejs.plugins.txt");
 
 		if (Files.exists(pp)) {
 			loadFromFile(Files.lines(pp), modId, loadClientPlugins);
 		}
 
-		var pc = mod.findResource("kubejs.classfilter.txt");
+		var pc = mod.getFilePath().resolve("kubejs.classfilter.txt");
 
 		if (Files.exists(pc)) {
 			GLOBAL_CLASS_FILTER.addAll(Files.readAllLines(pc));

@@ -14,9 +14,9 @@ import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.LogType;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
 import net.neoforged.fml.ModList;
 
 import java.nio.charset.StandardCharsets;
@@ -95,10 +95,10 @@ public class DataExport {
 			var j = new JsonObject();
 
 			for (var entry : registry.entrySet()) {
-				j.addProperty(entry.getKey().location().toString(), (entry.getValue() == null ? "null" : entry.getValue().getClass().getName()));
+				j.addProperty(entry.getKey().identifier().toString(), (entry.getValue() == null ? "null" : entry.getValue().getClass().getName()));
 			}
 
-			addJson("registries/" + key.location().getPath() + ".json", j);
+			addJson("registries/" + key.identifier().getPath() + ".json", j);
 		});
 
 		var logStringBuilder = new StringBuilder();

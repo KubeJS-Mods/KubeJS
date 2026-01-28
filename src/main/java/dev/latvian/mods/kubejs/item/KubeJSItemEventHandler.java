@@ -19,7 +19,7 @@ public class KubeJSItemEventHandler {
 		var stack = event.getItemStack();
 		var key = stack.getItem().kjs$getKey();
 
-		if (ItemEvents.RIGHT_CLICKED.hasListeners(key) && !event.getEntity().getCooldowns().isOnCooldown(stack.getItem())) {
+		if (ItemEvents.RIGHT_CLICKED.hasListeners(key) && !event.getEntity().getCooldowns().isOnCooldown(stack)) {
 			ItemEvents.RIGHT_CLICKED.post(event.getEntity(), key, new ItemClickedKubeEvent(event.getEntity(), event.getHand(), stack)).applyCancel(event);
 		}
 	}

@@ -23,15 +23,15 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 	private final String stage;
 
 	public ShapelessKubeJSRecipe(ShapelessRecipe original, List<IngredientActionHolder> ingredientActions, String modifyResult, String stage) {
-		super(original.getGroup(), original.category(), original.result, original.getIngredients());
+		super(original.group(), original.category(), original.result, original.ingredients);
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
 		this.stage = stage;
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return KubeJSRecipeSerializers.SHAPELESS.get();
+	public RecipeSerializer<ShapelessRecipe> getSerializer() {
+		return (RecipeSerializer<ShapelessRecipe>) KubeJSRecipeSerializers.SHAPELESS.get();
 	}
 
 	@Override

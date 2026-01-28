@@ -27,7 +27,7 @@ public interface RecipeLikeKJS {
 	ResourceKey<RecipeSerializer<?>> kjs$getTypeKey();
 
 	default Identifier kjs$getType() {
-		return kjs$getTypeKey().location();
+		return kjs$getTypeKey().identifier();
 	}
 
 	RecipeSerializer<?> kjs$getSerializer();

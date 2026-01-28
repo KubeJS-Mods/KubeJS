@@ -15,7 +15,7 @@ import net.minecraft.world.item.Item;
 public class ArmorItemBuilder extends ItemBuilder {
 	public static class Helmet extends ArmorItemBuilder {
 		public static final Identifier[] HELMET_TAGS = {
-			ItemTags.HEAD_ARMOR.location(),
+			ItemTags.HEAD_ARMOR.identifier(),
 		};
 
 		public Helmet(Identifier id) {
@@ -26,7 +26,7 @@ public class ArmorItemBuilder extends ItemBuilder {
 
 	public static class Chestplate extends ArmorItemBuilder {
 		public static final Identifier[] CHESTPLATE_TAGS = {
-			ItemTags.CHEST_ARMOR.location(),
+			ItemTags.CHEST_ARMOR.identifier(),
 		};
 
 		public Chestplate(Identifier id) {
@@ -37,7 +37,7 @@ public class ArmorItemBuilder extends ItemBuilder {
 
 	public static class Leggings extends ArmorItemBuilder {
 		public static final Identifier[] LEGGING_TAGS = {
-			ItemTags.LEG_ARMOR.location(),
+			ItemTags.LEG_ARMOR.identifier(),
 		};
 
 		public Leggings(Identifier id) {
@@ -48,7 +48,7 @@ public class ArmorItemBuilder extends ItemBuilder {
 
 	public static class Boots extends ArmorItemBuilder {
 		public static final Identifier[] BOOT_TAGS = {
-			ItemTags.FOOT_ARMOR.location(),
+			ItemTags.FOOT_ARMOR.identifier(),
 		};
 
 		public Boots(Identifier id) {

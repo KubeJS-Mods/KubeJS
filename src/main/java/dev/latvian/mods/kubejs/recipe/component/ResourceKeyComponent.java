@@ -54,12 +54,12 @@ public record ResourceKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverr
 		if (typeOverride != null) {
 			return typeOverride.toString();
 		} else {
-			return "resource_key<" + ID.reduce(registryKey.location()) + ">";
+			return "resource_key<" + ID.reduce(registryKey.identifier()) + ">";
 		}
 	}
 
 	@Override
 	public String toString(OpsContainer ops, ResourceKey<T> value) {
-		return value.location().toString();
+		return value.identifier().toString();
 	}
 }

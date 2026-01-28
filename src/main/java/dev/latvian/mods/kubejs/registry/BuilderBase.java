@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -57,9 +57,9 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 			return object;
 		} catch (Exception ex) {
 			if (dummyBuilder) {
-				throw new KubeRuntimeException("Object '" + id + "' of registry '" + registryKey.location() + "' is from a dummy builder and doesn't have a value!").source(sourceLine);
+				throw new KubeRuntimeException("Object '" + id + "' of registry '" + registryKey.identifier() + "' is from a dummy builder and doesn't have a value!").source(sourceLine);
 			} else {
-				throw new KubeRuntimeException("Object '" + id + "' of registry '" + registryKey.location() + "' hasn't been registered yet!", ex).source(sourceLine);
+				throw new KubeRuntimeException("Object '" + id + "' of registry '" + registryKey.identifier() + "' hasn't been registered yet!", ex).source(sourceLine);
 			}
 		}
 	}
@@ -73,7 +73,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 			return "unknown_registry";
 		}
 
-		return registryKey.location().getPath().replace('/', '.');
+		return registryKey.identifier().getPath().replace('/', '.');
 	}
 
 	@Info("""

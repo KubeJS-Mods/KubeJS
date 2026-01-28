@@ -381,13 +381,13 @@ public class KubeJSWeb {
 	private static HTTPResponse getRegistriesResponse(KJSHTTPRequest req) {
 		return HTTPResponse.ok().content(JsonContent.array(json -> {
 			for (var registry : req.registries().access().registries().toList()) {
-				json.add(registry.key().location().toString());
+				json.add(registry.key().identifier().toString());
 			}
 		}));
 	}
 
 	private static HTTPResponse getRegistryKeysResponse(KJSHTTPRequest req) {
-		var registry = req.registries().access().registry(ResourceKey.createRegistryKey(req.id()));
+		var registry = req.registries().access().lookup(ResourceKey.createRegistryKey(req.id()));
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
@@ -401,7 +401,7 @@ public class KubeJSWeb {
 	}
 
 	private static HTTPResponse getRegistryMatchResponse(KJSHTTPRequest req) {
-		var registry = req.registries().access().registry(ResourceKey.createRegistryKey(req.id()));
+		var registry = req.registries().access().lookup(ResourceKey.createRegistryKey(req.id()));
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
@@ -425,47 +425,52 @@ public class KubeJSWeb {
 	}
 
 	private static HTTPResponse getTagsResponse(KJSHTTPRequest req) {
-		var registry = req.registries().access().registry(ResourceKey.createRegistryKey(req.id()));
+		var registry = req.registries().access().lookup(ResourceKey.createRegistryKey(req.id()));
+
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
 		}
 
 		return HTTPResponse.ok().content(JsonContent.array(json -> {
-			for (var tag : registry.get().getTagNames().map(TagKey::location).toList()) {
+			for (var tag : registry.get().listTagIds().map(TagKey::location).toList()) {
 				json.add(tag.toString());
 			}
 		}));
 	}
 
 	private static HTTPResponse getTagValuesResponse(KJSHTTPRequest req) {
-		var registry = req.registries().access().registry(ResourceKey.createRegistryKey(req.id()));
+		var registry = req.registries().access().lookup(ResourceKey.createRegistryKey(req.id()));
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
 		}
 
-		var tagKey = registry.get().getTag(TagKey.create(registry.get().key(), req.id("tag-namespace", "tag-path")));
+		var tagId = TagKey.create(registry.get().key(), req.id("tag-namespace", "tag-path"));
+
+		var tagKey = registry.get().getTags()
+			.filter(t -> t.key().equals(tagId))
+			.findFirst();
 
 		if (tagKey.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
 		}
 
 		return HTTPResponse.ok().content(JsonContent.array(json -> {
-			for (var key : tagKey.get().stream().map(Holder::unwrapKey).filter(Optional::isPresent).map(Optional::get).map(ResourceKey::location).toList()) {
+			for (var key : tagKey.get().stream().map(Holder::unwrapKey).filter(Optional::isPresent).map(Optional::get).map(ResourceKey::identifier).toList()) {
 				json.add(key.toString());
 			}
 		}));
 	}
 
 	private static HTTPResponse getTagKeysResponse(KJSHTTPRequest req) {
-		var registry = req.registries().access().registry(ResourceKey.createRegistryKey(req.id()));
+		var registry = req.registries().access().lookup(ResourceKey.createRegistryKey(req.id()));
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
 		}
 
-		var value = registry.get().getHolder(req.id("value-namespace", "value-path"));
+		var value = registry.get().get(req.id("value-namespace", "value-path"));
 
 		if (value.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;

@@ -63,10 +63,10 @@ public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
 				var id = ID.mc(s);
 
 				if (reg != null) {
-					var registry = BuiltInRegistries.REGISTRY.get((ResourceKey) reg.key());
+					Registry registry = (Registry) BuiltInRegistries.REGISTRY.get((ResourceKey) reg.key()).get();
 
 					if (registry != null) {
-						var opt = registry.getHolder(id);
+						var opt = registry.get(id);
 
 						if (opt.isPresent()) {
 							yield new RegistryHolderPredicate<>((Holder) opt.get());
@@ -80,10 +80,10 @@ public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
 	}
 
 	default List<Holder.Reference<T>> getHolders(Registry<T> registry) {
-		return registry.holders().filter(this).toList();
+		return registry.listElements().filter(this).toList();
 	}
 
 	default List<T> getValues(Registry<T> registry) {
-		return registry.holders().filter(this).map(Holder::value).toList();
+		return registry.listElements().filter(this).map(Holder::value).toList();
 	}
 }

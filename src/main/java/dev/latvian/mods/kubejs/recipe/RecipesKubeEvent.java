@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
@@ -46,6 +47,7 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
+
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -176,7 +178,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		recipeFunctions.put("smithing", smithing);
 		recipeFunctions.put("smithingTrim", smithingTrim);
 
-		stageSerializer = BuiltInRegistries.RECIPE_SERIALIZER.get(Identifier.parse("recipestages:stage"));
+		stageSerializer = BuiltInRegistries.RECIPE_SERIALIZER.get(Identifier.parse("recipestages:stage")).get().value();
 	}
 
 	@HideFromJS
@@ -215,14 +217,15 @@ public class RecipesKubeEvent implements KubeEvent {
 				continue;
 			}
 
-			var codec = ConditionalOps.createConditionalCodec(Codec.unit(originalJson));
+			var codec = MapCodec.unit(originalJson).codec();
+
 			switch (codec.parse(ops.json(), originalJson)) {
 				case DataResult.Success(var jsonResult, var lifecycle) -> {
 					if (jsonResult.isEmpty()) {
 						infoSkip("Skipping recipe %s, conditions not met".formatted(recipeId));
 						skippedRecipes++;
 					} else {
-						parseOriginalRecipe(jsonResult.get(), recipeId);
+						parseOriginalRecipe(jsonResult, recipeId);
 					}
 				}
 				case DataResult.Error<?> error -> errorSkip("Skipping recipe %s, error parsing conditions: %s".formatted(recipeId, error.message()));

@@ -13,7 +13,7 @@ import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.rhino.Context;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
@@ -63,7 +63,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			}
 			default -> {
 				var block = BuiltInRegistries.BLOCK.get(Identifier.parse(s));
-				yield block != Blocks.AIR ? new BlockMatch(block) : Simple.NONE;
+				yield block.get().value() != Blocks.AIR ? new BlockMatch(block.get().value()) : Simple.NONE;
 			}
 		};
 	}

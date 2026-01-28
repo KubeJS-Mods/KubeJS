@@ -43,11 +43,11 @@ public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey
 	}
 
 	public Set<Map.Entry<Identifier, T>> getEntrySet() {
-		return registry.entrySet().stream().map(e -> Map.entry(e.getKey().location(), e.getValue())).collect(Collectors.toSet());
+		return registry.entrySet().stream().map(e -> Map.entry(e.getKey().identifier(), e.getValue())).collect(Collectors.toSet());
 	}
 
 	public Map<Identifier, T> getValueMap() {
-		return registry.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().location(), Map.Entry::getValue));
+		return registry.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().identifier(), Map.Entry::getValue));
 	}
 
 	public HolderSetWrapper<T> getValues(Object filter) {

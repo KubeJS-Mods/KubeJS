@@ -39,8 +39,8 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return KubeJSRecipeSerializers.SHAPED.get();
+	public RecipeSerializer<? extends ShapedRecipe> getSerializer() {
+		return (RecipeSerializer<? extends ShapedRecipe>) KubeJSRecipeSerializers.SHAPED.get();
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 	public static class SerializerKJS implements RecipeSerializer<ShapedKubeJSRecipe> {
 		public static final MapCodec<ShapedKubeJSRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			Codec.STRING.optionalFieldOf("group", "").forGetter(ShapedRecipe::getGroup),
+			Codec.STRING.optionalFieldOf("group", "").forGetter(ShapedRecipe::group),
 			CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(ShapedRecipe::category),
 			// KubeJS modified keys
 			ShapedRecipePattern.MAP_CODEC.forGetter(recipe -> recipe.pattern),
@@ -97,7 +97,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 		public static final StreamCodec<RegistryFriendlyByteBuf, ShapedKubeJSRecipe> STREAM_CODEC = KubeJSStreamCodecs.composite(
 			ByteBufCodecs.STRING_UTF8,
-			ShapedKubeJSRecipe::getGroup,
+			ShapedKubeJSRecipe::group,
 			CraftingBookCategory.STREAM_CODEC,
 			ShapedKubeJSRecipe::category,
 			ShapedRecipePattern.STREAM_CODEC,

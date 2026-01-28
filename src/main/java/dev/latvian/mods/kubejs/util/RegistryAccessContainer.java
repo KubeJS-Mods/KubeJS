@@ -145,7 +145,7 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 	@Override
 	public <T> boolean isTagLoaded(TagKey<T> key) {
 		var cached = cachedRegistryTags.get(key.registry());
-		return cached != null && cached.lookup().tagMap().containsKey(key.location());
+		return cached != null && cached.lookup().tagMap().containsKey(key.identifier());
 	}
 
 	@Override

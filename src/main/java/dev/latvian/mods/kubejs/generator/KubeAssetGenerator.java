@@ -10,7 +10,7 @@ import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.ID;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.resources.Identifier;
 
 import java.util.Map;

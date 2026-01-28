@@ -469,7 +469,7 @@ public class KubeJSClientEventHandler {
 
 		image.setRGB(0, 0, w, h, pixels, 0, w);
 
-		var path = KubeJSPaths.EXPORT.resolve(atlas.location().getNamespace() + "/" + atlas.location().getPath());
+		var path = KubeJSPaths.EXPORT.resolve(atlas.identifier().getNamespace() + "/" + atlas.identifier().getPath());
 
 		if (!Files.exists(path.getParent())) {
 			try {
@@ -498,7 +498,7 @@ public class KubeJSClientEventHandler {
 
 	// FIXME: implement
 	/*private void textureStitch(TextureStitchEvent.Pre event) {
-		ClientEvents.ATLAS_SPRITE_REGISTRY.post(new AtlasSpriteRegistryEventJS(event::addSprite), event.getAtlas().location());
+		ClientEvents.ATLAS_SPRITE_REGISTRY.post(new AtlasSpriteRegistryEventJS(event::addSprite), event.getAtlas().identifier());
 	}*/
 
 	@SubscribeEvent(priority = EventPriority.LOW)

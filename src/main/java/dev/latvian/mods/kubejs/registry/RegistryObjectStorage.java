@@ -26,7 +26,7 @@ public final class RegistryObjectStorage<T> implements Iterable<BuilderBase<? ex
 	private static final Map<ResourceKey<? extends Registry<?>>, RegistryObjectStorage<?>> MAP = new Reference2ObjectOpenHashMap<>();
 	public static final List<BuilderBase<?>> ALL_BUILDERS = new LinkedList<>();
 
-	public static final Codec<RegistryObjectStorage<?>> CODEC = Identifier.CODEC.xmap(rl -> RegistryObjectStorage.of(ResourceKey.createRegistryKey(rl)), ri -> ri.key.location());
+	public static final Codec<RegistryObjectStorage<?>> CODEC = Identifier.CODEC.xmap(rl -> RegistryObjectStorage.of(ResourceKey.createRegistryKey(rl)), ri -> ri.key.identifier());
 
 	public static <T> RegistryObjectStorage<T> of(ResourceKey<Registry<T>> key) {
 		synchronized (LOCK) {
@@ -56,6 +56,6 @@ public final class RegistryObjectStorage<T> implements Iterable<BuilderBase<? ex
 
 	@Override
 	public String toString() {
-		return key.location().toString();
+		return key.identifier().toString();
 	}
 }

@@ -34,11 +34,11 @@ import java.util.Map;
 @ReturnsSelf
 public class DoorBlockBuilder extends ShapedBlockBuilder {
 	public static final Identifier[] DOOR_TAGS = {
-		BlockTags.DOORS.location()
+		BlockTags.DOORS.identifier()
 	};
 
 	public static final Identifier[] WOODEN_DOOR_TAGS = {
-		BlockTags.WOODEN_DOORS.location()
+		BlockTags.WOODEN_DOORS.identifier()
 	};
 
 	private static final Map<String, Identifier> MODELS = Map.of(

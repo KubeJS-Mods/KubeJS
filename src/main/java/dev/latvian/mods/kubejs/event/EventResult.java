@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.rhino.Context;
 import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.neoforge.common.util.TriState;
+import net.minecraft.util.TriState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;

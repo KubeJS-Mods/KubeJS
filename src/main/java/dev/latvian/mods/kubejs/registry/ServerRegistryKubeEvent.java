@@ -55,7 +55,7 @@ public class ServerRegistryKubeEvent<T> implements KubeEvent {
 		var t = builderInfo.defaultType();
 
 		if (t == null) {
-			throw new KubeRuntimeException("Registry '" + registryKey.location() + "' doesn't have a default type registered!").source(sourceLine);
+			throw new KubeRuntimeException("Registry '" + registryKey.identifier() + "' doesn't have a default type registered!").source(sourceLine);
 		}
 
 		var b = t.factory().createBuilder(id.wrapped());

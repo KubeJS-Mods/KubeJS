@@ -48,7 +48,7 @@ public class VirtualDataPack extends VirtualResourcePack implements KubeDataGene
 			var id = type.id();
 
 			var registry = type.registryKey();
-			var regId = registry.location();
+			var regId = registry.identifier();
 
 			var codec = DataMapFile.codec(Cast.to(registry), type);
 			var data = typeEntry.getValue();

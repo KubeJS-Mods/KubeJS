@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
+import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.command.CommandRegistryKubeEvent;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
@@ -12,13 +13,19 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.web.LocalWebServer;
 import dev.latvian.mods.kubejs.web.WebServerProperties;
-import net.minecraft.Util;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.TriState;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelResource;
@@ -26,8 +33,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.common.util.TriState;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.CommandEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
@@ -58,7 +64,7 @@ public class KubeJSServerEventHandler {
 	public static void serverBeforeStart(ServerAboutToStartEvent event) {
 		var server = event.getServer();
 
-		if (FMLEnvironment.dist == Dist.DEDICATED_SERVER && !PlatformWrapper.isGeneratingData() && WebServerProperties.get().enabled && !WebServerProperties.get().publicAddress.isEmpty()) {
+		if (FMLEnvironment.getDist() == Dist.DEDICATED_SERVER && !PlatformWrapper.isGeneratingData() && WebServerProperties.get().enabled && !WebServerProperties.get().publicAddress.isEmpty()) {
 			LocalWebServer.start(server, false);
 		}
 
@@ -69,26 +75,35 @@ public class KubeJSServerEventHandler {
 				var tag = NbtIo.readCompressed(p, NbtAccounter.unlimitedHeap());
 
 				if (tag != null) {
-					var t = tag.getCompound("__restore_inventories");
+					var tOpt = tag.getCompound("__restore_inventories");
 
-					if (!t.isEmpty()) {
+					if (tOpt.isPresent()) {
 						tag.remove("__restore_inventories");
 
+						var t = tOpt.get();
 						var playerMap = server.kjs$restoreInventories();
 
-						for (var key : t.getAllKeys()) {
-							var list = t.getList(key, 10);
+						for (var key : t.keySet()) {
+							var list = t.getList(key).orElseGet(ListTag::new);
+
+							if (!list.isEmpty() && list.get(0).getId() != (byte) 10) {
+								continue;
+							}
+
 							var map = playerMap.computeIfAbsent(UUID.fromString(key), k -> new HashMap<>());
 
 							for (var tag2 : list) {
-								var slot = ((CompoundTag) tag2).getShort("Slot");
-								var stack = ItemStack.parse(server.registryAccess(), tag2);
+								if (!(tag2 instanceof CompoundTag c)) {
+									continue;
+								}
 
-								stack.ifPresent(itemStack -> map.put((int) slot, itemStack));
+								var slot = c.getShort("Slot").orElse((short) 0);
+								var stackResult = parseItemStack(server.registryAccess(), tag2);
+								stackResult.result().ifPresent(itemStack -> map.put((int) slot, itemStack));
+
 							}
 						}
 					}
-
 					server.kjs$getPersistentData().merge(tag);
 				}
 			} catch (Exception ex) {
@@ -96,7 +111,10 @@ public class KubeJSServerEventHandler {
 			}
 		}
 	}
-
+	static DataResult<ItemStack> parseItemStack(RegistryAccess access, Tag tag) {
+		RegistryOps<Tag> ops = access.createSerializationContext(NbtOps.INSTANCE);
+		return ItemStack.CODEC.parse(ops, tag);
+	}
 	@SubscribeEvent
 	public static void serverStarting(ServerStartingEvent event) {
 		ServerEvents.LOADED.post(ScriptType.SERVER, new ServerKubeEvent(event.getServer()));
@@ -140,7 +158,9 @@ public class KubeJSServerEventHandler {
 					for (var entry2 : entry.getValue().entrySet()) {
 						var tag = new CompoundTag();
 						tag.putShort("Slot", entry2.getKey().shortValue());
-						entry2.getValue().save(level.registryAccess(), tag);
+						RegistryOps<Tag> ops = level.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+						Tag itemTag = ItemStack.CODEC.encodeStart(ops, entry2.getValue()).getOrThrow();
+						tag.put("Item", itemTag);
 						list.add(tag);
 					}
 
@@ -172,8 +192,8 @@ public class KubeJSServerEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void addReloadListeners(AddReloadListenerEvent event) {
-		event.addListener(new KubeJSReloadListener(event.getServerResources()));
+	public static void addReloadListeners(AddServerReloadListenersEvent event) {
+		event.addListener(Identifier.fromNamespaceAndPath(KubeJS.MOD_ID, "kubejs_resources"), new KubeJSReloadListener(event.getServerResources()));
 	}
 
 	@SubscribeEvent

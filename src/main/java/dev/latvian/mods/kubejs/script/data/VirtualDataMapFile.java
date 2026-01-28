@@ -4,13 +4,13 @@ import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Util;
 import net.neoforged.neoforge.common.conditions.WithConditions;
 import net.neoforged.neoforge.registries.datamaps.DataMapEntry;
 import net.neoforged.neoforge.registries.datamaps.DataMapFile;
@@ -42,7 +42,7 @@ public class VirtualDataMapFile<RT, DT> implements BiConsumer<Identifier, DT> {
 	public VirtualDataMapFile(DataMapType<RT, DT> type, VirtualDataPack pack) {
 		this.pack = pack;
 		this.registryAccess = pack.getRegistries();
-		this.registry = registryAccess.access().registryOrThrow(type.registryKey());
+		this.registry = registryAccess.access().lookupOrThrow(type.registryKey());
 	}
 
 	public void replaceAll() {
@@ -141,6 +141,6 @@ public class VirtualDataMapFile<RT, DT> implements BiConsumer<Identifier, DT> {
 	@Override
 	@HideFromJS
 	public void accept(Identifier id, DT data) {
-		add(registry.getHolderOrThrow(ResourceKey.create(registry.key(), id)), data);
+		add(registry.get(ResourceKey.create(registry.key(), id)).get(), data);
 	}
 }

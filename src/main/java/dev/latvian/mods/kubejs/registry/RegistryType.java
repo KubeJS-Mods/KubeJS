@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.JavaWrapper;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -38,7 +38,7 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 		CLASS_MAP.computeIfAbsent(t.baseClass, c -> new ArrayList<>(1)).add(t);
 
 		if (DevProperties.get().logRegistryTypes) {
-			KubeJS.LOGGER.info("Registered RegistryType '{}': {}", key.location(), type);
+			KubeJS.LOGGER.info("Registered RegistryType '{}': {}", key.identifier(), type);
 		}
 	}
 
@@ -84,7 +84,7 @@ public record RegistryType<T>(ResourceKey<Registry<T>> key, Class<?> baseClass, 
 
 	@Override
 	public String toString() {
-		return key.location() + "=" + type;
+		return key.identifier() + "=" + type;
 	}
 
 	public static class Scanner {

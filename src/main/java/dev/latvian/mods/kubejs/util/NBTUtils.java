@@ -70,9 +70,9 @@ public interface NBTUtils {
 		return switch (t) {
 			case null -> JsonNull.INSTANCE;
 			case EndTag endTag -> JsonNull.INSTANCE;
-			case StringTag stringTag -> new JsonPrimitive(stringTag.getAsString());
-			case NumericTag numericTag -> new JsonPrimitive(numericTag.getAsNumber());
-			case CollectionTag<?> l -> {
+			case StringTag stringTag -> new JsonPrimitive(stringTag.asString().get());
+			case NumericTag numericTag -> new JsonPrimitive(numericTag.asNumber().get());
+			case CollectionTag l -> {
 				JsonArray array = new JsonArray();
 
 				for (Tag tag : l) {
@@ -84,7 +84,7 @@ public interface NBTUtils {
 			case CompoundTag c -> {
 				JsonObject object = new JsonObject();
 
-				for (String key : c.getAllKeys()) {
+				for (String key : c.keySet()) {
 					object.add(key, toJson(c.get(key)));
 				}
 
@@ -95,7 +95,7 @@ public interface NBTUtils {
 	}
 
 	@Nullable
-	static OrderedCompoundTag read(FriendlyByteBuf buf) {
+	static CompoundTag read(FriendlyByteBuf buf) {
 		int i = buf.readerIndex();
 		byte b = buf.readByte();
 		if (b == 0) {
@@ -129,9 +129,9 @@ public interface NBTUtils {
 		return tag.tags;
 	}
 
-	TagType<OrderedCompoundTag> COMPOUND_TYPE = new TagType.VariableSize<>() {
+	TagType<CompoundTag> COMPOUND_TYPE = new TagType.VariableSize<>() {
 		@Override
-		public OrderedCompoundTag load(DataInput dataInput, NbtAccounter accounter) throws IOException {
+		public CompoundTag load(DataInput dataInput, NbtAccounter accounter) throws IOException {
 			accounter.pushDepth();
 
 			try {
@@ -148,7 +148,7 @@ public interface NBTUtils {
 					}
 				}
 
-				return new OrderedCompoundTag(map);
+				return new CompoundTag(map);
 			} finally {
 				accounter.popDepth();
 			}
@@ -246,6 +246,7 @@ public interface NBTUtils {
 			return string;
 		}
 	};
+
 
 	TagType<ListTag> LIST_TYPE = new TagType.VariableSize<>() {
 		@Override

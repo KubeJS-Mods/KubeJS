@@ -11,6 +11,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.neoforged.fml.loading.FMLLoader;
 import org.jetbrains.annotations.NotNull;
@@ -127,10 +128,10 @@ public class VirtualResourcePack extends AbstractPackResources implements KubeRe
 		return Set.copyOf(namespaces);
 	}
 
-	@Nullable
+
 	@Override
-	public <T> T getMetadataSection(MetadataSectionSerializer<T> serializer) {
-		return null;
+	public <T> @org.jspecify.annotations.Nullable T getMetadataSection(MetadataSectionType<T> metadataSerializer) throws IOException {
+		return super.getMetadataSection(metadataSerializer);
 	}
 
 	@Override

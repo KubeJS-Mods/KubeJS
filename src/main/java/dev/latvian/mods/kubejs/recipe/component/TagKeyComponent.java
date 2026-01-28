@@ -100,7 +100,7 @@ public record TagKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, 
 		if (typeOverride != null) {
 			return typeOverride.toString();
 		} else {
-			return (hashed ? "hashed_tag<" : "tag<") + ID.reduce(registry.location()) + ">";
+			return (hashed ? "hashed_tag<" : "tag<") + ID.reduce(registry.identifier()) + ">";
 		}
 	}
 }

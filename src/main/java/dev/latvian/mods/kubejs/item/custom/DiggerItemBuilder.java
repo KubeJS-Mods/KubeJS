@@ -29,9 +29,9 @@ public class DiggerItemBuilder extends HandheldItemBuilder {
 
 	public static class Pickaxe extends DiggerItemBuilder {
 		public static final Identifier[] PICKAXE_TAGS = {
-			ItemTags.PICKAXES.location(),
-			ItemTags.CLUSTER_MAX_HARVESTABLES.location(),
-			Tags.Items.MINING_TOOL_TOOLS.location(),
+			ItemTags.PICKAXES.identifier(),
+			ItemTags.CLUSTER_MAX_HARVESTABLES.identifier(),
+			Tags.Items.MINING_TOOL_TOOLS.identifier(),
 		};
 
 		public static final Identifier PICKAXE_MODEL = Identifier.withDefaultNamespace("item/iron_pickaxe");
@@ -45,7 +45,7 @@ public class DiggerItemBuilder extends HandheldItemBuilder {
 
 	public static class Shovel extends DiggerItemBuilder {
 		public static final Identifier[] SHOVEL_TAGS = {
-			ItemTags.SHOVELS.location(),
+			ItemTags.SHOVELS.identifier(),
 		};
 
 		public static final Identifier SHOVEL_MODEL = Identifier.withDefaultNamespace("item/iron_shovel");
@@ -59,7 +59,7 @@ public class DiggerItemBuilder extends HandheldItemBuilder {
 
 	public static class Axe extends DiggerItemBuilder {
 		public static final Identifier[] AXE_TAGS = {
-			ItemTags.AXES.location(),
+			ItemTags.AXES.identifier(),
 		};
 
 		public static final Identifier AXE_MODEL = Identifier.withDefaultNamespace("item/iron_axe");
@@ -73,7 +73,7 @@ public class DiggerItemBuilder extends HandheldItemBuilder {
 
 	public static class Hoe extends DiggerItemBuilder {
 		public static final Identifier[] HOE_TAGS = {
-			ItemTags.HOES.location(),
+			ItemTags.HOES.identifier(),
 		};
 
 		public static final Identifier HOE_MODEL = Identifier.withDefaultNamespace("item/iron_hoe");

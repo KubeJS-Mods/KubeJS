@@ -40,14 +40,14 @@ public class RegistryEventHandler {
 
 		if (objStorage.objects.isEmpty()) {
 			if (DevProperties.get().logRegistryEventObjects) {
-				KubeJS.LOGGER.info("Skipping {} registry - no objects to build", registryKey.location());
+				KubeJS.LOGGER.info("Skipping {} registry - no objects to build", registryKey.identifier());
 			}
 
 			return;
 		}
 
 		if (DevProperties.get().logRegistryEventObjects) {
-			KubeJS.LOGGER.info("Building {} objects of {} registry", objStorage.objects.size(), registryKey.location());
+			KubeJS.LOGGER.info("Building {} objects of {} registry", objStorage.objects.size(), registryKey.identifier());
 		}
 
 		int added = 0;
@@ -57,7 +57,7 @@ public class RegistryEventHandler {
 				event.register(registryKey, builder.id, builder::createTransformedObject);
 
 				if (DevProperties.get().logRegistryEventObjects) {
-					ConsoleJS.STARTUP.info("+ " + registryKey.location() + " | " + builder.id);
+					ConsoleJS.STARTUP.info("+ " + registryKey.identifier() + " | " + builder.id);
 				}
 
 				added++;
@@ -65,7 +65,7 @@ public class RegistryEventHandler {
 		}
 
 		if (!objStorage.objects.isEmpty() && DevProperties.get().logRegistryEventObjects) {
-			KubeJS.LOGGER.info("Registered {}/{} objects of {}", added, objStorage.objects.size(), registryKey.location());
+			KubeJS.LOGGER.info("Registered {}/{} objects of {}", added, objStorage.objects.size(), registryKey.identifier());
 		}
 	}
 }

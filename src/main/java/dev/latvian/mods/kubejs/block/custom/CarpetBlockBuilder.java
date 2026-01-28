@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.CarpetBlock;
 @ReturnsSelf
 public class CarpetBlockBuilder extends ShapedBlockBuilder {
 	public static final Identifier[] CARPET_TAGS = {
-		BlockTags.WOOL_CARPETS.location(),
+		BlockTags.WOOL_CARPETS.identifier(),
 	};
 
 	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/carpet");

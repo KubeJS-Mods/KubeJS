@@ -65,7 +65,7 @@ public class RegExHolderSet<T> extends HolderSet.ListBacked<T> implements ICusto
 	@Override
 	protected List<Holder<T>> contents() {
 		if (list == null) {
-			list = List.copyOf(registryLookup.listElements().filter(ref -> pattern.matcher(ref.key().location().toString()).find()).toList());
+			list = List.copyOf(registryLookup.listElements().filter(ref -> pattern.matcher(ref.key().identifier().toString()).find()).toList());
 		}
 
 		return list;

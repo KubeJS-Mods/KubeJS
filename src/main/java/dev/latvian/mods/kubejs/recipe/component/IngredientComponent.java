@@ -12,7 +12,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient> codec, boolean allowEmpty) implements RecipeComponent<Ingredient> {
-	public static final RecipeComponentType<Ingredient> INGREDIENT = RecipeComponentType.unit(KubeJS.id("ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC_NONEMPTY, false));
+	public static final RecipeComponentType<Ingredient> INGREDIENT = RecipeComponentType.unit(KubeJS.id("ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC, false));
 	public static final RecipeComponentType<Ingredient> OPTIONAL_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC, true));
 
 	@Override
@@ -36,16 +36,16 @@ public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient>
 			return true;
 		}
 
-		var stacks = value.getItems();
+		var stacks = value.getValues();
 
-		if (stacks.length == 0) {
+		if (stacks.size() == 0) {
 			return true;
 		}
 
 		int count = 0;
 
 		for (var stack : stacks) {
-			if (!stack.isEmpty() && stack.getItem() != Items.BARRIER) {
+			if (!stack.value().getDefaultInstance().isEmpty() && stack.value().asItem() != Items.BARRIER) {
 				count++;
 			}
 		}

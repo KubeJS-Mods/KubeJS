@@ -25,10 +25,10 @@ import dev.latvian.mods.rhino.EvaluatorException;
 import dev.latvian.mods.rhino.NativeJavaMap;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import net.minecraft.Util;
+import net.minecraft.core.component.predicates.DataComponentPredicate;
+import net.minecraft.util.Util;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
@@ -107,7 +107,7 @@ public interface DataComponentWrapper {
 			return (DataComponentType<?>) object;
 		}
 
-		return BuiltInRegistries.DATA_COMPONENT_TYPE.get(ID.mc(object));
+		return BuiltInRegistries.DATA_COMPONENT_TYPE.get(ID.mc(object)).get().value();
 	}
 
 	static DataComponentMap readMap(@Nullable DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {

@@ -54,7 +54,7 @@ public class TagKubeEvent implements KubeEvent {
 	}
 
 	public Identifier getType() {
-		return registryKey.location();
+		return registryKey.identifier();
 	}
 
 	public TagWrapper get(Identifier id) {
@@ -87,7 +87,7 @@ public class TagKubeEvent implements KubeEvent {
 
 	public Set<Identifier> getElementIds() {
 		if (elementIds == null) {
-			elementIds = Cast.to(vanillaRegistry.holders().map(Holder.Reference::key).map(ResourceKey::location).collect(Collectors.toSet()));
+			elementIds = Cast.to(vanillaRegistry.listElements().map(Holder.Reference::key).map(ResourceKey::identifier).collect(Collectors.toSet()));
 		}
 
 		return elementIds;

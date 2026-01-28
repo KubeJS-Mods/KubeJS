@@ -34,7 +34,7 @@ public record GeneratedData(Identifier id, Supplier<byte[]> data) implements IoS
 
 	public static final GeneratedData PACK_ICON = new GeneratedData(KubeJS.id("textures/kubejs_logo.png"), () -> {
 		try {
-			return Files.readAllBytes(KubeJS.thisMod.getModInfo().getOwningFile().getFile().findResource("assets", "kubejs", "textures", "kubejs_logo.png"));
+			return Files.readAllBytes(KubeJS.thisMod.getModInfo().getOwningFile().getFile().getFilePath().resolve("assets", "kubejs", "textures", "kubejs_logo.png"));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return new byte[0];

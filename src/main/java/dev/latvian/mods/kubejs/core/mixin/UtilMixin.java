@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
 import dev.latvian.mods.kubejs.script.KubeJSBackgroundThread;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

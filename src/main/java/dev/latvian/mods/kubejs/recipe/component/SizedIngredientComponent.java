@@ -18,8 +18,14 @@ public record SizedIngredientComponent(RecipeComponentType<?> type, Codec<SizedI
 	public static final RecipeComponentType<SizedIngredient> SIZED_INGREDIENT = RecipeComponentType.unit(KubeJS.id("sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, false));
 	public static final RecipeComponentType<SizedIngredient> OPTIONAL_SIZED_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, true));
 
-	public static final RecipeComponentType<SizedIngredient> FLAT = RecipeComponentType.unit(KubeJS.id("flat_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.FLAT_CODEC, false));
-	public static final RecipeComponentType<SizedIngredient> OPTIONAL_FLAT = RecipeComponentType.unit(KubeJS.id("optional_flat_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.FLAT_CODEC, true));
+	public static final RecipeComponentType<SizedIngredient> FLAT =
+		RecipeComponentType.unit(KubeJS.id("flat_sized_ingredient"),
+			type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, false));
+
+	public static final RecipeComponentType<SizedIngredient> OPTIONAL_FLAT =
+		RecipeComponentType.unit(KubeJS.id("optional_flat_sized_ingredient"),
+			type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, true));
+
 
 	@Override
 	public TypeInfo typeInfo() {

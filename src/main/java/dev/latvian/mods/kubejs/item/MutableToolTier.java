@@ -58,7 +58,7 @@ public class MutableToolTier implements Tier {
 	}
 
 	public Identifier getIncorrectBlocksForDropsTag() {
-		return incorrectBlocksForDrops.location();
+		return incorrectBlocksForDrops.identifier();
 	}
 
 	@Override

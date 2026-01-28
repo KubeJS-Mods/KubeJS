@@ -10,9 +10,9 @@ public record RegistryRegExpPredicate<T>(Pattern pattern) implements RegistryPre
 	public boolean test(Holder<T> holder) {
 		try {
 			if (holder instanceof Holder.Reference<T> ref) {
-				return pattern.matcher(ref.key().location().toString()).find();
+				return pattern.matcher(ref.key().identifier().toString()).find();
 			} else {
-				return pattern.matcher(holder.getKey().location().toString()).find();
+				return pattern.matcher(holder.getKey().identifier().toString()).find();
 			}
 		} catch (Exception ex) {
 			return false;

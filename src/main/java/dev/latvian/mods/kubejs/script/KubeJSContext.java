@@ -114,10 +114,10 @@ public class KubeJSContext extends Context {
 	public Registry<?> lookupRegistry(TypeInfo type, Object from) {
 		var registryType = lookupRegistryType(type, from);
 
-		var registry = getRegistries().access().registry(registryType.key()).orElse(null);
+		var registry = getRegistries().access().lookup(registryType.key()).orElse(null);
 
 		if (registry == null) {
-			throw reportRuntimeError("Can't interpret '" + from + "' as '" + registryType.key().location() + "': registry not found", this);
+			throw reportRuntimeError("Can't interpret '" + from + "' as '" + registryType.key().identifier() + "': registry not found", this);
 		}
 
 		return registry;
@@ -164,10 +164,10 @@ public class KubeJSContext extends Context {
 			var reg = RegistryType.lookup(target);
 
 			if (reg != null) {
-				var registry = getRegistries().access().registry(reg.key()).orElse(null);
+				var registry = getRegistries().access().lookup(reg.key()).orElse(null);
 
 				if (registry == null) {
-					throw reportRuntimeError("Can't interpret '" + from + "' as '" + reg.key().location() + "': registry not found", this);
+					throw reportRuntimeError("Can't interpret '" + from + "' as '" + reg.key().identifier() + "': registry not found", this);
 				}
 
 				var value = registry.get(ID.mc(from));
@@ -175,7 +175,7 @@ public class KubeJSContext extends Context {
 				if (value != null) {
 					return value;
 				} else {
-					throw reportRuntimeError("Can't interpret '" + from + "' as '" + reg.key().location() + "': entry not found", this);
+					throw reportRuntimeError("Can't interpret '" + from + "' as '" + reg.key().identifier() + "': entry not found", this);
 				}
 			}
 		}
@@ -251,7 +251,7 @@ public class KubeJSContext extends Context {
 		if (from instanceof CompoundTag tag) {
 			var map = new LinkedHashMap<>();
 
-			for (var key : tag.getAllKeys()) {
+			for (var key : tag.keySet()) {
 				map.put(kTarget == TypeInfo.STRING ? key : String.valueOf(jsToJava(key, kTarget)), jsToJava(tag.get(key), vTarget));
 			}
 

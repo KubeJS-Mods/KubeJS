@@ -234,15 +234,15 @@ public class DumpCommands {
 
 	public static <T> int registry(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
 		var ids = source.registryAccess().registry(registry)
-			.orElseThrow(() -> KubeJSCommands.NO_REGISTRY.create(registry.location()))
+			.orElseThrow(() -> KubeJSCommands.NO_REGISTRY.create(registry.identifier()))
 			.holders();
 
 		source.sendSystemMessage(Component.empty());
-		source.sendSystemMessage(Component.literal("List of all entries for registry " + registry.location() + ":"));
+		source.sendSystemMessage(Component.literal("List of all entries for registry " + registry.identifier() + ":"));
 		source.sendSystemMessage(Component.empty());
 
 		var size = ids.map(holder -> {
-			var id = holder.key().location();
+			var id = holder.key().identifier();
 			return Component.literal("- %s".formatted(id)).withStyle(Style.EMPTY
 				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("%s [%s]".formatted(holder.value(), holder.value().getClass().getName()))))
 			);

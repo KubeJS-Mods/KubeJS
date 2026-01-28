@@ -142,7 +142,7 @@ public class FoodBuilder {
 				cachedEffect = BuiltInRegistries.MOB_EFFECT.getHolder(id).orElse(null);
 
 				if (cachedEffect == null) {
-					var effectIds = BuiltInRegistries.MOB_EFFECT.entrySet().stream().map(entry -> entry.getKey().location()).collect(Collectors.toSet());
+					var effectIds = BuiltInRegistries.MOB_EFFECT.entrySet().stream().map(entry -> entry.getKey().identifier()).collect(Collectors.toSet());
 					throw new RuntimeException(String.format("Missing effect '%s'. Check spelling or maybe potion id was used instead of effect id. Possible ids: %s", id, effectIds));
 				}
 			}

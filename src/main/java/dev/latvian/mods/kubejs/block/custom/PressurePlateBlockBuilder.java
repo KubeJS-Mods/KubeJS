@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.properties.BlockSetType;
 @ReturnsSelf
 public class PressurePlateBlockBuilder extends ShapedBlockBuilder implements ButtonOrPressurePlateBuilder {
 	public static final Identifier[] PRESSURE_PLATE_TAGS = {
-		BlockTags.PRESSURE_PLATES.location(),
+		BlockTags.PRESSURE_PLATES.identifier(),
 	};
 
 	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/pressure_plate_up");
@@ -41,7 +41,7 @@ public class PressurePlateBlockBuilder extends ShapedBlockBuilder implements But
 		super(i, "_pressure_plate");
 		noCollision();
 		tagBoth(PRESSURE_PLATE_TAGS);
-		// tagBoth(BlockTags.WOODEN_PRESSURE_PLATES.location());
+		// tagBoth(BlockTags.WOODEN_PRESSURE_PLATES.identifier());
 		behaviour = BlockSetType.OAK;
 		ticksToStayPressed = 20;
 	}

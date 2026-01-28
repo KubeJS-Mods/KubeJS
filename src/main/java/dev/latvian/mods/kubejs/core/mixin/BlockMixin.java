@@ -33,7 +33,7 @@ public abstract class BlockMixin implements BlockKJS {
 	@Override
 	public String kjs$getId() {
 		if (kjs$id == null) {
-			kjs$id = kjs$getBlock().builtInRegistryHolder().key().location().toString();
+			kjs$id = kjs$getBlock().builtInRegistryHolder().key().identifier().toString();
 		}
 
 		return kjs$id;

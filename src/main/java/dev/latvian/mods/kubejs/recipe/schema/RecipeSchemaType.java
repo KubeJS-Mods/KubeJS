@@ -23,18 +23,18 @@ public class RecipeSchemaType {
 		this.id = id;
 		this.schema = schema;
 		this.serializerKey = ResourceKey.create(Registries.RECIPE_SERIALIZER, schema.typeOverride == null ? id : schema.typeOverride);
-		serializerType = serializerKey.location().toString();
+		serializerType = serializerKey.identifier().toString();
 	}
 
 	public RecipeSerializer<?> getSerializer() {
 		if (serializer == null) {
-			serializer = Optional.ofNullable(BuiltInRegistries.RECIPE_SERIALIZER.get(serializerKey));
+			serializer = Optional.ofNullable(BuiltInRegistries.RECIPE_SERIALIZER.get(serializerKey).get().value());
 		}
 
 		var s = serializer.orElse(null);
 
 		if (s == null) {
-			throw new KubeRuntimeException("Serializer for type " + serializerKey.location() + " is not found!");
+			throw new KubeRuntimeException("Serializer for type " + serializerKey.identifier() + " is not found!");
 		}
 
 		return s;

@@ -49,7 +49,7 @@ public class ModResourceBindings {
 	}
 
 	public void readBindings(String modId, IModFile mod) throws IOException {
-		var resource = mod.findResource("kubejs.bindings.txt");
+		var resource = mod.getFilePath().resolve("kubejs.bindings.txt");
 		if (Files.exists(resource)) {
 			try (var lines = Files.lines(resource)) {
 				List<BindingProvider> providers = lines.map(s -> s.split("#", 2)[0].trim())

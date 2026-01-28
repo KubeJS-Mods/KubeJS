@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.DevProperties;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 
 import java.net.URI;
 import java.nio.file.Path;

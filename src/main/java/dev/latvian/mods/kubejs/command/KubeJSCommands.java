@@ -135,7 +135,7 @@ public class KubeJSCommands {
 					.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
 						ctx.getSource().registryAccess()
 							.registries()
-							.map(entry -> entry.key().location().toString()), builder)
+							.map(entry -> entry.key().identifier().toString()), builder)
 					)
 					.executes(ctx -> listTagsFor(ctx.getSource(), registry(ctx, "registry")))
 					.then(Commands.argument("tag", IdentifierArgument.id())
@@ -156,7 +156,7 @@ public class KubeJSCommands {
 						.suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
 							ctx.getSource().registryAccess()
 								.registries()
-								.map(entry -> entry.key().location().toString()), builder)
+								.map(entry -> entry.key().identifier().toString()), builder)
 						)
 						.executes(ctx -> DumpCommands.registry(ctx.getSource(), registry(ctx, "registry")))
 					)
@@ -253,7 +253,7 @@ public class KubeJSCommands {
 
 	private static <T> Stream<TagKey<T>> allTags(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
 		return source.registryAccess().registry(registry)
-			.orElseThrow(() -> NO_REGISTRY.create(registry.location()))
+			.orElseThrow(() -> NO_REGISTRY.create(registry.identifier()))
 			.getTagNames();
 	}
 
@@ -478,11 +478,11 @@ public class KubeJSCommands {
 		var tags = allTags(source, registry);
 
 		source.sendSystemMessage(Component.empty());
-		source.sendSystemMessage(Component.literal("List of all Tags for " + registry.location() + ":"));
+		source.sendSystemMessage(Component.literal("List of all Tags for " + registry.identifier() + ":"));
 		source.sendSystemMessage(Component.empty());
 
 		var size = tags.map(TagKey::location).map(tag -> Component.literal("- %s".formatted(tag)).withStyle(Style.EMPTY
-			.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs list_tag %s %s".formatted(registry.location(), tag)))
+			.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs list_tag %s %s".formatted(registry.identifier(), tag)))
 			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("[Show all entries for %s]".formatted(tag))))
 		)).mapToLong(msg -> {
 			source.sendSystemMessage(msg);
@@ -500,7 +500,7 @@ public class KubeJSCommands {
 	private static <T> int tagObjects(CommandSourceStack source, TagKey<T> key) throws CommandSyntaxException {
 		var registry = source.registryAccess()
 			.registry(key.registry())
-			.orElseThrow(() -> NO_REGISTRY.create(key.registry().location()));
+			.orElseThrow(() -> NO_REGISTRY.create(key.registry().identifier()));
 
 		var tag = registry.getTag(key);
 
@@ -509,13 +509,13 @@ public class KubeJSCommands {
 			return 0;
 		}
 		source.sendSystemMessage(Component.empty());
-		source.sendSystemMessage(Component.literal("Contents of #" + key.location() + " [" + key.registry().location() + "]:"));
+		source.sendSystemMessage(Component.literal("Contents of #" + key.identifier() + " [" + key.registry().identifier() + "]:"));
 		source.sendSystemMessage(Component.empty());
 
 		var items = tag.get();
 
 		for (var holder : items) {
-			var id = holder.unwrap().map(o -> o.location().toString(), o -> o + " (unknown ID)");
+			var id = holder.unwrap().map(o -> o.identifier().toString(), o -> o + " (unknown ID)");
 			source.sendSystemMessage(Component.literal("- " + id));
 		}
 
@@ -554,16 +554,16 @@ public class KubeJSCommands {
 
 	private static int exportRecipeSchemaJson(CommandSourceStack source, ResourceKey<?> id) {
 		var storage = source.getServer().getServerResources().managers().kjs$getServerScriptManager().recipeSchemaStorage;
-		var schemaType = storage.namespace(id.location().getNamespace()).get(id.location().getPath());
+		var schemaType = storage.namespace(id.identifier().getNamespace()).get(id.identifier().getPath());
 		var ops = source.getServer().registryAccess().createSerializationContext(JsonOps.INSTANCE);
 
 		source.sendSuccess(() -> Component.literal("Check console/log for the exported JSON"), false);
 
 		if (schemaType != null) {
 			var json = schemaType.schema.toJson(storage, schemaType, ops);
-			ConsoleJS.SERVER.info("JSON of " + id.location() + ": (May be inaccurate!)\n" + JsonUtils.toPrettyString(json));
+			ConsoleJS.SERVER.info("JSON of " + id.identifier() + ": (May be inaccurate!)\n" + JsonUtils.toPrettyString(json));
 		} else {
-			ConsoleJS.SERVER.info("Failed to generate JSON of " + id.location());
+			ConsoleJS.SERVER.info("Failed to generate JSON of " + id.identifier());
 		}
 
 		return 1;

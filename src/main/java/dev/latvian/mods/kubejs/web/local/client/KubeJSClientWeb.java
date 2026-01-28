@@ -227,7 +227,7 @@ public class KubeJSClientWeb {
 					var tags = new JsonArray();
 
 					for (var t : item.value().builtInRegistryHolder().tags().toList()) {
-						tags.add(t.location().toString());
+						tags.add(t.identifier().toString());
 					}
 
 					if (!tags.isEmpty()) {
@@ -256,7 +256,7 @@ public class KubeJSClientWeb {
 					var tags = new JsonArray();
 
 					for (var t : block.builtInRegistryHolder().tags().toList()) {
-						tags.add(t.location().toString());
+						tags.add(t.identifier().toString());
 					}
 
 					if (!tags.isEmpty()) {
@@ -282,7 +282,7 @@ public class KubeJSClientWeb {
 					var tags = new JsonArray();
 
 					for (var t : fluid.builtInRegistryHolder().tags().toList()) {
-						tags.add(t.location().toString());
+						tags.add(t.identifier().toString());
 					}
 
 					if (!tags.isEmpty()) {

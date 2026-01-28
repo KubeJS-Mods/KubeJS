@@ -6,9 +6,9 @@ public record RegistryNamespacePredicate<T>(String namespace) implements Registr
 	@Override
 	public boolean test(Holder<T> holder) {
 		if (holder instanceof Holder.Reference<T> ref) {
-			return ref.key().location().getNamespace().equals(namespace);
+			return ref.key().identifier().getNamespace().equals(namespace);
 		} else {
-			return holder.getKey().location().getNamespace().equals(namespace);
+			return holder.getKey().identifier().getNamespace().equals(namespace);
 		}
 	}
 

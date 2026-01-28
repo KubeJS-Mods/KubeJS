@@ -208,12 +208,12 @@ public class ServerScriptManager extends ScriptManager {
 						var codec = codecs.get(b.registryKey);
 
 						if (codec == null) {
-							throw new KubeRuntimeException("Don't know how to encode '" + b.id + "' of '" + b.registryKey.location() + "'!").source(b.sourceLine);
+							throw new KubeRuntimeException("Don't know how to encode '" + b.id + "' of '" + b.registryKey.identifier() + "'!").source(b.sourceLine);
 						}
 
 						var obj = b.createTransformedObject();
 						var json = codec.encodeStart(ops, Cast.to(obj)).getOrThrow();
-						var k = b.registryKey.location();
+						var k = b.registryKey.identifier();
 
 						if (k.getNamespace().equals("minecraft")) {
 							registriesDataPack.json(Identifier.fromNamespaceAndPath(b.id.getNamespace(), k.getPath() + "/" + b.id.getPath()), json);
@@ -221,7 +221,7 @@ public class ServerScriptManager extends ScriptManager {
 							registriesDataPack.json(Identifier.fromNamespaceAndPath(b.id.getNamespace(), k.getNamespace() + "/" + k.getPath() + "/" + b.id.getPath()), json);
 						}
 					} catch (Exception ex) {
-						ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to register object '" + b.id + "' of registry '" + b.registryKey.location() + "'!", ex).source(b.sourceLine));
+						ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to register object '" + b.id + "' of registry '" + b.registryKey.identifier() + "'!", ex).source(b.sourceLine));
 					}
 				}
 

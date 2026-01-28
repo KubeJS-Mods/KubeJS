@@ -184,8 +184,8 @@ public class RecipeSchemaStorage {
 		recipePostProcessorCodec = RecipePostProcessorType.CODEC.dispatch("type", RecipePostProcessor::type, type -> type.mapCodec().apply(rcCtx));
 
 		for (var entry : BuiltInRegistries.RECIPE_SERIALIZER.entrySet()) {
-			var ns = namespace(entry.getKey().location().getNamespace());
-			ns.put(entry.getKey().location().getPath(), new UnknownRecipeSchemaType(ns, entry.getKey().location(), entry.getValue()));
+			var ns = namespace(entry.getKey().identifier().getNamespace());
+			ns.put(entry.getKey().identifier().getPath(), new UnknownRecipeSchemaType(ns, entry.getKey().identifier(), entry.getValue()));
 		}
 
 		var schemaRegistry = new RecipeSchemaRegistry(this);

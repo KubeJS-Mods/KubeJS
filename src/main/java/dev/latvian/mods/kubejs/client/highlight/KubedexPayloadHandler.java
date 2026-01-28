@@ -43,7 +43,7 @@ public class KubedexPayloadHandler {
 	}
 
 	private static CompoundTag flags(int flags) {
-		var tag = new OrderedCompoundTag();
+		var tag = OrderedCompoundTag.create();
 		tag.putBoolean("shift", (flags & 1) != 0);
 		tag.putBoolean("ctrl", (flags & 2) != 0);
 		tag.putBoolean("alt", (flags & 4) != 0);
@@ -55,15 +55,15 @@ public class KubedexPayloadHandler {
 		var blockState = player.level().getBlockState(pos);
 
 		if (!blockState.isAir()) {
-			var payload = new OrderedCompoundTag();
+			var payload = OrderedCompoundTag.create();
 			payload.put("flags", flags(flags));
 
-			var payloadBlock = new OrderedCompoundTag();
+			var payloadBlock = OrderedCompoundTag.create();
 
 			payloadBlock.putString("id", blockState.getBlock().kjs$getId());
-			payloadBlock.putString("dimension", player.level().dimension().location().toString());
+			payloadBlock.putString("dimension", player.level().dimension().identifier().toString());
 
-			var jpos = new OrderedCompoundTag();
+			var jpos = OrderedCompoundTag.create();
 			payloadBlock.put("pos", jpos);
 			jpos.putInt("x", pos.getX());
 			jpos.putInt("y", pos.getY());
@@ -106,17 +106,17 @@ public class KubedexPayloadHandler {
 		var entity = player.level().getEntity(entityId);
 
 		if (entity != null) {
-			var payload = new OrderedCompoundTag();
+			var payload = OrderedCompoundTag.create();
 			payload.put("flags", flags(flags));
 
-			var payloadEntity = new OrderedCompoundTag();
+			var payloadEntity = OrderedCompoundTag.create();
 
 			payloadEntity.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString());
 			payloadEntity.putInt("network_id", entityId);
 			payloadEntity.putString("unique_id", entity.getUUID().toString());
-			payloadEntity.putString("dimension", player.level().dimension().location().toString());
+			payloadEntity.putString("dimension", player.level().dimension().identifier().toString());
 
-			var jpos = new OrderedCompoundTag();
+			var jpos = OrderedCompoundTag.create();
 			payloadEntity.put("pos", jpos);
 			jpos.putDouble("x", entity.position().x);
 			jpos.putDouble("y", entity.position().y);
@@ -166,7 +166,7 @@ public class KubedexPayloadHandler {
 
 		for (var slotStack : stacks) {
 			var stack = slotStack.item;
-			var tag = new OrderedCompoundTag();
+			var tag = OrderedCompoundTag.create();
 			tag.putString("string", stack.kjs$toItemString0(ops));
 			tag.put("item", ItemStack.CODEC.encodeStart(ops, stack).result().get());
 			tag.put("name", ComponentSerialization.FLAT_CODEC.encodeStart(ops, stack.getHoverName()).getOrThrow());

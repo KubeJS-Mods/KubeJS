@@ -96,7 +96,7 @@ public interface KubeDataGenerator extends KubeResourceGenerator {
 	}
 
 	default void setVillagerType(ResourceKey<Biome> biome, VillagerType villagerType) {
-		dataMap(NeoForgeDataMaps.VILLAGER_TYPES, callback -> callback.accept(biome.location(), new BiomeVillagerType(villagerType)));
+		dataMap(NeoForgeDataMaps.VILLAGER_TYPES, callback -> callback.accept(biome.identifier(), new BiomeVillagerType(villagerType)));
 	}
 
 	default void setWaxable(Block from, Block to) {

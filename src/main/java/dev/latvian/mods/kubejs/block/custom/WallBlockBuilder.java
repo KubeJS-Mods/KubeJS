@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.WallBlock;
 // FIXME: fix connection
 public class WallBlockBuilder extends ShapedBlockBuilder {
 	public static final Identifier[] WALL_TAGS = {
-		BlockTags.WALLS.location(),
+		BlockTags.WALLS.identifier(),
 	};
 
 	private static final Identifier POST_MODEL = Identifier.withDefaultNamespace("block/template_wall_post");

@@ -23,13 +23,13 @@ public record TagWrapperStages(Player player) implements Stages {
 
 	@Override
 	public Collection<String> getAll() {
-		return player.getTags();
+		return player.entityTags();
 	}
 
 	@Override
 	public boolean clear() {
-		if (!player.getTags().isEmpty()) {
-			player.getTags().clear();
+		if (!player.entityTags().isEmpty()) {
+			player.entityTags().clear();
 			sync();
 			return true;
 		}
@@ -39,9 +39,9 @@ public record TagWrapperStages(Player player) implements Stages {
 
 	@Override
 	public void replace(Collection<String> stages) {
-		if (!(getPlayer() instanceof ServerPlayer) || !player.getTags().equals(stages)) {
-			player.getTags().clear();
-			player.getTags().addAll(stages);
+		if (!(getPlayer() instanceof ServerPlayer) || !player.entityTags().equals(stages)) {
+			player.entityTags().clear();
+			player.entityTags().addAll(stages);
 			sync();
 		}
 	}

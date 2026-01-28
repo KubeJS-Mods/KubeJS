@@ -25,7 +25,7 @@ public abstract class ServerLevelMixin implements ServerLevelKJS {
 	@Override
 	public CompoundTag kjs$getPersistentData() {
 		if (kjs$persistentData == null) {
-			var t = kjs$self().dimension().location().toString();
+			var t = kjs$self().dimension().identifier().toString();
 			kjs$persistentData = kjs$self().getServer().kjs$getPersistentData().getCompound(t);
 			kjs$self().getServer().kjs$getPersistentData().put(t, kjs$persistentData);
 		}

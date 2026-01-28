@@ -55,7 +55,7 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 		var t = builderInfo.defaultType();
 
 		if (t == null) {
-			throw new KubeRuntimeException("Registry '" + registryKey.location() + "' doesn't have a default type registered!").source(sourceLine);
+			throw new KubeRuntimeException("Registry '" + registryKey.identifier() + "' doesn't have a default type registered!").source(sourceLine);
 		}
 
 		var b = t.factory().createBuilder(id.wrapped());
@@ -102,17 +102,17 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 
 	private <R> void addBuilder(BuilderBase<? extends R> builder) {
 		if (builder == null) {
-			throw new IllegalArgumentException("Can't add null builder in registry '" + builder.registryKey.location() + "'!");
+			throw new IllegalArgumentException("Can't add null builder in registry '" + builder.registryKey.identifier() + "'!");
 		}
 
 		if (DevProperties.get().logRegistryEventObjects) {
-			ConsoleJS.STARTUP.info("~ " + builder.registryKey.location() + " | " + builder.id);
+			ConsoleJS.STARTUP.info("~ " + builder.registryKey.identifier() + " | " + builder.id);
 		}
 
 		var objStorage = RegistryObjectStorage.of(builder.registryKey);
 
 		if (objStorage.objects.containsKey(builder.id)) {
-			throw new IllegalArgumentException("Duplicate key '" + builder.id + "' in registry '" + builder.registryKey.location() + "'!");
+			throw new IllegalArgumentException("Duplicate key '" + builder.id + "' in registry '" + builder.registryKey.identifier() + "'!");
 		}
 
 		objStorage.objects.put(builder.id, (BuilderBase) builder);

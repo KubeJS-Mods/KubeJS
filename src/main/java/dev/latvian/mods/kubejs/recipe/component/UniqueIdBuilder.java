@@ -39,7 +39,7 @@ public record UniqueIdBuilder(StringBuilder builder) {
 
 	public void append(@Nullable ResourceKey<?> key) {
 		if (key != null) {
-			append(key.location());
+			append(key.identifier());
 		}
 	}
 

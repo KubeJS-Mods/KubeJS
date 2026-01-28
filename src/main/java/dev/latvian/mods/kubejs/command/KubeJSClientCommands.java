@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.command;
 import com.mojang.brigadier.CommandDispatcher;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;

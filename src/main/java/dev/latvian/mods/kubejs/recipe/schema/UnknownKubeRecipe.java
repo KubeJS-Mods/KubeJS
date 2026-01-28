@@ -7,8 +7,9 @@ import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 
 public class UnknownKubeRecipe extends KubeRecipe {
 	public static final KubeRecipeFactory RECIPE_FACTORY = new KubeRecipeFactory(KubeJS.id("unknown"), UnknownKubeRecipe.class, UnknownKubeRecipe::new);
@@ -24,23 +25,34 @@ public class UnknownKubeRecipe extends KubeRecipe {
 	@Override
 	public boolean hasInput(RecipeMatchContext cx, ReplacementMatchInfo match) {
 		if (CommonProperties.get().matchJsonRecipes && match.match() instanceof ItemMatch m) {
-			var original = getOriginalRecipe();
-
-			if (original == null) {
+			var recipeJson = json;
+			if (recipeJson == null) {
 				return false;
 			}
 
-			var arr = original.getIngredients();
-
-			//noinspection ConstantValue
-			if (arr == null || arr.isEmpty()) {
-				return false;
-			}
-
-			for (var ingredient : arr) {
-				if (ingredient != null && ingredient != Ingredient.EMPTY && ingredient.kjs$canBeUsedForMatching() && m.matches(cx, ingredient, match.exact())) {
-					return true;
+			if (recipeJson.has("ingredients") && recipeJson.get("ingredients").isJsonArray()) {
+				var arr = recipeJson.getAsJsonArray("ingredients");
+				if (arr.isEmpty()) {
+					return false;
 				}
+
+				for (var el : arr) {
+					if (el == null || el.isJsonNull()) {
+						continue;
+					}
+
+					var ingredient = Ingredient.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, el).result().orElse(null);
+					if (ingredient != null && !ingredient.isEmpty() && ingredient.kjs$canBeUsedForMatching() && m.matches(cx, ingredient, match.exact())) {
+						return true;
+					}
+				}
+
+				return false;
+			}
+
+			if (recipeJson.has("ingredient")) {
+				var ingredient = Ingredient.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, recipeJson.get("ingredient")).result().orElse(null);
+				return ingredient != null && !ingredient.isEmpty() && ingredient.kjs$canBeUsedForMatching() && m.matches(cx, ingredient, match.exact());
 			}
 		}
 
@@ -56,14 +68,26 @@ public class UnknownKubeRecipe extends KubeRecipe {
 	public boolean hasOutput(RecipeMatchContext cx, ReplacementMatchInfo match) {
 		if (CommonProperties.get().matchJsonRecipes && match.match() instanceof ItemMatch m) {
 			var original = getOriginalRecipe();
-
 			if (original == null) {
 				return false;
 			}
 
-			var result = original.getResultItem(type.event.registries.access());
-			//noinspection ConstantValue
-			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.matches(cx, result, match.exact());
+			var ctx = new ContextMap.Builder()
+				.withOptionalParameter(SlotDisplayContext.REGISTRIES, type.event.registries.access())
+				.create(SlotDisplayContext.CONTEXT);
+
+			var displays = original.display();
+			if (displays.isEmpty()) {
+				return false;
+			}
+
+			for (var d : displays) {
+				for (var stack : d.result().resolveForStacks(ctx)) {
+					if (!stack.isEmpty() && m.matches(cx, stack, match.exact())) {
+						return true;
+					}
+				}
+			}
 		}
 
 		return false;

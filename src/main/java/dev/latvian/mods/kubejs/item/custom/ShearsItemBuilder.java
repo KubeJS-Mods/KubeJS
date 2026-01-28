@@ -17,7 +17,7 @@ import net.neoforged.neoforge.common.Tags;
 @ReturnsSelf
 public class ShearsItemBuilder extends ItemBuilder {
 	public static final Identifier[] SHEAR_TAGS = {
-		Tags.Items.TOOLS_SHEAR.location(),
+		Tags.Items.TOOLS_SHEAR.identifier(),
 	};
 
 	public static boolean isCustomShears(ItemStack stack) {

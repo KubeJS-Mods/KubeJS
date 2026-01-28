@@ -19,6 +19,6 @@ public class TypeFilter implements RecipeFilter {
 
 	@Override
 	public String toString() {
-		return "TypeFilter{" + type.location() + '}';
+		return "TypeFilter{" + type.identifier() + '}';
 	}
 }

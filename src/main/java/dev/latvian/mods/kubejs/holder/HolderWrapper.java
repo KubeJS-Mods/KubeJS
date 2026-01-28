@@ -44,7 +44,7 @@ public interface HolderWrapper {
 				var baseClass = cx.lookupRegistryType(param, from).baseClass();
 
 				if (!baseClass.isInstance(from)) {
-					throw Context.reportRuntimeError("Can't interpret '" + from + "' as Holder: can't cast object to '" + baseClass.getName() + "' of " + registry.key().location(), cx);
+					throw Context.reportRuntimeError("Can't interpret '" + from + "' as Holder: can't cast object to '" + baseClass.getName() + "' of " + registry.key().identifier(), cx);
 				}
 			}
 
