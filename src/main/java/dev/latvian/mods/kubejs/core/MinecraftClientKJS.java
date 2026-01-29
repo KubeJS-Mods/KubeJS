@@ -9,6 +9,8 @@ import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.GLFWInputWrapper;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.Param;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.KeyMapping;
@@ -48,11 +50,17 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 	}
 
 	@Override
+	@Info(value = "Runs the specified console command client-side with the player's permission level.", params = {
+		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
+	})
 	default void kjs$runCommand(String command) {
 		kjs$self().player.kjs$runCommand(command);
 	}
 
 	@Override
+	@Info(value = "Runs the specified console command client-side with the player's permission level. The command won't output any logs in chat nor console.", params = {
+		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
+	})
 	default void kjs$runCommandSilent(String command) {
 		kjs$self().player.kjs$runCommandSilent(command);
 	}

@@ -8,6 +8,8 @@ import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.server.ChangesForChat;
 import dev.latvian.mods.kubejs.server.DataExport;
+import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.Param;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.ChatFormatting;
@@ -61,11 +63,17 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 	}
 
 	@Override
+	@Info(value = "Runs the specified console command.", params = {
+		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
+	})
 	default void kjs$runCommand(String command) {
 		kjs$self().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack(), command);
 	}
 
 	@Override
+	@Info(value = "Runs the specified console command. The command won't output any logs in chat nor console.", params = {
+		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
+	})
 	default void kjs$runCommandSilent(String command) {
 		kjs$self().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack().withSuppressedOutput(), command);
 	}

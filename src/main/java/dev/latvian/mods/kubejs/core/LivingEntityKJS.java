@@ -6,6 +6,10 @@ import dev.latvian.mods.kubejs.entity.KubeRayTraceResult;
 import dev.latvian.mods.kubejs.item.FoodEatenKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
+import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.Param;
+import dev.latvian.mods.kubejs.typings.ThisIs;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -31,33 +35,36 @@ public interface LivingEntityKJS extends EntityKJS {
 	ResourceLocation KJS_PLAYER_CUSTOM_SPEED = KubeJS.id("player.speed.modifier");
 
 	@Override
+	@HideFromJS
 	default LivingEntity kjs$self() {
 		return (LivingEntity) this;
 	}
 
-	default void kjs$foodEaten(ItemStack is, FoodProperties food) {
-		if (this instanceof LivingEntity entity) {
-			var event = new FoodEatenKubeEvent(entity, is);
-			var i = is.getItem();
-			var b = i.kjs$getItemBuilder();
+	default void kjs$foodEaten(ItemStack eatenStack, FoodProperties food) {
+		var event = new FoodEatenKubeEvent(kjs$self(), eatenStack);
+		var item = eatenStack.getItem();
+		var itemBuilder = item.kjs$getItemBuilder();
 
-			if (b != null && b.foodBuilder != null && b.foodBuilder.eaten != null) {
-				b.foodBuilder.eaten.accept(event);
-			}
+		if (itemBuilder != null && itemBuilder.foodBuilder != null && itemBuilder.foodBuilder.eaten != null) {
+			itemBuilder.foodBuilder.eaten.accept(event);
+		}
 
-			var key = i.kjs$getKey();
+		var key = item.kjs$getKey();
 
-			if (ItemEvents.FOOD_EATEN.hasListeners(key)) {
-				ItemEvents.FOOD_EATEN.post(entity, key, event);
-			}
+		if (ItemEvents.FOOD_EATEN.hasListeners(key)) {
+			ItemEvents.FOOD_EATEN.post(kjs$self(), key, event);
 		}
 	}
 
 	@Override
+	@ThisIs(LivingEntity.class)
 	default boolean kjs$isLiving() {
 		return true;
 	}
 
+	@Info(value = "Sets the entity's maximum health to specified HP.", params = {
+		@Param(name = "hp", value = "The new maximum health of the entity.")
+	})
 	default void kjs$setMaxHealth(float hp) {
 		kjs$self().getAttribute(Attributes.MAX_HEALTH).setBaseValue(hp);
 	}
@@ -176,8 +183,8 @@ public interface LivingEntityKJS extends EntityKJS {
 		kjs$damageHeldItem(InteractionHand.MAIN_HAND, 1);
 	}
 
-	default boolean kjs$isHoldingInAnyHand(ItemPredicate i) {
-		return i.test(kjs$self().getItemInHand(InteractionHand.MAIN_HAND)) || i.test(kjs$self().getItemInHand(InteractionHand.OFF_HAND));
+	default boolean kjs$isHoldingInAnyHand(ItemPredicate itemPredicate) {
+		return itemPredicate.test(kjs$self().getItemInHand(InteractionHand.MAIN_HAND)) || itemPredicate.test(kjs$self().getItemInHand(InteractionHand.OFF_HAND));
 	}
 
 	default double kjs$getTotalMovementSpeed() {

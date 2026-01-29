@@ -4,13 +4,20 @@ import dev.latvian.mods.kubejs.core.EntityKJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.RelativeMovement;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,6 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Mixin(Entity.class)
@@ -28,7 +36,6 @@ import java.util.UUID;
 public abstract class EntityMixin implements EntityKJS {
 	@Shadow
 	public abstract void playerTouch(Player arg);
-
 	@Unique
 	private CompoundTag kjs$persistentData;
 
@@ -86,9 +93,9 @@ public abstract class EntityMixin implements EntityKJS {
 	@RemapForJS("getStringUuid")
 	public abstract String getStringUUID();
 
-	@Shadow
-	@RemapForJS("getUsername")
-	public abstract String getScoreboardName();
+//	@Shadow
+//	@RemapForJS("getUsername")
+//	public abstract String getScoreboardName();
 
 	@Shadow
 	@RemapForJS("isGlowing")
@@ -126,6 +133,9 @@ public abstract class EntityMixin implements EntityKJS {
 	@RemapForJS("addMotion")
 	public abstract void push(double x, double y, double z);
 
+	/**
+	 * Replaced in JS by {@link EntityKJS#kjs$getPassengers()}.
+	 */
 	@Shadow
 	@HideFromJS
 	public abstract List<Entity> getPassengers();
@@ -134,22 +144,38 @@ public abstract class EntityMixin implements EntityKJS {
 	@RemapForJS("isOnSameTeam")
 	public abstract boolean isAlliedTo(Entity e);
 
+	/**
+	 * KubeJS adds {@link EntityKJS#kjs$getFacing()} which also can specify whether the entity is looking down or up.
+	 */
 	@Shadow
 	@RemapForJS("getHorizontalFacing")
 	public abstract Direction getDirection();
 
+//	@Shadow
+//	@RemapForJS("extinguish")
+//	public abstract void clearFire();
+
 	@Shadow
 	@RemapForJS("extinguish")
-	public abstract void clearFire();
+	public abstract void extinguishFire();
 
 	@Shadow
-	@RemapForJS("attack")
+	@RemapForJS("damage")
 	public abstract boolean hurt(DamageSource source, float hp);
 
-	@Shadow
-	@RemapForJS("getDistanceSq")
-	public abstract double distanceToSqr(double x, double y, double z);
+//	@Shadow
+//	@RemapForJS("getDistanceSq")
+//	public abstract double distanceToSqr(double x, double y, double z);
 
+	// The remaps:
+	// distanceToSqr(double x, double y, double z) - remains as is
+	// distanceToSqr(Vec3 vector) - remains as is
+	// distanceToSqr(Entity entity) - remapped to distanceToEntitySqr
+	// distanceToBlockSqr(BlockPos block) is added by EntityKJS
+
+	/**
+	 * {@link EntityKJS#kjs$getType()} returns a string in JS.
+	 */
 	@Shadow
 	@RemapForJS("getEntityType")
 	public abstract EntityType<?> getType();
@@ -162,7 +188,47 @@ public abstract class EntityMixin implements EntityKJS {
 	@RemapForJS("distanceToEntity")
 	public abstract float distanceTo(Entity arg);
 
+	/**
+	 * Replaced in JS by {@link EntityKJS#kjs$teleportTo(double, double, double)}.
+	 */
+	@Shadow
+	@HideFromJS
+	public abstract void teleportTo(double x, double y, double z);
+
+	/**
+	 * Hidden, most similar equivalent usable by JS is
+	 * {@link EntityKJS#kjs$teleportToLevel(ServerLevel, double, double, double, float, float)}.
+	 */
+	@Shadow
+	@HideFromJS
+	public abstract boolean teleportTo(ServerLevel level, double x, double y, double z, Set<RelativeMovement> relativeMovements, float yaw, float pitch);
+
+	/**
+	 * Replaced in JS by {@link EntityKJS#kjs$getLevel()}.
+	 */
 	@Shadow
 	@HideFromJS
 	public abstract Level level();
+
+	/**
+	 * Disambiguates {@link Entity#spawnAtLocation(ItemStack)} in JS.
+	 */
+	@Shadow
+	@HideFromJS
+	public abstract ItemEntity spawnAtLocation(ItemLike item);
+
+	/**
+	 * Disambiguates {@link Entity#spawnAtLocation(ItemStack, float)} in JS.
+	 */
+	@Shadow
+	@HideFromJS
+	public abstract ItemEntity spawnAtLocation(ItemLike item, int offsetY);
+
+
+	/**
+	 * Disambiguates {@link Entity#moveTo(Vec3, float, float)} in JS.
+	 */
+	@Shadow
+	@RemapForJS("moveToBlockPos")
+	public abstract void moveTo(BlockPos pos, float yRot, float xRot);
 }

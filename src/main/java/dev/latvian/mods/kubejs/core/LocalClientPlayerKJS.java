@@ -4,7 +4,11 @@ import dev.latvian.mods.kubejs.client.KubeSessionData;
 import dev.latvian.mods.kubejs.client.NotificationToast;
 import dev.latvian.mods.kubejs.net.SendDataFromClientPayload;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
+import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.Param;
+import dev.latvian.mods.kubejs.typings.ThisIs;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -16,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 @RemapPrefixForJS("kjs$")
 public interface LocalClientPlayerKJS extends ClientPlayerKJS {
 	@Override
+	@HideFromJS
 	default LocalPlayer kjs$self() {
 		return (LocalPlayer) this;
 	}
@@ -25,17 +30,25 @@ public interface LocalClientPlayerKJS extends ClientPlayerKJS {
 	}
 
 	@Override
+	@Info(value = "Runs the specified console command client-side with the player's permission level.", params = {
+		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
+	})
 	default void kjs$runCommand(String command) {
 		kjs$self().connection.sendCommand(command);
 	}
 
 	@Override
+	@Info(value = "Runs the specified console command client-side with the player's permission level. The command won't output any logs in chat nor console.", params = {
+		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
+	})
 	default void kjs$runCommandSilent(String command) {
 		kjs$self().connection.sendCommand(command);
 	}
 
 	@Override
-	default boolean isSelf() {
+	@ThisIs(LocalPlayer.class)
+	@Info("Checks, whether the entity is a reference to yourself - that is - the client player you are controlling.")
+	default boolean kjs$isSelf() {
 		return true;
 	}
 

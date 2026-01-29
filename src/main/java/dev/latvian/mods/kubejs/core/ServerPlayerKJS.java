@@ -11,6 +11,7 @@ import dev.latvian.mods.kubejs.net.SendDataFromServerPayload;
 import dev.latvian.mods.kubejs.net.SetActivePostShaderPayload;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -37,6 +38,7 @@ import java.util.function.Consumer;
 @RemapPrefixForJS("kjs$")
 public interface ServerPlayerKJS extends PlayerKJS {
 	@Override
+	@HideFromJS
 	default ServerPlayer kjs$self() {
 		return (ServerPlayer) this;
 	}

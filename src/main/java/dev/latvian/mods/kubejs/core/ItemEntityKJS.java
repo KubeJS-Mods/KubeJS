@@ -1,5 +1,8 @@
 package dev.latvian.mods.kubejs.core;
 
+import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.ThisIs;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -8,15 +11,26 @@ import org.jetbrains.annotations.Nullable;
 @RemapPrefixForJS("kjs$")
 public interface ItemEntityKJS extends EntityKJS {
 	@Override
+	@HideFromJS
 	default ItemEntity kjs$self() {
 		return (ItemEntity) this;
 	}
 
 	@Override
 	@Nullable
+	@Info("""
+		Gets the item stack corresponding to the item contained in the item entity.
+		Will be `null` if the contained stack is empty.
+		""")
 	default ItemStack kjs$getItem() {
 		var stack = kjs$self().getItem();
 		return stack.isEmpty() ? null : stack;
+	}
+
+	@Override
+	@ThisIs(ItemEntity.class)
+	default boolean kjs$isItem() {
+		return true;
 	}
 
 	default int kjs$getLifespan() {

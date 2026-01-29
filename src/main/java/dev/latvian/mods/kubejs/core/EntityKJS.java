@@ -1,12 +1,14 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.mods.kubejs.entity.KubeRayTraceResult;
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
+import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.Param;
+import dev.latvian.mods.kubejs.typings.ThisIs;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -19,12 +21,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.commands.TeleportCommand;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -39,7 +45,9 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 @RemapPrefixForJS("kjs$")
+//@SuppressWarnings("unused")
 public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptTypeHolder {
+	@HideFromJS
 	default Entity kjs$self() {
 		return (Entity) this;
 	}
@@ -57,8 +65,21 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		return kjs$self().getType().kjs$getId();
 	}
 
+	@ThisIs(LocalClientPlayerKJS.class)
+	@Info("Checks, whether the entity is a reference to yourself - that is - the client player you are controlling.")
+	default boolean kjs$isSelf() {
+		return false;
+	}
+
+	@Nullable
 	default GameProfile kjs$getProfile() {
-		return new GameProfile(kjs$self().getUUID(), kjs$self().getScoreboardName());
+		return null;
+	}
+
+	@Info("Gets the entity's custom name, or entity ID if entity has no custom name.")
+	default String kjs$getUsername() {
+		Component customName = kjs$self().getCustomName();
+		return customName != null ? customName.getString() : kjs$getType();
 	}
 
 	@Override
@@ -71,12 +92,18 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		return kjs$self().getDisplayName();
 	}
 
+	@Info(value = "Sends a message in chat to the entity.", params = {
+		@Param(name = "message", value = "A text component. It may be a string, which will be implicitly wrapped into a text component."),
+	})
 	@Override
 	default void kjs$tell(Component message) {
 		kjs$self().sendSystemMessage(message);
 	}
 
 	@Override
+	@Info(value = "Runs the specified console command with permission level of the entity.", params = {
+		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
+	})
 	default void kjs$runCommand(String command) {
 		if (kjs$getLevel() instanceof ServerLevel level) {
 			level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack(), command);
@@ -84,45 +111,71 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	@Override
+	@Info(value = "Runs the specified console command with permission level of the entity. The command won't output any logs in chat nor console.", params = {
+		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
+	})
 	default void kjs$runCommandSilent(String command) {
 		if (kjs$getLevel() instanceof ServerLevel level) {
 			level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack().withSuppressedOutput(), command);
 		}
 	}
 
+	@ThisIs(Player.class)
+	@Info("Checks if the entity is a player entity.")
 	default boolean kjs$isPlayer() {
 		return false;
 	}
 
 	@Nullable
+	@Info("""
+		Gets the item stack corresponding to either:
+		- the item contained in the item entity,
+		- the item in the item frame.
+		Will be `null` if the entity is neither an item entity nor an item frame.
+		""")
 	default ItemStack kjs$getItem() {
 		return null;
 	}
 
+	@ThisIs(ItemFrame.class)
+	@Info("Checks if the entity is an item frame entity.")
 	default boolean kjs$isFrame() {
 		return this instanceof ItemFrame;
 	}
 
+	@ThisIs(ItemEntity.class)
+	@Info("Checks if the entity is an item entity.")
+	default boolean kjs$isItem() {
+		return this instanceof ItemEntity;
+	}
+
+	@ThisIs(LivingEntity.class)
+	@Info("Checks if the entity is a `LivingEntity`.")
 	default boolean kjs$isLiving() {
 		return false;
 	}
 
+	@Info("Checks if the entity is a monster.")
 	default boolean kjs$isMonster() {
 		return !kjs$self().getType().getCategory().isFriendly();
 	}
 
+	@Info("Checks if the entity is an animal.")
 	default boolean kjs$isAnimal() {
 		return kjs$self().getType().getCategory().isPersistent();
 	}
 
+	@Info("Checks if the entity is an ambient creature.")
 	default boolean kjs$isAmbientCreature() {
 		return kjs$self().getType().getCategory() == MobCategory.AMBIENT;
 	}
 
+	@Info("Checks if the entity is a water creature.")
 	default boolean kjs$isWaterCreature() {
 		return kjs$self().getType().getCategory() == MobCategory.WATER_CREATURE;
 	}
 
+	@Info("Checks if the entity is a peaceful creature (not a monster).")
 	default boolean kjs$isPeacefulCreature() {
 		return kjs$self().getType().getCategory().isFriendly();
 	}
@@ -166,42 +219,100 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		kjs$self().setDeltaMovement(m.x, m.y, z);
 	}
 
-	default void kjs$teleportTo(ResourceLocation dimension, double x, double y, double z, float yaw, float pitch) {
-		var previousLevel = kjs$getLevel();
-		var level = kjs$getServer().getLevel(ResourceKey.create(Registries.DIMENSION, dimension));
-
-		if (level == null) {
-			throw new IllegalArgumentException("Invalid dimension!");
-		}
-
+	@Info(value = "Teleports an entity to specified coordinates.", params = {
+		@Param(name = "x", value = "The `x` target coordinate."),
+		@Param(name = "y", value = "The `y` target coordinate."),
+		@Param(name = "z", value = "The `z` target coordinate."),
+	})
+	default void kjs$teleportTo(double x, double y, double z) throws IllegalArgumentException {
+		Entity self = kjs$self();
 		if (!Level.isInSpawnableBounds(BlockPos.containing(x, y, z))) {
-			throw new IllegalArgumentException("Invalid coordinates!");
-		} else if (Float.isNaN(yaw) || Float.isNaN(pitch)) {
-			throw new IllegalArgumentException("Invalid rotation!");
+			throw new IllegalArgumentException("The provided coordinates are out of bounds.");
 		}
+		kjs$self().teleportTo(x, y, z);
+	}
 
-		if (level == previousLevel) {
-			kjs$setPositionAndRotation(x, y, z, yaw, pitch);
-			return;
+	private void checkDestinationValidity(BlockPos blockPos, float yaw, float pitch) throws IllegalArgumentException {
+		if (!Level.isInSpawnableBounds(blockPos)) {
+			throw new IllegalArgumentException("The provided coordinates are out of bounds.");
 		}
-
-		try {
-			TeleportCommand.performTeleport(
-				kjs$self().createCommandSourceStack(),
-				kjs$self(),
-				level,
-				x, y, z,
-				Set.of(),
-				yaw, pitch,
-				null
-			);
-		} catch (CommandSyntaxException e) {
-			throw new IllegalArgumentException(e.getRawMessage().getString());
+		if (Float.isNaN(yaw)) {
+			throw new IllegalArgumentException("Yaw is not a number.");
+		}
+		if (Float.isNaN(pitch)) {
+			throw new IllegalArgumentException("Pitch is not a number.");
 		}
 	}
 
+	@Info(value = "Teleports an entity to a specified `ServerLevel`, to specified coordinates and rotation.", params = {
+		@Param(name = "level", value = "A `ServerLevel` to teleport the entity to."),
+		@Param(name = "x", value = "The `x` target coordinate."),
+		@Param(name = "y", value = "The `y` target coordinate."),
+		@Param(name = "z", value = "The `z` target coordinate."),
+		@Param(name = "yaw", value = "The entity's target yaw."),
+		@Param(name = "pitch", value = "The entity's target pitch.")
+	})
+	default boolean kjs$teleportToLevel(ServerLevel level, double x, double y, double z, float yaw, float pitch) throws IllegalArgumentException {
+		Entity self = kjs$self();
+		Level previousLevel = kjs$getLevel();
+
+		checkDestinationValidity(BlockPos.containing(x, y, z), yaw, pitch);
+
+		if (level == previousLevel) {
+			kjs$setPositionAndRotation(x, y, z, yaw, pitch);
+			return true;
+		}
+
+		float adjustedYaw = Mth.wrapDegrees(yaw);
+		float adjustedPitch = Mth.wrapDegrees(pitch);
+
+		boolean teleportSucceeded = self.teleportTo(level, x, y, z, Set.of(), adjustedYaw, adjustedPitch);
+		if (!teleportSucceeded) {
+			return false;
+		}
+
+		if (self instanceof LivingEntity livingEntity && !livingEntity.isFallFlying()) {
+			livingEntity.setDeltaMovement(livingEntity.getDeltaMovement().multiply(1.0, 0.0, 1.0));
+			livingEntity.setOnGround(true);
+		}
+		if (self instanceof PathfinderMob pathfinderMob) {
+			pathfinderMob.getNavigation().stop();
+		}
+		return true;
+	}
+
+	@Info(value = "Teleports an entity to a dimension of specified ID, to specified coordinates and rotation.", params = {
+		@Param(name = "dimension", value = "A `ResourceLocation` of the target dimension. It can be a string representing the dimension ID."),
+		@Param(name = "x", value = "The `x` target coordinate."),
+		@Param(name = "y", value = "The `y` target coordinate."),
+		@Param(name = "z", value = "The `z` target coordinate."),
+		@Param(name = "yaw", value = "The entity's target yaw."),
+		@Param(name = "pitch", value = "The entity's target pitch.")
+	})
+	default boolean kjs$teleportTo(ResourceLocation dimension, double x, double y, double z, float yaw, float pitch) throws IllegalArgumentException {
+		ServerLevel level = kjs$getServer().getLevel(ResourceKey.create(Registries.DIMENSION, dimension));
+
+		if (level == null) {
+			throw new IllegalArgumentException("The provided dimension ID is invalid.");
+		}
+
+		return kjs$teleportToLevel(level, x, y, z, yaw, pitch);
+	}
+
+	@Info(value = "Teleports an entity to a dimension of specified ID, to specified coordinates and rotation.", params = {
+		@Param(name = "x", value = "The `x` target coordinate."),
+		@Param(name = "y", value = "The `y` target coordinate."),
+		@Param(name = "z", value = "The `z` target coordinate."),
+		@Param(name = "yaw", value = "The entity's target yaw."),
+		@Param(name = "pitch", value = "The entity's target pitch.")
+	})
+	default void kjs$teleportTo(double x, double y, double z, float yaw, float pitch) throws IllegalArgumentException {
+		checkDestinationValidity(BlockPos.containing(x, y, z), yaw, pitch);
+		kjs$setPositionAndRotation(x, y, z, yaw, pitch);
+	}
+
 	default void kjs$setPosition(LevelBlock block) {
-		kjs$teleportTo(block.getDimension(), block.getX(), block.getY(), block.getZ(), kjs$self().getYRot(), kjs$self().getXRot());
+		kjs$teleportTo(block.getX(), block.getY(), block.getZ());
 	}
 
 	default void kjs$setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
@@ -216,20 +327,35 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		kjs$setPositionAndRotation(kjs$self().getX(), kjs$self().getY(), kjs$self().getZ(), yaw, pitch);
 	}
 
+	@Info("Gets a list of all passengers of the entity.")
 	default EntityArrayList kjs$getPassengers() {
 		return new EntityArrayList(kjs$self().getPassengers());
 	}
 
-	default String kjs$getTeamId() {
+	@Info("Gets the name of the team entity is in, or `''` (empty string) if the entity is not part of any team")
+	default String kjs$getTeamName() {
 		var team = kjs$self().getTeam();
 		return team == null ? "" : team.getName();
 	}
 
-	default boolean kjs$isOnScoreboardTeam(String teamId) {
-		Team team = kjs$self().getCommandSenderWorld().getScoreboard().getPlayerTeam(teamId);
+	@Info("Checks, whether the entity is part of any team.")
+	default boolean kjs$isOnScoreboardTeam() {
+		return kjs$self().getTeam() != null;
+	}
+
+	@Info(value = "Checks, whether the entity is part of a team called `teamName`.", params = {
+		@Param(name = "teamName", value = "The name of the team to check.")
+	})
+	default boolean kjs$isOnScoreboardTeam(String teamName) {
+		Team team = kjs$self().getCommandSenderWorld().getScoreboard().getPlayerTeam(teamName);
 		return team != null && kjs$self().isAlliedTo(team);
 	}
 
+	@Info("""
+		Gets the entity's facing direction.
+		If the entity faces more than 45 degrees up or down, the resulting facing direction is respectively `up` or `down`.
+		Otherwise, the resulting facing direction is determined by whichever cardinal direction is closer to entity's yaw.
+		""")
 	default Direction kjs$getFacing() {
 		if (kjs$self().getXRot() > 45F) {
 			return Direction.DOWN;
@@ -240,6 +366,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		return kjs$self().getDirection();
 	}
 
+	@Info("Gets a block at the position of the entity.")
 	default LevelBlock kjs$getBlock() {
 		return kjs$getLevel().kjs$getBlock(kjs$self().blockPosition());
 	}
@@ -277,32 +404,35 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		return kjs$self();
 	}
 
-	default void kjs$playSound(SoundEvent id, float volume, float pitch) {
-		kjs$getLevel().playSound(null, kjs$self().getX(), kjs$self().getY(), kjs$self().getZ(), id, kjs$self().getSoundSource(), volume, pitch);
-	}
-
-	default void kjs$playSound(SoundEvent id) {
-		kjs$playSound(id, 1F, 1F);
-	}
-
 	default void kjs$spawn() {
 		kjs$getLevel().addFreshEntity(kjs$self());
 	}
 
-	default void kjs$attack(float hp) {
-		kjs$self().hurt(kjs$self().damageSources().generic(), hp);
+	default boolean kjs$damage(float hp) {
+		return kjs$self().hurt(kjs$self().damageSources().generic(), hp);
 	}
 
-	default double kjs$getDistance(double x, double y, double z) {
-		return Math.sqrt(kjs$self().distanceToSqr(x, y, z));
+	// Alias to not break old scripts
+	@Info("Replaced by `entity.damage(hp)`")
+	@Deprecated
+	default boolean kjs$attack(float hp) {
+		return kjs$damage(hp);
 	}
 
-	default double kjs$getDistanceSq(BlockPos pos) {
+	@Info("Replaced by `entity.damage(damageSource, hp)`")
+	@Deprecated
+	default boolean kjs$attack(DamageSource source, float hp) {
+		return kjs$self().hurt(source, hp);
+	}
+
+	@Info("Measures the distance of entity to block at specified `BlockPos`.")
+	default double kjs$distanceToBlock(BlockPos pos) {
+		return Math.sqrt(kjs$distanceToBlockSqr(pos));
+	}
+
+	@Info("Measures the **square** of a distance of entity to the block at specified `BlockPos`.")
+	default double kjs$distanceToBlockSqr(BlockPos pos) {
 		return kjs$self().distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
-	}
-
-	default double kjs$getDistance(BlockPos pos) {
-		return Math.sqrt(kjs$getDistanceSq(pos));
 	}
 
 	default KubeRayTraceResult kjs$rayTrace(double distance, boolean fluids) {

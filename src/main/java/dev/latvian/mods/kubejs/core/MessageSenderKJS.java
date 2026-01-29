@@ -1,5 +1,7 @@
 package dev.latvian.mods.kubejs.core;
 
+import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.Param;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -15,6 +17,9 @@ public interface MessageSenderKJS {
 		return kjs$getName();
 	}
 
+	@Info(value = "Sends a message in chat to something.", params = {
+		@Param(name = "message", value = "A text component. It may be a string, which will be implicitly wrapped into a text component."),
+	})
 	default void kjs$tell(Component message) {
 		throw new NoMixinException();
 	}
@@ -22,9 +27,15 @@ public interface MessageSenderKJS {
 	default void kjs$setStatusMessage(Component message) {
 	}
 
+	@Info(value = "Runs the specified console command.", params = {
+		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
+	})
 	default void kjs$runCommand(String command) {
 	}
 
+	@Info(value = "Runs the specified console command. The command won't output any logs in chat nor console.", params = {
+		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
+	})
 	default void kjs$runCommandSilent(String command) {
 		kjs$runCommand(command);
 	}
