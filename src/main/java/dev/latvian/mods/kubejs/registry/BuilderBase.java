@@ -65,6 +65,14 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	}
 
 	@HideFromJS
+	public T getOrCreate() {
+		if (object == null) {
+			createTransformedObject();
+		}
+		return object;
+	}
+
+	@HideFromJS
 	public void createAdditionalObjects(AdditionalObjectRegistry registry) {
 	}
 

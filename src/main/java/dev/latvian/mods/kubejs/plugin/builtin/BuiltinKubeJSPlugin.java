@@ -48,12 +48,13 @@ import dev.latvian.mods.kubejs.fluid.ThickFluidBuilder;
 import dev.latvian.mods.kubejs.fluid.ThinFluidBuilder;
 import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
+import dev.latvian.mods.kubejs.item.EquipmentAssetBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
 import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ItemTintFunction;
-import dev.latvian.mods.kubejs.item.ItemToolTiers;
+import dev.latvian.mods.kubejs.item.ItemToolMaterials;
 import dev.latvian.mods.kubejs.item.JukeboxSongBuilder;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabBuilder;
 import dev.latvian.mods.kubejs.item.custom.ArmorItemBuilder;
@@ -150,6 +151,7 @@ import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.postprocessing.KeyPatternCleanupPostProcessor;
 import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessorTypeRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
+import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.registry.ServerRegistryRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
@@ -224,6 +226,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.JukeboxSong;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.component.BlockItemStateProperties;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.CustomModelData;
@@ -234,6 +237,8 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.enchantment.providers.EnchantmentProvider;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import net.minecraft.world.level.ItemLike;
@@ -286,6 +291,7 @@ import java.time.Duration;
 import java.time.temporal.TemporalAmount;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -350,7 +356,10 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.addDefault(Registries.VILLAGER_TYPE, VillagerTypeBuilder.class, VillagerTypeBuilder::new);
 		registry.addDefault(Registries.VILLAGER_PROFESSION, VillagerProfessionBuilder.class, VillagerProfessionBuilder::new);
 		registry.addDefault(Registries.CREATIVE_MODE_TAB, CreativeTabBuilder.class, CreativeTabBuilder::new);
-		registry.addDefault(Registries.EQUIPMENT_ASSET, ArmorMaterialBuilder.class, ArmorMaterialBuilder::new);
+
+		registry.addDefault(EquipmentAssets.ROOT_ID, EquipmentAssetBuilder.class, EquipmentAssetBuilder::new);
+		registry.addDefault(KubeJSRegistries.ARMOR_MATERIAL, ArmorMaterialBuilder.class, ArmorMaterialBuilder::new);
+
 
 		// FIXME registry.addDefault(Registries.ENCHANTMENT, EnchantmentBuilder.class, EnchantmentBuilder::new);
 		registry.addDefault(Registries.PAINTING_VARIANT, PaintingVariantBuilder.class, PaintingVariantBuilder::new);
@@ -526,9 +535,13 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(FloatProvider.class, MiscWrappers::wrapFloatProvider);
 		registry.register(NumberProvider.class, MiscWrappers::wrapNumberProvider);
 		registry.registerEnumFromStringCodec(LootContext.EntityTarget.class, LootContext.EntityTarget.CODEC);
-		registry.registerEnumFromStringCodec(CopyNameFunction.NameSource.class, CopyNameFunction.NameSource.CODEC);
+
+		// No equivalent
+		//registry.registerEnumFromStringCodec(CopyNameFunction.NameSource.class, CopyNameFunction.NameSource.CODEC);
+
 		// FIXME registry.register(Enchantment.Cost.class, EnchantmentBuilder::wrapCost);
-		registry.registerEnumFromStringCodec(ArmorItem.Type.class, ArmorItem.Type.CODEC);
+
+		registry.registerEnumFromStringCodec(ArmorType.class, ArmorType.CODEC);
 		registry.register(BlockSetType.class, BlockWrapper::wrapSetType);
 		registry.register(BlockState.class, BlockWrapper::wrapBlockState);
 		registry.register(ItemAbility.class, ItemWrapper::wrapItemAbility);
@@ -546,7 +559,10 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(SizedFluidIngredient.class, FluidWrapper::wrapSizedIngredient);
 		registry.register(RecipeFilter.class, RecipeFilter::wrap);
 		registry.register(SlotFilter.class, SlotFilter::wrap);
-		registry.register(Tier.class, ItemToolTiers::wrap);
+
+
+		registry.register(ToolMaterial.class, ItemToolMaterials::wrap);
+
 		registry.register(PlayerSelector.class, PlayerSelector::wrap);
 		registry.register(DamageSource.class, DamageSourceWrapper::wrap);
 		registry.register(EntitySelector.class, EntitySelectorWrapper::wrap);
@@ -575,7 +591,9 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		// alias
 		registry.registerAlias(Unit.class, TypeInfo.NONE, o -> Unit.INSTANCE);
 		registry.registerAlias(CustomData.class, CompoundTag.class, CustomData::of);
-		registry.registerAlias(CustomModelData.class, TypeInfo.PRIMITIVE_INT, CustomModelData::new);
+		registry.registerAlias(CustomModelData.class, TypeInfo.PRIMITIVE_INT, (Integer i) ->
+			new CustomModelData(List.of(), List.of(), List.of(), List.of(i))
+		);
 		registry.registerAlias(LockCode.class, TypeInfo.STRING, LockCode::new);
 		registry.registerAlias(BlockItemStateProperties.class, TypeInfo.RAW_MAP.withParams(TypeInfo.STRING, TypeInfo.STRING), BlockItemStateProperties::new);
 	}
@@ -792,28 +810,27 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 			if (song != null) {
 				registry.register(item, (registries, stack) -> {
-					var key = Util.makeDescriptionId("jukebox_song", song.song().key().identifier());
+					var key = Util.makeDescriptionId("jukebox_song", song.song().key().get().identifier());
 					return Component.empty().append(stack.getHoverName()).append(": ").append(Component.translatable(key));
 				});
 			}
 		}
 
 		registry.register(Items.PAINTING, (registries, stack) -> {
-			var customData = stack.getOrDefault(DataComponents.ENTITY_DATA, CustomData.EMPTY);
-
-			if (!customData.isEmpty()) {
-				var key = customData.read(registries.createSerializationContext(NbtOps.INSTANCE), Painting.VARIANT_MAP_CODEC)
-					.result()
-					.flatMap(Holder::unwrapKey)
-					.map(ResourceKey::location)
-					.orElse(null);
-
-				if (key != null) {
-					return Component.empty().append(stack.getHoverName()).append(": ").append(Component.translatable(key.toLanguageKey("painting", "author"))).append(" - ").append(Component.translatable(key.toLanguageKey("painting", "title")));
-				}
+			var variant = stack.get(DataComponents.PAINTING_VARIANT);
+			if (variant == null) {
+				return null;
 			}
-
-			return null;
+			var key = variant.unwrapKey().map(ResourceKey::identifier).orElse(null);
+			if (key == null) {
+				return null;
+			}
+			return Component.empty()
+				.append(stack.getHoverName())
+				.append(": ")
+				.append(Component.translatable(key.toLanguageKey("painting", "author")))
+				.append(" - ")
+				.append(Component.translatable(key.toLanguageKey("painting", "title")));
 		});
 	}
 

@@ -18,7 +18,7 @@ import java.util.List;
 @ReturnsSelf
 public class TrapdoorBlockBuilder extends ShapedBlockBuilder {
 	public static final Identifier[] TRAPDOOR_TAGS = {
-		BlockTags.TRAPDOORS.identifier(),
+		BlockTags.TRAPDOORS.location(),
 	};
 
 	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/template_trapdoor_bottom");

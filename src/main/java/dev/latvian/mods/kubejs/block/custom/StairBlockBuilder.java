@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.StairBlock;
 
 public class StairBlockBuilder extends ShapedBlockBuilder {
 	public static final Identifier[] STAIR_TAGS = {
-		BlockTags.STAIRS.identifier(),
+		BlockTags.STAIRS.location(),
 	};
 
 	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/stairs");

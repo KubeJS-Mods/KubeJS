@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.properties.BlockSetType;
 @ReturnsSelf
 public class PressurePlateBlockBuilder extends ShapedBlockBuilder implements ButtonOrPressurePlateBuilder {
 	public static final Identifier[] PRESSURE_PLATE_TAGS = {
-		BlockTags.PRESSURE_PLATES.identifier(),
+		BlockTags.PRESSURE_PLATES.location(),
 	};
 
 	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/pressure_plate_up");

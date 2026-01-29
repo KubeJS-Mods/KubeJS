@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.advancements.criterion.StatePropertiesPredicate;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
@@ -34,11 +34,11 @@ import java.util.Map;
 @ReturnsSelf
 public class DoorBlockBuilder extends ShapedBlockBuilder {
 	public static final Identifier[] DOOR_TAGS = {
-		BlockTags.DOORS.identifier()
+		BlockTags.DOORS.location()
 	};
 
 	public static final Identifier[] WOODEN_DOOR_TAGS = {
-		BlockTags.WOODEN_DOORS.identifier()
+		BlockTags.WOODEN_DOORS.location()
 	};
 
 	private static final Map<String, Identifier> MODELS = Map.of(

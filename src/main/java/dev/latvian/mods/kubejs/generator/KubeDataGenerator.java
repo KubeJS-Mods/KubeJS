@@ -4,12 +4,13 @@ import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.script.data.VirtualDataMapFile;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.random.Weight;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.entity.npc.VillagerType;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.biome.Biome;
@@ -74,7 +75,7 @@ public interface KubeDataGenerator extends KubeResourceGenerator {
 	}
 
 	default void setMonsterRoomMobs(EntityType<?> entityType, int weight) {
-		dataMap(NeoForgeDataMaps.MONSTER_ROOM_MOBS, callback -> callback.accept(entityType.kjs$getIdLocation(), new MonsterRoomMob(Weight.of(weight))));
+		dataMap(NeoForgeDataMaps.MONSTER_ROOM_MOBS, callback -> callback.accept(entityType.kjs$getIdLocation(), new MonsterRoomMob(weight)));
 	}
 
 	default void setOxidizable(Block from, Block to) {
@@ -96,7 +97,8 @@ public interface KubeDataGenerator extends KubeResourceGenerator {
 	}
 
 	default void setVillagerType(ResourceKey<Biome> biome, VillagerType villagerType) {
-		dataMap(NeoForgeDataMaps.VILLAGER_TYPES, callback -> callback.accept(biome.identifier(), new BiomeVillagerType(villagerType)));
+		ResourceKey<VillagerType> resourceKey = ResourceKey.create();
+		dataMap(NeoForgeDataMaps.VILLAGER_TYPES, callback -> callback.accept(biome.identifier(), new BiomeVillagerType(resourceKey)));
 	}
 
 	default void setWaxable(Block from, Block to) {

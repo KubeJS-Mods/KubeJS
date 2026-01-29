@@ -11,6 +11,6 @@ public record RegistryTagKeyPredicate<T>(TagKey<T> key) implements RegistryPredi
 
 	@Override
 	public String toString() {
-		return "#" + key.identifier();
+		return "#" + key.location();
 	}
 }

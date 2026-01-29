@@ -16,7 +16,7 @@ import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemPickedUpKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemSmeltedKubeEvent;
 import dev.latvian.mods.kubejs.item.ModifyItemTooltipsKubeEvent;
-import dev.latvian.mods.kubejs.item.custom.ItemToolTierRegistryKubeEvent;
+import dev.latvian.mods.kubejs.item.custom.ItemToolMaterialRegistryKubeEvent;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -27,7 +27,7 @@ public interface ItemEvents {
 	EventTargetType<ResourceKey<Item>> TARGET = EventTargetType.registryKey(Registries.ITEM, Item.class);
 
 	EventHandler MODIFICATION = GROUP.startup("modification", () -> ItemModificationKubeEvent.class);
-	EventHandler TOOL_TIER_REGISTRY = GROUP.startup("toolTierRegistry", () -> ItemToolTierRegistryKubeEvent.class);
+	EventHandler TOOL_MATERIAL_REGISTRY = GROUP.startup("toolTierRegistry", () -> ItemToolMaterialRegistryKubeEvent.class);
 	TargetedEventHandler<ResourceKey<Item>> RIGHT_CLICKED = GROUP.common("rightClicked", () -> ItemClickedKubeEvent.class).hasResult(ItemWrapper.TYPE_INFO).supportsTarget(TARGET);
 	TargetedEventHandler<ResourceKey<Item>> CAN_PICK_UP = GROUP.common("canPickUp", () -> ItemPickedUpKubeEvent.class).hasResult().supportsTarget(TARGET);
 	TargetedEventHandler<ResourceKey<Item>> PICKED_UP = GROUP.common("pickedUp", () -> ItemPickedUpKubeEvent.class).supportsTarget(TARGET);

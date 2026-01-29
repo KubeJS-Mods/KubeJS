@@ -19,9 +19,9 @@ public interface BuilderTypeRegistry {
 		}
 	}
 
-	<T> void of(ResourceKey<Registry<T>> registry, Consumer<Callback<T>> callback);
+	<T> void of(ResourceKey<? extends Registry<T>> registry, Consumer<Callback<T>> callback);
 
-	default <T> void addDefault(ResourceKey<Registry<T>> registry, Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory) {
+	default <T> void addDefault(ResourceKey<? extends Registry<T>> registry, Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory) {
 		of(registry, reg -> reg.addDefault(builderType, factory));
 	}
 }

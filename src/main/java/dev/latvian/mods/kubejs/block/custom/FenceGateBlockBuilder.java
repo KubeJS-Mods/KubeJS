@@ -14,8 +14,8 @@ import net.neoforged.neoforge.common.Tags;
 @ReturnsSelf
 public class FenceGateBlockBuilder extends ShapedBlockBuilder {
 	public static final Identifier[] FENCE_GATE_TAGS = {
-		BlockTags.FENCE_GATES.identifier(),
-		Tags.Blocks.FENCE_GATES.identifier()
+		BlockTags.FENCE_GATES.location(),
+		Tags.Blocks.FENCE_GATES.location()
 	};
 
 	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/template_fence_gate");

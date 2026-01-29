@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.SlabBlock;
 
 public class SlabBlockBuilder extends ShapedBlockBuilder {
 	public static final Identifier[] SLAB_TAGS = {
-		BlockTags.SLABS.identifier(),
+		BlockTags.SLABS.location(),
 	};
 
 	private static final Identifier MODEL = Identifier.withDefaultNamespace("block/slab");

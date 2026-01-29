@@ -11,8 +11,8 @@ import net.neoforged.neoforge.common.Tags;
 
 public class FenceBlockBuilder extends ShapedBlockBuilder {
 	public static final Identifier[] FENCE_TAGS = {
-		BlockTags.FENCES.identifier(),
-		Tags.Blocks.FENCES.identifier(),
+		BlockTags.FENCES.location(),
+		Tags.Blocks.FENCES.location(),
 	};
 
 	private static final Identifier SIDE_MODEL = Identifier.withDefaultNamespace("block/fence_side");

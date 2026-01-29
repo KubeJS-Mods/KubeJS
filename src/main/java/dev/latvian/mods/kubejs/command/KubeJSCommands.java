@@ -509,7 +509,7 @@ public class KubeJSCommands {
 			return 0;
 		}
 		source.sendSystemMessage(Component.empty());
-		source.sendSystemMessage(Component.literal("Contents of #" + key.identifier() + " [" + key.registry().identifier() + "]:"));
+		source.sendSystemMessage(Component.literal("Contents of #" + key.location() + " [" + key.registry().identifier() + "]:"));
 		source.sendSystemMessage(Component.empty());
 
 		var items = tag.get();

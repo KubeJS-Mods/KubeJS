@@ -77,7 +77,7 @@ public class InformationCommands {
 			// block tags
 			var blockTags = blockHolder.tags().toList();
 			for (var tag : blockTags) {
-				var id = "'#%s'".formatted(tag.identifier());
+				var id = "'#%s'".formatted(tag.location());
 				var size = blockRegistry.getTag(tag).map(HolderSet::size).orElse(0);
 				player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Block Tag [" + size + " items]"));
 			}
@@ -94,7 +94,7 @@ public class InformationCommands {
 			// fluid tags
 			var fluidTags = fluidHolder.tags().toList();
 			for (var tag : fluidTags) {
-				var id = "'#%s'".formatted(tag.identifier());
+				var id = "'#%s'".formatted(tag.location());
 				var size = fluidRegistry.getTag(tag).map(HolderSet::size).orElse(0);
 				player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Fluid Tag [" + size + " items]"));
 			}

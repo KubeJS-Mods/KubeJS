@@ -25,7 +25,7 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 		KubeJSPlugins.forEachPlugin(handler, KubeJSPlugin::registerServerRegistries);
 	});
 
-	public static <T> Info<T> info(ResourceKey<Registry<T>> key) {
+	public static <T> Info<T> info(ResourceKey<? extends Registry<T>> key) {
 		return (Info<T>) INFO.get().get(key);
 	}
 
@@ -63,16 +63,17 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 	}
 
 	@Override
-	public <T> void of(ResourceKey<Registry<T>> registry, Consumer<Callback<T>> callback) {
+	public <T> void of(ResourceKey<? extends Registry<T>> registry, Consumer<Callback<T>> callback) {
 		callback.accept(new RegConsumer<>((Info) map.computeIfAbsent(registry, k -> new Info<>())));
 	}
 
 	@Override
-	public <T> void register(ResourceKey<Registry<T>> registry, Codec<T> directCodec, TypeInfo typeInfo) {
+	public <T> void register(ResourceKey<? extends Registry<T>> registry, Codec<T> directCodec, TypeInfo typeInfo) {
 		var info = map.computeIfAbsent(registry, k -> new Info<>());
 		info.directCodec = (Codec) directCodec;
 		info.typeInfo = typeInfo == null ? TypeInfo.NONE : typeInfo;
 	}
+
 
 	private record RegConsumer<T>(Info<T> info) implements BuilderTypeRegistry.Callback<T> {
 		private static final Identifier DEFAULT = KubeJS.id("default");

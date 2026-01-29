@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.rhino.util.RemapForJS;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ToolMaterial;
@@ -13,9 +13,8 @@ import net.minecraft.world.level.block.Block;
 
 import java.util.List;
 
-public class MutableToolTier {
+public class MutableToolMaterial {
 	public final ToolMaterial parent;
-
 	private TagKey<Block> incorrectBlocksForDrops;
 	private int durability;
 	private float speed;
@@ -23,47 +22,27 @@ public class MutableToolTier {
 	private int enchantmentValue;
 	private TagKey<Item> repairItems;
 
-	public MutableToolTier(ToolMaterial p) {
+	public MutableToolMaterial(ToolMaterial p) {
 		parent = p;
-		incorrectBlocksForDrops = parent.incorrectBlocksForDrops();
-		durability = parent.durability();
-		speed = parent.speed();
-		attackDamageBonus = parent.attackDamageBonus();
-		enchantmentValue = parent.enchantmentValue();
-		repairItems = parent.repairItems();
+		incorrectBlocksForDrops = p.incorrectBlocksForDrops();
+		durability = p.durability();
+		speed = p.speed();
+		attackDamageBonus = p.attackDamageBonus();
+		enchantmentValue = p.enchantmentValue();
+		repairItems = p.repairItems();
 	}
 
-	public ToolMaterial build() {
-		return new ToolMaterial(
-			incorrectBlocksForDrops,
-			durability,
-			speed,
-			attackDamageBonus,
-			enchantmentValue,
-			repairItems
-		);
+	public ToolMaterial toToolMaterial() {
+		return new ToolMaterial(incorrectBlocksForDrops, durability, speed, attackDamageBonus, enchantmentValue, repairItems);
 	}
 
-	public Tool createToolProperties(TagKey<Block> minesEfficiently) {
-		var blocks = BuiltInRegistries.acquireBootstrapRegistrationLookup(BuiltInRegistries.BLOCK);
-		return new Tool(
-			List.of(
-				Tool.Rule.deniesDrops(blocks.getOrThrow(incorrectBlocksForDrops)),
-				Tool.Rule.minesAndDrops(blocks.getOrThrow(minesEfficiently), speed)
-			),
-			1.0F,
-			1,
-			true
-		);
-	}
-
-	@RemapForJS("getUses")
-	public int getUses() {
+	@RemapForJS("getDurability")
+	public int getDurability() {
 		return durability;
 	}
 
-	public void setUses(int i) {
-		durability = i;
+	public void setDurability(int v) {
+		durability = v;
 	}
 
 	@RemapForJS("getSpeed")
@@ -71,8 +50,8 @@ public class MutableToolTier {
 		return speed;
 	}
 
-	public void setSpeed(float f) {
-		speed = f;
+	public void setSpeed(float v) {
+		speed = v;
 	}
 
 	@RemapForJS("getAttackDamageBonus")
@@ -80,8 +59,8 @@ public class MutableToolTier {
 		return attackDamageBonus;
 	}
 
-	public void setAttackDamageBonus(float f) {
-		attackDamageBonus = f;
+	public void setAttackDamageBonus(float v) {
+		attackDamageBonus = v;
 	}
 
 	@RemapForJS("getEnchantmentValue")
@@ -89,8 +68,8 @@ public class MutableToolTier {
 		return enchantmentValue;
 	}
 
-	public void setEnchantmentValue(int i) {
-		enchantmentValue = i;
+	public void setEnchantmentValue(int v) {
+		enchantmentValue = v;
 	}
 
 	public void setIncorrectBlocksForDropsTag(Identifier tag) {
@@ -106,7 +85,7 @@ public class MutableToolTier {
 	}
 
 	public void setRepairItemsTag(Identifier tag) {
-		repairItems = ItemTags.create(tag);
+		repairItems = net.minecraft.tags.ItemTags.create(tag);
 	}
 
 	public Identifier getRepairItemsTag() {
@@ -115,5 +94,19 @@ public class MutableToolTier {
 
 	public TagKey<Item> getRepairItems() {
 		return repairItems;
+	}
+
+	public static Tool createToolProperties(ToolMaterial material, TagKey<Block> minesEfficiently) {
+		HolderGetter<Block> lookup = BuiltInRegistries.acquireBootstrapRegistrationLookup(BuiltInRegistries.BLOCK);
+
+		return new Tool(
+			List.of(
+				Tool.Rule.deniesDrops(lookup.getOrThrow(material.incorrectBlocksForDrops())),
+				Tool.Rule.minesAndDrops(lookup.getOrThrow(minesEfficiently), material.speed())
+			),
+			1.0F,
+			1,
+			true
+		);
 	}
 }
