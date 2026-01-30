@@ -253,8 +253,8 @@ public interface LevelBlock extends BlockProviderKJS {
 		return getLevel().canSeeSkyFromBelowWater(getPos());
 	}
 
-	default Explosion explode(ExplosionProperties properties) {
-		return getLevel().kjs$explode(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D, properties);
+	default void explode(ExplosionProperties properties) {
+		getLevel().kjs$explode(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D, properties);
 	}
 
 	@Nullable
@@ -308,7 +308,7 @@ public interface LevelBlock extends BlockProviderKJS {
 
 	default ItemStack getItem() {
 		var state = getBlockState();
-		return state.getBlock().getCloneItemStack(getLevel(), getPos(), state,true,null);
+		return state.getBlock().getCloneItemStack(getLevel(), getPos(), state, true, null);
 	}
 
 	default List<ItemStack> getDrops() {

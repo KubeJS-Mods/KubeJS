@@ -106,8 +106,8 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Ent
 		return new CachedLevelBlock(entity.getLevel(), entity.getBlockPos()).cache(entity).cache(entity.getBlockState());
 	}
 
-	default Explosion kjs$explode(double x, double y, double z, ExplosionProperties properties) {
-		return properties.explode(kjs$self(), x, y, z);
+	default void kjs$explode(double x, double y, double z, ExplosionProperties properties) {
+		properties.explode(kjs$self(), x, y, z);
 	}
 
 	@Nullable
@@ -151,7 +151,7 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Ent
 			} catch (Throwable var17) {
 			}
 		} else {
-			var random = level.random;
+			var random = level.getRandom();
 
 			for (int i = 0; i < count; ++i) {
 				double ox = random.nextGaussian() * vx;

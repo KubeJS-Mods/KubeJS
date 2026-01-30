@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.net;
 
 import dev.latvian.mods.kubejs.client.highlight.KubedexPayloadHandler;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -24,7 +25,7 @@ public record RequestBlockKubedexPayload(BlockPos pos, int flags) implements Cus
 	}
 
 	public void handle(IPayloadContext ctx) {
-		if (ctx.player() instanceof ServerPlayer serverPlayer && serverPlayer.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.byId(2)))) {
+		if (ctx.player() instanceof ServerPlayer serverPlayer && Commands.LEVEL_GAMEMASTERS.check(serverPlayer.permissions())) {
 			ctx.enqueueWork(() -> KubedexPayloadHandler.block(serverPlayer, pos, flags));
 		}
 	}
