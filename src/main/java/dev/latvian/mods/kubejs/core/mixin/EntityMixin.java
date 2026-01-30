@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
 import dev.latvian.mods.kubejs.core.EntityKJS;
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -93,10 +94,6 @@ public abstract class EntityMixin implements EntityKJS {
 	@RemapForJS("getStringUuid")
 	public abstract String getStringUUID();
 
-//	@Shadow
-//	@RemapForJS("getUsername")
-//	public abstract String getScoreboardName();
-
 	@Shadow
 	@RemapForJS("isGlowing")
 	public abstract boolean isCurrentlyGlowing();
@@ -151,10 +148,6 @@ public abstract class EntityMixin implements EntityKJS {
 	@RemapForJS("getHorizontalFacing")
 	public abstract Direction getDirection();
 
-//	@Shadow
-//	@RemapForJS("extinguish")
-//	public abstract void clearFire();
-
 	@Shadow
 	@RemapForJS("extinguish")
 	public abstract void extinguishFire();
@@ -162,10 +155,6 @@ public abstract class EntityMixin implements EntityKJS {
 	@Shadow
 	@RemapForJS("damage")
 	public abstract boolean hurt(DamageSource source, float hp);
-
-//	@Shadow
-//	@RemapForJS("getDistanceSq")
-//	public abstract double distanceToSqr(double x, double y, double z);
 
 	// The remaps:
 	// distanceToSqr(double x, double y, double z) - remains as is
@@ -181,11 +170,21 @@ public abstract class EntityMixin implements EntityKJS {
 	public abstract EntityType<?> getType();
 
 	@Shadow
+	@Info("Measures the **square** of a distance of entity to the point at specified 3D position vector.")
+	public abstract double distanceToSqr(Vec3 vec);
+
+	@Shadow
+	@Info("Measures the distance of entity to the point at specified `x`, `y` and `z`.")
+	public abstract double distanceToSqr(double x, double y, double z);
+
+	@Shadow
 	@RemapForJS("distanceToEntitySqr")
+	@Info("Measures the **square** of a distance of entity to another entity.")
 	public abstract double distanceToSqr(Entity arg);
 
 	@Shadow
 	@RemapForJS("distanceToEntity")
+	@Info("Measures the distance of entity to another entity.")
 	public abstract float distanceTo(Entity arg);
 
 	/**

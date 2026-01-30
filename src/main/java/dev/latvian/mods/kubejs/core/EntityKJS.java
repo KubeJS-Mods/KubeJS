@@ -45,7 +45,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 @RemapPrefixForJS("kjs$")
-//@SuppressWarnings("unused")
 public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptTypeHolder {
 	@HideFromJS
 	default Entity kjs$self() {
@@ -332,6 +331,12 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		return new EntityArrayList(kjs$self().getPassengers());
 	}
 
+	@Deprecated
+	@Info("Replaced by `entity.getTeamName()`")
+	default String kjs$getTeamId() {
+		return kjs$getTeamName();
+	}
+
 	@Info("Gets the name of the team entity is in, or `''` (empty string) if the entity is not part of any team")
 	default String kjs$getTeamName() {
 		var team = kjs$self().getTeam();
@@ -433,6 +438,34 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	@Info("Measures the **square** of a distance of entity to the block at specified `BlockPos`.")
 	default double kjs$distanceToBlockSqr(BlockPos pos) {
 		return kjs$self().distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
+	}
+
+	@Info("Measures the distance of entity to the point at specified `x`, `y` and `z`.")
+	default double kjs$distanceTo(double x, double y, double z) {
+		return Math.sqrt(kjs$self().distanceToSqr(x, y, z));
+	}
+
+	@Info("Measures the distance of entity to the point at specified 3D position vector.")
+	default double kjs$distanceTo(Vec3 position) {
+		return Math.sqrt(kjs$self().distanceToSqr(position));
+	}
+
+	@Deprecated
+	@Info("Replaced by `entity.distanceToSqr(x, y, z)`.")
+	default double kjs$getDistanceSq(double x, double y, double z) {
+		return kjs$self().distanceToSqr(x, y, z);
+	}
+
+	@Deprecated
+	@Info("Replaced by `entity.distanceTo(x, y, z)`.")
+	default double kjs$getDistance(double x, double y, double z) {
+		return kjs$distanceTo(x, y, z);
+	}
+
+	@Deprecated
+	@Info("Replaced by `entity.distanceToBlockSqr(pos)`.")
+	default double kjs$getDistanceSq(BlockPos pos) {
+		return kjs$distanceToBlockSqr(pos);
 	}
 
 	default KubeRayTraceResult kjs$rayTrace(double distance, boolean fluids) {
