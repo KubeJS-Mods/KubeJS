@@ -37,11 +37,11 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 	}
 
 	default Ingredient kjs$and(Ingredient ingredient) {
-		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : IntersectionIngredient.of(kjs$self(), ingredient);
+		return ingredient == Ingredient.of() ? kjs$self() : this == Ingredient.of() ? ingredient : IntersectionIngredient.of(kjs$self(), ingredient);
 	}
 
 	default Ingredient kjs$or(Ingredient ingredient) {
-		return ingredient == Ingredient.EMPTY ? kjs$self() : this == Ingredient.EMPTY ? ingredient : CompoundIngredient.of(kjs$self(), ingredient);
+		return ingredient == Ingredient.of() ? kjs$self() : this == Ingredient.of() ? ingredient : CompoundIngredient.of(kjs$self(), ingredient);
 	}
 
 	default Ingredient kjs$except(Ingredient subtracted) {
@@ -101,7 +101,7 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 
 	@Override
 	default boolean matches(RecipeMatchContext cx, Ingredient in, boolean exact) {
-		if (in == Ingredient.EMPTY) {
+		if (in == Ingredient.of()) {
 			return false;
 		}
 

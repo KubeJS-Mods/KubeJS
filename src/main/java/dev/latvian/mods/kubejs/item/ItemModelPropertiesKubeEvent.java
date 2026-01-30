@@ -3,8 +3,6 @@ package dev.latvian.mods.kubejs.item;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.KubeIdentifier;
-import net.minecraft.client.renderer.item.ClampedItemPropertyFunction;
-import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public class ItemModelPropertiesKubeEvent implements KubeStartupEvent {

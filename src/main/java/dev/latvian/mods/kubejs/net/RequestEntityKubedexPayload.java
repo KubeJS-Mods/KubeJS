@@ -6,6 +6,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.PermissionLevel;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record RequestEntityKubedexPayload(int entityId, int flags) implements CustomPacketPayload {
@@ -21,7 +23,7 @@ public record RequestEntityKubedexPayload(int entityId, int flags) implements Cu
 	}
 
 	public void handle(IPayloadContext ctx) {
-		if (ctx.player() instanceof ServerPlayer serverPlayer && serverPlayer.hasPermissions(2)) {
+		if (ctx.player() instanceof ServerPlayer serverPlayer && serverPlayer.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.byId(2)))) {
 			ctx.enqueueWork(() -> KubedexPayloadHandler.entity(serverPlayer, entityId, flags));
 		}
 	}

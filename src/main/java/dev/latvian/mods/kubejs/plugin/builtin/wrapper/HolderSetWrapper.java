@@ -27,7 +27,7 @@ public record HolderSetWrapper<T>(Registry<T> registry, HolderSet<T> holders) im
 	}
 
 	public boolean contains(Identifier id) {
-		return registry.getHolder(id).filter(holders::contains).isPresent();
+		return registry.get(id).filter(holders::contains).isPresent();
 	}
 
 	public boolean containsValue(T value) {

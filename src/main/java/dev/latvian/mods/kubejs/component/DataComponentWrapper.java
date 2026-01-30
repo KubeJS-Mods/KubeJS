@@ -266,10 +266,10 @@ public interface DataComponentWrapper {
 		}
 	}
 
-	static DataComponentPredicate readPredicate(@Nullable DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
-		var map = reader.canRead() ? readMap(registryOps, reader) : DataComponentMap.EMPTY;
-		return map.isEmpty() ? DataComponentPredicate.EMPTY : DataComponentPredicate.allOf(map);
+	static DataComponentMap readPredicate(@Nullable DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+		return reader.canRead() ? readMap(registryOps, reader) : DataComponentMap.EMPTY;
 	}
+
 
 	static boolean filter(Object from, TypeInfo target) {
 		return from == null || from instanceof DataComponentMap || from instanceof DataComponentPatch || from instanceof Map || from instanceof NativeJavaMap || from instanceof String s && (s.isEmpty() || s.charAt(0) == '[');
@@ -357,7 +357,7 @@ public interface DataComponentWrapper {
 				if (!errors.isEmpty()) {
 					var joiner = new StringJoiner("; ");
 					errors.forEach((type, error) -> {
-						var id = reg.access().registryOrThrow(Registries.DATA_COMPONENT_TYPE).getKeyOrNull(type);
+						var id = reg.access().lookupOrThrow(Registries.DATA_COMPONENT_TYPE).getKeyOrNull(type);
 						joiner.add("'%s' -> %s".formatted(id, error));
 					});
 					yield error(() -> "Invalid component map format, errored input: [%s]".formatted(joiner.toString()), builder.build());
@@ -398,7 +398,7 @@ public interface DataComponentWrapper {
 				if (!errors.isEmpty()) {
 					var joiner = new StringJoiner("; ");
 					errors.forEach((type, error) -> {
-						var id = reg.access().registryOrThrow(Registries.DATA_COMPONENT_TYPE).getKeyOrNull(type);
+						var id = reg.access().lookupOrThrow(Registries.DATA_COMPONENT_TYPE).getKeyOrNull(type);
 						joiner.add("'%s' -> %s".formatted(id, error));
 					});
 					yield error(() -> "Invalid component map format, errored input: [%s]".formatted(joiner.toString()), builder.build());

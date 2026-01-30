@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.brigadier.StringReader;
@@ -24,6 +25,8 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
@@ -91,7 +94,7 @@ public interface ItemWrapper {
 
 		for (var itemId : CACHED_ITEM_TYPE_LIST.get()) {
 			var itemRl = Identifier.parse(itemId);
-			map.computeIfAbsent(itemRl, id -> Set.of(BuiltInRegistries.ITEM.get(id).getDefaultInstance()));
+			map.computeIfAbsent(itemRl, id -> Set.of(BuiltInRegistries.ITEM.get(id).get().value().getDefaultInstance()));
 		}
 	});
 
@@ -156,7 +159,7 @@ public interface ItemWrapper {
 		return switch (from) {
 			case Identifier id -> findItem(id).map(Holder::value).map(Item::getDefaultInstance);
 			case JsonElement json -> parseJson(cx, registries.nbt(), json);
-			case StringTag tag -> wrapResult(cx, tag.getAsString());
+			case StringTag tag -> wrapResult(cx, tag.asString().get());
 			case CharSequence charSequence -> {
 				var os = from.toString().trim();
 				var s = os;
@@ -227,13 +230,14 @@ public interface ItemWrapper {
 		};
 	}
 
-	@HideFromJS
 	static DataResult<Holder<Item>> findItem(Identifier id) {
+		var key = ResourceKey.create(Registries.ITEM, id);
+
 		return BuiltInRegistries.ITEM
-			.getHolder(id)
+			.get(key)
+			.map(h -> (Holder<Item>) h)
 			.map(DataResult::success)
-			.orElseGet(() -> DataResult.error(() -> "Item with ID " + id + " does not exist!"))
-			.map(Function.identity());
+			.orElseGet(() -> DataResult.error(() -> "Item with ID " + id + " does not exist!"));
 	}
 
 	@Info("Get a list of most items in the game. Items not in a creative tab are ignored")
@@ -266,7 +270,7 @@ public interface ItemWrapper {
 
 	@Info("Gets an Item from an item id")
 	static Item getItem(Identifier id) {
-		return BuiltInRegistries.ITEM.get(id);
+		return BuiltInRegistries.ITEM.get(id).get().value();
 	}
 
 	@Info("Gets an items id from the Item")
@@ -289,10 +293,10 @@ public interface ItemWrapper {
 
 	static ItemStack playerHead(String name) {
 		var stack = new ItemStack(Items.PLAYER_HEAD);
-		stack.set(DataComponents.PROFILE, new ResolvableProfile(Optional.of(name), Optional.empty(), new PropertyMap()));
+		stack.set(DataComponents.PROFILE, ResolvableProfile.createUnresolved(name));
 		return stack;
 	}
-
+	
 	static ItemStack playerHeadFromBase64(UUID uuid, String textureBase64) {
 		if (uuid == null || uuid.equals(Util.NIL_UUID)) {
 			throw new IllegalArgumentException("UUID can't be null!");
@@ -303,11 +307,17 @@ public interface ItemWrapper {
 		}
 
 		var stack = new ItemStack(Items.PLAYER_HEAD);
-		var properties = new PropertyMap();
-		properties.put("textures", new Property("textures", textureBase64));
-		stack.set(DataComponents.PROFILE, new ResolvableProfile(Optional.empty(), Optional.of(uuid), properties));
+
+		var props = PropertyMap.EMPTY;
+		props = new PropertyMap(com.google.common.collect.ImmutableMultimap.of(
+			"textures", new Property("textures", textureBase64)
+		));
+
+		var profile = new GameProfile(uuid, "", props);
+		stack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(profile));
 		return stack;
 	}
+
 
 	static ItemStack playerHeadFromUrl(String url) {
 		var root = new JsonObject();

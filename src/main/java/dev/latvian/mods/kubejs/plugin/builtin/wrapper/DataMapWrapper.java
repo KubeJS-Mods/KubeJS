@@ -41,7 +41,7 @@ public record DataMapWrapper<T, A>(Registry<T> registry, DataMapType<T, A> type)
 	}
 
 	public Stream<T> keys() {
-		return byKey().keySet().stream().map(registry::get);
+		return byKey().keySet().stream().map(m -> registry.get(m).get().value());
 	}
 
 	public @NotNull Iterator<Data<T, A>> iterator() {
@@ -56,7 +56,7 @@ public record DataMapWrapper<T, A>(Registry<T> registry, DataMapType<T, A> type)
 			@Override
 			public Data<T, A> next() {
 				var entry = backing.next();
-				return new Data<>(registry.get(entry.getKey()), entry.getValue());
+				return new Data<>(registry.get(entry.getKey()).get().value(), entry.getValue());
 			}
 		};
 	}

@@ -219,7 +219,7 @@ public abstract class ItemMixin implements ItemKJS {
 	public Ingredient kjs$asIngredient() {
 		if (kjs$asIngredient == null) {
 			var is = new ItemStack(kjs$self());
-			kjs$asIngredient = is.isEmpty() ? Ingredient.EMPTY : Ingredient.of(Stream.of(is));
+			kjs$asIngredient = is.isEmpty() ? Ingredient.of() : Ingredient.of(Stream.of(is));
 		}
 
 		return kjs$asIngredient;

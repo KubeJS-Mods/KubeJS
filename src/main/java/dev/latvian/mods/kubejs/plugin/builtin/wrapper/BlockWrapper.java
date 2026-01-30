@@ -79,7 +79,7 @@ public class BlockWrapper {
 
 	@Info("Gets a Block from a block id")
 	public static Block getBlock(Identifier id) {
-		return BuiltInRegistries.BLOCK.get(id);
+		return BuiltInRegistries.BLOCK.get(id).get().value();
 	}
 
 	@Info("Gets a blocks id from the Block")

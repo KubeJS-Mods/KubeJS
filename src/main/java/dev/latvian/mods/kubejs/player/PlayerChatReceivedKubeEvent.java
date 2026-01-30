@@ -17,7 +17,7 @@ public class PlayerChatReceivedKubeEvent implements KubePlayerEvent {
 	}
 
 	public String getUsername() {
-		return event.getPlayer().getGameProfile().getName();
+		return event.getPlayer().getGameProfile().name();
 	}
 
 	public String getMessage() {

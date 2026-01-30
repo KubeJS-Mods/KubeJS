@@ -32,15 +32,20 @@ public record WebServerUpdateNBTPayload(String event, String requiredTag, Option
 		int count = KubeJSWeb.broadcastUpdate("server/" + event, requiredTag, () -> payload.map(tag -> NbtOps.INSTANCE.convertTo(JsonOps.INSTANCE, tag)).orElse(null));
 
 		if (count == 0 && event.equals("highlight/items")) {
-			for (var e : ((CompoundTag) payload.get()).getList("items", Tag.TAG_COMPOUND)) {
-				var t = (CompoundTag) e;
-				KubeJS.LOGGER.info("[Highlighted Item] {}", t.getString("string"));
+			var list = ((CompoundTag) payload.get()).getList("items").get();
 
-				if (t.get("tags") instanceof ListTag l) {
-					for (var tag : l) {
-						KubeJS.LOGGER.info("[Highlighted Item] - #{}", tag.getAsString());
-					}
+			for (var e : list) {
+				if (!(e instanceof CompoundTag t)) {
+					continue;
 				}
+
+				KubeJS.LOGGER.info("[Highlighted Item] {}", t.getStringOr("string", ""));
+
+				t.getList("tags").ifPresent(l -> {
+					for (var tag : l) {
+						tag.asString().ifPresent(s -> KubeJS.LOGGER.info("[Highlighted Item] - #{}", s));
+					}
+				});
 			}
 		}
 	}

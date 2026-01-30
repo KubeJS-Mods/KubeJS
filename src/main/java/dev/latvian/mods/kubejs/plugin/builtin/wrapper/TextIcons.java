@@ -4,12 +4,13 @@ import dev.latvian.mods.betteradvancedtooltips.BATIcons;
 import dev.latvian.mods.kubejs.KubeJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 
 public interface TextIcons {
 	Identifier FONT = KubeJS.id("icons");
-	Style STYLE = Style.EMPTY.withFont(FONT).applyFormat(ChatFormatting.WHITE);
+	Style STYLE = Style.EMPTY.withFont(new FontDescription.Resource(FONT)).applyFormat(ChatFormatting.WHITE);
 
 	Component CRAFTING = Component.literal("A").setStyle(STYLE);
 	Component LOGO = Component.literal("K").setStyle(STYLE);

@@ -33,7 +33,8 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.core.component.predicates.DataComponentPredicate;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -60,7 +61,7 @@ public interface IngredientWrapper {
 	TypeInfo TYPE_INFO = TypeInfo.of(Ingredient.class);
 
 	@Info("A completely empty ingredient that will only match air")
-	Ingredient none = Ingredient.EMPTY;
+	Ingredient none = Ingredient.of();
 
 	@Info("An ingredient that matches everything")
 	Ingredient all = WildcardIngredient.INSTANCE.toVanilla();
@@ -92,13 +93,19 @@ public interface IngredientWrapper {
 		}
 
 		return switch (from) {
-			case null -> Ingredient.EMPTY;
+			case null -> Ingredient.of();
 			case Ingredient id -> id;
-			case ItemStack s when s.isEmpty() -> Ingredient.EMPTY;
-			case ItemLike i when i.asItem() == Items.AIR -> Ingredient.EMPTY;
+			case ItemStack s when s.isEmpty() -> Ingredient.of();
+			case ItemLike i when i.asItem() == Items.AIR -> Ingredient.of();
 			case IngredientSupplierKJS ingr -> ingr.kjs$asIngredient();
 			case ItemLike i -> Ingredient.of(i);
-			case TagKey<?>(ResourceKey<?> reg, var location) -> Ingredient.of(ItemTags.create(location));
+			case TagKey<?>(ResourceKey<?> reg, var location) -> {
+				var tagKey = ItemTags.create(location);
+				yield BuiltInRegistries.ITEM.get(tagKey)
+					.map(Ingredient::of)
+					.orElseGet(Ingredient::of);
+			}
+
 			default -> null;
 		};
 	}
@@ -139,7 +146,7 @@ public interface IngredientWrapper {
 				var ingredient = wrapResult(cx, o1);
 
 				ingredient.resultOrPartial()
-					.filter(ingr -> ingr != Ingredient.EMPTY)
+					.filter(ingr -> ingr != Ingredient.of())
 					.ifPresent(results::add);
 
 				if (ingredient.isError()) {
@@ -153,7 +160,7 @@ public interface IngredientWrapper {
 				return DataResult.error(() -> "Failed to parse ingredient list: " + msg);
 			} else {
 				return DataResult.success(switch (results.size()) {
-					case 0 -> Ingredient.EMPTY;
+					case 0 -> Ingredient.of();
 					case 1 -> results.getFirst();
 					default -> new CompoundIngredient(results).toVanilla();
 				});
@@ -187,9 +194,9 @@ public interface IngredientWrapper {
 
 	static DataResult<Ingredient> parseJson(Context cx, JsonElement json) {
 		return switch (json) {
-			case null -> DataResult.success(Ingredient.EMPTY);
-			case JsonNull jsonNull -> DataResult.success(Ingredient.EMPTY);
-			case JsonArray arr when arr.isEmpty() -> DataResult.success(Ingredient.EMPTY);
+			case null -> DataResult.success(Ingredient.of());
+			case JsonNull jsonNull -> DataResult.success(Ingredient.of());
+			case JsonArray arr when arr.isEmpty() -> DataResult.success(Ingredient.of());
 			case JsonPrimitive primitive -> wrapResult(cx, json.getAsString());
 			default -> Ingredient.CODEC.decode(JsonOps.INSTANCE, json).map(Pair::getFirst);
 		};
@@ -197,7 +204,7 @@ public interface IngredientWrapper {
 
 	static DataResult<Ingredient> parseString(Context cx, String s) {
 		return switch (s) {
-			case "", "-", "air", "minecraft:air" -> DataResult.success(Ingredient.EMPTY);
+			case "", "-", "air", "minecraft:air" -> DataResult.success(Ingredient.of());
 			case "*" -> DataResult.success(IngredientWrapper.all);
 			default -> read(cx, new StringReader(s));
 		};
@@ -209,13 +216,13 @@ public interface IngredientWrapper {
 		reader.skipWhitespace();
 
 		if (!reader.canRead()) {
-			return DataResult.success(Ingredient.EMPTY);
+			return DataResult.success(Ingredient.of());
 		}
 
 		return switch (reader.peek()) {
 			case '-' -> {
 				reader.skip();
-				yield DataResult.success(Ingredient.EMPTY);
+				yield DataResult.success(Ingredient.of());
 			}
 			case '*' -> {
 				reader.skip();
@@ -223,8 +230,11 @@ public interface IngredientWrapper {
 			}
 			case '#' -> {
 				reader.skip();
-				// yield new TagIngredient(registries.cachedItemTags, ItemTags.create(ID.read(reader))).toVanilla();
-				yield ID.read(reader).map(ItemTags::create).map(Ingredient::of);
+				yield ID.read(reader).map(ItemTags::create).flatMap(tagKey ->
+					BuiltInRegistries.ITEM.get(tagKey)
+						.<DataResult<Ingredient>>map(set -> DataResult.success(Ingredient.of(set)))
+						.orElseGet(() -> DataResult.error(() -> "Item tag " + tagKey.location() + " does not exist!"))
+				);
 			}
 			case '@' -> {
 				reader.skip();
@@ -245,7 +255,7 @@ public interface IngredientWrapper {
 				reader.skipWhitespace();
 
 				if (!reader.canRead() || reader.peek() == ']') {
-					yield DataResult.success(Ingredient.EMPTY);
+					yield DataResult.success(Ingredient.of());
 				}
 
 				var ingredients = new ArrayList<Ingredient>(2);
@@ -285,11 +295,12 @@ public interface IngredientWrapper {
 
 				if (next == '[' || next == '{') {
 					try {
-						var components = DataComponentWrapper.readPredicate(registries.nbt(), reader);
+						var components = DataComponentWrapper.readMap(registries.nbt(), reader);
 
-						if (components != DataComponentPredicate.EMPTY) {
+						if (!components.isEmpty()) {
 							yield item.map(holder -> DataComponentIngredient.of(false, components, holder));
 						}
+
 					} catch (CommandSyntaxException e) {
 						yield DataResult.error(e::getMessage);
 					}
@@ -297,6 +308,7 @@ public interface IngredientWrapper {
 
 				yield item.map(Holder::value).map(Ingredient::of);
 			}
+
 		};
 	}
 
@@ -314,11 +326,12 @@ public interface IngredientWrapper {
 
 	@Nullable
 	static TagKey<Item> tagKeyOf(Ingredient in) {
-		if (!in.isCustom() && in.getValues().length == 1 && in.getValues()[0] instanceof Ingredient.TagValue(TagKey<Item> tag)) {
-			return tag;
-		} else {
+		if (in.isCustom()) {
 			return null;
 		}
+
+		var values = in.getValues();
+		return values.unwrap().left().orElse(null);
 	}
 
 	static boolean containsAnyTag(Ingredient in) {
@@ -326,12 +339,7 @@ public interface IngredientWrapper {
 			return false;
 		}
 
-		for (var value : in.getValues()) {
-			if (value instanceof Ingredient.TagValue) {
-				return true;
-			}
-		}
-
-		return false;
+		return in.getValues().unwrap().left().isPresent();
 	}
+
 }

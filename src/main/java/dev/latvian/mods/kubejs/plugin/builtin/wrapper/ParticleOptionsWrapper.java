@@ -6,10 +6,11 @@ import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.util.ARGB;
 import org.joml.Vector3f;
 
 public interface ParticleOptionsWrapper {
-	DustParticleOptions ERROR = new DustParticleOptions(new Vector3f(0F, 0F, 0F), 1F);
+	DustParticleOptions ERROR = new DustParticleOptions(ARGB.colorFromFloat(1F, 0F, 0F, 0F), 1F);
 
 	static ParticleOptions wrap(RegistryAccessContainer registries, Object o) {
 		if (o instanceof ParticleOptions po) {

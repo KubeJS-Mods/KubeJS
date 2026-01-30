@@ -31,7 +31,7 @@ public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey
 	}
 
 	public T get(Identifier id) {
-		return registry.get(id);
+		return registry.get(id).get().value();
 	}
 
 	public boolean contains(Identifier id) {

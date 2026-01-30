@@ -10,6 +10,9 @@ import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
@@ -23,7 +26,7 @@ public interface SizedIngredientWrapper {
 	TypeInfo TYPE_INFO = TypeInfo.of(SizedIngredient.class);
 
 	@Info("A completely empty ingredient that will only match air")
-	SizedIngredient empty = new SizedIngredient(Ingredient.EMPTY, 1);
+	SizedIngredient empty = new SizedIngredient(Ingredient.of(), 1);
 	@Info("An ingredient that matches everything")
 	SizedIngredient all = new SizedIngredient(IngredientWrapper.all, 1);
 
@@ -37,8 +40,9 @@ public interface SizedIngredientWrapper {
 		return new SizedIngredient(ingredient, count);
 	}
 
-	static SizedIngredient ofTag(TagKey<Item> tag, int count) {
-		return SizedIngredient.of(tag, count);
+	static SizedIngredient ofTag(RegistryAccess registries, TagKey<Item> tag, int count) {
+		HolderSet<Item> set = registries.lookupOrThrow(Registries.ITEM).getOrThrow(tag);
+		return new SizedIngredient(Ingredient.of(set), count);
 	}
 
 	@HideFromJS
@@ -46,7 +50,7 @@ public interface SizedIngredientWrapper {
 		return switch (from) {
 			case SizedIngredient s -> s;
 			case Ingredient ingredient -> ingredient.kjs$asStack();
-			case ItemStack stack -> Ingredient.of(stack.kjs$withCount(1)).kjs$withCount(stack.getCount());
+			case ItemStack stack -> Ingredient.of(stack.getItem()).kjs$asStack().ingredient().kjs$withCount(stack.getCount());
 			case ItemLike item -> Ingredient.of(item).kjs$asStack();
 			case null, default -> null;
 		};
