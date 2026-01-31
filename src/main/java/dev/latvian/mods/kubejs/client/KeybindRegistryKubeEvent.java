@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.GLFWInputWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 
@@ -28,16 +29,26 @@ public class KeybindRegistryKubeEvent implements ClientKubeEvent {
 		return builders.stream().map(Builder::create).toList();
 	}
 
+	@HideFromJS
+	public List<Identifier> categories() {
+		var out = new ArrayList<Identifier>();
+		for (var b : builders) {
+			out.add(b.categoryId);
+		}
+		return out;
+	}
+
 	public static class Builder {
 		private final String id;
 		private KeyConflictContext keyConflictContext = KeyConflictContext.UNIVERSAL;
 		private KeyModifier modifier = KeyModifier.NONE;
 		private InputConstants.Type inputType = InputConstants.Type.KEYSYM;
 		private int defaultKey = -1;
-		private String category = "key.categories.kubejs";
+		private Identifier categoryId;
 
 		private Builder(String id) {
 			this.id = id;
+			this.categoryId = Identifier.fromNamespaceAndPath("kubejs", "kubejs");
 		}
 
 		public Builder conflictContext(KeyConflictContext keyConflictContext) {
@@ -77,14 +88,21 @@ public class KeybindRegistryKubeEvent implements ClientKubeEvent {
 		}
 
 		public Builder category(String category) {
-			this.category = category;
+			this.categoryId = Identifier.fromNamespaceAndPath("kubejs", category);
 			return this;
 		}
 
 		@HideFromJS
 		public KubeJSKeybinds.KubeKey create() {
 			var key = KubeJSKeybinds.getOrCreate(id);
-			key.mapping = new KeyMapping("key.kubejs.%s".formatted(id), keyConflictContext, modifier, inputType, defaultKey, category);
+			key.mapping = new KeyMapping(
+				"key.kubejs.%s".formatted(id),
+				keyConflictContext,
+				modifier,
+				inputType,
+				defaultKey,
+				new KeyMapping.Category(categoryId)
+			);
 			return key;
 		}
 	}

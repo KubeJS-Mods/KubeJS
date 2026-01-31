@@ -1,8 +1,10 @@
 package dev.latvian.mods.kubejs.client.highlight;
 
 import com.google.gson.JsonSyntaxException;
+import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.shaders.ShaderSource;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.latvian.mods.kubejs.DevProperties;
@@ -27,11 +29,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.ShaderManager;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
@@ -51,7 +53,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
@@ -68,6 +70,9 @@ public class HighlightRenderer {
 		SCREEN,
 		WORLD
 	}
+
+	public static RenderPipeline HIGHLIGHT_PIPELINE_BLOCK;
+	public static RenderPipeline HIGHLIGHT_PIPELINE_ENTITY;
 
 	public record ShaderChain(PostChain postChain, RenderTarget renderInput, RenderTarget mcDepthInput, RenderTarget renderOutput, MutableBoolean renderAnything) {
 		@Nullable
@@ -137,7 +142,7 @@ public class HighlightRenderer {
 			super("kubejs:wrapped", delegate.format(), delegate.mode(), delegate.bufferSize(), delegate.affectsCrumbling(), delegate.sortOnUpload(), () -> {
 				delegate.setupRenderState();
 				RenderSystem.setShader(() -> INSTANCE.highlightShader);
-			}, delegate::clearRenderState);
+			}, delegate::create);
 
 			this.delegate = delegate;
 		}
@@ -173,6 +178,11 @@ public class HighlightRenderer {
 		}
 
 		@Override
+		public VertexConsumer setColor(int i) {
+			return delegate.setColor(i);
+		}
+
+		@Override
 		public VertexConsumer setUv(float f, float g) {
 			this.delegate.setUv(f, g);
 			return this;
@@ -195,6 +205,11 @@ public class HighlightRenderer {
 			this.delegate.setNormal(f, g, h);
 			return this;
 		}
+
+		@Override
+		public VertexConsumer setLineWidth(float v) {
+			return delegate.setLineWidth(v);
+		}
 	}
 
 	public static HighlightRenderer INSTANCE = new HighlightRenderer();
@@ -211,7 +226,7 @@ public class HighlightRenderer {
 	public ShaderChain guiChain;
 
 	@Nullable
-	public ShaderInstance highlightShader;
+	public ShaderManager highlightShader;
 
 	public final Set<Slot> hoveredSlots = new HashSet<>();
 	public final Reference2IntMap<Entity> highlightedEntities = new Reference2IntLinkedOpenHashMap<>(0);

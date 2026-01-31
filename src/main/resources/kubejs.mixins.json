@@ -21,6 +21,7 @@
 		"DataComponentMapBuilderMixin",
 		"DataComponentPatchBuilderMixin",
 		"DataComponentsMixin",
+		"DebugScreenOverlayMixin",
 		"DifferenceIngredientMixin",
 		"DirectionMixin",
 		"DyeColorMixin",
