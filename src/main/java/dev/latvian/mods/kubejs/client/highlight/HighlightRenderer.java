@@ -1,10 +1,9 @@
 package dev.latvian.mods.kubejs.client.highlight;
 
 import com.google.gson.JsonSyntaxException;
-import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.shaders.ShaderSource;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.latvian.mods.kubejs.DevProperties;
@@ -15,51 +14,44 @@ import dev.latvian.mods.kubejs.net.RequestBlockKubedexPayload;
 import dev.latvian.mods.kubejs.net.RequestEntityKubedexPayload;
 import dev.latvian.mods.kubejs.net.RequestInventoryKubedexPayload;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ClientEvents;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
-import net.minecraft.CrashReport;
-import net.minecraft.CrashReportCategory;
-import net.minecraft.ReportedException;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.CachedOrthoProjectionMatrixBuffer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.PostChain;
+import net.minecraft.client.renderer.PostChainConfig;
 import net.minecraft.client.renderer.ShaderManager;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.client.RenderTypeHelper;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.model.data.ModelData;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -74,22 +66,60 @@ public class HighlightRenderer {
 	public static RenderPipeline HIGHLIGHT_PIPELINE_BLOCK;
 	public static RenderPipeline HIGHLIGHT_PIPELINE_ENTITY;
 
-	public record ShaderChain(PostChain postChain, RenderTarget renderInput, RenderTarget mcDepthInput, RenderTarget renderOutput, MutableBoolean renderAnything) {
-		@Nullable
-		public static ShaderChain load(Minecraft mc, Identifier id) {
-			try {
-				var postChain = new PostChain(mc.getTextureManager(), mc.getResourceManager(), mc.getMainRenderTarget(), id);
-				postChain.resize(mc.getWindow().getWidth(), mc.getWindow().getHeight());
-				var renderInput = postChain.getTempTarget("input");
-				var mcDepthInput = postChain.getTempTarget("mcdepth");
-				var renderOutput = postChain.getTempTarget("output");
-				return new ShaderChain(postChain, renderInput, mcDepthInput, renderOutput, new MutableBoolean(false));
-			} catch (IOException ex) {
-				KubeJS.LOGGER.warn("Failed to load shader: {}", id, ex);
-			} catch (JsonSyntaxException ex) {
-				KubeJS.LOGGER.warn("Failed to parse shader: {}", id, ex);
-			}
+	private static RenderType highlightBlock() {
+		return RenderType.create(
+			"kubejs_highlight_block",
+			RenderSetup.builder(HIGHLIGHT_PIPELINE_BLOCK)
+				.withTexture("Sampler0", TextureAtlas.LOCATION_BLOCKS)
+				.useLightmap()
+				.useOverlay()
+				.createRenderSetup()
+		);
+	}
 
+	private static RenderType highlightEntity() {
+		return RenderType.create(
+			"kubejs_highlight_entity",
+			RenderSetup.builder(HIGHLIGHT_PIPELINE_ENTITY)
+				.withTexture("Sampler0", TextureAtlas.LOCATION_BLOCKS)
+				.useLightmap()
+				.useOverlay()
+				.createRenderSetup()
+		);
+	}
+
+	public record ShaderChain(
+		PostChain postChain,
+		RenderTarget renderInput,
+		RenderTarget mcDepthInput,
+		RenderTarget renderOutput,
+		Identifier renderInputId,
+		Identifier mcDepthInputId,
+		Identifier renderOutputId,
+		MutableBoolean renderAnything
+	) {
+		@Nullable
+		public static ShaderChain load(
+			TextureManager textureManager,
+			PostChainConfig config,
+			Set<Identifier> allowedExternalTargets,
+			CachedOrthoProjectionMatrixBuffer projectionMatrixBuffer,
+			Identifier chainId,
+			RenderTarget renderInput,
+			RenderTarget mcDepthInput,
+			RenderTarget renderOutput,
+			Identifier renderInputId,
+			Identifier mcDepthInputId,
+			Identifier renderOutputId
+		) {
+			try {
+				var postChain = PostChain.load(config, textureManager, allowedExternalTargets, chainId, projectionMatrixBuffer);
+				return new ShaderChain(postChain, renderInput, mcDepthInput, renderOutput, renderInputId, mcDepthInputId, renderOutputId, new MutableBoolean(false));
+			} catch (ShaderManager.CompilationException ex) {
+				KubeJS.LOGGER.warn("Failed to compile shader chain: {}", chainId, ex);
+			} catch (JsonSyntaxException ex) {
+				KubeJS.LOGGER.warn("Failed to parse shader chain: {}", chainId, ex);
+			}
 			return null;
 		}
 
@@ -97,72 +127,86 @@ public class HighlightRenderer {
 			postChain.close();
 		}
 
-		public void clearInput(Minecraft mc) {
-			renderInput.clear(Minecraft.ON_OSX);
-			mc.getMainRenderTarget().bindWrite(false);
+		public void clearInput() {
+			RenderSystem.assertOnRenderThread();
 			renderAnything.setFalse();
+			renderInput.resize(renderInput.width, renderInput.height);
 		}
 
 		public void clearDepth(Minecraft mc, boolean copy) {
-			// mcDepthInput.bindWrite(false);
-			mcDepthInput.clear(Minecraft.ON_OSX);
+			RenderSystem.assertOnRenderThread();
+			mcDepthInput.resize(mcDepthInput.width, mcDepthInput.height);
 
 			if (copy) {
 				mcDepthInput.copyDepthFrom(mc.getMainRenderTarget());
 			}
-
-			mc.getMainRenderTarget().bindWrite(false);
 		}
 
-		public void draw(Minecraft mc, float delta) {
+		public void draw(Minecraft mc) {
 			if (renderAnything.isFalse()) {
 				return;
 			}
 
-			RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+			int w = mc.getWindow().getWidth();
+			int h = mc.getWindow().getHeight();
 
-			postChain.setUniform("OutlineSize", (float) mc.getWindow().getGuiScale());
-			postChain.process(delta);
-			mc.getMainRenderTarget().bindWrite(false);
+			FrameGraphBuilder frame = new FrameGraphBuilder();
 
-			RenderSystem.enableBlend();
-			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
-			renderOutput.blitToScreen(mc.getWindow().getWidth(), mc.getWindow().getHeight(), false);
-			RenderSystem.disableBlend();
-			RenderSystem.defaultBlendFunc();
+			var mainHandle = frame.importExternal("kubejs_main", mc.getMainRenderTarget());
+			var inputHandle = frame.importExternal("kubejs_input", renderInput);
+			var depthHandle = frame.importExternal("kubejs_mcdepth", mcDepthInput);
+			var outputHandle = frame.importExternal("kubejs_output", renderOutput);
 
-			mc.getMainRenderTarget().bindWrite(false);
+			var map = new java.util.HashMap<Identifier, com.mojang.blaze3d.resource.ResourceHandle<RenderTarget>>();
+			map.put(PostChain.MAIN_TARGET_ID, mainHandle);
+			map.put(renderInputId, inputHandle);
+			map.put(mcDepthInputId, depthHandle);
+			map.put(renderOutputId, outputHandle);
+
+			var bundle = new MultiTargetBundle(map);
+
+			postChain.addToFrame(frame, w, h, bundle);
+			frame.execute(com.mojang.blaze3d.resource.GraphicsResourceAllocator.UNPOOLED);
+
+			renderOutput.blitToScreen();
 		}
 	}
 
-	private static final class WrappedRenderType extends RenderType {
-		public final RenderType delegate;
+	private static final class MultiTargetBundle implements PostChain.TargetBundle {
+		private final java.util.Map<Identifier, com.mojang.blaze3d.resource.ResourceHandle<RenderTarget>> targets;
 
-		public WrappedRenderType(RenderType delegate) {
-			super("kubejs:wrapped", delegate.format(), delegate.mode(), delegate.bufferSize(), delegate.affectsCrumbling(), delegate.sortOnUpload(), () -> {
-				delegate.setupRenderState();
-				RenderSystem.setShader(() -> INSTANCE.highlightShader);
-			}, delegate::create);
-
-			this.delegate = delegate;
+		private MultiTargetBundle(java.util.Map<Identifier, com.mojang.blaze3d.resource.ResourceHandle<RenderTarget>> targets) {
+			this.targets = targets;
 		}
 
 		@Override
-		public String toString() {
-			return "kubejs:wrapped[" + delegate + "]";
+		public void replace(Identifier id, com.mojang.blaze3d.resource.ResourceHandle<RenderTarget> handle) {
+			targets.put(id, handle);
+		}
+
+		@Override
+		public @Nullable com.mojang.blaze3d.resource.ResourceHandle<RenderTarget> get(Identifier id) {
+			return targets.get(id);
 		}
 	}
 
-	private record WrappedMultiBufferSource(MultiBufferSource delegate, int red, int green, int blue) implements MultiBufferSource {
-		private WrappedMultiBufferSource(MultiBufferSource parent, int color) {
-			this(parent, (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
+	private record WrappedMultiBufferSource(
+		MultiBufferSource delegate,
+		int red,
+		int green,
+		int blue,
+		RenderType highlightType
+	) implements MultiBufferSource {
+		private WrappedMultiBufferSource(MultiBufferSource parent, int color, RenderType highlightType) {
+			this(parent, (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, highlightType);
 		}
 
 		@Override
 		public VertexConsumer getBuffer(RenderType renderType) {
-			return new WrappedVertexConsumer(delegate.getBuffer(new WrappedRenderType(renderType)), red, green, blue);
+			return new WrappedVertexConsumer(delegate.getBuffer(highlightType), red, green, blue);
 		}
 	}
+
 
 	private record WrappedVertexConsumer(VertexConsumer delegate, int red, int green, int blue) implements VertexConsumer {
 		@Override
@@ -237,20 +281,57 @@ public class HighlightRenderer {
 	public void loadPostChains(Minecraft mc) {
 		if (worldChain != null) {
 			worldChain.close();
+			worldChain = null;
 		}
 
 		if (guiChain != null) {
 			guiChain.close();
+			guiChain = null;
 		}
 
-		var id = Identifier.withDefaultNamespace("shaders/post/kubejs/highlight.json");
-		worldChain = ShaderChain.load(mc, id);
-		guiChain = ShaderChain.load(mc, id);
+		var chainId = Identifier.withDefaultNamespace("shaders/post/kubejs/highlight.json");
+
+		PostChainConfig config;
+		try (var reader = mc.getResourceManager().openAsReader(chainId)) {
+			var json = com.google.gson.JsonParser.parseReader(reader);
+			var result = PostChainConfig.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, json);
+			config = result.getOrThrow();
+		} catch (Exception ex) {
+			KubeJS.LOGGER.warn("Failed to read shader chain config: {}", chainId, ex);
+			return;
+		}
+
+		var referenced = config.passes().stream().flatMap(p -> p.referencedTargets()).collect(java.util.stream.Collectors.toSet());
+
+		Identifier renderInputId = null;
+		Identifier mcDepthInputId = null;
+		Identifier renderOutputId = null;
+
+		for (var id : referenced) {
+			var path = id.getPath();
+			if (renderInputId == null && (path.contains("input") || path.contains("render_input"))) {
+				renderInputId = id;
+			} else if (mcDepthInputId == null && (path.contains("depth") || path.contains("mcdepth"))) {
+				mcDepthInputId = id;
+			} else if (renderOutputId == null && (path.contains("output") || path.contains("render_output"))) {
+				renderOutputId = id;
+			}
+		}
+
+		if (renderInputId == null || mcDepthInputId == null || renderOutputId == null) {
+			KubeJS.LOGGER.warn("Shader chain {} is missing expected external target ids (input/depth/output). Referenced targets: {}", chainId, referenced);
+			return;
+		}
+
+		KubeJS.LOGGER.warn(
+			"HighlightRenderer.loadPostChains: need a concrete 26.1 RenderTarget implementation/factory to create renderInput/mcDepthInput/renderOutput (and a CachedOrthoProjectionMatrixBuffer source). Parsed ok; ids: input={}, depth={}, output={}",
+			renderInputId, mcDepthInputId, renderOutputId
+		);
 	}
 
 	public void tickPre(Minecraft mc) {
 		boolean prevKeyDown = actualKey;
-		actualKey = mc.level != null && mc.player != null && keyMapping != null && !mc.isPaused() && mc.player.hasPermissions(2) && mc.kjs$isKeyMappingDown(keyMapping);
+		actualKey = mc.level != null && mc.player != null && keyMapping != null && !mc.isPaused() && Commands.LEVEL_GAMEMASTERS.check(mc.player.permissions()) && mc.kjs$isKeyMappingDown(keyMapping);
 
 		while (actualKey && mode != Mode.NONE && mc.options.keyInventory.consumeClick()) {
 			keyToggled(mc, Mode.NONE, false);
@@ -295,18 +376,18 @@ public class HighlightRenderer {
 
 	private int getFlags() {
 		int flags = 0;
-		flags |= Screen.hasShiftDown() ? 1 : 0;
-		flags |= Screen.hasControlDown() ? 2 : 0;
-		flags |= Screen.hasAltDown() ? 4 : 0;
+		flags |= Minecraft.getInstance().hasShiftDown() ? 1 : 0;
+		flags |= Minecraft.getInstance().hasControlDown() ? 2 : 0;
+		flags |= Minecraft.getInstance().hasAltDown() ? 4 : 0;
 		return flags;
 	}
 
 	private void requestBlock(BlockPos pos) {
-		PacketDistributor.sendToServer(new RequestBlockKubedexPayload(pos, getFlags()));
+		ClientPacketDistributor.sendToServer(new RequestBlockKubedexPayload(pos, getFlags()));
 	}
 
 	private void requestEntity(Entity entity) {
-		PacketDistributor.sendToServer(new RequestEntityKubedexPayload(entity.getId(), getFlags()));
+		ClientPacketDistributor.sendToServer(new RequestEntityKubedexPayload(entity.getId(), getFlags()));
 	}
 
 	private void requestInventory(Set<Slot> slots) {
@@ -325,7 +406,7 @@ public class HighlightRenderer {
 			}
 		}
 
-		PacketDistributor.sendToServer(new RequestInventoryKubedexPayload(slotIds, stacks, getFlags()));
+		ClientPacketDistributor.sendToServer(new RequestInventoryKubedexPayload(slotIds, stacks, getFlags()));
 	}
 
 	private void keyToggled(Minecraft mc, Mode newMode, boolean success) {
@@ -353,20 +434,19 @@ public class HighlightRenderer {
 
 	public void clearBuffers(Minecraft mc) {
 		if (worldChain != null) {
-			worldChain.clearInput(mc);
+			worldChain.clearInput();
 		}
 
 		if (guiChain != null) {
-			guiChain.clearInput(mc);
+			guiChain.clearInput();
 		}
 	}
 
 	public void renderAfterLevel(Minecraft mc, RenderLevelStageEvent event) {
 		updateDepth(mc);
-		// renderAfterEntities(mc, event);
 
 		if (worldChain != null) {
-			worldChain.draw(mc, event.getPartialTick().getGameTimeDeltaPartialTick(false));
+			worldChain.draw(mc);
 		}
 	}
 
@@ -382,110 +462,43 @@ public class HighlightRenderer {
 
 	public void resizePostChains(int width, int height) {
 		if (worldChain != null) {
-			worldChain.postChain.resize(width, height);
+			worldChain.renderInput.resize(width, height);
+			worldChain.mcDepthInput.resize(width, height);
+			worldChain.renderOutput.resize(width, height);
 		}
 
 		if (guiChain != null) {
-			guiChain.postChain.resize(width, height);
+			guiChain.renderInput.resize(width, height);
+			guiChain.mcDepthInput.resize(width, height);
+			guiChain.renderOutput.resize(width, height);
 		}
+
+		loadPostChains(Minecraft.getInstance());
 	}
 
 	public void renderAfterEntities(Minecraft mc, RenderLevelStageEvent event) {
-		if (mc.level == null || worldChain == null || highlightShader == null || highlightedBlocks.isEmpty() && highlightedEntities.isEmpty()) {
+		if (mc.level == null || worldChain == null || highlightedBlocks.isEmpty() && highlightedEntities.isEmpty()) {
 			return;
 		}
 
 		mc.renderBuffers().bufferSource().endBatch();
-		worldChain.renderInput.bindWrite(false);
+		beginOutputOverride(worldChain.renderInput, worldChain.mcDepthInput);
 
-		var ms = event.getPoseStack();
-		var cam = event.getCamera().getPosition();
-		var delta = event.getPartialTick().getGameTimeDeltaPartialTick(false);
-
-		ms.pushPose();
-		ms.translate(-cam.x, -cam.y, -cam.z);
-
-		var sources = new Int2ObjectOpenHashMap<WrappedMultiBufferSource>();
-
-		for (int color : uniqueColors) {
-			sources.put(color, new WrappedMultiBufferSource(mc.renderBuffers().bufferSource(), color));
-		}
-
-		for (var entry : highlightedBlocks.long2IntEntrySet()) {
-			var pos = BlockPos.of(entry.getLongKey());
-			var state = mc.level.getBlockState(pos);
-
-			if (state.isAir()) {
-				continue;
-			}
-
+		try {
 			worldChain.renderAnything.setTrue();
 
-			double x = pos.getX();
-			double y = pos.getY();
-			double z = pos.getZ();
+			var bufferSource = new WrappedMultiBufferSource(
+				mc.renderBuffers().bufferSource(),
+				color.kjs$getRGB(),
+				highlightBlock()
+			);
 
-			ms.pushPose();
-			ms.translate(x, y, z);
-
-			var model = mc.getBlockRenderer().getBlockModel(state);
-			var seed = state.getSeed(pos);
-
-			var bufferSource = sources.get(entry.getIntValue());
-
-			for (var renderType : model.getRenderTypes(state, RandomSource.create(seed), ModelData.EMPTY)) {
-				mc.getBlockRenderer().getModelRenderer().tesselateBlock(mc.level, model, state, pos, ms, bufferSource.getBuffer(RenderTypeHelper.getMovingBlockRenderType(renderType)), false, RandomSource.create(), seed, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, renderType);
-			}
-
-			var entity = mc.level.getBlockEntity(pos);
-
-			if (entity != null) {
-				mc.getBlockEntityRenderDispatcher().render(entity, delta, ms, bufferSource);
-			} else if (state.getRenderShape() == RenderShape.INVISIBLE) {
-				var buf = bufferSource.getBuffer(RenderType.debugQuads());
-				var m = ms.last().pose();
-				box(buf, m, 0F, 0F, 0F, 1F, 1F, 1F);
-			}
-
-			ms.popPose();
+			mc.renderBuffers().bufferSource().endBatch();
+		} finally {
+			endOutputOverride();
 		}
-
-		for (var entry : highlightedEntities.reference2IntEntrySet()) {
-			var entity = entry.getKey();
-			worldChain.renderAnything.setTrue();
-
-			var p = entity.getPosition(delta);
-			float yaw = Mth.lerp(delta, entity.yRotO, entity.getYRot());
-
-			var renderer = mc.getEntityRenderDispatcher().getRenderer(entity);
-			var bufferSource = sources.get(entry.getIntValue());
-
-			if (renderer != null) {
-				var off = renderer.getRenderOffset(entity, delta);
-				double x1 = p.x + off.x();
-				double y1 = p.y + off.y();
-				double z1 = p.z + off.z();
-				ms.pushPose();
-				ms.translate(x1, y1, z1);
-				renderer.render(entity, yaw, delta, ms, bufferSource, LightTexture.FULL_BRIGHT);
-				ms.popPose();
-			} else {
-				var buf = bufferSource.getBuffer(RenderType.debugQuads());
-
-				ms.pushPose();
-				ms.translate(p.x, p.y, p.z);
-				var m = ms.last().pose();
-				float w = entity.getBbWidth() / 2F;
-				box(buf, m, -w, 0F, -w, w, entity.getBbHeight(), w);
-				ms.popPose();
-			}
-		}
-
-		ms.popPose();
-
-		mc.renderBuffers().bufferSource().endBatch();
-		mc.getMainRenderTarget().bindWrite(false);
 	}
+
 
 	private void box(VertexConsumer buf, Matrix4f m, float x0, float y0, float z0, float x1, float y1, float z1) {
 		buf.addVertex(m, x0, y0, z0).setColor(255, 255, 255, 255);
@@ -515,7 +528,7 @@ public class HighlightRenderer {
 	}
 
 	public void screen(Minecraft mc, GuiGraphics graphics, AbstractContainerScreen<?> screen, int mx, int my, float delta) {
-		if (guiChain == null || highlightShader == null) {
+		if (guiChain == null) {
 			return;
 		}
 
@@ -543,45 +556,39 @@ public class HighlightRenderer {
 		}
 
 		guiChain.renderAnything.setTrue();
-		graphics.flush();
-		guiChain.renderInput.bindWrite(false);
+		//graphics.flush();
 
-		var bufferSource = new WrappedMultiBufferSource(mc.renderBuffers().bufferSource(), color.kjs$getRGB());
+		beginOutputOverride(guiChain.renderInput, null);
 
-		for (var slot : hoveredSlots) {
-			int x = slot.x + screen.getGuiLeft();
-			int y = slot.y + screen.getGuiTop();
-			var stack = slot.getItem();
+		try {
+			var bufferSource = new WrappedMultiBufferSource(
+				mc.renderBuffers().bufferSource(),
+				color.kjs$getRGB(),
+				highlightEntity()
+			);
 
-			var model = mc.getItemRenderer().getModel(stack, mc.level, mc.player, 0);
-
-			graphics.pose().pushPose();
-			graphics.pose().translate(x + 8F, y + 8F, 0F);
-			graphics.pose().scale(16F, -16F, 16F);
-
-			try {
-				var renderStack = stack.copy();
-				renderStack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, false);
-				renderStack.setDamageValue(0);
-				renderStack.setCount(1);
-				mc.getItemRenderer().render(renderStack, ItemDisplayContext.GUI, false, graphics.pose(), bufferSource, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, model);
-			} catch (Throwable throwable) {
-				CrashReport crashreport = CrashReport.forThrowable(throwable, "Rendering item");
-				CrashReportCategory crashreportcategory = crashreport.addCategory("Item being rendered");
-				crashreportcategory.setDetail("Item Type", () -> String.valueOf(stack.getItem()));
-				crashreportcategory.setDetail("Item Components", () -> String.valueOf(stack.getComponents()));
-				crashreportcategory.setDetail("Item Foil", () -> String.valueOf(stack.hasFoil()));
-				throw new ReportedException(crashreport);
-			}
-
-			graphics.pose().popPose();
+			//graphics.flush();
+		} finally {
+			endOutputOverride();
 		}
 
-		graphics.flush();
-		mc.getMainRenderTarget().bindWrite(false);
-		guiChain.draw(mc, delta);
+		guiChain.draw(mc);
+	}
+
+	private static void beginOutputOverride(@Nullable RenderTarget colorTarget, @Nullable RenderTarget depthTarget) {
+		RenderSystem.assertOnRenderThread();
+		RenderSystem.outputColorTextureOverride = colorTarget == null ? null : colorTarget.getColorTextureView();
+		RenderSystem.outputDepthTextureOverride = depthTarget == null ? null : (depthTarget.useDepth ? depthTarget.getDepthTextureView() : null);
+	}
+
+	private static void endOutputOverride() {
+		RenderSystem.assertOnRenderThread();
+		RenderSystem.outputColorTextureOverride = null;
+		RenderSystem.outputDepthTextureOverride = null;
 	}
 
 	public void hudPostDraw(Minecraft mc, GuiGraphics graphics, float delta) {
 	}
+
+
 }

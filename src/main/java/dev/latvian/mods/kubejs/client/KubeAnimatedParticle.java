@@ -22,7 +22,7 @@ public class KubeAnimatedParticle extends SimpleAnimatedParticle {
 		super(level, x, y, z, sprites, 0.0125F);
 		setLifetime(20);
 		setSpriteFromAge(sprites);
-		lightColorFunction = super::getLightColor;
+		lightColorFunction = super::getLightCoords;
 	}
 
 	public void setGravity(float g) {
@@ -104,9 +104,10 @@ public class KubeAnimatedParticle extends SimpleAnimatedParticle {
 	}
 
 	@Override
-	public int getLightColor(float partialTick) {
+	public int getLightCoords(float partialTick) {
 		return lightColorFunction.get(partialTick);
 	}
+
 
 	@Override
 	public void tick() {

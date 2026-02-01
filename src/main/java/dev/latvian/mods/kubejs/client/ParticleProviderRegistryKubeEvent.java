@@ -7,6 +7,7 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
 import java.util.function.Consumer;
@@ -24,7 +25,7 @@ public class ParticleProviderRegistryKubeEvent implements ClientKubeEvent {
 	}
 
 	public <T extends ParticleOptions> void register(ParticleType<T> type, Consumer<KubeAnimatedParticle> particle) {
-		parent.registerSpriteSet(type, set -> (type1, level, x, y, z, xSpeed, ySpeed, zSpeed) -> {
+		parent.registerSpriteSet(type, set -> (type1, level, x, y, z, xSpeed, ySpeed, zSpeed, random) -> {
 			var kube = new KubeAnimatedParticle(level, x, y, z, set);
 			kube.setParticleSpeed(xSpeed, ySpeed, zSpeed);
 			particle.accept(kube);
@@ -42,12 +43,28 @@ public class ParticleProviderRegistryKubeEvent implements ClientKubeEvent {
 	}
 
 	@FunctionalInterface
-	public interface SpriteSetParticleProvider<T extends ParticleOptions> extends ParticleEngine.SpriteParticleRegistration<T> {
-		Particle create(T type, ClientLevel clientLevel, double x, double y, double z, SpriteSet sprites, double xSpeed, double ySpeed, double zSpeed);
+	public interface SpriteSetParticleProvider<T extends ParticleOptions>
+		extends net.minecraft.client.particle.ParticleResources.SpriteParticleRegistration<T> {
+
+		Particle create(
+			T type,
+			ClientLevel level,
+			double x,
+			double y,
+			double z,
+			SpriteSet sprites,
+			double xSpeed,
+			double ySpeed,
+			double zSpeed,
+			RandomSource random
+		);
 
 		@Override
 		default ParticleProvider<T> create(SpriteSet sprites) {
-			return (type, level, x, y, z, xSpeed, ySpeed, zSpeed) -> create(type, level, x, y, z, sprites, xSpeed, ySpeed, zSpeed);
+			return (type, level, x, y, z, xSpeed, ySpeed, zSpeed, random) ->
+				create(type, level, x, y, z, sprites, xSpeed, ySpeed, zSpeed, random);
 		}
 	}
+
+
 }

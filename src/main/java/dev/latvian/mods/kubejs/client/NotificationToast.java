@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -9,11 +8,11 @@ import dev.latvian.mods.kubejs.client.icon.KubeIconRenderer;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextWrapper;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.Toast;
-import net.minecraft.client.gui.components.toasts.ToastComponent;
+import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.FormattedCharSequence;
 import org.joml.Matrix4f;
 
@@ -30,6 +29,8 @@ public class NotificationToast implements Toast {
 
 	private long lastChanged;
 	private boolean changed;
+
+	private Toast.Visibility wantedVisibility = Toast.Visibility.SHOW;
 
 	public NotificationToast(Minecraft mc, NotificationToastData notification) {
 		this.notification = notification;
@@ -75,70 +76,72 @@ public class NotificationToast implements Toast {
 		return this.height;
 	}
 
-	private void drawRectangle(Matrix4f m, int x0, int y0, int x1, int y1, int r, int g, int b) {
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-		var buf = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-		buf.addVertex(m, x0, y1, 0F).setColor(r, g, b, 255);
-		buf.addVertex(m, x1, y1, 0F).setColor(r, g, b, 255);
-		buf.addVertex(m, x1, y0, 0F).setColor(r, g, b, 255);
-		buf.addVertex(m, x0, y0, 0F).setColor(r, g, b, 255);
-		BufferUploader.drawWithShader(buf.buildOrThrow());
+	private void drawRectangle(GuiGraphics graphics, int x0, int y0, int x1, int y1, int r, int g, int b) {
+		graphics.fill(x0, y0, x1, y1, (0xFF << 24) | (r << 16) | (g << 8) | b);
+	}
+
+	private void drawRectangle(GuiGraphics graphics, int x0, int y0, int x1, int y1, int rgb) {
+		graphics.fill(x0, y0, x1, y1, 0xFF000000 | (rgb & 0xFFFFFF));
+	}
+
+
+	@Override
+	public Toast.Visibility getWantedVisibility() {
+		return wantedVisibility;
 	}
 
 	@Override
-	public Toast.Visibility render(GuiGraphics graphics, ToastComponent toastComponent, long l) {
-		if (this.changed) {
-			this.lastChanged = l;
-			this.changed = false;
+	public void update(ToastManager toastManager, long l) {
+		if (changed) {
+			lastChanged = l;
+			changed = false;
 		}
 
-		var mc = toastComponent.getMinecraft();
+		wantedVisibility = l - lastChanged < duration ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
+	}
 
-		var poseStack = graphics.pose();
+	@Override
+	public void render(GuiGraphics graphics, Font font, long l) {
+		if (changed) {
+			lastChanged = l;
+			changed = false;
+		}
 
-		poseStack.pushPose();
-		poseStack.translate(-2D, 2D, 0D);
-		var m = poseStack.last().pose();
+		var mc = Minecraft.getInstance();
+
 		int w = width();
 		int h = height();
 
+		int xOff = -2;
+		int yOff = 2;
+
 		int oc = notification.outlineColor().orElse(NotificationToastData.DEFAULT_OUTLINE_COLOR).kjs$getRGB();
-		int ocr = FastColor.ARGB32.red(oc);
-		int ocg = FastColor.ARGB32.green(oc);
-		int ocb = FastColor.ARGB32.blue(oc);
-
 		int bc = notification.borderColor().orElse(NotificationToastData.DEFAULT_BORDER_COLOR).kjs$getRGB();
-		int bcr = FastColor.ARGB32.red(bc);
-		int bcg = FastColor.ARGB32.green(bc);
-		int bcb = FastColor.ARGB32.blue(bc);
-
 		int bgc = notification.backgroundColor().orElse(NotificationToastData.DEFAULT_BACKGROUND_COLOR).kjs$getRGB();
-		int bgcr = FastColor.ARGB32.red(bgc);
-		int bgcg = FastColor.ARGB32.green(bgc);
-		int bgcb = FastColor.ARGB32.blue(bgc);
 
-		RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		drawRectangle(m, 2, 0, w - 2, h, ocr, ocg, ocb);
-		drawRectangle(m, 0, 2, w, h - 2, ocr, ocg, ocb);
-		drawRectangle(m, 1, 1, w - 1, h - 1, ocr, ocg, ocb);
-		drawRectangle(m, 2, 1, w - 2, h - 1, bcr, bcg, bcb);
-		drawRectangle(m, 1, 2, w - 1, h - 2, bcr, bcg, bcb);
-		drawRectangle(m, 2, 2, w - 2, h - 2, bgcr, bgcg, bgcb);
+		int o = 0xFF000000 | oc;
+		int b = 0xFF000000 | bc;
+		int bg = 0xFF000000 | bgc;
+
+		graphics.fill(xOff + 2, yOff + 0, xOff + w - 2, yOff + h, o);
+		graphics.fill(xOff + 0, yOff + 2, xOff + w, yOff + h - 2, o);
+		graphics.fill(xOff + 1, yOff + 1, xOff + w - 1, yOff + h - 1, o);
+
+		graphics.fill(xOff + 2, yOff + 1, xOff + w - 2, yOff + h - 1, b);
+		graphics.fill(xOff + 1, yOff + 2, xOff + w - 1, yOff + h - 2, b);
+
+		graphics.fill(xOff + 2, yOff + 2, xOff + w - 2, yOff + h - 2, bg);
 
 		if (icon != null) {
-			icon.draw(mc, graphics, 14, h / 2, notification.iconSize());
+			icon.draw(mc, graphics, xOff + 14, yOff + h / 2, notification.iconSize());
 		}
 
 		int th = icon == null ? 6 : 26;
 		int tv = (h - text.size() * 10) / 2 + 1;
 
 		for (var i = 0; i < text.size(); i++) {
-			graphics.drawString(mc.font, text.get(i), th, tv + i * 10, 0xFFFFFF, notification.textShadow());
+			graphics.drawString(mc.font, text.get(i), xOff + th, yOff + tv + i * 10, 0xFFFFFF, notification.textShadow());
 		}
-
-		poseStack.popPose();
-		return l - this.lastChanged < duration ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
 	}
+
 }

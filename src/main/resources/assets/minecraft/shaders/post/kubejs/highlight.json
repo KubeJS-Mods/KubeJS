@@ -1,24 +1,31 @@
 {
-	"targets": [
-		"input",
-		"output",
-		"mcdepth"
-	],
+	"targets": {},
 	"passes": [
 		{
-			"name": "kubejs/highlight",
-			"intarget": "input",
-			"outtarget": "output",
-			"auxtargets": [
+			"vertex_shader": "minecraft:kubejs/highlight",
+			"fragment_shader": "minecraft:kubejs/highlight",
+			"inputs": [
 				{
-					"name": "DiffuseDepthSampler",
-					"id": "input:depth"
+					"sampler_name": "Diffuse",
+					"target": "minecraft:input",
+					"use_depth_buffer": false,
+					"bilinear": false
 				},
 				{
-					"name": "MCDepthSampler",
-					"id": "mcdepth:depth"
+					"sampler_name": "DiffuseDepth",
+					"target": "minecraft:input",
+					"use_depth_buffer": true,
+					"bilinear": false
+				},
+				{
+					"sampler_name": "MCDepth",
+					"target": "minecraft:mcdepth",
+					"use_depth_buffer": true,
+					"bilinear": false
 				}
-			]
+			],
+			"output": "minecraft:output",
+			"uniforms": {}
 		}
 	]
 }

@@ -16,12 +16,14 @@ import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.TagValueOutput;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -123,7 +125,10 @@ public class KubedexPayloadHandler {
 			jpos.putDouble("z", entity.position().z);
 
 			try {
-				payloadEntity.put("data", entity.saveWithoutId(new CompoundTag()));
+				var out = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, player.server.registryAccess());
+				entity.saveWithoutId(out);
+				payloadEntity.put("data", out.buildResult());
+
 			} catch (Exception ex) {
 				payloadEntity.put("data", new CompoundTag());
 			}
@@ -169,7 +174,7 @@ public class KubedexPayloadHandler {
 			var tag = OrderedCompoundTag.create();
 			tag.putString("string", stack.kjs$toItemString0(ops));
 			tag.put("item", ItemStack.CODEC.encodeStart(ops, stack).result().get());
-			tag.put("name", ComponentSerialization.FLAT_CODEC.encodeStart(ops, stack.getHoverName()).getOrThrow());
+			tag.put("name", ComponentSerialization.CODEC.encodeStart(ops, stack.getHoverName()).getOrThrow());
 			tag.putString("icon", stack.kjs$getWebIconURL(ops, 64).toString());
 			tag.putInt("slot", slotStack.slot);
 
@@ -179,7 +184,7 @@ public class KubedexPayloadHandler {
 				tag.putString("component_string", DataComponentWrapper.patchToString(new StringBuilder(), ops, patch).toString());
 			}
 
-			var itemTagList = sortedTagList(stack.getItemHolder().tags());
+			var itemTagList = sortedTagList(stack.typeHolder().tags());
 
 			if (!itemTagList.isEmpty()) {
 				tag.put("tags", itemTagList);

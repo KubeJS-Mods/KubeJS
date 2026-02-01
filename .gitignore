@@ -30,3 +30,5 @@ eclipse
 # metadata (windows)
 Thumbs.db
 desktop.ini
+
+**/dev/latvian/mods/kubejs/client/ui/
