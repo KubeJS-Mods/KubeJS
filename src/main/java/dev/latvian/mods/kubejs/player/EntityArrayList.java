@@ -134,7 +134,7 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 		Filters the entity list by passing each entity through a given predicate.
 		Entities that pass the predicate will end up in the resulting entity list.
 		""", params = {
-		@Param(name = "filter", value = "The predicate - a function that takes no arguments and returns a boolean.")
+		@Param(name = "filter", value = "The predicate - a function that takes an argument of `Entity` and returns a boolean.")
 	})
 	public EntityArrayList oneFilter(Predicate<Entity> filter) {
 		if (isEmpty()) {
@@ -157,7 +157,7 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 		Filters the entity list by passing each entity through all predicates in provided list.
 		Entities that pass at least one of the predicates will end up in the resulting entity list.
 		""", params = {
-		@Param(name = "filterList", value = "The list of predicates - functions that take no arguments and return boolean values.")
+		@Param(name = "filterList", value = "The list of predicates - functions that take one argument of `Entity` and return boolean values.")
 	})
 	public EntityArrayList filter(List<Predicate<Entity>> filterList) {
 		if (isEmpty() || filterList.isEmpty()) {
