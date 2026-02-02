@@ -62,7 +62,7 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Ent
 	}
 
 	@Override
-	@Info(value = "Each entity in the level (world) runs the specified console command with their permission level.", params = {
+	@Info(value = "Each player in the level (world) runs the specified console command with their permission level.", params = {
 		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
 	})
 	default void kjs$runCommand(String command) {
@@ -72,7 +72,7 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Ent
 	}
 
 	@Override
-	@Info(value = "Each entity in the level (world) runs the specified console command with their permission level. The command won't output any logs in chat nor console", params = {
+	@Info(value = "Each player in the level (world) runs the specified console command with their permission level. The command won't output any logs in chat nor console", params = {
 		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
 	})
 	default void kjs$runCommandSilent(String command) {
