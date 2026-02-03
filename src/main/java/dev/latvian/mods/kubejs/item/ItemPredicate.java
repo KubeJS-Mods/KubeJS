@@ -133,7 +133,7 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 	@Override
 	default Ingredient kjs$asIngredient() {
 		return Ingredient.of(
-			java.util.Arrays.stream(kjs$getStackArray())
+			Arrays.stream(kjs$getStackArray())
 				.filter(s -> s != null && !s.isEmpty())
 				.map(ItemStack::getItem)
 		);

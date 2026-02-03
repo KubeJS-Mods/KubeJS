@@ -407,6 +407,8 @@ public class KubeJSErrorScreen extends Screen {
 				return true;
 			}
 
+			var mc = Minecraft.getInstance();
+			mc.keyboardHandler.setClipboard(String.join("\n", line.stackTrace));
 			return true;
 		}
 

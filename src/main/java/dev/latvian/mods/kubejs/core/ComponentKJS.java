@@ -13,12 +13,14 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.URI;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -198,39 +200,52 @@ public interface ComponentKJS extends Component, WithCodec, WrappedJS {
 	}
 
 	default MutableComponent kjs$font(@Nullable Identifier s) {
-		return kjs$self().setStyle(getStyle().withFont(s));
+		FontDescription fd = s == null ? FontDescription.DEFAULT : new FontDescription.Resource(s);
+		return kjs$self().setStyle(getStyle().withFont(fd));
 	}
+
 
 	default MutableComponent kjs$click(@Nullable ClickEvent s) {
 		return kjs$self().setStyle(getStyle().withClickEvent(s));
 	}
 
 	default MutableComponent kjs$clickRunCommand(String command) {
-		return kjs$click(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+		return kjs$click(new ClickEvent.RunCommand(command));
 	}
 
 	default MutableComponent kjs$clickSuggestCommand(String command) {
-		return kjs$click(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
+		return kjs$click(new ClickEvent.SuggestCommand(command));
 	}
 
 	default MutableComponent kjs$clickCopy(String text) {
-		return kjs$click(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, text));
+		return kjs$click(new ClickEvent.CopyToClipboard(text));
 	}
 
 	default MutableComponent kjs$clickChangePage(String page) {
-		return kjs$click(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, page));
+		int p;
+		try {
+			p = Integer.parseInt(page);
+		} catch (NumberFormatException ignored) {
+			p = 1;
+		}
+		return kjs$click(new ClickEvent.ChangePage(Math.max(1, p)));
 	}
 
 	default MutableComponent kjs$clickOpenUrl(String url) {
-		return kjs$click(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+		try {
+			return kjs$click(new ClickEvent.OpenUrl(URI.create(url)));
+		} catch (IllegalArgumentException ignored) {
+			return (MutableComponent) (Object) this;
+		}
 	}
 
 	default MutableComponent kjs$clickOpenFile(String path) {
-		return kjs$click(new ClickEvent(ClickEvent.Action.OPEN_FILE, path));
+		return kjs$click(new ClickEvent.OpenFile(path));
 	}
 
+
 	default MutableComponent kjs$hover(@Nullable Component s) {
-		return kjs$self().setStyle(getStyle().withHoverEvent(s == null ? null : new HoverEvent(HoverEvent.Action.SHOW_TEXT, s)));
+		return kjs$self().setStyle(getStyle().withHoverEvent(s == null ? null : new HoverEvent.ShowText(s)));
 	}
 
 	default boolean kjs$isEmpty() {

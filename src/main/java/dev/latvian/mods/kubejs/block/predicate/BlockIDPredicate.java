@@ -65,7 +65,7 @@ public class BlockIDPredicate implements BlockPredicate {
 
 	private Block getBlock() {
 		if (cachedBlock == null) {
-			cachedBlock = BuiltInRegistries.BLOCK.get(id);
+			cachedBlock = BuiltInRegistries.BLOCK.get(id).get().value();
 
 			if (cachedBlock == null) {
 				cachedBlock = Blocks.AIR;

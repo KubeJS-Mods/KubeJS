@@ -8,10 +8,14 @@ import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import org.jetbrains.annotations.NotNull;
 
 @RemapPrefixForJS("kjs$")
 public interface FluidIngredientKJS extends WithCodec, FluidMatch {
@@ -35,20 +39,39 @@ public interface FluidIngredientKJS extends WithCodec, FluidMatch {
 
 	@Override
 	default boolean matches(RecipeMatchContext cx, FluidIngredient in, boolean exact) {
-		if (in == FluidIngredient.empty()) {
-			return false;
-		}
-
 		try {
-			for (var stack : ((FluidIngredient) this).getStacks()) {
-				if (in.test(stack)) {
+			var fluids = ((FluidIngredient) this).fluids();
+			if (fluids.isEmpty()) {
+				return false;
+			}
+			int probeAmount = FluidType.BUCKET_VOLUME;
+			for (var holder : fluids) {
+				if (in.test(new FluidStack(holder, probeAmount))) {
 					return true;
 				}
 			}
 		} catch (Exception ex) {
 			throw new KubeRuntimeException("Failed to test fluid ingredient " + in, ex);
 		}
+		return false;
+	}
 
+	@Override
+	default boolean matches(RecipeMatchContext cx, SizedFluidIngredient in, boolean exact) {
+		try {
+			var fluids = ((FluidIngredient) this).fluids();
+			if (fluids.isEmpty()) {
+				return false;
+			}
+			int probeAmount = in.amount();
+			for (var holder : fluids) {
+				if (in.test(new FluidStack(holder, probeAmount))) {
+					return true;
+				}
+			}
+		} catch (Exception ex) {
+			throw new KubeRuntimeException("Failed to test sized fluid ingredient " + in, ex);
+		}
 		return false;
 	}
 }

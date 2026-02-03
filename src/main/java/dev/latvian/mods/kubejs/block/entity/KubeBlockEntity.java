@@ -1,20 +1,27 @@
 package dev.latvian.mods.kubejs.block.entity;
 
+import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.plugin.builtin.event.BlockEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -69,54 +76,70 @@ public class KubeBlockEntity extends BlockEntity {
 		block = null;
 	}
 
+
 	@Override
-	protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-		super.saveAdditional(tag, registries);
-		tag.put("data", data);
+	protected void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
+
+		output.store("data", CompoundTag.CODEC, data);
 
 		if (tick > 0) {
-			tag.putInt("tick", tick);
+			output.putInt("tick", tick);
+		} else {
+			output.discard("tick");
 		}
 
 		if (cycle > 0) {
-			tag.putInt("cycle", cycle);
+			output.putInt("cycle", cycle);
+		} else {
+			output.discard("cycle");
 		}
 
-		if (placerId != null) {
-			tag.putUUID("placer", placerId);
-		}
+		output.storeNullable("placer", UUIDUtil.CODEC, placerId);
 
 		if (attachmentArray.length > 0) {
-			var data = new CompoundTag();
+			var registries = level != null ? level.registryAccess() : RegistryAccess.EMPTY;
+			var attachmentsOut = output.child("attachments");
 
 			for (var entry : attachmentArray) {
 				var t = entry.attachment().serialize(registries);
 
 				if (t != null) {
-					data.put(entry.info().id(), t);
+					attachmentsOut.store(entry.info().id(), ExtraCodecs.NBT, t);
+				} else {
+					attachmentsOut.discard(entry.info().id());
 				}
 			}
 
-			tag.put("attachments", data);
+			if (attachmentsOut.isEmpty()) {
+				output.discard("attachments");
+			}
+		} else {
+			output.discard("attachments");
 		}
 	}
 
 	@Override
-	public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-		super.loadAdditional(tag, registries);
-		data = tag.getCompound("data");
-		tick = tag.getInt("tick");
-		cycle = tag.getInt("cycle");
-		placerId = tag.contains("placer") ? tag.getUUID("placer") : null;
+	protected void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
+
+		data = input.read("data", CompoundTag.CODEC).orElseGet(CompoundTag::new);
+		tick = input.read("tick", Codec.INT).orElse(0);
+		cycle = input.read("cycle", Codec.INT).orElse(0);
+		placerId = input.read("placer", UUIDUtil.CODEC).orElse(null);
 
 		if (attachmentArray.length > 0) {
-			var data = tag.getCompound("attachments");
+			var registries = level != null ? level.registryAccess() : RegistryAccess.EMPTY;
 
-			for (var entry : attachmentArray) {
-				entry.attachment().deserialize(registries, data.get(entry.info().id()));
-			}
+			input.child("attachments").ifPresent(attachmentsIn -> {
+				for (var entry : attachmentArray) {
+					var t = attachmentsIn.read(entry.info().id(), ExtraCodecs.NBT).orElse(null);
+					entry.attachment().deserialize(registries, t);
+				}
+			});
 		}
 	}
+
 
 	@Override
 	public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
@@ -195,7 +218,7 @@ public class KubeBlockEntity extends BlockEntity {
 			return;
 		}
 
-		if (level.isClientSide ? info.clientTicking : info.serverTicking) {
+		if (level.isClientSide() ? info.clientTicking : info.serverTicking) {
 			if (tick % info.tickFrequency == info.tickOffset) {
 				var side = level.kjs$getScriptType();
 
@@ -215,7 +238,7 @@ public class KubeBlockEntity extends BlockEntity {
 			tick++;
 		}
 
-		if (!level.isClientSide && info.attachmentsTicking) {
+		if (!level.isClientSide() && info.attachmentsTicking) {
 			for (var entry : attachmentArray) {
 				entry.attachment().serverTick();
 			}

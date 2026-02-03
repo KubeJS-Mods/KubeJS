@@ -10,28 +10,43 @@ import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.commands.LookAt;
 import net.minecraft.server.commands.TeleportCommand;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.Relative;
 import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Team;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -73,20 +88,24 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 
 	@Override
 	default void kjs$tell(Component message) {
-		kjs$self().sendSystemMessage(message);
+		if (kjs$self() instanceof ServerPlayer serverPlayer) {
+			serverPlayer.sendSystemMessage(message);
+		} else if (kjs$self() instanceof Player player) {
+			player.displayClientMessage(message, false);
+		}
 	}
 
 	@Override
 	default void kjs$runCommand(String command) {
 		if (kjs$getLevel() instanceof ServerLevel level) {
-			level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack(), command);
+			level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStackForNameResolution(level), command);
 		}
 	}
 
 	@Override
 	default void kjs$runCommandSilent(String command) {
 		if (kjs$getLevel() instanceof ServerLevel level) {
-			level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStack().withSuppressedOutput(), command);
+			level.getServer().getCommands().performPrefixedCommand(kjs$self().createCommandSourceStackForNameResolution(level).withSuppressedOutput(), command);
 		}
 	}
 
@@ -187,7 +206,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 
 		try {
 			TeleportCommand.performTeleport(
-				kjs$self().createCommandSourceStack(),
+				kjs$self().createCommandSourceStackForNameResolution(level),
 				kjs$self(),
 				level,
 				x, y, z,
@@ -205,7 +224,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	default void kjs$setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
-		kjs$self().moveTo(x, y, z, yaw, pitch);
+		kjs$self().snapTo(x, y, z, yaw, pitch);
 	}
 
 	default void kjs$setPosition(double x, double y, double z) {
@@ -226,7 +245,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	default boolean kjs$isOnScoreboardTeam(String teamId) {
-		Team team = kjs$self().getCommandSenderWorld().getScoreboard().getPlayerTeam(teamId);
+		Team team = kjs$self().level().getScoreboard().getPlayerTeam(teamId);
 		return team != null && kjs$self().isAlliedTo(team);
 	}
 
@@ -245,16 +264,25 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	default CompoundTag kjs$getNbt() {
-		var nbt = new CompoundTag();
-		kjs$self().saveWithoutId(nbt);
-		return nbt;
+		var registries = (HolderLookup.Provider) kjs$self().level().registryAccess();
+		var problems = new ProblemReporter.Collector(() -> "kubejs");
+
+		var out = TagValueOutput.createWithContext(problems, registries);
+		kjs$self().saveWithoutId(out);
+		return out.buildResult();
 	}
 
 	default void kjs$setNbt(@Nullable CompoundTag nbt) {
-		if (nbt != null) {
-			kjs$self().load(nbt);
+		if (nbt == null) {
+			return;
 		}
+		var registries = (HolderLookup.Provider) kjs$self().level().registryAccess();
+		var problems = new ProblemReporter.Collector(() -> "kubejs");
+
+		var in = TagValueInput.create(problems, registries, nbt);
+		kjs$self().load(in);
 	}
+
 
 	default Entity kjs$mergeNbt(@Nullable CompoundTag tag) {
 		if (tag == null || tag.isEmpty()) {
@@ -263,7 +291,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 
 		var nbt = kjs$getNbt();
 
-		for (var k : tag.getAllKeys()) {
+		for (var k : tag.keySet()) {
 			var t = tag.get(k);
 
 			if (t == null || t == EndTag.INSTANCE) {

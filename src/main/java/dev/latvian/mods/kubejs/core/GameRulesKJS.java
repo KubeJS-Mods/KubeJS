@@ -1,26 +1,76 @@
 package dev.latvian.mods.kubejs.core;
 
-import net.minecraft.world.level.GameRules;
+import com.mojang.serialization.DataResult;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.gamerules.GameRule;
+import net.minecraft.world.level.gamerules.GameRules;
 import org.jetbrains.annotations.Nullable;
 
 public interface GameRulesKJS {
 	@Nullable
-	GameRules.Value<?> kjs$get(String rule);
+	MinecraftServer kjs$getServer();
 
-	void kjs$set(String rule, String value);
+	@Nullable
+	default GameRule<?> kjs$getRule(String rule) {
+		Identifier id = Identifier.tryParse(rule);
+		if (id == null) {
+			id = Identifier.fromNamespaceAndPath("minecraft", rule);
+		}
+		return BuiltInRegistries.GAME_RULE.getOptional(id).orElse(null);
+	}
 
 	default String kjs$getString(String rule) {
-		var o = kjs$get(rule);
-		return o == null ? "" : o.serialize();
+		GameRule<?> r = kjs$getRule(rule);
+		if (r == null) {
+			return "";
+		}
+		return kjs$serialize((GameRules) (Object) this, r);
 	}
 
 	default boolean kjs$getBoolean(String rule) {
-		var o = kjs$get(rule);
-		return o instanceof GameRules.BooleanValue v && v.get();
+		GameRule<?> r = kjs$getRule(rule);
+		if (r == null) {
+			return false;
+		}
+		Object v = ((GameRules) (Object) this).get((GameRule<Object>) r);
+		return v instanceof Boolean b && b;
 	}
 
 	default int kjs$getInt(String rule) {
-		var o = kjs$get(rule);
-		return o instanceof GameRules.IntegerValue v ? v.get() : 0;
+		GameRule<?> r = kjs$getRule(rule);
+		if (r == null) {
+			return 0;
+		}
+		Object v = ((GameRules) (Object) this).get((GameRule<Object>) r);
+		return v instanceof Integer i ? i : 0;
+	}
+
+	default void kjs$set(String rule, String value) {
+		GameRule<?> r = kjs$getRule(rule);
+		if (r == null) {
+			return;
+		}
+
+		GameRules self = (GameRules) (Object) this;
+
+		if (r.valueClass() == Boolean.class) {
+			DataResult<Boolean> parsed = ((GameRule<Boolean>) r).deserialize(value);
+			Boolean v = parsed.result().orElse(null);
+			if (v != null) {
+				self.set((GameRule<Boolean>) r, v, kjs$getServer());
+			}
+		} else if (r.valueClass() == Integer.class) {
+			DataResult<Integer> parsed = ((GameRule<Integer>) r).deserialize(value);
+			Integer v = parsed.result().orElse(null);
+			if (v != null) {
+				self.set((GameRule<Integer>) r, v, kjs$getServer());
+			}
+		}
+	}
+
+	static <T> String kjs$serialize(GameRules rules, GameRule<T> rule) {
+		return rule.serialize(rules.get(rule));
 	}
 }

@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class SeedItemBuilder extends BlockItemBuilder {
-	public static class SeedKubeItem extends ItemNameBlockItem implements SpecialPlantable {
+	public static class SeedKubeItem extends BlockItem implements SpecialPlantable {
 		public SeedKubeItem(SeedItemBuilder b) {
 			super(b.blockBuilder.get(), b.createItemProperties());
 		}

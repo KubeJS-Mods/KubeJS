@@ -47,11 +47,11 @@ public interface BlockTintFunction {
 	}
 
 	BlockTintFunction GRASS = (s, l, p, i) -> new SimpleColor(l == null || p == null ? GrassColor.get(0.5, 1.0) : BiomeColors.getAverageGrassColor(l, p));
-	KubeColor DEFAULT_FOLIAGE_COLOR = new SimpleColor(FoliageColor.getDefaultColor());
+	KubeColor DEFAULT_FOLIAGE_COLOR = new SimpleColor(FoliageColor.FOLIAGE_DEFAULT);
 	BlockTintFunction FOLIAGE = (s, l, p, i) -> l == null || p == null ? DEFAULT_FOLIAGE_COLOR : new SimpleColor(BiomeColors.getAverageFoliageColor(l, p));
-	Fixed EVERGREEN_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.getEvergreenColor()));
-	Fixed BIRCH_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.getBirchColor()));
-	Fixed MANGROVE_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.getMangroveColor()));
+	Fixed EVERGREEN_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.FOLIAGE_EVERGREEN));
+	Fixed BIRCH_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.FOLIAGE_BIRCH));
+	Fixed MANGROVE_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.FOLIAGE_MANGROVE));
 	BlockTintFunction WATER = (s, l, p, i) -> l == null || p == null ? null : new SimpleColorWithAlpha(BiomeColors.getAverageWaterColor(l, p));
 	KubeColor[] REDSTONE_COLORS = new KubeColor[16];
 	BlockTintFunction REDSTONE = (state, level, pos, index) -> {

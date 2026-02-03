@@ -20,7 +20,7 @@ public class FarmlandTrampledKubeEvent implements KubeEntityEvent {
 	}
 
 	@Info("The distance of the entity from the block.")
-	public float getDistance() {
+	public double getDistance() {
 		return event.getFallDistance();
 	}
 

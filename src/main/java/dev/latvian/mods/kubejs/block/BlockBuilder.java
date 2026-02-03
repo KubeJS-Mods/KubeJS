@@ -792,7 +792,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		}
 
 		if (noCollision) {
-			properties.noCollission();
+			properties.noCollision();
 		}
 
 		if (notSolid) {

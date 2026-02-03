@@ -14,6 +14,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.redstone.Orientation;
+import org.jspecify.annotations.Nullable;
 
 public class DetectorBlock extends Block {
 	@ReturnsSelf
@@ -70,8 +72,7 @@ public class DetectorBlock extends Block {
 	}
 
 	@Override
-	@Deprecated
-	public void neighborChanged(BlockState blockState, Level level, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+	protected void neighborChanged(BlockState blockState, Level level, BlockPos blockPos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
 		var p = !blockState.getValue(BlockStateProperties.POWERED);
 
 		if (p == level.hasNeighborSignal(blockPos)) {

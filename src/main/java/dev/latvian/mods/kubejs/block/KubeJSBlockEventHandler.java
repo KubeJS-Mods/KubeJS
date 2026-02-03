@@ -17,7 +17,7 @@ public class KubeJSBlockEventHandler {
 		var state = event.getLevel().getBlockState(event.getPos());
 		var key = state.getBlock().kjs$getKey();
 
-		if (event.getLevel() instanceof Level level && BlockEvents.RIGHT_CLICKED.hasListeners(key) && !event.getEntity().getCooldowns().isOnCooldown(event.getEntity().getItemInHand(event.getHand()).getItem())) {
+		if (event.getLevel() instanceof Level level && BlockEvents.RIGHT_CLICKED.hasListeners(key) && !event.getEntity().getCooldowns().isOnCooldown(event.getEntity().getItemInHand(event.getHand()))) {
 			BlockEvents.RIGHT_CLICKED.post(level, key, new BlockRightClickedKubeEvent(null, event.getEntity(), event.getHand(), event.getPos(), event.getFace(), event.getHitVec())).applyCancel(event);
 		}
 	}
