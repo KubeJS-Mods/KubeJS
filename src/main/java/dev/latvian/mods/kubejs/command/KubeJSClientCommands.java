@@ -52,22 +52,15 @@ public class KubeJSClientCommands {
 	}
 
 	private static void reloadResources(PreparableReloadListener listener) {
-		var start = System.currentTimeMillis();
 		var mc = Minecraft.getInstance();
 		mc.getResourceManager().getResource(GeneratedData.INTERNAL_RELOAD.id());
 
-		listener.reload(CompletableFuture::completedFuture, mc.getResourceManager(), InactiveProfiler.INSTANCE, InactiveProfiler.INSTANCE, Util.backgroundExecutor(), mc).thenAccept(unused -> {
-			/*
-			long ms = System.currentTimeMillis() - start;
+		var shared = new PreparableReloadListener.SharedState(mc.getResourceManager());
+		listener.prepareSharedState(shared);
 
-			if (ms < 1000L) {
-				mc.player.sendMessage(Component.literal("Reloaded in " + ms + "ms! You still may have to reload all assets with F3 + T"), Util.NIL_UUID);
-			} else {
-				mc.player.sendMessage(Component.literal("Reloaded in " + Mth.ceil(ms / 1000D) + "s! You still may have to reload all assets with F3 + T"), Util.NIL_UUID);
-			}
-			 */
+		PreparableReloadListener.PreparationBarrier barrier = CompletableFuture::completedFuture;
 
-			mc.player.sendSystemMessage(Component.literal("Done! You still may have to reload all assets with F3 + T"));
-		});
+		listener.reload(shared, Util.backgroundExecutor(), barrier, mc)
+			.thenAccept(unused -> mc.player.displayClientMessage(Component.literal("Done! You still may have to reload all assets with F3 + T"), false));
 	}
 }

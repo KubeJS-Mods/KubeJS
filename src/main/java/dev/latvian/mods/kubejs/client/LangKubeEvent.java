@@ -40,7 +40,7 @@ public record LangKubeEvent(String lang, Map<Key, String> map) implements KubeEv
 
 	public void renameItem(ItemStack item, String name) {
 		if (item != null && !item.isEmpty()) {
-			var d = item.getDescriptionId();
+			var d = item.getItem().getDescriptionId();
 
 			if (d != null && !d.isEmpty()) {
 				add(item.kjs$getMod(), d, name);

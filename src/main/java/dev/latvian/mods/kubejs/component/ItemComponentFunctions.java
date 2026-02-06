@@ -8,18 +8,24 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Instrument;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.DamageResistant;
 import net.minecraft.world.item.component.FireworkExplosion;
 import net.minecraft.world.item.component.Fireworks;
+import net.minecraft.world.item.component.InstrumentComponent;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.MapItemColor;
 import net.minecraft.world.item.component.Tool;
-import net.minecraft.world.item.component.Unbreakable;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.component.TypedEntityData;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.List;
 
@@ -39,11 +45,17 @@ public interface ItemComponentFunctions extends ComponentFunctions, AttributeMod
 	}
 
 	default void kjs$setUnbreakable() {
-		kjs$override(DataComponents.UNBREAKABLE, new Unbreakable(false));
+		kjs$setUnit(DataComponents.UNBREAKABLE);
 	}
 
 	default void kjs$setUnbreakableWithTooltip() {
-		kjs$override(DataComponents.UNBREAKABLE, new Unbreakable(true));
+		kjs$setUnit(DataComponents.UNBREAKABLE);
+
+		var td = kjs$get(DataComponents.TOOLTIP_DISPLAY);
+		if (td == null) {
+			td = TooltipDisplay.DEFAULT;
+		}
+		kjs$override(DataComponents.TOOLTIP_DISPLAY, td.withHidden(DataComponents.UNBREAKABLE, false));
 	}
 
 	default void kjs$setItemName(Component component) {
@@ -62,8 +74,12 @@ public interface ItemComponentFunctions extends ComponentFunctions, AttributeMod
 		kjs$setFood(new FoodProperties.Builder().nutrition(nutrition).saturationModifier(saturation).build());
 	}
 
-	default void kjs$setFireResistant() {
-		kjs$setUnit(DataComponents.FIRE_RESISTANT);
+	default void kjs$addDamageResistance(TagKey<DamageType> types) {
+		kjs$override(DataComponents.DAMAGE_RESISTANT, new DamageResistant(types));
+	}
+
+	default void kjs$setFireResistant(TagKey<DamageType> fireTypes) {
+		kjs$addDamageResistance(fireTypes);
 	}
 
 	default void kjs$setTool(Tool tool) {
@@ -86,12 +102,13 @@ public interface ItemComponentFunctions extends ComponentFunctions, AttributeMod
 		kjs$override(DataComponents.BUCKET_ENTITY_DATA, CustomData.of(tag));
 	}
 
-	default void kjs$setBlockEntityData(CompoundTag tag) {
-		kjs$override(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(tag));
+
+	default void kjs$setBlockEntityData(BlockEntityType<?> type, CompoundTag tag) {
+		kjs$override(DataComponents.BLOCK_ENTITY_DATA, TypedEntityData.of(type, tag));
 	}
 
 	default void kjs$setInstrument(Holder<Instrument> instrument) {
-		kjs$override(DataComponents.INSTRUMENT, instrument);
+		kjs$override(DataComponents.INSTRUMENT, new InstrumentComponent(instrument));
 	}
 
 	default void kjs$setFireworkExplosion(FireworkExplosion explosion) {
@@ -109,7 +126,7 @@ public interface ItemComponentFunctions extends ComponentFunctions, AttributeMod
 	@Override
 	default ItemAttributeModifiers kjs$getAttributeModifiers() {
 		var mods = kjs$get(DataComponents.ATTRIBUTE_MODIFIERS);
-		return mods == null ? new ItemAttributeModifiers(List.of(), true) : mods;
+		return mods == null ? new ItemAttributeModifiers(List.of()) : mods;
 	}
 
 	@Override

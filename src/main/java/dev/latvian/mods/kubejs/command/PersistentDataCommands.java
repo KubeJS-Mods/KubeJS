@@ -98,7 +98,7 @@ public class PersistentDataCommands {
 					var objects = factory.getAll(ctx);
 
 					for (var o : objects) {
-						o.kjs$getPersistentData().getAllKeys().removeIf(UtilsJS.ALWAYS_TRUE);
+						o.kjs$getPersistentData().keySet().removeIf(UtilsJS.ALWAYS_TRUE);
 					}
 
 					return objects.size();
@@ -156,7 +156,7 @@ public class PersistentDataCommands {
 								var targets = ScoreHolderArgument.getNames(ctx, "targets");
 								var objective = ObjectiveArgument.getObjective(ctx, "objective");
 
-								int score = object.kjs$getPersistentData().getInt(key);
+								int score = object.kjs$getPersistentData().getInt(key).get();
 
 								for (var target : targets) {
 									scoreboard.getOrCreatePlayerScore(target, objective).set(score);

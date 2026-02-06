@@ -53,13 +53,27 @@ public interface AttributeModifierFunctions {
 
 	@ApiStatus.NonExtendable
 	default void kjs$setAttributeModifiers(List<ItemAttributeModifiers.Entry> modifiers) {
-		kjs$setAttributeModifiers(new ItemAttributeModifiers(modifiers, false));
+		kjs$setAttributeModifiers(new ItemAttributeModifiers(modifiers));
 	}
 
 	@ApiStatus.NonExtendable
 	default void kjs$setAttributeModifiersWithTooltip(List<ItemAttributeModifiers.Entry> modifiers) {
-		kjs$setAttributeModifiers(new ItemAttributeModifiers(modifiers, true));
+		var out = new ArrayList<ItemAttributeModifiers.Entry>(modifiers.size());
+		for (var e : modifiers) {
+			out.add(new ItemAttributeModifiers.Entry(e.attribute(), e.modifier(), e.slot(), ItemAttributeModifiers.Display.attributeModifiers()));
+		}
+		kjs$setAttributeModifiers(new ItemAttributeModifiers(out));
 	}
+
+	@ApiStatus.NonExtendable
+	default void kjs$setAttributeModifiersWithoutTooltip(List<ItemAttributeModifiers.Entry> modifiers) {
+		var out = new ArrayList<ItemAttributeModifiers.Entry>(modifiers.size());
+		for (var e : modifiers) {
+			out.add(new ItemAttributeModifiers.Entry(e.attribute(), e.modifier(), e.slot(), ItemAttributeModifiers.Display.hidden()));
+		}
+		kjs$setAttributeModifiers(new ItemAttributeModifiers(out));
+	}
+
 
 	@Info("""
 		Sets the attack speed of this item to the given value, **removing** all other modifiers to attack speed.
@@ -74,14 +88,25 @@ public interface AttributeModifierFunctions {
 			if (entry.attribute().equals(Attributes.ATTACK_SPEED)) {
 				continue;
 			}
-
 			list.add(entry);
 		}
-		list.add(new ItemAttributeModifiers.Entry(Attributes.ATTACK_SPEED,
-			new AttributeModifier(BASE_ATTACK_SPEED_ID, speed, AttributeModifier.Operation.ADD_VALUE),
-			EquipmentSlotGroup.MAINHAND));
 
-		kjs$setAttributeModifiers(new ItemAttributeModifiers(list, oldMods.showInTooltip()));
+		ItemAttributeModifiers.Display display = ItemAttributeModifiers.Display.attributeModifiers();
+		for (var entry : oldMods.modifiers()) {
+			if (entry.attribute().equals(Attributes.ATTACK_SPEED)) {
+				display = entry.display();
+				break;
+			}
+		}
+
+		list.add(new ItemAttributeModifiers.Entry(
+			Attributes.ATTACK_SPEED,
+			new AttributeModifier(BASE_ATTACK_SPEED_ID, speed, AttributeModifier.Operation.ADD_VALUE),
+			EquipmentSlotGroup.MAINHAND,
+			display
+		));
+
+		kjs$setAttributeModifiers(new ItemAttributeModifiers(list));
 	}
 
 	@Info("""
@@ -97,14 +122,25 @@ public interface AttributeModifierFunctions {
 			if (entry.attribute().equals(Attributes.ATTACK_DAMAGE)) {
 				continue;
 			}
-
 			list.add(entry);
 		}
-		list.add(new ItemAttributeModifiers.Entry(Attributes.ATTACK_DAMAGE,
-			new AttributeModifier(BASE_ATTACK_DAMAGE_ID, dmg, AttributeModifier.Operation.ADD_VALUE),
-			EquipmentSlotGroup.MAINHAND));
 
-		kjs$setAttributeModifiers(new ItemAttributeModifiers(list, oldMods.showInTooltip()));
+		ItemAttributeModifiers.Display display = ItemAttributeModifiers.Display.attributeModifiers();
+		for (var entry : oldMods.modifiers()) {
+			if (entry.attribute().equals(Attributes.ATTACK_DAMAGE)) {
+				display = entry.display();
+				break;
+			}
+		}
+
+		list.add(new ItemAttributeModifiers.Entry(
+			Attributes.ATTACK_DAMAGE,
+			new AttributeModifier(BASE_ATTACK_DAMAGE_ID, dmg, AttributeModifier.Operation.ADD_VALUE),
+			EquipmentSlotGroup.MAINHAND,
+			display
+		));
+
+		kjs$setAttributeModifiers(new ItemAttributeModifiers(list));
 	}
 
 	default double kjs$getAttackDamage() {

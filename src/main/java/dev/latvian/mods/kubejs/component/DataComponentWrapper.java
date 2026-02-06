@@ -25,7 +25,6 @@ import dev.latvian.mods.rhino.EvaluatorException;
 import dev.latvian.mods.rhino.NativeJavaMap;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import net.minecraft.core.component.predicates.DataComponentPredicate;
 import net.minecraft.util.Util;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -130,7 +129,10 @@ public interface DataComponentWrapper {
 				reader.expect('=');
 				reader.skipWhitespace();
 				int i = reader.getCursor();
-				var dataResult = dataComponentType.codecOrThrow().parse(registryOps == null ? NbtOps.INSTANCE : registryOps, new TagParser(reader).readValue());
+
+				var ops = registryOps == null ? NbtOps.INSTANCE : registryOps;
+				var parsed = TagParser.create(ops).parseFully(reader);
+				var dataResult = dataComponentType.codecOrThrow().parse(ops, parsed);
 
 				if (builder == null) {
 					builder = DataComponentMap.builder();
@@ -157,13 +159,13 @@ public interface DataComponentWrapper {
 		}
 
 		if (reader.canRead() && reader.peek() == '{') {
-			var tag = new TagParser(reader).readStruct();
+			var compound = TagParser.parseCompoundAsArgument(reader);
 
 			if (builder == null) {
 				builder = DataComponentMap.builder();
 			}
 
-			builder.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+			builder.set(DataComponents.CUSTOM_DATA, CustomData.of(compound));
 		}
 
 		return builder == null ? DataComponentMap.EMPTY : builder.build();
@@ -176,42 +178,45 @@ public interface DataComponentWrapper {
 			return DataComponentPatch.EMPTY;
 		}
 
+		var ops = registryOps == null ? NbtOps.INSTANCE : registryOps;
 		DataComponentPatch.Builder builder = null;
 
-		if (reader.canRead() && reader.peek() == '[') {
+		if (reader.peek() == '[') {
 			reader.skip();
 
 			while (reader.canRead() && reader.peek() != ']') {
 				reader.skipWhitespace();
-				boolean remove = reader.canRead() && reader.peek() == '!';
 
+				boolean remove = reader.canRead() && reader.peek() == '!';
 				if (remove) {
+					reader.skip();
 					reader.skipWhitespace();
 				}
 
 				var dataComponentType = readComponentType(reader);
 
 				if (remove) {
-					reader.skipWhitespace();
-
-					if (reader.canRead() && reader.peek() != ']') {
-						reader.expect(',');
-						reader.skipWhitespace();
-					}
-
 					if (builder == null) {
 						builder = DataComponentPatch.builder();
 					}
 
 					builder.remove(dataComponentType);
+
+					reader.skipWhitespace();
+					if (reader.canRead() && reader.peek() == ',') {
+						reader.skip();
+						reader.skipWhitespace();
+					}
 					continue;
 				}
 
 				reader.skipWhitespace();
 				reader.expect('=');
 				reader.skipWhitespace();
+
 				int i = reader.getCursor();
-				var dataResult = dataComponentType.codecOrThrow().parse(registryOps == null ? NbtOps.INSTANCE : registryOps, new TagParser(reader).readValue());
+				var input = TagParser.create(ops).parseFully(reader);
+				var dataResult = dataComponentType.codecOrThrow().parse(ops, input);
 
 				if (builder == null) {
 					builder = DataComponentPatch.builder();
@@ -238,17 +243,18 @@ public interface DataComponentWrapper {
 		}
 
 		if (reader.canRead() && reader.peek() == '{') {
-			var tag = new TagParser(reader).readStruct();
+			var tag = TagParser.create(ops).parseFully(reader);
 
 			if (builder == null) {
 				builder = DataComponentPatch.builder();
 			}
 
-			builder.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+			builder.set(DataComponents.CUSTOM_DATA, CustomData.of((CompoundTag) tag));
 		}
 
 		return builder == null ? DataComponentPatch.EMPTY : builder.build();
 	}
+
 
 	static DataComponentType<?> readComponentType(StringReader stringReader) throws CommandSyntaxException {
 		if (!stringReader.canRead()) {
@@ -256,13 +262,13 @@ public interface DataComponentWrapper {
 		}
 
 		int i = stringReader.getCursor();
-		Identifier Identifier = Identifier.read(stringReader);
-		DataComponentType<?> dataComponentType = BuiltInRegistries.DATA_COMPONENT_TYPE.get(Identifier);
+		Identifier identifier = Identifier.read(stringReader);
+		DataComponentType<?> dataComponentType = BuiltInRegistries.DATA_COMPONENT_TYPE.get(identifier).get().value();
 		if (dataComponentType != null && !dataComponentType.isTransient()) {
 			return dataComponentType;
 		} else {
 			stringReader.setCursor(i);
-			throw ERROR_UNKNOWN_COMPONENT.createWithContext(stringReader, Identifier);
+			throw ERROR_UNKNOWN_COMPONENT.createWithContext(stringReader, identifier);
 		}
 	}
 

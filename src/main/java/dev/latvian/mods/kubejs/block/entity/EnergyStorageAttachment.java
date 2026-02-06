@@ -40,7 +40,7 @@ public class EnergyStorageAttachment implements BlockEntityAttachment {
 
 		@Override
 		public List<BlockCapability<?, ?>> getCapabilities() {
-			return List.of(Capabilities.EnergyHandler.BLOCK);
+			return List.of(Capabilities.Energy.BLOCK);
 		}
 	}
 

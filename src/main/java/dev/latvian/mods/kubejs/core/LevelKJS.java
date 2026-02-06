@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
@@ -112,11 +113,16 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Ent
 
 	@Nullable
 	default Entity kjs$createEntity(EntityType<?> type) {
-		return type.create(kjs$self());
+		return type.create(kjs$self(), EntitySpawnReason.COMMAND);
+	}
+
+	@Nullable
+	default Entity kjs$createEntity(EntityType<?> type, EntitySpawnReason reason) {
+		return type.create(kjs$self(), reason);
 	}
 
 	default void spawnEntity(EntityType<?> type, Consumer<Entity> callback) {
-		var entity = type.create(kjs$self());
+		var entity = type.create(kjs$self(), EntitySpawnReason.COMMAND);
 
 		if (entity != null) {
 			callback.accept(entity);
@@ -147,8 +153,8 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Ent
 			double d4 = speed * vz;
 
 			try {
-				level.addParticle(options, overrideLimiter, x, y, z, d0, d2, d4);
-			} catch (Throwable var17) {
+				level.addParticle(options, overrideLimiter, false, x, y, z, d0, d2, d4);
+			} catch (Throwable ignored) {
 			}
 		} else {
 			var random = level.getRandom();
@@ -162,8 +168,8 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Ent
 				double d8 = random.nextGaussian() * speed;
 
 				try {
-					level.addParticle(options, overrideLimiter, x + ox, y + oy, z + oz, d6, d7, d8);
-				} catch (Throwable var16) {
+					level.addParticle(options, overrideLimiter, false, x + ox, y + oy, z + oz, d6, d7, d8);
+				} catch (Throwable ignored) {
 					return;
 				}
 			}
@@ -171,8 +177,8 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Ent
 	}
 
 	default void kjs$spawnLightning(double x, double y, double z, boolean visualOnly, @Nullable ServerPlayer cause) {
-		var e = EntityType.LIGHTNING_BOLT.create(kjs$self());
-		e.moveTo(x, y, z);
+		var e = EntityType.LIGHTNING_BOLT.create(kjs$self(), EntitySpawnReason.COMMAND);
+		e.snapTo(x, y, z);
 		e.setCause(cause);
 		e.setVisualOnly(visualOnly);
 		kjs$self().addFreshEntity(e);

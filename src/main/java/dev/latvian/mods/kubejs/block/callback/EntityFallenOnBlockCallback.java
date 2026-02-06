@@ -8,15 +8,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class EntityFallenOnBlockCallback extends EntityBlockCallback {
-	private final float fallHeight;
+	private final double fallHeight;
 
-	public EntityFallenOnBlockCallback(Level level, Entity entity, BlockPos pos, BlockState state, float fallHeight) {
+	public EntityFallenOnBlockCallback(Level level, Entity entity, BlockPos pos, BlockState state, double fallHeight) {
 		super(level, entity, pos, state);
 		this.fallHeight = fallHeight;
 	}
 
 	@Info("Get the height the entity has fallen")
-	public float getFallHeight() {
+	public double getFallHeight() {
 		return fallHeight;
 	}
 
@@ -40,7 +40,7 @@ public class EntityFallenOnBlockCallback extends EntityBlockCallback {
 		Applies fall damage to the entity as if they had fallen from the provided height, and multiplies it by the provided multiplier.
 		Note this does not force it, so entities that do not take fall damage are not affected.
 		""")
-	public boolean applyFallDamage(float fallHeight, float multiplier) {
+	public boolean applyFallDamage(double fallHeight, float multiplier) {
 		return applyFallDamage(fallHeight, multiplier, entity.damageSources().fall());
 	}
 
@@ -48,7 +48,7 @@ public class EntityFallenOnBlockCallback extends EntityBlockCallback {
 		Damages the entity using the provided damage source, using the fall height and multiplier to calculate the damage amount.
 		Note this does not force the damage, so entities that do not take fall damage are not affected.
 		""")
-	public boolean applyFallDamage(float fallHeight, float multiplier, DamageSource damageSource) {
+	public boolean applyFallDamage(double fallHeight, float multiplier, DamageSource damageSource) {
 		return entity.causeFallDamage(fallHeight, multiplier, damageSource);
 	}
 }

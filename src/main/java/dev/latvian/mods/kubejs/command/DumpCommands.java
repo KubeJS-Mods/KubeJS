@@ -233,9 +233,9 @@ public class DumpCommands {
 	}
 
 	public static <T> int registry(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
-		var ids = source.registryAccess().registry(registry)
+		var ids = source.registryAccess().lookup(registry)
 			.orElseThrow(() -> KubeJSCommands.NO_REGISTRY.create(registry.identifier()))
-			.holders();
+			.listElements();
 
 		source.sendSystemMessage(Component.empty());
 		source.sendSystemMessage(Component.literal("List of all entries for registry " + registry.identifier() + ":"));
@@ -244,7 +244,7 @@ public class DumpCommands {
 		var size = ids.map(holder -> {
 			var id = holder.key().identifier();
 			return Component.literal("- %s".formatted(id)).withStyle(Style.EMPTY
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("%s [%s]".formatted(holder.value(), holder.value().getClass().getName()))))
+				.withHoverEvent(new HoverEvent.ShowText(Component.literal("%s [%s]".formatted(holder.value(), holder.value().getClass().getName()))))
 			);
 		}).mapToLong(msg -> {
 			source.sendSystemMessage(msg);
@@ -255,8 +255,8 @@ public class DumpCommands {
 		source.sendSystemMessage(Component.literal("Total: %d entries".formatted(size)));
 		source.sendSystemMessage(Component.empty());
 
-
 		return 1;
 	}
+
 
 }

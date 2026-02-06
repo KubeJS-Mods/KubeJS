@@ -1,7 +1,10 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.core.TagLoaderKJS;
+import dev.latvian.mods.kubejs.util.TagReloadContextKJS;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -11,6 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
@@ -21,19 +25,54 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 	@Unique
 	private ReloadableServerResourcesKJS kjs$resources;
 
-	@Nullable
 	@Unique
-	private Registry<T> kjs$storedRegistry;
-
-	@Inject(method = "load", at = @At("RETURN"))
-	private void customTags(ResourceManager resourceManager, CallbackInfoReturnable<Map<Identifier, List<TagLoader.EntryWithSource>>> cir) {
-		kjs$customTags(kjs$resources, cir.getReturnValue());
-	}
+	private @Nullable Registry<T> kjs$storedRegistry;
 
 	@Override
 	public void kjs$init(ReloadableServerResourcesKJS resources, Registry<T> registry) {
 		kjs$resources = resources;
 		kjs$storedRegistry = registry;
+	}
+
+	@Inject(
+		method = "loadPendingTags(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/core/Registry;)Ljava/util/Optional;",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/tags/TagLoader;load(Lnet/minecraft/server/packs/resources/ResourceManager;)Ljava/util/Map;",
+			shift = At.Shift.BEFORE
+		)
+	)
+	private static <T> void kjs$initLoaderBeforeLoad(
+		ResourceManager manager,
+		Registry<T> registry,
+		CallbackInfoReturnable<?> cir,
+		@Local TagLoader<Holder<T>> loader
+	) {
+		ReloadableServerResourcesKJS resources = TagReloadContextKJS.CURRENT.get();
+		if (resources != null) {
+			((TagLoaderKJS<T>) (Object) loader).kjs$init(resources, registry);
+		}
+	}
+
+	@Redirect(
+		method = "loadPendingTags(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/core/Registry;)Ljava/util/Optional;",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/tags/TagLoader;load(Lnet/minecraft/server/packs/resources/ResourceManager;)Ljava/util/Map;"
+		)
+	)
+	private static <T> Map<Identifier, List<TagLoader.EntryWithSource>> kjs$customTagsBeforeBuild(
+		TagLoader<Holder<T>> loader,
+		ResourceManager manager
+	) {
+		Map<Identifier, List<TagLoader.EntryWithSource>> map = loader.load(manager);
+
+		ReloadableServerResourcesKJS resources = TagReloadContextKJS.CURRENT.get();
+		if (resources != null) {
+			((TagLoaderKJS<T>) loader).kjs$customTags(resources, map);
+		}
+
+		return map;
 	}
 
 	@Override
@@ -42,8 +81,7 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 	}
 
 	@Override
-	@Nullable
-	public Registry<T> kjs$getRegistry() {
+	public @Nullable Registry<T> kjs$getRegistry() {
 		return kjs$storedRegistry;
 	}
 }

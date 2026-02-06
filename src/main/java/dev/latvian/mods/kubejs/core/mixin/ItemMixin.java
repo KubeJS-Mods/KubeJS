@@ -11,7 +11,6 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -165,7 +164,7 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Inject(method = "getUseAnimation", at = @At("HEAD"), cancellable = true)
-	private void getUseAnimation(ItemStack itemStack, CallbackInfoReturnable<UseAnim> ci) {
+	private void getUseAnimation(ItemStack itemStack, CallbackInfoReturnable<ItemUseAnimation> ci) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.anim != null) {
 			ci.setReturnValue(kjs$itemBuilder.anim);
 		}
@@ -219,7 +218,7 @@ public abstract class ItemMixin implements ItemKJS {
 	public Ingredient kjs$asIngredient() {
 		if (kjs$asIngredient == null) {
 			var is = new ItemStack(kjs$self());
-			kjs$asIngredient = is.isEmpty() ? Ingredient.of() : Ingredient.of(Stream.of(is));
+			kjs$asIngredient = is.isEmpty() ? Ingredient.of() : Ingredient.of(Stream.of(is.getItem()));
 		}
 
 		return kjs$asIngredient;

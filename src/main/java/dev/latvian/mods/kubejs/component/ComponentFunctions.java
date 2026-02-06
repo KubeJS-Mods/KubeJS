@@ -11,17 +11,21 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
+import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Unit;
 import net.minecraft.world.LockCode;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.alchemy.Potion;
@@ -33,6 +37,8 @@ import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.component.SeededContainerLoot;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.level.storage.loot.LootTable;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,6 +48,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static dev.latvian.mods.kubejs.component.DataComponentWrapper.tryWrapComponent;
+import static net.minecraft.core.component.DataComponents.TOOLTIP_DISPLAY;
 
 @RemapPrefixForJS("kjs$")
 @ReturnsSelf
@@ -150,27 +157,51 @@ public interface ComponentFunctions {
 	}
 
 	default void kjs$setCustomModelData(int data) {
-		kjs$override(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(data));
-	}
-
-	default void kjs$setAdditionalTooltipHidden() {
-		kjs$setUnit(DataComponents.HIDE_ADDITIONAL_TOOLTIP);
+		kjs$override(
+			DataComponents.CUSTOM_MODEL_DATA,
+			new CustomModelData(
+				List.of(),
+				List.of(),
+				List.of(),
+				List.of(data)
+			)
+		);
 	}
 
 	default void kjs$setTooltipHidden() {
-		kjs$setUnit(DataComponents.HIDE_TOOLTIP);
+		var display = kjs$get(DataComponents.TOOLTIP_DISPLAY);
+		if (display == null) {
+			display = TooltipDisplay.DEFAULT;
+		}
+		kjs$override(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(true, display.hiddenComponents()));
 	}
+
+	default void kjs$setAdditionalTooltipHidden() {
+		var display = kjs$get(DataComponents.TOOLTIP_DISPLAY);
+		if (display == null) {
+			display = TooltipDisplay.DEFAULT;
+		}
+
+		display = display.withHidden(DataComponents.BANNER_PATTERNS, true);
+		display = display.withHidden(DataComponents.BEES, true);
+		display = display.withHidden(DataComponents.BLOCK_ENTITY_DATA, true);
+		display = display.withHidden(DataComponents.BLOCK_STATE, true);
+		display = display.withHidden(DataComponents.WRITTEN_BOOK_CONTENT, true);
+
+		kjs$override(DataComponents.TOOLTIP_DISPLAY, display);
+	}
+
 
 	default void kjs$setGlintOverride(boolean override) {
 		kjs$override(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, override);
 	}
 
 	default void kjs$setDyedColor(KubeColor color) {
-		kjs$override(DataComponents.DYED_COLOR, new DyedItemColor(color.kjs$getRGB(), false));
+		kjs$override(DataComponents.DYED_COLOR, new DyedItemColor(color.kjs$getRGB()));
 	}
 
 	default void kjs$setDyedColorWithTooltip(KubeColor color) {
-		kjs$override(DataComponents.DYED_COLOR, new DyedItemColor(color.kjs$getRGB(), true));
+		kjs$override(DataComponents.DYED_COLOR, new DyedItemColor(color.kjs$getRGB()));
 	}
 
 	default void kjs$setPotionContents(PotionContents contents) {
@@ -182,16 +213,38 @@ public interface ComponentFunctions {
 	}
 
 	default void kjs$setEntityData(CompoundTag tag) {
-		kjs$override(DataComponents.ENTITY_DATA, CustomData.of(tag));
+		if (tag == null || tag.isEmpty()) {
+			kjs$remove(DataComponents.ENTITY_DATA);
+			return;
+		}
+
+		var id = tag.getString("id");
+		if (id.isEmpty()) {
+			throw new IllegalArgumentException("ENTITY_DATA tag must contain non-empty \"id\"");
+		}
+
+		var type = EntityType.byString(id.get()).orElseThrow(() -> new IllegalArgumentException("Unknown entity id: " + id));
+		kjs$override(DataComponents.ENTITY_DATA, TypedEntityData.of(type, tag));
 	}
 
+
 	default void kjs$setProfile(GameProfile profile) {
-		kjs$override(DataComponents.PROFILE, new ResolvableProfile(profile));
+		kjs$override(DataComponents.PROFILE, ResolvableProfile.createResolved(profile));
 	}
 
 	default void kjs$setProfile(@Nullable String name, @Nullable UUID uuid) {
-		kjs$override(DataComponents.PROFILE, new ResolvableProfile(Optional.ofNullable(name != null && name.isBlank() ? null : name), Optional.ofNullable(uuid != null && uuid.getLeastSignificantBits() == 0L && uuid.getMostSignificantBits() == 0L ? null : uuid), new PropertyMap()));
+		var cleanName = name != null && name.isBlank() ? null : name;
+		var cleanUuid = uuid != null && uuid.getLeastSignificantBits() == 0L && uuid.getMostSignificantBits() == 0L ? null : uuid;
+
+		if (cleanUuid != null) {
+			kjs$override(DataComponents.PROFILE, ResolvableProfile.createUnresolved(cleanUuid));
+		} else if (cleanName != null) {
+			kjs$override(DataComponents.PROFILE, ResolvableProfile.createUnresolved(cleanName));
+		} else {
+			kjs$remove(DataComponents.PROFILE);
+		}
 	}
+
 
 	default void kjs$setBaseColor(DyeColor color) {
 		kjs$override(DataComponents.BASE_COLOR, color);
@@ -201,7 +254,7 @@ public interface ComponentFunctions {
 		kjs$override(DataComponents.BLOCK_STATE, new BlockItemStateProperties(properties));
 	}
 
-	default void kjs$setLockCode(String lock) {
+	default void kjs$setLockCode(ItemPredicate lock) {
 		kjs$override(DataComponents.LOCK, new LockCode(lock));
 	}
 

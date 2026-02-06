@@ -13,6 +13,6 @@ import org.spongepowered.asm.mixin.Mixin;
 @RemapPrefixForJS("kjs$")
 public abstract class AbstractClientPlayerMixin extends Player implements ClientPlayerKJS {
 	public AbstractClientPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
-		super(level, blockPos, f, gameProfile);
+		super(level, gameProfile);
 	}
 }

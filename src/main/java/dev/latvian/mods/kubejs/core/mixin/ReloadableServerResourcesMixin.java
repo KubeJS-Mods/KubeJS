@@ -4,13 +4,15 @@ import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.LayeredRegistryAccess;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.RegistryLayer;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.tags.TagManager;
+import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.crafting.RecipeManager;
 import org.spongepowered.asm.mixin.Final;
@@ -22,6 +24,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -32,25 +35,49 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 
 	@Shadow
 	@Final
-	private TagManager tagManager;
+	private RecipeManager recipes;
 
 	@Shadow
 	@Final
-	private RecipeManager recipes;
+	private HolderLookup.Provider registryLookup;
+
+	@Shadow
+	@Final
+	private List<Registry.PendingTags<?>> postponedTags;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
-	private void init(RegistryAccess.Frozen registryAccess, FeatureFlagSet featureFlagSet, Commands.CommandSelection commandSelection, int functionCompilationLevel, CallbackInfo ci) {
+	private void kjs$init(
+		LayeredRegistryAccess<RegistryLayer> fullLayers,
+		HolderLookup.Provider loadingContext,
+		FeatureFlagSet enabledFeatures,
+		Commands.CommandSelection commandSelection,
+		List<Registry.PendingTags<?>> postponedTags,
+		PermissionSet functionCompilationPermissions,
+		CallbackInfo ci
+	) {
 		kjs$serverScriptManager = ServerScriptManager.release();
-		tagManager.kjs$setResources(this);
 		recipes.kjs$setResources(this);
 	}
 
 	@Inject(method = "loadResources", at = @At("HEAD"))
-	private static void injectKubeJSPacks(ResourceManager resourceManager, LayeredRegistryAccess<RegistryLayer> registries, FeatureFlagSet enabledFeatures, Commands.CommandSelection commandSelection, int functionCompilationLevel, Executor backgroundExecutor, Executor gameExecutor, CallbackInfoReturnable<CompletableFuture<ReloadableServerResources>> cir) {
-		RegistryAccessContainer.current = new RegistryAccessContainer(registries.compositeAccess());
+	private static void kjs$injectKubeJSPacks(
+		ResourceManager resourceManager,
+		LayeredRegistryAccess<RegistryLayer> contextLayers,
+		List<Registry.PendingTags<?>> updatedContextTags,
+		FeatureFlagSet enabledFeatures,
+		Commands.CommandSelection commandSelection,
+		PermissionSet functionCompilationPermissions,
+		Executor backgroundExecutor,
+		Executor mainThreadExecutor,
+		CallbackInfoReturnable<CompletableFuture<ReloadableServerResources>> cir
+	) {
+		RegistryAccessContainer.current = new RegistryAccessContainer(contextLayers.compositeAccess());
 
-		if (gameExecutor instanceof MinecraftServer s && s.getServerResources() != null && s.getServerResources().managers().kjs$getServerScriptManager() != null) {
-			s.getServerResources().managers().kjs$getServerScriptManager().reloadAndCapture();
+		if (mainThreadExecutor instanceof MinecraftServer s && s.getServerResources() != null) {
+			var mgr = s.getServerResources().managers().kjs$getServerScriptManager();
+			if (mgr != null) {
+				mgr.reloadAndCapture();
+			}
 		}
 	}
 
@@ -60,7 +87,12 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 	}
 
 	@Override
-	public TagManager kjs$getTagManager() {
-		return tagManager;
+	public HolderLookup.Provider kjs$getRegistryLookup() {
+		return registryLookup;
+	}
+
+	@Override
+	public List<Registry.PendingTags<?>> kjs$getPostponedTags() {
+		return postponedTags;
 	}
 }

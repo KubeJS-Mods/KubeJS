@@ -50,7 +50,4 @@ public class BlockExplodedCallback {
 		return explosion.radius();
 	}
 
-	public List<Player> getAffectedPlayers() {
-		return explosion.getHitPlayers().keySet().stream().toList();
-	}
 }

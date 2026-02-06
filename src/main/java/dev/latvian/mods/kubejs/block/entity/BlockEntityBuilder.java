@@ -14,7 +14,7 @@ public class BlockEntityBuilder extends BuilderBase<BlockEntityType<?>> {
 
 	@Override
 	public BlockEntityType<?> createObject() {
-		info.entityType = BlockEntityType.Builder.of(info::createBlockEntity, info.blockBuilder.get()).build(null);
+		info.entityType = new BlockEntityType<>(info::createBlockEntity, info.blockBuilder.get());
 		return info.entityType;
 	}
 }

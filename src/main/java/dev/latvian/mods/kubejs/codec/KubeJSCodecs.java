@@ -76,13 +76,13 @@ public interface KubeJSCodecs {
 		}
 	}, ClassTypeInfo::asClass);
 
-	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY = Identifier.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::location);
+	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY = Identifier.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::identifier);
 
 	MapCodec<EntityType<?>> ENTITY_TYPE_FIELD = BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("id");
 
 	Codec<Duration> DURATION = KubeJSCodecs.stringResolverCodec(Duration::toString, TimeJS::wrapDuration);
 
-	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY_CODEC = Identifier.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::location);
+	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY_CODEC = Identifier.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::identifier);
 
 	Codec<Map<String, JsonElement>> JSON_MAP = Codec.unboundedMap(Codec.STRING, ExtraCodecs.JSON);
 

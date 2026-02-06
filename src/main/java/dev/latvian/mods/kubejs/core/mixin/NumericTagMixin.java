@@ -19,7 +19,7 @@ public abstract class NumericTagMixin implements SpecialEquality {
 		return switch (o) {
 			case Boolean b -> b == (getAsByte() != 0);
 			case Number n1 -> getAsDouble() == n1.doubleValue();
-			case NumericTag n1 when !shallow -> getAsDouble() == n1.getAsDouble();
+			case NumericTag n1 when !shallow -> getAsDouble() == n1.asDouble().get();
 			case null, default -> equals(o);
 		};
 	}

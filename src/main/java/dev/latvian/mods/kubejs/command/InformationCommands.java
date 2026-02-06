@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.command;
 
 import dev.latvian.mods.kubejs.ingredient.NamespaceIngredient;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
@@ -13,7 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
 import java.util.List;
 
@@ -29,19 +30,19 @@ public class InformationCommands {
 	private static Component copy(Component c, Component info) {
 		return Component.literal("- ")
 			.withStyle(ChatFormatting.GRAY)
-			.withStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, c.getString())))
-			.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, info.copy().append(" (Click to copy)"))))
+			.withStyle(Style.EMPTY.withClickEvent(new ClickEvent.CopyToClipboard(c.getString())))
+			.withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(info.copy().append(" (Click to copy)"))))
 			.append(c);
 	}
 
 	public static int hand(ServerPlayer player, InteractionHand hand) {
 		player.sendSystemMessage(Component.literal("Item in hand:"));
 		var stack = player.getItemInHand(hand);
-		var holder = stack.getItemHolder();
-		var itemRegistry = player.server.registryAccess().registry(Registries.ITEM).orElseThrow();
-		var blockRegistry = player.server.registryAccess().registry(Registries.BLOCK).orElseThrow();
-		var fluidRegistry = player.server.registryAccess().registry(Registries.FLUID).orElseThrow();
-		var tabRegistry = player.server.registryAccess().registry(Registries.CREATIVE_MODE_TAB).orElseThrow();
+		var holder = Holder.direct(stack.getItem());
+		var itemRegistry = player.server.registryAccess().get(Registries.ITEM).orElseThrow().value();
+		var blockRegistry = player.server.registryAccess().get(Registries.BLOCK).orElseThrow().value();
+		var fluidRegistry = player.server.registryAccess().get(Registries.FLUID).orElseThrow().value();
+		var tabRegistry = player.server.registryAccess().get(Registries.CREATIVE_MODE_TAB).orElseThrow().value();
 
 		// item info
 		// id
@@ -49,8 +50,8 @@ public class InformationCommands {
 		// item tags
 		var itemTags = holder.tags().toList();
 		for (var tag : itemTags) {
-			var id = "'#%s'".formatted(tag.identifier());
-			var size = itemRegistry.getTag(tag).map(HolderSet::size).orElse(0);
+			var id = "'#%s'".formatted(tag.location());
+			var size = itemRegistry.get(tag).map(HolderSet::size).orElse(0);
 			player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Item Tag [" + size + " items]"));
 		}
 		// mod
@@ -78,16 +79,16 @@ public class InformationCommands {
 			var blockTags = blockHolder.tags().toList();
 			for (var tag : blockTags) {
 				var id = "'#%s'".formatted(tag.location());
-				var size = blockRegistry.getTag(tag).map(HolderSet::size).orElse(0);
+				var size = blockRegistry.get(tag).map(HolderSet::size).orElse(0);
 				player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Block Tag [" + size + " items]"));
 			}
 		}
 
 		// fluid info
-		var containedFluid = FluidUtil.getFluidContained(stack);
-		if (containedFluid.isPresent()) {
+		var containedFluid = FluidUtil.getFirstStackContained(stack);
+		if (!containedFluid.isEmpty()) {
 			player.sendSystemMessage(Component.literal("Held fluid:"));
-			var fluid = containedFluid.orElseThrow();
+			var fluid = containedFluid;
 			var fluidHolder = fluid.getFluid().builtInRegistryHolder();
 			// id
 			player.sendSystemMessage(copy(fluidHolder.key().identifier().toString(), ChatFormatting.GREEN, "Fluid ID"));
@@ -95,7 +96,7 @@ public class InformationCommands {
 			var fluidTags = fluidHolder.tags().toList();
 			for (var tag : fluidTags) {
 				var id = "'#%s'".formatted(tag.location());
-				var size = fluidRegistry.getTag(tag).map(HolderSet::size).orElse(0);
+				var size = fluidRegistry.get(tag).map(HolderSet::size).orElse(0);
 				player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Fluid Tag [" + size + " items]"));
 			}
 		}
@@ -104,11 +105,11 @@ public class InformationCommands {
 	}
 
 	public static int inventory(ServerPlayer player) {
-		return dump(player.getInventory().items, player, "Inventory");
+		return dump(player.getInventory().getNonEquipmentItems(), player, "Inventory");
 	}
 
 	public static int hotbar(ServerPlayer player) {
-		return dump(player.getInventory().items.subList(0, 9), player, "Hotbar");
+		return dump(player.getInventory().getNonEquipmentItems().subList(0, 9), player, "Hotbar");
 	}
 
 	public static int dump(List<ItemStack> stacks, ServerPlayer player, String name) {

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.Shadow;
 @RemapPrefixForJS("kjs$")
 public abstract class ServerPlayerMixin extends Player implements ServerPlayerKJS {
 	public ServerPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
-		super(level, blockPos, f, gameProfile);
+		super(level, gameProfile);
 	}
 
 	@Shadow

@@ -1,6 +1,10 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.latvian.mods.kubejs.core.MinecraftServerKJS;
+import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
+import dev.latvian.mods.kubejs.util.TagReloadContextKJS;
 import dev.latvian.mods.kubejs.gui.chest.CustomChestMenu;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
@@ -13,6 +17,7 @@ import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -20,6 +25,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -144,5 +150,37 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	@Redirect(method = "lambda$reloadResources$29", at = @At(value = "NEW", target = "(Lnet/minecraft/server/packs/PackType;Ljava/util/List;)Lnet/minecraft/server/packs/resources/MultiPackResourceManager;"))
 	private MultiPackResourceManager kjs$modifyResourceReload(PackType type, List<PackResources> original) {
 		return new MultiPackResourceManager(type, ServerScriptManager.createPackResources(original));
+	}
+
+	@WrapOperation(
+		method = "reloadResources",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/tags/TagLoader;loadTagsForExistingRegistries(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/core/RegistryAccess;)Ljava/util/List;"
+		)
+	)
+	private List<Registry.PendingTags<?>> kjs$withTagContext_reloadResources(
+		ResourceManager manager,
+		RegistryAccess layer,
+		Operation<List<Registry.PendingTags<?>>> original
+	) {
+		MinecraftServer self = (MinecraftServer) (Object) this;
+
+		ReloadableServerResourcesKJS ctx = null;
+		if (self.getServerResources() != null) {
+			ctx = self.getServerResources().managers();
+		}
+
+		ReloadableServerResourcesKJS prev = TagReloadContextKJS.CURRENT.get();
+		TagReloadContextKJS.CURRENT.set(ctx);
+		try {
+			return original.call(manager, layer);
+		} finally {
+			if (prev == null) {
+				TagReloadContextKJS.CURRENT.remove();
+			} else {
+				TagReloadContextKJS.CURRENT.set(prev);
+			}
+		}
 	}
 }

@@ -37,6 +37,7 @@ import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.ClickEvent;
@@ -46,6 +47,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.fml.loading.FMLLoader;
@@ -53,6 +55,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,7 +70,7 @@ public class KubeJSCommands {
 	static final DynamicCommandExceptionType NO_REGISTRY = new DynamicCommandExceptionType(id -> Component.literal("No builtin or static registry found for " + id));
 
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-		Predicate<CommandSourceStack> spOrOP = (source) -> source.getServer().isSingleplayer() || source.hasPermission(2);
+		Predicate<CommandSourceStack> spOrOP = (source) -> source.getServer().isSingleplayer() || source.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
 		var cmd = Commands.literal("kubejs")
 			.then(Commands.literal("help")
 				.executes(context -> help(context.getSource()))
@@ -252,16 +255,19 @@ public class KubeJSCommands {
 	}
 
 	private static <T> Stream<TagKey<T>> allTags(CommandSourceStack source, ResourceKey<Registry<T>> registry) throws CommandSyntaxException {
-		return source.registryAccess().registry(registry)
-			.orElseThrow(() -> NO_REGISTRY.create(registry.identifier()))
-			.getTagNames();
+		var reg = source.registryAccess()
+			.lookup(registry)
+			.orElseThrow(() -> NO_REGISTRY.create(registry.identifier()));
+
+		return reg.getTags().map(HolderSet.Named::key);
 	}
 
+
 	private static void link(CommandSourceStack source, ChatFormatting color, Component icon, String name, @Nullable Component info, String url) {
-		var c = Component.literal("• ").withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url)));
+		var c = Component.literal("• ").withStyle(style -> style.withClickEvent(new ClickEvent.OpenUrl(URI.create(url))));
 
 		if (info != null) {
-			c = c.withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, info)));
+			c = c.withStyle(style -> style.withHoverEvent(new HoverEvent.ShowText(info)));
 		}
 
 		c.append(icon);
@@ -459,7 +465,7 @@ public class KubeJSCommands {
 				e.printStackTrace();
 				source.sendFailure(Component.empty().append(BATIcons.NO).append("Failed to export %s!".formatted(packName)).withStyle(style ->
 					style.withColor(ChatFormatting.RED)
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(e.getMessage())))));
+						.withHoverEvent(new HoverEvent.ShowText(Component.literal(e.getMessage())))));
 			}
 		}
 
@@ -482,8 +488,8 @@ public class KubeJSCommands {
 		source.sendSystemMessage(Component.empty());
 
 		var size = tags.map(TagKey::location).map(tag -> Component.literal("- %s".formatted(tag)).withStyle(Style.EMPTY
-			.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kubejs list_tag %s %s".formatted(registry.identifier(), tag)))
-			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("[Show all entries for %s]".formatted(tag))))
+			.withClickEvent(new ClickEvent.RunCommand("/kubejs list_tag %s %s".formatted(registry.identifier(), tag)))
+			.withHoverEvent(new HoverEvent.ShowText(Component.literal("[Show all entries for %s]".formatted(tag))))
 		)).mapToLong(msg -> {
 			source.sendSystemMessage(msg);
 			return 1;
@@ -499,15 +505,16 @@ public class KubeJSCommands {
 
 	private static <T> int tagObjects(CommandSourceStack source, TagKey<T> key) throws CommandSyntaxException {
 		var registry = source.registryAccess()
-			.registry(key.registry())
+			.lookup(key.registry())
 			.orElseThrow(() -> NO_REGISTRY.create(key.registry().identifier()));
 
-		var tag = registry.getTag(key);
+		var tag = registry.get(key);
 
 		if (tag.isEmpty()) {
 			source.sendFailure(Component.literal("Tag not found or empty!"));
 			return 0;
 		}
+
 		source.sendSystemMessage(Component.empty());
 		source.sendSystemMessage(Component.literal("Contents of #" + key.location() + " [" + key.registry().identifier() + "]:"));
 		source.sendSystemMessage(Component.empty());
@@ -515,7 +522,9 @@ public class KubeJSCommands {
 		var items = tag.get();
 
 		for (var holder : items) {
-			var id = holder.unwrap().map(o -> o.identifier().toString(), o -> o + " (unknown ID)");
+			var id = holder.unwrapKey()
+				.map(k -> k.identifier().toString())
+				.orElse(holder.value() + " (unknown ID)");
 			source.sendSystemMessage(Component.literal("- " + id));
 		}
 
@@ -524,6 +533,7 @@ public class KubeJSCommands {
 		source.sendSystemMessage(Component.empty());
 		return Command.SINGLE_SUCCESS;
 	}
+
 
 	private static int generateTypings(CommandSourceStack source) {
 		if (!source.getServer().isSingleplayer()) {

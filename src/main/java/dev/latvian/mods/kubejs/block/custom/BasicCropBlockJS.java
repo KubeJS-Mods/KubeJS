@@ -76,7 +76,7 @@ public class BasicCropBlockJS extends CropBlock {
 		if (builder.fertilizerCallback == null) {
 			super.growCrops(level, blockPos, blockState);
 		} else {
-			int effect = builder.fertilizerCallback.applyAsInt(new RandomTickCallback(level.kjs$getBlock(blockPos).cache(blockState), level.random));
+			int effect = builder.fertilizerCallback.applyAsInt(new RandomTickCallback(level.kjs$getBlock(blockPos).cache(blockState), level.getRandom()));
 			if (effect > 0) {
 				level.setBlock(blockPos, this.getStateForAge(Integer.min(getAge(blockState) + effect, getMaxAge())), 2);
 			}

@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -81,7 +81,7 @@ public class CardinalBlockBuilder extends BlockBuilder {
 	}
 
 	public static class CardinalKubeBlock extends BasicKubeBlock {
-		public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+		public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 		public final Map<Direction, VoxelShape> shapes = new HashMap<>();
 
 		public CardinalKubeBlock(BlockBuilder p) {

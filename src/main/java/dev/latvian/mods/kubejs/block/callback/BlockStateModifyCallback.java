@@ -3,8 +3,11 @@ package dev.latvian.mods.kubejs.block.callback;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -112,8 +115,8 @@ public class BlockStateModifyCallback {
 	}
 
 	@Info("Updates the shape of this block. Mostly used in waterloggable blocks to update the water flow")
-	public BlockStateModifyCallback updateShape(Direction direction, BlockState blockState, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos2) {
-		this.state = state.updateShape(direction, blockState, levelAccessor, blockPos, blockPos2);
+	public BlockStateModifyCallback updateShape(LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
+		this.state = state.updateShape(level, ticks, pos, directionToNeighbour, neighbourPos, neighbourState, random);
 		return this;
 	}
 

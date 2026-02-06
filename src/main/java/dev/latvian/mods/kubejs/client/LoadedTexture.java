@@ -31,11 +31,11 @@ public class LoadedTexture {
 					return new LoadedTexture(ImageIO.read(in), Files.exists(metaPath) ? Files.readAllBytes(metaPath) : null);
 				}
 			} else if (id.getNamespace().equals(KubeJS.MOD_ID)) {
-				var path1 = KubeJS.thisMod.getModInfo().getOwningFile().getFile().findResource("assets", "kubejs", "textures", id.getPath() + ".png");
+				var path1 = KubeJS.thisMod.getModInfo().getOwningFile().getFile().getFilePath().resolve("assets", "kubejs", "textures", id.getPath() + ".png");
 
 				if (Files.exists(path1)) {
 					try (var in = new BufferedInputStream(Files.newInputStream(path1))) {
-						var metaPath = KubeJS.thisMod.getModInfo().getOwningFile().getFile().findResource("assets", "kubejs", "textures", id.getPath() + ".png.mcmeta");
+						var metaPath = KubeJS.thisMod.getModInfo().getOwningFile().getFile().getFilePath().resolve("assets", "kubejs", "textures", id.getPath() + ".png.mcmeta");
 						return new LoadedTexture(ImageIO.read(in), Files.exists(metaPath) ? Files.readAllBytes(metaPath) : null);
 					}
 				}
