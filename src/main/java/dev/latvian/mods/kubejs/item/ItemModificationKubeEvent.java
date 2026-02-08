@@ -9,6 +9,7 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.BlockTags;
@@ -29,6 +30,7 @@ import net.minecraft.world.item.enchantment.Enchantable;
 import net.minecraft.world.item.enchantment.Repairable;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -40,17 +42,25 @@ import static net.minecraft.world.item.Item.BASE_ATTACK_DAMAGE_ID;
 	Invoked after all items are registered to modify them.
 	""")
 public class ItemModificationKubeEvent implements KubeEvent {
+	private final ModifyDefaultComponentsEvent event;
+
+	public ItemModificationKubeEvent(ModifyDefaultComponentsEvent event) {
+		this.event = event;
+	}
+
 	@Info("""
 		Modifies items matching the given ingredient.
 		
 		**NOTE**: tag ingredients are not supported at this time.
 		""")
 	public void modify(ItemPredicate in, Consumer<ItemModifications> c) {
-		in.kjs$getItemTypes().stream().map(ItemModifications::new).forEach(c);
+		for (var item : in.kjs$getItemTypes()) {
+			event.modify(item, builder -> c.accept(new ItemModifications(item, builder)));
+		}
 	}
 
 	@RemapPrefixForJS("kjs$")
-	public record ItemModifications(Item item) implements ItemComponentFunctions {
+	public record ItemModifications(Item item, DataComponentMap.Builder patch) implements ItemComponentFunctions {
 		@HideFromJS
 		public static final Reference2IntOpenHashMap<Item> BURN_TIME_OVERRIDES = new Reference2IntOpenHashMap<>();
 
@@ -62,8 +72,12 @@ public class ItemModificationKubeEvent implements KubeEvent {
 		@Override
 		@HideFromJS
 		public <T> ItemComponentFunctions kjs$override(DataComponentType<T> type, @Nullable T value) {
-			item.kjs$overrideComponent(type, value);
+			patch.set(type, value);
 			return this;
+		}
+
+		public void removeComponent(DataComponentType<?> type) {
+			patch.set((DataComponentType) type, null);
 		}
 
 		public void setBurnTime(TickDuration i) {
@@ -141,7 +155,6 @@ public class ItemModificationKubeEvent implements KubeEvent {
 
 			return BlockTags.MINEABLE_WITH_PICKAXE;
 		}
-
 
 		public void setNameKey(String key) {
 			item.kjs$setNameKey(key);

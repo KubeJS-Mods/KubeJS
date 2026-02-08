@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.core.mixin;
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
+import dev.latvian.mods.kubejs.item.KubeJSDefaultComponentOverrides;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
@@ -111,9 +112,7 @@ public abstract class ItemMixin implements ItemKJS {
 	@Override
 	@HideFromJS
 	public <T> void kjs$overrideComponent(DataComponentType<T> type, @Nullable T value) {
-		var builder = DataComponentMap.builder().addAll(this.components);
-		builder.set(type, value);
-		this.components = Item.Properties.COMPONENT_INTERNER.intern(Item.Properties.validateComponents(builder.build()));
+		KubeJSDefaultComponentOverrides.override(kjs$self(), type, value);
 	}
 
 	@Override
@@ -129,9 +128,18 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Inject(method = "appendHoverText", at = @At("RETURN"))
-	private void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flagIn, CallbackInfo ci) {
+	private void appendHoverText(
+		ItemStack itemStack,
+		Item.TooltipContext context,
+		net.minecraft.world.item.component.TooltipDisplay display,
+		java.util.function.Consumer<Component> builder,
+		TooltipFlag tooltipFlag,
+		CallbackInfo ci
+	) {
 		if (kjs$itemBuilder != null && !kjs$itemBuilder.tooltip.isEmpty()) {
-			tooltip.addAll(kjs$itemBuilder.tooltip);
+			for (var c : kjs$itemBuilder.tooltip) {
+				builder.accept(c);
+			}
 		}
 	}
 
@@ -182,13 +190,13 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Inject(method = "use", at = @At("HEAD"), cancellable = true)
-	private void use(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> ci) {
+	private void use(Level level, Player player, InteractionHand hand, CallbackInfoReturnable<net.minecraft.world.InteractionResult> cir) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.use != null) {
-			ItemStack itemStack = player.getItemInHand(interactionHand);
-			if (kjs$itemBuilder.use.use(level, player, interactionHand)) {
-				ci.setReturnValue(ItemUtils.startUsingInstantly(level, player, interactionHand));
+			if (kjs$itemBuilder.use.use(level, player, hand)) {
+				player.startUsingItem(hand);
+				cir.setReturnValue(net.minecraft.world.InteractionResult.CONSUME);
 			} else {
-				ci.setReturnValue(InteractionResultHolder.fail(itemStack));
+				cir.setReturnValue(net.minecraft.world.InteractionResult.FAIL);
 			}
 		}
 	}
@@ -200,17 +208,17 @@ public abstract class ItemMixin implements ItemKJS {
 		}
 	}
 
-	@Inject(method = "releaseUsing", at = @At("HEAD"))
-	private void releaseUsing(ItemStack itemStack, Level level, LivingEntity livingEntity, int i, CallbackInfo ci) {
+	@Inject(method = "releaseUsing", at = @At("HEAD"), cancellable = true)
+	private void releaseUsing(ItemStack itemStack, Level level, LivingEntity entity, int remainingTime, CallbackInfoReturnable<Boolean> cir) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.releaseUsing != null) {
-			kjs$itemBuilder.releaseUsing.releaseUsing(itemStack, level, livingEntity, i);
+			kjs$itemBuilder.releaseUsing.releaseUsing(itemStack, level, entity, remainingTime);
 		}
 	}
 
 	@Inject(method = "hurtEnemy", at = @At("HEAD"), cancellable = true)
-	private void hurtEnemy(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2, CallbackInfoReturnable<Boolean> cir) {
+	private void hurtEnemy(ItemStack itemStack, LivingEntity mob, LivingEntity attacker, CallbackInfo ci) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.hurtEnemy != null) {
-			cir.setReturnValue(kjs$itemBuilder.hurtEnemy.test(new ItemBuilder.HurtEnemyContext(itemStack, livingEntity, livingEntity2)));
+			kjs$itemBuilder.hurtEnemy.test(new ItemBuilder.HurtEnemyContext(itemStack, mob, attacker));
 		}
 	}
 

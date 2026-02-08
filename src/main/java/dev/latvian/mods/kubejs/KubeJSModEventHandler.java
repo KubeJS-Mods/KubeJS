@@ -28,6 +28,7 @@ import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
@@ -40,6 +41,11 @@ import java.util.ArrayList;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSModEventHandler {
+	@SubscribeEvent
+	public static void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
+		UtilsJS.postItemModificationEvents(event);
+	}
+
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void creativeTab(BuildCreativeModeTabContentsEvent event) {
 		var tabId = event.getTabKey().registry();
@@ -58,7 +64,7 @@ public class KubeJSModEventHandler {
 		KubeJSPlugins.forEachPlugin(KubeJSPlugin::afterInit);
 		NeoForge.EVENT_BUS.post(new ScriptsLoadedEvent());
 		StartupEvents.POST_INIT.post(ScriptType.STARTUP, KubeStartupEvent.BASIC);
-		UtilsJS.postModificationEvents();
+		UtilsJS.postBlockModificationEvents();
 
 		if (!ConsoleJS.STARTUP.errors.isEmpty()) {
 			var list = new ArrayList<String>();
@@ -82,7 +88,7 @@ public class KubeJSModEventHandler {
 		ConsoleJS.STARTUP.stopCapturingErrors();
 		ConsoleJS.CLIENT.stopCapturingErrors();
 
-		Util.nonCriticalIoPool().submit(() -> {
+		Util.nonCriticalIoPool().execute(() -> {
 			try {
 				var response = HttpClient.newBuilder()
 					.followRedirects(HttpClient.Redirect.ALWAYS)

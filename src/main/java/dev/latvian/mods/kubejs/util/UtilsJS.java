@@ -19,6 +19,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.CreativeModeTab;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.GenericArrayType;
@@ -117,9 +118,12 @@ public class UtilsJS {
 
 	// TODO: We could probably make these generic for RegistryObjectBuilderTypes,
 	//  so maybe look into that to allow people to modify builtin fluids, etc. as well.
-	public static void postModificationEvents() {
+	public static void postItemModificationEvents(ModifyDefaultComponentsEvent event) {
+		ItemEvents.MODIFICATION.post(ScriptType.STARTUP, new ItemModificationKubeEvent(event));
+	}
+
+	public static void postBlockModificationEvents() {
 		BlockEvents.MODIFICATION.post(ScriptType.STARTUP, new BlockModificationKubeEvent());
-		ItemEvents.MODIFICATION.post(ScriptType.STARTUP, new ItemModificationKubeEvent());
 	}
 
 	public static String toMappedTypeString(Type type) {

@@ -8,6 +8,7 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -20,6 +21,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
+import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
 @Mixin(ItemStack.class)
@@ -52,4 +54,10 @@ public abstract class ItemStackMixin implements ItemStackKJS {
 		components.restorePatch(DataComponentPatch.EMPTY);
 		return this;
 	}
+
+	@HideFromJS
+	public static <T> void kjs$overrideComponent(ItemStack stack, DataComponentType<T> type, @Nullable T value) {
+		stack.set(type, value);
+	}
+
 }

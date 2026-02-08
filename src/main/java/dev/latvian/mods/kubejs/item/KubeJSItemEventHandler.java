@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.event.PlayerEvents;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
@@ -14,6 +15,11 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSItemEventHandler {
+	@SubscribeEvent
+	public static void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
+		KubeJSDefaultComponentOverrides.applyTo(event);
+	}
+
 	@SubscribeEvent
 	public static void rightClick(PlayerInteractEvent.RightClickItem event) {
 		var stack = event.getItemStack();

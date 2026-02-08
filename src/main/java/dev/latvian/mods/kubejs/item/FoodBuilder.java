@@ -24,7 +24,7 @@ public class FoodBuilder {
 	private boolean alwaysEdible;
 	private float eatSeconds;
 	private Optional<ItemStack> usingConvertsTo;
-	private final List<FoodProperties.PossibleEffect> effects;
+	private final List<PossibleEffect> effects;
 	public Consumer<FoodEatenKubeEvent> eaten;
 
 	public FoodBuilder() {
@@ -40,9 +40,9 @@ public class FoodBuilder {
 		this.nutrition = properties.nutrition();
 		this.saturation = properties.saturation();
 		this.alwaysEdible = properties.canAlwaysEat();
-		this.eatSeconds = properties.eatSeconds();
+		this.eatSeconds = 1.6F;
+		this.usingConvertsTo = Optional.empty();
 		this.effects = new ArrayList<>();
-		this.effects.addAll(properties.effects());
 	}
 
 	@Info("Sets the hunger restored.")
@@ -84,17 +84,19 @@ public class FoodBuilder {
 		return this;
 	}
 
-	@Info(value = """
-		Adds an effect to the food. Note that the effect duration is in ticks (20 ticks = 1 second).
-		""",
+	@Info(
+		value = """
+			Adds an effect to the food. Note that the effect duration is in ticks (20 ticks = 1 second).
+			""",
 		params = {
 			@Param(name = "mobEffectId", value = "The id of the effect. Can be either a string or a Identifier."),
 			@Param(name = "duration", value = "The duration of the effect in ticks."),
 			@Param(name = "amplifier", value = "The amplifier of the effect. 0 means level 1, 1 means level 2, etc."),
 			@Param(name = "probability", value = "The probability of the effect being applied. 1 = 100%.")
-		})
+		}
+	)
 	public FoodBuilder effect(Identifier mobEffectId, int duration, int amplifier, float probability) {
-		effects.add(new FoodProperties.PossibleEffect(new EffectSupplier(mobEffectId, duration, amplifier), probability));
+		effects.add(new PossibleEffect(new EffectSupplier(mobEffectId, duration, amplifier), probability));
 		return this;
 	}
 
@@ -120,7 +122,22 @@ public class FoodBuilder {
 	}
 
 	public FoodProperties build() {
-		return new FoodProperties(nutrition, FoodConstants.saturationByModifier(nutrition, saturation), alwaysEdible, eatSeconds, usingConvertsTo, effects);
+		return new FoodProperties(nutrition, FoodConstants.saturationByModifier(nutrition, saturation), alwaysEdible);
+	}
+
+	public float getEatSeconds() {
+		return eatSeconds;
+	}
+
+	public Optional<ItemStack> getUsingConvertsTo() {
+		return usingConvertsTo;
+	}
+
+	public List<PossibleEffect> getEffects() {
+		return effects;
+	}
+
+	public record PossibleEffect(Supplier<MobEffectInstance> effectSupplier, float probability) {
 	}
 
 	private static class EffectSupplier implements Supplier<MobEffectInstance> {
@@ -139,7 +156,7 @@ public class FoodBuilder {
 		@Override
 		public MobEffectInstance get() {
 			if (cachedEffect == null) {
-				cachedEffect = BuiltInRegistries.MOB_EFFECT.getHolder(id).orElse(null);
+				cachedEffect = BuiltInRegistries.MOB_EFFECT.get(id).orElse(null);
 
 				if (cachedEffect == null) {
 					var effectIds = BuiltInRegistries.MOB_EFFECT.entrySet().stream().map(entry -> entry.getKey().identifier()).collect(Collectors.toSet());

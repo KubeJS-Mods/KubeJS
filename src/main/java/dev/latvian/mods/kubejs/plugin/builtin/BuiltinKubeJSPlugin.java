@@ -810,7 +810,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 			if (song != null) {
 				registry.register(item, (registries, stack) -> {
-					var key = Util.makeDescriptionId("jukebox_song", song.song().key().get().identifier());
+					var key = Util.makeDescriptionId("jukebox_song", song.song().getKey().identifier());
 					return Component.empty().append(stack.getHoverName()).append(": ").append(Component.translatable(key));
 				});
 			}
