@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 @Mixin(value = Item.class, priority = 1001)
@@ -131,8 +133,8 @@ public abstract class ItemMixin implements ItemKJS {
 	private void appendHoverText(
 		ItemStack itemStack,
 		Item.TooltipContext context,
-		net.minecraft.world.item.component.TooltipDisplay display,
-		java.util.function.Consumer<Component> builder,
+		TooltipDisplay display,
+		Consumer<Component> builder,
 		TooltipFlag tooltipFlag,
 		CallbackInfo ci
 	) {

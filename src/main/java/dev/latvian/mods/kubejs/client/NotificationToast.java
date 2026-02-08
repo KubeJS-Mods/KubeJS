@@ -1,9 +1,5 @@
 package dev.latvian.mods.kubejs.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.latvian.mods.kubejs.client.icon.KubeIconRenderer;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextWrapper;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
@@ -12,9 +8,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.FormattedCharSequence;
-import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;

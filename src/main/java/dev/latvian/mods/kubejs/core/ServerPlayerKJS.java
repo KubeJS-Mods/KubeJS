@@ -14,7 +14,7 @@ import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
+import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanListEntry;
@@ -27,10 +27,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.storage.LevelData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -69,7 +71,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	}
 
 	default boolean kjs$isOp() {
-		return kjs$self().server.getPlayerList().isOp(kjs$self().getGameProfile());
+		return kjs$self().server.getPlayerList().isOp(kjs$self().nameAndId());
 	}
 
 	default void kjs$kick(Component reason) {
@@ -82,7 +84,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 
 	default void kjs$ban(String banner, String reason, long expiresInMillis) {
 		var date = new Date();
-		var userlistbansentry = new UserBanListEntry(kjs$self().getGameProfile(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
+		var userlistbansentry = new UserBanListEntry(kjs$self().nameAndId(), date, banner, new Date(date.getTime() + (expiresInMillis <= 0L ? 315569260000L : expiresInMillis)), reason);
 		kjs$self().server.getPlayerList().getBans().add(userlistbansentry);
 		kjs$kick(Component.translatable("multiplayer.disconnect.banned"));
 	}
@@ -125,9 +127,10 @@ public interface ServerPlayerKJS extends PlayerKJS {
 		var n = kjs$getSelectedSlot();
 
 		if (p != n && kjs$self().connection != null) {
-			kjs$self().connection.send(new ClientboundSetCarriedItemPacket(n));
+			kjs$self().connection.send(new ClientboundSetHeldSlotPacket(n));
 		}
 	}
+
 
 	@Override
 	default void kjs$setMouseItem(ItemStack item) {
@@ -140,12 +143,19 @@ public interface ServerPlayerKJS extends PlayerKJS {
 
 	@Nullable
 	default LevelBlock kjs$getSpawnLocation() {
-		var pos = kjs$self().getRespawnPosition();
+		var pos = Objects.requireNonNull(kjs$self().getRespawnConfig()).respawnData().pos();
 		return pos == null ? null : kjs$getLevel().kjs$getBlock(pos);
 	}
 
 	default void kjs$setSpawnLocation(LevelBlock c) {
-		kjs$self().setRespawnPosition(c.getDimensionKey(), c.getPos(), 0F, true, false);
+		var level = c.getLevel();
+		var pos = c.getPos();
+		var yaw = 0F;
+		var pitch = 0F;
+		var forced = false;
+
+		var respawn = new ServerPlayer.RespawnConfig(LevelData.RespawnData.of(level.dimension(), pos, yaw, pitch), forced);
+		kjs$self().setRespawnPosition(respawn, false);
 	}
 
 	@Override
@@ -195,7 +205,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 	}
 
 	default Container kjs$captureInventory(boolean autoRestore) {
-		var playerItems = kjs$self().getInventory().items;
+		var playerItems = kjs$self().getInventory().getNonEquipmentItems();
 
 		var captured = new SimpleContainer(playerItems.size());
 		var map = new HashMap<Integer, ItemStack>();
@@ -213,7 +223,7 @@ public interface ServerPlayerKJS extends PlayerKJS {
 		}
 
 		if (autoRestore && !map.isEmpty()) {
-			kjs$self().getServer().kjs$restoreInventories().put(kjs$self().getUUID(), map);
+			kjs$self().server.kjs$restoreInventories().put(kjs$self().getUUID(), map);
 		}
 
 		return captured;

@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.gui.chest;
 
 import dev.latvian.mods.kubejs.core.InventoryKJS;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -59,39 +59,39 @@ public class ChestMenuSlot {
 		clickHandlers.clear();
 	}
 
-	public void clicked(ClickType type, int button, ChestMenuClickEvent.Callback callback, boolean autoHandle) {
+	public void clicked(ContainerInput type, int button, ChestMenuClickEvent.Callback callback, boolean autoHandle) {
 		clickHandlers.add(new ChestMenuClickHandler(type, button, callback, autoHandle));
 	}
 
 	public void setLeftClicked(ChestMenuClickEvent.Callback callback) {
-		clicked(ClickType.PICKUP, 0, callback, true);
+		clicked(ContainerInput.PICKUP, 0, callback, true);
 	}
 
 	public void setRightClicked(ChestMenuClickEvent.Callback callback) {
-		clicked(ClickType.PICKUP, 1, callback, true);
+		clicked(ContainerInput.PICKUP, 1, callback, true);
 	}
 
 	public void setMiddleClicked(ChestMenuClickEvent.Callback callback) {
-		clicked(ClickType.CLONE, 2, callback, true);
+		clicked(ContainerInput.CLONE, 2, callback, true);
 	}
 
 	public void setSwapped(ChestMenuClickEvent.Callback callback) {
-		clicked(ClickType.SWAP, -1, callback, true);
+		clicked(ContainerInput.SWAP, -1, callback, true);
 	}
 
 	public void setThrown(ChestMenuClickEvent.Callback callback) {
-		clicked(ClickType.THROW, -1, callback, true);
+		clicked(ContainerInput.THROW, -1, callback, true);
 	}
 
 	public void setShiftLeftClicked(ChestMenuClickEvent.Callback callback) {
-		clicked(ClickType.QUICK_MOVE, 0, callback, true);
+		clicked(ContainerInput.QUICK_MOVE, 0, callback, true);
 	}
 
 	public void setShiftRightClicked(ChestMenuClickEvent.Callback callback) {
-		clicked(ClickType.QUICK_MOVE, 1, callback, true);
+		clicked(ContainerInput.QUICK_MOVE, 1, callback, true);
 	}
 
 	public void setDoubleClicked(ChestMenuClickEvent.Callback callback) {
-		clicked(ClickType.PICKUP_ALL, -1, callback, true);
+		clicked(ContainerInput.PICKUP_ALL, -1, callback, true);
 	}
 }

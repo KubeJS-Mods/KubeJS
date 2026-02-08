@@ -18,7 +18,6 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
@@ -29,11 +28,13 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static com.mojang.serialization.DataResult.error;
 import static com.mojang.serialization.DataResult.success;
@@ -44,10 +45,11 @@ public interface FluidWrapper {
 	TypeInfo INGREDIENT_TYPE_INFO = TypeInfo.of(FluidIngredient.class);
 	TypeInfo SIZED_INGREDIENT_TYPE_INFO = TypeInfo.of(SizedFluidIngredient.class);
 
-	SizedFluidIngredient EMPTY_SIZED = new SizedFluidIngredient(FluidIngredient.empty(), FluidType.BUCKET_VOLUME);
+	FluidIngredient EMPTY_INGREDIENT = new EmptyKjsFluidIngredient();
+	SizedFluidIngredient EMPTY_SIZED = new SizedFluidIngredient(EMPTY_INGREDIENT, FluidType.BUCKET_VOLUME);
 
 	DataResult<FluidStack> EMPTY_STACK_RESULT = success(FluidStack.EMPTY);
-	DataResult<FluidIngredient> EMPTY_INGREDIENT_RESULT = success(FluidIngredient.empty());
+	DataResult<FluidIngredient> EMPTY_INGREDIENT_RESULT = success(EMPTY_INGREDIENT);
 	DataResult<SizedFluidIngredient> EMPTY_SIZED_RESULT = success(EMPTY_SIZED);
 
 	@HideFromJS
@@ -88,7 +90,6 @@ public interface FluidWrapper {
 		return DataComponentFluidIngredient.of(strict, data, base);
 	}
 
-
 	@HideFromJS
 	static DataResult<FluidIngredient> tryWrapIngredient(Context cx, Object from) {
 		while (from instanceof Wrapper w) {
@@ -101,7 +102,7 @@ public interface FluidWrapper {
 			case null -> EMPTY_INGREDIENT_RESULT;
 			case FluidStack stack when stack.isEmpty() -> EMPTY_INGREDIENT_RESULT;
 			case Fluid fluid when fluid.kjs$isEmpty() -> EMPTY_INGREDIENT_RESULT;
-			case FluidIngredient in when in.isEmpty() -> EMPTY_INGREDIENT_RESULT;
+			case FluidIngredient in when isEmptyIngredient(in) -> EMPTY_INGREDIENT_RESULT;
 			case FluidStack stack -> success(FluidIngredient.of(stack));
 			case Fluid fluid -> success(FluidIngredient.of(fluid));
 			case FluidIngredient in -> success(in);
@@ -133,8 +134,8 @@ public interface FluidWrapper {
 			case null -> EMPTY_SIZED_RESULT;
 			case FluidStack stack when stack.isEmpty() -> EMPTY_SIZED_RESULT;
 			case Fluid fluid when fluid.kjs$isEmpty() -> EMPTY_SIZED_RESULT;
-			case FluidIngredient in when in.isEmpty() -> EMPTY_SIZED_RESULT;
-			case FluidStack stack -> success(SizedFluidIngredient.of(stack));
+			case FluidIngredient in when isEmptyIngredient(in) -> EMPTY_SIZED_RESULT;
+			case FluidStack stack -> success(SizedFluidIngredient.of(stack.getFluid(), stack.getAmount()));
 			case Fluid fluid -> success(SizedFluidIngredient.of(fluid, FluidType.BUCKET_VOLUME));
 			case FluidIngredient in -> success(new SizedFluidIngredient(in, FluidType.BUCKET_VOLUME));
 			case SizedFluidIngredient s -> success(s);
@@ -190,7 +191,7 @@ public interface FluidWrapper {
 	}
 
 	static Fluid getType(Identifier id) {
-		return BuiltInRegistries.FLUID.get(id);
+		return BuiltInRegistries.FLUID.get(id).get().value();
 	}
 
 	static List<String> getTypes() {
@@ -279,7 +280,11 @@ public interface FluidWrapper {
 		return switch (reader.peek()) {
 			case '#' -> {
 				reader.skip();
-				yield ID.read(reader).map(FluidTags::create).map(FluidIngredient::tag);
+				var tagKey = ID.read(reader).map(FluidTags::create);
+				yield tagKey.map(k -> {
+					var lookup = BuiltInRegistries.acquireBootstrapRegistrationLookup(BuiltInRegistries.FLUID);
+					return FluidIngredient.of(lookup.getOrThrow(k));
+				});
 			}
 			case '@' -> {
 				reader.skip();
@@ -295,16 +300,13 @@ public interface FluidWrapper {
 				if (next == '[' || next == '{') {
 					try {
 						var components = DataComponentWrapper.readPredicate(registryOps, reader);
-
-						if (components != DataComponentPredicate.EMPTY) {
-							yield fluid.map(holder -> DataComponentFluidIngredient.of(false, components, holder));
-						}
+						yield fluid.map(holder -> DataComponentFluidIngredient.of(false, components, HolderSet.direct(holder)));
 					} catch (CommandSyntaxException e) {
 						yield error(e::getMessage);
 					}
 				}
 
-				yield fluid.map(FluidIngredient::single);
+				yield fluid.map(holder -> FluidIngredient.of(HolderSet.direct(holder.value().builtInRegistryHolder())));
 			}
 		};
 	}
@@ -330,7 +332,7 @@ public interface FluidWrapper {
 	@HideFromJS
 	static DataResult<Holder<Fluid>> findFluid(Identifier id) {
 		return BuiltInRegistries.FLUID
-			.getHolder(id)
+			.get(id)
 			.map(DataResult::success)
 			.orElseGet(() -> error(() -> "Fluid with ID " + id + " does not exist!"))
 			.map(Function.identity());
@@ -366,5 +368,45 @@ public interface FluidWrapper {
 		}
 
 		return success(FluidType.BUCKET_VOLUME);
+	}
+
+	@HideFromJS
+	static boolean isEmptyIngredient(FluidIngredient ingredient) {
+		return ingredient == EMPTY_INGREDIENT || ingredient instanceof EmptyKjsFluidIngredient;
+	}
+
+	final class EmptyKjsFluidIngredient extends FluidIngredient {
+		private static final FluidIngredientType<?> SIMPLE_TYPE =
+			FluidIngredient.of(Fluids.EMPTY).getType();
+
+		@Override
+		public boolean test(FluidStack fluidStack) {
+			return fluidStack == null || fluidStack.isEmpty();
+		}
+
+		@Override
+		protected Stream<Holder<Fluid>> generateFluids() {
+			return Stream.of(Fluids.EMPTY.builtInRegistryHolder());
+		}
+
+		@Override
+		public boolean isSimple() {
+			return true;
+		}
+
+		@Override
+		public FluidIngredientType<?> getType() {
+			return SIMPLE_TYPE;
+		}
+
+		@Override
+		public int hashCode() {
+			return 0;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return obj == this;
+		}
 	}
 }

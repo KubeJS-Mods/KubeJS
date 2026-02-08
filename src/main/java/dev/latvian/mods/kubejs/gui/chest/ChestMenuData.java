@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.gui.chest;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Consumer;
@@ -59,7 +59,7 @@ public class ChestMenuData {
 		slot.setLeftClicked(leftClicked);
 	}
 
-	public void handleClick(int index, ClickType type, int button) {
+	public void handleClick(int index, ContainerInput type, int button) {
 		if (index < 0 || index >= slots.length) {
 			return;
 		}
