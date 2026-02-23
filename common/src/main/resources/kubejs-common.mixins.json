@@ -58,6 +58,7 @@
 		"ScreenMixin",
 		"WindowMixin",
 		"WorldOpenFlowsMixin",
+        "mod.EMITooltipMixin",
 		"mod.ModNameTooltipMixin",
 		"mod.REITooltipMixin"
 	],
