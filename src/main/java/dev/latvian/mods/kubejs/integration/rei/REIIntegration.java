@@ -47,7 +47,8 @@ public class REIIntegration {
 	}
 
 	public static EntryIngredient fluidIngredient(FluidIngredient ingredient) {
-		return EntryIngredient.of(Arrays.stream(ingredient.getStacks()).map(FluidStackHooksForge::fromForge).map(EntryStacks::of).toList());
+		FluidStack[] fluidStacks = (FluidStack[]) ingredient.fluids().stream().map(holder -> new FluidStack(holder.value(), 0)).toArray();
+		return EntryIngredient.of(Arrays.stream(fluidStacks).map(FluidStackHooksForge::fromForge).map(EntryStacks::of).toList());
 	}
 
 	public static EntryIngredient ingredientOf(Context cx, RecipeViewerEntryType type, Object from) {

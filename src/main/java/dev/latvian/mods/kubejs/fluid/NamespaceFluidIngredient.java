@@ -4,9 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
@@ -38,8 +40,8 @@ public class NamespaceFluidIngredient extends FluidIngredient {
 	}
 
 	@Override
-	protected Stream<FluidStack> generateStacks() {
-		return BuiltInRegistries.FLUID.stream().filter(fluid -> fluid.kjs$getMod().equals(namespace)).map(fluid -> new FluidStack(fluid, FluidType.BUCKET_VOLUME));
+	protected Stream<Holder<Fluid>> generateFluids() {
+		return BuiltInRegistries.FLUID.stream().filter(fluid -> fluid.kjs$getMod().equals(namespace)).map(fluid -> Holder.direct(new FluidStack(fluid, FluidType.BUCKET_VOLUME).getFluid()));
 	}
 
 	@Override

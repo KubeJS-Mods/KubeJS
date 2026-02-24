@@ -7,6 +7,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerExplosion;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,9 +16,9 @@ import java.util.List;
 
 public abstract class ExplosionKubeEvent implements KubeLevelEvent {
 	protected final Level level;
-	protected final Explosion explosion;
+	protected final ServerExplosion explosion;
 
-	public ExplosionKubeEvent(Level level, Explosion explosion) {
+	public ExplosionKubeEvent(Level level, ServerExplosion explosion) {
 		this.level = level;
 		this.explosion = explosion;
 	}
@@ -56,13 +57,13 @@ public abstract class ExplosionKubeEvent implements KubeLevelEvent {
 		Invoked right before an explosion happens.
 		""")
 	public static class Before extends ExplosionKubeEvent {
-		public Before(Level level, Explosion explosion) {
+		public Before(Level level, ServerExplosion explosion) {
 			super(level, explosion);
 		}
 
 		@Info("Returns the size of the explosion.")
 		public float getSize() {
-			return explosion.radius;
+			return explosion.radius();
 		}
 
 		@Info("Sets the size of the explosion.")
@@ -77,7 +78,7 @@ public abstract class ExplosionKubeEvent implements KubeLevelEvent {
 	public static class After extends ExplosionKubeEvent {
 		private final List<Entity> affectedEntities;
 
-		public After(Level level, Explosion explosion, List<Entity> affectedEntities) {
+		public After(Level level, ServerExplosion explosion, List<Entity> affectedEntities) {
 			super(level, explosion);
 			this.affectedEntities = affectedEntities;
 		}
@@ -99,9 +100,9 @@ public abstract class ExplosionKubeEvent implements KubeLevelEvent {
 
 		@Info("Gets a list of all blocks affected by the explosion.")
 		public List<LevelBlock> getAffectedBlocks() {
-			List<LevelBlock> list = new ArrayList<>(explosion.getToBlow().size());
+			List<LevelBlock> list = new ArrayList<>(explosion.calculateExplodedPositions().size());
 
-			for (var pos : explosion.getToBlow()) {
+			for (var pos : explosion.calculateExplodedPositions()) {
 				list.add(level.kjs$getBlock(pos));
 			}
 
@@ -110,12 +111,12 @@ public abstract class ExplosionKubeEvent implements KubeLevelEvent {
 
 		@Info("Remove a block from the list of affected blocks.")
 		public void removeAffectedBlock(LevelBlock block) {
-			explosion.getToBlow().remove(block.getPos());
+			explosion.calculateExplodedPositions().remove(block.getPos());
 		}
 
 		@Info("Remove all blocks from the list of affected blocks.")
 		public void removeAllAffectedBlocks() {
-			explosion.getToBlow().clear();
+			explosion.calculateExplodedPositions().clear();
 		}
 
 		@Info("Remove all knockback from all affected *players*.")

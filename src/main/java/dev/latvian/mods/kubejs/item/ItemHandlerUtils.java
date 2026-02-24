@@ -22,12 +22,11 @@ package dev.latvian.mods.kubejs.item;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 
 public class ItemHandlerUtils {
 	public static void giveItemToPlayer(Player player, @NotNull ItemStack stack, int preferredSlot) {
-		ItemHandlerHelper.giveItemToPlayer(player, stack, preferredSlot);
+		ItemHandlerUtils.giveItemToPlayer(player, stack, preferredSlot);
 	}
 
 	@NotNull

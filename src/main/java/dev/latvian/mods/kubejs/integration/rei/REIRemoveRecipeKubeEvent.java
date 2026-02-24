@@ -38,7 +38,7 @@ public class REIRemoveRecipeKubeEvent implements RemoveRecipesKubeEvent {
 			return;
 		}
 
-		var catId = CategoryIdentifier.of(category);
+		var catId = CategoryIdentifier.of(String.valueOf(category));
 
 		if (categories.tryGet(catId).isEmpty()) {
 			((KubeJSContext) cx).getConsole().error("Failed to remove recipes for type '" + category + "': Category doesn't exist! Use 'event.categories' to get a list of all categories.");

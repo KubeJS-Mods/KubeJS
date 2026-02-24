@@ -34,8 +34,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @JeiPlugin
-public class KubeJSJEIPlugin implements IModPlugin {
-	public static final Identifier ID = KubeJS.id("jei");
+public class KubeJSJEIPlugin/* implements IModPlugin*/ {
+/*	public static final Identifier ID = KubeJS.id("jei");
 	public static final boolean DISABLED = ModList.get().isLoaded("emi");
 	private RecipeViewerData remote = null;
 
@@ -246,5 +246,5 @@ public class KubeJSJEIPlugin implements IModPlugin {
 				}
 			}
 		}
-	}
+	}*/
 }

@@ -8,8 +8,8 @@ import net.minecraft.resources.Identifier;
 
 import java.util.Set;
 
-public class REIRemoveCategoriesKubeEvent implements RemoveCategoriesKubeEvent {
-	private final Set<CategoryIdentifier<?>> categoriesRemoved;
+public class REIRemoveCategoriesKubeEvent /*implements RemoveCategoriesKubeEvent */ {
+	/*private final Set<CategoryIdentifier<?>> categoriesRemoved;
 	private final CategoryRegistry registry;
 
 	public REIRemoveCategoriesKubeEvent(Set<CategoryIdentifier<?>> categoriesRemoved) {
@@ -22,5 +22,5 @@ public class REIRemoveCategoriesKubeEvent implements RemoveCategoriesKubeEvent {
 		for (var id : categories) {
 			categoriesRemoved.add(CategoryIdentifier.of(id));
 		}
-	}
+	}*/
 }

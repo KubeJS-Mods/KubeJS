@@ -2,15 +2,19 @@ package dev.latvian.mods.kubejs.ingredient;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.stream.Stream;
 
 public record CreativeTabIngredient(CreativeModeTab tab) implements KubeJSIngredient {
 	public static final MapCodec<CreativeTabIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -27,5 +31,10 @@ public record CreativeTabIngredient(CreativeModeTab tab) implements KubeJSIngred
 	@Override
 	public boolean test(@Nullable ItemStack stack) {
 		return stack != null && tab.contains(stack);
+	}
+
+	@Override
+	public Stream<Holder<Item>> items() {
+		return Stream.empty();
 	}
 }

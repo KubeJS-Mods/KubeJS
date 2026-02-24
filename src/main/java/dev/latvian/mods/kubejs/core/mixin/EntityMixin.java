@@ -55,7 +55,7 @@ public abstract class EntityMixin implements EntityKJS {
 	@Inject(method = "load", at = @At("RETURN"))
 	private void loadKJS(CompoundTag tag, CallbackInfo ci) {
 		if (tag.contains("KubeJSPersistentData")) {
-			kjs$persistentData = tag.getCompound("KubeJSPersistentData");
+			kjs$persistentData = tag.getCompound("KubeJSPersistentData").get();
 		} else {
 			kjs$persistentData = null;
 		}

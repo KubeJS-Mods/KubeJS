@@ -35,7 +35,7 @@ public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
 				var predicate = (Predicate) cx.jsToJava(fn, t.shouldConvert() ? TypeInfo.RAW_PREDICATE.withParams(t) : TypeInfo.RAW_PREDICATE);
 				yield predicate::test;
 			}
-			default -> new RegistryHolderPredicate<>(new Holder.Direct<>(from));
+			default -> new RegistryHolderPredicate<>(Holder.direct(from));
 		};
 	}
 

@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Set;
 
 @EmiEntrypoint
-public class KubeJSEMIPlugin implements EmiPlugin {
-	@Override
+public class KubeJSEMIPlugin /*implements EmiPlugin*/ {
+	/*@Override
 	public void register(EmiRegistry registry) {
 		var sessionData = KubeSessionData.of(Minecraft.getInstance());
 		var remote = sessionData == null ? null : sessionData.recipeViewerData;
@@ -34,7 +34,7 @@ public class KubeJSEMIPlugin implements EmiPlugin {
 			}
 
 			registry.removeRecipes(r -> {
-				var cat = r.getCategory().getId();
+				Object cat = r.getCategory().getId();
 
 				if (cat == null) {
 					return false;
@@ -44,7 +44,7 @@ public class KubeJSEMIPlugin implements EmiPlugin {
 					return true;
 				}
 
-				var id = r.getId();
+				Object id = r.getId();
 
 				if (id == null) {
 					return false;
@@ -113,5 +113,5 @@ public class KubeJSEMIPlugin implements EmiPlugin {
 				registry.addRecipe(new EmiInfoRecipe(List.of(EMIIntegration.fluidIngredient(info.filter())), info.info(), null));
 			}
 		}
-	}
+	}*/
 }

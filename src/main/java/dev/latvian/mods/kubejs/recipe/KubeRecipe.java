@@ -43,6 +43,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
@@ -570,9 +572,14 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			return ItemStack.EMPTY;
 		}
 
-		var result = original.getResultItem(type.event.registries.access());
-		//noinspection ConstantValue
-		return result == null ? ItemStack.EMPTY : result;
+		if (original instanceof ShapedRecipe shaped) {
+			return shaped.result.create();
+		} else if (original instanceof ShapelessRecipe shapeless) {
+			return shapeless.result.create();
+		}
+
+		ConsoleJS.SERVER.warn("Recipe type " + original.getClass().getName() + " does not support getResult");
+		return ItemStack.EMPTY;
 	}
 
 	public List<Ingredient> getOriginalRecipeIngredients() {
@@ -583,7 +590,16 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			return List.of();
 		}
 
-		return List.copyOf(original.getIngredients());
+		if (original instanceof ShapelessRecipe shapeless) {
+			return List.copyOf(shapeless.ingredients);
+		} else if (original instanceof ShapedRecipe shaped) {
+			return shaped.getIngredients().stream()
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.toList();
+		}
+
+		return List.copyOf(original.placementInfo().ingredients());
 	}
 
 	public KubeRecipe ingredientAction(SlotFilter filter, IngredientAction action) {

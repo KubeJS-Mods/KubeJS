@@ -9,6 +9,8 @@ import mezz.jei.api.neoforge.NeoForgeTypes;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class JEIIntegration {
 	@Nullable
 	public static IIngredientType<?> typeOf(RecipeViewerEntryType type) {
@@ -25,7 +27,7 @@ public class JEIIntegration {
 		if (type == RecipeViewerEntryType.ITEM) {
 			return ((ItemPredicate) type.wrapPredicate(cx, filter)).kjs$getStackArray();
 		} else if (type == RecipeViewerEntryType.FLUID) {
-			return ((FluidIngredient) type.wrapPredicate(cx, filter)).getStacks();
+			return new List[]{((FluidIngredient) type.wrapPredicate(cx, filter)).fluids()};
 		} else {
 			return new Object[0];
 		}

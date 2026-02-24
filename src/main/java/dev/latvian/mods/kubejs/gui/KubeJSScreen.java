@@ -15,14 +15,14 @@ public class KubeJSScreen extends AbstractContainerScreen<KubeJSMenu> implements
 	private final int xOffset;
 
 	public KubeJSScreen(KubeJSMenu menu, Inventory inventory, Component component) {
-		super(menu, inventory, component);
+		super(menu, inventory, component, 176, 114 + menu.guiData.inventoryHeight * 18);
 		this.containerRows = menu.guiData.inventoryHeight;
 		this.containerColumns = menu.guiData.inventoryWidth;
-		this.imageHeight = 114 + this.containerRows * 18;
 		this.inventoryLabelY = this.imageHeight - 94;
 		this.xOffset = 88 - 9 * this.containerColumns;
 
 	}
+
 
 	@Override
 	public void render(GuiGraphics guiGraphics, int i, int j, float f) {

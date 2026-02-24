@@ -33,7 +33,9 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 
 	@Override
 	default ItemStack[] kjs$getStackArray() {
-		return kjs$self().getItems();
+		return kjs$self().items()
+			.map(ItemStack::new)
+			.toArray(ItemStack[]::new);
 	}
 
 	default Ingredient kjs$and(Ingredient ingredient) {
@@ -117,7 +119,10 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 		}
 
 		try {
-			for (var stack : in.getItems()) {
+			var items = in.items()
+				.map(ItemStack::new)
+				.toArray(ItemStack[]::new);
+			for (var stack : items) {
 				if (test(stack)) {
 					return true;
 				}

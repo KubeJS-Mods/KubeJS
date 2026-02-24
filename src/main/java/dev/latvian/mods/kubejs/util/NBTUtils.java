@@ -268,7 +268,7 @@ public interface NBTUtils {
 						list.add(valueType.load(dataInput, accounter));
 					}
 
-					return new ListTag(list, typeId);
+					return new ListTag(list);
 				}
 			} finally {
 				accounter.popDepth();

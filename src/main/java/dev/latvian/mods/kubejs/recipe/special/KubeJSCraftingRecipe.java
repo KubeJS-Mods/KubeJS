@@ -35,7 +35,7 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 		return list;
 	}
 
-	default ItemStack kjs$assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
+	default ItemStack kjs$assemble(CraftingInput input) {
 		if (!kjs$getStage().isEmpty()) {
 			/* FIXME
 			var player = getPlayer(((CraftingContainerKJS) container).kjs$getMenu());
@@ -47,7 +47,7 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 		}
 
 		var modifyResult = kjs$getModifyResult();
-		var result = assemble(input,registryAccess);
+		var result = assemble(input);
 		//noinspection ConstantValue
 		result = (result == null || result.isEmpty()) ? ItemStack.EMPTY : result.copy();
 

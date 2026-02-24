@@ -43,7 +43,7 @@ public class NamespaceHolderSet<T> extends HolderSet.ListBacked<T> implements IC
 	@Nullable
 	private List<Holder<T>> list = null;
 
-	private NamespaceHolderSet(HolderLookup.RegistryLookup<T> registryLookup, String namespace) {
+	NamespaceHolderSet(HolderLookup.RegistryLookup<T> registryLookup, String namespace) {
 		this.registryLookup = registryLookup;
 		this.namespace = namespace;
 	}
@@ -68,6 +68,11 @@ public class NamespaceHolderSet<T> extends HolderSet.ListBacked<T> implements IC
 		}
 
 		return list;
+	}
+
+	@Override
+	public boolean isBound() {
+		return list != null;
 	}
 
 	@Override

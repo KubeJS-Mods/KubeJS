@@ -24,6 +24,7 @@ import me.shedaniel.rei.api.common.util.EntryIngredients;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import me.shedaniel.rei.forge.REIPluginClient;
 import me.shedaniel.rei.plugin.client.BuiltinClientPlugin;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -39,11 +40,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @REIPluginClient
 @SuppressWarnings("UnstableApiUsage")
 public class KubeJSREIPlugin implements REIClientPlugin {
-	private final Set<CategoryIdentifier<?>> categoriesRemoved = new HashSet<>();
+	/*private final Set<CategoryIdentifier<?>> categoriesRemoved = new HashSet<>();
 	private final Map<CategoryIdentifier<?>, Collection<Identifier>> recipesRemoved = new HashMap<>();
 	private RecipeViewerData remote = null;
 
@@ -51,10 +53,10 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 		NeoForge.EVENT_BUS.register(this);
 	}
 
-	/**
+	*//**
 	 * We want to run as late as possible, so we can remove other
 	 * mods' entries after they have already been added.
-	 */
+	 *//*
 	@Override
 	public double getPriority() {
 		return 1e7;
@@ -163,7 +165,7 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 			}
 
 			for (var info : remote.fluidData().info()) {
-				if (!info.filter().isEmpty() && !info.info().isEmpty()) {
+				if (!info.filter().fluids().isEmpty() && !info.info().isEmpty()) {
 					BuiltinClientPlugin.getInstance().registerInformation(REIIntegration.fluidIngredient(info.filter()), info.info().getFirst(), components -> {
 						for (int i = 1; i < info.info().size(); i++) {
 							components.add(info.info().get(i));
@@ -206,10 +208,10 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 			}
 
 			if (remote != null) {
-				categoriesRemoved.addAll(remote.removedCategories().stream().map(CategoryIdentifier::of).toList());
+				categoriesRemoved.addAll(remote.removedCategories().stream().map(t -> CategoryIdentifier.of(t.getNamespace(), t.getPath())).toList());
 
 				for (var entry : remote.categoryData()) {
-					recipesRemoved.computeIfAbsent(CategoryIdentifier.of(entry.category()), k -> new HashSet<>()).addAll(entry.removedRecipes());
+					recipesRemoved.computeIfAbsent(CategoryIdentifier.of(entry.category().getNamespace(), entry.category().getPath()), k -> new HashSet<>()).addAll(entry.removedRecipes());
 				}
 			}
 		}
@@ -263,10 +265,10 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 
 		if (remote != null) {
 			for (var subtypes : remote.fluidData().dataComponentSubtypes()) {
-				var fluids = Arrays.stream(subtypes.filter().getStacks()).map(FluidStack::getFluid).toArray(Fluid[]::new);
+				var fluids = Arrays.stream(new Stream[]{subtypes.filter().fluids().stream().map(Holder::value)}).map(t -> (Fluid) t).toArray(Fluid[]::new);
 
 				registry.register((EntryComparator) DataComponentComparator.of(subtypes.components()), fluids);
 			}
 		}
-	}
+	}*/
 }

@@ -3,6 +3,8 @@ package dev.latvian.mods.kubejs.ingredient;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 
@@ -12,9 +14,10 @@ public interface KubeJSIngredient extends ICustomIngredient, ItemPredicate {
 	@Override
 	boolean test(ItemStack stack);
 
+
 	@Override
-	default Stream<ItemStack> getItems() {
-		return ItemWrapper.getList().stream().filter(this);
+	default Stream<Holder<Item>> items() {
+		return ItemWrapper.getList().stream().filter(this).map(itemStack -> Holder.direct(itemStack.getItem()));
 	}
 
 	@Override

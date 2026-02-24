@@ -44,7 +44,7 @@ public class RegExHolderSet<T> extends HolderSet.ListBacked<T> implements ICusto
 	@Nullable
 	private List<Holder<T>> list = null;
 
-	private RegExHolderSet(HolderLookup.RegistryLookup<T> registryLookup, Pattern pattern) {
+	RegExHolderSet(HolderLookup.RegistryLookup<T> registryLookup, Pattern pattern) {
 		this.registryLookup = registryLookup;
 		this.pattern = pattern;
 	}
@@ -69,6 +69,11 @@ public class RegExHolderSet<T> extends HolderSet.ListBacked<T> implements ICusto
 		}
 
 		return list;
+	}
+
+	@Override
+	public boolean isBound() {
+		return this.list != null;
 	}
 
 	@Override

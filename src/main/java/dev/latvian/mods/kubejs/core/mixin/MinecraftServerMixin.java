@@ -109,7 +109,7 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 				if (map != null && player.isAlive() && !player.hasDisconnected() && !(player.containerMenu instanceof CustomChestMenu)) {
 					kjs$restoreInventories.remove(player.getUUID());
 
-					var playerItems = player.getInventory().items;
+					var playerItems = player.getInventory().getNonEquipmentItems();
 
 					for (int i = 0; i < playerItems.size(); i++) {
 						playerItems.set(i, map.getOrDefault(i, ItemStack.EMPTY));

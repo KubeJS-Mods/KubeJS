@@ -91,11 +91,13 @@ public interface ItemComponentFunctions extends ComponentFunctions, AttributeMod
 	}
 
 	default void kjs$setChargedProjectiles(List<ItemStack> items) {
-		kjs$override(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.of(items));
+		kjs$override(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.ofNonEmpty(items));
 	}
 
 	default void kjs$setBundleContents(List<ItemStack> items) {
-		kjs$override(DataComponents.BUNDLE_CONTENTS, new BundleContents(items));
+		var mutable = new BundleContents.Mutable(BundleContents.EMPTY);
+		items.forEach(mutable::tryInsert);
+		kjs$override(DataComponents.BUNDLE_CONTENTS, mutable.toImmutable());
 	}
 
 	default void kjs$setBucketEntityData(CompoundTag tag) {

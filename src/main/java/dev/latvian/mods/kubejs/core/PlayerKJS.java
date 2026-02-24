@@ -72,11 +72,11 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 	}
 
 	default int kjs$getSelectedSlot() {
-		return kjs$self().getInventory().selected;
+		return kjs$self().getInventory().getSelectedSlot();
 	}
 
 	default void kjs$setSelectedSlot(int index) {
-		kjs$self().getInventory().selected = Mth.clamp(index, 0, 8);
+		kjs$self().getInventory().setSelectedSlot(Mth.clamp(index, 0, 8));
 	}
 
 	default ItemStack kjs$getMouseItem() {
@@ -165,7 +165,7 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 	}
 
 	default void kjs$addItemCooldown(Item item, int ticks) {
-		kjs$self().getCooldowns().addCooldown(item, ticks);
+		kjs$self().getCooldowns().addCooldown(item.getDefaultInstance(), ticks);
 	}
 
 	default KubeJSInventoryListener kjs$getInventoryChangeListener() {

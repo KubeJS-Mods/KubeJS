@@ -11,8 +11,8 @@ import net.minecraft.resources.Identifier;
 import java.util.function.Predicate;
 
 @SuppressWarnings("UnstableApiUsage")
-public class REIGroupEntriesKubeEvent implements GroupEntriesKubeEvent {
-	private final RecipeViewerEntryType type;
+public class REIGroupEntriesKubeEvent /*implements GroupEntriesKubeEvent*/ {
+	/*private final RecipeViewerEntryType type;
 	private final EntryType<?> entryType;
 	private final CollapsibleEntryRegistry registry;
 
@@ -27,5 +27,5 @@ public class REIGroupEntriesKubeEvent implements GroupEntriesKubeEvent {
 	public void group(Context cx, Object filter, Identifier groupId, Component description) {
 		var predicate = (Predicate) type.wrapPredicate(cx, filter);
 		registry.group(groupId, description, e -> e.getType() == entryType && predicate.test(e.getValue()));
-	}
+	}*/
 }

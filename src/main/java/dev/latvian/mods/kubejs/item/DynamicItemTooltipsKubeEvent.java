@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -24,9 +25,9 @@ public class DynamicItemTooltipsKubeEvent implements KubeEvent {
 		this.startup = startup;
 		this.advanced = flags.isAdvanced();
 		this.creative = flags.isCreative();
-		this.shift = !startup && Screen.hasShiftDown();
-		this.ctrl = !startup && Screen.hasControlDown();
-		this.alt = !startup && Screen.hasAltDown();
+		this.shift = !startup && Minecraft.getInstance().hasShiftDown();
+		this.ctrl = !startup && Minecraft.getInstance().hasControlDown();
+		this.alt = !startup && Minecraft.getInstance().hasAltDown();
 	}
 
 	public void add(List<Component> text) {

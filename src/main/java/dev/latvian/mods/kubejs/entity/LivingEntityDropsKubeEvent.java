@@ -54,7 +54,7 @@ public class LivingEntityDropsKubeEvent implements KubeLivingEntityEvent {
 
 	@Nullable
 	public ItemEntity addDrop(ItemStack stack, float chance) {
-		if (chance >= 1F || event.getEntity().level().random.nextFloat() <= chance) {
+		if (chance >= 1F || event.getEntity().level().getRandom().nextFloat() <= chance) {
 			return addDrop(stack);
 		}
 

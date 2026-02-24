@@ -55,8 +55,8 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 	}
 
 	@Override
-	public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
-		return kjs$assemble(input, registryAccess);
+	public ItemStack assemble(CraftingInput input) {
+		return kjs$assemble(input);
 	}
 
 	public static class SerializerKJS implements RecipeSerializer<ShapelessKubeJSRecipe> {

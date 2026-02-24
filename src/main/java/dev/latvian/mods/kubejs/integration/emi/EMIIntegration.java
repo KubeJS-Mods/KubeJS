@@ -16,7 +16,7 @@ public class EMIIntegration {
 	}
 
 	public static EmiIngredient fluidIngredient(FluidIngredient ingredient) {
-		return EmiIngredient.of(Arrays.stream(ingredient.getStacks()).map(EMIIntegration::fluid).toList());
+		return EmiIngredient.of(Arrays.stream(ingredient.fluids().toArray()).map(i -> EMIIntegration.fluid((FluidStack) i)).toList());
 	}
 
 	public static Predicate<EmiStack> predicate(ItemPredicate ingredient) {
@@ -27,7 +27,7 @@ public class EMIIntegration {
 	}
 
 	public static Predicate<EmiStack> predicate(FluidIngredient ingredient) {
-		var set = new HashSet<>(Arrays.stream(ingredient.getStacks()).map(EMIIntegration::fluid).toList());
+		var set = new HashSet<>(Arrays.stream(ingredient.fluids().toArray()).map(i -> EMIIntegration.fluid((FluidStack) i)).toList());
 		return set::contains;
 	}
 }

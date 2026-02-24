@@ -16,6 +16,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
+
+import java.util.List;
 
 @RemapPrefixForJS("kjs$")
 public interface RecipeHolderKJS extends RecipeLikeKJS {
@@ -29,7 +33,7 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 
 	@Override
 	default String kjs$getGroup() {
-		return kjs$getRecipe().getGroup();
+		return kjs$getRecipe().group();
 	}
 
 	@Override
@@ -38,7 +42,7 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 
 	@Override
 	default Identifier kjs$getOrCreateId() {
-		return kjs$self().id();
+		return kjs$self().id().identifier();
 	}
 
 	@Override
@@ -60,9 +64,18 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	@Override
 	default boolean hasInput(RecipeMatchContext cx, ReplacementMatchInfo match) {
 		if (match.match() instanceof ItemMatch m) {
-			for (var in : kjs$getRecipe().getIngredients()) {
-				if (m.matches(cx, in, match.exact())) {
-					return true;
+			var recipe = kjs$getRecipe();
+			if (recipe instanceof ShapedRecipe shapedRecipe) {
+				for (var in : shapedRecipe.getIngredients()) {
+					if (m.matches(cx, in.get(), match.exact())) {
+						return true;
+					}
+				}
+			} else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
+				for (var in : shapelessRecipe.ingredients) {
+					if (m.matches(cx, in, match.exact())) {
+						return true;
+					}
 				}
 			}
 		}
@@ -77,12 +90,18 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 
 	@Override
 	default boolean hasOutput(RecipeMatchContext cx, ReplacementMatchInfo match) {
-		if (match.match() instanceof ItemMatch m) {
-			var result = kjs$getRecipe().getResultItem(cx.registries().access());
-			//noinspection ConstantValue
-			return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.matches(cx, result, match.exact());
+		var recipe = kjs$getRecipe();
+		if (recipe instanceof ShapedRecipe shaped) {
+			if (match.match() instanceof ItemMatch m) {
+				var result = shaped.result.create();
+				return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.matches(cx, result, match.exact());
+			}
+		} else if (recipe instanceof ShapelessRecipe shapeless) {
+			if (match.match() instanceof ItemMatch m) {
+				var result = shapeless.result.create();
+				return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.matches(cx, result, match.exact());
+			}
 		}
-
 		return false;
 	}
 

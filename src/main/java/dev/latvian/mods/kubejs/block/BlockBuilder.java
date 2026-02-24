@@ -182,7 +182,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		var table = generateLootTable(generator);
 
 		if (table != null) {
-			generator.json(id.withPath(ID.BLOCK_LOOT_TABLE), generator.getRegistries().json().withEncoder(LootTable.CODEC).apply(new Holder.Direct<>(table)).getOrThrow());
+			generator.json(id.withPath(ID.BLOCK_LOOT_TABLE), generator.getRegistries().json().withEncoder(LootTable.CODEC).apply(Holder.direct(table)).getOrThrow());
 		}
 	}
 

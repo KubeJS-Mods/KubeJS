@@ -27,7 +27,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	private final String stage;
 
 	public ShapedKubeJSRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, ItemStack result, boolean showNotification, boolean mirror, List<IngredientActionHolder> ingredientActions, String modifyResult, String stage) {
-		super(group, category, pattern, result, showNotification);
+		super(group, category, pattern, result.getCraftingRemainder(), showNotification);
 		this.mirror = mirror;
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
@@ -67,9 +67,10 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 		return kjs$getRemainingItems(input);
 	}
 
+
 	@Override
-	public ItemStack assemble(CraftingInput input, HolderLookup.Provider registryAccess) {
-		return kjs$assemble(input, registryAccess);
+	public ItemStack assemble(CraftingInput input) {
+		return kjs$assemble(input);
 	}
 
 	private ShapedRecipePattern pattern() {
@@ -77,7 +78,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	}
 
 	private ItemStack result() {
-		return result;
+		return result.create();
 	}
 
 	public static class SerializerKJS implements RecipeSerializer<ShapedKubeJSRecipe> {

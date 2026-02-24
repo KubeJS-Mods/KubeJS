@@ -30,11 +30,11 @@ public interface SizedFluidIngredientKJS extends Replaceable, FluidMatch {
 	}
 
 	default JsonElement kjs$toFlatJson() {
-		return KubeJSCodecs.toJsonOrThrow(kjs$self(), SizedFluidIngredient.FLAT_CODEC);
+		return KubeJSCodecs.toJsonOrThrow(kjs$self(), SizedFluidIngredient.CODEC);
 	}
 
 	default JsonElement kjs$toNestedJson() {
-		return KubeJSCodecs.toJsonOrThrow(kjs$self(), SizedFluidIngredient.NESTED_CODEC);
+		return KubeJSCodecs.toJsonOrThrow(kjs$self(), SizedFluidIngredient.CODEC);
 	}
 
 	@Override

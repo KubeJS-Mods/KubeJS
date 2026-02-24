@@ -3,11 +3,16 @@ package dev.latvian.mods.kubejs.item.custom;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.MutableToolTier;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 
 import java.util.function.Consumer;
 
@@ -15,19 +20,29 @@ import java.util.function.Consumer;
 public abstract class HandheldItemBuilder extends ItemBuilder {
 	public transient MutableToolTier toolTier;
 	public transient float attackDamageBaseline;
+	public transient float disableBlockingForSeconds;
 	public transient float speedBaseline;
 
 	public HandheldItemBuilder(Identifier i, float d, float s) {
 		super(i);
-		toolTier = new MutableToolTier(Tiers.IRON);
+		toolTier = new MutableToolTier(ToolMaterial.IRON);
 		attackDamageBaseline = d;
+		disableBlockingForSeconds = 0;
 		speedBaseline = s;
 		parentModel(KubeAssetGenerator.HANDHELD_ITEM_MODEL);
 		unstackable();
 	}
 
-	public HandheldItemBuilder tier(Tier t) {
-		toolTier = t instanceof MutableToolTier mtt ? mtt : new MutableToolTier(t);
+	public HandheldItemBuilder tier(MutableToolTier t) {
+		if (t == null) {
+			try {
+				return this;
+			} catch (Exception e) {
+				ConsoleJS.STARTUP.error("Cannot pass in a null tier to tier builder.");
+			}
+		}
+
+		toolTier = t instanceof MutableToolTier mtt ? mtt : new MutableToolTier(t.build());
 		return this;
 	}
 
@@ -40,6 +55,18 @@ public abstract class HandheldItemBuilder extends ItemBuilder {
 		""")
 	public HandheldItemBuilder attackDamageBaseline(float f) {
 		attackDamageBaseline = f;
+		return this;
+	}
+
+	@Info("""
+		Sets how long blocking is disabled on the target after being hit, in seconds.
+		
+		Defaults to 0, meaning blocking is not disabled.
+		
+		Axes set this to 5.0 seconds, which is what causes them to disable shields.
+		""")
+	public HandheldItemBuilder disableBlockingForSeconds(float f) {
+		disableBlockingForSeconds = f;
 		return this;
 	}
 
@@ -71,5 +98,20 @@ public abstract class HandheldItemBuilder extends ItemBuilder {
 	public HandheldItemBuilder speed(float f) {
 		toolTier.setSpeed(f);
 		return this;
+	}
+
+	protected static ItemAttributeModifiers createToolAttributes(ToolMaterial material, float attackDamageBaseline, float attackSpeedBaseline) {
+		return ItemAttributeModifiers.builder()
+			.add(
+				Attributes.ATTACK_DAMAGE,
+				new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, (double) (attackDamageBaseline + material.attackDamageBonus()), AttributeModifier.Operation.ADD_VALUE),
+				EquipmentSlotGroup.MAINHAND
+			)
+			.add(
+				Attributes.ATTACK_SPEED,
+				new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, (double) attackSpeedBaseline, AttributeModifier.Operation.ADD_VALUE),
+				EquipmentSlotGroup.MAINHAND
+			)
+			.build();
 	}
 }

@@ -3,28 +3,28 @@ package dev.latvian.mods.kubejs.item.custom;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.ShovelItem;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.ToolMaterial;
 import net.neoforged.neoforge.common.Tags;
 
 import java.util.function.BiFunction;
 
 public class DiggerItemBuilder extends HandheldItemBuilder {
-	public final BiFunction<Tier, Item.Properties, DiggerItem> function;
+	public final BiFunction<ToolMaterial, Item.Properties, Item> function;
 
-	public DiggerItemBuilder(Identifier i, float d, float s, BiFunction<Tier, Item.Properties, DiggerItem> f) {
+	public DiggerItemBuilder(Identifier i, float d, float s, BiFunction<ToolMaterial, Item.Properties, Item> f) {
 		super(i, d, s);
 		function = f;
 	}
 
 	@Override
 	public Item createObject() {
-		itemAttributeModifiers = DiggerItem.createAttributes(toolTier, attackDamageBaseline, speedBaseline);
-		return function.apply(toolTier, createItemProperties());
+		var props = createItemProperties();
+		var material = toolTier.build();
+		itemAttributeModifiers = createToolAttributes(material, attackDamageBaseline, speedBaseline);
+		return function.apply(material, props);
 	}
 
 	public static class Pickaxe extends DiggerItemBuilder {
@@ -37,7 +37,7 @@ public class DiggerItemBuilder extends HandheldItemBuilder {
 		public static final Identifier PICKAXE_MODEL = Identifier.withDefaultNamespace("item/iron_pickaxe");
 
 		public Pickaxe(Identifier i) {
-			super(i, 1F, -2.8F, PickaxeItem::new);
+			super(i, 1F, -2.8F, (material, props) -> new Item(props.pickaxe(material, 1F, -2.8F)));
 			parentModel = PICKAXE_MODEL;
 			tag(PICKAXE_TAGS);
 		}
@@ -51,7 +51,7 @@ public class DiggerItemBuilder extends HandheldItemBuilder {
 		public static final Identifier SHOVEL_MODEL = Identifier.withDefaultNamespace("item/iron_shovel");
 
 		public Shovel(Identifier i) {
-			super(i, 1.5F, -3F, ShovelItem::new);
+			super(i, 1.5F, -3F, (material, props) -> new ShovelItem(material, 1.5F, -3F, props));
 			parentModel = SHOVEL_MODEL;
 			tag(SHOVEL_TAGS);
 		}
@@ -65,7 +65,7 @@ public class DiggerItemBuilder extends HandheldItemBuilder {
 		public static final Identifier AXE_MODEL = Identifier.withDefaultNamespace("item/iron_axe");
 
 		public Axe(Identifier i) {
-			super(i, 6F, -3.1F, AxeItem::new);
+			super(i, 6F, -3.1F, (material, props) -> new AxeItem(material, 6F, -3.1F, props));
 			parentModel = AXE_MODEL;
 			tag(AXE_TAGS);
 		}
@@ -79,7 +79,7 @@ public class DiggerItemBuilder extends HandheldItemBuilder {
 		public static final Identifier HOE_MODEL = Identifier.withDefaultNamespace("item/iron_hoe");
 
 		public Hoe(Identifier i) {
-			super(i, 0F, -3F, HoeItem::new);
+			super(i, 0F, -3F, (material, props) -> new HoeItem(material, 0F, -3F, props));
 			parentModel = HOE_MODEL;
 			tag(HOE_TAGS);
 		}

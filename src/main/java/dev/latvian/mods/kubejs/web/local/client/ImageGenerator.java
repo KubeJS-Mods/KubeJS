@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.web.local.client;
 
 import com.madgag.gif.fmsware.AnimatedGifEncoder;
+import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -49,9 +49,9 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.model.data.ModelData;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -70,7 +70,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 public class ImageGenerator {
-	public static final ItemTransform ROTATED_BLOCK_TRANSFORM = new ItemTransform(
+/*	public static final ItemTransform ROTATED_BLOCK_TRANSFORM = new ItemTransform(
 		new Vector3f(30F, 225F, 0F),
 		new Vector3f(0F, 0F, 0F),
 		new Vector3f(0.625F, 0.625F, 0.625F)
@@ -102,8 +102,8 @@ public class ImageGenerator {
 		var target = FB_CACHE.get(size);
 
 		if (target == null) {
-			target = new TextureTarget(size, size, true, Minecraft.ON_OSX);
-			target.setClearColor(0.54F, 0.54F, 0.54F, 0F);
+			target = new TextureTarget(null, size, size, true);
+			// setClearColor no longer exists; handle clear color via RenderPass if needed
 			FB_CACHE.put(size, target);
 		}
 
@@ -135,18 +135,19 @@ public class ImageGenerator {
 
 		var bytes = req.supplyInMainThread(() -> {
 			var target = getCanvas(size);
-
 			var mc = Minecraft.getInstance();
 			var bufferSource = mc.renderBuffers().bufferSource();
 
-			target.clear(Minecraft.ON_OSX);
+			// Clear by creating a render pass with a clear color
+			var encoder = RenderSystem.getDevice().createCommandEncoder();
+			encoder.clearColorTexture(target.getColorTexture(), 0x8A8A8A00); // ~0.54 grey, 0 alpha
+
 			target.bindWrite(true);
 			RenderSystem.setProjectionMatrix(new Matrix4f().setOrtho(0, canvasSize, canvasSize, 0, -1000F, 1000F), VertexSorting.ORTHOGRAPHIC_Z);
 
 			var view = RenderSystem.getModelViewStack();
 			view.pushMatrix();
 			view.translation(0F, 0F, 0F);
-
 			RenderSystem.applyModelViewMatrix();
 
 			GuiGraphics graphics = new GuiGraphics(mc, bufferSource);
@@ -160,37 +161,58 @@ public class ImageGenerator {
 
 			graphics.flush();
 
-			target.bindRead();
-			RenderSystem.bindTexture(target.getColorTextureId());
+			// Allocate a GpuBuffer to receive the texture data (size * size * 4 bytes for RGBA8)
+			int byteCount = size * size * 4;
+			var device = RenderSystem.getDevice();
+			var readbackBuffer = device.createBuffer(() -> "ImageGenerator readback", GpuBuffer.Usage.COPY_DST | GpuBuffer.Usage.MAP_READ, byteCount);
 
-			try (var image = new NativeImage(size, size, false)) {
-				image.downloadTexture(0, false);
-				image.flipY();
+			byte[][] result = {null};
 
-				for (int y = 0; y < size; y++) {
-					for (int x = 0; x < size; x++) {
-						int color = image.getPixelRGBA(x, y);
-						int a = (color >> 24) & 0xFF;
+			encoder = device.createCommandEncoder();
+			encoder.copyTextureToBuffer(target.getColorTexture(), readbackBuffer, 0L, () -> {
+				try (var mapped = device.createCommandEncoder().mapBuffer(readbackBuffer, true, false)) {
+					var buf = mapped.data();
+					try (var image = new NativeImage(size, size, false)) {
+						// Copy buffer into NativeImage pixel by pixel, flipping Y
+						for (int y = 0; y < size; y++) {
+							for (int x = 0; x < size; x++) {
+								int srcIdx = ((size - 1 - y) * size + x) * 4; // flipY
+								int r = buf.get(srcIdx) & 0xFF;
+								int g = buf.get(srcIdx + 1) & 0xFF;
+								int b = buf.get(srcIdx + 2) & 0xFF;
+								int a = buf.get(srcIdx + 3) & 0xFF;
 
-						if (a == 0) {
-							image.setPixelRGBA(x, y, 0);
-						} else if (a < 255) {
-							image.setPixelRGBA(x, y, (color & 0xFFFFFF) | 0xFF000000);
+								int argb;
+								if (a == 0) {
+									argb = 0;
+								} else if (a < 255) {
+									argb = (0xFF << 24) | (r << 16) | (g << 8) | b;
+								} else {
+									argb = (a << 24) | (r << 16) | (g << 8) | b;
+								}
+								image.setPixel(x, y, argb);
+							}
 						}
+						result[0] = image.asByteArray();
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				} finally {
+					readbackBuffer.close();
 				}
+			}, size);
 
-				return image.asByteArray();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				return null;
-			} finally {
-				target.unbindRead();
-				target.unbindWrite();
+			// Fence to ensure callback has completed before returning
+			var fence = encoder.createFence();
+			fence.awaitCompletion(10_000_000_000L); // 10s timeout in nanoseconds
+			fence.close();
 
-				view.popMatrix();
-				RenderSystem.applyModelViewMatrix();
-			}
+			view.popMatrix();
+			RenderSystem.applyModelViewMatrix();
+
+			return result[0];
 		});
 
 		if (cachePath != null) {
@@ -479,5 +501,5 @@ public class ImageGenerator {
 
 			}
 		}
-	}
+	}*/
 }
