@@ -13,8 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-public class REIRemoveRecipeKubeEvent implements RemoveRecipesKubeEvent {
-	private final Map<CategoryIdentifier<?>, Collection<Identifier>> recipesRemoved;
+public class REIRemoveRecipeKubeEvent /*implements RemoveRecipesKubeEvent*/ {
+	/*private final Map<CategoryIdentifier<?>, Collection<Identifier>> recipesRemoved;
 	private final CategoryRegistry categories;
 
 	public REIRemoveRecipeKubeEvent(Map<CategoryIdentifier<?>, Collection<Identifier>> recipesRemoved) {
@@ -46,5 +46,5 @@ public class REIRemoveRecipeKubeEvent implements RemoveRecipesKubeEvent {
 		}
 
 		recipesRemoved.computeIfAbsent(catId, _0 -> new HashSet<>()).addAll(List.of(recipesToRemove));
-	}
+	}*/
 }

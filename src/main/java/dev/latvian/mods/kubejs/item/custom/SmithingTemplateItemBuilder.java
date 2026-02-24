@@ -264,6 +264,14 @@ public class SmithingTemplateItemBuilder extends ItemBuilder {
 
 	@Override
 	public SmithingTemplateItem createObject() {
-		return new SmithingTemplateItem(appliesToText, ingredientsText, Objects.requireNonNullElse(displayName, Component.translatable(getBuilderTranslationKey()).withStyle(TITLE_FORMAT)), appliesToSlotDescriptionText, ingredientSlotDescriptionText, appliesToEmptyIcons, ingredientsSlotEmptyIcons);
+		return new SmithingTemplateItem(
+			appliesToText,
+			ingredientsText,
+			appliesToSlotDescriptionText,
+			ingredientSlotDescriptionText,
+			appliesToEmptyIcons,
+			ingredientsSlotEmptyIcons,
+			createItemProperties()
+		);
 	}
 }

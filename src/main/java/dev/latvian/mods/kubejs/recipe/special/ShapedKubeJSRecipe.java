@@ -87,7 +87,10 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(ShapedRecipe::category),
 			// KubeJS modified keys
 			ShapedRecipePattern.MAP_CODEC.forGetter(recipe -> recipe.pattern),
-			ItemStack.STRICT_CODEC.fieldOf("result").forGetter(r -> r.result),
+			ItemStack.CODEC.flatXmap(
+				ItemStack::validateStrict,
+				ItemStack::validateStrict
+			).fieldOf("result").forGetter(r -> r.result.create()),
 			Codec.BOOL.optionalFieldOf("show_notification", true).forGetter(ShapedRecipe::showNotification),
 			// KubeJS additions
 			Codec.BOOL.optionalFieldOf(MIRROR_KEY, true).forGetter(ShapedKubeJSRecipe::kjs$getMirror),

@@ -12,8 +12,8 @@ import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 
 import java.util.List;
 
-public class EMIAddInformationKubeEvent implements AddInformationKubeEvent {
-	private final RecipeViewerEntryType type;
+public class EMIAddInformationKubeEvent /*implements AddInformationKubeEvent*/ {
+	/*private final RecipeViewerEntryType type;
 	private final EmiRegistry registry;
 
 	public EMIAddInformationKubeEvent(RecipeViewerEntryType type, EmiRegistry registry) {
@@ -30,5 +30,5 @@ public class EMIAddInformationKubeEvent implements AddInformationKubeEvent {
 		} else if (type == RecipeViewerEntryType.FLUID) {
 			registry.addRecipe(new EmiInfoRecipe(List.of(EMIIntegration.fluidIngredient((FluidIngredient) in)), info, null));
 		}
-	}
+	}*/
 }

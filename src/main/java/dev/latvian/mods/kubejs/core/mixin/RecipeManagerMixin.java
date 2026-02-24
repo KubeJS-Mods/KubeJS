@@ -15,6 +15,7 @@ import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.Cast;
+import net.minecraft.core.MappedRegistry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -56,7 +57,9 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 				continue;
 			}
 
-			entry.registry().bindTags(Cast.to(entry.lookup().bindingMap()));
+			if (entry.registry() instanceof MappedRegistry<?> mappedRegistry) {
+				mappedRegistry.bindTags(Cast.to(entry.lookup().bindingMap()));
+			}
 		}
 
 		manager.recipeSchemaStorage.fireEvents(manager.getRegistries(), resourceManager);

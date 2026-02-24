@@ -42,10 +42,6 @@ public interface SizedIngredientKJS extends Replaceable, IngredientSupplierKJS, 
 		return kjs$self().ingredient().matches(cx, in, exact);
 	}
 
-	default JsonElement kjs$toFlatJson() {
-		return KubeJSCodecs.toJsonOrThrow(kjs$self(), SizedIngredient.FLAT_CODEC);
-	}
-
 	default JsonElement kjs$toNestedJson() {
 		return KubeJSCodecs.toJsonOrThrow(kjs$self(), SizedIngredient.NESTED_CODEC);
 	}

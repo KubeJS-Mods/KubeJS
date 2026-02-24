@@ -28,9 +28,11 @@ public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> c
 		).apply(instance, (allowEmpty, filter) -> new ItemStackComponent(type, allowEmpty, filter)))
 	);
 
-
 	public ItemStackComponent(RecipeComponentType<?> type, boolean allowEmpty, Ingredient filter) {
-		this(type, allowEmpty ? ItemStack.OPTIONAL_CODEC : ItemStack.STRICT_CODEC, allowEmpty, filter);
+		this(type, allowEmpty ? ItemStack.OPTIONAL_CODEC : ItemStack.CODEC.flatXmap(
+			ItemStack::validateStrict,
+			ItemStack::validateStrict
+		), allowEmpty, filter);
 	}
 
 	@Override
