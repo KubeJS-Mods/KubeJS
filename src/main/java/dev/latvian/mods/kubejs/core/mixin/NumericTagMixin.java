@@ -7,15 +7,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(NumericTag.class)
-public abstract class NumericTagMixin implements SpecialEquality {
+public interface NumericTagMixin extends SpecialEquality {
 	@Shadow
-	public abstract byte getAsByte();
+	byte getAsByte();
 
 	@Shadow
-	public abstract double getAsDouble();
+	double getAsDouble();
 
 	@Override
-	public boolean specialEquals(Context cx, Object o, boolean shallow) {
+	default boolean specialEquals(Context cx, Object o, boolean shallow) {
 		return switch (o) {
 			case Boolean b -> b == (getAsByte() != 0);
 			case Number n1 -> getAsDouble() == n1.doubleValue();

@@ -119,8 +119,7 @@ public abstract class EntityMixin implements EntityKJS {
 	public abstract void setDeltaMovement(double x, double y, double z);
 
 	@Shadow
-	@RemapForJS("setPositionAndRotation")
-	public abstract void moveTo(double x, double y, double z, float yaw, float pitch);
+	public abstract void setRot(float yaw, float pitch);
 
 	@Shadow
 	@RemapForJS("addMotion")

@@ -32,13 +32,13 @@ public abstract class CompoundTagMixin implements CustomJavaToJsWrapper {
 
 	@Shadow
 	@HideFromJS
-	public abstract void putByteArray(String key, List<Byte> value);
+	public abstract void putByteArray(String key, byte[] value);
 
 	@Shadow
 	@HideFromJS
-	public abstract void putIntArray(String key, List<Integer> value);
+	public abstract void putIntArray(String key, int[] value);
 
 	@Shadow
 	@HideFromJS
-	public abstract void putLongArray(String key, List<Long> value);
+	public abstract void putLongArray(String key, long[] value);
 }

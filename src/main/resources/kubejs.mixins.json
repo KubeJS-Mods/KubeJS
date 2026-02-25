@@ -47,7 +47,7 @@
 		"ItemStackHandlerMixin",
 		"ItemStackMixin",
 		"LevelMixin",
-		"LivingEntityMixin",
+		"AnimalMixin",
 		"LootDataTypeMixin",
 		"MenuTypeMixin",
 		"MinecraftServerMixin",

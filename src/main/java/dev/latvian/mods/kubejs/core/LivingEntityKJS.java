@@ -35,7 +35,7 @@ public interface LivingEntityKJS extends EntityKJS {
 		return (LivingEntity) this;
 	}
 
-	default void kjs$foodEaten(ItemStack is, FoodProperties food) {
+	default void kjs$foodEaten(ItemStack is) {
 		if (this instanceof LivingEntity entity) {
 			var event = new FoodEatenKubeEvent(entity, is);
 			var i = is.getItem();

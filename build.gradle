@@ -87,13 +87,13 @@ tasks.withType(Javadoc).configureEach {
 
 dependencies {
 	api("dev.latvian.mods:rhino:$rhino_version") { transitive(false) }
-
+	
 	// not updated to 26.1 yet
 	compileOnly("dev.architectury:architectury-neoforge:$architectury_version")
 	compileOnly("mezz.jei:jei-1.21.1-neoforge:$jei_version")
 	compileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version")
 	compileOnly("dev.emi:emi-neoforge:$emi_version+1.21.1:api")
-	
+
 	implementation(jarJar(implementation('dev.latvian.apps:tiny-java-server'))) {
 		version {
 			strictly "[$tiny_server_version,)"

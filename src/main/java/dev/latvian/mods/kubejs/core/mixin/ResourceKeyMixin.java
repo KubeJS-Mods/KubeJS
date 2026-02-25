@@ -20,16 +20,16 @@ import static dev.latvian.mods.kubejs.registry.RegistryType.Scanner;
 public abstract class ResourceKeyMixin implements SpecialEquality {
 	@Shadow
 	@Final
-	private Identifier location;
+	private Identifier identifier;
 
 	@Unique
 	public String kjs$getNamespace() {
-		return location.getNamespace();
+		return identifier.getNamespace();
 	}
 
 	@Unique
 	public String kjs$getPath() {
-		return location.getPath();
+		return identifier.getPath();
 	}
 
 	@Inject(method = "<init>", at = @At(value = "RETURN"))
@@ -41,8 +41,8 @@ public abstract class ResourceKeyMixin implements SpecialEquality {
 	public boolean specialEquals(Context cx, Object o, boolean shallow) {
 		return switch (o) {
 			case ResourceKey<?> _key -> o == this;
-			case Identifier id -> location.equals(id);
-			default -> location.toString().equals(o.toString());
+			case Identifier id -> identifier.equals(id);
+			default -> identifier.toString().equals(o.toString());
 		};
 	}
 }

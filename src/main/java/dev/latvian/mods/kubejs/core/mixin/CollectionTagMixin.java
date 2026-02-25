@@ -13,12 +13,9 @@ import org.spongepowered.asm.mixin.Unique;
 import java.util.List;
 
 @Mixin(CollectionTag.class)
-public abstract class CollectionTagMixin implements CustomJavaToJsWrapper {
-	@Unique
-	private static final TypeInfo TAGS_TYPE_INFO = TypeInfo.RAW_LIST.withParams(TypeInfo.of(Tag.class));
-
+public interface CollectionTagMixin extends CustomJavaToJsWrapper {
 	@Override
-	public Scriptable convertJavaToJs(Context cx, Scriptable scope, TypeInfo target) {
-		return new NativeJavaList(cx, scope, this, (List) this, TAGS_TYPE_INFO);
+	default Scriptable convertJavaToJs(Context cx, Scriptable scope, TypeInfo target) {
+		return new NativeJavaList(cx, scope, this, (List) this, TypeInfo.RAW_LIST.withParams(TypeInfo.of(Tag.class)));
 	}
 }

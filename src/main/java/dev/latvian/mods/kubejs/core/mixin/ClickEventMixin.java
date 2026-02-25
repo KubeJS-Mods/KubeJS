@@ -8,12 +8,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(ClickEvent.class)
-public abstract class ClickEventMixin implements WithCodec {
-	@Shadow
-	public abstract String getValue();
-
+public interface ClickEventMixin extends WithCodec {
 	@Override
-	public Codec<?> getCodec(Context cx) {
+	default Codec<?> getCodec(Context cx) {
 		return ClickEvent.CODEC;
 	}
 }
