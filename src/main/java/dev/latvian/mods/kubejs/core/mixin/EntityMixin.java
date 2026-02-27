@@ -11,6 +11,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -46,19 +48,17 @@ public abstract class EntityMixin implements EntityKJS {
 	public abstract CompoundTag getPersistentData();
 
 	@Inject(method = "saveWithoutId", at = @At("RETURN"))
-	private void saveKJS(CompoundTag tag, CallbackInfoReturnable<CompoundTag> ci) {
+	private void saveKJS(ValueOutput output, CallbackInfo ci) {
 		if (kjs$persistentData != null && !kjs$persistentData.isEmpty()) {
-			tag.put("KubeJSPersistentData", kjs$persistentData);
+			output.store("KubeJSPersistentData", CompoundTag.CODEC, kjs$persistentData);
 		}
 	}
 
 	@Inject(method = "load", at = @At("RETURN"))
-	private void loadKJS(CompoundTag tag, CallbackInfo ci) {
-		if (tag.contains("KubeJSPersistentData")) {
-			kjs$persistentData = tag.getCompound("KubeJSPersistentData").get();
-		} else {
-			kjs$persistentData = null;
-		}
+	private void loadKJS(ValueInput input, CallbackInfo ci) {
+		kjs$persistentData = input
+			.read("KubeJSPersistentData", CompoundTag.CODEC)
+			.orElse(null);
 	}
 
 	@Override
@@ -143,7 +143,7 @@ public abstract class EntityMixin implements EntityKJS {
 
 	@Shadow
 	@RemapForJS("attack")
-	public abstract boolean hurt(DamageSource source, float hp);
+	public abstract void hurt(DamageSource source, float damage);
 
 	@Shadow
 	@RemapForJS("getDistanceSq")

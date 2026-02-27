@@ -1,6 +1,9 @@
 package dev.latvian.mods.kubejs.server;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.command.CommandRegistryKubeEvent;
 import dev.latvian.mods.kubejs.command.KubeJSCommands;
@@ -8,12 +11,15 @@ import dev.latvian.mods.kubejs.gui.chest.CustomChestMenu;
 import dev.latvian.mods.kubejs.level.SimpleLevelKubeEvent;
 import dev.latvian.mods.kubejs.plugin.builtin.event.LevelEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.web.LocalWebServer;
 import dev.latvian.mods.kubejs.web.WebServerProperties;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
@@ -29,12 +35,14 @@ import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.CommandEvent;
+import net.neoforged.neoforge.event.LootTableLoadEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -50,6 +58,36 @@ import java.util.UUID;
 @EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSServerEventHandler {
 	private static final LevelResource PERSISTENT_DATA = new LevelResource("kubejs_persistent_data.nbt");
+
+	@SubscribeEvent
+	public static void exportLootTable(LootTableLoadEvent event) {
+		if (DataExport.export == null) {
+			return;
+		}
+
+		Identifier id = event.getName();
+		LootTable table = event.getTable();
+		HolderLookup.Provider registries = event.getRegistries();
+
+		try {
+			var ops = registries.createSerializationContext(JsonOps.INSTANCE);
+			var result = LootTable.DIRECT_CODEC.encodeStart(ops, table);
+
+			result.ifSuccess(element -> {
+				if (element instanceof JsonObject json) {
+					var fileName = "%s/%s/%s/%s.json".formatted(
+						Registries.LOOT_TABLE.identifier().getNamespace(),
+						Registries.LOOT_TABLE.identifier().getPath(),
+						id.getNamespace(),
+						id.getPath()
+					);
+					DataExport.export.addJson(fileName, json);
+				}
+			});
+		} catch (Exception ex) {
+			ConsoleJS.SERVER.error("Failed to export loot table %s as JSON!".formatted(id), ex);
+		}
+	}
 
 	@SubscribeEvent
 	public static void registerCommands(RegisterCommandsEvent event) {
@@ -111,10 +149,12 @@ public class KubeJSServerEventHandler {
 			}
 		}
 	}
+
 	static DataResult<ItemStack> parseItemStack(RegistryAccess access, Tag tag) {
 		RegistryOps<Tag> ops = access.createSerializationContext(NbtOps.INSTANCE);
 		return ItemStack.CODEC.parse(ops, tag);
 	}
+
 	@SubscribeEvent
 	public static void serverStarting(ServerStartingEvent event) {
 		ServerEvents.LOADED.post(ScriptType.SERVER, new ServerKubeEvent(event.getServer()));

@@ -15,7 +15,6 @@ public interface ReloadableServerResourcesKJS {
 		throw new NoMixinException();
 	}
 
-	// TagManager removed in favor of a list of PendingTags
 	default List<Registry.PendingTags<?>> kjs$getPostponedTags() {
 		throw new NoMixinException();
 	}

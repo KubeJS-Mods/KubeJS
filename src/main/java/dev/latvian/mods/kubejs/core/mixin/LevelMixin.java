@@ -34,9 +34,6 @@ public abstract class LevelMixin implements LevelKJS {
 		return kjs$attachedData;
 	}
 
-	@Shadow
-	@RemapForJS("getTime")
-	public abstract long getGameTime();
 
 	@Shadow
 	@RemapForJS("getDimensionKey")
