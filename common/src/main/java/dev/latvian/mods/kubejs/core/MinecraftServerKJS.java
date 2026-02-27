@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.net.SendDataFromServerMessage;
 import dev.latvian.mods.kubejs.player.AdvancementJS;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.server.DataExport;
+import dev.latvian.mods.kubejs.server.KubeJSReloadListener;
 import dev.latvian.mods.kubejs.util.ConsoleJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -100,6 +101,8 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 
 	@HideFromJS
 	default void kjs$afterResourcesLoaded(boolean reload) {
+		KubeJSReloadListener.postAfterRecipes();
+
 		if (reload) {
 			DataExport.exportData();
 		}
