@@ -413,8 +413,19 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		kjs$getLevel().addFreshEntity(kjs$self());
 	}
 
+	@Info(value = "Damages an entity by a given amount of HP dealing generic damage.", params = {
+		@Param(name = "hp", value = "The amount of damage to deal."),
+	})
 	default boolean kjs$damage(float hp) {
 		return kjs$self().hurt(kjs$self().damageSources().generic(), hp);
+	}
+
+	@Info(value = "Damages an entity by a given amount of HP dealing a specific type of damage.", params = {
+		@Param(name = "hp", value = "The amount of damage to deal."),
+		@Param(name = "source", value = "The damage source. It may be a string specifying a damage source, like `'minecraft:cramming'`.")
+	})
+	default boolean kjs$damage(float hp, DamageSource source) {
+		return kjs$self().hurt(source, hp);
 	}
 
 	// Alias to not break old scripts
@@ -424,10 +435,10 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		return kjs$damage(hp);
 	}
 
-	@Info("Replaced by `entity.damage(damageSource, hp)`")
+	@Info("Replaced by `entity.damage(hp, damageSource)`")
 	@Deprecated
 	default boolean kjs$attack(DamageSource source, float hp) {
-		return kjs$self().hurt(source, hp);
+		return kjs$damage(hp, source);
 	}
 
 	@Info("Measures the distance of entity to block at specified `BlockPos`.")

@@ -152,8 +152,11 @@ public abstract class EntityMixin implements EntityKJS {
 	@RemapForJS("extinguish")
 	public abstract void extinguishFire();
 
+	/**
+	 * Replaced by
+	 */
 	@Shadow
-	@RemapForJS("damage")
+	@HideFromJS
 	public abstract boolean hurt(DamageSource source, float hp);
 
 	// The remaps:

@@ -136,7 +136,8 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 		""", params = {
 		@Param(name = "filter", value = "The predicate - a function that takes an argument of `Entity` and returns a boolean.")
 	})
-	public EntityArrayList oneFilter(Predicate<Entity> filter) {
+	// FIXME: Inaccessible from JS due to order of operations in Rhino, this method is used by other filter methods
+	public EntityArrayList filter(Predicate<Entity> filter) {
 		if (isEmpty()) {
 			return this;
 		}
@@ -146,7 +147,6 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 		for (var entity : this) {
 			if (filter.test(entity)) {
 				list.add(entity);
-				break;
 			}
 		}
 
@@ -159,7 +159,7 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 		""", params = {
 		@Param(name = "filterList", value = "The list of predicates - functions that take one argument of `Entity` and return boolean values.")
 	})
-	public EntityArrayList filter(List<Predicate<Entity>> filterList) {
+	public EntityArrayList filterList(List<Predicate<Entity>> filterList) {
 		if (isEmpty() || filterList.isEmpty()) {
 			return this;
 		}
@@ -181,7 +181,7 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 		@Param(name = "selector", value = "The entity selector. It may be a string representing the entity selector as seen in commands, such as `'@e[distance=..25]'`")
 	})
 	public EntityArrayList filterSelector(EntitySelector selector) {
-		return filter(selector.contextFreePredicates);
+		return filterList(selector.contextFreePredicates);
 	}
 
 	@Info(value = """
@@ -218,19 +218,19 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 
 	@Info("Results in an entity list containing only players.")
 	public EntityArrayList filterPlayers() {
-		return oneFilter(e -> e instanceof Player);
+		return filter(e -> e instanceof Player);
 	}
 
 	@Info("Results in an entity list containing only item entities.")
 	public EntityArrayList filterItems() {
-		return oneFilter(e -> e instanceof ItemEntity);
+		return filter(e -> e instanceof ItemEntity);
 	}
 
 	@Info(value = "Filters the entity list based on the type of the entity. Only entities whose type is equal to the provided one will end up in the resulting list.", params = {
 		@Param(name = "type", value = "The entity type. It may be a string representing an entity ID, like `'minecraft:creeper'`.")
 	})
 	public EntityArrayList filterType(EntityType<?> type) {
-		return oneFilter(e -> e.getType() == type);
+		return filter(e -> e.getType() == type);
 	}
 
 	@Override
