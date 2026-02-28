@@ -32,12 +32,26 @@ public class FallingBlockEntityMixin {
 		}
 	}
 
-	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ChunkMap;broadcast(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/network/protocol/Packet;)V", shift = At.Shift.BEFORE))
-	private void kjs$fallEnd(CallbackInfo ci, @Local BlockPos pos, @Local double fallSpeed, @Local BlockState replacedState) {
-		var entity = (FallingBlockEntity) (Object) this;
+	@Unique
+	private double kjs$lastFallSpeed;
 
+	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/item/FallingBlockEntity;applyGravity()V", shift = At.Shift.BEFORE))
+	private void kjs$captureFallSpeed(CallbackInfo ci) {
+		kjs$lastFallSpeed = Math.abs(((FallingBlockEntity) (Object) this).getDeltaMovement().y());
+	}
+
+	@Inject(
+		method = "tick",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/server/level/ChunkMap;sendToTrackingPlayers(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/network/protocol/Packet;)V",
+			shift = At.Shift.BEFORE
+		)
+	)
+	private void kjs$fallEnd(CallbackInfo ci, @Local BlockPos pos, @Local BlockState replacedState) {
+		var entity = (FallingBlockEntity) (Object) this;
 		if (!entity.level().isClientSide() && BlockEvents.STOPPED_FALLING.hasListeners(blockState.kjs$getKey())) {
-			BlockEvents.STOPPED_FALLING.post(ScriptType.SERVER, blockState.kjs$getKey(), new BlockStoppedFallingKubeEvent(entity.level(), pos, blockState, entity, fallSpeed, replacedState));
+			BlockEvents.STOPPED_FALLING.post(ScriptType.SERVER, blockState.kjs$getKey(), new BlockStoppedFallingKubeEvent(entity.level(), pos, blockState, entity, kjs$lastFallSpeed, replacedState));
 		}
 	}
 

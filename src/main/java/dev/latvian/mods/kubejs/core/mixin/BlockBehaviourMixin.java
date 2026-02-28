@@ -73,4 +73,9 @@ public abstract class BlockBehaviourMixin implements BlockBehaviourKJS {
 	@Accessor("jumpFactor")
 	@Mutable
 	public abstract void kjs$setJumpFactor(float v);
+	
+	@Override
+	@Accessor("descriptionId")
+	@Mutable
+	public abstract void kjs$setNameKey(String key);
 }

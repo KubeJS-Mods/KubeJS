@@ -116,12 +116,14 @@ public class KubeJSClientEventHandler {
 		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesKubeEvent());
 
 		for (var builder : RegistryObjectStorage.BLOCK) {
-			if (builder instanceof BlockBuilder b) {
-				switch (b instanceof FluidBlockBuilder fb ? fb.fluidBuilder.fluidType.renderType : b.renderType) {
-					case CUTOUT -> ItemBlockRenderTypes.setRenderLayer(b.get(), ChunkSectionLayer.CUTOUT);
-					case TRANSLUCENT -> ItemBlockRenderTypes.setRenderLayer(b.get(), ChunkSectionLayer.TRANSLUCENT);
-					case SOLID -> ItemBlockRenderTypes.setRenderLayer(b.get(), ChunkSectionLayer.SOLID);
-				}
+			if (builder instanceof FluidBlockBuilder b) {
+				var layer = switch (b.renderType) {
+					case CUTOUT -> ChunkSectionLayer.CUTOUT;
+					case TRANSLUCENT -> ChunkSectionLayer.TRANSLUCENT;
+					case SOLID -> ChunkSectionLayer.SOLID;
+				};
+
+				ItemBlockRenderTypes.setRenderLayer(b.fluidBuilder.get(), layer);
 			}
 		}
 
@@ -217,7 +219,7 @@ public class KubeJSClientEventHandler {
 			.withLocation(Identifier.withDefaultNamespace("kubejs/rendertype_highlight_entity"))
 			.withVertexShader(shaderId)
 			.withFragmentShader(shaderId)
-			.withVertexFormat(DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLES)
+			.withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.TRIANGLES)
 			.withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
 			.withCull(true)
 			.withoutBlend()
@@ -431,7 +433,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void worldRender(RenderLevelStageEvent.AfterEntities event) {
+	public static void worldRender(RenderLevelStageEvent.AfterOpaqueFeatures event) {
 		var mc = Minecraft.getInstance();
 		HighlightRenderer.INSTANCE.renderAfterEntities(mc, event);
 	}

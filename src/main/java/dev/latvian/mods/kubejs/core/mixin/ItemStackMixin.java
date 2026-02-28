@@ -49,12 +49,13 @@ public abstract class ItemStackMixin implements ItemStackKJS {
 
 	@Shadow
 	@HideFromJS
-	public abstract Stream<TagKey<Item>> getTags();
+	public abstract Holder<Item> typeHolder();
 
-	@ModifyConstant(method = "lambda$static$3", constant = @Constant(intValue = 99))
+	// Moved to ExtraCodecsMixin which should now intercept globally
+	/*@ModifyConstant(method = "lambda$static$3", constant = @Constant(intValue = 99))
 	private static int kjs$maxSlotSize(int original) {
 		return CommonProperties.get().getMaxSlotSize(original);
-	}
+	}*/
 
 	@Override
 	@ReturnsSelf

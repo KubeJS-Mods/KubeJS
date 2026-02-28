@@ -16,6 +16,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemUseAnimation;
@@ -44,7 +45,7 @@ import java.util.stream.Stream;
 @RemapPrefixForJS("kjs$")
 public abstract class ItemMixin implements ItemKJS {
 	@Shadow
-	private DataComponentMap components;
+	public abstract DataComponentMap components();
 
 	@Shadow
 	@Final
@@ -120,7 +121,7 @@ public abstract class ItemMixin implements ItemKJS {
 	@Override
 	@Accessor("craftingRemainingItem")
 	@Mutable
-	public abstract void kjs$setCraftingRemainder(Item i);
+	public abstract void kjs$setCraftingRemainder(ItemStackTemplate i);
 
 	@Inject(method = "isFoil", at = @At("HEAD"), cancellable = true)
 	private void isFoil(ItemStack itemStack, CallbackInfoReturnable<Boolean> ci) {
@@ -249,7 +250,7 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Override
-	@Accessor("canRepair")
+	@Accessor("canCombineRepair")
 	@Mutable
 	public abstract void kjs$setCanRepair(boolean repairable);
 }

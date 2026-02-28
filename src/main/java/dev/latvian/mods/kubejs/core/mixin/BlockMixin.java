@@ -59,11 +59,6 @@ public abstract class BlockMixin implements BlockKJS {
 		return kjs$typeData;
 	}
 
-	@Override
-	@Accessor("descriptionId")
-	@Mutable
-	public abstract void kjs$setNameKey(String key);
-
 	@Inject(method = "getName", at = @At("HEAD"), cancellable = true)
 	private void kjs$getName(CallbackInfoReturnable<MutableComponent> cir) {
 		if (kjs$blockBuilder != null && kjs$blockBuilder.displayName != null && kjs$blockBuilder.formattedDisplayName) {

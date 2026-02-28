@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
-import com.llamalad7.mixinextras.sugar.Local;
+import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
+import dev.latvian.mods.kubejs.core.ContextAwareReloadListenerKJS;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.net.KubeServerData;
@@ -16,28 +16,44 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 @Mixin(value = RecipeManager.class, priority = 1100)
 public abstract class RecipeManagerMixin implements RecipeManagerKJS {
-	@Shadow
-	private Map<Identifier, RecipeHolder<?>> byName;
+	@Unique
+	private RecipeManager kjs$self() {
+		return (RecipeManager) (Object) this;
+	}
 
 	@Shadow
-	private Multimap<RecipeType<?>, RecipeHolder<?>> byType;
+	private RecipeMap recipes;
+
+	@Final
+	@Shadow
+	private net.minecraft.core.HolderLookup.Provider registries;
 
 	@Unique
 	private ReloadableServerResourcesKJS kjs$resources;
@@ -46,17 +62,22 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 	private RecipesKubeEvent kjs$event;
 
 	@Inject(
-		method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V",
-		at = @At("HEAD")
+		method = "prepare(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)Lnet/minecraft/world/item/crafting/RecipeMap;",
+		at = @At("RETURN"),
+		cancellable = true
 	)
-	private void customRecipesHead(Map<Identifier, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
+	private void kjs$interceptPrepare(ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfoReturnable<RecipeMap> cir) {
+		if (kjs$resources == null) {
+			return;
+		}
+
 		var manager = kjs$resources.kjs$getServerScriptManager();
 
+		// Bind registry tags
 		for (var entry : manager.getRegistries().cachedRegistryTags.values()) {
 			if (entry.registry() == null || entry.lookup() == null) {
 				continue;
 			}
-
 			if (entry.registry() instanceof MappedRegistry<?> mappedRegistry) {
 				mappedRegistry.bindTags(Cast.to(entry.lookup().bindingMap()));
 			}
@@ -67,28 +88,57 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 		SpecialRecipeSerializerManager.INSTANCE.reset();
 		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
 
-		if (ServerEvents.RECIPES.hasListeners()) {
-			ConsoleJS.SERVER.info("Processing recipes...");
-			kjs$event = new RecipesKubeEvent(manager, resourceManager);
-			kjs$event.post(this, map);
+		if (!ServerEvents.RECIPES.hasListeners()) {
+			return;
 		}
+
+		ConsoleJS.SERVER.info("Processing recipes...");
+
+		var ops = kjs$self().kjs$makeConditionalOps();
+		var jsonMap = new HashMap<Identifier, JsonElement>();
+
+		for (var holder : cir.getReturnValue().values()) {
+			Recipe.CODEC.encodeStart(ops, holder.value())
+				.ifSuccess(encoded -> {
+					if (encoded instanceof JsonObject obj) {
+						jsonMap.put(holder.id().identifier(), obj);
+					}
+				})
+				.ifError(err -> ConsoleJS.SERVER.warn("Failed to encode recipe %s for KubeJS: %s".formatted(holder.id().identifier(), err.toString())));
+		}
+
+		kjs$event = new RecipesKubeEvent(manager, resourceManager);
+		kjs$event.post(this, jsonMap);
+
+		var holders = new ArrayList<RecipeHolder<?>>();
+
+		for (var entry : jsonMap.entrySet()) {
+			var id = entry.getKey();
+
+			if (entry.getValue() instanceof JsonObject jsonObj && jsonObj.has("type")) {
+				Recipe.CODEC.parse(ops, jsonObj)
+					.ifSuccess(recipe -> {
+						var key = ResourceKey.create(Registries.RECIPE, id);
+						holders.add(new RecipeHolder<>(key, recipe));
+					})
+					.ifError(err -> {
+						if (kjs$event != null) {
+							kjs$event.handleFailedRecipe(id, entry.getValue(), new RuntimeException(err.toString()));
+						} else {
+							ConsoleJS.SERVER.warn("Failed to parse modified recipe %s: %s".formatted(id, err.toString()));
+						}
+					});
+			}
+		}
+
+		cir.setReturnValue(RecipeMap.create(holders));
 	}
 
 	@Inject(
-		method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V",
-		at = @At(value = "INVOKE", target = "Lorg/slf4j/Logger;error(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V")
+		method = "apply(Lnet/minecraft/world/item/crafting/RecipeMap;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V",
+		at = @At("TAIL")
 	)
-	private void catchFailingRecipes(CallbackInfo ci, @Local Map.Entry<Identifier, JsonElement> entry, @Local RuntimeException ex) {
-		if (kjs$event != null) {
-			kjs$event.handleFailedRecipe(entry.getKey(), entry.getValue(), ex);
-		}
-	}
-
-	@Inject(
-		method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V",
-		at = @At(value = "TAIL")
-	)
-	private void addServerData(CallbackInfo ci) {
+	private void kjs$applyTail(RecipeMap recipeMap, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
 		if (kjs$event != null) {
 			kjs$event.finishEvent();
 		}
@@ -111,21 +161,13 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 	}
 
 	@Override
-	public Map<Identifier, RecipeHolder<?>> kjs$getRecipeIdMap() {
-		return byName;
+	public void kjs$replaceRecipes(RecipeMap recipeMap) {
+		recipes = recipeMap;
+		ConsoleJS.SERVER.info("Loaded " + recipeMap.values().size() + " recipes");
 	}
 
 	@Override
-	public void kjs$replaceRecipes(Map<Identifier, RecipeHolder<?>> map) {
-		byName = map;
-
-		var recipesByType = ImmutableMultimap.<RecipeType<?>, RecipeHolder<?>>builder();
-
-		for (var entry : map.entrySet()) {
-			recipesByType.put(entry.getValue().value().getType(), entry.getValue());
-		}
-
-		byType = recipesByType.build();
-		ConsoleJS.SERVER.info("Loaded " + byType.size() + " recipes");
+	public Collection<RecipeHolder<?>> kjs$getRecipes() {
+		return recipes.values();
 	}
 }

@@ -11,5 +11,5 @@ import java.util.stream.Stream;
 @Mixin(ICustomIngredient.class)
 public interface ICustomIngredientMixin extends CustomIngredientKJS {
 	@Shadow
-	Stream<ItemStack> getItems();
+	Stream<ItemStack> items();
 }

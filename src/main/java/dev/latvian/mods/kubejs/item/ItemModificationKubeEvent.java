@@ -22,6 +22,7 @@ import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.Tool;
@@ -85,7 +86,8 @@ public class ItemModificationKubeEvent implements KubeEvent {
 		}
 
 		public void setCraftingRemainder(Item item) {
-			this.item.kjs$setCraftingRemainder(item);
+			var template = new ItemStackTemplate(item);
+			this.item.kjs$setCraftingRemainder(template);
 		}
 
 		public void setTier(Consumer<MutableToolMaterial> builder) {

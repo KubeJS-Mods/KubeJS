@@ -15,6 +15,7 @@ import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,9 +48,10 @@ public class AfterRecipesLoadedKubeEvent implements KubeEvent {
 
 	private List<RecipeLikeKJS> getOriginalRecipes() {
 		if (originalRecipes == null) {
-			originalRecipes = new ArrayList<>(recipeManager.kjs$getRecipeIdMap().values());
+			originalRecipes = new ArrayList<>(recipeManager.kjs$getRecipes().stream()
+				.map(r -> (RecipeLikeKJS) r)
+				.toList());
 		}
-
 		return originalRecipes;
 	}
 
@@ -97,13 +99,11 @@ public class AfterRecipesLoadedKubeEvent implements KubeEvent {
 	@Override
 	public void afterPosted(EventResult result) {
 		if (changed) {
-			var map = new HashMap<Identifier, RecipeHolder<?>>();
-
+			var holders = new ArrayList<RecipeHolder<?>>();
 			for (var r : getOriginalRecipes()) {
-				map.put(r.kjs$getOrCreateId(), (RecipeHolder) r);
+				holders.add((RecipeHolder<?>) r);
 			}
-
-			recipeManager.kjs$replaceRecipes(map);
+			recipeManager.kjs$replaceRecipes(RecipeMap.create(holders));
 		}
 	}
 }

@@ -61,6 +61,6 @@ public class KubeJSClientCommands {
 		PreparableReloadListener.PreparationBarrier barrier = CompletableFuture::completedFuture;
 
 		listener.reload(shared, Util.backgroundExecutor(), barrier, mc)
-			.thenAccept(unused -> mc.player.displayClientMessage(Component.literal("Done! You still may have to reload all assets with F3 + T"), false));
+			.thenAccept(unused -> mc.player.sendSystemMessage(Component.literal("Done! You still may have to reload all assets with F3 + T")));
 	}
 }

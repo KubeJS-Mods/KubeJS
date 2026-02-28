@@ -91,7 +91,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		if (kjs$self() instanceof ServerPlayer serverPlayer) {
 			serverPlayer.sendSystemMessage(message);
 		} else if (kjs$self() instanceof Player player) {
-			player.displayClientMessage(message, false);
+			player.sendSystemMessage(message);
 		}
 	}
 

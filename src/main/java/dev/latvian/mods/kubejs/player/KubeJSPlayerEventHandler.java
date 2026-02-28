@@ -42,7 +42,7 @@ public class KubeJSPlayerEventHandler {
 			player.inventoryMenu.addSlotListener(player.kjs$getInventoryChangeListener());
 
 			if (!ConsoleJS.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors) {
-				player.displayClientMessage(ConsoleJS.SERVER.errorsComponent("/kubejs errors server"), false);
+				player.sendSystemMessage(ConsoleJS.SERVER.errorsComponent("/kubejs errors server"), false);
 			}
 
 			player.kjs$getStages().sync();

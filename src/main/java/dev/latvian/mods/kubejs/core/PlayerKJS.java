@@ -89,7 +89,7 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 
 	@Override
 	default void kjs$setStatusMessage(Component message) {
-		kjs$self().displayClientMessage(message, true);
+		kjs$self().sendOverlayMessage(message);
 	}
 
 	@Override

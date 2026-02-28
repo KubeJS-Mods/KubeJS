@@ -24,7 +24,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.CachedOrthoProjectionMatrixBuffer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.PostChainConfig;
@@ -98,7 +97,7 @@ public class HighlightRenderer {
 		Identifier renderOutputId,
 		MutableBoolean renderAnything
 	) {
-		@Nullable
+		/*@Nullable
 		public static ShaderChain load(
 			TextureManager textureManager,
 			PostChainConfig config,
@@ -121,7 +120,7 @@ public class HighlightRenderer {
 				KubeJS.LOGGER.warn("Failed to parse shader chain: {}", chainId, ex);
 			}
 			return null;
-		}
+		}*/
 
 		public void close() {
 			postChain.close();

@@ -6,11 +6,13 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStackTemplate;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -20,6 +22,10 @@ public interface ItemKJS extends IngredientSupplierKJS, RegistryObjectKJS<Item> 
 	@RemapForJS("getItem")
 	default Item kjs$self() {
 		return (Item) this;
+	}
+
+	default DataComponentMap kjs$getComponents() {
+		return this.kjs$self().components();
 	}
 
 	@Override
@@ -50,7 +56,7 @@ public interface ItemKJS extends IngredientSupplierKJS, RegistryObjectKJS<Item> 
 		throw new NoMixinException();
 	}
 
-	default void kjs$setCraftingRemainder(Item i) {
+	default void kjs$setCraftingRemainder(ItemStackTemplate i) {
 		throw new NoMixinException();
 	}
 

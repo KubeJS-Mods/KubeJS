@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.codec;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
+import com.mojang.datafixers.util.Function7;
 import com.mojang.datafixers.util.Function8;
 import com.mojang.datafixers.util.Function9;
 import dev.latvian.mods.kubejs.KubeJS;
@@ -52,6 +53,49 @@ public interface KubeJSStreamCodecs {
 	};
 
 	StreamCodec<ByteBuf, Duration> DURATION = ByteBufCodecs.VAR_LONG.map(Duration::ofMillis, Duration::toMillis);
+
+	static <B, C, T1, T2, T3, T4, T5, T6, T7> StreamCodec<B, C> composite(
+		StreamCodec<? super B, T1> codec1,
+		Function<C, T1> getter1,
+		StreamCodec<? super B, T2> codec2,
+		Function<C, T2> getter2,
+		StreamCodec<? super B, T3> codec3,
+		Function<C, T3> getter3,
+		StreamCodec<? super B, T4> codec4,
+		Function<C, T4> getter4,
+		StreamCodec<? super B, T5> codec5,
+		Function<C, T5> getter5,
+		StreamCodec<? super B, T6> codec6,
+		Function<C, T6> getter6,
+		StreamCodec<? super B, T7> codec7,
+		Function<C, T7> getter7,
+		Function7<T1, T2, T3, T4, T5, T6, T7, C> func) {
+		return new StreamCodec<>() {
+			@Override
+			public C decode(B buf) {
+				return func.apply(
+					codec1.decode(buf),
+					codec2.decode(buf),
+					codec3.decode(buf),
+					codec4.decode(buf),
+					codec5.decode(buf),
+					codec6.decode(buf),
+					codec7.decode(buf)
+				);
+			}
+
+			@Override
+			public void encode(B buf, C value) {
+				codec1.encode(buf, getter1.apply(value));
+				codec2.encode(buf, getter2.apply(value));
+				codec3.encode(buf, getter3.apply(value));
+				codec4.encode(buf, getter4.apply(value));
+				codec5.encode(buf, getter5.apply(value));
+				codec6.encode(buf, getter6.apply(value));
+				codec7.encode(buf, getter7.apply(value));
+			}
+		};
+	}
 
 	static <B, C, T1, T2, T3, T4, T5, T6, T7, T8> StreamCodec<B, C> composite(
 		StreamCodec<? super B, T1> codec1,

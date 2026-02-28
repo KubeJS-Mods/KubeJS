@@ -47,13 +47,7 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void kjs$init(
-		LayeredRegistryAccess<RegistryLayer> fullLayers,
-		HolderLookup.Provider loadingContext,
-		FeatureFlagSet enabledFeatures,
-		Commands.CommandSelection commandSelection,
-		List<Registry.PendingTags<?>> postponedTags,
-		PermissionSet functionCompilationPermissions,
-		CallbackInfo ci
+		LayeredRegistryAccess fullLayers, HolderLookup.Provider loadingContext, FeatureFlagSet enabledFeatures, Commands.CommandSelection commandSelection, List postponedTags, PermissionSet functionCompilationPermissions, List newComponents, CallbackInfo ci
 	) {
 		kjs$serverScriptManager = ServerScriptManager.release();
 		recipes.kjs$setResources(this);

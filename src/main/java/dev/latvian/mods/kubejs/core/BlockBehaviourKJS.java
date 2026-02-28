@@ -39,4 +39,8 @@ public interface BlockBehaviourKJS extends BlockProviderKJS {
 	default void kjs$setJumpFactor(float v) {
 		throw new NoMixinException();
 	}
+
+	default void kjs$setNameKey(String key) {
+		throw new NoMixinException();
+	}
 }
