@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.rei;
+/*
 
 import me.shedaniel.rei.api.common.entry.comparison.ComparisonContext;
 import me.shedaniel.rei.api.common.entry.comparison.EntryComparator;
@@ -32,3 +33,4 @@ public record DataComponentComparator(List<DataComponentType<?>> components) imp
 		return hash;
 	}
 }
+*/

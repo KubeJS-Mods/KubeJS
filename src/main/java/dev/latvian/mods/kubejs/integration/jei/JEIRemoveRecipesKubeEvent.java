@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.jei;
+/*
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.event.EventResult;
@@ -18,8 +19,8 @@ import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class JEIRemoveRecipesKubeEvent /*implements RemoveRecipesKubeEvent */ {
-/*	private final IRecipeManager recipeManager;
+public class JEIRemoveRecipesKubeEvent implements RemoveRecipesKubeEvent  {
+	private final IRecipeManager recipeManager;
 	private final Map<Identifier, IRecipeCategory> categories;
 	private final Set<Identifier> removedGlobal;
 	private final Map<IRecipeCategory, Collection<Identifier>> removed;
@@ -79,5 +80,5 @@ public class JEIRemoveRecipesKubeEvent /*implements RemoveRecipesKubeEvent */ {
 				recipeManager.hideRecipes(cat.getRecipeType(), removedRecipes);
 			}
 		}
-	}*/
-}
+	}
+}*/

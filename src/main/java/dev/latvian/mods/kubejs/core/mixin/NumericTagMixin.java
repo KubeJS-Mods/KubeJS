@@ -6,20 +6,22 @@ import net.minecraft.nbt.NumericTag;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.util.Optional;
+
 @Mixin(NumericTag.class)
 public interface NumericTagMixin extends SpecialEquality {
 	@Shadow
-	byte getAsByte();
+	Optional<Byte> asByte();
 
 	@Shadow
-	double getAsDouble();
+	Optional<Double> asDouble();
 
 	@Override
 	default boolean specialEquals(Context cx, Object o, boolean shallow) {
 		return switch (o) {
-			case Boolean b -> b == (getAsByte() != 0);
-			case Number n1 -> getAsDouble() == n1.doubleValue();
-			case NumericTag n1 when !shallow -> getAsDouble() == n1.asDouble().get();
+			case Boolean b -> b == (asByte().get() != 0);
+			case Number n1 -> asDouble().get() == n1.doubleValue();
+			case NumericTag n1 when !shallow -> asDouble().get() == n1.asDouble().get();
 			case null, default -> equals(o);
 		};
 	}

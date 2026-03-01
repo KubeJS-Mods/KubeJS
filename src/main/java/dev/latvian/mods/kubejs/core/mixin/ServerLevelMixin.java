@@ -38,11 +38,6 @@ public abstract class ServerLevelMixin implements ServerLevelKJS {
 	public abstract List<ServerPlayer> players();
 
 	@Shadow
-	@Nullable
-	@HideFromJS
-	public abstract Entity getEntity(UUID uniqueId);
-
-	@Shadow
 	@HideFromJS
 	public abstract LevelEntityGetter<Entity> getEntities();
 }

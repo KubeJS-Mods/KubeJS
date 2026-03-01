@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.rei;
+/*
 
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
@@ -41,3 +42,4 @@ public class REIRegisterItemSubtypesKubeEvent implements RegisterSubtypesKubeEve
 		registry.register((EntryComparator) DataComponentComparator.of(components), in.kjs$getItemTypes().toArray(new Item[0]));
 	}
 }
+*/

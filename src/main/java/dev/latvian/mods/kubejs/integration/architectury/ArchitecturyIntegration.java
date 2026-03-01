@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.architectury;
+/*
 
 import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
@@ -15,4 +16,4 @@ public class ArchitecturyIntegration implements KubeJSPlugin {
 	public void registerTypeWrappers(TypeWrapperRegistry registry) {
 		registry.register(dev.architectury.fluid.FluidStack.class, ArchitecturyIntegration::wrapArchFluid);
 	}
-}
+}*/

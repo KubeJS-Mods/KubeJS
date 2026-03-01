@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.jei;
+/*
 
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.recipe.viewer.RegisterSubtypesKubeEvent;
@@ -48,4 +49,4 @@ public class JEIRegisterSubtypesKubeEvent implements RegisterSubtypesKubeEvent {
 			registration.registerSubtypeInterpreter(ingredientType, type.getBase(item), in);
 		}
 	}
-}
+}*/

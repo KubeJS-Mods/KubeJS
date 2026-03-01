@@ -147,13 +147,13 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	}
 
 	// There's a good chance this will break in the future, but currently that's the only reliable way to both inject packs and reload scripts before resources that I could find
-	@Redirect(method = "lambda$reloadResources$29", at = @At(value = "NEW", target = "(Lnet/minecraft/server/packs/PackType;Ljava/util/List;)Lnet/minecraft/server/packs/resources/MultiPackResourceManager;"))
+	@Redirect(method = "lambda$reloadResources$1", at = @At(value = "NEW", target = "(Lnet/minecraft/server/packs/PackType;Ljava/util/List;)Lnet/minecraft/server/packs/resources/MultiPackResourceManager;"))
 	private MultiPackResourceManager kjs$modifyResourceReload(PackType type, List<PackResources> original) {
 		return new MultiPackResourceManager(type, ServerScriptManager.createPackResources(original));
 	}
 
 	@WrapOperation(
-		method = "reloadResources",
+		method = "lambda$reloadResources$1",
 		at = @At(
 			value = "INVOKE",
 			target = "Lnet/minecraft/tags/TagLoader;loadTagsForExistingRegistries(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/core/RegistryAccess;)Ljava/util/List;"

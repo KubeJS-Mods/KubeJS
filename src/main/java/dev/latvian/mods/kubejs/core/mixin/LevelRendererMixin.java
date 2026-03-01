@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.client.highlight.HighlightRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.state.BlockOutlineRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,7 +34,7 @@ public abstract class LevelRendererMixin {
 	}
 
 	@Inject(method = "renderHitOutline", at = @At("HEAD"), cancellable = true)
-	private void kjs$highlightBlock(PoseStack poseStack, VertexConsumer consumer, Entity entity, double camX, double camY, double camZ, BlockPos pos, BlockState state, CallbackInfo ci) {
+	private void kjs$highlightBlock(PoseStack poseStack, VertexConsumer builder, double camX, double camY, double camZ, BlockOutlineRenderState state, int color, float width, CallbackInfo ci) {
 		if (HighlightRenderer.INSTANCE.cancelBlockHighlight) {
 			ci.cancel();
 		}

@@ -62,6 +62,7 @@ import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterConditionalItemModelPropertyEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -104,8 +105,8 @@ public class KubeJSClientEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void registerConditionalItemModelProperties(net.neoforged.neoforge.client.event.RegisterConditionalItemModelPropertyEvent event) {
-		event.register(Identifier.withDefaultNamespace("kubejs:callback"), KubeJSConditionalCallbackProperty.MAP_CODEC);
+	public static void registerConditionalItemModelProperties(RegisterConditionalItemModelPropertyEvent event) {
+		event.register(Identifier.fromNamespaceAndPath("kubejs", "callback"), KubeJSConditionalCallbackProperty.MAP_CODEC);
 	}
 
 	private static void setupClient0() {

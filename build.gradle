@@ -37,6 +37,7 @@ neoForge {
 		runs {
 			configureEach {
 				logLevel = org.slf4j.event.Level.INFO
+				systemProperty 'terminal.ansi', 'true'
 			}
 
 			client {
@@ -87,12 +88,12 @@ tasks.withType(Javadoc).configureEach {
 
 dependencies {
 	api("dev.latvian.mods:rhino:$rhino_version") { transitive(false) }
-	
+
 	// not updated to 26.1 yet
-	compileOnly("dev.architectury:architectury-neoforge:$architectury_version")
-	compileOnly("mezz.jei:jei-1.21.1-neoforge:$jei_version")
-	compileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version")
-	compileOnly("dev.emi:emi-neoforge:$emi_version+1.21.1:api")
+	/*compileOnly("dev.architectury:architectury-neoforge:$architectury_version")
+	compileOnly("mezz.jei:jei-1.21.11-neoforge:$jei_version")
+	compileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:$rei_version")*/
+	/*compileOnly("dev.emi:emi-neoforge:$emi_version+1.21.1:api")*/
 
 	implementation(jarJar(implementation('dev.latvian.apps:tiny-java-server'))) {
 		version {
@@ -108,12 +109,12 @@ dependencies {
 		}
 	}
 
-	jarJar(implementation('dev.latvian.mods:better-advanced-tooltips')) {
+	/*jarJar(compileOnly('dev.latvian.mods:better-advanced-tooltips')) {
 		version {
 			strictly "[$bat_version,)"
 			prefer "$bat_version"
 		}
-	}
+	}*/
 }
 
 processResources {

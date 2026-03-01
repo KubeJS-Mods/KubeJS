@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.rei;
+/*
 
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.recipe.viewer.RemoveEntriesKubeEvent;
@@ -25,4 +26,4 @@ public class REIRemoveEntriesCompletelyKubeEvent implements RemoveEntriesKubeEve
 		var predicate = (Predicate) type.wrapPredicate(cx, filter);
 		rule.hide(allEntries.stream().filter(e -> predicate.test(e.getValue())).toList());
 	}
-}
+}*/

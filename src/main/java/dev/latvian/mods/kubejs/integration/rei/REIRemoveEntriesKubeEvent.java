@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.rei;
+/*
 
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.recipe.viewer.RemoveEntriesKubeEvent;
@@ -30,4 +31,4 @@ public class REIRemoveEntriesKubeEvent implements RemoveEntriesKubeEvent {
 			}
 		}
 	}
-}
+}*/

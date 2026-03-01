@@ -56,12 +56,14 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static dev.latvian.mods.kubejs.util.SlotFilter.EMPTY_INGREDIENT;
+
 @Info("Various Ingredient related helper methods")
 public interface IngredientWrapper {
 	TypeInfo TYPE_INFO = TypeInfo.of(Ingredient.class);
 
 	@Info("A completely empty ingredient that will only match air")
-	Ingredient none = Ingredient.of();
+	Ingredient none = EMPTY_INGREDIENT;
 
 	@Info("An ingredient that matches everything")
 	Ingredient all = WildcardIngredient.INSTANCE.toVanilla();

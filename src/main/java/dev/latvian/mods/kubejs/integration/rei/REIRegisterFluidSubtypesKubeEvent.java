@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.rei;
+/*
 
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
 import dev.latvian.mods.kubejs.recipe.viewer.RegisterSubtypesKubeEvent;
@@ -45,3 +46,4 @@ public class REIRegisterFluidSubtypesKubeEvent implements RegisterSubtypesKubeEv
 		registry.register((EntryComparator) DataComponentComparator.of(components), Arrays.stream(fluidStacks).map(FluidStack::getFluid).toArray(Fluid[]::new));
 	}
 }
+*/

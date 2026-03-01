@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.emi;
+/*
 
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.stack.EmiStack;
@@ -30,3 +31,4 @@ public class EMIAddEntriesKubeEvent implements AddEntriesKubeEvent {
 		}
 	}
 }
+*/

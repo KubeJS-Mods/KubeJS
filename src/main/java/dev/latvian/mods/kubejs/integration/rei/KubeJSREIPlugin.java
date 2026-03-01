@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.rei;
+/*
 
 import dev.architectury.event.EventResult;
 import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
@@ -45,7 +46,7 @@ import java.util.stream.Stream;
 @REIPluginClient
 @SuppressWarnings("UnstableApiUsage")
 public class KubeJSREIPlugin implements REIClientPlugin {
-	/*private final Set<CategoryIdentifier<?>> categoriesRemoved = new HashSet<>();
+	private final Set<CategoryIdentifier<?>> categoriesRemoved = new HashSet<>();
 	private final Map<CategoryIdentifier<?>, Collection<Identifier>> recipesRemoved = new HashMap<>();
 	private RecipeViewerData remote = null;
 
@@ -53,10 +54,12 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 		NeoForge.EVENT_BUS.register(this);
 	}
 
-	*//**
-	 * We want to run as late as possible, so we can remove other
-	 * mods' entries after they have already been added.
-	 *//*
+	*/
+/**
+ * We want to run as late as possible, so we can remove other
+ * mods' entries after they have already been added.
+ *//*
+
 	@Override
 	public double getPriority() {
 		return 1e7;
@@ -270,5 +273,5 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 				registry.register((EntryComparator) DataComponentComparator.of(subtypes.components()), fluids);
 			}
 		}
-	}*/
-}
+	}
+}*/

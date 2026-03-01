@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.rei;
+/*
 
 import dev.latvian.mods.kubejs.recipe.viewer.AddEntriesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
@@ -24,4 +25,4 @@ public class REIAddEntriesKubeEvent implements AddEntriesKubeEvent {
 			registry.addEntries(EntryStack.of(entryType, type.wrapEntry(cx, item)));
 		}
 	}
-}
+}*/

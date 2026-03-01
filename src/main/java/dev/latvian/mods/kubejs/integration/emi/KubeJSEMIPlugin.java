@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.emi;
+/*
 
 import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiPlugin;
@@ -18,8 +19,8 @@ import java.util.List;
 import java.util.Set;
 
 @EmiEntrypoint
-public class KubeJSEMIPlugin /*implements EmiPlugin*/ {
-	/*@Override
+public class KubeJSEMIPlugin implements EmiPlugin {
+	@Override
 	public void register(EmiRegistry registry) {
 		var sessionData = KubeSessionData.of(Minecraft.getInstance());
 		var remote = sessionData == null ? null : sessionData.recipeViewerData;
@@ -113,5 +114,6 @@ public class KubeJSEMIPlugin /*implements EmiPlugin*/ {
 				registry.addRecipe(new EmiInfoRecipe(List.of(EMIIntegration.fluidIngredient(info.filter())), info.info(), null));
 			}
 		}
-	}*/
+	}
 }
+*/

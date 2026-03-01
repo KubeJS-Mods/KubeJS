@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.rei;
+/*
 
 import dev.architectury.hooks.fluid.forge.FluidStackHooksForge;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
@@ -62,4 +63,4 @@ public class REIIntegration {
 			return EntryIngredient.empty();
 		}
 	}
-}
+}*/

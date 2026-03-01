@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.jei;
+/*
 
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
@@ -44,4 +45,4 @@ public class JEIRemoveEntriesKubeEvent implements RemoveEntriesKubeEvent {
 			runtime.getIngredientManager().removeIngredientsAtRuntime(ingredientType, hidden);
 		}
 	}
-}
+}*/

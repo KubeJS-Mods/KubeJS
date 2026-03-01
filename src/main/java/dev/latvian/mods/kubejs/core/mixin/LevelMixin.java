@@ -34,6 +34,10 @@ public abstract class LevelMixin implements LevelKJS {
 		return kjs$attachedData;
 	}
 
+	@Shadow
+	@Nullable
+	@HideFromJS
+	public abstract Entity getEntity(UUID uniqueId);
 
 	@Shadow
 	@RemapForJS("getDimensionKey")

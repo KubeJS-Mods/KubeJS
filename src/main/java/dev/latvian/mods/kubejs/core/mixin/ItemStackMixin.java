@@ -22,6 +22,7 @@ import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -37,7 +38,7 @@ public abstract class ItemStackMixin implements ItemStackKJS {
 
 	@Shadow
 	@Final
-	PatchedDataComponentMap components;
+	private PatchedDataComponentMap components;
 
 	@Shadow
 	@HideFromJS
@@ -65,7 +66,7 @@ public abstract class ItemStackMixin implements ItemStackKJS {
 	}
 
 	@HideFromJS
-	public static <T> void kjs$overrideComponent(ItemStack stack, DataComponentType<T> type, @Nullable T value) {
+	private static <T> void kjs$overrideComponent(ItemStack stack, DataComponentType<T> type, @Nullable T value) {
 		stack.set(type, value);
 	}
 

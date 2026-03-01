@@ -1,4 +1,5 @@
 package dev.latvian.mods.kubejs.integration.jei;
+/*
 
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
@@ -56,4 +57,4 @@ public record DataComponentTypeInterpreter(List<DataComponentType<?>> keys) impl
 			return sb.toString();
 		}
 	}
-}
+}*/
