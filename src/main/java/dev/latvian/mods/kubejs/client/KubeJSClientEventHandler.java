@@ -204,7 +204,7 @@ public class KubeJSClientEventHandler {
 
 	@SubscribeEvent
 	public static void registerCoreShaders(RegisterRenderPipelinesEvent event) {
-		var shaderId = Identifier.withDefaultNamespace("kubejs/rendertype_highlight");
+		/*var shaderId = Identifier.withDefaultNamespace("kubejs/rendertype_highlight");
 		HighlightRenderer.HIGHLIGHT_PIPELINE_BLOCK = RenderPipeline.builder()
 			.withLocation(shaderId)
 			.withVertexShader(shaderId)
@@ -216,19 +216,7 @@ public class KubeJSClientEventHandler {
 			.withColorWrite(true, true)
 			.withDepthWrite(true)
 			.build();
-		HighlightRenderer.HIGHLIGHT_PIPELINE_ENTITY = RenderPipeline.builder()
-			.withLocation(Identifier.withDefaultNamespace("kubejs/rendertype_highlight_entity"))
-			.withVertexShader(shaderId)
-			.withFragmentShader(shaderId)
-			.withVertexFormat(DefaultVertexFormat.ENTITY, VertexFormat.Mode.TRIANGLES)
-			.withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
-			.withCull(true)
-			.withoutBlend()
-			.withColorWrite(true, true)
-			.withDepthWrite(true)
-			.build();
-		event.registerPipeline(HighlightRenderer.HIGHLIGHT_PIPELINE_BLOCK);
-		event.registerPipeline(HighlightRenderer.HIGHLIGHT_PIPELINE_ENTITY);
+		event.registerPipeline(HighlightRenderer.HIGHLIGHT_PIPELINE_BLOCK);*/
 	}
 
 	@SubscribeEvent

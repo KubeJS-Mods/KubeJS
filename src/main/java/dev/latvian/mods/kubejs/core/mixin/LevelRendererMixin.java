@@ -25,12 +25,12 @@ public abstract class LevelRendererMixin {
 
 	@Inject(method = "initOutline", at = @At("RETURN"))
 	private void kjs$loadPostChains(CallbackInfo ci) {
-		KubeJSClient.loadPostChains(minecraft);
+		//KubeJSClient.loadPostChains(minecraft);
 	}
 
 	@Inject(method = "resize", at = @At("RETURN"))
 	private void kjs$resizePostChains(int width, int height, CallbackInfo ci) {
-		KubeJSClient.resizePostChains(width, height);
+		//KubeJSClient.resizePostChains(width, height);
 	}
 
 	@Inject(method = "renderHitOutline", at = @At("HEAD"), cancellable = true)

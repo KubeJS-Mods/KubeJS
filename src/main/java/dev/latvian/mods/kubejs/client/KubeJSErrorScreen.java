@@ -126,7 +126,7 @@ public class KubeJSErrorScreen extends Screen {
 			return false;
 		}
 
-		net.minecraft.client.gui.screens.Screen.defaultHandleGameClickEvent(click, this.minecraft, this);
+		Screen.defaultHandleGameClickEvent(click, this.minecraft, this);
 		return true;
 	}
 

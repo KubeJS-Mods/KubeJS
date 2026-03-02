@@ -2,9 +2,7 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
-import dev.latvian.mods.kubejs.core.ContextAwareReloadListenerKJS;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.net.KubeServerData;
@@ -15,6 +13,7 @@ import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.Cast;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -25,8 +24,6 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.neoforged.neoforge.common.conditions.ConditionalOps;
-import net.neoforged.neoforge.common.conditions.ICondition;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -39,7 +36,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 
 @Mixin(value = RecipeManager.class, priority = 1100)
 public abstract class RecipeManagerMixin implements RecipeManagerKJS {
@@ -53,7 +49,7 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 
 	@Final
 	@Shadow
-	private net.minecraft.core.HolderLookup.Provider registries;
+	private HolderLookup.Provider registries;
 
 	@Unique
 	private ReloadableServerResourcesKJS kjs$resources;

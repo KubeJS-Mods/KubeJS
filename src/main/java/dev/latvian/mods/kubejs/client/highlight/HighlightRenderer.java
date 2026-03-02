@@ -62,10 +62,12 @@ public class HighlightRenderer {
 		WORLD
 	}
 
-	public static RenderPipeline HIGHLIGHT_PIPELINE_BLOCK;
+	/*public static RenderPipeline HIGHLIGHT_PIPELINE_BLOCK;*/
+/*
 	public static RenderPipeline HIGHLIGHT_PIPELINE_ENTITY;
+*/
 
-	private static RenderType highlightBlock() {
+/*	private static RenderType highlightBlock() {
 		return RenderType.create(
 			"kubejs_highlight_block",
 			RenderSetup.builder(HIGHLIGHT_PIPELINE_BLOCK)
@@ -74,9 +76,9 @@ public class HighlightRenderer {
 				.useOverlay()
 				.createRenderSetup()
 		);
-	}
+	}*/
 
-	private static RenderType highlightEntity() {
+	/*private static RenderType highlightEntity() {
 		return RenderType.create(
 			"kubejs_highlight_entity",
 			RenderSetup.builder(HIGHLIGHT_PIPELINE_ENTITY)
@@ -85,7 +87,7 @@ public class HighlightRenderer {
 				.useOverlay()
 				.createRenderSetup()
 		);
-	}
+	}*/
 
 	public record ShaderChain(
 		PostChain postChain,
@@ -486,11 +488,11 @@ public class HighlightRenderer {
 		try {
 			worldChain.renderAnything.setTrue();
 
-			var bufferSource = new WrappedMultiBufferSource(
+			/*var bufferSource = new WrappedMultiBufferSource(
 				mc.renderBuffers().bufferSource(),
 				color.kjs$getRGB(),
 				highlightBlock()
-			);
+			);*/
 
 			mc.renderBuffers().bufferSource().endBatch();
 		} finally {
@@ -560,11 +562,11 @@ public class HighlightRenderer {
 		beginOutputOverride(guiChain.renderInput, null);
 
 		try {
-			var bufferSource = new WrappedMultiBufferSource(
+			/*var bufferSource = new WrappedMultiBufferSource(
 				mc.renderBuffers().bufferSource(),
 				color.kjs$getRGB(),
 				highlightEntity()
-			);
+			);*/
 
 			//graphics.flush();
 		} finally {
