@@ -24,6 +24,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
@@ -72,7 +73,7 @@ public interface FluidWrapper {
 	@HideFromJS
 	static FluidStack wrap(Context cx, Object from) {
 		return tryWrap(cx, from)
-			.getOrThrow(error -> new KubeRuntimeException("Failed to read FluidStack from %s: %s".formatted(from, error))
+			.getOrThrow(err -> new KubeRuntimeException("Failed to read FluidStack from %s: %s".formatted(from, err))
 				.source(SourceLine.of(cx)));
 	}
 
@@ -114,7 +115,7 @@ public interface FluidWrapper {
 	@HideFromJS
 	static FluidIngredient wrapIngredient(Context cx, Object from) {
 		return tryWrapIngredient(cx, from)
-			.getOrThrow(error -> new KubeRuntimeException("Failed to read FluidIngredient from %s: %s".formatted(from, error))
+			.getOrThrow(err -> new KubeRuntimeException("Failed to read FluidIngredient from %s: %s".formatted(from, err))
 				.source(SourceLine.of(cx)));
 	}
 
@@ -146,7 +147,7 @@ public interface FluidWrapper {
 	@HideFromJS
 	static SizedFluidIngredient wrapSizedIngredient(Context cx, Object from) {
 		return tryWrapSizedIngredient(cx, from)
-			.getOrThrow(error -> new KubeRuntimeException("Failed to read SizedFluidIngredient from %s: %s".formatted(from, error))
+			.getOrThrow(err -> new KubeRuntimeException("Failed to read SizedFluidIngredient from %s: %s".formatted(from, err))
 				.source(SourceLine.of(cx)));
 	}
 
@@ -376,9 +377,6 @@ public interface FluidWrapper {
 	}
 
 	final class EmptyKjsFluidIngredient extends FluidIngredient {
-		private static final FluidIngredientType<?> SIMPLE_TYPE =
-			FluidIngredient.of(Fluids.EMPTY).getType();
-
 		@Override
 		public boolean test(FluidStack fluidStack) {
 			return fluidStack == null || fluidStack.isEmpty();
@@ -396,7 +394,7 @@ public interface FluidWrapper {
 
 		@Override
 		public FluidIngredientType<?> getType() {
-			return SIMPLE_TYPE;
+			return NeoForgeMod.SIMPLE_FLUID_INGREDIENT_TYPE.get();
 		}
 
 		@Override
