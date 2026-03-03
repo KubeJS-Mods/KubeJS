@@ -1,63 +1,39 @@
 package dev.latvian.mods.kubejs.recipe;
 
-import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
-import dev.latvian.mods.kubejs.script.data.VirtualDataMapFile;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.registries.datamaps.builtin.Compostable;
+import it.unimi.dsi.fastutil.objects.Object2FloatMap;
+import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.ComposterBlock;
 
-import java.util.stream.Stream;
+// FIXME
+public class CompostableRecipesKubeEvent implements KubeEvent {
+	public static Object2FloatMap<ItemLike> originalMap = null;
 
-public record CompostableRecipesKubeEvent(VirtualDataMapFile<Item, Compostable> compostables) implements KubeEvent {
-	public void add(ItemPredicate match, float f) {
-		add(match, f, false);
-	}
-
-	public void add(ItemPredicate match, float f, boolean villager) {
-		var data = new Compostable(f, villager);
-
-		dissolve(match)
-			.ifLeft(tag -> compostables.addTag(tag, data))
-			.ifRight(items -> items.forEach(item -> compostables.add(item, data)));
-	}
-
-	public void addReplace(ItemPredicate match, float f) {
-		addReplace(match, f, false);
-	}
-
-	public void addReplace(ItemPredicate match, float f, boolean villager) {
-		var data = new Compostable(f, villager);
-
-		dissolve(match)
-			.ifLeft(tag -> compostables.addTag(tag, data, true))
-			.ifRight(items -> items.forEach(item -> compostables.add(item, data, true)));
-	}
-
-	public void replaceAll() {
-		compostables.replaceAll();
+	public CompostableRecipesKubeEvent() {
+		if (originalMap == null) {
+			originalMap = new Object2FloatOpenHashMap<>(ComposterBlock.COMPOSTABLES);
+		} else {
+			ComposterBlock.COMPOSTABLES.clear();
+			ComposterBlock.COMPOSTABLES.putAll(originalMap);
+		}
 	}
 
 	public void remove(ItemPredicate match) {
-		dissolve(match)
-			.ifLeft(compostables::removeTag)
-			.ifRight(items -> items.forEach(compostables::remove));
+		for (var item : match.kjs$getItemTypes()) {
+			ComposterBlock.COMPOSTABLES.removeFloat(item);
+		}
 	}
 
 	public void removeAll() {
-		compostables.clear();
-		replaceAll();
+		ComposterBlock.COMPOSTABLES.clear();
 	}
 
-	private static Either<TagKey<Item>, Stream<Item>> dissolve(ItemPredicate filter) {
-		var tag = filter instanceof Ingredient ingredient ? ingredient.kjs$getTagKey() : null;
-
-		if (tag != null) {
-			return Either.left(tag);
-		} else {
-			return Either.right(filter.kjs$getItemStream());
+	public void add(ItemPredicate match, float f) {
+		for (var item : match.kjs$getItemTypes()) {
+			ComposterBlock.COMPOSTABLES.put(item, Mth.clamp(f, 0F, 1F));
 		}
 	}
 }

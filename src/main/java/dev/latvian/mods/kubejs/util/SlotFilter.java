@@ -9,54 +9,19 @@ import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
 import dev.latvian.mods.rhino.type.JSOptionalParam;
 import dev.latvian.mods.rhino.type.RecordTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.display.SlotDisplay;
-import net.neoforged.neoforge.common.crafting.ICustomIngredient;
-import net.neoforged.neoforge.common.crafting.IngredientType;
 
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
+
+import static dev.latvian.mods.kubejs.util.UtilsJS.EMPTY_INGREDIENT;
 
 public record SlotFilter(Ingredient item, int index) {
-	public static final Ingredient EMPTY_INGREDIENT;
 	public static final TypeInfo TYPE_INFO = TypeInfo.INT.or(IngredientWrapper.TYPE_INFO).or(new JSObjectTypeInfo(List.of(new JSOptionalParam("item", IngredientWrapper.TYPE_INFO, true), new JSOptionalParam("index", TypeInfo.INT, true))));
-
-	static {
-		EMPTY_INGREDIENT = new Ingredient(new ICustomIngredient() {
-			@Override
-			public boolean test(ItemStack stack) {
-				return false;
-			}
-
-			@Override
-			public Stream<Holder<Item>> items() {
-				return Stream.empty();
-			}
-
-			@Override
-			public boolean isSimple() {
-				return true;
-			}
-
-			@Override
-			public IngredientType<?> getType() {
-				return null;
-			}
-
-			@Override
-			public SlotDisplay display() {
-				return SlotDisplay.Empty.INSTANCE;
-			}
-		});
-	}
 
 	public static final SlotFilter EMPTY = new SlotFilter(EMPTY_INGREDIENT, -1);
 

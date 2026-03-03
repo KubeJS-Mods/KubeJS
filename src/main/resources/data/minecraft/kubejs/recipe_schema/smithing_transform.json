@@ -29,9 +29,7 @@
 		{
 			"keys": ["result", "base", "addition"],
 			"overrides": {
-				"template": {
-					"item": "minecraft:netherite_upgrade_smithing_template"
-				}
+				"template": "minecraft:netherite_upgrade_smithing_template"
 			}
 		}
 	]

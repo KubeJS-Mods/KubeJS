@@ -14,16 +14,23 @@ import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.nbt.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.storage.ValueInput;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.stream.Stream;
+
+import static dev.latvian.mods.kubejs.util.UtilsJS.EMPTY_INGREDIENT;
 
 @RemapPrefixForJS("kjs$")
 public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, ItemMatch {
@@ -39,11 +46,11 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 	}
 
 	default Ingredient kjs$and(Ingredient ingredient) {
-		return ingredient == Ingredient.of() ? kjs$self() : this == Ingredient.of() ? ingredient : IntersectionIngredient.of(kjs$self(), ingredient);
+		return ingredient == EMPTY_INGREDIENT ? kjs$self() : this == EMPTY_INGREDIENT ? ingredient : IntersectionIngredient.of(kjs$self(), ingredient);
 	}
 
 	default Ingredient kjs$or(Ingredient ingredient) {
-		return ingredient == Ingredient.of() ? kjs$self() : this == Ingredient.of() ? ingredient : CompoundIngredient.of(kjs$self(), ingredient);
+		return ingredient == EMPTY_INGREDIENT ? kjs$self() : this == EMPTY_INGREDIENT ? ingredient : CompoundIngredient.of(kjs$self(), ingredient);
 	}
 
 	default Ingredient kjs$except(Ingredient subtracted) {
@@ -103,7 +110,7 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 
 	@Override
 	default boolean matches(RecipeMatchContext cx, Ingredient in, boolean exact) {
-		if (in == Ingredient.of()) {
+		if (in == EMPTY_INGREDIENT) {
 			return false;
 		}
 
@@ -160,4 +167,6 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 			return Ingredient.CODEC.encodeStart(ops, in).getOrThrow().toString();
 		}
 	}
+
+
 }

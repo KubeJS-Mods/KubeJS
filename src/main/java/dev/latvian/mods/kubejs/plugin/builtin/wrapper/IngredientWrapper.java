@@ -56,13 +56,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static dev.latvian.mods.kubejs.util.SlotFilter.EMPTY_INGREDIENT;
+import static dev.latvian.mods.kubejs.util.UtilsJS.EMPTY_INGREDIENT;
 
 @Info("Various Ingredient related helper methods")
 public interface IngredientWrapper {
 	TypeInfo TYPE_INFO = TypeInfo.of(Ingredient.class);
 
-	@Info("A completely empty ingredient that will only match air")
+	@Info("A completely empty ingredient that will only match a dummy Ingredient")
 	Ingredient none = EMPTY_INGREDIENT;
 
 	@Info("An ingredient that matches everything")
@@ -95,10 +95,10 @@ public interface IngredientWrapper {
 		}
 
 		return switch (from) {
-			case null -> Ingredient.of();
+			case null -> EMPTY_INGREDIENT;
 			case Ingredient id -> id;
-			case ItemStack s when s.isEmpty() -> Ingredient.of();
-			case ItemLike i when i.asItem() == Items.AIR -> Ingredient.of();
+			case ItemStack s when s.isEmpty() -> EMPTY_INGREDIENT;
+			case ItemLike i when i.asItem() == Items.AIR -> EMPTY_INGREDIENT;
 			case IngredientSupplierKJS ingr -> ingr.kjs$asIngredient();
 			case ItemLike i -> Ingredient.of(i);
 			case TagKey<?>(ResourceKey<?> reg, var location) -> {
@@ -148,7 +148,7 @@ public interface IngredientWrapper {
 				var ingredient = wrapResult(cx, o1);
 
 				ingredient.resultOrPartial()
-					.filter(ingr -> ingr != Ingredient.of())
+					.filter(ingr -> ingr != EMPTY_INGREDIENT)
 					.ifPresent(results::add);
 
 				if (ingredient.isError()) {
@@ -162,7 +162,7 @@ public interface IngredientWrapper {
 				return DataResult.error(() -> "Failed to parse ingredient list: " + msg);
 			} else {
 				return DataResult.success(switch (results.size()) {
-					case 0 -> Ingredient.of();
+					case 0 -> EMPTY_INGREDIENT;
 					case 1 -> results.getFirst();
 					default -> new CompoundIngredient(results).toVanilla();
 				});
@@ -196,9 +196,9 @@ public interface IngredientWrapper {
 
 	static DataResult<Ingredient> parseJson(Context cx, JsonElement json) {
 		return switch (json) {
-			case null -> DataResult.success(Ingredient.of());
-			case JsonNull jsonNull -> DataResult.success(Ingredient.of());
-			case JsonArray arr when arr.isEmpty() -> DataResult.success(Ingredient.of());
+			case null -> DataResult.success(EMPTY_INGREDIENT);
+			case JsonNull jsonNull -> DataResult.success(EMPTY_INGREDIENT);
+			case JsonArray arr when arr.isEmpty() -> DataResult.success(EMPTY_INGREDIENT);
 			case JsonPrimitive primitive -> wrapResult(cx, json.getAsString());
 			default -> Ingredient.CODEC.decode(JsonOps.INSTANCE, json).map(Pair::getFirst);
 		};
@@ -206,7 +206,7 @@ public interface IngredientWrapper {
 
 	static DataResult<Ingredient> parseString(Context cx, String s) {
 		return switch (s) {
-			case "", "-", "air", "minecraft:air" -> DataResult.success(Ingredient.of());
+			case "", "-", "air", "minecraft:air" -> DataResult.success(EMPTY_INGREDIENT);
 			case "*" -> DataResult.success(IngredientWrapper.all);
 			default -> read(cx, new StringReader(s));
 		};
@@ -218,13 +218,13 @@ public interface IngredientWrapper {
 		reader.skipWhitespace();
 
 		if (!reader.canRead()) {
-			return DataResult.success(Ingredient.of());
+			return DataResult.success(EMPTY_INGREDIENT);
 		}
 
 		return switch (reader.peek()) {
 			case '-' -> {
 				reader.skip();
-				yield DataResult.success(Ingredient.of());
+				yield DataResult.success(EMPTY_INGREDIENT);
 			}
 			case '*' -> {
 				reader.skip();
@@ -257,7 +257,7 @@ public interface IngredientWrapper {
 				reader.skipWhitespace();
 
 				if (!reader.canRead() || reader.peek() == ']') {
-					yield DataResult.success(Ingredient.of());
+					yield DataResult.success(EMPTY_INGREDIENT);
 				}
 
 				var ingredients = new ArrayList<Ingredient>(2);

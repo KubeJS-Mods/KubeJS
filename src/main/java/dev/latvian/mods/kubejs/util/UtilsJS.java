@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeUtils;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.EndTag;
 import net.minecraft.nbt.NumericTag;
@@ -19,6 +20,12 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
+import net.neoforged.neoforge.common.crafting.ICustomIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,12 +39,44 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class UtilsJS {
 	public static final RandomSource RANDOM = RandomSource.create();
+	public static final Ingredient EMPTY_INGREDIENT;
 
 	public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
+
+	static {
+		// Dummy empty Ingredient as ItemStack can no longer be empty
+		EMPTY_INGREDIENT = new Ingredient(new ICustomIngredient() {
+			@Override
+			public boolean test(ItemStack stack) {
+				return false;
+			}
+
+			@Override
+			public Stream<Holder<Item>> items() {
+				return Stream.empty();
+			}
+
+			@Override
+			public boolean isSimple() {
+				return true;
+			}
+
+			@Override
+			public IngredientType<?> getType() {
+				return null;
+			}
+
+			@Override
+			public SlotDisplay display() {
+				return SlotDisplay.Empty.INSTANCE;
+			}
+		});
+	}
 
 	// TODO: Remove this garbage
 	@Nullable

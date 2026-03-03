@@ -32,9 +32,11 @@ import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -773,6 +775,8 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	public Block.Properties createProperties() {
 		var properties = new KubeJSBlockProperties(this, copyPropertiesFrom);
 
+		properties.setId(ResourceKey.create(BuiltInRegistries.BLOCK.key(), this.id));
+
 		if (soundType != null) {
 			properties.sound(soundType);
 		}
@@ -842,7 +846,6 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		if (instrument != null) {
 			properties.instrument(instrument);
 		}
-
 		return properties;
 	}
 }

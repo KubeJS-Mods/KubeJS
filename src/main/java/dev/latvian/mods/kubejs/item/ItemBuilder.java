@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -104,7 +105,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 
 	@Override
 	public Item createObject() {
-		return new Item(createItemProperties());
+		return new Item(createItemProperties().setId(ResourceKey.create(BuiltInRegistries.ITEM.key(), this.id)));
 	}
 
 	@Override

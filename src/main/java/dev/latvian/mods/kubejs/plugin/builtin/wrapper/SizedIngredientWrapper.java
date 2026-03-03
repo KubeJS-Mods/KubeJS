@@ -21,12 +21,14 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
+import static dev.latvian.mods.kubejs.util.UtilsJS.EMPTY_INGREDIENT;
+
 @Info("Various SizedIngredient related helper methods")
 public interface SizedIngredientWrapper {
 	TypeInfo TYPE_INFO = TypeInfo.of(SizedIngredient.class);
 
-	@Info("A completely empty ingredient that will only match air")
-	SizedIngredient empty = new SizedIngredient(Ingredient.of(), 1);
+	@Info("A completely empty ingredient that will only match a dummy Ingredient")
+	SizedIngredient empty = new SizedIngredient(EMPTY_INGREDIENT, 1);
 	@Info("An ingredient that matches everything")
 	SizedIngredient all = new SizedIngredient(IngredientWrapper.all, 1);
 

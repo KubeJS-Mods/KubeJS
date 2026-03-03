@@ -24,7 +24,7 @@ public class ItemStackKey {
 
 	public ItemStackKey(Item item, DataComponentPatch patch) {
 		this.item = item;
-		this.patch = patch;
+		this.patch = patch == null ? DataComponentPatch.EMPTY : patch;
 	}
 
 	@Override

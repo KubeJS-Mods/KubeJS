@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 @RemapPrefixForJS("kjs$")
 public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierKJS {
@@ -23,25 +22,30 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 	ItemPredicate NONE = stack -> false;
 	ItemPredicate ALL = stack -> true;
 
-	@Override
-	boolean test(ItemStack itemStack);
-
-	private static ItemPredicate simplify(Ingredient in) {
-		return in.isEmpty() ? NONE : in.kjs$isWildcard() ? ALL : in;
-	}
-
 	static ItemPredicate wrap(Context cx, Object from) {
-		return switch (from) {
-			case null -> NONE;
-			case BaseFunction func -> (ItemPredicate) cx.createInterfaceAdapter(TYPE_INFO, func);
-			case String s -> switch (s) {
-				case "*" -> ALL;
-				case "", "-" -> NONE;
-				case String s1 when s1.isBlank() -> NONE;
-				default -> simplify(IngredientWrapper.wrap(cx, from));
-			};
-			default -> simplify(IngredientWrapper.wrap(cx, from));
-		};
+		if (from == null) {
+			return NONE;
+		} else if (from instanceof BaseFunction func) {
+			return (ItemPredicate) cx.createInterfaceAdapter(TYPE_INFO, func);
+		} else {
+			if (from instanceof CharSequence s) {
+				if (s.equals("*")) {
+					return ALL;
+				} else if (s.isEmpty() || s.equals("-")) {
+					return NONE;
+				}
+			}
+
+			var in = IngredientWrapper.wrap(cx, from);
+
+			if (in.isEmpty()) {
+				return NONE;
+			} else if (in.kjs$isWildcard()) {
+				return ALL;
+			} else {
+				return in;
+			}
+		}
 	}
 
 	default boolean kjs$testItem(Item item) {
@@ -70,10 +74,6 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 
 	default boolean kjs$isWildcard() {
 		return this == ALL;
-	}
-
-	default Stream<Item> kjs$getItemStream() {
-		return Arrays.stream(kjs$getStackArray()).map(ItemStack::getItem);
 	}
 
 	default Set<Item> kjs$getItemTypes() {
@@ -132,11 +132,6 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 
 	@Override
 	default Ingredient kjs$asIngredient() {
-		return Ingredient.of(
-			Arrays.stream(kjs$getStackArray())
-				.filter(s -> s != null && !s.isEmpty())
-				.map(ItemStack::getItem)
-		);
+		return Ingredient.of(Arrays.stream(kjs$getStackArray()).map(ItemStack::getItem));
 	}
-
 }

@@ -843,14 +843,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void generateData(KubeDataGenerator generator) {
-		if (ServerEvents.COMPOSTABLE_RECIPES.hasListeners()) {
-			generator.dataMap(NeoForgeDataMaps.COMPOSTABLES,
-				map -> {
-					var event = new CompostableRecipesKubeEvent(map);
-					ServerEvents.COMPOSTABLE_RECIPES.post(ScriptType.SERVER, event);
-				});
-		}
-
 		generator.dataMap(NeoForgeDataMaps.FURNACE_FUELS, callback -> {
 			for (var entry : ItemModificationKubeEvent.ItemModifications.BURN_TIME_OVERRIDES.reference2IntEntrySet()) {
 				callback.accept(entry.getKey().kjs$getIdLocation(), new FurnaceFuel(entry.getIntValue()));

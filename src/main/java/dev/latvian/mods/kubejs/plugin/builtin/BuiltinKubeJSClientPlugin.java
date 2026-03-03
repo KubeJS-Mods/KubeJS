@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.plugin.builtin;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.client.KubeJSKeybinds;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
+import dev.latvian.mods.kubejs.client.ScheduledClientEvent;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ClientEvents;
@@ -28,17 +29,17 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 
 	@Override
 	public void registerBindings(BindingRegistry bindings) {
-		bindings.add("Client", Minecraft.getInstance());
+		var mc = Minecraft.getInstance();
+
+		bindings.add("Client", mc);
 
 		if (bindings.type().isClient()) {
-			var se = Minecraft.getInstance().kjs$getScheduledEvents();
-
+			var se = ScheduledClientEvent.EVENTS;
 			bindings.add("setTimeout", new ScheduledEvents.TimeoutJSFunction(se, false, false));
 			bindings.add("clearTimeout", new ScheduledEvents.TimeoutJSFunction(se, true, false));
 			bindings.add("setInterval", new ScheduledEvents.TimeoutJSFunction(se, false, true));
 			bindings.add("clearInterval", new ScheduledEvents.TimeoutJSFunction(se, true, true));
 		}
-
 		bindings.add("GLFWInput", GLFWInputWrapper.MAP.get());
 	}
 

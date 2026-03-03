@@ -9,6 +9,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.neoforgespi.locating.IModFile;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,16 +36,16 @@ public class KubeJSPlugins {
 	}
 
 	private static void loadMod(String modId, IModFile mod, boolean loadClientPlugins) throws IOException {
-		var pp = mod.getFilePath().resolve("kubejs.plugins.txt");
+		var contents = mod.getContents();
 
-		if (Files.exists(pp)) {
-			loadFromFile(Files.lines(pp), modId, loadClientPlugins);
+		var pluginData = contents.readFile("kubejs.plugins.txt");
+		if (pluginData != null) {
+			loadFromFile(new String(pluginData, StandardCharsets.UTF_8).lines(), modId, loadClientPlugins);
 		}
 
-		var pc = mod.getFilePath().resolve("kubejs.classfilter.txt");
-
-		if (Files.exists(pc)) {
-			GLOBAL_CLASS_FILTER.addAll(Files.readAllLines(pc));
+		var filterData = contents.readFile("kubejs.classfilter.txt");
+		if (filterData != null) {
+			GLOBAL_CLASS_FILTER.addAll(new String(filterData, StandardCharsets.UTF_8).lines().toList());
 		}
 
 		BINDINGS.readBindings(modId, mod);
@@ -62,14 +63,14 @@ public class KubeJSPlugins {
 					if (line[i].equalsIgnoreCase("client")) {
 						if (!loadClientPlugins) {
 							if (DevProperties.get().logSkippedPlugins) {
-								KubeJS.LOGGER.warn("Plugin {} does not load on server side, skipping", line[0]);
+								KubeJS.LOGGER.warn("Plugin " + line[0] + " does not load on server side, skipping");
 							}
 
 							return Stream.empty();
 						}
 					} else if (!ModList.get().isLoaded(line[i])) {
 						if (DevProperties.get().logSkippedPlugins) {
-							KubeJS.LOGGER.warn("Plugin {} does not have required mod '{}' loaded, skipping", line[0], line[i]);
+							KubeJS.LOGGER.warn("Plugin " + line[0] + " does not have required mod '" + line[i] + "' loaded, skipping");
 						}
 
 						return Stream.empty();

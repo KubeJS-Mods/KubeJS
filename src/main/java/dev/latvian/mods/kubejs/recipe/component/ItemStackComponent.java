@@ -16,15 +16,17 @@ import net.minecraft.world.item.crafting.Ingredient;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dev.latvian.mods.kubejs.util.UtilsJS.EMPTY_INGREDIENT;
+
 public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> codec, boolean allowEmpty, Ingredient filter) implements RecipeComponent<ItemStack> {
-	public static final RecipeComponentType<ItemStack> ITEM_STACK = RecipeComponentType.unit(KubeJS.id("item_stack"), type -> new ItemStackComponent(type, false, Ingredient.of()));
-	public static final RecipeComponentType<ItemStack> OPTIONAL_ITEM_STACK = RecipeComponentType.unit(KubeJS.id("optional_item_stack"), type -> new ItemStackComponent(type, true, Ingredient.of()));
+	public static final RecipeComponentType<ItemStack> ITEM_STACK = RecipeComponentType.unit(KubeJS.id("item_stack"), type -> new ItemStackComponent(type, false, EMPTY_INGREDIENT));
+	public static final RecipeComponentType<ItemStack> OPTIONAL_ITEM_STACK = RecipeComponentType.unit(KubeJS.id("optional_item_stack"), type -> new ItemStackComponent(type, true, EMPTY_INGREDIENT));
 
 	public static final RecipeComponentType<?> FILTERED_ITEM_STACK = RecipeComponentType.<ItemStackComponent>dynamic(
 		KubeJS.id("filtered_item_stack"),
 		(type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 			Codec.BOOL.optionalFieldOf("allow_empty", false).forGetter(ItemStackComponent::allowEmpty),
-			Ingredient.CODEC.optionalFieldOf("filter", Ingredient.of()).forGetter(ItemStackComponent::filter)
+			Ingredient.CODEC.optionalFieldOf("filter", EMPTY_INGREDIENT).forGetter(ItemStackComponent::filter)
 		).apply(instance, (allowEmpty, filter) -> new ItemStackComponent(type, allowEmpty, filter)))
 	);
 

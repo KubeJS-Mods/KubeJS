@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
@@ -30,6 +31,14 @@ public interface CustomIngredientKJS extends ItemPredicate {
 	}
 
 	default ItemStackSet kjs$getDisplayStacks() {
-		return getItems().collect(Collector.of(ItemStackSet::new, ItemStackSet::add, ItemStackSet::merge));
+		var set = new ItemStackSet();
+
+		for (var stack : ItemWrapper.getList()) {
+			if (test(stack)) {
+				set.add(stack);
+			}
+		}
+
+		return set;
 	}
 }

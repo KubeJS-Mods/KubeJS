@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.ingredient.NamespaceIngredient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.ClickEvent;
@@ -39,10 +40,10 @@ public class InformationCommands {
 		player.sendSystemMessage(Component.literal("Item in hand:"));
 		var stack = player.getItemInHand(hand);
 		var holder = Holder.direct(stack.getItem());
-		var itemRegistry = player.server.registryAccess().get(Registries.ITEM).orElseThrow().value();
-		var blockRegistry = player.server.registryAccess().get(Registries.BLOCK).orElseThrow().value();
-		var fluidRegistry = player.server.registryAccess().get(Registries.FLUID).orElseThrow().value();
-		var tabRegistry = player.server.registryAccess().get(Registries.CREATIVE_MODE_TAB).orElseThrow().value();
+		var itemRegistry = BuiltInRegistries.ITEM;
+		var blockRegistry = BuiltInRegistries.BLOCK;
+		var fluidRegistry = BuiltInRegistries.FLUID;
+		var tabRegistry = BuiltInRegistries.CREATIVE_MODE_TAB;
 
 		// item info
 		// id
@@ -83,7 +84,6 @@ public class InformationCommands {
 				player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Block Tag [" + size + " items]"));
 			}
 		}
-
 		// fluid info
 		var containedFluid = FluidUtil.getFirstStackContained(stack);
 		if (!containedFluid.isEmpty()) {
