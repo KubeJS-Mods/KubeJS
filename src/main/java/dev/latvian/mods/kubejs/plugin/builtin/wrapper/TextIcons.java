@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
-//import dev.latvian.mods.betteradvancedtooltips.BATIcons;
-
+import dev.latvian.mods.betteradvancedtooltips.BATIcons;
 import dev.latvian.mods.kubejs.KubeJS;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -17,28 +16,28 @@ public interface TextIcons {
 	Component LOGO = Component.literal("K").setStyle(STYLE);
 	Component VSCODE = Component.literal("V").setStyle(STYLE);
 
-	Component NAME = Component.empty().append(LOGO).append(Component.literal(KubeJS.MOD_NAME));
+	Component NAME = Component.empty().append(LOGO).append(BATIcons.SMALL_SPACE).append(Component.literal(KubeJS.MOD_NAME));
 
 	String ALL_ICONS = "AKV";
 
 	static Component smallSpace() {
-		return Component.empty();
+		return BATIcons.SMALL_SPACE;
 	}
 
 	static Component error() {
-		return Component.empty();
+		return BATIcons.ERROR;
 	}
 
 	static Component plus() {
-		return Component.empty();
+		return BATIcons.PLUS;
 	}
 
 	static Component minus() {
-		return Component.empty();
+		return BATIcons.MINUS;
 	}
 
 	static Component tilde() {
-		return Component.empty();
+		return BATIcons.TILDE;
 	}
 
 	static Component crafting() {
@@ -46,15 +45,15 @@ public interface TextIcons {
 	}
 
 	static Component copy() {
-		return Component.empty();
+		return BATIcons.COPY;
 	}
 
 	static Component id() {
-		return Component.empty();
+		return BATIcons.ID;
 	}
 
 	static Component info() {
-		return Component.empty();
+		return BATIcons.INFO;
 	}
 
 	static Component logo() {
@@ -62,27 +61,27 @@ public interface TextIcons {
 	}
 
 	static Component camera() {
-		return Component.empty();
+		return BATIcons.CAMERA;
 	}
 
 	static Component no() {
-		return Component.empty();
+		return BATIcons.NO;
 	}
 
 	static Component prototypeComponent() {
-		return Component.empty();
+		return BATIcons.PROTOTYPE_COMPONENT;
 	}
 
 	static Component patchedComponent() {
-		return Component.empty();
+		return BATIcons.PATCHED_COMPONENT;
 	}
 
 	static Component fire() {
-		return Component.empty();
+		return BATIcons.FIRE;
 	}
 
 	static Component tag() {
-		return Component.empty();
+		return BATIcons.TAG;
 	}
 
 	static Component vscode() {
@@ -90,14 +89,14 @@ public interface TextIcons {
 	}
 
 	static Component warn() {
-		return Component.empty();
+		return BATIcons.WARN;
 	}
 
 	static Component yes() {
-		return Component.empty();
+		return BATIcons.YES;
 	}
 
 	static Component yes(boolean yes) {
-		return Component.empty();
+		return yes ? BATIcons.YES : BATIcons.NO;
 	}
 }

@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.client;
 
-//import dev.latvian.mods.betteradvancedtooltips.BATIcons;
-
+import dev.latvian.mods.betteradvancedtooltips.BATIcons;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
@@ -126,7 +125,7 @@ public class KubeJSErrorScreen extends Screen {
 			return false;
 		}
 
-		Screen.defaultHandleGameClickEvent(click, this.minecraft, this);
+		net.minecraft.client.gui.screens.Screen.defaultHandleGameClickEvent(click, this.minecraft, this);
 		return true;
 	}
 
@@ -372,7 +371,7 @@ public class KubeJSErrorScreen extends Screen {
 						if (EditorExt.isKnownVSCode()) {
 							comp.append(" in ");
 							comp.append(TextIcons.VSCODE);
-							//comp.append(BATIcons.SMALL_SPACE);
+							comp.append(BATIcons.SMALL_SPACE);
 							comp.append(Component.literal("VSCode").withColor(0x22A7F2));
 						}
 

@@ -109,12 +109,12 @@ dependencies {
 		}
 	}
 
-	/*jarJar(compileOnly('dev.latvian.mods:better-advanced-tooltips')) {
+	jarJar(implementation('dev.latvian.mods:better-advanced-tooltips')) {
 		version {
 			strictly "[$bat_version,)"
 			prefer "$bat_version"
 		}
-	}*/
+	}
 }
 
 processResources {
