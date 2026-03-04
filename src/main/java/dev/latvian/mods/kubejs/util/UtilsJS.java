@@ -49,7 +49,7 @@ public class UtilsJS {
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
 
 	static {
-		// Dummy empty Ingredient as ItemStack can no longer be empty
+		// Dummy-Ingredient as Ingredient can no longer be empty
 		EMPTY_INGREDIENT = new Ingredient(new ICustomIngredient() {
 			@Override
 			public boolean test(ItemStack stack) {
