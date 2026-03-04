@@ -107,36 +107,19 @@ public class KubeJSErrorScreen extends Screen {
 		}
 	}
 
-	private boolean handleStyleClick(@org.jspecify.annotations.Nullable Style style) {
-		if (style == null) {
-			return false;
-		}
-
-		if (Minecraft.getInstance().hasShiftDown()) {
-			var ins = style.getInsertion();
-			if (ins != null) {
-				insertText(ins, false);
-				return true;
-			}
-		}
-
-		var click = style.getClickEvent();
-		if (click == null) {
-			return false;
-		}
-
-		net.minecraft.client.gui.screens.Screen.defaultHandleGameClickEvent(click, this.minecraft, this);
-		return true;
-	}
-
-
 	private void report(Button button) {
-		handleStyleClick(Style.EMPTY.withClickEvent(new ClickEvent.OpenUrl(URI.create(CommonProperties.get().startupErrorReportUrl))));
+		try {
+			Util.getPlatform().openUri(URI.create(CommonProperties.get().startupErrorReportUrl));
+		} catch (Exception ignored) {
+		}
 	}
 
 	private void openLog(Button button) {
 		if (logFile != null) {
-			handleStyleClick(Style.EMPTY.withClickEvent(new ClickEvent.OpenFile(logFile.toAbsolutePath())));
+			try {
+				Util.getPlatform().openFile(logFile.toAbsolutePath().toFile());
+			} catch (Exception ignored) {
+			}
 		}
 	}
 
@@ -150,12 +133,12 @@ public class KubeJSErrorScreen extends Screen {
 		tooltip = null;
 
 		super.render(guiGraphics, mx, my, delta);
+		guiGraphics.drawCenteredString(font, "KubeJS " + scriptType.name + " script " + (viewing == errors ? "errors" : "warnings"), width / 2, 12, 0xFFFFFFFF);
 		list.render(guiGraphics, mx, my, delta);
 
-		guiGraphics.drawCenteredString(font, "KubeJS " + scriptType.name + " script " + (viewing == errors ? "errors" : "warnings"), width / 2, 12, 0xFFFFFF);
 
 		if (errors.isEmpty() && warnings.isEmpty()) {
-			guiGraphics.drawCenteredString(font, "No errors or warnings found!", width / 2, height / 2 - 6, 0x66FF66);
+			guiGraphics.drawCenteredString(font, "No errors or warnings found!", width / 2, height / 2 - 6, 0xFF66FF66);
 		}
 
 		if (tooltip != null && !tooltip.isEmpty()) {
@@ -187,6 +170,7 @@ public class KubeJSErrorScreen extends Screen {
 			}, null);
 
 		}
+
 	}
 
 
@@ -341,11 +325,10 @@ public class KubeJSErrorScreen extends Screen {
 			int w = getWidth();
 			int h = getHeight();
 
-			int col = line.type == LogType.ERROR ? 0xFF5B63 : 0xFFBB5B;
-
+			int col = line.type == LogType.ERROR ? 0xFFFF5B63 : 0xFFFFBB5B;
 			g.drawString(minecraft.font, indexText, x + 1, y + 1, col);
-			g.drawCenteredString(minecraft.font, scriptLineText, x + w / 2, y + 1, 0xFFFFFF);
-			g.drawString(minecraft.font, timestampText, x + w - minecraft.font.width(timestampText) - 4, y + 1, 0x666666);
+			g.drawCenteredString(minecraft.font, scriptLineText, x + w / 2, y + 1, 0xFFFFFFFF);
+			g.drawString(minecraft.font, timestampText, x + w - minecraft.font.width(timestampText) - 4, y + 1, 0xFF666666);
 
 			for (int i = 0; i < errorText.size(); i++) {
 				g.drawString(minecraft.font, errorText.get(i), x + 1, y + 13 + i * 10, col);

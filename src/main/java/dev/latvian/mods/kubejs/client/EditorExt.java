@@ -12,7 +12,7 @@ public class EditorExt {
 	public static final String VSCODE_OSS = vsLikeScheme("vscode-oss");
 
 	private static String vsLikeScheme(String prefix) {
-		return prefix + "://file{path}:{line}:{col}";
+		return prefix + "://file/{path}:{line}:{col}";
 	}
 
 	public static boolean isKnownVSCode() {
@@ -22,7 +22,7 @@ public class EditorExt {
 
 	private static URI format(String scheme, Path path, int line, int column) {
 		return URI.create(scheme
-			.replace("{path}", path.toString())
+			.replace("{path}", path.toAbsolutePath().toString().replace("\\", "/"))
 			.replace("{line}", String.valueOf(line))
 			.replace("{col}", String.valueOf(column))
 		);
