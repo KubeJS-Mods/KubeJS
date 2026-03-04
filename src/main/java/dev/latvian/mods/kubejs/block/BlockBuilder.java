@@ -285,6 +285,13 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 					});
 				}
 			}
+			if (renderType != BlockRenderType.SOLID) {
+				m.custom(json -> json.addProperty("render_type", switch (renderType) {
+					case CUTOUT -> "cutout";
+					case TRANSLUCENT -> "translucent";
+					default -> "solid";
+				}));
+			}
 		});
 	}
 

@@ -33,6 +33,14 @@ public class FluidBlockBuilder extends BlockBuilder {
 		generator.blockModel(id, mg -> {
 			mg.parent(null);
 			mg.texture("particle", fluidBuilder.fluidType.stillTexture.toString());
+
+			if (fluidBuilder.fluidType.renderType != BlockRenderType.SOLID) {
+				mg.custom(json -> json.addProperty("render_type", switch (fluidBuilder.fluidType.renderType) {
+					case CUTOUT -> "cutout";
+					case TRANSLUCENT -> "translucent";
+					default -> "solid";
+				}));
+			}
 		});
 	}
 

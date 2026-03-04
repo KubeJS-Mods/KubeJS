@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
@@ -14,7 +15,7 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.commands.arguments.selector.SelectorPattern;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.StringTag;
@@ -298,18 +299,26 @@ public interface TextWrapper {
 
 	@Info("Returns a score component of the input objective, for the provided selector")
 	static MutableComponent score(String selector, String objective) {
-		return MutableComponent.create(new ScoreContents(Either.left(SelectorPattern.parse(selector).getOrThrow()), objective));
+		var compiled = EntitySelector.COMPILABLE_CODEC
+			.parse(JsonOps.INSTANCE, new JsonPrimitive(selector))
+			.getOrThrow();
+		return MutableComponent.create(new ScoreContents(Either.left(compiled), objective));
 	}
-
 
 	@Info("Returns a component displaying all entities matching the input selector")
 	static MutableComponent selector(String selector) {
-		return MutableComponent.create(new SelectorContents(SelectorPattern.parse(selector).getOrThrow(), Optional.empty()));
+		var compiled = EntitySelector.COMPILABLE_CODEC
+			.parse(JsonOps.INSTANCE, new JsonPrimitive(selector))
+			.getOrThrow();
+		return MutableComponent.create(new SelectorContents(compiled, Optional.empty()));
 	}
 
 	@Info("Returns a component displaying all entities matching the input selector, with a custom separator")
 	static MutableComponent selector(String selector, Component separator) {
-		return MutableComponent.create(new SelectorContents(SelectorPattern.parse(selector).getOrThrow(), Optional.of(separator)));
+		var compiled = EntitySelector.COMPILABLE_CODEC
+			.parse(JsonOps.INSTANCE, new JsonPrimitive(selector))
+			.getOrThrow();
+		return MutableComponent.create(new SelectorContents(compiled, Optional.of(separator)));
 	}
 
 	@Info("Returns a component of the input, colored black")

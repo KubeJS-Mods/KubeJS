@@ -174,6 +174,14 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		generator.blockModel(id, m -> {
 			m.parent(null);
 			m.texture("particle", fluidType.actualStillTexture.toString());
+
+			if (fluidType.renderType != BlockRenderType.SOLID) {
+				m.custom(json -> json.addProperty("render_type", switch (fluidType.renderType) {
+					case CUTOUT -> "cutout";
+					case TRANSLUCENT -> "translucent";
+					default -> "solid";
+				}));
+			}
 		});
 
 		if (bucketItem != null) {

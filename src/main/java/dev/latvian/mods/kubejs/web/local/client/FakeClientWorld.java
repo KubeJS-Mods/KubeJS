@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.web.local.client;
 
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.CardinalLighting;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
@@ -28,14 +28,15 @@ public class FakeClientWorld implements BlockAndTintGetter {
 	}
 
 	@Override
-	public float getShade(Direction direction, boolean shade) {
-		return parent.getShade(direction, shade);
+	public CardinalLighting cardinalLighting() {
+		return CardinalLighting.DEFAULT;
 	}
 
 	@Override
 	public LevelLightEngine getLightEngine() {
 		return parent.getLightEngine();
 	}
+
 
 	@Override
 	public int getBlockTint(BlockPos pos, ColorResolver colorResolver) {

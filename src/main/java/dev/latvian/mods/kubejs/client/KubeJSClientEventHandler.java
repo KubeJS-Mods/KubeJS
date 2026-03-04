@@ -1,10 +1,6 @@
 package dev.latvian.mods.kubejs.client;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
@@ -30,7 +26,6 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.text.action.DynamicTextAction;
 import dev.latvian.mods.kubejs.text.tooltip.ItemTooltipData;
 import dev.latvian.mods.kubejs.text.tooltip.TooltipRequirements;
-import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.StackTraceCollector;
 import dev.latvian.mods.kubejs.util.Tristate;
 import dev.latvian.mods.kubejs.web.LocalWebServer;
@@ -42,7 +37,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.NbtUtils;
@@ -58,7 +52,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
@@ -66,7 +59,6 @@ import net.neoforged.neoforge.client.event.RegisterConditionalItemModelPropertyE
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.client.event.RegisterRecipeBookSearchCategoriesEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
@@ -81,7 +73,6 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -115,31 +106,6 @@ public class KubeJSClientEventHandler {
 		}
 
 		ItemEvents.MODEL_PROPERTIES.post(ScriptType.STARTUP, new ItemModelPropertiesKubeEvent());
-
-		for (var builder : RegistryObjectStorage.BLOCK) {
-			if (builder instanceof FluidBlockBuilder b) {
-				var layer = switch (b.renderType) {
-					case CUTOUT -> ChunkSectionLayer.CUTOUT;
-					case TRANSLUCENT -> ChunkSectionLayer.TRANSLUCENT;
-					case SOLID -> ChunkSectionLayer.SOLID;
-				};
-
-				ItemBlockRenderTypes.setRenderLayer(b.fluidBuilder.get(), layer);
-			}
-		}
-
-		for (var builder : RegistryObjectStorage.FLUID) {
-			if (builder instanceof FluidBuilder b) {
-				var layer = switch (b.fluidType.renderType) {
-					case CUTOUT -> ChunkSectionLayer.CUTOUT;
-					case TRANSLUCENT -> ChunkSectionLayer.TRANSLUCENT;
-					case SOLID -> ChunkSectionLayer.SOLID;
-				};
-
-				ItemBlockRenderTypes.setRenderLayer(b.get().getSource(), layer);
-				ItemBlockRenderTypes.setRenderLayer(b.get().getFlowing(), layer);
-			}
-		}
 
 		var list = new ArrayList<ItemTooltipData>();
 		ItemEvents.MODIFY_TOOLTIPS.post(ScriptType.CLIENT, new ModifyItemTooltipsKubeEvent(list::add));
