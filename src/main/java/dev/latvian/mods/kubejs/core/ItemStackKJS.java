@@ -19,6 +19,7 @@ import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.kubejs.web.RelativeURL;
 import dev.latvian.mods.rhino.Context;
@@ -246,20 +247,19 @@ public interface ItemStackKJS extends
 
 	@Override
 	default Ingredient kjs$asIngredient() {
+		if (kjs$self().isEmpty()) {
+			return UtilsJS.EMPTY_INGREDIENT;
+		}
 		var p = kjs$self().getComponentsPatch();
-
 		if (p.isEmpty()) {
 			return kjs$self().getItem().kjs$asIngredient();
 		}
-
 		var map = DataComponentMap.builder();
-
 		for (var entry : p.entrySet()) {
 			if (entry.getValue().isPresent()) {
 				map.set(entry.getKey(), Cast.to(entry.getValue().get()));
 			}
 		}
-
 		return IngredientWrapper.withData(HolderSet.direct(kjs$asHolder()), map.build());
 	}
 
