@@ -78,6 +78,11 @@ public interface IngredientWrapper {
 		return ingredient.kjs$withCount(count);
 	}
 
+	@Info("Returns an empty ingredient")
+	static Ingredient of() {
+		return EMPTY_INGREDIENT;
+	}
+
 	@Info("Returns an ingredient that accepts the given set of items under the given component filter.")
 	static Ingredient withData(HolderSet<Item> base, DataComponentMap data) {
 		return withData(base, data, false);
@@ -175,7 +180,9 @@ public interface IngredientWrapper {
 			return Ingredient.CODEC.parse(JavaOps.INSTANCE, map);
 		}
 
-		return ItemWrapper.wrapResult(cx, from).map(ItemStackKJS::kjs$asIngredient);
+		return ItemWrapper.wrapResult(cx, from).map(stack ->
+			stack.isEmpty() ? EMPTY_INGREDIENT : stack.kjs$asIngredient()
+		);
 	}
 
 	@HideFromJS

@@ -74,9 +74,9 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 		return kjs$self().getCustomIngredient() == WildcardIngredient.INSTANCE;
 	}
 
-	@Override
 	default Ingredient kjs$asIngredient() {
-		return kjs$self();
+		var self = kjs$self();
+		return self.isEmpty() ? EMPTY_INGREDIENT : Ingredient.of(self.getValues());
 	}
 
 	@Override
@@ -167,6 +167,4 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 			return Ingredient.CODEC.encodeStart(ops, in).getOrThrow().toString();
 		}
 	}
-
-
 }
