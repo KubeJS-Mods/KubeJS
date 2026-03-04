@@ -8,6 +8,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponentInitializers;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.RegistryLayer;
 import net.minecraft.server.ReloadableServerResources;
@@ -44,6 +45,14 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 	@Shadow
 	@Final
 	private List<Registry.PendingTags<?>> postponedTags;
+	@Shadow
+	@Final
+	private List<DataComponentInitializers.PendingComponents<?>> newComponents;
+
+	@Override
+	public List<DataComponentInitializers.PendingComponents<?>> kjs$getNewComponents() {
+		return newComponents;
+	}
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void kjs$init(

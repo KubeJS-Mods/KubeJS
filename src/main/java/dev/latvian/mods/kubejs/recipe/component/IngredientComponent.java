@@ -36,20 +36,24 @@ public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient>
 			return true;
 		}
 
-		var stacks = value.getValues();
+		if (value.isCustom()) {
+			return value.items().noneMatch(holder -> {
+				var item = holder.value();
+				return !item.getDefaultInstance().isEmpty() && item.asItem() != Items.BARRIER;
+			});
+		}
 
+		var stacks = value.getValues();
 		if (stacks.size() == 0) {
 			return true;
 		}
 
 		int count = 0;
-
 		for (var stack : stacks) {
 			if (!stack.value().getDefaultInstance().isEmpty() && stack.value().asItem() != Items.BARRIER) {
 				count++;
 			}
 		}
-
 		return count == 0;
 	}
 

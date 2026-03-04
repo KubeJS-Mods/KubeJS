@@ -17,4 +17,12 @@ public abstract class ContextAwareReloadListenerMixin implements ContextAwareRel
 	public ConditionalOps<JsonElement> kjs$makeConditionalOps() {
 		return makeConditionalOps();
 	}
+
+	@Shadow
+	protected abstract ICondition.IContext getContext();
+
+	@Override
+	public ICondition.IContext kjs$getContext() {
+		return getContext();
+	}
 }

@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
@@ -24,6 +25,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -69,6 +71,16 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 
 		var manager = kjs$resources.kjs$getServerScriptManager();
 
+		// Apply postponed tags first so that tag-based ingredients can be resolved during encoding
+		for (var pending : kjs$resources.kjs$getPostponedTags()) {
+			pending.apply();
+		}
+
+		// Apply pending components so that items have their data components available during recipe parsing
+		for (var pending : kjs$resources.kjs$getNewComponents()) {
+			pending.apply();
+		}
+
 		// Bind registry tags
 		for (var entry : manager.getRegistries().cachedRegistryTags.values()) {
 			if (entry.registry() == null || entry.lookup() == null) {
@@ -90,7 +102,10 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 
 		ConsoleJS.SERVER.info("Processing recipes...");
 
-		var ops = kjs$self().kjs$makeConditionalOps();
+		var ops = new ConditionalOps<>(
+			manager.getRegistries().access().createSerializationContext(JsonOps.INSTANCE),
+			kjs$self().kjs$getContext()
+		);
 		var jsonMap = new HashMap<Identifier, JsonElement>();
 
 		for (var holder : cir.getReturnValue().values()) {

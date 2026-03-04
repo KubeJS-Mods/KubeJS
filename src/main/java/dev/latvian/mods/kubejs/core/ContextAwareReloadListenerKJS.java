@@ -10,4 +10,8 @@ public interface ContextAwareReloadListenerKJS {
 	default ConditionalOps<JsonElement> kjs$makeConditionalOps() {
 		throw new NoMixinException();
 	}
+
+	default ICondition.IContext kjs$getContext() {
+		throw new NoMixinException();
+	}
 }
