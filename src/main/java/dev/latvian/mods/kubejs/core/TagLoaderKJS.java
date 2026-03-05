@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.server.tag.TagEventFilter;
 import dev.latvian.mods.kubejs.server.tag.TagKubeEvent;
 import dev.latvian.mods.kubejs.server.tag.TagWrapper;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface TagLoaderKJS<T> {
-	default void kjs$customTags(ReloadableServerResourcesKJS kjs$resources, Map<Identifier, List<TagLoader.EntryWithSource>> map) {
+	default void kjs$customTags(ServerScriptManager serverScriptManager, Map<Identifier, List<TagLoader.EntryWithSource>> map) {
 		var reg = kjs$getRegistry();
 
 		if (reg == null) {
@@ -37,7 +38,7 @@ public interface TagLoaderKJS<T> {
 		}
 
 		if (hasDefaultTags || ServerEvents.TAGS.hasListeners(objStorage.key)) {
-			var preEvent = kjs$getResources().kjs$getServerScriptManager().preTagEvents.get(reg.key());
+			var preEvent = serverScriptManager.preTagEvents.get(reg.key());
 
 			var event = new TagKubeEvent(objStorage.key, reg);
 
@@ -75,12 +76,12 @@ public interface TagLoaderKJS<T> {
 			}
 		}
 
-		kjs$resources.kjs$getServerScriptManager().getRegistries().cacheTags(reg, map);
+		serverScriptManager.getRegistries().cacheTags(reg, map);
 	}
 
-	void kjs$init(ReloadableServerResourcesKJS resources, Registry<T> registry);
+	void kjs$init(ServerScriptManager serverScriptManager, Registry<T> registry);
 
-	ReloadableServerResourcesKJS kjs$getResources();
+	ServerScriptManager kjs$getServerScriptManager();
 
 	@Nullable
 	Registry<T> kjs$getRegistry();

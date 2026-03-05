@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
 import dev.latvian.mods.kubejs.core.TagLoaderKJS;
+import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.TagReloadContextKJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -23,14 +23,14 @@ import java.util.Map;
 @Mixin(TagLoader.class)
 public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 	@Unique
-	private ReloadableServerResourcesKJS kjs$resources;
+	private ServerScriptManager kjs$serverScriptManager;
 
 	@Unique
 	private @Nullable Registry<T> kjs$storedRegistry;
 
 	@Override
-	public void kjs$init(ReloadableServerResourcesKJS resources, Registry<T> registry) {
-		kjs$resources = resources;
+	public void kjs$init(ServerScriptManager serverScriptManager, Registry<T> registry) {
+		kjs$serverScriptManager = serverScriptManager;
 		kjs$storedRegistry = registry;
 	}
 
@@ -48,9 +48,9 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 		CallbackInfoReturnable<?> cir,
 		@Local TagLoader<Holder<T>> loader
 	) {
-		ReloadableServerResourcesKJS resources = TagReloadContextKJS.CURRENT.get();
-		if (resources != null) {
-			((TagLoaderKJS<T>) (Object) loader).kjs$init(resources, registry);
+		ServerScriptManager ssm = TagReloadContextKJS.CURRENT.get();
+		if (ssm != null) {
+			((TagLoaderKJS<T>) (Object) loader).kjs$init(ssm, registry);
 		}
 	}
 
@@ -66,18 +66,16 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 		ResourceManager manager
 	) {
 		Map<Identifier, List<TagLoader.EntryWithSource>> map = loader.load(manager);
-
-		ReloadableServerResourcesKJS resources = TagReloadContextKJS.CURRENT.get();
-		if (resources != null) {
-			((TagLoaderKJS<T>) loader).kjs$customTags(resources, map);
+		ServerScriptManager ssm = TagReloadContextKJS.CURRENT.get();
+		if (ssm != null) {
+			((TagLoaderKJS<T>) loader).kjs$customTags(ssm, map);
 		}
-
 		return map;
 	}
 
 	@Override
-	public ReloadableServerResourcesKJS kjs$getResources() {
-		return kjs$resources;
+	public ServerScriptManager kjs$getServerScriptManager() {
+		return kjs$serverScriptManager;
 	}
 
 	@Override

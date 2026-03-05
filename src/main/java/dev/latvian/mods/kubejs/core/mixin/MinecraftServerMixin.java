@@ -166,13 +166,13 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	) {
 		MinecraftServer self = (MinecraftServer) (Object) this;
 
-		ReloadableServerResourcesKJS ctx = null;
+		ServerScriptManager ssm = null;
 		if (self.getServerResources() != null) {
-			ctx = self.getServerResources().managers();
+			ssm = self.getServerResources().managers().kjs$getServerScriptManager();
 		}
 
-		ReloadableServerResourcesKJS prev = TagReloadContextKJS.CURRENT.get();
-		TagReloadContextKJS.CURRENT.set(ctx);
+		ServerScriptManager prev = TagReloadContextKJS.CURRENT.get();
+		TagReloadContextKJS.CURRENT.set(ssm);
 		try {
 			return original.call(manager, layer);
 		} finally {

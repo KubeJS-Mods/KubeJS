@@ -34,6 +34,7 @@ import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.ApiStatus;
 
+import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +114,10 @@ public class ServerScriptManager extends ScriptManager {
 		} catch (Throwable ex) {
 			throw new RuntimeException("KubeJS failed to register it's script loader!", ex);
 		}
+	}
+
+	public static @Nullable ServerScriptManager getStaticInstance() {
+		return staticInstance;
 	}
 
 	@Override

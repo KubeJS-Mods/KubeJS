@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.MappedRegistry;
@@ -157,18 +158,18 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 		kjs$event = null;
 
 		if (!CommonProperties.get().serverOnly) {
-			kjs$getResources().kjs$getServerScriptManager().serverData = new SyncServerDataPayload(KubeServerData.collect());
+			kjs$getServerScriptManager().serverData = new SyncServerDataPayload(KubeServerData.collect());
 		}
+	}
+
+	@Override
+	public ServerScriptManager kjs$getServerScriptManager() {
+		return kjs$resources != null ? kjs$resources.kjs$getServerScriptManager() : null;
 	}
 
 	@Override
 	public void kjs$setResources(ReloadableServerResourcesKJS resources) {
 		kjs$resources = resources;
-	}
-
-	@Override
-	public ReloadableServerResourcesKJS kjs$getResources() {
-		return kjs$resources;
 	}
 
 	@Override

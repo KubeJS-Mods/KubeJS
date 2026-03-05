@@ -87,9 +87,11 @@ public class TagKubeEvent implements KubeEvent {
 
 	public Set<Identifier> getElementIds() {
 		if (elementIds == null) {
-			elementIds = Cast.to(vanillaRegistry.listElements().map(Holder.Reference::key).map(ResourceKey::identifier).collect(Collectors.toSet()));
+			elementIds = Cast.to(vanillaRegistry.listElements()
+				.map(Holder.Reference::key)
+				.map(ResourceKey::identifier)
+				.collect(Collectors.toSet()));
 		}
-
 		return elementIds;
 	}
 
