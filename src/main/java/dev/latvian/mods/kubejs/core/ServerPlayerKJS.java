@@ -12,11 +12,16 @@ import dev.latvian.mods.kubejs.net.SetActivePostShaderPayload;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.commands.Commands;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.LevelBasedPermissionSet;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.PermissionCheck;
+import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -139,6 +144,11 @@ public interface ServerPlayerKJS extends PlayerKJS {
 		if (kjs$self().connection != null) {
 			kjs$self().inventoryMenu.broadcastChanges();
 		}
+	}
+
+	default boolean kjs$hasPermission(int i) {
+		var permission = new Permission.HasCommandLevel(PermissionLevel.byId(i));
+		return kjs$self().permissions().hasPermission(permission);
 	}
 
 	@Nullable

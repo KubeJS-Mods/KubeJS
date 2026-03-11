@@ -87,6 +87,10 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 		return result;
 	}
 
+	public ItemStack getResultItem() {
+		return result.create();
+	}
+
 	public static class SerializerKJS {
 		public static final MapCodec<ShapedKubeJSRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			CommonInfo.MAP_CODEC.forGetter(ShapedKubeJSRecipe::commonInfo),

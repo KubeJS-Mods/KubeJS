@@ -5,6 +5,7 @@ import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ToolMaterial;
@@ -85,7 +86,7 @@ public class MutableToolMaterial {
 	}
 
 	public void setRepairItemsTag(Identifier tag) {
-		repairItems = net.minecraft.tags.ItemTags.create(tag);
+		repairItems = ItemTags.create(tag);
 	}
 
 	public Identifier getRepairItemsTag() {
