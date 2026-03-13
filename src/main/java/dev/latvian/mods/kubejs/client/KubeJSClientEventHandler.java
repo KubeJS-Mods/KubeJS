@@ -5,6 +5,7 @@ import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
+import dev.latvian.mods.kubejs.block.BlockTintFunction;
 import dev.latvian.mods.kubejs.client.highlight.HighlightRenderer;
 import dev.latvian.mods.kubejs.client.model.KubeJSConditionalCallbackProperty;
 import dev.latvian.mods.kubejs.command.KubeJSClientCommands;
@@ -30,6 +31,7 @@ import dev.latvian.mods.kubejs.util.StackTraceCollector;
 import dev.latvian.mods.kubejs.util.Tristate;
 import dev.latvian.mods.kubejs.web.LocalWebServer;
 import dev.latvian.mods.kubejs.web.WebServerProperties;
+import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
@@ -79,7 +81,8 @@ import java.util.regex.Pattern;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT)
 public class KubeJSClientEventHandler {
-	public static final Pattern COMPONENT_ERROR = ConsoleJS.methodPattern(KubeJSClientEventHandler.class, "onItemTooltip");
+	public static final Pattern COMPONENT_ERROR = ConsoleJS.methodPattern(KubeJSClientEventHandler.class,
+			"onItemTooltip");
 	private static final List<String> lastComponentError = List.of();
 
 	@SubscribeEvent(priority = EventPriority.LOW)
@@ -97,11 +100,13 @@ public class KubeJSClientEventHandler {
 
 	@SubscribeEvent
 	public static void registerConditionalItemModelProperties(RegisterConditionalItemModelPropertyEvent event) {
-		event.register(Identifier.fromNamespaceAndPath("kubejs", "callback"), KubeJSConditionalCallbackProperty.MAP_CODEC);
+		event.register(Identifier.fromNamespaceAndPath("kubejs", "callback"),
+				KubeJSConditionalCallbackProperty.MAP_CODEC);
 	}
 
 	private static void setupClient0() {
-		if (!PlatformWrapper.isGeneratingData() && Minecraft.getInstance() != null && WebServerProperties.get().enabled) {
+		if (!PlatformWrapper.isGeneratingData() && Minecraft.getInstance() != null
+				&& WebServerProperties.get().enabled) {
 			LocalWebServer.start(Minecraft.getInstance(), true);
 		}
 
@@ -113,20 +118,35 @@ public class KubeJSClientEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void blockColors(RegisterColorHandlersEvent.Block event) {
+	public static void blockTintSources(RegisterColorHandlersEvent.BlockTintSources event) {
 		for (var builder : RegistryObjectStorage.BLOCK) {
 			if (builder instanceof BlockBuilder b && b.tint != null) {
-				event.register(new BlockTintFunctionWrapper(b.tint), b.get());
+				var tintSources = new ArrayList<BlockTintSource>();
+
+				if (b.tint instanceof BlockTintFunction.Mapped mapped) {
+					int maxIndex = 0;
+					for (var entry : mapped.map.int2ObjectEntrySet()) {
+						int key = entry.getIntKey();
+						if (key > maxIndex)
+							maxIndex = key;
+					}
+					for (int i = 0; i <= maxIndex; i++) {
+						var func = mapped.map.get(i);
+						tintSources.add(func == null ? null : new BlockTintFunctionWrapper(func, i));
+					}
+				} else {
+					tintSources.add(new BlockTintFunctionWrapper(b.tint, 0));
+				}
+
+				event.register(tintSources, b.get());
 			}
 		}
 	}
-
 
 	@SubscribeEvent
 	public static void itemTintSources(RegisterColorHandlersEvent.ItemTintSources event) {
 		event.register(Identifier.fromNamespaceAndPath("kubejs", "tint"), ItemTintFunctionWrapper.CODEC);
 	}
-
 
 	@SubscribeEvent
 	public static void registerMenuScreens(RegisterMenuScreensEvent event) {
@@ -137,7 +157,8 @@ public class KubeJSClientEventHandler {
 	@SubscribeEvent
 	public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
 		ClientEvents.ENTITY_RENDERER_REGISTRY.post(ScriptType.STARTUP, new EntityRendererRegistryKubeEvent(event));
-		ClientEvents.BLOCK_ENTITY_RENDERER_REGISTRY.post(ScriptType.STARTUP, new BlockEntityRendererRegistryKubeEvent(event));
+		ClientEvents.BLOCK_ENTITY_RENDERER_REGISTRY.post(ScriptType.STARTUP,
+				new BlockEntityRendererRegistryKubeEvent(event));
 	}
 
 	@SubscribeEvent
@@ -146,13 +167,12 @@ public class KubeJSClientEventHandler {
 		event.registerCategory(mainCategory);
 
 		event.register(HighlightRenderer.keyMapping = new KeyMapping(
-			"key.kubejs.kubedex",
-			KeyConflictContext.UNIVERSAL,
-			KeyModifier.NONE,
-			InputConstants.Type.KEYSYM,
-			GLFW.GLFW_KEY_K,
-			mainCategory
-		));
+				"key.kubejs.kubedex",
+				KeyConflictContext.UNIVERSAL,
+				KeyModifier.NONE,
+				InputConstants.Type.KEYSYM,
+				GLFW.GLFW_KEY_K,
+				mainCategory));
 
 		var kubeEvent = new KeybindRegistryKubeEvent();
 		KeyBindEvents.REGISTRY.post(kubeEvent);
@@ -182,7 +202,8 @@ public class KubeJSClientEventHandler {
 			.withColorWrite(true, true)
 			.withDepthWrite(true)
 			.build();
-		event.registerPipeline(HighlightRenderer.HIGHLIGHT_PIPELINE_BLOCK);*/
+		event.registerPipeline(HighlightRenderer.HIGHLIGHT_PIPELINE_BLOCK);
+		*/
 	}
 
 	@SubscribeEvent
@@ -228,7 +249,8 @@ public class KubeJSClientEventHandler {
 		// TODO: custom client commands...?
 	}
 
-	private static <T> List<String> appendComponentValue(DynamicOps<Tag> ops, MutableComponent line, DataComponentType<T> type, T value) {
+	private static <T> List<String> appendComponentValue(DynamicOps<Tag> ops, MutableComponent line,
+			DataComponentType<T> type, T value) {
 		if (value == null) {
 			line.append(Component.literal("null").kjs$red());
 			return List.of();
@@ -283,7 +305,8 @@ public class KubeJSClientEventHandler {
 	}
 
 	private static void handleItemTooltips(Minecraft mc, ItemTooltipData tooltip, DynamicItemTooltipsKubeEvent event) {
-		if ((tooltip.filter().isEmpty() || tooltip.filter().get().test(event.item)) && (tooltip.requirements().isEmpty() || testRequirements(mc, event, tooltip.requirements().get()))) {
+		if ((tooltip.filter().isEmpty() || tooltip.filter().get().test(event.item))
+				&& (tooltip.requirements().isEmpty() || testRequirements(mc, event, tooltip.requirements().get()))) {
 			for (var action : tooltip.actions()) {
 				if (action instanceof DynamicTextAction(String id)) {
 					try {
@@ -337,7 +360,8 @@ public class KubeJSClientEventHandler {
 	@SubscribeEvent
 	public static void hudPostDraw(RenderGuiEvent.Post event) {
 		var mc = Minecraft.getInstance();
-		HighlightRenderer.INSTANCE.hudPostDraw(mc, event.getGuiGraphics(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
+		HighlightRenderer.INSTANCE.hudPostDraw(mc, event.getGuiGraphics(),
+				event.getPartialTick().getGameTimeDeltaPartialTick(false));
 
 		/*
 		if (PlatformWrapper.isDevelopmentEnvironment()) {
@@ -369,7 +393,8 @@ public class KubeJSClientEventHandler {
 		var mc = Minecraft.getInstance();
 
 		if (event.getScreen() instanceof AbstractContainerScreen<?> screen) {
-			HighlightRenderer.INSTANCE.screen(mc, event.getGuiGraphics(), screen, event.getMouseX(), event.getMouseY(), event.getPartialTick());
+			HighlightRenderer.INSTANCE.screen(mc, event.getGuiGraphics(), screen, event.getMouseX(), event.getMouseY(),
+					event.getPartialTick());
 		}
 	}
 
@@ -401,11 +426,13 @@ public class KubeJSClientEventHandler {
 
 	@Nullable
 	public static Screen setScreen(Screen screen) {
-		if (screen instanceof TitleScreen && !ConsoleJS.STARTUP.errors.isEmpty() && CommonProperties.get().startupErrorGUI) {
+		if (screen instanceof TitleScreen && !ConsoleJS.STARTUP.errors.isEmpty()
+				&& CommonProperties.get().startupErrorGUI) {
 			return new KubeJSErrorScreen(screen, ConsoleJS.STARTUP, false);
 		}
 
-		if (screen instanceof TitleScreen && !ConsoleJS.CLIENT.errors.isEmpty() && CommonProperties.get().startupErrorGUI) {
+		if (screen instanceof TitleScreen && !ConsoleJS.CLIENT.errors.isEmpty()
+				&& CommonProperties.get().startupErrorGUI) {
 			return new KubeJSErrorScreen(screen, ConsoleJS.CLIENT, false);
 		}
 
@@ -422,7 +449,8 @@ public class KubeJSClientEventHandler {
 			while (iterator.hasNext()) {
 				var listener = iterator.next();
 
-				if (listener instanceof ImageButton button && button.sprites.enabled().equals(KubeJSClient.RECIPE_BUTTON_TEXTURE)) {
+				if (listener instanceof ImageButton button
+						&& button.sprites.enabled().equals(KubeJSClient.RECIPE_BUTTON_TEXTURE)) {
 					screen.renderables.remove(listener);
 					screen.narratables.remove(listener);
 					iterator.remove();
@@ -497,7 +525,9 @@ public class KubeJSClientEventHandler {
 
 	@SubscribeEvent
 	public static void tagsUpdated(TagsUpdatedEvent event) {
-		if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED && Minecraft.getInstance().screen instanceof KubeJSErrorScreen screen && screen.scriptType == ScriptType.SERVER) {
+		if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED
+				&& Minecraft.getInstance().screen instanceof KubeJSErrorScreen screen
+				&& screen.scriptType == ScriptType.SERVER) {
 			Minecraft.getInstance().kjs$runCommand("kubejs errors server");
 		}
 	}
