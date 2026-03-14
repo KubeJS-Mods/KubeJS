@@ -25,7 +25,6 @@ import dev.latvian.mods.rhino.EvaluatorException;
 import dev.latvian.mods.rhino.NativeJavaMap;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import net.minecraft.util.Util;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -39,6 +38,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.component.CustomData;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
@@ -279,42 +279,6 @@ public interface DataComponentWrapper {
 
 	static boolean filter(Object from, TypeInfo target) {
 		return from == null || from instanceof DataComponentMap || from instanceof DataComponentPatch || from instanceof Map || from instanceof NativeJavaMap || from instanceof String s && (s.isEmpty() || s.charAt(0) == '[');
-	}
-
-	@Deprecated(forRemoval = true)
-	static DataComponentMap mapOf(@Nullable DynamicOps<Tag> ops, Object o) {
-		try {
-			return readMap(ops, new StringReader(o.toString()));
-		} catch (CommandSyntaxException ex) {
-			throw new RuntimeException("Error parsing DataComponentMap from " + o, ex);
-		}
-	}
-
-	@Deprecated(forRemoval = true)
-	static DataComponentMap mapOrEmptyOf(@Nullable DynamicOps<Tag> ops, Object o) {
-		try {
-			return readMap(ops, new StringReader(o.toString()));
-		} catch (CommandSyntaxException ex) {
-			return DataComponentMap.EMPTY;
-		}
-	}
-
-	@Deprecated(forRemoval = true)
-	static DataComponentPatch patchOf(@Nullable DynamicOps<Tag> ops, Object o) {
-		try {
-			return readPatch(ops, new StringReader(o.toString()));
-		} catch (CommandSyntaxException ex) {
-			throw new RuntimeException("Error parsing DataComponentPatch from " + o, ex);
-		}
-	}
-
-	@Deprecated(forRemoval = true)
-	static DataComponentPatch patchOrEmptyOf(@Nullable DynamicOps<Tag> ops, Object o) {
-		try {
-			return readPatch(ops, new StringReader(o.toString()));
-		} catch (CommandSyntaxException ex) {
-			return DataComponentPatch.EMPTY;
-		}
 	}
 
 	static DataComponentMap mapOf(Context cx, Object from) {

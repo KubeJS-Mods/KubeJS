@@ -104,7 +104,6 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.UUIDWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.UtilsWrapper;
-import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.component.BlockComponent;
 import dev.latvian.mods.kubejs.recipe.component.BlockStateComponent;
 import dev.latvian.mods.kubejs.recipe.component.BookCategoryComponent;
@@ -158,7 +157,7 @@ import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.DataComponentTypeInfoRegistry;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.RecordDefaultsRegistry;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.TypeDescriptionRegistry;
 import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
@@ -185,10 +184,8 @@ import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import dev.latvian.mods.rhino.type.RecordTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import net.minecraft.util.Util;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -200,19 +197,19 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ColorRGBA;
 import net.minecraft.util.Unit;
+import net.minecraft.util.Util;
 import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.LockCode;
@@ -220,7 +217,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.animal.wolf.WolfVariant;
-import net.minecraft.world.entity.decoration.painting.Painting;
 import net.minecraft.world.entity.decoration.painting.PaintingVariant;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -267,7 +263,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -736,8 +731,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
-	public void clearCaches() {
+	public void beforeScriptsLoaded(ScriptManager manager) {
 		ItemWrapper.CACHED_ITEM_MAP.forget();
 		ItemWrapper.CACHED_ITEM_LIST.forget();
 		ItemWrapper.CACHED_ITEM_TYPE_LIST.forget();

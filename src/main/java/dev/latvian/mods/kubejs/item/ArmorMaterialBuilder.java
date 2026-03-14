@@ -103,9 +103,4 @@ public class ArmorMaterialBuilder extends BuilderBase<ArmorMaterial> {
 		knockbackResistance = v;
 		return this;
 	}
-
-	@Deprecated
-	public ArmorMaterialBuilder layers(Object[] v) {
-		return this;
-	}
 }

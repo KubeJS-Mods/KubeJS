@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.core;
 
 import com.google.common.collect.Iterators;
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextWrapper;
 import dev.latvian.mods.kubejs.util.WithCodec;
@@ -235,7 +234,7 @@ public interface ComponentKJS extends Component, WithCodec, WrappedJS {
 		try {
 			return kjs$click(new ClickEvent.OpenUrl(URI.create(url)));
 		} catch (IllegalArgumentException ignored) {
-			return (MutableComponent) (Object) this;
+			return (MutableComponent) this;
 		}
 	}
 
@@ -253,25 +252,4 @@ public interface ComponentKJS extends Component, WithCodec, WrappedJS {
 	}
 
 	// endregion Style extensions
-
-	// These following methods only exist for interoperability with old scripts using the Text class
-	// region Deprecated
-	@Deprecated(forRemoval = true)
-	default MutableComponent kjs$rawComponent() {
-		KubeJS.LOGGER.warn("Using rawComponent() is deprecated, since components no longer need to be wrapped to Text! You can safely remove this method.");
-		return kjs$self();
-	}
-
-	@Deprecated(forRemoval = true)
-	default MutableComponent kjs$rawCopy() {
-		KubeJS.LOGGER.warn("Using rawCopy() is deprecated, since components no longer need to be wrapped to Text! Use copy() instead.");
-		return copy();
-	}
-
-	@Deprecated(forRemoval = true)
-	default Component kjs$component() {
-		KubeJS.LOGGER.warn("Using component() is deprecated, since components no longer need to be wrapped to Text! You can safely remove this method.");
-		return kjs$self();
-	}
-	// endregion Deprecated
 }

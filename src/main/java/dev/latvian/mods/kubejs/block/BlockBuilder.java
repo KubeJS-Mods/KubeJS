@@ -7,8 +7,8 @@ import dev.latvian.mods.kubejs.block.callback.BlockStateModifyCallback;
 import dev.latvian.mods.kubejs.block.callback.BlockStateModifyPlacementCallback;
 import dev.latvian.mods.kubejs.block.callback.BlockStateRotateCallback;
 import dev.latvian.mods.kubejs.block.callback.CanBeReplacedCallback;
-import dev.latvian.mods.kubejs.block.callback.EntityFallenOnBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.EntityBlockCallback;
+import dev.latvian.mods.kubejs.block.callback.EntityFallenOnBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.RandomTickCallback;
 import dev.latvian.mods.kubejs.block.drop.BlockDropSupplier;
 import dev.latvian.mods.kubejs.block.drop.BlockDrops;
@@ -56,7 +56,6 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -188,12 +187,8 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		}
 	}
 
-	/**
-	 * @deprecated Use the version with additional datagen parameter (used for registry access etc.)
-	 */
-	@Deprecated(forRemoval = true)
-	@ApiStatus.NonExtendable
-	public LootTable generateLootTable() {
+	@Nullable
+	public LootTable generateLootTable(KubeDataGenerator generator) {
 		if (drops == BlockDropSupplier.NO_DROPS) {
 			return null;
 		}
@@ -227,11 +222,6 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		}
 
 		return new LootTable.Builder().withPool(pool).build();
-	}
-
-	@Nullable
-	public LootTable generateLootTable(KubeDataGenerator generator) {
-		return generateLootTable();
 	}
 
 	@Override
@@ -530,21 +520,6 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	public BlockBuilder notSolid() {
 		notSolid = true;
 		return this;
-	}
-
-	@Deprecated(forRemoval = true)
-	public BlockBuilder setWaterlogged(boolean waterlogged) {
-		ScriptType.STARTUP.console.warn("\"BlockBuilder.waterlogged\" is a deprecated property! Please use \"BlockBuilder.property(BlockProperties.WATERLOGGED)\" instead.");
-		if (waterlogged) {
-			property(BlockStateProperties.WATERLOGGED);
-		}
-		return this;
-	}
-
-	@Deprecated(forRemoval = true)
-	public boolean getWaterlogged() {
-		ScriptType.STARTUP.console.warn("\"BlockBuilder.waterlogged\" is a deprecated property! Please use \"BlockBuilder.property(BlockProperties.WATERLOGGED)\" instead.");
-		return canBeWaterlogged();
 	}
 
 	@Info("Makes the block can be waterlogged.")

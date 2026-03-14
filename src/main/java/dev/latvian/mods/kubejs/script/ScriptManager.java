@@ -44,8 +44,6 @@ public class ScriptManager {
 	}
 
 	public void reload() {
-		KubeJSPlugins.forEachPlugin(KubeJSPlugin::clearCaches);
-
 		long start = System.currentTimeMillis();
 
 		KubeJSWeb.broadcastUpdate("before_scripts_loaded", "", () -> {

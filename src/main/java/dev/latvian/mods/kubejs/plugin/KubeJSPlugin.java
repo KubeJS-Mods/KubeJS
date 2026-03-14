@@ -150,10 +150,6 @@ public interface KubeJSPlugin {
 	default void generateLang(LangKubeEvent event) {
 	}
 
-	@Deprecated
-	default void clearCaches() {
-	}
-
 	default void exportServerData(DataExport export) {
 	}
 
