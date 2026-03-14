@@ -19,8 +19,7 @@ import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -190,7 +189,7 @@ public class KubeJSClient extends KubeJSCommon {
 		}
 	}
 
-	public static int drawStackSize(GuiGraphics graphics, Font font, int size, int x, int y, int color, boolean dropShadow) {
+	public static int drawStackSize(GuiGraphicsExtractor graphics, Font font, int size, int x, int y, int color, boolean dropShadow) {
 		var str = formatNumber(size);
 		int w = font.width(str);
 		float scale = ClientProperties.get().shrinkStackSizeText ? (str.length() >= 4 ? 0.5F : str.length() == 3 ? 0.75F : 1F) : 1F;
@@ -199,7 +198,7 @@ public class KubeJSClient extends KubeJSCommon {
 		graphics.pose().translate(x + 16F - (w - 1F) * scale, y + 16F - 7F * scale);
 		graphics.pose().scale(scale, scale);
 
-		graphics.drawString(font, str, 0, 0, color, dropShadow);
+		graphics.text(font, str, 0, 0, color, dropShadow);
 
 		graphics.pose().popMatrix();
 		return Mth.ceil(w * scale);

@@ -9,20 +9,18 @@ import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.LogType;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 
@@ -129,16 +127,16 @@ public class KubeJSErrorScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mx, int my, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mx, int my, float delta) {
 		tooltip = null;
 
-		super.render(guiGraphics, mx, my, delta);
-		guiGraphics.drawCenteredString(font, "KubeJS " + scriptType.name + " script " + (viewing == errors ? "errors" : "warnings"), width / 2, 12, 0xFFFFFFFF);
-		list.render(guiGraphics, mx, my, delta);
+		super.extractRenderState(graphics, mx, my, delta);
+		graphics.centeredText(font, "KubeJS " + scriptType.name + " script " + (viewing == errors ? "errors" : "warnings"), width / 2, 12, 0xFFFFFFFF);
+		list.extractRenderState(graphics, mx, my, delta);
 
 
 		if (errors.isEmpty() && warnings.isEmpty()) {
-			guiGraphics.drawCenteredString(font, "No errors or warnings found!", width / 2, height / 2 - 6, 0xFF66FF66);
+			graphics.centeredText(font, "No errors or warnings found!", width / 2, height / 2 - 6, 0xFF66FF66);
 		}
 
 		if (tooltip != null && !tooltip.isEmpty()) {
@@ -146,7 +144,7 @@ public class KubeJSErrorScreen extends Screen {
 				.map(ClientTooltipComponent::create)
 				.toList();
 
-			guiGraphics.renderTooltip(font, comps, mx, my, (guiW, guiH, x, y, tipW, tipH) -> {
+			graphics.tooltip(font, comps, mx, my, (guiW, guiH, x, y, tipW, tipH) -> {
 				int px = x + 12;
 				int py = y - 12;
 
@@ -319,19 +317,19 @@ public class KubeJSErrorScreen extends Screen {
 
 
 		@Override
-		public void renderContent(GuiGraphics g, int mouseX, int mouseY, boolean hovered, float delta) {
+		public void extractContent(GuiGraphicsExtractor g, int mouseX, int mouseY, boolean hovered, float delta) {
 			int x = getX();
 			int y = getY();
 			int w = getWidth();
 			int h = getHeight();
 
 			int col = line.type == LogType.ERROR ? 0xFFFF5B63 : 0xFFFFBB5B;
-			g.drawString(minecraft.font, indexText, x + 1, y + 1, col);
-			g.drawCenteredString(minecraft.font, scriptLineText, x + w / 2, y + 1, 0xFFFFFFFF);
-			g.drawString(minecraft.font, timestampText, x + w - minecraft.font.width(timestampText) - 4, y + 1, 0xFF666666);
+			g.text(minecraft.font, indexText, x + 1, y + 1, col);
+			g.centeredText(minecraft.font, scriptLineText, x + w / 2, y + 1, 0xFFFFFFFF);
+			g.text(minecraft.font, timestampText, x + w - minecraft.font.width(timestampText) - 4, y + 1, 0xFF666666);
 
 			for (int i = 0; i < errorText.size(); i++) {
-				g.drawString(minecraft.font, errorText.get(i), x + 1, y + 13 + i * 10, col);
+				g.text(minecraft.font, errorText.get(i), x + 1, y + 13 + i * 10, col);
 			}
 
 			if (hovered && totalStackTraceSize > 0) {

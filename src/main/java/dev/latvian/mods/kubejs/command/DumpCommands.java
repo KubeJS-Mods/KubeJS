@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.UtilsJS;
-import dev.latvian.mods.rhino.JavaMembers;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
@@ -18,7 +17,6 @@ import net.minecraft.resources.ResourceKey;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
-import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 
 public class DumpCommands {
@@ -88,10 +86,10 @@ public class DumpCommands {
 
 				builder.append("\n\n");
 
-				var classInfo = eventType.getAnnotation(Info.class);
-				if (classInfo != null) {
+				var infoAnno = eventType.getAnnotation(Info.class);
+				if (infoAnno != null) {
 					builder.append("```\n")
-						.append(classInfo.value())
+						.append(infoAnno.value())
 						.append("```");
 					builder.append("\n\n");
 				}
@@ -99,7 +97,7 @@ public class DumpCommands {
 				var scriptManager = source.getServer().getServerResources().managers().kjs$getServerScriptManager();
 				var cx = (KubeJSContext) scriptManager.contextFactory.enter();
 
-				var members = JavaMembers.lookupClass(cx, cx.topLevelScope, eventType, null, false);
+				var classInfo = cx.getCachedClassStorage(false).get(eventType);
 
 				var hasDocumentedMembers = false;
 				var documentedMembers = new StringBuilder("### Documented members:\n\n");
@@ -107,19 +105,19 @@ public class DumpCommands {
 				builder.append("### Available fields:\n\n");
 				builder.append("| Name | Type | Static? |\n");
 				builder.append("| ---- | ---- | ------- |\n");
-				for (var field : members.getAccessibleFields(cx, false)) {
-					if (field.field.getDeclaringClass() == Object.class) {
+				for (var accessible : classInfo.getAccessibleFields(false)) {
+					var field = accessible.getInfo();
+					if (field.getDeclaringClass().type == Object.class) {
 						continue;
 					}
 
-					var typeName = UtilsJS.toMappedTypeString(field.field.getGenericType());
-					builder.append("| ").append(field.name).append(" | ").append(typeName).append(" | ");
-					builder.append(Modifier.isStatic(field.field.getModifiers()) ? UNICODE_TICK : UNICODE_CROSS).append(" |\n");
+					builder.append("| ").append(field.getName()).append(" | ").append(field.getType()).append(" | ");
+					builder.append(field.isStatic ? UNICODE_TICK : UNICODE_CROSS).append(" |\n");
 
-					var info = field.field.getAnnotation(Info.class);
+					var info = field.getCached().getAnnotation(Info.class);
 					if (info != null) {
 						hasDocumentedMembers = true;
-						documentedMembers.append("- `").append(typeName).append(' ').append(field.name).append("`\n");
+						documentedMembers.append("- `").append(field.getType()).append(' ').append(accessible.getName()).append("`\n");
 						documentedMembers.append("```\n");
 						var desc = info.value();
 						documentedMembers.append(desc);
@@ -135,36 +133,36 @@ public class DumpCommands {
 				builder.append("### Available methods:\n\n");
 				builder.append("| Name | Parameters | Return type | Static? |\n");
 				builder.append("| ---- | ---------- | ----------- | ------- |\n");
-				for (var method : members.getAccessibleMethods(cx, false)) {
-					if (method.hidden || method.method.getDeclaringClass() == Object.class) {
+				for (var accessible : classInfo.getAccessibleMethods(false)) {
+					var method = accessible.getInfo();
+					if (method.getDeclaringClass().type == Object.class) {
 						continue;
 					}
-					builder.append("| ").append(method.name).append(" | ");
-					var params = method.method.getGenericParameterTypes();
+					builder.append("| ").append(accessible.getName()).append(" | ");
+					var params = method.getParameters();
 
-					var paramTypes = new String[params.length];
-					for (var i = 0; i < params.length; i++) {
-						paramTypes[i] = UtilsJS.toMappedTypeString(params[i]);
+					String[] paramTypes = new String[params.count()];
+					for (int i = 0; i < params.count(); i++) {
+						paramTypes[i] = params.typeInfos().get(i).toString();
 					}
 					builder.append(String.join(", ", paramTypes)).append(" | ");
 
-					var returnType = UtilsJS.toMappedTypeString(method.method.getGenericReturnType());
-					builder.append(" | ").append(returnType).append(" | ");
-					builder.append(Modifier.isStatic(method.method.getModifiers()) ? UNICODE_TICK : UNICODE_CROSS).append(" |\n");
+					builder.append(" | ").append(method.getReturnType()).append(" | ");
+					builder.append(method.isStatic ? UNICODE_TICK : UNICODE_CROSS).append(" |\n");
 
-					var info = method.method.getAnnotation(Info.class);
+					var info = method.getCached().getAnnotation(Info.class);
 					if (info != null) {
 						hasDocumentedMembers = true;
 						documentedMembers.append("- ").append('`');
-						if (Modifier.isStatic(method.method.getModifiers())) {
+						if (method.isStatic) {
 							documentedMembers.append("static ");
 						}
-						documentedMembers.append(returnType).append(' ').append(method.name).append('(');
+						documentedMembers.append(method.getReturnType()).append(' ').append(accessible.getName()).append('(');
 
 						var namedParams = info.params();
-						var paramNames = new String[params.length];
-						var signature = new String[params.length];
-						for (var i = 0; i < params.length; i++) {
+						var paramNames = new String[params.count()];
+						var signature = new String[params.count()];
+						for (var i = 0; i < params.count(); i++) {
 							var name = "var" + i;
 							if (namedParams.length > i) {
 								var name1 = namedParams[i].name();
@@ -178,9 +176,9 @@ public class DumpCommands {
 
 						documentedMembers.append(String.join(", ", signature)).append(')').append('`').append("\n");
 
-						if (params.length > 0) {
+						if (params.count() > 0) {
 							documentedMembers.append("\n  Parameters:\n");
-							for (var i = 0; i < params.length; i++) {
+							for (var i = 0; i < params.count(); i++) {
 								documentedMembers.append("  - ")
 									.append(paramNames[i])
 									.append(": ")

@@ -1,72 +1,5 @@
 package dev.latvian.mods.kubejs.web.local.client;
 
-import com.madgag.gif.fmsware.AnimatedGifEncoder;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.pipeline.TextureTarget;
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexSorting;
-import dev.latvian.apps.tinyserver.content.ResponseContent;
-import dev.latvian.apps.tinyserver.http.response.HTTPPayload;
-import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
-import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
-import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.component.DataComponentWrapper;
-import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
-import dev.latvian.mods.kubejs.plugin.builtin.wrapper.UUIDWrapper;
-import dev.latvian.mods.kubejs.util.CachedComponentObject;
-import dev.latvian.mods.kubejs.util.Cast;
-import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.Identifier;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.biome.Biomes;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.model.data.ModelData;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-
-import javax.imageio.ImageIO;
-import java.awt.Color;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.nio.file.Files;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
-
 public class ImageGenerator {
 /*	public static final ItemTransform ROTATED_BLOCK_TRANSFORM = new ItemTransform(
 		new Vector3f(30F, 225F, 0F),
@@ -76,7 +9,7 @@ public class ImageGenerator {
 
 	public static final Identifier WILDCARD_TEXTURE = KubeJS.id("textures/misc/wildcard.png");
 
-	private record RenderImage(Minecraft mc, GuiGraphics graphics, int size) {
+	private record RenderImage(Minecraft mc, GuiGraphicsExtractor graphics, int size) {
 	}
 
 	public record CachedImage(HTTPResponse response, @Nullable String pathStr) {
@@ -148,7 +81,7 @@ public class ImageGenerator {
 			view.translation(0F, 0F, 0F);
 			RenderSystem.applyModelViewMatrix();
 
-			GuiGraphics graphics = new GuiGraphics(mc, bufferSource);
+			GuiGraphicsExtractor graphics = new GuiGraphicsExtractor(mc, bufferSource);
 			render.accept(new RenderImage(mc, graphics, size));
 
 			if (wildcard) {

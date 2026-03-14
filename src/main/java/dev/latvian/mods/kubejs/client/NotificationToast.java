@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextWrapper;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.util.FormattedCharSequence;
@@ -70,11 +70,11 @@ public class NotificationToast implements Toast {
 		return this.height;
 	}
 
-	private void drawRectangle(GuiGraphics graphics, int x0, int y0, int x1, int y1, int r, int g, int b) {
+	private void drawRectangle(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1, int r, int g, int b) {
 		graphics.fill(x0, y0, x1, y1, (0xFF << 24) | (r << 16) | (g << 8) | b);
 	}
 
-	private void drawRectangle(GuiGraphics graphics, int x0, int y0, int x1, int y1, int rgb) {
+	private void drawRectangle(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1, int rgb) {
 		graphics.fill(x0, y0, x1, y1, 0xFF000000 | (rgb & 0xFFFFFF));
 	}
 
@@ -95,7 +95,7 @@ public class NotificationToast implements Toast {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, Font font, long l) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, Font font, long l) {
 		if (changed) {
 			lastChanged = l;
 			changed = false;
@@ -117,8 +117,8 @@ public class NotificationToast implements Toast {
 		int b = 0xFF000000 | bc;
 		int bg = 0xFF000000 | bgc;
 
-		graphics.fill(xOff + 2, yOff + 0, xOff + w - 2, yOff + h, o);
-		graphics.fill(xOff + 0, yOff + 2, xOff + w, yOff + h - 2, o);
+		graphics.fill(xOff + 2, yOff, xOff + w - 2, yOff + h, o);
+		graphics.fill(xOff, yOff + 2, xOff + w, yOff + h - 2, o);
 		graphics.fill(xOff + 1, yOff + 1, xOff + w - 1, yOff + h - 1, o);
 
 		graphics.fill(xOff + 2, yOff + 1, xOff + w - 2, yOff + h - 1, b);
@@ -134,7 +134,7 @@ public class NotificationToast implements Toast {
 		int tv = (h - text.size() * 10) / 2 + 1;
 
 		for (var i = 0; i < text.size(); i++) {
-			graphics.drawString(mc.font, text.get(i), xOff + th, yOff + tv + i * 10, 0xFFFFFF, notification.textShadow());
+			graphics.text(mc.font, text.get(i), xOff + th, yOff + tv + i * 10, 0xFFFFFF, notification.textShadow());
 		}
 	}
 

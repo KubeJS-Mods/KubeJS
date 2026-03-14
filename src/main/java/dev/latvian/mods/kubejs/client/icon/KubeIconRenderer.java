@@ -1,18 +1,12 @@
 package dev.latvian.mods.kubejs.client.icon;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.data.AtlasIds;
-import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -37,11 +31,11 @@ public interface KubeIconRenderer {
 		return factory != null ? factory.apply(Cast.to(icon)) : null;
 	}
 
-	void draw(Minecraft mc, GuiGraphics graphics, int x, int y, int size);
+	void draw(Minecraft mc, GuiGraphicsExtractor graphics, int x, int y, int size);
 
 	record FromTexture(TextureKubeIcon icon) implements KubeIconRenderer {
 		@Override
-		public void draw(Minecraft mc, GuiGraphics graphics, int x, int y, int size) {
+		public void draw(Minecraft mc, GuiGraphicsExtractor graphics, int x, int y, int size) {
 			int p0 = -size / 2;
 			int p1 = p0 + size;
 
@@ -51,7 +45,7 @@ public interface KubeIconRenderer {
 
 	record FromAtlasSprite(AtlasSpriteKubeIcon icon) implements KubeIconRenderer {
 		@Override
-		public void draw(Minecraft mc, GuiGraphics graphics, int x, int y, int size) {
+		public void draw(Minecraft mc, GuiGraphicsExtractor graphics, int x, int y, int size) {
 			TextureAtlas atlas = icon.atlas().isEmpty()
 				? mc.getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS)
 				: mc.getAtlasManager().getAtlasOrThrow(icon.atlas().get());
@@ -67,13 +61,13 @@ public interface KubeIconRenderer {
 
 	record FromItem(ItemKubeIcon icon) implements KubeIconRenderer {
 		@Override
-		public void draw(Minecraft mc, GuiGraphics graphics, int x, int y, int size) {
+		public void draw(Minecraft mc, GuiGraphicsExtractor graphics, int x, int y, int size) {
 			var m = RenderSystem.getModelViewStack();
 			m.pushMatrix();
 			m.translate(x - 2F, y + 2F, 0F);
 			float s = size / 16F;
 			m.scale(s, s, s);
-			graphics.renderFakeItem(icon.item(), -8, -8);
+			graphics.fakeItem(icon.item(), -8, -8);
 			m.popMatrix();
 		}
 	}

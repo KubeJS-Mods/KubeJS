@@ -14,13 +14,14 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.util.valueproviders.IntProviders;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.function.Function;
 
 public interface KubeJSStreamCodecs {
-	StreamCodec<? super RegistryFriendlyByteBuf, IntProvider> INT_PROVIDER = ByteBufCodecs.fromCodecWithRegistries(IntProvider.CODEC);
+	StreamCodec<? super RegistryFriendlyByteBuf, IntProvider> INT_PROVIDER = ByteBufCodecs.fromCodecWithRegistries(IntProviders.CODEC);
 
 	StreamCodec<RegistryFriendlyByteBuf, Identifier> KUBEJS_ID = new StreamCodec<>() {
 		@Override

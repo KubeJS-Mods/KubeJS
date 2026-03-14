@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import dev.latvian.mods.kubejs.client.DebugInfoKubeEvent;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ClientEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,14 +16,14 @@ import java.util.List;
 @Mixin(DebugScreenOverlay.class)
 public class DebugScreenOverlayMixin {
 	@Inject(
-		method = "render(Lnet/minecraft/client/gui/GuiGraphics;)V",
+		method = "extractRenderState",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/components/DebugScreenOverlay;renderLines(Lnet/minecraft/client/gui/GuiGraphics;Ljava/util/List;Z)V",
+			target = "Lnet/minecraft/client/gui/components/DebugScreenOverlay;extractLines(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Ljava/util/List;Z)V",
 			ordinal = 0
 		)
 	)
-	private void kubejs$debugText(GuiGraphics graphics, CallbackInfo ci, @Local(ordinal = 0) List<String> leftLines, @Local(ordinal = 1) List<String> rightLines) {
+	private void kubejs$debugText(GuiGraphicsExtractor graphics, CallbackInfo ci, @Local(ordinal = 0) List<String> leftLines, @Local(ordinal = 1) List<String> rightLines) {
 		var mc = Minecraft.getInstance();
 		if (mc.player == null) {
 			return;

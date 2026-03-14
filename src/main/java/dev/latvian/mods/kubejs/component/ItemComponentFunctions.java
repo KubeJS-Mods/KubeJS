@@ -4,11 +4,11 @@ import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Instrument;
@@ -74,11 +74,11 @@ public interface ItemComponentFunctions extends ComponentFunctions, AttributeMod
 		kjs$setFood(new FoodProperties.Builder().nutrition(nutrition).saturationModifier(saturation).build());
 	}
 
-	default void kjs$addDamageResistance(TagKey<DamageType> types) {
+	default void kjs$addDamageResistance(HolderSet<DamageType> types) {
 		kjs$override(DataComponents.DAMAGE_RESISTANT, new DamageResistant(types));
 	}
 
-	default void kjs$setFireResistant(TagKey<DamageType> fireTypes) {
+	default void kjs$setFireResistant(HolderSet<DamageType> fireTypes) {
 		kjs$addDamageResistance(fireTypes);
 	}
 

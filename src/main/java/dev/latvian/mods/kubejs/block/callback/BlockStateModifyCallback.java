@@ -5,7 +5,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Mirror;
@@ -17,7 +16,7 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 public class BlockStateModifyCallback {
@@ -92,14 +91,9 @@ public class BlockStateModifyCallback {
 		return this;
 	}
 
-	public BlockStateModifyCallback populateNeighbours(Map<Map<Property<?>, Comparable<?>>, BlockState> map) {
-		state.populateNeighbours(map);
-		return this;
-	}
-
 	@Info("Get a map of this blocks properties to it's value")
-	public Map<Property<?>, Comparable<?>> getValues() {
-		return state.getValues();
+	public List<Property.Value<?>> getValues() {
+		return state.getValues().toList();
 	}
 
 	@Info("Rotate the block using the specified Rotation")

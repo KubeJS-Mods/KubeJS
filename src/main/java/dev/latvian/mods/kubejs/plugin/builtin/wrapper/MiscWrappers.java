@@ -16,7 +16,9 @@ import net.minecraft.util.valueproviders.ClampedNormalInt;
 import net.minecraft.util.valueproviders.ConstantFloat;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.FloatProvider;
+import net.minecraft.util.valueproviders.FloatProviders;
 import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.util.valueproviders.IntProviders;
 import net.minecraft.util.valueproviders.UniformFloat;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.Entity;
@@ -102,7 +104,7 @@ public interface MiscWrappers {
 				} else if (hasBounds(map)) {
 					yield parseIntBounds(map).map(v -> v);
 				} else {
-					yield IntProvider.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), NBTWrapper.wrapCompound(cx, map))
+					yield IntProviders.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), NBTWrapper.wrapCompound(cx, map))
 						.mapError(error -> "Failed to decode IntProvider from %s: %s".formatted(map, error));
 				}
 			}
@@ -185,7 +187,7 @@ public interface MiscWrappers {
 		} else if (hasBounds(m)) {
 			return parseIntBounds(m).map(v -> v);
 		} else {
-			return IntProvider.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), NBTWrapper.wrapCompound(cx, m)).map(v -> v).mapError(error -> "Failed to decode IntProvider from %s: %s".formatted(m, error));
+			return IntProviders.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), NBTWrapper.wrapCompound(cx, m)).map(v -> v).mapError(error -> "Failed to decode IntProvider from %s: %s".formatted(m, error));
 		}
 	}
 
@@ -208,7 +210,7 @@ public interface MiscWrappers {
 		} else if (hasBounds(m)) {
 			return parseFloatBounds(m).map(v -> v);
 		} else {
-			return FloatProvider.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), NBTWrapper.wrapCompound(cx, m))
+			return FloatProviders.CODEC.parse(RegistryAccessContainer.of(cx).nbt(), NBTWrapper.wrapCompound(cx, m))
 				.mapError(error -> "Failed to decode FloatProvider from %s: %s".formatted(m, error));
 		}
 	}
@@ -231,15 +233,15 @@ public interface MiscWrappers {
 	}
 
 	private static IntProvider toClamped(IntProvider source, UniformInt clampTo) {
-		return ClampedInt.of(source, clampTo.getMinValue(), clampTo.getMaxValue());
+		return ClampedInt.of(source, clampTo.minInclusive(), clampTo.maxInclusive());
 	}
 
 	private static IntProvider toClampedNormal(int mean, int deviation, UniformInt clampTo) {
-		return ClampedNormalInt.of(mean, deviation, clampTo.getMinValue(), clampTo.getMaxValue());
+		return ClampedNormalInt.of(mean, deviation, clampTo.minInclusive(), clampTo.maxInclusive());
 	}
 
 	private static FloatProvider toClampedNormal(float mean, float deviation, UniformFloat clampTo) {
-		return ClampedNormalFloat.of(mean, deviation, clampTo.getMinValue(), clampTo.getMaxValue());
+		return ClampedNormalFloat.of(mean, deviation, clampTo.min(), clampTo.max());
 	}
 
 	static Path wrapPath(Context cx, Object o) {

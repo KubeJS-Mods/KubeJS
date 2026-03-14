@@ -1,9 +1,8 @@
 package dev.latvian.mods.kubejs.client.highlight;
 
-import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.resource.ResourceHandle;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.latvian.mods.kubejs.DevProperties;
@@ -21,17 +20,13 @@ import it.unimi.dsi.fastutil.objects.Reference2IntLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.PostChainConfig;
 import net.minecraft.client.renderer.ShaderManager;
-import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -46,13 +41,13 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class HighlightRenderer {
@@ -173,20 +168,15 @@ public class HighlightRenderer {
 		}
 	}
 
-	private static final class MultiTargetBundle implements PostChain.TargetBundle {
-		private final java.util.Map<Identifier, com.mojang.blaze3d.resource.ResourceHandle<RenderTarget>> targets;
-
-		private MultiTargetBundle(java.util.Map<Identifier, com.mojang.blaze3d.resource.ResourceHandle<RenderTarget>> targets) {
-			this.targets = targets;
-		}
+	private record MultiTargetBundle(Map<Identifier, ResourceHandle<RenderTarget>> targets) implements PostChain.TargetBundle {
 
 		@Override
-		public void replace(Identifier id, com.mojang.blaze3d.resource.ResourceHandle<RenderTarget> handle) {
+		public void replace(Identifier id, ResourceHandle<RenderTarget> handle) {
 			targets.put(id, handle);
 		}
 
 		@Override
-		public @Nullable com.mojang.blaze3d.resource.ResourceHandle<RenderTarget> get(Identifier id) {
+		public @Nullable ResourceHandle<RenderTarget> get(Identifier id) {
 			return targets.get(id);
 		}
 	}
@@ -528,7 +518,7 @@ public class HighlightRenderer {
 		buf.addVertex(m, x1, y0, z1).setColor(255, 255, 255, 255);
 	}
 
-	public void screen(Minecraft mc, GuiGraphics graphics, AbstractContainerScreen<?> screen, int mx, int my, float delta) {
+	public void screen(Minecraft mc, GuiGraphicsExtractor graphics, AbstractContainerScreen<?> screen, int mx, int my, float delta) {
 		if (guiChain == null) {
 			return;
 		}
@@ -588,7 +578,7 @@ public class HighlightRenderer {
 		RenderSystem.outputDepthTextureOverride = null;
 	}
 
-	public void hudPostDraw(Minecraft mc, GuiGraphics graphics, float delta) {
+	public void hudPostDraw(Minecraft mc, GuiGraphicsExtractor graphics, float delta) {
 	}
 
 

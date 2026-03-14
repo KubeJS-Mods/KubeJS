@@ -82,7 +82,7 @@
 		"ClientLevelMixin",
 		"ClientPacketListenerMixin",
 		"GameRendererMixin",
-		"GuiGraphicsMixin",
+		"GuiGraphicsExtractorMixin",
 		"KeyboardHandlerMixin",
 		"LevelRendererMixin",
 		"LoadingOverlayMixin",
