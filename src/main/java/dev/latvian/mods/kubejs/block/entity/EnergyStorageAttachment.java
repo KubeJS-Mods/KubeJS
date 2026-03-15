@@ -13,7 +13,6 @@ import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.energy.EnergyHandlerUtil;
 import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
@@ -152,7 +151,7 @@ public class EnergyStorageAttachment implements BlockEntityAttachment {
 
 		@Override
 		protected void onRootCommit(Integer originalState) {
-			if (originalState == null || originalState.intValue() != energy) {
+			if (originalState == null || originalState != energy) {
 				if (attachment.entity.getLevel() != null && !attachment.entity.getLevel().isClientSide()) {
 					attachment.entity.save();
 				}

@@ -1,7 +1,8 @@
 package dev.latvian.mods.kubejs.block.entity;
 
-import dev.latvian.mods.kubejs.KubeJS;
 import com.mojang.serialization.DataResult;
+import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -52,7 +53,7 @@ public class FluidTankAttachment implements BlockEntityAttachment {
 	@Nullable
 	public <CAP, SRC> CAP getCapability(BlockCapability<CAP, SRC> capability) {
 		if (capability == Capabilities.Fluid.BLOCK) {
-			return (CAP) (ResourceHandler<FluidResource>) fluidTank;
+			return Cast.to(fluidTank);
 		}
 		return null;
 	}

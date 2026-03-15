@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.fluid;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockRenderType;
-import dev.latvian.mods.kubejs.client.LoadedTexture;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;

@@ -78,7 +78,6 @@ public interface NBTWrapper {
 
 				yield list;
 			}
-			default -> t;
 		};
 	}
 
@@ -242,7 +241,7 @@ public interface NBTWrapper {
 			int[] array = new int[s];
 
 			for (int i = 0; i < s; i++) {
-				array[i] = ((NumericTag) values[i]).asInt().get();
+				array[i] = values[i].asInt().get();
 			}
 
 			return new IntArrayTag(array);
@@ -250,7 +249,7 @@ public interface NBTWrapper {
 			byte[] array = new byte[s];
 
 			for (int i = 0; i < s; i++) {
-				array[i] = ((NumericTag) values[i]).asByte().get();
+				array[i] = values[i].asByte().get();
 			}
 
 			return new ByteArrayTag(array);
@@ -258,7 +257,7 @@ public interface NBTWrapper {
 			long[] array = new long[s];
 
 			for (int i = 0; i < s; i++) {
-				array[i] = ((NumericTag) values[i]).asLong().get();
+				array[i] = values[i].asLong().get();
 			}
 
 			return new LongArrayTag(array);

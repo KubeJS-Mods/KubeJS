@@ -11,14 +11,13 @@ import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.rhino.Context;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.world.damagesource.DamageSources;
@@ -29,7 +28,6 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,6 +140,7 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 
 		return cachedRegistryWrappers.computeIfAbsent(id, this::createRegistryWrapper);
 	}
+
 	@Override
 	public <T> boolean isTagLoaded(TagKey<T> key) {
 		var cached = cachedRegistryTags.get(key.registry());

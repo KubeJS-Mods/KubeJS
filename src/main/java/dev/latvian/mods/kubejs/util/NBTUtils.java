@@ -90,7 +90,6 @@ public interface NBTUtils {
 
 				yield object;
 			}
-			default -> JsonNull.INSTANCE;
 		};
 	}
 

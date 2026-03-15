@@ -11,7 +11,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import org.jetbrains.annotations.NotNull;
 
 public class BasicMobEffect extends MobEffect {
 	public final transient MobEffectBuilder builder;

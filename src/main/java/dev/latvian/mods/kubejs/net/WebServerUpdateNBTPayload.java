@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.codec.ByteBufCodecs;

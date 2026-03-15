@@ -18,9 +18,9 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryFixedCodec;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
@@ -44,7 +44,7 @@ public record RegistryComponent<T>(Registry<T> registry, @Nullable RegistryType<
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public RegistryComponent(RegistryAccessContainer registries, ResourceKey key) {
-		this(registries, (RegistryType) RegistryType.ofKey(key), key);
+		this(registries, RegistryType.ofKey(key), key);
 	}
 
 	@Override

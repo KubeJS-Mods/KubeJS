@@ -10,7 +10,6 @@ import dev.latvian.mods.kubejs.registry.RegistryKubeEvent;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
 
 public interface StartupEvents {
 	EventGroup GROUP = EventGroup.of("StartupEvents");

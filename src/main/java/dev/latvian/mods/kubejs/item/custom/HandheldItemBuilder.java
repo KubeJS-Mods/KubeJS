@@ -104,12 +104,12 @@ public abstract class HandheldItemBuilder extends ItemBuilder {
 		return ItemAttributeModifiers.builder()
 			.add(
 				Attributes.ATTACK_DAMAGE,
-				new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, (double) (attackDamageBaseline + material.attackDamageBonus()), AttributeModifier.Operation.ADD_VALUE),
+				new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, attackDamageBaseline + material.attackDamageBonus(), AttributeModifier.Operation.ADD_VALUE),
 				EquipmentSlotGroup.MAINHAND
 			)
 			.add(
 				Attributes.ATTACK_SPEED,
-				new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, (double) attackSpeedBaseline, AttributeModifier.Operation.ADD_VALUE),
+				new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, attackSpeedBaseline, AttributeModifier.Operation.ADD_VALUE),
 				EquipmentSlotGroup.MAINHAND
 			)
 			.build();

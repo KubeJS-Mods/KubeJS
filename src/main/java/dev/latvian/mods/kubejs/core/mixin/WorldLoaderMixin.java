@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.TagReloadContextKJS;
@@ -13,7 +14,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import com.llamalad7.mixinextras.sugar.Local;
 
 import java.util.List;
 import java.util.concurrent.CompletionStage;
@@ -30,7 +30,7 @@ public class WorldLoaderMixin {
 	)
 	private static void kjs$load(
 		CallbackInfoReturnable<CompletionStage<?>> cir,
-		@Local RegistryAccess.Frozen worldgenLoadContext
+		@Local(name = "worldgenLoadContext") RegistryAccess.Frozen worldgenLoadContext
 	) {
 		RegistryAccessContainer.current = new RegistryAccessContainer(worldgenLoadContext);
 	}

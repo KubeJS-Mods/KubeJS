@@ -10,16 +10,14 @@ import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
-
-import java.util.List;
 
 @RemapPrefixForJS("kjs$")
 public interface RecipeHolderKJS extends RecipeLikeKJS {

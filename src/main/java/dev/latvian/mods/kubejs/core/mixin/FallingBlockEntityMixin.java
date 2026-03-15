@@ -24,7 +24,7 @@ public class FallingBlockEntityMixin {
 	private BlockState blockState;
 
 	@Inject(method = "fall", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", shift = At.Shift.BEFORE))
-	private static void kjs$fallStart(Level level, BlockPos pos, BlockState state, CallbackInfoReturnable<FallingBlockEntity> cir, @Local FallingBlockEntity entity) {
+	private static void kjs$fallStart(Level level, BlockPos pos, BlockState state, CallbackInfoReturnable<FallingBlockEntity> cir, @Local(name = "entity") FallingBlockEntity entity) {
 		if (!level.isClientSide() && BlockEvents.STARTED_FALLING.hasListeners(state.kjs$getKey())) {
 			if (BlockEvents.STARTED_FALLING.post(ScriptType.SERVER, state.kjs$getKey(), new BlockStartedFallingKubeEvent(level, pos, state, entity)).interruptFalse()) {
 				cir.setReturnValue(entity);
@@ -48,7 +48,7 @@ public class FallingBlockEntityMixin {
 			shift = At.Shift.BEFORE
 		)
 	)
-	private void kjs$fallEnd(CallbackInfo ci, @Local BlockPos pos, @Local BlockState replacedState) {
+	private void kjs$fallEnd(CallbackInfo ci, @Local(name = "pos") BlockPos pos, @Local(name = "currentState") BlockState replacedState) {
 		var entity = (FallingBlockEntity) (Object) this;
 		if (!entity.level().isClientSide() && BlockEvents.STOPPED_FALLING.hasListeners(blockState.kjs$getKey())) {
 			BlockEvents.STOPPED_FALLING.post(ScriptType.SERVER, blockState.kjs$getKey(), new BlockStoppedFallingKubeEvent(entity.level(), pos, blockState, entity, kjs$lastFallSpeed, replacedState));

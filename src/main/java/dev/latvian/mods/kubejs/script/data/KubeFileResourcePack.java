@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.AbstractPackResources;
 import net.minecraft.server.packs.FilePackResources;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
@@ -285,7 +284,6 @@ public class KubeFileResourcePack implements PackResources {
 			return metadata.getSection(type).orElse(null);
 		}
 	}
-
 
 
 	@Override

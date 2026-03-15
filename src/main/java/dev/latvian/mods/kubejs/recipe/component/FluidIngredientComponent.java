@@ -41,7 +41,7 @@ public record FluidIngredientComponent(RecipeComponentType<?> type, Codec<FluidI
 	@Override
 	public void buildUniqueId(UniqueIdBuilder builder, FluidIngredient value) {
 		if (!value.fluids().isEmpty()) {
-			builder.append(value.fluids().get(0).value().kjs$getIdLocation());
+			builder.append(value.fluids().getFirst().value().kjs$getIdLocation());
 		}
 	}
 

@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;

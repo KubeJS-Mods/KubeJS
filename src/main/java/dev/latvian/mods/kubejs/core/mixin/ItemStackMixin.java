@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
-import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.core.ItemStackKJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -11,7 +10,6 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -24,13 +22,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
-import java.util.stream.Stream;
 
 @Mixin(ItemStack.class)
 @RemapPrefixForJS("kjs$")
@@ -65,6 +60,7 @@ public abstract class ItemStackMixin implements ItemStackKJS {
 		return this;
 	}
 
+	@Unique
 	@HideFromJS
 	private static <T> void kjs$overrideComponent(ItemStack stack, DataComponentType<T> type, @Nullable T value) {
 		stack.set(type, value);

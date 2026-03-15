@@ -51,7 +51,7 @@ public interface ResourceHandlerItemMixin extends InventoryKJS {
 			return stack;
 		}
 		var resource = ItemResource.of(stack);
-		try (var tx = simulate ? Transaction.openRoot() : Transaction.openRoot()) {
+		try (var tx = Transaction.openRoot()) {
 			int inserted = kjs$self().insert(slot, resource, stack.getCount(), tx);
 			if (!simulate) {
 				tx.commit();

@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.block.predicate;
 
 import dev.latvian.mods.kubejs.level.LevelBlock;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
 import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -31,29 +32,7 @@ public class BlockIDPredicate implements BlockPredicate {
 
 	@Override
 	public String toString() {
-		if (properties.isEmpty()) {
-			return id.toString();
-		}
-
-		var sb = new StringBuilder(id.toString());
-		sb.append('[');
-
-		var first = true;
-
-		for (var entry : properties.entrySet()) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(',');
-			}
-
-			sb.append(entry.getKey());
-			sb.append('=');
-			sb.append(entry.getValue());
-		}
-
-		sb.append(']');
-		return sb.toString();
+		return BlockWrapper.toBlockStateString(id.toString(), properties);
 	}
 
 	public BlockIDPredicate with(String key, String value) {

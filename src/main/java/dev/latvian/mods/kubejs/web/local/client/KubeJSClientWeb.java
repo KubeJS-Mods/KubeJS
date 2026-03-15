@@ -1,52 +1,36 @@
 package dev.latvian.mods.kubejs.web.local.client;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.serialization.JsonOps;
 import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
 import dev.latvian.apps.tinyserver.http.response.HTTPStatus;
-import dev.latvian.apps.tinyserver.http.response.error.client.BadRequestError;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
-import dev.latvian.mods.kubejs.plugin.builtin.wrapper.UUIDWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.CachedComponentObject;
-import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.kubejs.util.NameProvider;
 import dev.latvian.mods.kubejs.web.JsonContent;
 import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
-import dev.latvian.mods.kubejs.web.LocalWebServer;
 import dev.latvian.mods.kubejs.web.LocalWebServerAPIRegistry;
 import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Blocks;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 
 public class KubeJSClientWeb {
 	private static final Lazy<CreativeModeTab> SEARCH_TAB = Lazy.of(() -> BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.SEARCH).get().value());

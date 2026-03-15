@@ -25,17 +25,17 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.Util;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -55,10 +55,8 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 
 @Info("Various item related helper methods")
 public interface ItemWrapper {
@@ -296,7 +294,7 @@ public interface ItemWrapper {
 		stack.set(DataComponents.PROFILE, ResolvableProfile.createUnresolved(name));
 		return stack;
 	}
-	
+
 	static ItemStack playerHeadFromBase64(UUID uuid, String textureBase64) {
 		if (uuid == null || uuid.equals(Util.NIL_UUID)) {
 			throw new IllegalArgumentException("UUID can't be null!");

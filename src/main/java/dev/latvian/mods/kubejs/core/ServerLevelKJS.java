@@ -2,10 +2,7 @@ package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 
 @RemapPrefixForJS("kjs$")
 public interface ServerLevelKJS extends LevelKJS, WithPersistentData {

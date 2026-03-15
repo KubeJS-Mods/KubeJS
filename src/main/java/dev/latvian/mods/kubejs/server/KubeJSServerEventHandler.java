@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.server;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
@@ -124,7 +123,7 @@ public class KubeJSServerEventHandler {
 						for (var key : t.keySet()) {
 							var list = t.getList(key).orElseGet(ListTag::new);
 
-							if (!list.isEmpty() && list.get(0).getId() != (byte) 10) {
+							if (!list.isEmpty() && list.getFirst().getId() != (byte) 10) {
 								continue;
 							}
 

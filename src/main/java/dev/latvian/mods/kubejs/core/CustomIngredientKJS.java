@@ -8,7 +8,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 public interface CustomIngredientKJS extends ItemPredicate {

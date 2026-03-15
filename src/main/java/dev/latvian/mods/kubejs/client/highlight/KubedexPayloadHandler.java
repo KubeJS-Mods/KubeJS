@@ -207,7 +207,7 @@ public class KubedexPayloadHandler {
 			}
 
 			if (stack.getItem() instanceof SpawnEggItem egg) {
-				var entityType = egg.getType(stack);
+				var entityType = SpawnEggItem.getType(stack);
 
 				if (entityType != null) {
 					var entityTagList = sortedTagList(entityType.builtInRegistryHolder().tags());

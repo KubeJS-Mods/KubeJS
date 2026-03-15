@@ -432,8 +432,8 @@ public class RecipesKubeEvent implements KubeEvent {
 	public Stream<KubeRecipe> recipeStream(Context cx, RecipeFilter filter) {
 		if (filter == ConstantFilter.FALSE) {
 			return Stream.empty();
-		} else if (filter instanceof IDFilter id) {
-			var r = originalRecipes.get(id.id);
+		} else if (filter instanceof IDFilter(Identifier id1)) {
+			var r = originalRecipes.get(id1);
 			return r == null || r.removed ? Stream.empty() : Stream.of(r);
 		}
 
@@ -449,7 +449,7 @@ public class RecipesKubeEvent implements KubeEvent {
 				}
 			}
 
-			return or.list.stream().map(idf -> originalRecipes.get(((IDFilter) idf).id)).filter(RECIPE_NOT_REMOVED);
+			return or.list.stream().map(idf -> originalRecipes.get(((IDFilter) idf).id())).filter(RECIPE_NOT_REMOVED);
 		}
 
 		return originalRecipes.values().stream().filter(new RecipeStreamFilter(cx, filter));
@@ -460,8 +460,8 @@ public class RecipesKubeEvent implements KubeEvent {
 	}
 
 	public void forEachRecipe(Context cx, RecipeFilter filter, Consumer<KubeRecipe> consumer) {
-		if (filter instanceof IDFilter id) {
-			var r = originalRecipes.get(id.id);
+		if (filter instanceof IDFilter(Identifier id1)) {
+			var r = originalRecipes.get(id1);
 
 			if (r != null && !r.removed) {
 				consumer.accept(r);
@@ -626,7 +626,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	public void printAllTypes() {
 		ConsoleJS.SERVER.info("== All recipe types [available] ==");
-		printTypes(t -> BuiltInRegistries.RECIPE_SERIALIZER.get(t.id) != null, true);
+		printTypes(t -> BuiltInRegistries.RECIPE_SERIALIZER.containsKey(t.id), true);
 	}
 
 	public void printExamples(String type) {

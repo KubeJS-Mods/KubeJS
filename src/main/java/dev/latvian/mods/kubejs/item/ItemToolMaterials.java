@@ -22,7 +22,7 @@ public class ItemToolMaterials {
 			}
 		}
 
-		ItemEvents.TOOL_MATERIAL_REGISTRY.post(ScriptType.STARTUP, new ItemToolMaterialRegistryKubeEvent((Map) map));
+		ItemEvents.TOOL_MATERIAL_REGISTRY.post(ScriptType.STARTUP, new ItemToolMaterialRegistryKubeEvent(map));
 	});
 
 	public static ToolMaterial wrap(Object o) {

@@ -14,21 +14,16 @@ import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.nbt.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.storage.ValueInput;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.stream.Stream;
 
 import static dev.latvian.mods.kubejs.util.UtilsJS.EMPTY_INGREDIENT;
 

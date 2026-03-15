@@ -171,6 +171,32 @@ public class BlockWrapper {
 		};
 	}
 
+	public static String toBlockStateString(String id, Map<String, String> properties) {
+		if (properties.isEmpty()) {
+			return id;
+		}
+
+		var builder = new StringBuilder(id);
+		builder.append('[');
+
+		var first = true;
+
+		for (var entry : properties.entrySet()) {
+			if (first) {
+				first = false;
+			} else {
+				builder.append(',');
+			}
+
+			builder.append(entry.getKey());
+			builder.append('=');
+			builder.append(entry.getValue());
+		}
+
+		builder.append(']');
+		return builder.toString();
+	}
+
 	public static BlockState withProperties(BlockState state, Map<?, ?> properties) {
 		var pmap = new HashMap<String, Property<?>>();
 

@@ -5,7 +5,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -88,12 +87,11 @@ public class InformationCommands {
 		var containedFluid = FluidUtil.getFirstStackContained(stack);
 		if (!containedFluid.isEmpty()) {
 			player.sendSystemMessage(Component.literal("Held fluid:"));
-			var fluid = containedFluid;
-			var fluidHolder = fluid.getFluid().builtInRegistryHolder();
+			var fluid = containedFluid.typeHolder();
 			// id
-			player.sendSystemMessage(copy(fluidHolder.key().identifier().toString(), ChatFormatting.GREEN, "Fluid ID"));
+			player.sendSystemMessage(copy(fluid.getKey().identifier().toString(), ChatFormatting.GREEN, "Fluid ID"));
 			// fluid tags
-			var fluidTags = fluidHolder.tags().toList();
+			var fluidTags = containedFluid.tags().toList();
 			for (var tag : fluidTags) {
 				var id = "'#%s'".formatted(tag.location());
 				var size = fluidRegistry.get(tag).map(HolderSet::size).orElse(0);

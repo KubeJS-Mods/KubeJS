@@ -3,13 +3,12 @@ package dev.latvian.mods.kubejs.command;
 import com.mojang.brigadier.CommandDispatcher;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
-import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
-import net.minecraft.util.profiling.InactiveProfiler;
+import net.minecraft.util.Util;
 
 import java.util.concurrent.CompletableFuture;
 

@@ -28,7 +28,6 @@ import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.chat.contents.ScoreContents;
 import net.minecraft.network.chat.contents.SelectorContents;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.Nullable;
 

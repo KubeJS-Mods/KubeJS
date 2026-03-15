@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.component;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.PropertyMap;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.script.SourceLine;
@@ -18,10 +17,8 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Unit;
 import net.minecraft.world.LockCode;
@@ -44,11 +41,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static dev.latvian.mods.kubejs.component.DataComponentWrapper.tryWrapComponent;
-import static net.minecraft.core.component.DataComponents.TOOLTIP_DISPLAY;
 
 @RemapPrefixForJS("kjs$")
 @ReturnsSelf

@@ -7,7 +7,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentInitializers;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.RegistryLayer;

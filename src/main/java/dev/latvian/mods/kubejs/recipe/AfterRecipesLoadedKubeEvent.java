@@ -12,13 +12,11 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.RegistryOpsContainer;
 import dev.latvian.mods.rhino.Context;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeMap;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 

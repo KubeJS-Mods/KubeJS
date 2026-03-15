@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs;
 
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.fml.loading.LoadingModList;
 import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;

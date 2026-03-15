@@ -46,11 +46,11 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 		ResourceManager manager,
 		Registry<T> registry,
 		CallbackInfoReturnable<?> cir,
-		@Local TagLoader<Holder<T>> loader
+		@Local(name = "loader") TagLoader<Holder<T>> loader
 	) {
 		ServerScriptManager ssm = TagReloadContextKJS.CURRENT.get();
 		if (ssm != null) {
-			((TagLoaderKJS<T>) (Object) loader).kjs$init(ssm, registry);
+			((TagLoaderKJS<T>) loader).kjs$init(ssm, registry);
 		}
 	}
 

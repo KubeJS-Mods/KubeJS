@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.web.local.client;
 
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.CardinalLighting;
 import net.minecraft.world.level.ColorResolver;

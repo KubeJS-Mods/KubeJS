@@ -12,7 +12,6 @@ import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
-import dev.latvian.mods.kubejs.core.ItemStackKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.ingredient.CreativeTabIngredient;
 import dev.latvian.mods.kubejs.ingredient.NamespaceIngredient;
@@ -33,7 +32,6 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.predicates.DataComponentPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
@@ -241,7 +239,7 @@ public interface IngredientWrapper {
 				reader.skip();
 				yield ID.read(reader).map(ItemTags::create).flatMap(tagKey ->
 					BuiltInRegistries.ITEM.get(tagKey)
-						.<DataResult<Ingredient>>map(set -> DataResult.success(Ingredient.of(set)))
+						.map(set -> DataResult.success(Ingredient.of(set)))
 						.orElseGet(() -> DataResult.error(() -> "Item tag " + tagKey.location() + " does not exist!"))
 				);
 			}

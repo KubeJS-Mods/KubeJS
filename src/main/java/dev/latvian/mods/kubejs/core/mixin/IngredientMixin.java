@@ -7,7 +7,6 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import org.spongepowered.asm.mixin.Mixin;

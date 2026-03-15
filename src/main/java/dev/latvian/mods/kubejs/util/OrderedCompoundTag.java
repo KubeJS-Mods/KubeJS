@@ -3,8 +3,6 @@ package dev.latvian.mods.kubejs.util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 
-import java.io.DataOutput;
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

@@ -8,7 +8,6 @@ import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.Tag;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 
 import java.util.List;
 

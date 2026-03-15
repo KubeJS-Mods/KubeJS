@@ -69,29 +69,4 @@ public abstract class GameRulesMixin implements GameRulesKJS {
 		}
 		return GameRulesKJS.super.kjs$getRule(rule);
 	}
-
-	@Override
-	public void kjs$set(String rule, String value) {
-		GameRule<?> r = kjs$getRule(rule);
-		if (r == null) {
-			return;
-		}
-
-		GameRules self = (GameRules) (Object) this;
-		MinecraftServer server = kjs$getServer();
-
-		if (r.valueClass() == Boolean.class) {
-			var parsed = ((GameRule<Boolean>) r).deserialize(value);
-			Boolean v = parsed.result().orElse(null);
-			if (v != null) {
-				self.set((GameRule<Boolean>) r, v, server);
-			}
-		} else if (r.valueClass() == Integer.class) {
-			var parsed = ((GameRule<Integer>) r).deserialize(value);
-			Integer v = parsed.result().orElse(null);
-			if (v != null) {
-				self.set((GameRule<Integer>) r, v, server);
-			}
-		}
-	}
 }

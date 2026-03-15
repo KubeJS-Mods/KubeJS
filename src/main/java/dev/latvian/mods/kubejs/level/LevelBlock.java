@@ -21,7 +21,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.Fireworks;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biomes;
@@ -357,31 +356,6 @@ public interface LevelBlock extends BlockProviderKJS {
 	}
 
 	default String toBlockStateString() {
-		var id = kjs$getId();
-		var properties = getProperties();
-
-		if (properties.isEmpty()) {
-			return id;
-		}
-
-		var builder = new StringBuilder(id);
-		builder.append('[');
-
-		var first = true;
-
-		for (var entry : properties.entrySet()) {
-			if (first) {
-				first = false;
-			} else {
-				builder.append(',');
-			}
-
-			builder.append(entry.getKey());
-			builder.append('=');
-			builder.append(entry.getValue());
-		}
-
-		builder.append(']');
-		return builder.toString();
+		return BlockWrapper.toBlockStateString(kjs$getId(), getProperties());
 	}
 }

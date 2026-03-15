@@ -273,7 +273,7 @@ public interface FluidWrapper {
 	}
 
 	@HideFromJS
-	static DataResult<FluidIngredient> readIngredient(DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
+	static DataResult<FluidIngredient> readIngredient(DynamicOps<Tag> registryOps, StringReader reader) {
 		if (!reader.canRead() || reader.peek() == '-') {
 			return EMPTY_INGREDIENT_RESULT;
 		}

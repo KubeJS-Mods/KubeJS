@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.special.ShapedKubeJSRecipe;
 import dev.latvian.mods.kubejs.recipe.special.ShapelessKubeJSRecipe;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
