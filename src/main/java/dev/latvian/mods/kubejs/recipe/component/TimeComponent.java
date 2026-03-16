@@ -9,10 +9,10 @@ import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 public record TimeComponent(RecipeComponentType<?> type, long scale, Codec<TickDuration> codec) implements RecipeComponent<TickDuration> {
-	public static final RecipeComponentType<TickDuration> TICKS = RecipeComponentType.unit(KubeJS.id("ticks"), type -> new TimeComponent(type, 1L, TickDuration.CODEC));
-	public static final RecipeComponentType<TickDuration> SECONDS = RecipeComponentType.unit(KubeJS.id("seconds"), type -> new TimeComponent(type, 20L, TickDuration.SECONDS_CODEC));
-	public static final RecipeComponentType<TickDuration> MINUTES = RecipeComponentType.unit(KubeJS.id("minutes"), type -> new TimeComponent(type, 1200L, TickDuration.MINUTES_CODEC));
-	public static final RecipeComponentType<TickDuration> HOURS = RecipeComponentType.unit(KubeJS.id("hours"), type -> new TimeComponent(type, 1200L, TickDuration.HOURS_CODEC));
+	public static final RecipeComponentType.Unit<TickDuration> TICKS = RecipeComponentType.unit(KubeJS.id("ticks"), type -> new TimeComponent(type, 1L, TickDuration.CODEC));
+	public static final RecipeComponentType.Unit<TickDuration> SECONDS = RecipeComponentType.unit(KubeJS.id("seconds"), type -> new TimeComponent(type, 20L, TickDuration.SECONDS_CODEC));
+	public static final RecipeComponentType.Unit<TickDuration> MINUTES = RecipeComponentType.unit(KubeJS.id("minutes"), type -> new TimeComponent(type, 1200L, TickDuration.MINUTES_CODEC));
+	public static final RecipeComponentType.Unit<TickDuration> HOURS = RecipeComponentType.unit(KubeJS.id("hours"), type -> new TimeComponent(type, 1200L, TickDuration.HOURS_CODEC));
 
 	@Override
 	public Codec<TickDuration> codec() {

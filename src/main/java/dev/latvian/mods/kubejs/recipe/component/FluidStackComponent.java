@@ -13,8 +13,8 @@ import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 public record FluidStackComponent(RecipeComponentType<?> type, Codec<FluidStack> codec, boolean allowEmpty) implements RecipeComponent<FluidStack> {
-	public static final RecipeComponentType<FluidStack> FLUID_STACK = RecipeComponentType.unit(KubeJS.id("fluid_stack"), type -> new FluidStackComponent(type, FluidStack.CODEC, false));
-	public static final RecipeComponentType<FluidStack> OPTIONAL_FLUID_STACK = RecipeComponentType.unit(KubeJS.id("optional_fluid_stack"), type -> new FluidStackComponent(type, FluidStack.OPTIONAL_CODEC, true));
+	public static final RecipeComponentType.Unit<FluidStack> FLUID_STACK = RecipeComponentType.unit(KubeJS.id("fluid_stack"), type -> new FluidStackComponent(type, FluidStack.CODEC, false));
+	public static final RecipeComponentType.Unit<FluidStack> OPTIONAL_FLUID_STACK = RecipeComponentType.unit(KubeJS.id("optional_fluid_stack"), type -> new FluidStackComponent(type, FluidStack.OPTIONAL_CODEC, true));
 
 	@Override
 	public TypeInfo typeInfo() {

@@ -53,14 +53,14 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		Codec.DOUBLE.optionalFieldOf("max", Double.POSITIVE_INFINITY).forGetter(DoubleRange::max)
 	).apply(instance, NumberComponent::doubleRange)));
 
-	RecipeComponentType<Integer> NON_NEGATIVE_INT = RecipeComponentType.unit(KubeJS.id("non_negative_int"), type -> new IntRange(type, 0, Integer.MAX_VALUE, KubeJSCodecs.NON_NEGATIVE_INT));
-	RecipeComponentType<Integer> POSITIVE_INT = RecipeComponentType.unit(KubeJS.id("positive_int"), type -> new IntRange(type, 1, Integer.MAX_VALUE, KubeJSCodecs.POSITIVE_INT));
-	RecipeComponentType<Long> NON_NEGATIVE_LONG = RecipeComponentType.unit(KubeJS.id("non_negative_long"), type -> new LongRange(type, 0L, Long.MAX_VALUE, KubeJSCodecs.NON_NEGATIVE_LONG));
-	RecipeComponentType<Long> POSITIVE_LONG = RecipeComponentType.unit(KubeJS.id("positive_long"), type -> new LongRange(type, 1L, Long.MAX_VALUE, KubeJSCodecs.POSITIVE_LONG));
-	RecipeComponentType<Float> NON_NEGATIVE_FLOAT = RecipeComponentType.unit(KubeJS.id("non_negative_float"), type -> new FloatRange(type, 0F, Float.POSITIVE_INFINITY, KubeJSCodecs.NON_NEGATIVE_FLOAT));
-	RecipeComponentType<Float> POSITIVE_FLOAT = RecipeComponentType.unit(KubeJS.id("positive_float"), type -> new FloatRange(type, Float.MIN_VALUE, Float.POSITIVE_INFINITY, KubeJSCodecs.POSITIVE_FLOAT));
-	RecipeComponentType<Double> NON_NEGATIVE_DOUBLE = RecipeComponentType.unit(KubeJS.id("non_negative_double"), type -> new DoubleRange(type, 0D, Double.POSITIVE_INFINITY, KubeJSCodecs.NON_NEGATIVE_DOUBLE));
-	RecipeComponentType<Double> POSITIVE_DOUBLE = RecipeComponentType.unit(KubeJS.id("positive_double"), type -> new DoubleRange(type, Double.MIN_VALUE, Double.POSITIVE_INFINITY, KubeJSCodecs.POSITIVE_DOUBLE));
+	RecipeComponentType.Unit<Integer> NON_NEGATIVE_INT = RecipeComponentType.unit(KubeJS.id("non_negative_int"), type -> new IntRange(type, 0, Integer.MAX_VALUE, KubeJSCodecs.NON_NEGATIVE_INT));
+	RecipeComponentType.Unit<Integer> POSITIVE_INT = RecipeComponentType.unit(KubeJS.id("positive_int"), type -> new IntRange(type, 1, Integer.MAX_VALUE, KubeJSCodecs.POSITIVE_INT));
+	RecipeComponentType.Unit<Long> NON_NEGATIVE_LONG = RecipeComponentType.unit(KubeJS.id("non_negative_long"), type -> new LongRange(type, 0L, Long.MAX_VALUE, KubeJSCodecs.NON_NEGATIVE_LONG));
+	RecipeComponentType.Unit<Long> POSITIVE_LONG = RecipeComponentType.unit(KubeJS.id("positive_long"), type -> new LongRange(type, 1L, Long.MAX_VALUE, KubeJSCodecs.POSITIVE_LONG));
+	RecipeComponentType.Unit<Float> NON_NEGATIVE_FLOAT = RecipeComponentType.unit(KubeJS.id("non_negative_float"), type -> new FloatRange(type, 0F, Float.POSITIVE_INFINITY, KubeJSCodecs.NON_NEGATIVE_FLOAT));
+	RecipeComponentType.Unit<Float> POSITIVE_FLOAT = RecipeComponentType.unit(KubeJS.id("positive_float"), type -> new FloatRange(type, Float.MIN_VALUE, Float.POSITIVE_INFINITY, KubeJSCodecs.POSITIVE_FLOAT));
+	RecipeComponentType.Unit<Double> NON_NEGATIVE_DOUBLE = RecipeComponentType.unit(KubeJS.id("non_negative_double"), type -> new DoubleRange(type, 0D, Double.POSITIVE_INFINITY, KubeJSCodecs.NON_NEGATIVE_DOUBLE));
+	RecipeComponentType.Unit<Double> POSITIVE_DOUBLE = RecipeComponentType.unit(KubeJS.id("positive_double"), type -> new DoubleRange(type, Double.MIN_VALUE, Double.POSITIVE_INFINITY, KubeJSCodecs.POSITIVE_DOUBLE));
 
 	private static Number numberOf(Object from) {
 		if (from instanceof Number n) {

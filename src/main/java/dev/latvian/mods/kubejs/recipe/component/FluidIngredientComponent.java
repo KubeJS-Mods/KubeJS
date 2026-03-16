@@ -14,8 +14,8 @@ import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 public record FluidIngredientComponent(RecipeComponentType<?> type, Codec<FluidIngredient> codec, boolean allowEmpty) implements RecipeComponent<FluidIngredient> {
-	public static final RecipeComponentType<FluidIngredient> FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("fluid_ingredient"), type -> new FluidIngredientComponent(type, FluidIngredient.CODEC, false));
-	public static final RecipeComponentType<FluidIngredient> OPTIONAL_FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_fluid_ingredient"), type -> new FluidIngredientComponent(type, FluidIngredient.CODEC, true));
+	public static final RecipeComponentType.Unit<FluidIngredient> FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("fluid_ingredient"), type -> new FluidIngredientComponent(type, FluidIngredient.CODEC, false));
+	public static final RecipeComponentType.Unit<FluidIngredient> OPTIONAL_FLUID_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_fluid_ingredient"), type -> new FluidIngredientComponent(type, FluidIngredient.CODEC, true));
 
 	@Override
 	public TypeInfo typeInfo() {

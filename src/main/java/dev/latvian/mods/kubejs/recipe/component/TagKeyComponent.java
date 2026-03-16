@@ -12,8 +12,8 @@ import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -25,17 +25,17 @@ import org.jetbrains.annotations.Nullable;
 public record TagKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, ResourceKey<? extends Registry<T>> registry, TypeInfo registryType, Codec<TagKey<T>> codec, TypeInfo typeInfo, boolean hashed) implements RecipeComponent<TagKey<T>> {
 	public static final TypeInfo TAG_KEY_TYPE = TypeInfo.of(TagKey.class);
 
-	public static final RecipeComponentType<TagKey<Block>> BLOCK = RecipeComponentType.unit(KubeJS.id("block_tag"), type -> new TagKeyComponent<>(type, Registries.BLOCK, TypeInfo.of(Block.class), false));
-	public static final RecipeComponentType<TagKey<Item>> ITEM = RecipeComponentType.unit(KubeJS.id("item_tag"), type -> new TagKeyComponent<>(type, Registries.ITEM, TypeInfo.of(Item.class), false));
-	public static final RecipeComponentType<TagKey<EntityType<?>>> ENTITY_TYPE = RecipeComponentType.unit(KubeJS.id("entity_type_tag"), type -> new TagKeyComponent<>(type, Registries.ENTITY_TYPE, TypeInfo.of(EntityType.class), false));
-	public static final RecipeComponentType<TagKey<Biome>> BIOME = RecipeComponentType.unit(KubeJS.id("biome_tag"), type -> new TagKeyComponent<>(type, Registries.BIOME, TypeInfo.of(Biome.class), false));
-	public static final RecipeComponentType<TagKey<Fluid>> FLUID = RecipeComponentType.unit(KubeJS.id("fluid_tag"), type -> new TagKeyComponent<>(type, Registries.FLUID, TypeInfo.of(Fluid.class), false));
+	public static final RecipeComponentType.Unit<TagKey<Block>> BLOCK = RecipeComponentType.unit(KubeJS.id("block_tag"), type -> new TagKeyComponent<>(type, Registries.BLOCK, TypeInfo.of(Block.class), false));
+	public static final RecipeComponentType.Unit<TagKey<Item>> ITEM = RecipeComponentType.unit(KubeJS.id("item_tag"), type -> new TagKeyComponent<>(type, Registries.ITEM, TypeInfo.of(Item.class), false));
+	public static final RecipeComponentType.Unit<TagKey<EntityType<?>>> ENTITY_TYPE = RecipeComponentType.unit(KubeJS.id("entity_type_tag"), type -> new TagKeyComponent<>(type, Registries.ENTITY_TYPE, TypeInfo.of(EntityType.class), false));
+	public static final RecipeComponentType.Unit<TagKey<Biome>> BIOME = RecipeComponentType.unit(KubeJS.id("biome_tag"), type -> new TagKeyComponent<>(type, Registries.BIOME, TypeInfo.of(Biome.class), false));
+	public static final RecipeComponentType.Unit<TagKey<Fluid>> FLUID = RecipeComponentType.unit(KubeJS.id("fluid_tag"), type -> new TagKeyComponent<>(type, Registries.FLUID, TypeInfo.of(Fluid.class), false));
 
-	public static final RecipeComponentType<TagKey<Block>> HASHED_BLOCK = RecipeComponentType.unit(KubeJS.id("hashed_block_tag"), type -> new TagKeyComponent<>(type, Registries.BLOCK, TypeInfo.of(Block.class), true));
-	public static final RecipeComponentType<TagKey<Item>> HASHED_ITEM = RecipeComponentType.unit(KubeJS.id("hashed_item_tag"), type -> new TagKeyComponent<>(type, Registries.ITEM, TypeInfo.of(Item.class), true));
-	public static final RecipeComponentType<TagKey<EntityType<?>>> HASHED_ENTITY_TYPE = RecipeComponentType.unit(KubeJS.id("hashed_entity_type_tag"), type -> new TagKeyComponent<>(type, Registries.ENTITY_TYPE, TypeInfo.of(EntityType.class), true));
-	public static final RecipeComponentType<TagKey<Biome>> HASHED_BIOME = RecipeComponentType.unit(KubeJS.id("hashed_biome_tag"), type -> new TagKeyComponent<>(type, Registries.BIOME, TypeInfo.of(Biome.class), true));
-	public static final RecipeComponentType<TagKey<Fluid>> HASHED_FLUID = RecipeComponentType.unit(KubeJS.id("hashed_fluid_tag"), type -> new TagKeyComponent<>(type, Registries.FLUID, TypeInfo.of(Fluid.class), true));
+	public static final RecipeComponentType.Unit<TagKey<Block>> HASHED_BLOCK = RecipeComponentType.unit(KubeJS.id("hashed_block_tag"), type -> new TagKeyComponent<>(type, Registries.BLOCK, TypeInfo.of(Block.class), true));
+	public static final RecipeComponentType.Unit<TagKey<Item>> HASHED_ITEM = RecipeComponentType.unit(KubeJS.id("hashed_item_tag"), type -> new TagKeyComponent<>(type, Registries.ITEM, TypeInfo.of(Item.class), true));
+	public static final RecipeComponentType.Unit<TagKey<EntityType<?>>> HASHED_ENTITY_TYPE = RecipeComponentType.unit(KubeJS.id("hashed_entity_type_tag"), type -> new TagKeyComponent<>(type, Registries.ENTITY_TYPE, TypeInfo.of(EntityType.class), true));
+	public static final RecipeComponentType.Unit<TagKey<Biome>> HASHED_BIOME = RecipeComponentType.unit(KubeJS.id("hashed_biome_tag"), type -> new TagKeyComponent<>(type, Registries.BIOME, TypeInfo.of(Biome.class), true));
+	public static final RecipeComponentType.Unit<TagKey<Fluid>> HASHED_FLUID = RecipeComponentType.unit(KubeJS.id("hashed_fluid_tag"), type -> new TagKeyComponent<>(type, Registries.FLUID, TypeInfo.of(Fluid.class), true));
 
 	private static TagKeyComponent<?> of(ResourceKey<? extends Registry<?>> registry, boolean hashed) {
 		var key = (ResourceKey) registry;

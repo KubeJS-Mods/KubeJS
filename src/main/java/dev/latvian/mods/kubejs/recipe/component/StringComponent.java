@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record StringComponent(RecipeComponentType<?> type, Codec<String> codec, boolean allowEmpty) implements RecipeComponent<String> {
-	public static final RecipeComponentType<String> STRING = RecipeComponentType.unit(KubeJS.id("string"), type -> new StringComponent(type, ExtraCodecs.NON_EMPTY_STRING, false));
-	public static final RecipeComponentType<String> OPTIONAL_STRING = RecipeComponentType.unit(KubeJS.id("optional_string"), type -> new StringComponent(type, Codec.STRING, true));
-	public static final RecipeComponentType<String> ID = RecipeComponentType.unit(KubeJS.id("id"), type -> new StringComponent(type, Codec.STRING.validate(s -> Identifier.read(s).map(Identifier::toString)), false));
+	public static final RecipeComponentType.Unit<String> STRING = RecipeComponentType.unit(KubeJS.id("string"), type -> new StringComponent(type, ExtraCodecs.NON_EMPTY_STRING, false));
+	public static final RecipeComponentType.Unit<String> OPTIONAL_STRING = RecipeComponentType.unit(KubeJS.id("optional_string"), type -> new StringComponent(type, Codec.STRING, true));
+	public static final RecipeComponentType.Unit<String> ID = RecipeComponentType.unit(KubeJS.id("id"), type -> new StringComponent(type, Codec.STRING.validate(s -> Identifier.read(s).map(Identifier::toString)), false));
 
 	@Override
 	public TypeInfo typeInfo() {

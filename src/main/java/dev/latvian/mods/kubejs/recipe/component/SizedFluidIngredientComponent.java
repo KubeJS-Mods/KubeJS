@@ -13,16 +13,16 @@ import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 public record SizedFluidIngredientComponent(RecipeComponentType<?> type, Codec<SizedFluidIngredient> codec, boolean allowEmpty) implements RecipeComponent<SizedFluidIngredient> {
-	public static final RecipeComponentType<SizedFluidIngredient> FLAT =
+	public static final RecipeComponentType.Unit<SizedFluidIngredient> FLAT =
 		RecipeComponentType.unit(KubeJS.id("flat_sized_fluid_ingredient"),
 			type -> new SizedFluidIngredientComponent(type, SizedFluidIngredient.CODEC, false));
-	public static final RecipeComponentType<SizedFluidIngredient> NESTED =
+	public static final RecipeComponentType.Unit<SizedFluidIngredient> NESTED =
 		RecipeComponentType.unit(KubeJS.id("nested_sized_fluid_ingredient"),
 			type -> new SizedFluidIngredientComponent(type, SizedFluidIngredient.CODEC, false));
-	public static final RecipeComponentType<SizedFluidIngredient> OPTIONAL_FLAT =
+	public static final RecipeComponentType.Unit<SizedFluidIngredient> OPTIONAL_FLAT =
 		RecipeComponentType.unit(KubeJS.id("optional_flat_sized_fluid_ingredient"),
 			type -> new SizedFluidIngredientComponent(type, SizedFluidIngredient.CODEC, true));
-	public static final RecipeComponentType<SizedFluidIngredient> OPTIONAL_NESTED =
+	public static final RecipeComponentType.Unit<SizedFluidIngredient> OPTIONAL_NESTED =
 		RecipeComponentType.unit(KubeJS.id("optional_nested_sized_fluid_ingredient"),
 			type -> new SizedFluidIngredientComponent(type, SizedFluidIngredient.CODEC, true));
 

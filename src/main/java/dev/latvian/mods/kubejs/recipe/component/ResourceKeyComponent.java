@@ -22,8 +22,8 @@ public record ResourceKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverr
 		return new ResourceKeyComponent<>(typeOverride, registryKey, ResourceKey.codec(registryKey), reg == null ? TypeInfo.of(ResourceKey.class) : TypeInfo.of(ResourceKey.class).withParams(reg.type()));
 	}
 
-	public static final RecipeComponentType<ResourceKey<Level>> DIMENSION = RecipeComponentType.unit(KubeJS.id("dimension_resource_key"), type -> create(type, Registries.DIMENSION));
-	public static final RecipeComponentType<ResourceKey<LootTable>> LOOT_TABLE = RecipeComponentType.unit(KubeJS.id("loot_table_resource_key"), type -> create(type, Registries.LOOT_TABLE));
+	public static final RecipeComponentType.Unit<ResourceKey<Level>> DIMENSION = RecipeComponentType.unit(KubeJS.id("dimension_resource_key"), type -> create(type, Registries.DIMENSION));
+	public static final RecipeComponentType.Unit<ResourceKey<LootTable>> LOOT_TABLE = RecipeComponentType.unit(KubeJS.id("loot_table_resource_key"), type -> create(type, Registries.LOOT_TABLE));
 
 	private static ResourceKeyComponent<?> of(ResourceKey key) {
 		if (key == Registries.DIMENSION) {

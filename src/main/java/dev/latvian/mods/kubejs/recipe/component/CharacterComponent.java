@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 public class CharacterComponent extends SimpleRecipeComponent<Character> {
-	public static final RecipeComponentType<Character> CHARACTER = RecipeComponentType.unit(KubeJS.id("character"), CharacterComponent::new);
+	public static final RecipeComponentType.Unit<Character> CHARACTER = RecipeComponentType.unit(KubeJS.id("character"), CharacterComponent::new);
 
 	public CharacterComponent(RecipeComponentType<?> type) {
 		super(type, KubeJSCodecs.CHARACTER, TypeInfo.CHARACTER);

@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 public class BooleanComponent implements RecipeComponent<Boolean> {
-	public static final RecipeComponentType<Boolean> BOOLEAN = RecipeComponentType.unit(KubeJS.id("boolean"), new BooleanComponent());
+	public static final RecipeComponentType.Unit<Boolean> BOOLEAN = RecipeComponentType.unit(KubeJS.id("boolean"), new BooleanComponent());
 
 	@Override
 	public RecipeComponentType<?> type() {

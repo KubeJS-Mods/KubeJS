@@ -10,7 +10,7 @@ import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 public class NestedRecipeComponent implements RecipeComponent<KubeRecipe> {
-	public static final RecipeComponentType<KubeRecipe> RECIPE = RecipeComponentType.unit(KubeJS.id("nested_recipe"), new NestedRecipeComponent());
+	public static final RecipeComponentType.Unit<KubeRecipe> RECIPE = RecipeComponentType.unit(KubeJS.id("nested_recipe"), new NestedRecipeComponent());
 
 	@Override
 	public RecipeComponentType<?> type() {

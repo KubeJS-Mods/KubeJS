@@ -12,8 +12,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient> codec, boolean allowEmpty) implements RecipeComponent<Ingredient> {
-	public static final RecipeComponentType<Ingredient> INGREDIENT = RecipeComponentType.unit(KubeJS.id("ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC, false));
-	public static final RecipeComponentType<Ingredient> OPTIONAL_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC, true));
+	public static final RecipeComponentType.Unit<Ingredient> INGREDIENT = RecipeComponentType.unit(KubeJS.id("ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC, false));
+	public static final RecipeComponentType.Unit<Ingredient> OPTIONAL_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC, true));
 
 	@Override
 	public TypeInfo typeInfo() {

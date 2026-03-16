@@ -50,7 +50,7 @@ public class RecipeSchemaStorage {
 
 		void init(Ops ops) {
 			mapCodec = type.mapCodec();
-			unit = type.isUnit() ? type.instance() : mapCodec.decode(ops, JsonUtils.MAP_LIKE).result().orElse(null);
+			unit = type instanceof RecipeComponentType.Unit<?> u ? u.instance() : mapCodec.decode(ops, JsonUtils.MAP_LIKE).result().orElse(null);
 		}
 	}
 
@@ -105,8 +105,8 @@ public class RecipeSchemaStorage {
 
 		@Override
 		public <T> DataResult<T> encode(RecipeComponent<?> input, DynamicOps<T> ops, T prefix) {
-			return input.type().isUnit()
-				? TYPE_CODEC.encode(input.type(), ops, prefix)
+			return input.type() instanceof RecipeComponentType.Unit<?> unit
+				? TYPE_CODEC.encode(unit, ops, prefix)
 				: COMPONENT_BY_TYPE.encode(input, ops, prefix);
 		}
 	};

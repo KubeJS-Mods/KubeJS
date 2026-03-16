@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record SizedIngredientComponent(RecipeComponentType<?> type, Codec<SizedIngredient> codec, boolean allowEmpty) implements RecipeComponent<SizedIngredient> {
-	public static final RecipeComponentType<SizedIngredient> SIZED_INGREDIENT = RecipeComponentType.unit(KubeJS.id("sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, false));
-	public static final RecipeComponentType<SizedIngredient> OPTIONAL_SIZED_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, true));
+	public static final RecipeComponentType.Unit<SizedIngredient> SIZED_INGREDIENT = RecipeComponentType.unit(KubeJS.id("sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, false));
+	public static final RecipeComponentType.Unit<SizedIngredient> OPTIONAL_SIZED_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, true));
 
 	public static final RecipeComponentType<SizedIngredient> FLAT =
 		RecipeComponentType.unit(KubeJS.id("flat_sized_ingredient"),

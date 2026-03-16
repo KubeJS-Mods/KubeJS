@@ -11,7 +11,7 @@ public enum IgnoreComponent implements RecipeComponent<Object> {
 	INSTANCE;
 
 	public static final MapCodec<Object> CODEC = MapCodec.unit(INSTANCE);
-	public static final RecipeComponentType<Object> TYPE = RecipeComponentType.unit(KubeJS.id("ignore"), IgnoreComponent.INSTANCE);
+	public static final RecipeComponentType.Unit<Object> TYPE = RecipeComponentType.unit(KubeJS.id("ignore"), IgnoreComponent.INSTANCE);
 
 	@Override
 	public RecipeComponentType<?> type() {

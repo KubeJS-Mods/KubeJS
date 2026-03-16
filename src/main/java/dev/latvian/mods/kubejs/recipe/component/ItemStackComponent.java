@@ -19,8 +19,8 @@ import java.util.List;
 import static dev.latvian.mods.kubejs.util.UtilsJS.EMPTY_INGREDIENT;
 
 public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> codec, boolean allowEmpty, Ingredient filter) implements RecipeComponent<ItemStack> {
-	public static final RecipeComponentType<ItemStack> ITEM_STACK = RecipeComponentType.unit(KubeJS.id("item_stack"), type -> new ItemStackComponent(type, false, EMPTY_INGREDIENT));
-	public static final RecipeComponentType<ItemStack> OPTIONAL_ITEM_STACK = RecipeComponentType.unit(KubeJS.id("optional_item_stack"), type -> new ItemStackComponent(type, true, EMPTY_INGREDIENT));
+	public static final RecipeComponentType.Unit<ItemStack> ITEM_STACK = RecipeComponentType.unit(KubeJS.id("item_stack"), type -> new ItemStackComponent(type, false, EMPTY_INGREDIENT));
+	public static final RecipeComponentType.Unit<ItemStack> OPTIONAL_ITEM_STACK = RecipeComponentType.unit(KubeJS.id("optional_item_stack"), type -> new ItemStackComponent(type, true, EMPTY_INGREDIENT));
 
 	public static final RecipeComponentType<?> FILTERED_ITEM_STACK = RecipeComponentType.<ItemStackComponent>dynamic(
 		KubeJS.id("filtered_item_stack"),
