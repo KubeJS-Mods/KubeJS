@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.recipe.schema;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeFunctionInstance;
@@ -22,6 +21,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.SequencedMap;
+
+import static com.mojang.serialization.DataResult.Error;
+import static com.mojang.serialization.DataResult.Success;
 
 public class JsonRecipeSchemaLoader {
 	private static final class RecipeSchemaBuilder {
@@ -276,7 +278,7 @@ public class JsonRecipeSchemaLoader {
 						if (func.isSuccess()) {
 							schema.function(new RecipeFunctionInstance(entry.getKey(), func.getOrThrow()));
 						} else {
-							throw new NullPointerException("Failed to parse function '" + entry.getKey() + "' of recipe schema '" + id + "': " + func.error().map(DataResult.Error::message).orElse("Unknown Error"));
+							throw new NullPointerException("Failed to parse function '" + entry.getKey() + "' of recipe schema '" + id + "': " + func.error().map(Error::message).orElse("Unknown Error"));
 						}
 					}
 
@@ -323,12 +325,10 @@ public class JsonRecipeSchemaLoader {
 			try (var reader = entry.getValue().openAsReader()) {
 				var json = JsonUtils.GSON.fromJson(reader, JsonObject.class);
 				var id = entry.getKey().withPath(entry.getKey().getPath().substring("kubejs/recipe_schema/".length(), entry.getKey().getPath().length() - ".json".length()));
-				var data = recipeSchemaDataCodec.parse(ops, json);
 
-				if (data.isSuccess()) {
-					map.put(id, new RecipeSchemaBuilder(id, data.getOrThrow()));
-				} else {
-					ConsoleJS.SERVER.error("Error parsing recipe schema json " + entry.getKey() + ": " + data.error().map(DataResult.Error::message).orElse("Unknown Error"));
+				switch (recipeSchemaDataCodec.parse(ops, json)) {
+					case Success(var value, _) -> map.put(id, new RecipeSchemaBuilder(id, value));
+					case Error(var msg, _, _) -> ConsoleJS.SERVER.error("Error parsing recipe schema json %s: %s".formatted(entry.getKey(), msg.get()));
 				}
 			} catch (Exception ex) {
 				ConsoleJS.SERVER.error("Error reading recipe schema json " + entry.getKey(), ex);
