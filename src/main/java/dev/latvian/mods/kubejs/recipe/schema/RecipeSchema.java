@@ -20,8 +20,8 @@ import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.RegistryOps;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -351,7 +351,7 @@ public class RecipeSchema {
 			var a = new JsonArray();
 
 			for (var p : postProcessors) {
-				a.add(storage.recipePostProcessorCodec.encodeStart(ops, p).getOrThrow());
+				a.add(RecipePostProcessor.CODEC.encodeStart(ops, p).getOrThrow());
 			}
 
 			json.add("post_processors", a);

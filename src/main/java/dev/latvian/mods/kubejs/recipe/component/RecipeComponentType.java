@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
-import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryContext;
 import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.resources.Identifier;
 
@@ -36,7 +35,7 @@ public abstract class RecipeComponentType<T> {
 		}
 
 		@Override
-		public MapCodec<RecipeComponent<?>> mapCodec(RecipeTypeRegistryContext ctx) {
+		public MapCodec<RecipeComponent<?>> mapCodec() {
 			if (mapCodec == null) {
 				mapCodec = MapCodec.unit(instance);
 			}
@@ -49,7 +48,7 @@ public abstract class RecipeComponentType<T> {
 	public static class Dynamic<T> extends RecipeComponentType<T> {
 		private record Simple(MapCodec mapCodec) implements RecipeComponentCodecFactory<RecipeComponent<?>> {
 			@Override
-			public MapCodec<RecipeComponent<?>> create(RecipeComponentType<?> type, RecipeTypeRegistryContext ctx) {
+			public MapCodec<RecipeComponent<?>> create(RecipeComponentType<?> type) {
 				return mapCodec;
 			}
 		}
@@ -62,8 +61,8 @@ public abstract class RecipeComponentType<T> {
 		}
 
 		@Override
-		public MapCodec<RecipeComponent<?>> mapCodec(RecipeTypeRegistryContext ctx) {
-			return factory.create(this, ctx);
+		public MapCodec<RecipeComponent<?>> mapCodec() {
+			return factory.create(this);
 		}
 	}
 
@@ -118,7 +117,7 @@ public abstract class RecipeComponentType<T> {
 		throw new NullPointerException("This recipe component type is not a unit type");
 	}
 
-	public abstract MapCodec<RecipeComponent<?>> mapCodec(RecipeTypeRegistryContext ctx);
+	public abstract MapCodec<RecipeComponent<?>> mapCodec();
 
 	/**
 	 * Creates a new {@link RecipeKey} for this component with the given name.

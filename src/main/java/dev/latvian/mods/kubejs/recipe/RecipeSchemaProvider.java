@@ -12,13 +12,13 @@ import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessor;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
-import net.minecraft.util.Util;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.util.Util;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +46,6 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 	private final PackOutput.PathProvider path;
 	private final ImmutableMap.Builder<Identifier, RecipeSchemaData> map;
 	private final ServerScriptManager scriptManager;
-	private final RecipeTypeRegistryContext regCtx;
 	private final Codec<RecipeSchemaData> codec;
 
 	public RecipeSchemaProvider(String name, GatherDataEvent event) {
@@ -60,12 +59,8 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 		path = event.getGenerator().getPackOutput().createPathProvider(PackOutput.Target.DATA_PACK, "kubejs/recipe_schema");
 		map = ImmutableMap.builder();
 		scriptManager = ServerScriptManager.createForDataGen();
-		regCtx = new RecipeTypeRegistryContext(
-			registryAccessContainer,
-			scriptManager.recipeSchemaStorage
-		);
 		scriptManager.recipeSchemaStorage.fireEvents(registryAccessContainer, event.getResourceManager(PackType.SERVER_DATA));
-		codec = RecipeSchemaData.CODEC.apply(regCtx);
+		codec = RecipeSchemaData.CODEC;
 	}
 
 	public final RegistryAccessContainer registryAccessContainer() {
@@ -74,10 +69,6 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 
 	public final ServerScriptManager serverScriptManager() {
 		return scriptManager;
-	}
-
-	public final RecipeTypeRegistryContext recipeTypeRegistryContext() {
-		return regCtx;
 	}
 
 	public abstract void add(HolderLookup.Provider lookup);

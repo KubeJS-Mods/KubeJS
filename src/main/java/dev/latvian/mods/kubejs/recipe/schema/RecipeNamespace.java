@@ -21,7 +21,7 @@ public class RecipeNamespace extends LinkedHashMap<String, RecipeSchemaType> {
 	}
 
 	public RecipeNamespace register(String id, RegistryAwareSchema type) {
-		return register(id, type.create(storage.getRegistries()));
+		return register(id, type.create(storage.registries()));
 	}
 
 	public RecipeNamespace registerBasic(String id, RecipeKey<?>... keys) {

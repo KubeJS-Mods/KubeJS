@@ -24,7 +24,7 @@ public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> c
 
 	public static final RecipeComponentType<?> FILTERED_ITEM_STACK = RecipeComponentType.<ItemStackComponent>dynamic(
 		KubeJS.id("filtered_item_stack"),
-		(type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		(type) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
 			Codec.BOOL.optionalFieldOf("allow_empty", false).forGetter(ItemStackComponent::allowEmpty),
 			Ingredient.CODEC.optionalFieldOf("filter", EMPTY_INGREDIENT).forGetter(ItemStackComponent::filter)
 		).apply(instance, (allowEmpty, filter) -> new ItemStackComponent(type, allowEmpty, filter)))

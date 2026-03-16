@@ -8,8 +8,8 @@ import dev.latvian.mods.kubejs.core.RegistryObjectKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import net.minecraft.IdentifierException;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URLEncoder;
@@ -105,6 +105,10 @@ public interface ID {
 
 	static boolean isKey(Object from) {
 		return from instanceof CharSequence || from instanceof Identifier || from instanceof ResourceKey<?>;
+	}
+
+	static boolean isValidKey(Object from) {
+		return from instanceof Identifier || from instanceof ResourceKey<?> || (from instanceof CharSequence && Identifier.tryParse(from.toString()) != null);
 	}
 
 	static String url(Identifier id) {

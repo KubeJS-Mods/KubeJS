@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -16,9 +17,9 @@ import java.util.List;
 
 @SuppressWarnings("OptionalIsPresent")
 public record EitherRecipeComponent<H, L>(RecipeComponent<H> left, RecipeComponent<L> right, Codec<Either<H, L>> codec, TypeInfo typeInfo) implements RecipeComponent<Either<H, L>> {
-	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<EitherRecipeComponent<?, ?>>dynamic(KubeJS.id("either"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
-		ctx.recipeComponentCodec().fieldOf("left").forGetter(EitherRecipeComponent::left),
-		ctx.recipeComponentCodec().fieldOf("right").forGetter(EitherRecipeComponent::right)
+	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<EitherRecipeComponent<?, ?>>dynamic(KubeJS.id("either"), (type) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("left").forGetter(EitherRecipeComponent::left),
+		RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("right").forGetter(EitherRecipeComponent::right)
 	).apply(instance, EitherRecipeComponent::new)));
 
 	public EitherRecipeComponent(RecipeComponent<H> left, RecipeComponent<L> right) {

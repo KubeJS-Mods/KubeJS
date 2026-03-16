@@ -239,7 +239,7 @@ public final class RecipeKey<T> {
 			json.addProperty("role", role.getSerializedName());
 		}
 
-		json.add("type", storage.recipeComponentCodec.encodeStart(ops, component).getOrThrow());
+		json.add("type", RecipeSchemaStorage.COMPONENT_CODEC.encodeStart(ops, component).getOrThrow());
 
 		if (optional != null) {
 			if (optional.isDefault()) {

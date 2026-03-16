@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.error.RecipeComponentTooLargeException;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -23,14 +24,14 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 		return new MapRecipeComponent<>(CharacterComponent.CHARACTER.instance(), component, bounds, true);
 	}
 
-	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<MapRecipeComponent<?, ?>>dynamic(KubeJS.id("map"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
-		ctx.recipeComponentCodec().fieldOf("key").forGetter(MapRecipeComponent::key),
-		ctx.recipeComponentCodec().fieldOf("component").forGetter(MapRecipeComponent::component),
+	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<MapRecipeComponent<?, ?>>dynamic(KubeJS.id("map"), (type) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("key").forGetter(MapRecipeComponent::key),
+		RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("component").forGetter(MapRecipeComponent::component),
 		IntBounds.MAP_CODEC.forGetter(MapRecipeComponent::bounds)
 	).apply(instance, MapRecipeComponent::of)));
 
-	public static final RecipeComponentType<?> PATTERN_TYPE = RecipeComponentType.<MapRecipeComponent<?, ?>>dynamic(KubeJS.id("pattern"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
-		ctx.recipeComponentCodec().fieldOf("component").forGetter(MapRecipeComponent::component),
+	public static final RecipeComponentType<?> PATTERN_TYPE = RecipeComponentType.<MapRecipeComponent<?, ?>>dynamic(KubeJS.id("pattern"), (type) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("component").forGetter(MapRecipeComponent::component),
 		IntBounds.MAP_CODEC.forGetter(MapRecipeComponent::bounds)
 	).apply(instance, MapRecipeComponent::patternOf)));
 

@@ -5,14 +5,12 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
-import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryContext;
 import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.resources.Identifier;
 
 import java.util.Map;
-import java.util.function.Function;
 
-public record RecipePostProcessorType<T extends RecipePostProcessor>(Identifier id, Function<RecipeTypeRegistryContext, MapCodec<T>> mapCodec) {
+public record RecipePostProcessorType<T extends RecipePostProcessor>(Identifier id, MapCodec<T> mapCodec) {
 	public static final Lazy<Map<Identifier, RecipePostProcessorType<?>>> MAP = Lazy.map(map -> KubeJSPlugins.forEachPlugin(type -> map.put(type.id, type), KubeJSPlugin::registerRecipePostProcessors));
 
 	public static final Codec<RecipePostProcessorType<?>> CODEC = Identifier.CODEC.comapFlatMap(id -> {

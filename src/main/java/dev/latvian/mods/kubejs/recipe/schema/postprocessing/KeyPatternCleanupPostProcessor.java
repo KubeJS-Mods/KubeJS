@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.IngredientComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeValidationContext;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import it.unimi.dsi.fastutil.chars.CharArrayList;
@@ -18,10 +19,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public record KeyPatternCleanupPostProcessor(String patternName, String keyName, RecipeComponent<?> component) implements RecipePostProcessor {
-	public static final RecipePostProcessorType<KeyPatternCleanupPostProcessor> TYPE = new RecipePostProcessorType<>(KubeJS.id("key_pattern_cleanup"), ctx -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final RecipePostProcessorType<KeyPatternCleanupPostProcessor> TYPE = new RecipePostProcessorType<>(KubeJS.id("key_pattern_cleanup"), RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.STRING.optionalFieldOf("pattern", "pattern").forGetter(KeyPatternCleanupPostProcessor::patternName),
 		Codec.STRING.optionalFieldOf("key", "key").forGetter(KeyPatternCleanupPostProcessor::keyName),
-		ctx.recipeComponentCodec().optionalFieldOf("component", IngredientComponent.INGREDIENT.instance()).forGetter(KeyPatternCleanupPostProcessor::component)
+		RecipeSchemaStorage.COMPONENT_CODEC.optionalFieldOf("component", IngredientComponent.INGREDIENT.instance()).forGetter(KeyPatternCleanupPostProcessor::component)
 	).apply(instance, KeyPatternCleanupPostProcessor::new)));
 
 	@Override

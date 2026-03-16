@@ -1,22 +1,20 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
-import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryContext;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentType;
-import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessor;
-import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessorType;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.ID;
@@ -24,6 +22,7 @@ import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,7 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RecipeSchemaStorage {
-
 	public static final class StoredRecipeComponentType {
 		private final RecipeComponentType<?> type;
 		private MapCodec<RecipeComponent<?>> mapCodec;
@@ -46,9 +44,13 @@ public class RecipeSchemaStorage {
 			return type.toString();
 		}
 
-		public void init(RecipeTypeRegistryContext ctx) {
-			mapCodec = type.mapCodec(ctx);
-			unit = type.isUnit() ? type.instance() : mapCodec.decode(JsonOps.INSTANCE, JsonUtils.MAP_LIKE).result().orElse(null);
+		public Identifier id() {
+			return type.id();
+		}
+
+		void init(Ops ops) {
+			mapCodec = type.mapCodec();
+			unit = type.isUnit() ? type.instance() : mapCodec.decode(ops, JsonUtils.MAP_LIKE).result().orElse(null);
 		}
 	}
 
@@ -59,8 +61,55 @@ public class RecipeSchemaStorage {
 	public final Map<String, Identifier> mappings;
 	public final Map<String, RecipeSchemaType> schemaTypes;
 
-	public Codec<RecipeComponent<?>> recipeComponentCodec;
-	public Codec<RecipePostProcessor> recipePostProcessorCodec;
+	private static <T> DataResult<StoredRecipeComponentType> retrieveStored(DynamicOps<T> ops, Identifier id) {
+		if (ops instanceof Ops ctx) {
+			var stored = ctx.componentTypes.get(id);
+			return stored != null
+				? DataResult.success(stored)
+				: DataResult.error(() -> "Unknown recipe component type '%s'".formatted(ID.reduceKjs(id)));
+		}
+		return DataResult.error(() -> "Not in a recipe schema registry context!");
+	}
+
+	private static final Codec<RecipeComponentType<?>> TYPE_CODEC = new Codec<>() {
+		@Override
+		public <T> DataResult<Pair<RecipeComponentType<?>, T>> decode(DynamicOps<T> ops, T input) {
+			return KubeJSCodecs.KUBEJS_ID.decode(ops, input)
+				.flatMap(pair -> retrieveStored(ops, pair.getFirst())
+					.map(stored -> Pair.of(stored.type, pair.getSecond())));
+		}
+
+		@Override
+		public <T> DataResult<T> encode(RecipeComponentType<?> input, DynamicOps<T> ops, T prefix) {
+			return KubeJSCodecs.KUBEJS_ID.encode(input.id(), ops, prefix);
+		}
+	};
+
+	private static final Codec<RecipeComponent<?>> COMPONENT_BY_TYPE = TYPE_CODEC.dispatch("type", RecipeComponent::type, RecipeComponentType::mapCodec);
+
+	public static final Codec<RecipeComponent<?>> COMPONENT_CODEC = new Codec<>() {
+		@Override
+		public <T> DataResult<Pair<RecipeComponent<?>, T>> decode(DynamicOps<T> ops, T input) {
+			DataResult<Pair<RecipeComponent<?>, T>> unitResult = TYPE_CODEC.decode(ops, input)
+				.flatMap(pair -> retrieveStored(ops, pair.getFirst().id())
+					.flatMap(stored -> {
+						if (stored.unit == null) {
+							return DataResult.error(() -> "Dynamic recipe component type '%s' doesn't have a unit value".formatted(ID.reduceKjs(stored.id())));
+						}
+
+						return DataResult.success(Pair.of(stored.unit, pair.getSecond()));
+					}));
+
+			return unitResult.result().isPresent() ? unitResult : COMPONENT_BY_TYPE.decode(ops, input);
+		}
+
+		@Override
+		public <T> DataResult<T> encode(RecipeComponent<?> input, DynamicOps<T> ops, T prefix) {
+			return input.type().isUnit()
+				? TYPE_CODEC.encode(input.type(), ops, prefix)
+				: COMPONENT_BY_TYPE.encode(input, ops, prefix);
+		}
+	};
 
 	public RecipeSchemaStorage(ServerScriptManager manager) {
 		this.manager = manager;
@@ -74,7 +123,7 @@ public class RecipeSchemaStorage {
 		return namespaces.computeIfAbsent(namespace, n -> new RecipeNamespace(this, n));
 	}
 
-	RegistryAccessContainer getRegistries() {
+	RegistryAccessContainer registries() {
 		return manager.getRegistries();
 	}
 
@@ -84,7 +133,8 @@ public class RecipeSchemaStorage {
 		mappings.clear();
 		schemaTypes.clear();
 
-		var jsonOps = registries.json();
+		var componentTypes = new HashMap<Identifier, StoredRecipeComponentType>();
+		var ops = new Ops(registries.json(), this, componentTypes);
 
 		var typeEvent = new RecipeFactoryRegistry(this);
 		KubeJSPlugins.forEachPlugin(typeEvent, KubeJSPlugin::registerRecipeFactories);
@@ -113,51 +163,10 @@ public class RecipeSchemaStorage {
 		KubeJSPlugins.forEachPlugin(mappingRegistry, KubeJSPlugin::registerRecipeMappings);
 		ServerEvents.RECIPE_MAPPING_REGISTRY.post(ScriptType.SERVER, mappingRegistry);
 
-		var componentTypes = new HashMap<Identifier, StoredRecipeComponentType>();
-		Codec<StoredRecipeComponentType> typeCodec = KubeJSCodecs.KUBEJS_ID.comapFlatMap(id -> {
-			var stored = componentTypes.get(id);
-
-			if (stored != null) {
-				return DataResult.success(stored);
-			} else {
-				return DataResult.error(() -> "Unknown recipe component type '" + ID.reduceKjs(id) + "'");
-			}
-		}, stored -> stored.type.id());
-
-		Codec<RecipeComponent<?>> directComponentCodec = typeCodec.partialDispatch("type", c -> {
-			var stored = componentTypes.get(c.type().id());
-
-			if (stored != null) {
-				return DataResult.success(stored);
-			} else {
-				return DataResult.error(() -> "Missing stored recipe component type for '" + ID.reduceKjs(c.type().id()) + "'");
-			}
-		}, type -> DataResult.success(type.mapCodec));
-
-		recipeComponentCodec = Codec.either(
-			typeCodec,
-			directComponentCodec
-		).comapFlatMap(either -> either.map(stored -> {
-			if (stored.unit != null) {
-				return DataResult.success(stored.unit);
-			} else {
-				// return DataResult.error(() -> "Dynamic recipe component type '" + ID.reduceKjs(stored.type.id()) + "' doesn't have a unit value");
-				return stored.mapCodec.decode(jsonOps, JsonUtils.MAP_LIKE);
-			}
-		}, DataResult::success), component -> {
-			if (component.type().isUnit()) {
-				return Either.left(componentTypes.get(component.type().id()));
-			} else {
-				return Either.right(component);
-			}
-		});
-
 		KubeJSPlugins.forEachPlugin(type -> componentTypes.put(type.id(), new StoredRecipeComponentType(type)), KubeJSPlugin::registerRecipeComponents);
 
-		var rcCtx = new RecipeTypeRegistryContext(registries, this);
-
 		for (var stored : componentTypes.values()) {
-			stored.init(rcCtx);
+			stored.init(ops);
 		}
 
 		for (var entry : resourceManager.listResources("kubejs", path -> path.getPath().endsWith("/recipe_components.json")).entrySet()) {
@@ -166,12 +175,12 @@ public class RecipeSchemaStorage {
 
 				for (var entry1 : json.entrySet()) {
 					var id = ID.kjs(entry1.getKey());
-					var componentResult = recipeComponentCodec.parse(jsonOps, entry1.getValue());
+					var componentResult = COMPONENT_CODEC.parse(ops, entry1.getValue());
 
 					if (componentResult.isSuccess()) {
 						var stored = new StoredRecipeComponentType(RecipeComponentType.unit(id, componentResult.getOrThrow()));
 						componentTypes.put(id, stored);
-						stored.init(rcCtx);
+						stored.init(ops);
 					} else {
 						KubeJS.LOGGER.error("Failed to load recipe component {} from {}: {}", id, entry.getKey(), componentResult.error().map(DataResult.Error::message).orElse("Unknown Error"));
 					}
@@ -181,17 +190,31 @@ public class RecipeSchemaStorage {
 			}
 		}
 
-		recipePostProcessorCodec = RecipePostProcessorType.CODEC.dispatch("type", RecipePostProcessor::type, type -> type.mapCodec().apply(rcCtx));
-
 		for (var entry : BuiltInRegistries.RECIPE_SERIALIZER.entrySet()) {
 			var ns = namespace(entry.getKey().identifier().getNamespace());
 			ns.put(entry.getKey().identifier().getPath(), new UnknownRecipeSchemaType(ns, entry.getKey().identifier(), entry.getValue()));
 		}
 
 		var schemaRegistry = new RecipeSchemaRegistry(this);
-		JsonRecipeSchemaLoader.load(rcCtx, jsonOps, schemaRegistry, resourceManager);
+		JsonRecipeSchemaLoader.load(ops, schemaRegistry, resourceManager);
 
 		KubeJSPlugins.forEachPlugin(schemaRegistry, KubeJSPlugin::registerRecipeSchemas);
 		ServerEvents.RECIPE_SCHEMA_REGISTRY.post(ScriptType.SERVER, schemaRegistry);
+	}
+
+	static class Ops extends RegistryOps<JsonElement> {
+		final RecipeSchemaStorage storage;
+
+		private final Map<Identifier, StoredRecipeComponentType> componentTypes;
+
+		Ops(
+			RegistryOps<JsonElement> other,
+			RecipeSchemaStorage storage,
+			Map<Identifier, StoredRecipeComponentType> componentTypes
+		) {
+			super(other);
+			this.storage = storage;
+			this.componentTypes = componentTypes;
+		}
 	}
 }

@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.error.RecipeComponentTooLargeException;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
+import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.rhino.type.TypeInfo;
@@ -63,12 +64,12 @@ public record ListRecipeComponent<T>(
 		return spreadWrap;
 	}
 
-	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<ListRecipeComponent<?>>dynamic(KubeJS.id("list"), (type, ctx) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
-		ctx.recipeComponentCodec().fieldOf("component").forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::component),
+	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<ListRecipeComponent<?>>dynamic(KubeJS.id("list"), (type) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+		RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("component").forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::component),
 		Codec.BOOL.optionalFieldOf("can_write_self", false).forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::canWriteSelf),
 		Codec.BOOL.optionalFieldOf("conditional", false).forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::conditional),
 		IntBounds.MAP_CODEC.forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::bounds),
-		ctx.recipeComponentCodec().optionalFieldOf("spread").forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::spread)
+		RecipeSchemaStorage.COMPONENT_CODEC.optionalFieldOf("spread").forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::spread)
 	).apply(instance, dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::create)));
 
 	@Override

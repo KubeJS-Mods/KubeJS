@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe.schema;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.recipe.RecipeTypeRegistryContext;
 import dev.latvian.mods.kubejs.recipe.component.ComponentRole;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeSchemaFunction;
@@ -14,7 +13,6 @@ import net.minecraft.util.ExtraCodecs;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 public record RecipeSchemaData(
 	Optional<Identifier> parent,
@@ -30,18 +28,18 @@ public record RecipeSchemaData(
 	Optional<List<RecipePostProcessor>> postProcessors,
 	MergeData merge
 ) {
-	public static Function<RecipeTypeRegistryContext, Codec<RecipeSchemaData>> CODEC = ctx -> RecordCodecBuilder.create(instance -> instance.group(
+	public static Codec<RecipeSchemaData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Identifier.CODEC.optionalFieldOf("parent").forGetter(RecipeSchemaData::parent),
 		Identifier.CODEC.optionalFieldOf("override_type").forGetter(RecipeSchemaData::overrideType),
 		Identifier.CODEC.optionalFieldOf("recipe_factory").forGetter(RecipeSchemaData::recipeFactory),
-		RecipeKeyData.CODEC.apply(ctx).listOf().optionalFieldOf("keys").forGetter(RecipeSchemaData::keys),
+		RecipeKeyData.CODEC.listOf().optionalFieldOf("keys").forGetter(RecipeSchemaData::keys),
 		ConstructorData.CODEC.listOf().optionalFieldOf("constructors").forGetter(RecipeSchemaData::constructors),
 		Codec.unboundedMap(Codec.STRING, RecipeSchemaFunction.CODEC).optionalFieldOf("functions").forGetter(RecipeSchemaData::functions),
 		Codec.unboundedMap(Codec.STRING, ExtraCodecs.JSON).optionalFieldOf("override_keys", Map.of()).forGetter(RecipeSchemaData::overrideKeys),
 		Codec.BOOL.optionalFieldOf("hidden").forGetter(RecipeSchemaData::hidden),
 		Codec.STRING.listOf().optionalFieldOf("mappings", List.of()).forGetter(RecipeSchemaData::mappings),
 		Codec.STRING.listOf().optionalFieldOf("unique").forGetter(RecipeSchemaData::unique),
-		ctx.recipePostProcessorCodec().listOf().optionalFieldOf("post_processors").forGetter(RecipeSchemaData::postProcessors),
+		RecipePostProcessor.CODEC.listOf().optionalFieldOf("post_processors").forGetter(RecipeSchemaData::postProcessors),
 		MergeData.CODEC.optionalFieldOf("merge", MergeData.DEFAULT).forGetter(RecipeSchemaData::merge)
 	).apply(instance, RecipeSchemaData::new));
 
@@ -102,10 +100,10 @@ public record RecipeSchemaData(
 		List<String> functionNames,
 		boolean alwaysWrite
 	) {
-		public static Function<RecipeTypeRegistryContext, Codec<RecipeKeyData>> CODEC = ctx -> RecordCodecBuilder.create(instance -> instance.group(
+		public static Codec<RecipeKeyData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.STRING.fieldOf("name").forGetter(RecipeKeyData::name),
 			ComponentRole.CODEC.optionalFieldOf("role", ComponentRole.OTHER).forGetter(RecipeKeyData::role),
-			ctx.recipeComponentCodec().fieldOf("type").forGetter(RecipeKeyData::type),
+			RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("type").forGetter(RecipeKeyData::type),
 			ExtraCodecs.JSON.optionalFieldOf("optional").forGetter(RecipeKeyData::optional),
 			Codec.BOOL.optionalFieldOf("default_optional", false).forGetter(RecipeKeyData::defaultOptional),
 			Codec.STRING.listOf().optionalFieldOf("alternative_names", List.of()).forGetter(RecipeKeyData::alternativeNames),
