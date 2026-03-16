@@ -2,25 +2,28 @@ package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
 import com.google.gson.JsonElement;
 import com.mojang.brigadier.StringReader;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.rhino.Context;
 import net.minecraft.commands.arguments.ParticleArgument;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.util.ARGB;
-import org.joml.Vector3f;
 
 public interface ParticleOptionsWrapper {
 	DustParticleOptions ERROR = new DustParticleOptions(ARGB.colorFromFloat(1F, 0F, 0F, 0F), 1F);
 
-	static ParticleOptions wrap(RegistryAccessContainer registries, Object o) {
+	// TODO (26.1?): improve
+	static ParticleOptions wrap(Context cx, Object o) {
 		if (o instanceof ParticleOptions po) {
 			return po;
 		} else if (o != null) {
 			try {
 				var reader = new StringReader(o instanceof JsonElement j ? j.getAsString() : o.toString());
-				return ParticleArgument.readParticle(reader, registries.access());
+				return ParticleArgument.readParticle(reader, RegistryAccessContainer.of(cx).access());
 			} catch (Exception ex) {
-				throw new RuntimeException("Failed to parse ParticleOptions from " + o, ex);
+				throw new KubeRuntimeException("Failed to parse ParticleOptions from %s".formatted(o), ex).source(SourceLine.of(cx));
 			}
 		}
 

@@ -4,7 +4,6 @@ import com.google.common.base.Stopwatch;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.CommonProperties;
@@ -47,11 +46,8 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
-
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -103,8 +99,6 @@ public class RecipesKubeEvent implements KubeEvent {
 	public final RecipeTypeFunction stonecutting;
 	public final RecipeTypeFunction smithing;
 	public final RecipeTypeFunction smithingTrim;
-
-	public RecipeSerializer<?> stageSerializer = null;
 
 	public RecipesKubeEvent(ServerScriptManager manager, ResourceManager resourceManager) {
 		ConsoleJS.SERVER.info("Initializing recipe event...");
@@ -177,9 +171,6 @@ public class RecipesKubeEvent implements KubeEvent {
 		recipeFunctions.put("stonecutting", stonecutting);
 		recipeFunctions.put("smithing", smithing);
 		recipeFunctions.put("smithingTrim", smithingTrim);
-
-		var optionalSerializer = BuiltInRegistries.RECIPE_SERIALIZER.get(Identifier.parse("recipestages:stage"));
-		optionalSerializer.ifPresent(recipeSerializerReference -> stageSerializer = recipeSerializerReference.value());
 	}
 
 	@HideFromJS

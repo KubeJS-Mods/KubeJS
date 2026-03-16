@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.util;
 
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 
 import java.time.temporal.Temporal;
@@ -23,13 +24,13 @@ public record TickDuration(long ticks) implements TemporalAmount {
 		return ticks == 0L ? ZERO : new TickDuration(ticks);
 	}
 
-	public static TickDuration wrap(Object from) {
+	public static TickDuration wrap(Context cx, Object from) {
 		return switch (from) {
 			case null -> ZERO;
 			case TickDuration d -> d;
 			case Number n -> of(n.longValue());
 			case JsonPrimitive json -> of(json.getAsLong());
-			default -> of(TimeJS.wrapDuration(from).toMillis() / 50L);
+			default -> of(TimeJS.wrapDuration(cx, from).toMillis() / 50L);
 		};
 	}
 

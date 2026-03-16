@@ -18,8 +18,8 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.IdentifierException;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.EntityType;
@@ -80,7 +80,7 @@ public interface KubeJSCodecs {
 
 	MapCodec<EntityType<?>> ENTITY_TYPE_FIELD = BuiltInRegistries.ENTITY_TYPE.byNameCodec().fieldOf("id");
 
-	Codec<Duration> DURATION = KubeJSCodecs.stringResolverCodec(Duration::toString, TimeJS::wrapDuration);
+	Codec<Duration> DURATION = Codec.STRING.comapFlatMap(TimeJS::readDuration, Duration::toString);
 
 	Codec<ResourceKey<? extends Registry<?>>> REGISTRY_KEY_CODEC = Identifier.CODEC.xmap(ResourceKey::createRegistryKey, ResourceKey::identifier);
 

@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
 import com.google.gson.JsonElement;
+import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import net.minecraft.resources.Identifier;
@@ -60,6 +61,27 @@ public interface StringUtilsWrapper {
 		}
 	}
 
+	@Info("Tries to parse the first parameter as a float and returns that. The second parameter is returned if parsing fails")
+	static float parseFloat(@Nullable Object object, float def) {
+		if (object == null) {
+			return def;
+		} else if (object instanceof Number num) {
+			return num.floatValue();
+		}
+
+		try {
+			var s = object.toString();
+
+			if (s.isEmpty()) {
+				return def;
+			}
+
+			return Float.parseFloat(String.valueOf(object));
+		} catch (Exception ex) {
+			return def;
+		}
+	}
+
 	@Info("Tries to parse the first parameter as a double and returns that. The second parameter is returned if parsing fails")
 	static double parseDouble(@Nullable Object object, double def) {
 		if (object == null) {
@@ -79,6 +101,44 @@ public interface StringUtilsWrapper {
 		} catch (Exception ex) {
 			return def;
 		}
+	}
+
+	static <T extends Number> DataResult<T> tryParseNumber(Object input, Function<Number, T> getter, Function<String, T> parser) {
+		if (input == null) {
+			return DataResult.error(() -> "Value cannot be null");
+		} else if (input instanceof Number num) {
+			return DataResult.success(getter.apply(num));
+		}
+
+		var s = input.toString();
+
+		if (s.isEmpty()) {
+			return DataResult.error(() -> "Value cannot be empty");
+		}
+
+		try {
+			return DataResult.success(parser.apply(s));
+		} catch (final NumberFormatException e) {
+			return DataResult.error(() -> "Not a number: " + e + " " + input);
+		}
+	}
+
+	static DataResult<Integer> tryParseInt(Object input) {
+		return tryParseNumber(input, Number::intValue, Integer::parseInt);
+	}
+
+	static DataResult<Long> tryParseLong(Object input) {
+		return tryParseNumber(input, Number::longValue, Long::parseLong);
+
+	}
+
+	static DataResult<Float> tryParseFloat(Object input) {
+		return tryParseNumber(input, Number::floatValue, Float::parseFloat);
+
+	}
+
+	static DataResult<Double> tryParseDouble(Object input) {
+		return tryParseNumber(input, Number::doubleValue, Double::parseDouble);
 	}
 
 	@Info("Returns the provided snake_case_string in camelCase")

@@ -6,10 +6,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapLike;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -67,7 +70,7 @@ public interface JsonUtils {
 				} else if (cx.isListLike(o)) {
 					yield arrayOf(cx, o);
 				} else {
-					yield JsonNull.INSTANCE;
+					throw new KubeRuntimeException("Unsure how to convert '%s' to JSON!".formatted(o)).source(SourceLine.of(cx));
 				}
 			}
 		};
@@ -79,52 +82,66 @@ public interface JsonUtils {
 
 	@Nullable
 	static JsonObject objectOf(Context cx, @Nullable Object map) {
-		if (map instanceof JsonObject json) {
-			return json;
-		} else if (map instanceof CharSequence) {
-			try {
-				return GSON.fromJson(map.toString(), JsonObject.class);
-			} catch (Exception ex) {
-				return null;
-			}
-		}
-
-		var m = (Map<?, ?>) cx.jsToJava(map, TypeInfo.RAW_MAP);
-
-		if (m != null) {
-			var json = new JsonObject();
-
-			for (var entry : m.entrySet()) {
-				var e = of(cx, entry.getValue());
-
-				if (e instanceof JsonPrimitive p && p.isNumber() && p.getAsNumber() instanceof Double d && d <= Long.MAX_VALUE && d >= Long.MIN_VALUE && d == d.longValue()) {
-					var l = d.longValue();
-
-					if (l >= Integer.MIN_VALUE && l <= Integer.MAX_VALUE) {
-						json.add(String.valueOf(entry.getKey()), new JsonPrimitive((int) l));
-					} else {
-						json.add(String.valueOf(entry.getKey()), new JsonPrimitive(l));
+		return switch (map) {
+			case null -> null;
+			case JsonObject json -> json;
+			case CharSequence charSequence -> {
+				try {
+					var json = GSON.fromJson(map.toString(), JsonObject.class);
+					if (json == null) {
+						throw new JsonParseException("JSON object string cannot be null");
 					}
-				} else {
-					json.add(String.valueOf(entry.getKey()), e);
+
+					yield json;
+				} catch (JsonParseException ex) {
+					throw new KubeRuntimeException("Failed to parse JsonObject from '%s'".formatted(map), ex).source(SourceLine.of(cx));
 				}
 			}
+			default -> {
+				var m = (Map<?, ?>) cx.jsToJava(map, TypeInfo.RAW_MAP);
 
-			return json;
-		}
+				if (m != null) {
+					var json = new JsonObject();
 
-		return null;
+					for (var entry : m.entrySet()) {
+						var e = of(cx, entry.getValue());
+
+						if (e instanceof JsonPrimitive p && p.isNumber() && p.getAsNumber() instanceof Double d && d <= Long.MAX_VALUE && d >= Long.MIN_VALUE && d == d.longValue()) {
+							var l = d.longValue();
+
+							if (l >= Integer.MIN_VALUE && l <= Integer.MAX_VALUE) {
+								json.add(String.valueOf(entry.getKey()), new JsonPrimitive((int) l));
+							} else {
+								json.add(String.valueOf(entry.getKey()), new JsonPrimitive(l));
+							}
+						} else {
+							json.add(String.valueOf(entry.getKey()), e);
+						}
+					}
+
+					yield json;
+				} else {
+					throw new KubeRuntimeException("Expected a map-like object or JSON object string, got '%s'".formatted(map)).source(SourceLine.of(cx));
+				}
+			}
+		};
 	}
 
 	@Nullable
 	static JsonArray arrayOf(Context cx, @Nullable Object array) {
 		return switch (array) {
+			case null -> null;
 			case JsonArray arr -> arr;
 			case CharSequence cs -> {
 				try {
-					yield JsonUtils.GSON.fromJson(cs.toString(), JsonArray.class);
+					var json = JsonUtils.GSON.fromJson(cs.toString(), JsonArray.class);
+					if (json == null) {
+						throw new JsonParseException("JSON array string cannot be null");
+					}
+
+					yield json;
 				} catch (Exception ex) {
-					yield null;
+					throw new KubeRuntimeException("Failed to parse JsonArray from '%s'".formatted(array), ex).source(SourceLine.of(cx));
 				}
 			}
 			case Iterable<?> itr -> {
@@ -136,7 +153,7 @@ public interface JsonUtils {
 
 				yield json;
 			}
-			case null, default -> null;
+			default -> throw new KubeRuntimeException("Expected an iterable or JSON array string, got %s".formatted(array)).source(SourceLine.of(cx));
 		};
 	}
 

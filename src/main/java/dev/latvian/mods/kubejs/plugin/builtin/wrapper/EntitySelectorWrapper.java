@@ -1,7 +1,8 @@
 package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
 import com.mojang.brigadier.StringReader;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.advancements.criterion.MinMaxBounds;
@@ -25,7 +26,7 @@ public class EntitySelectorWrapper {
 	@HideFromJS
 	public static EntitySelector wrap(Context cx, @Nullable Object o) {
 		if (o == null) {
-			return ALL_ENTITIES_SELECTOR;
+			throw new KubeRuntimeException("EntitySelector cannot be null!").source(SourceLine.of(cx));
 		} else if (o instanceof EntitySelector s) {
 			return s;
 		}
@@ -33,7 +34,7 @@ public class EntitySelectorWrapper {
 		String s = o.toString();
 
 		if (s.isBlank()) {
-			return ALL_ENTITIES_SELECTOR;
+			throw new KubeRuntimeException("EntitySelector cannot be blank!").source(SourceLine.of(cx));
 		}
 
 		EntitySelector sel;
@@ -45,8 +46,7 @@ public class EntitySelectorWrapper {
 				sel = new EntitySelectorParser(new StringReader(s), true).parse();
 				ENTITY_SELECTOR_CACHE.put(s, sel);
 			} catch (Exception ex) {
-				ConsoleJS.getCurrent(cx).error("Error parsing entity selector, falling back to all", ex);
-				return ALL_ENTITIES_SELECTOR;
+				throw new KubeRuntimeException("Failed to parse entity selector '%s'".formatted(s), ex).source(SourceLine.of(cx));
 			}
 		}
 

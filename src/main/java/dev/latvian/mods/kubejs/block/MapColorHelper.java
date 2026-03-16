@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Undefined;
 import net.minecraft.world.item.DyeColor;
@@ -92,18 +93,31 @@ public record MapColorHelper(int id, String name, MapColor color, Vector3f rgb) 
 		add("glow_lichen", MapColor.GLOW_LICHEN);
 	}
 
-	@SuppressWarnings("DuplicateBranchesInSwitch")
 	public static MapColor wrap(Object o) {
 		return switch (o) {
-			case Undefined undefined -> MapColor.NONE;
-			case Scriptable s when Undefined.isUndefined(s) -> MapColor.NONE;
+			case Undefined undefined -> throw new KubeRuntimeException("MapColor cannot be undefined!");
+			case Scriptable s when Undefined.isUndefined(s) -> throw new KubeRuntimeException("MapColor cannot be undefined!");
 			case MapColor c -> c;
-			case String s when s.isBlank() -> MapColor.NONE;
-			case String s when s.charAt(0) == '#' -> findClosest(Integer.decode(s)).color;
-			case String s -> NAME_MAP.getOrDefault(s.toLowerCase(Locale.ROOT), NONE).color;
+			case String s when s.isBlank() -> throw new KubeRuntimeException("MapColor string cannot be blank!");
+			case String s when s.charAt(0) == '#' -> {
+				try {
+					yield findClosest(Integer.decode(s)).color;
+				} catch (Exception ex) {
+					throw new KubeRuntimeException("Invalid MapColor hex value '%s'".formatted(s), ex);
+				}
+			}
+			case String s -> {
+				var color = NAME_MAP.get(s.toLowerCase(Locale.ROOT));
+				if (color != null) {
+					yield color.color;
+				}
+
+				throw new KubeRuntimeException("Unknown MapColor '%s'".formatted(s));
+			}
 			case Number n -> findClosest(n.intValue()).color;
 			case DyeColor c -> c.getMapColor();
-			case null, default -> MapColor.NONE;
+			case null -> throw new KubeRuntimeException("MapColor cannot be null!");
+			default -> throw new KubeRuntimeException("Invalid MapColor input %s".formatted(o));
 		};
 	}
 

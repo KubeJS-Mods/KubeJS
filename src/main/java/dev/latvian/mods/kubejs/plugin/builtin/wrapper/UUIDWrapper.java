@@ -1,5 +1,8 @@
 package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.script.SourceLine;
+import dev.latvian.mods.rhino.Context;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -28,7 +31,7 @@ public interface UUIDWrapper {
 	}
 
 	@Nullable
-	static UUID fromString(Object o) {
+	static UUID fromString(Context cx, Object o) {
 		if (o instanceof UUID) {
 			return (UUID) o;
 		} else if (o == null) {
@@ -37,8 +40,8 @@ public interface UUIDWrapper {
 
 		String s = String.valueOf(o);
 
-		if (o == null || !(s.length() == 32 || s.length() == 36)) {
-			return null;
+		if (!(s.length() == 32 || s.length() == 36)) {
+			throw new KubeRuntimeException("UUID string must be 32 or 36 characters long, got '%s'".formatted(s)).source(SourceLine.of(cx));
 		}
 
 		try {
@@ -57,9 +60,7 @@ public interface UUIDWrapper {
 
 			return UUID.fromString(sb.toString());
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new KubeRuntimeException("Invalid UUID string '%s'".formatted(s), e).source(SourceLine.of(cx));
 		}
-
-		return null;
 	}
 }

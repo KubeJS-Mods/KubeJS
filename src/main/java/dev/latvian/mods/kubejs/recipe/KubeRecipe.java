@@ -36,8 +36,8 @@ import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -487,10 +487,15 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		}
 	}
 
+	/**
+	 * @deprecated It doesn't look like recipe staging is likely to return any time soon;
+	 * if anybody finds a way to do it though or just needs this method for whatever reason,
+	 * I am happy to keep it...
+	 */
+	@Deprecated(forRemoval = true)
 	public KubeRecipe stage(String s) {
-		json.addProperty(KubeJSCraftingRecipe.STAGE_KEY, s);
-		save();
-		return this;
+		throw new KubeRuntimeException("recipe.stage() is no longer supported by default due to vanilla changes!")
+			.source(sourceLine);
 	}
 
 	/**
@@ -518,13 +523,6 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 
 			if (newRecipe) {
 				json.addProperty("type", getSerializationTypeFunction().schemaType.serializerType);
-			}
-
-			if (type.event.stageSerializer != null && json.has(KubeJSCraftingRecipe.STAGE_KEY) && !type.idString.equals("recipestages:stage")) {
-				var staged = new JsonObject();
-				staged.addProperty("stage", json.get(KubeJSCraftingRecipe.STAGE_KEY).getAsString());
-				staged.add("recipe", json);
-				json = staged;
 			}
 
 			json.add(CHANGED_MARKER, sourceLine.toJson());

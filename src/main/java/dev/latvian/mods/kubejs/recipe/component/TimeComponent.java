@@ -34,7 +34,7 @@ public record TimeComponent(RecipeComponentType<?> type, long scale, Codec<TickD
 		if (from instanceof Number n) {
 			return TickDuration.of((long) (n.doubleValue() * scale));
 		} else {
-			return TickDuration.wrap(from);
+			return TickDuration.wrap(cx.cx(), from);
 		}
 	}
 

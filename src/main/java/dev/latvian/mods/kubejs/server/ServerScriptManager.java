@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.server;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.Lifecycle;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
@@ -24,9 +25,11 @@ import dev.latvian.mods.kubejs.server.tag.PreTagKubeEvent;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.fml.loading.FMLLoader;
@@ -37,11 +40,15 @@ import org.jetbrains.annotations.ApiStatus;
 import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ServerScriptManager extends ScriptManager {
 	private static ServerScriptManager staticInstance;
@@ -93,6 +100,7 @@ public class ServerScriptManager extends ScriptManager {
 	public final VirtualDataPack internalDataPack;
 	public final VirtualDataPack registriesDataPack;
 	public final Map<GeneratedDataStage, VirtualDataPack> virtualPacks;
+	public final Map<Identifier, Set<Identifier>> serverRegistryTags;
 	public boolean firstLoad;
 
 	private ServerScriptManager() {
@@ -104,6 +112,7 @@ public class ServerScriptManager extends ScriptManager {
 		this.internalDataPack = new VirtualDataPack(GeneratedDataStage.INTERNAL, this::getRegistries);
 		this.registriesDataPack = new VirtualDataPack(GeneratedDataStage.REGISTRIES, this::getRegistries);
 		this.virtualPacks = GeneratedDataStage.forScripts(stage -> new VirtualDataPack(stage, this::getRegistries));
+		serverRegistryTags = new HashMap<>();
 
 		this.firstLoad = true;
 
@@ -182,6 +191,28 @@ public class ServerScriptManager extends ScriptManager {
 			if (ServerEvents.REGISTRY.hasListeners()) {
 				var builders = new ArrayList<BuilderBase<?>>();
 
+				var current = RegistryAccessContainer.current;
+				RegistryAccessContainer.current = new RegistryAccessContainer(new RegistryAccess.Frozen() {
+
+					final Map<ResourceKey<? extends Registry<?>>, Optional<Registry<?>>> registries = new HashMap<>();
+
+					@Override
+					public <E> Optional<Registry<E>> lookup(ResourceKey<? extends Registry<? extends E>> registryKey) {
+						return Cast.to(registries.computeIfAbsent(registryKey, key -> {
+							var c = current.access().lookup(key);
+							if (c.isPresent()) {
+								return Cast.to(c);
+							}
+							return Optional.of(new MappedRegistry(key, Lifecycle.experimental()));
+						}));
+					}
+
+					@Override
+					public Stream<RegistryEntry<?>> registries() {
+						return current.access().registries();
+					}
+				});
+
 				var ops = RegistryAccessContainer.current.json();
 
 				var codecs = new Reference2ObjectOpenHashMap<ResourceKey<?>, Codec<?>>();
@@ -201,6 +232,10 @@ public class ServerScriptManager extends ScriptManager {
 
 				for (var b : builders) {
 					b.generateData(registriesDataPack);
+
+					if (!b.defaultTags.isEmpty()) {
+						serverRegistryTags.put(b.id, b.defaultTags);
+					}
 				}
 
 				for (var b : builders) {
@@ -231,6 +266,8 @@ public class ServerScriptManager extends ScriptManager {
 				}
 
 				registriesDataPack.flush();
+
+				RegistryAccessContainer.current = current;
 			}
 		}
 	}

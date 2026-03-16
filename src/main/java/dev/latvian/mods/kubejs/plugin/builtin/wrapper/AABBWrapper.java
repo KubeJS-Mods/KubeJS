@@ -1,5 +1,8 @@
 package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.script.SourceLine;
+import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -28,16 +31,18 @@ public interface AABBWrapper {
 		return AABB.ofSize(vec3, x, y, z);
 	}
 
-	static AABB wrap(Object o) {
+	static AABB wrap(Context cx, Object o) {
 		return switch (o) {
+			case null -> EMPTY;
 			case AABB aabb -> aabb;
 			case BlockPos blockPos -> ofBlock(blockPos);
 			case double[] d -> switch (d.length) {
+				case 0 -> EMPTY;
 				case 3 -> ofSize(d[0], d[1], d[2]);
 				case 6 -> of(d[0], d[1], d[2], d[3], d[4], d[5]);
-				default -> EMPTY;
+				default -> throw new KubeRuntimeException("AABB list needs to either have 3 (size) or 6 (from -> to) elements, got %d!".formatted(d.length)).source(SourceLine.of(cx));
 			};
-			case null, default -> EMPTY;
+			default -> throw new KubeRuntimeException("Cannot convert %s to AABB!".formatted(o)).source(SourceLine.of(cx));
 		};
 	}
 }

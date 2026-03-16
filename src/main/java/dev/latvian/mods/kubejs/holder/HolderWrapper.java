@@ -1,17 +1,14 @@
 package dev.latvian.mods.kubejs.holder;
 
-import dev.latvian.mods.kubejs.core.RegistryObjectKJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.regexp.NativeRegExp;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -21,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public interface HolderWrapper {
@@ -54,6 +50,20 @@ public interface HolderWrapper {
 		var id = ID.mc(from);
 		var holder = registry.get(id);
 		return holder.isEmpty() ? DeferredHolder.create(registry.key(), id) : holder.get();
+	}
+
+	static Holder.Reference<?> wrapRef(KubeJSContext cx, Object from, TypeInfo param) {
+		var h = wrap(cx, from, param);
+
+		// Self or wrapped holder
+		if (h.getDelegate() instanceof Holder.Reference<?> ref) {
+			return ref;
+		} else if (h instanceof Holder.Direct<?>) {
+			// Create intrusive instead?
+			throw Context.reportRuntimeError("Can't interpret '" + from + "' as a Reference Holder: cannot obtain its registry id", cx);
+		}
+
+		return Holder.Reference.createStandAlone(Cast.to(cx.lookupRegistry(param, from)), h.getKey()); // Only null with direct holders
 	}
 
 	static HolderSet<?> wrapSet(KubeJSContext cx, Object from, TypeInfo param) {

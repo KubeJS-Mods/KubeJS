@@ -23,14 +23,12 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 	private final boolean mirror;
 	private final List<IngredientActionHolder> ingredientActions;
 	private final String modifyResult;
-	private final String stage;
 
-	public ShapedKubeJSRecipe(CommonInfo commonInfo, CraftingBookInfo bookInfo, ShapedRecipePattern pattern, ItemStackTemplate result, boolean mirror, List<IngredientActionHolder> ingredientActions, String modifyResult, String stage) {
+	public ShapedKubeJSRecipe(CommonInfo commonInfo, CraftingBookInfo bookInfo, ShapedRecipePattern pattern, ItemStackTemplate result, boolean mirror, List<IngredientActionHolder> ingredientActions, String modifyResult) {
 		super(commonInfo, bookInfo, pattern, result);
 		this.mirror = mirror;
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
-		this.stage = stage;
 
 		if (!mirror) {
 			this.pattern.symmetrical = true;
@@ -54,11 +52,6 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 	public boolean kjs$getMirror() {
 		return mirror;
-	}
-
-	@Override
-	public String kjs$getStage() {
-		return stage;
 	}
 
 	@Override
@@ -99,8 +92,7 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			ItemStackTemplate.CODEC.fieldOf("result").forGetter(ShapedKubeJSRecipe::result),
 			Codec.BOOL.optionalFieldOf(MIRROR_KEY, true).forGetter(ShapedKubeJSRecipe::kjs$getMirror),
 			IngredientActionHolder.LIST_CODEC.optionalFieldOf(INGREDIENT_ACTIONS_KEY, List.of()).forGetter(ShapedKubeJSRecipe::kjs$getIngredientActions),
-			Codec.STRING.optionalFieldOf(MODIFY_RESULT_KEY, "").forGetter(ShapedKubeJSRecipe::kjs$getModifyResult),
-			Codec.STRING.optionalFieldOf(STAGE_KEY, "").forGetter(ShapedKubeJSRecipe::kjs$getStage)
+			Codec.STRING.optionalFieldOf(MODIFY_RESULT_KEY, "").forGetter(ShapedKubeJSRecipe::kjs$getModifyResult)
 		).apply(instance, ShapedKubeJSRecipe::new));
 
 		public static final StreamCodec<RegistryFriendlyByteBuf, ShapedKubeJSRecipe> STREAM_CODEC = KubeJSStreamCodecs.composite(
@@ -111,7 +103,6 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 			ByteBufCodecs.BOOL, ShapedKubeJSRecipe::kjs$getMirror,
 			IngredientActionHolder.LIST_STREAM_CODEC, ShapedKubeJSRecipe::kjs$getIngredientActions,
 			ByteBufCodecs.STRING_UTF8.cast(), ShapedKubeJSRecipe::kjs$getModifyResult,
-			ByteBufCodecs.STRING_UTF8.cast(), ShapedKubeJSRecipe::kjs$getStage,
 			ShapedKubeJSRecipe::new
 		);
 

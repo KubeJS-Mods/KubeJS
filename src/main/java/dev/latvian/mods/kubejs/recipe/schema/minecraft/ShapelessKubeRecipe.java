@@ -16,7 +16,6 @@ public class ShapelessKubeRecipe extends KubeRecipe {
 			&& type.event.shapeless != type.event.vanillaShapeless // check if not in serverOnly mode
 			&& !json.has(KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY)
 			&& !json.has(KubeJSCraftingRecipe.MODIFY_RESULT_KEY)
-			&& !json.has(KubeJSCraftingRecipe.STAGE_KEY)
 		) {
 			return type.event.vanillaShapeless;
 		}

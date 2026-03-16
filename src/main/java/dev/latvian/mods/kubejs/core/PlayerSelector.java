@@ -1,36 +1,51 @@
 package dev.latvian.mods.kubejs.core;
 
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.UUIDWrapper;
+import dev.latvian.mods.kubejs.script.SourceLine;
+import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.rhino.BaseFunction;
+import dev.latvian.mods.rhino.Context;
+import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.UUID;
 
 @FunctionalInterface
 public interface PlayerSelector {
+	TypeInfo TYPE_INFO = TypeInfo.of(PlayerSelector.class);
 
-	static PlayerSelector wrap(Object o) {
-		if (o instanceof ServerPlayer sp) {
-			return identity(sp);
-		} else if (o instanceof UUID uuid) {
-			return uuid(uuid);
-		}
+	static PlayerSelector wrap(Context cx, Object o) {
+		return switch (o) {
+			case null -> throw new KubeRuntimeException("PlayerSelector cannot be null!").source(SourceLine.of(cx));
+			case ServerPlayer sp -> identity(sp);
+			case UUID uuid -> uuid(uuid);
+			case BaseFunction fn -> Cast.to(cx.createInterfaceAdapter(TYPE_INFO, fn));
+			default -> fromString(cx, String.valueOf(o).trim().toLowerCase(Locale.ROOT));
+		};
+	}
 
-		var name = Objects.toString(o, "").trim().toLowerCase(Locale.ROOT);
-
+	private static PlayerSelector fromString(Context cx, String name) {
 		if (name.isEmpty()) {
-			return identity(null);
+			throw new KubeRuntimeException("PlayerSelector cannot be blank!").source(SourceLine.of(cx));
 		}
 
-		var uuid = UUIDWrapper.fromString(name);
+		var uuid = UUIDWrapper.fromString(cx, name);
 		if (uuid != null) {
 			return uuid(uuid);
 		}
 
-		return name(name).or(fuzzyName(name));
+		return server -> {
+			var player = name(name).or(fuzzyName(name)).getPlayer(server);
+			if (player != null) {
+				return player;
+			}
+
+			throw new KubeRuntimeException("No player matched selector '%s'".formatted(name)).source(SourceLine.of(cx));
+		};
 	}
 
 	@Nullable

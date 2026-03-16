@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.block.state;
 
 import com.mojang.serialization.DataResult;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.level.ruletest.AllMatchRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.AlwaysFalseRuleTest;
 import dev.latvian.mods.kubejs.level.ruletest.AnyMatchRuleTest;
@@ -8,15 +9,16 @@ import dev.latvian.mods.kubejs.level.ruletest.InvertRuleTest;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.NBTWrapper;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatch;
+import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.Tags;
 import dev.latvian.mods.rhino.Context;
-import net.minecraft.util.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Util;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -127,7 +129,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 				.map(tag -> RuleTest.CODEC.parse(nbt, tag))
 				.flatMap(DataResult::result)
 				.or(() -> Optional.ofNullable(wrap(cx, o).asRuleTest()))
-				.orElseThrow(() -> new IllegalArgumentException("Could not parse valid rule test from " + o + "!"));
+				.orElseThrow(() -> new KubeRuntimeException("Could not parse valid rule test from %s!".formatted(o)).source(SourceLine.of(cx)));
 		};
 	}
 

@@ -9,8 +9,8 @@ import dev.latvian.mods.kubejs.server.tag.TagEventFilter;
 import dev.latvian.mods.kubejs.server.tag.TagKubeEvent;
 import dev.latvian.mods.kubejs.server.tag.TagWrapper;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagLoader;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,6 +37,8 @@ public interface TagLoaderKJS<T> {
 			}
 		}
 
+		hasDefaultTags |= !serverScriptManager.serverRegistryTags.isEmpty();
+
 		if (hasDefaultTags || ServerEvents.TAGS.hasListeners(objStorage.key)) {
 			var preEvent = serverScriptManager.preTagEvents.get(reg.key());
 
@@ -54,6 +56,12 @@ public interface TagLoaderKJS<T> {
 			for (var builder : (Collection<BuilderBase<?>>) objStorage.objects.values()) {
 				for (var s : builder.defaultTags) {
 					event.add(s, new TagEventFilter.ID(builder.id));
+				}
+			}
+
+			for (var e : serverScriptManager.serverRegistryTags.entrySet()) {
+				for (var tag : e.getValue()) {
+					event.add(tag, new TagEventFilter.ID(e.getKey()));
 				}
 			}
 
