@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -71,7 +72,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 	public transient FinishUsingCallback finishUsing;
 	public transient ReleaseUsingCallback releaseUsing;
 	public transient Predicate<HurtEnemyContext> hurtEnemy;
-	public transient JukeboxPlayable jukeboxPlayable;
+	public transient ResourceKey<JukeboxSong> jukeboxSong;
 
 	public transient Tool tool;
 	public transient ItemAttributeModifiers itemAttributeModifiers;
@@ -334,7 +335,8 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 	}
 
 	public ItemBuilder jukeboxPlayable(ResourceKey<JukeboxSong> song) {
-		return jukeboxPlayable(song);
+		this.jukeboxSong = song;
+		return this;
 	}
 
 	public ItemBuilder disableRepair() {
@@ -409,8 +411,8 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 			properties.attributes(itemAttributeModifiers);
 		}
 
-		if (jukeboxPlayable != null) {
-			properties.component(DataComponents.JUKEBOX_PLAYABLE, jukeboxPlayable);
+		if (jukeboxSong != null) {
+			properties.delayedComponent(DataComponents.JUKEBOX_PLAYABLE, ctx -> new JukeboxPlayable(ctx.getOrThrow(jukeboxSong)));
 		}
 
 		if (!canRepair) {
