@@ -156,7 +156,7 @@ public class PersistentDataCommands {
 								var targets = ScoreHolderArgument.getNames(ctx, "targets");
 								var objective = ObjectiveArgument.getObjective(ctx, "objective");
 
-								int score = object.kjs$getPersistentData().getInt(key).get();
+								int score = object.kjs$getPersistentData().getInt(key).orElse(0);
 
 								for (var target : targets) {
 									scoreboard.getOrCreatePlayerScore(target, objective).set(score);

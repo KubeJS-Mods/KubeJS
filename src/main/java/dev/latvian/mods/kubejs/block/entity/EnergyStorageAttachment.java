@@ -70,7 +70,6 @@ public class EnergyStorageAttachment implements BlockEntityAttachment {
 			int i = Mth.clamp(this.capacity - this.energy, 0, add);
 			if (!simulate && i > 0) {
 				this.energy += i;
-				attachment.entity.save();
 			}
 			return i;
 		}
@@ -79,7 +78,6 @@ public class EnergyStorageAttachment implements BlockEntityAttachment {
 			int i = Math.min(this.energy, remove);
 			if (!simulate && i > 0) {
 				this.energy -= i;
-				attachment.entity.save();
 			}
 			return i;
 		}
@@ -88,7 +86,6 @@ public class EnergyStorageAttachment implements BlockEntityAttachment {
 			if (this.energy >= use) {
 				if (!simulate) {
 					this.energy -= use;
-					attachment.entity.save();
 				}
 				return true;
 			}
@@ -195,7 +192,7 @@ public class EnergyStorageAttachment implements BlockEntityAttachment {
 	@Override
 	public void deserialize(HolderLookup.Provider registries, @Nullable Tag tag) {
 		if (tag instanceof IntTag i) {
-			energyStorage.setEnergyStored(i.asInt().get());
+			energyStorage.setEnergyStored(i.asInt().orElse(0));
 		} else {
 			energyStorage.setEnergyStored(0);
 		}

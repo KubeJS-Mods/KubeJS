@@ -126,7 +126,7 @@ public class InventoryAttachment implements BlockEntityAttachment {
 				var tag = ItemStack.CODEC.encodeStart(ops, stack).result().orElse(null);
 
 				if (tag instanceof CompoundTag itemTag) {
-					itemTag.putByte("slot", (byte) i);
+					itemTag.putInt("slot", i);
 					list.add(itemTag);
 				}
 			}
@@ -152,7 +152,7 @@ public class InventoryAttachment implements BlockEntityAttachment {
 				}
 
 				var itemTag = itemTagOpt.get();
-				var slotOpt = itemTag.getByte("slot");
+				var slotOpt = itemTag.getInt("slot");
 				if (slotOpt.isEmpty()) {
 					continue;
 				}

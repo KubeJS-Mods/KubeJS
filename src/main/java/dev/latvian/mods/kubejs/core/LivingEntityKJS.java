@@ -142,10 +142,14 @@ public interface LivingEntityKJS extends EntityKJS {
 	}
 
 	default void kjs$damageEquipment(EquipmentSlot slot, int amount, Consumer<ItemStack> onBroken) {
+		if (!(kjs$self().level() instanceof ServerLevel serverLevel)) {
+			return;
+		}
+
 		var stack = kjs$self().getItemBySlot(slot);
 
 		if (!stack.isEmpty()) {
-			stack.hurtAndBreak(amount, (ServerLevel) kjs$self().level(), kjs$self(), item -> onBroken.accept(stack));
+			stack.hurtAndBreak(amount, serverLevel, kjs$self(), item -> onBroken.accept(stack));
 
 			if (stack.isEmpty()) {
 				kjs$self().setItemSlot(slot, ItemStack.EMPTY);

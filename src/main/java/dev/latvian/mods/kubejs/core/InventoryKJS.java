@@ -69,7 +69,7 @@ public interface InventoryKJS {
 	}
 
 	default void kjs$clear() {
-		for (var i = kjs$getSlots(); i >= 0; i--) {
+		for (var i = kjs$getSlots() - 1; i >= 0; i--) {
 			if (kjs$isMutable()) {
 				kjs$setStackInSlot(i, ItemStack.EMPTY);
 			} else {

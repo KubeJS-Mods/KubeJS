@@ -412,7 +412,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 		}
 
 		if (jukeboxSong != null) {
-			properties.delayedComponent(DataComponents.JUKEBOX_PLAYABLE, ctx -> new JukeboxPlayable(ctx.getOrThrow(jukeboxSong)));
+			properties.jukeboxPlayable(jukeboxSong);
 		}
 
 		if (!canRepair) {

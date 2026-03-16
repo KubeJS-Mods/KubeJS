@@ -150,7 +150,11 @@ public interface ServerPlayerKJS extends PlayerKJS {
 
 	@Nullable
 	default LevelBlock kjs$getSpawnLocation() {
-		var pos = Objects.requireNonNull(kjs$self().getRespawnConfig()).respawnData().pos();
+		var config = kjs$self().getRespawnConfig();
+		if (config == null) {
+			return null;
+		}
+		var pos = config.respawnData().pos();
 		return pos == null ? null : kjs$getLevel().kjs$getBlock(pos);
 	}
 
