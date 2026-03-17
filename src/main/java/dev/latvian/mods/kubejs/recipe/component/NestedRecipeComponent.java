@@ -2,19 +2,21 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
 import dev.latvian.mods.kubejs.recipe.KubeRecipeEventOps;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 
 public class NestedRecipeComponent implements RecipeComponent<KubeRecipe> {
-	public static final RecipeComponentType.Unit<KubeRecipe> RECIPE = RecipeComponentType.unit(KubeJS.id("nested_recipe"), new NestedRecipeComponent());
+	private static final ResourceKey<RecipeComponentType<?>> TYPE = RecipeComponentType.builtin("nested_recipe");
+
+	public static final NestedRecipeComponent RECIPE = new NestedRecipeComponent();
 
 	@Override
-	public RecipeComponentType<?> type() {
-		return RECIPE;
+	public ResourceKey<RecipeComponentType<?>> type() {
+		return TYPE;
 	}
 
 	@Override
@@ -45,6 +47,6 @@ public class NestedRecipeComponent implements RecipeComponent<KubeRecipe> {
 
 	@Override
 	public String toString() {
-		return RECIPE.toString();
+		return RecipeComponentType.builtin("nested_recipe").toString();
 	}
 }

@@ -2,17 +2,19 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 
 public class BooleanComponent implements RecipeComponent<Boolean> {
-	public static final RecipeComponentType.Unit<Boolean> BOOLEAN = RecipeComponentType.unit(KubeJS.id("boolean"), new BooleanComponent());
+	private static final ResourceKey<RecipeComponentType<?>> TYPE = RecipeComponentType.builtin("boolean");
+
+	public static final BooleanComponent BOOLEAN = new BooleanComponent();
 
 	@Override
-	public RecipeComponentType<?> type() {
-		return BOOLEAN;
+	public ResourceKey<RecipeComponentType<?>> type() {
+		return TYPE;
 	}
 
 	@Override

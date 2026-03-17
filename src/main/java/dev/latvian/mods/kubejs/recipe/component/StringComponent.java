@@ -2,21 +2,21 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ExtraCodecs;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public record StringComponent(RecipeComponentType<?> type, Codec<String> codec, boolean allowEmpty) implements RecipeComponent<String> {
-	public static final RecipeComponentType.Unit<String> STRING = RecipeComponentType.unit(KubeJS.id("string"), type -> new StringComponent(type, ExtraCodecs.NON_EMPTY_STRING, false));
-	public static final RecipeComponentType.Unit<String> OPTIONAL_STRING = RecipeComponentType.unit(KubeJS.id("optional_string"), type -> new StringComponent(type, Codec.STRING, true));
-	public static final RecipeComponentType.Unit<String> ID = RecipeComponentType.unit(KubeJS.id("id"), type -> new StringComponent(type, Codec.STRING.validate(s -> Identifier.read(s).map(Identifier::toString)), false));
+public record StringComponent(ResourceKey<RecipeComponentType<?>> type, Codec<String> codec, boolean allowEmpty) implements RecipeComponent<String> {
+	public static final StringComponent STRING = new StringComponent(RecipeComponentType.builtin("string"), ExtraCodecs.NON_EMPTY_STRING, false);
+	public static final StringComponent OPTIONAL_STRING = new StringComponent(RecipeComponentType.builtin("optional_string"), Codec.STRING, true);
+	public static final StringComponent ID = new StringComponent(RecipeComponentType.builtin("id"), Codec.STRING.validate(s -> Identifier.read(s).map(Identifier::toString)), false);
 
 	@Override
 	public TypeInfo typeInfo() {

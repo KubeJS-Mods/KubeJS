@@ -1,46 +1,46 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.registry.RegistryType;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.LootTable;
 import org.jetbrains.annotations.Nullable;
 
-public record ResourceKeyComponent<T>(@Nullable RecipeComponentType<?> typeOverride, ResourceKey<? extends Registry<T>> registryKey, Codec<ResourceKey<T>> codec, TypeInfo typeInfo) implements RecipeComponent<ResourceKey<T>> {
-	private static <T> ResourceKeyComponent<T> create(@Nullable RecipeComponentType<?> typeOverride, ResourceKey<? extends Registry<T>> registryKey) {
+public record ResourceKeyComponent<T>(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, ResourceKey<? extends Registry<T>> registryKey, Codec<ResourceKey<T>> codec, TypeInfo typeInfo) implements RecipeComponent<ResourceKey<T>> {
+	private static <T> ResourceKeyComponent<T> create(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, ResourceKey<? extends Registry<T>> registryKey) {
 		var reg = RegistryType.ofKey(registryKey);
 		return new ResourceKeyComponent<>(typeOverride, registryKey, ResourceKey.codec(registryKey), reg == null ? TypeInfo.of(ResourceKey.class) : TypeInfo.of(ResourceKey.class).withParams(reg.type()));
 	}
 
-	public static final RecipeComponentType.Unit<ResourceKey<Level>> DIMENSION = RecipeComponentType.unit(KubeJS.id("dimension_resource_key"), type -> create(type, Registries.DIMENSION));
-	public static final RecipeComponentType.Unit<ResourceKey<LootTable>> LOOT_TABLE = RecipeComponentType.unit(KubeJS.id("loot_table_resource_key"), type -> create(type, Registries.LOOT_TABLE));
+	public static final ResourceKeyComponent<?> DIMENSION = create(RecipeComponentType.builtin("dimension_resource_key"), Registries.DIMENSION);
+	public static final ResourceKeyComponent<?> LOOT_TABLE = create(RecipeComponentType.builtin("loot_table_resource_key"), Registries.LOOT_TABLE);
 
-	private static ResourceKeyComponent<?> of(ResourceKey key) {
+	private static <T> ResourceKeyComponent<T> of(ResourceKey<?> key) {
 		if (key == Registries.DIMENSION) {
-			return (ResourceKeyComponent<?>) DIMENSION.instance();
+			return Cast.to(DIMENSION);
 		} else if (key == Registries.LOOT_TABLE) {
-			return (ResourceKeyComponent<?>) LOOT_TABLE.instance();
+			return Cast.to(LOOT_TABLE);
 		} else {
-			return create(null, key);
+			return create(null, Cast.to(key));
 		}
 	}
 
-	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<ResourceKeyComponent<?>>dynamic(KubeJS.id("resource_key"), RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final ResourceKey<RecipeComponentType<?>> TYPE = RecipeComponentType.builtin("resource_key");
+	public static final MapCodec<ResourceKeyComponent<?>> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		KubeJSCodecs.REGISTRY_KEY_CODEC.fieldOf("registry").forGetter(ResourceKeyComponent::registryKey)
-	).apply(instance, ResourceKeyComponent::of)));
+	).apply(instance, ResourceKeyComponent::of));
 
 	@Override
-	public RecipeComponentType<?> type() {
+	public ResourceKey<RecipeComponentType<?>> type() {
 		return typeOverride == null ? TYPE : typeOverride;
 	}
 

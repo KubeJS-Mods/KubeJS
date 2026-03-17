@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.error.InvalidRecipeComponentValueException;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -18,19 +19,23 @@ import java.util.List;
 
 import static dev.latvian.mods.kubejs.util.UtilsJS.EMPTY_INGREDIENT;
 
-public record ItemStackComponent(RecipeComponentType<?> type, Codec<ItemStack> codec, boolean allowEmpty, Ingredient filter) implements RecipeComponent<ItemStack> {
-	public static final RecipeComponentType.Unit<ItemStack> ITEM_STACK = RecipeComponentType.unit(KubeJS.id("item_stack"), type -> new ItemStackComponent(type, false, EMPTY_INGREDIENT));
-	public static final RecipeComponentType.Unit<ItemStack> OPTIONAL_ITEM_STACK = RecipeComponentType.unit(KubeJS.id("optional_item_stack"), type -> new ItemStackComponent(type, true, EMPTY_INGREDIENT));
-
-	public static final RecipeComponentType<?> FILTERED_ITEM_STACK = RecipeComponentType.<ItemStackComponent>dynamic(
-		KubeJS.id("filtered_item_stack"),
-		(type) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
-			Codec.BOOL.optionalFieldOf("allow_empty", false).forGetter(ItemStackComponent::allowEmpty),
-			Ingredient.CODEC.optionalFieldOf("filter", EMPTY_INGREDIENT).forGetter(ItemStackComponent::filter)
-		).apply(instance, (allowEmpty, filter) -> new ItemStackComponent(type, allowEmpty, filter)))
+public record ItemStackComponent(ResourceKey<RecipeComponentType<?>> type, Codec<ItemStack> codec, boolean allowEmpty, Ingredient filter) implements RecipeComponent<ItemStack> {
+	public static final ItemStackComponent ITEM_STACK = new ItemStackComponent(
+		RecipeComponentType.builtin("item_stack"),
+		false, EMPTY_INGREDIENT
+	);
+	public static final ItemStackComponent OPTIONAL_ITEM_STACK = new ItemStackComponent(
+		RecipeComponentType.builtin("optional_item_stack"),
+		true, EMPTY_INGREDIENT
 	);
 
-	public ItemStackComponent(RecipeComponentType<?> type, boolean allowEmpty, Ingredient filter) {
+	public static final ResourceKey<RecipeComponentType<?>> FILTERED_TYPE = RecipeComponentType.builtin("filtered_item_stack");
+	public static final MapCodec<ItemStackComponent> FILTERED_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+		Codec.BOOL.optionalFieldOf("allow_empty", false).forGetter(ItemStackComponent::allowEmpty),
+		Ingredient.CODEC.optionalFieldOf("filter", EMPTY_INGREDIENT).forGetter(ItemStackComponent::filter)
+	).apply(instance, (allowEmpty, filter) -> new ItemStackComponent(FILTERED_TYPE, allowEmpty, filter)));
+
+	public ItemStackComponent(ResourceKey<RecipeComponentType<?>> type, boolean allowEmpty, Ingredient filter) {
 		this(type, allowEmpty ? ItemStack.OPTIONAL_CODEC : ItemStack.CODEC.flatXmap(
 			ItemStack::validateStrict,
 			ItemStack::validateStrict

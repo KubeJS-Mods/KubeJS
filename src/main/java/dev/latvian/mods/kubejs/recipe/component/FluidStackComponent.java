@@ -1,20 +1,26 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
-public record FluidStackComponent(RecipeComponentType<?> type, Codec<FluidStack> codec, boolean allowEmpty) implements RecipeComponent<FluidStack> {
-	public static final RecipeComponentType.Unit<FluidStack> FLUID_STACK = RecipeComponentType.unit(KubeJS.id("fluid_stack"), type -> new FluidStackComponent(type, FluidStack.CODEC, false));
-	public static final RecipeComponentType.Unit<FluidStack> OPTIONAL_FLUID_STACK = RecipeComponentType.unit(KubeJS.id("optional_fluid_stack"), type -> new FluidStackComponent(type, FluidStack.OPTIONAL_CODEC, true));
+public record FluidStackComponent(ResourceKey<RecipeComponentType<?>> type, Codec<FluidStack> codec, boolean allowEmpty) implements RecipeComponent<FluidStack> {
+	public static final FluidStackComponent FLUID_STACK = new FluidStackComponent(
+		RecipeComponentType.builtin("fluid_stack"),
+		FluidStack.CODEC, false
+	);
+	public static final FluidStackComponent OPTIONAL_FLUID_STACK = new FluidStackComponent(
+		RecipeComponentType.builtin("optional_fluid_stack"),
+		FluidStack.OPTIONAL_CODEC, true
+	);
 
 	@Override
 	public TypeInfo typeInfo() {

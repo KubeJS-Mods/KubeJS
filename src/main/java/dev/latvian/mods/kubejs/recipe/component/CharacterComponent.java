@@ -1,16 +1,16 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 
 public class CharacterComponent extends SimpleRecipeComponent<Character> {
-	public static final RecipeComponentType.Unit<Character> CHARACTER = RecipeComponentType.unit(KubeJS.id("character"), CharacterComponent::new);
+	public static final CharacterComponent CHARACTER = new CharacterComponent(RecipeComponentType.builtin("character"));
 
-	public CharacterComponent(RecipeComponentType<?> type) {
+	public CharacterComponent(ResourceKey<RecipeComponentType<?>> type) {
 		super(type, KubeJSCodecs.CHARACTER, TypeInfo.CHARACTER);
 	}
 

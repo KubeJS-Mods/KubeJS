@@ -22,7 +22,7 @@ public record KeyPatternCleanupPostProcessor(String patternName, String keyName,
 	public static final RecipePostProcessorType<KeyPatternCleanupPostProcessor> TYPE = new RecipePostProcessorType<>(KubeJS.id("key_pattern_cleanup"), RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.STRING.optionalFieldOf("pattern", "pattern").forGetter(KeyPatternCleanupPostProcessor::patternName),
 		Codec.STRING.optionalFieldOf("key", "key").forGetter(KeyPatternCleanupPostProcessor::keyName),
-		RecipeSchemaStorage.COMPONENT_CODEC.optionalFieldOf("component", IngredientComponent.INGREDIENT.instance()).forGetter(KeyPatternCleanupPostProcessor::component)
+		RecipeSchemaStorage.COMPONENT_CODEC.optionalFieldOf("component", IngredientComponent.INGREDIENT).forGetter(KeyPatternCleanupPostProcessor::component)
 	).apply(instance, KeyPatternCleanupPostProcessor::new)));
 
 	@Override

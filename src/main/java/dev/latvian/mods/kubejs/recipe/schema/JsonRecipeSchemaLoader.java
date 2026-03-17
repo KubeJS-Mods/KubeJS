@@ -317,7 +317,7 @@ public class JsonRecipeSchemaLoader {
 		}
 	}
 
-	static void load(RecipeSchemaStorage.Ops ops, RecipeSchemaRegistry event, ResourceManager resourceManager) {
+	static void load(DynamicOps<JsonElement> ops, RecipeSchemaStorage storage, RecipeSchemaRegistry event, ResourceManager resourceManager) {
 		var map = new HashMap<Identifier, RecipeSchemaBuilder>();
 		var recipeSchemaDataCodec = RecipeSchemaData.CODEC;
 
@@ -337,7 +337,7 @@ public class JsonRecipeSchemaLoader {
 
 		for (var builder : map.values()) {
 			for (var m : builder.data.mappings()) {
-				ops.storage.mappings.put(m, builder.id);
+				storage.mappings.put(m, builder.id);
 			}
 		}
 
@@ -348,7 +348,7 @@ public class JsonRecipeSchemaLoader {
 
 			if (builder.data.recipeFactory().isPresent()) {
 				var fname = builder.data.recipeFactory().get();
-				builder.recipeFactory = ops.storage.recipeTypes.get(fname);
+				builder.recipeFactory = storage.recipeTypes.get(fname);
 
 				if (builder.recipeFactory == null) {
 					throw new NullPointerException("Recipe factory '" + fname + "' not found for recipe schema '" + builder.id + "'");

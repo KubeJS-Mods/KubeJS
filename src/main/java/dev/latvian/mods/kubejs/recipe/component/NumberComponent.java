@@ -2,12 +2,13 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,34 +34,62 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		return min == Double.NEGATIVE_INFINITY && max == Double.POSITIVE_INFINITY ? DOUBLE : DoubleRange.of(null, min, max);
 	}
 
-	RecipeComponentType<?> INT_TYPE = RecipeComponentType.<IntRange>dynamic(KubeJS.id("int"), RecordCodecBuilder.mapCodec(instance -> instance.group(
+	ResourceKey<RecipeComponentType<?>> INT_TYPE = RecipeComponentType.builtin("int");
+	MapCodec<IntRange> INT_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.INT.optionalFieldOf("min", Integer.MIN_VALUE).forGetter(IntRange::min),
 		Codec.INT.optionalFieldOf("max", Integer.MAX_VALUE).forGetter(IntRange::max)
-	).apply(instance, NumberComponent::intRange)));
+	).apply(instance, NumberComponent::intRange));
 
-	RecipeComponentType<?> LONG_TYPE = RecipeComponentType.<LongRange>dynamic(KubeJS.id("long"), RecordCodecBuilder.mapCodec(instance -> instance.group(
+	ResourceKey<RecipeComponentType<?>> LONG_TYPE = RecipeComponentType.builtin("long");
+	MapCodec<LongRange> LONG_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.LONG.optionalFieldOf("min", Long.MIN_VALUE).forGetter(LongRange::min),
 		Codec.LONG.optionalFieldOf("max", Long.MAX_VALUE).forGetter(LongRange::max)
-	).apply(instance, NumberComponent::longRange)));
+	).apply(instance, NumberComponent::longRange));
 
-	RecipeComponentType<?> FLOAT_TYPE = RecipeComponentType.<FloatRange>dynamic(KubeJS.id("float"), RecordCodecBuilder.mapCodec(instance -> instance.group(
+	ResourceKey<RecipeComponentType<?>> FLOAT_TYPE = RecipeComponentType.builtin("float");
+	MapCodec<FloatRange> FLOAT_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.FLOAT.optionalFieldOf("min", Float.NEGATIVE_INFINITY).forGetter(FloatRange::min),
 		Codec.FLOAT.optionalFieldOf("max", Float.POSITIVE_INFINITY).forGetter(FloatRange::max)
-	).apply(instance, NumberComponent::floatRange)));
+	).apply(instance, NumberComponent::floatRange));
 
-	RecipeComponentType<?> DOUBLE_TYPE = RecipeComponentType.<DoubleRange>dynamic(KubeJS.id("double"), RecordCodecBuilder.mapCodec(instance -> instance.group(
+	ResourceKey<RecipeComponentType<?>> DOUBLE_TYPE = RecipeComponentType.builtin("double");
+	MapCodec<DoubleRange> DOUBLE_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.DOUBLE.optionalFieldOf("min", Double.NEGATIVE_INFINITY).forGetter(DoubleRange::min),
 		Codec.DOUBLE.optionalFieldOf("max", Double.POSITIVE_INFINITY).forGetter(DoubleRange::max)
-	).apply(instance, NumberComponent::doubleRange)));
+	).apply(instance, NumberComponent::doubleRange));
 
-	RecipeComponentType.Unit<Integer> NON_NEGATIVE_INT = RecipeComponentType.unit(KubeJS.id("non_negative_int"), type -> new IntRange(type, 0, Integer.MAX_VALUE, KubeJSCodecs.NON_NEGATIVE_INT));
-	RecipeComponentType.Unit<Integer> POSITIVE_INT = RecipeComponentType.unit(KubeJS.id("positive_int"), type -> new IntRange(type, 1, Integer.MAX_VALUE, KubeJSCodecs.POSITIVE_INT));
-	RecipeComponentType.Unit<Long> NON_NEGATIVE_LONG = RecipeComponentType.unit(KubeJS.id("non_negative_long"), type -> new LongRange(type, 0L, Long.MAX_VALUE, KubeJSCodecs.NON_NEGATIVE_LONG));
-	RecipeComponentType.Unit<Long> POSITIVE_LONG = RecipeComponentType.unit(KubeJS.id("positive_long"), type -> new LongRange(type, 1L, Long.MAX_VALUE, KubeJSCodecs.POSITIVE_LONG));
-	RecipeComponentType.Unit<Float> NON_NEGATIVE_FLOAT = RecipeComponentType.unit(KubeJS.id("non_negative_float"), type -> new FloatRange(type, 0F, Float.POSITIVE_INFINITY, KubeJSCodecs.NON_NEGATIVE_FLOAT));
-	RecipeComponentType.Unit<Float> POSITIVE_FLOAT = RecipeComponentType.unit(KubeJS.id("positive_float"), type -> new FloatRange(type, Float.MIN_VALUE, Float.POSITIVE_INFINITY, KubeJSCodecs.POSITIVE_FLOAT));
-	RecipeComponentType.Unit<Double> NON_NEGATIVE_DOUBLE = RecipeComponentType.unit(KubeJS.id("non_negative_double"), type -> new DoubleRange(type, 0D, Double.POSITIVE_INFINITY, KubeJSCodecs.NON_NEGATIVE_DOUBLE));
-	RecipeComponentType.Unit<Double> POSITIVE_DOUBLE = RecipeComponentType.unit(KubeJS.id("positive_double"), type -> new DoubleRange(type, Double.MIN_VALUE, Double.POSITIVE_INFINITY, KubeJSCodecs.POSITIVE_DOUBLE));
+	IntRange NON_NEGATIVE_INT = new IntRange(
+		RecipeComponentType.builtin("non_negative_int"),
+		0, Integer.MAX_VALUE, KubeJSCodecs.NON_NEGATIVE_INT
+	);
+	IntRange POSITIVE_INT = new IntRange(
+		RecipeComponentType.builtin("positive_int"),
+		1, Integer.MAX_VALUE, KubeJSCodecs.POSITIVE_INT
+	);
+	LongRange NON_NEGATIVE_LONG = new LongRange(
+		RecipeComponentType.builtin("non_negative_long"),
+		0L, Long.MAX_VALUE, KubeJSCodecs.NON_NEGATIVE_LONG
+	);
+	LongRange POSITIVE_LONG = new LongRange(
+		RecipeComponentType.builtin("positive_long"),
+		1L, Long.MAX_VALUE, KubeJSCodecs.POSITIVE_LONG
+	);
+	FloatRange NON_NEGATIVE_FLOAT = new FloatRange(
+		RecipeComponentType.builtin("non_negative_float"),
+		0F, Float.POSITIVE_INFINITY, KubeJSCodecs.NON_NEGATIVE_FLOAT
+	);
+	FloatRange POSITIVE_FLOAT = new FloatRange(
+		RecipeComponentType.builtin("positive_float"),
+		Float.MIN_VALUE, Float.POSITIVE_INFINITY, KubeJSCodecs.POSITIVE_FLOAT
+	);
+	DoubleRange NON_NEGATIVE_DOUBLE = new DoubleRange(
+		RecipeComponentType.builtin("non_negative_double"),
+		0D, Double.POSITIVE_INFINITY, KubeJSCodecs.NON_NEGATIVE_DOUBLE
+	);
+	DoubleRange POSITIVE_DOUBLE = new DoubleRange(
+		RecipeComponentType.builtin("positive_double"),
+		Double.MIN_VALUE, Double.POSITIVE_INFINITY, KubeJSCodecs.POSITIVE_DOUBLE
+	);
 
 	private static Number numberOf(Object from) {
 		if (from instanceof Number n) {
@@ -98,7 +127,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		return range(min(), max);
 	}
 
-	default String toString(@Nullable RecipeComponentType<?> typeOverride, String name, T min, T max) {
+	default String toString(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, String name, T min, T max) {
 		if (typeOverride != null) {
 			return typeOverride.toString();
 		}
@@ -117,13 +146,13 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		}
 	}
 
-	record IntRange(@Nullable RecipeComponentType<?> typeOverride, Integer min, Integer max, Codec<Integer> codec) implements NumberComponent<IntRange, Integer> {
-		public static IntRange of(@Nullable RecipeComponentType<?> typeOverride, Integer min, Integer max) {
+	record IntRange(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, Integer min, Integer max, Codec<Integer> codec) implements NumberComponent<IntRange, Integer> {
+		public static IntRange of(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, Integer min, Integer max) {
 			return new IntRange(typeOverride, min, max, Codec.intRange(min, max));
 		}
 
 		@Override
-		public RecipeComponentType<?> type() {
+		public ResourceKey<RecipeComponentType<?>> type() {
 			return typeOverride == null ? INT_TYPE : typeOverride;
 		}
 
@@ -153,14 +182,14 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		}
 	}
 
-	record LongRange(@Nullable RecipeComponentType<?> typeOverride, Long min, Long max, Codec<Long> codec) implements NumberComponent<LongRange, Long> {
-		public static LongRange of(@Nullable RecipeComponentType<?> typeOverride, Long min, Long max) {
+	record LongRange(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, Long min, Long max, Codec<Long> codec) implements NumberComponent<LongRange, Long> {
+		public static LongRange of(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, Long min, Long max) {
 			var checker = Codec.checkRange(min, max);
 			return new LongRange(typeOverride, min, max, Codec.LONG.flatXmap(checker, checker));
 		}
 
 		@Override
-		public RecipeComponentType<?> type() {
+		public ResourceKey<RecipeComponentType<?>> type() {
 			return typeOverride == null ? LONG_TYPE : typeOverride;
 		}
 
@@ -191,13 +220,13 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		}
 	}
 
-	record FloatRange(@Nullable RecipeComponentType<?> typeOverride, Float min, Float max, Codec<Float> codec) implements NumberComponent<FloatRange, Float> {
-		public static FloatRange of(@Nullable RecipeComponentType<?> typeOverride, Float min, Float max) {
+	record FloatRange(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, Float min, Float max, Codec<Float> codec) implements NumberComponent<FloatRange, Float> {
+		public static FloatRange of(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, Float min, Float max) {
 			return new FloatRange(typeOverride, min, max, Codec.floatRange(min, max));
 		}
 
 		@Override
-		public RecipeComponentType<?> type() {
+		public ResourceKey<RecipeComponentType<?>> type() {
 			return typeOverride == null ? FLOAT_TYPE : typeOverride;
 		}
 
@@ -227,13 +256,13 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		}
 	}
 
-	record DoubleRange(@Nullable RecipeComponentType<?> typeOverride, Double min, Double max, Codec<Double> codec) implements NumberComponent<DoubleRange, Double> {
-		public static DoubleRange of(@Nullable RecipeComponentType<?> typeOverride, Double min, Double max) {
+	record DoubleRange(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, Double min, Double max, Codec<Double> codec) implements NumberComponent<DoubleRange, Double> {
+		public static DoubleRange of(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, Double min, Double max) {
 			return new DoubleRange(typeOverride, min, max, Codec.doubleRange(min, max));
 		}
 
 		@Override
-		public RecipeComponentType<?> type() {
+		public ResourceKey<RecipeComponentType<?>> type() {
 			return typeOverride == null ? DOUBLE_TYPE : typeOverride;
 		}
 

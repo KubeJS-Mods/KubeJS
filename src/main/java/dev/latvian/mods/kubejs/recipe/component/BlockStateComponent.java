@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.recipe.component;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
@@ -13,16 +12,18 @@ import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-public record BlockStateComponent(RecipeComponentType<?> type, boolean preferObjectForm, boolean allowEmpty) implements RecipeComponent<BlockState> {
+public record BlockStateComponent(ResourceKey<RecipeComponentType<?>> type, boolean preferObjectForm, boolean allowEmpty) implements RecipeComponent<BlockState> {
 	public static final TypeInfo TYPE_INFO = TypeInfo.of(BlockState.class);
-	public static final RecipeComponentType.Unit<BlockState> BLOCK = RecipeComponentType.unit(KubeJS.id("block_state"), type -> new BlockStateComponent(type, true, false));
-	public static final RecipeComponentType.Unit<BlockState> BLOCK_STRING = RecipeComponentType.unit(KubeJS.id("block_state_string"), type -> new BlockStateComponent(type, false, false));
-	public static final RecipeComponentType.Unit<BlockState> OPTIONAL_BLOCK = RecipeComponentType.unit(KubeJS.id("optional_block_state"), type -> new BlockStateComponent(type, true, true));
-	public static final RecipeComponentType.Unit<BlockState> OPTIONAL_BLOCK_STRING = RecipeComponentType.unit(KubeJS.id("optional_block_state_string"), type -> new BlockStateComponent(type, false, true));
+
+	public static final BlockStateComponent BLOCK_STATE = new BlockStateComponent(RecipeComponentType.builtin("block_state"), true, false);
+	public static final BlockStateComponent BLOCK_STATE_STRING = new BlockStateComponent(RecipeComponentType.builtin("block_state_string"), false, false);
+	public static final BlockStateComponent OPTIONAL_BLOCK_STATE = new BlockStateComponent(RecipeComponentType.builtin("optional_block_state"), true, true);
+	public static final BlockStateComponent OPTIONAL_BLOCK_STATE_STRING = new BlockStateComponent(RecipeComponentType.builtin("optional_block_state_string"), false, true);
 
 	@Override
 	public Codec<BlockState> codec() {

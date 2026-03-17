@@ -18,6 +18,7 @@ import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,7 +72,7 @@ public interface RecipeComponent<T> {
 		return key(name, ComponentRole.OTHER);
 	}
 
-	RecipeComponentType<?> type();
+	ResourceKey<RecipeComponentType<?>> type();
 
 	Codec<T> codec();
 

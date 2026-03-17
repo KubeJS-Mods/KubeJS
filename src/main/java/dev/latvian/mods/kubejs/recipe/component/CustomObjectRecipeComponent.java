@@ -11,7 +11,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.error.RecipeComponentException;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
@@ -21,6 +20,7 @@ import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
 import dev.latvian.mods.rhino.type.JSOptionalParam;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -80,9 +80,11 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 		}
 	}
 
-	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<CustomObjectRecipeComponent>dynamic(KubeJS.id("custom_object"), (type) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final ResourceKey<RecipeComponentType<?>> TYPE = RecipeComponentType.builtin("custom_object");
+
+	public static final MapCodec<CustomObjectRecipeComponent> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Key.createCodec().listOf().fieldOf("keys").forGetter(CustomObjectRecipeComponent::keys)
-	).apply(instance, CustomObjectRecipeComponent::new)));
+	).apply(instance, CustomObjectRecipeComponent::new));
 
 	private final List<Key> keys;
 	public Predicate<Set<String>> hasPriority;
@@ -94,7 +96,7 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 	}
 
 	@Override
-	public RecipeComponentType<?> type() {
+	public ResourceKey<RecipeComponentType<?>> type() {
 		return TYPE;
 	}
 

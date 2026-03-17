@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonArray;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.error.RecipeComponentTooLargeException;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
 import org.jetbrains.annotations.NotNull;
@@ -64,16 +65,17 @@ public record ListRecipeComponent<T>(
 		return spreadWrap;
 	}
 
-	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<ListRecipeComponent<?>>dynamic(KubeJS.id("list"), (type) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
-		RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("component").forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::component),
-		Codec.BOOL.optionalFieldOf("can_write_self", false).forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::canWriteSelf),
-		Codec.BOOL.optionalFieldOf("conditional", false).forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::conditional),
-		IntBounds.MAP_CODEC.forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::bounds),
-		RecipeSchemaStorage.COMPONENT_CODEC.optionalFieldOf("spread").forGetter(dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::spread)
-	).apply(instance, dev.latvian.mods.kubejs.recipe.component.ListRecipeComponent::create)));
+	public static final ResourceKey<RecipeComponentType<?>> TYPE = RecipeComponentType.builtin("list");
+	public static final MapCodec<ListRecipeComponent<?>> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+		RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("component").forGetter(ListRecipeComponent::component),
+		Codec.BOOL.optionalFieldOf("can_write_self", false).forGetter(ListRecipeComponent::canWriteSelf),
+		Codec.BOOL.optionalFieldOf("conditional", false).forGetter(ListRecipeComponent::conditional),
+		IntBounds.MAP_CODEC.forGetter(ListRecipeComponent::bounds),
+		RecipeSchemaStorage.COMPONENT_CODEC.optionalFieldOf("spread").forGetter(ListRecipeComponent::spread)
+	).apply(instance, ListRecipeComponent::create));
 
 	@Override
-	public RecipeComponentType<?> type() {
+	public ResourceKey<RecipeComponentType<?>> type() {
 		return TYPE;
 	}
 

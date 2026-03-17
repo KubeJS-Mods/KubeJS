@@ -2,21 +2,23 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.ScriptRuntime;
 import dev.latvian.mods.rhino.type.EnumTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.RemappedEnumConstant;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.Nullable;
 
 // TODO: add enum component variant with custom serialisation that doesn't need the StringRepresentable bound
-public record EnumComponent<T extends Enum<T> & StringRepresentable>(@Nullable RecipeComponentType<?> typeOverride, EnumTypeInfo typeInfo, Codec<T> codec) implements RecipeComponent<T> {
-	public static final RecipeComponentType<?> TYPE = RecipeComponentType.dynamic(KubeJS.id("enum"), RecordCodecBuilder.<EnumComponent<?>>mapCodec(instance -> instance.group(
+public record EnumComponent<T extends Enum<T> & StringRepresentable>(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, EnumTypeInfo typeInfo, Codec<T> codec) implements RecipeComponent<T> {
+	public static final ResourceKey<RecipeComponentType<?>> TYPE = RecipeComponentType.builtin("enum");
+
+	public static final MapCodec<EnumComponent<?>> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		KubeJSCodecs.ENUM_TYPE_INFO.fieldOf("enum").validate(type -> {
 			if (StringRepresentable.class.isAssignableFrom(type.asClass())) {
 				return DataResult.success(type);
@@ -24,15 +26,7 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(@Nullable R
 				return DataResult.error(() -> "Enum class " + type + " is not StringRepresentable!");
 			}
 		}).forGetter(EnumComponent::typeInfo)
-	).apply(instance, EnumComponent::new)));
-
-	public static <T extends Enum<T> & StringRepresentable> RecipeComponentType.Unit<T> of(Identifier id, Class<T> enumClass, Codec<T> codec) {
-		return RecipeComponentType.unit(id, type -> new EnumComponent<>(type, (EnumTypeInfo) TypeInfo.of(enumClass), codec));
-	}
-
-	public static <T extends Enum<T> & StringRepresentable> RecipeComponentType.Unit<T> of(Identifier id, Class<T> enumClass) {
-		return of(id, enumClass, StringRepresentable.fromEnum(enumClass::getEnumConstants));
-	}
+	).apply(instance, EnumComponent::new));
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private EnumComponent(EnumTypeInfo typeInfo) {
@@ -49,8 +43,16 @@ public record EnumComponent<T extends Enum<T> & StringRepresentable>(@Nullable R
 		}, o -> DataResult.success(EnumTypeInfo.getName(o))));
 	}
 
+	public static <T extends Enum<T> & StringRepresentable> EnumComponent<T> create(ResourceKey<RecipeComponentType<?>> type, Class<T> enumClass, Codec<T> codec) {
+		return new EnumComponent<>(type, (EnumTypeInfo) TypeInfo.of(enumClass), codec);
+	}
+
+	public static <T extends Enum<T> & StringRepresentable> EnumComponent<T> create(ResourceKey<RecipeComponentType<?>> type, Class<T> enumClass) {
+		return create(type, enumClass, StringRepresentable.fromEnum(enumClass::getEnumConstants));
+	}
+
 	@Override
-	public RecipeComponentType<?> type() {
+	public ResourceKey<RecipeComponentType<?>> type() {
 		return typeOverride == null ? TYPE : typeOverride;
 	}
 

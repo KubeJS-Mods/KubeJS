@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.error.RecipeComponentTooLargeException;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
@@ -12,6 +12,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 
 import java.util.Map;
 
@@ -21,19 +22,21 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	public static <V> MapRecipeComponent<Character, V> patternOf(RecipeComponent<V> component, IntBounds bounds) {
-		return new MapRecipeComponent<>(CharacterComponent.CHARACTER.instance(), component, bounds, true);
+		return new MapRecipeComponent<>(CharacterComponent.CHARACTER, component, bounds, true);
 	}
 
-	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<MapRecipeComponent<?, ?>>dynamic(KubeJS.id("map"), (type) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final ResourceKey<RecipeComponentType<?>> TYPE = RecipeComponentType.builtin("map");
+	public static final MapCodec<MapRecipeComponent<?, ?>> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("key").forGetter(MapRecipeComponent::key),
 		RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("component").forGetter(MapRecipeComponent::component),
 		IntBounds.MAP_CODEC.forGetter(MapRecipeComponent::bounds)
-	).apply(instance, MapRecipeComponent::of)));
+	).apply(instance, MapRecipeComponent::of));
 
-	public static final RecipeComponentType<?> PATTERN_TYPE = RecipeComponentType.<MapRecipeComponent<?, ?>>dynamic(KubeJS.id("pattern"), (type) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final ResourceKey<RecipeComponentType<?>> PATTERN_TYPE = RecipeComponentType.builtin("pattern");
+	public static final MapCodec<MapRecipeComponent<?, ?>> PATTERN_MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("component").forGetter(MapRecipeComponent::component),
 		IntBounds.MAP_CODEC.forGetter(MapRecipeComponent::bounds)
-	).apply(instance, MapRecipeComponent::patternOf)));
+	).apply(instance, MapRecipeComponent::patternOf));
 
 	public MapRecipeComponent(RecipeComponent<K> key, RecipeComponent<V> component, IntBounds bounds, boolean patternKey) {
 		this(
@@ -47,7 +50,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 	}
 
 	@Override
-	public RecipeComponentType<?> type() {
+	public ResourceKey<RecipeComponentType<?>> type() {
 		return patternKey ? PATTERN_TYPE : TYPE;
 	}
 

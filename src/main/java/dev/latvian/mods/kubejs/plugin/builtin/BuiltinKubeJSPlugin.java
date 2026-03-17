@@ -613,91 +613,87 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void registerRecipeComponents(RecipeComponentTypeRegistry registry) {
-		registry.register(IgnoreComponent.TYPE);
-		registry.register(BooleanComponent.BOOLEAN);
-		registry.register(StringComponent.STRING);
-		registry.register(StringComponent.OPTIONAL_STRING);
-		registry.register(StringComponent.ID);
-		registry.register(CharacterComponent.CHARACTER);
+		registry.unit(IgnoreComponent.INSTANCE);
+		registry.unit(BooleanComponent.BOOLEAN);
+		registry.unit(StringComponent.STRING);
+		registry.unit(StringComponent.OPTIONAL_STRING);
+		registry.unit(StringComponent.ID);
+		registry.unit(CharacterComponent.CHARACTER);
 
-		registry.register(NumberComponent.INT_TYPE);
-		registry.register(NumberComponent.LONG_TYPE);
-		registry.register(NumberComponent.FLOAT_TYPE);
-		registry.register(NumberComponent.DOUBLE_TYPE);
-		registry.register(NumberComponent.NON_NEGATIVE_INT);
-		registry.register(NumberComponent.POSITIVE_INT);
-		registry.register(NumberComponent.NON_NEGATIVE_LONG);
-		registry.register(NumberComponent.POSITIVE_LONG);
-		registry.register(NumberComponent.NON_NEGATIVE_FLOAT);
-		registry.register(NumberComponent.POSITIVE_FLOAT);
-		registry.register(NumberComponent.NON_NEGATIVE_DOUBLE);
-		registry.register(NumberComponent.POSITIVE_DOUBLE);
+		registry.register(NumberComponent.INT_TYPE, NumberComponent.INT_CODEC);
+		registry.register(NumberComponent.LONG_TYPE, NumberComponent.LONG_CODEC);
+		registry.register(NumberComponent.FLOAT_TYPE, NumberComponent.FLOAT_CODEC);
+		registry.register(NumberComponent.DOUBLE_TYPE, NumberComponent.DOUBLE_CODEC);
+		registry.unit(NumberComponent.NON_NEGATIVE_INT);
+		registry.unit(NumberComponent.POSITIVE_INT);
+		registry.unit(NumberComponent.NON_NEGATIVE_LONG);
+		registry.unit(NumberComponent.POSITIVE_LONG);
+		registry.unit(NumberComponent.NON_NEGATIVE_FLOAT);
+		registry.unit(NumberComponent.POSITIVE_FLOAT);
+		registry.unit(NumberComponent.NON_NEGATIVE_DOUBLE);
+		registry.unit(NumberComponent.POSITIVE_DOUBLE);
 
-		registry.register(ListRecipeComponent.TYPE);
-		registry.register(EnumComponent.TYPE);
-		registry.register(MapRecipeComponent.TYPE);
-		registry.register(MapRecipeComponent.PATTERN_TYPE);
-		registry.register(EitherRecipeComponent.TYPE);
-		registry.register(CustomObjectRecipeComponent.TYPE);
+		registry.register(ListRecipeComponent.TYPE, ListRecipeComponent.MAP_CODEC);
+		registry.register(EnumComponent.TYPE, EnumComponent.MAP_CODEC);
+		registry.register(MapRecipeComponent.TYPE, MapRecipeComponent.MAP_CODEC);
+		registry.register(MapRecipeComponent.PATTERN_TYPE, MapRecipeComponent.PATTERN_MAP_CODEC);
+		registry.register(EitherRecipeComponent.TYPE, EitherRecipeComponent.MAP_CODEC);
+		registry.register(CustomObjectRecipeComponent.TYPE, CustomObjectRecipeComponent.MAP_CODEC);
 
-		registry.register(IngredientComponent.INGREDIENT);
-		registry.register(IngredientComponent.OPTIONAL_INGREDIENT);
+		registry.unit(IngredientComponent.INGREDIENT);
+		registry.unit(IngredientComponent.OPTIONAL_INGREDIENT);
 
-		registry.register(SizedIngredientComponent.SIZED_INGREDIENT);
-		registry.register(SizedIngredientComponent.OPTIONAL_SIZED_INGREDIENT);
-		registry.register(SizedIngredientComponent.FLAT);
-		registry.register(SizedIngredientComponent.OPTIONAL_FLAT);
+		registry.unit(SizedIngredientComponent.SIZED_INGREDIENT);
+		registry.unit(SizedIngredientComponent.OPTIONAL_SIZED_INGREDIENT);
 
-		registry.register(ItemStackComponent.ITEM_STACK);
-		registry.register(ItemStackComponent.OPTIONAL_ITEM_STACK);
-		registry.register(ItemStackComponent.FILTERED_ITEM_STACK);
+		registry.unit(ItemStackComponent.ITEM_STACK);
+		registry.unit(ItemStackComponent.OPTIONAL_ITEM_STACK);
+		registry.register(ItemStackComponent.FILTERED_TYPE, ItemStackComponent.FILTERED_CODEC);
 
-		registry.register(FluidStackComponent.FLUID_STACK);
-		registry.register(FluidStackComponent.OPTIONAL_FLUID_STACK);
+		registry.unit(FluidStackComponent.FLUID_STACK);
+		registry.unit(FluidStackComponent.OPTIONAL_FLUID_STACK);
 
-		registry.register(FluidIngredientComponent.FLUID_INGREDIENT);
-		registry.register(FluidIngredientComponent.OPTIONAL_FLUID_INGREDIENT);
+		registry.unit(FluidIngredientComponent.FLUID_INGREDIENT);
+		registry.unit(FluidIngredientComponent.OPTIONAL_FLUID_INGREDIENT);
 
-		registry.register(SizedFluidIngredientComponent.FLAT);
-		registry.register(SizedFluidIngredientComponent.NESTED);
-		registry.register(SizedFluidIngredientComponent.OPTIONAL_FLAT);
-		registry.register(SizedFluidIngredientComponent.OPTIONAL_NESTED);
+		registry.unit(SizedFluidIngredientComponent.SIZED_FLUID_INGREDIENT);
+		registry.unit(SizedFluidIngredientComponent.OPTIONAL_SIZED_FLUID_INGREDIENT);
 
-		registry.register(BlockComponent.BLOCK);
-		registry.register(BlockComponent.OPTIONAL_BLOCK);
+		registry.unit(BlockComponent.BLOCK);
+		registry.unit(BlockComponent.OPTIONAL_BLOCK);
 
-		registry.register(BlockStateComponent.BLOCK);
-		registry.register(BlockStateComponent.BLOCK_STRING);
-		registry.register(BlockStateComponent.OPTIONAL_BLOCK);
-		registry.register(BlockStateComponent.OPTIONAL_BLOCK_STRING);
+		registry.unit(BlockStateComponent.BLOCK_STATE);
+		registry.unit(BlockStateComponent.BLOCK_STATE_STRING);
+		registry.unit(BlockStateComponent.OPTIONAL_BLOCK_STATE);
+		registry.unit(BlockStateComponent.OPTIONAL_BLOCK_STATE_STRING);
 
-		registry.register(TimeComponent.TICKS);
-		registry.register(TimeComponent.SECONDS);
-		registry.register(TimeComponent.MINUTES);
-		registry.register(TimeComponent.HOURS);
+		registry.unit(TimeComponent.TICKS);
+		registry.unit(TimeComponent.SECONDS);
+		registry.unit(TimeComponent.MINUTES);
+		registry.unit(TimeComponent.HOURS);
 
-		registry.register(TagKeyComponent.BLOCK);
-		registry.register(TagKeyComponent.ITEM);
-		registry.register(TagKeyComponent.FLUID);
-		registry.register(TagKeyComponent.ENTITY_TYPE);
-		registry.register(TagKeyComponent.BIOME);
-		registry.register(TagKeyComponent.HASHED_BLOCK);
-		registry.register(TagKeyComponent.HASHED_ITEM);
-		registry.register(TagKeyComponent.HASHED_FLUID);
-		registry.register(TagKeyComponent.HASHED_ENTITY_TYPE);
-		registry.register(TagKeyComponent.HASHED_BIOME);
+		registry.unit(TagKeyComponent.BLOCK);
+		registry.unit(TagKeyComponent.ITEM);
+		registry.unit(TagKeyComponent.FLUID);
+		registry.unit(TagKeyComponent.ENTITY_TYPE);
+		registry.unit(TagKeyComponent.BIOME);
+		registry.unit(TagKeyComponent.HASHED_BLOCK);
+		registry.unit(TagKeyComponent.HASHED_ITEM);
+		registry.unit(TagKeyComponent.HASHED_FLUID);
+		registry.unit(TagKeyComponent.HASHED_ENTITY_TYPE);
+		registry.unit(TagKeyComponent.HASHED_BIOME);
 
-		registry.register(NestedRecipeComponent.RECIPE);
+		registry.unit(NestedRecipeComponent.RECIPE);
 
-		registry.register(BookCategoryComponent.CRAFTING_BOOK_CATEGORY);
-		registry.register(BookCategoryComponent.COOKING_BOOK_CATEGORY);
+		registry.unit(BookCategoryComponent.CRAFTING_BOOK_CATEGORY);
+		registry.unit(BookCategoryComponent.COOKING_BOOK_CATEGORY);
 
-		registry.register(ResourceKeyComponent.DIMENSION);
-		registry.register(ResourceKeyComponent.LOOT_TABLE);
+		registry.unit(ResourceKeyComponent.DIMENSION);
+		registry.unit(ResourceKeyComponent.LOOT_TABLE);
 
-		registry.register(TagKeyComponent.TYPE);
-		registry.register(RegistryComponent.TYPE);
-		registry.register(ResourceKeyComponent.TYPE);
+		registry.register(TagKeyComponent.TYPE, TagKeyComponent.MAP_CODEC);
+		registry.register(RegistryComponent.TYPE, RegistryComponent.MAP_CODEC);
+		registry.register(ResourceKeyComponent.TYPE, ResourceKeyComponent.MAP_CODEC);
 	}
 
 	@Override

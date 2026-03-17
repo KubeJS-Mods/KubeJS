@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.holder.HolderWrapper;
@@ -32,10 +32,11 @@ public record RegistryComponent<T>(
 	Codec<Holder<T>> codec,
 	TypeInfo typeInfo
 ) implements RecipeComponent<Holder<T>> {
-	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<RegistryComponent<?>>dynamic(KubeJS.id("registry_element"), (type) ->
-		RecordCodecBuilder.mapCodec(instance -> instance.group(
-			KubeJSCodecs.REGISTRY_KEY_CODEC.fieldOf("registry").forGetter(RegistryComponent::registry)
-		).apply(instance, RegistryComponent::createUnchecked)));
+	public static final ResourceKey<RecipeComponentType<?>> TYPE = RecipeComponentType.builtin("registry_element");
+
+	public static final MapCodec<RegistryComponent<?>> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+		KubeJSCodecs.REGISTRY_KEY_CODEC.fieldOf("registry").forGetter(RegistryComponent::registry)
+	).apply(instance, RegistryComponent::createUnchecked));
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static <T> RegistryComponent<T> createUnchecked(ResourceKey<?> resourceKey) {
@@ -51,7 +52,7 @@ public record RegistryComponent<T>(
 	}
 
 	@Override
-	public RecipeComponentType<?> type() {
+	public ResourceKey<RecipeComponentType<?>> type() {
 		return TYPE;
 	}
 

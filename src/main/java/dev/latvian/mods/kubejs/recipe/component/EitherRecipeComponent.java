@@ -2,8 +2,8 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
@@ -12,22 +12,25 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 
 import java.util.List;
 
 @SuppressWarnings("OptionalIsPresent")
 public record EitherRecipeComponent<H, L>(RecipeComponent<H> left, RecipeComponent<L> right, Codec<Either<H, L>> codec, TypeInfo typeInfo) implements RecipeComponent<Either<H, L>> {
-	public static final RecipeComponentType<?> TYPE = RecipeComponentType.<EitherRecipeComponent<?, ?>>dynamic(KubeJS.id("either"), (type) -> RecordCodecBuilder.mapCodec(instance -> instance.group(
+	public static final ResourceKey<RecipeComponentType<?>> TYPE = RecipeComponentType.builtin("either");
+
+	public static final MapCodec<EitherRecipeComponent<?, ?>> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("left").forGetter(EitherRecipeComponent::left),
 		RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("right").forGetter(EitherRecipeComponent::right)
-	).apply(instance, EitherRecipeComponent::new)));
+	).apply(instance, EitherRecipeComponent::new));
 
 	public EitherRecipeComponent(RecipeComponent<H> left, RecipeComponent<L> right) {
 		this(left, right, Codec.either(left.codec(), right.codec()), left.typeInfo().or(right.typeInfo()));
 	}
 
 	@Override
-	public RecipeComponentType<?> type() {
+	public ResourceKey<RecipeComponentType<?>> type() {
 		return TYPE;
 	}
 

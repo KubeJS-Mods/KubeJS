@@ -1,20 +1,18 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ExtraCodecs;
 
 public enum IgnoreComponent implements RecipeComponent<Object> {
 	INSTANCE;
 
-	public static final MapCodec<Object> CODEC = MapCodec.unit(INSTANCE);
-	public static final RecipeComponentType.Unit<Object> TYPE = RecipeComponentType.unit(KubeJS.id("ignore"), IgnoreComponent.INSTANCE);
+	private static final ResourceKey<RecipeComponentType<?>> TYPE = RecipeComponentType.builtin("ignore");
 
 	@Override
-	public RecipeComponentType<?> type() {
+	public ResourceKey<RecipeComponentType<?>> type() {
 		return TYPE;
 	}
 

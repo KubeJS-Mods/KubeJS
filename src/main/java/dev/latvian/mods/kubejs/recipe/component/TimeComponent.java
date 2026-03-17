@@ -2,17 +2,17 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 
-public record TimeComponent(RecipeComponentType<?> type, long scale, Codec<TickDuration> codec) implements RecipeComponent<TickDuration> {
-	public static final RecipeComponentType.Unit<TickDuration> TICKS = RecipeComponentType.unit(KubeJS.id("ticks"), type -> new TimeComponent(type, 1L, TickDuration.CODEC));
-	public static final RecipeComponentType.Unit<TickDuration> SECONDS = RecipeComponentType.unit(KubeJS.id("seconds"), type -> new TimeComponent(type, 20L, TickDuration.SECONDS_CODEC));
-	public static final RecipeComponentType.Unit<TickDuration> MINUTES = RecipeComponentType.unit(KubeJS.id("minutes"), type -> new TimeComponent(type, 1200L, TickDuration.MINUTES_CODEC));
-	public static final RecipeComponentType.Unit<TickDuration> HOURS = RecipeComponentType.unit(KubeJS.id("hours"), type -> new TimeComponent(type, 1200L, TickDuration.HOURS_CODEC));
+public record TimeComponent(ResourceKey<RecipeComponentType<?>> type, long scale, Codec<TickDuration> codec) implements RecipeComponent<TickDuration> {
+	public static final TimeComponent TICKS = new TimeComponent(RecipeComponentType.builtin("ticks"), 1L, TickDuration.CODEC);
+	public static final TimeComponent SECONDS = new TimeComponent(RecipeComponentType.builtin("seconds"), 20L, TickDuration.SECONDS_CODEC);
+	public static final TimeComponent MINUTES = new TimeComponent(RecipeComponentType.builtin("minutes"), 1200L, TickDuration.MINUTES_CODEC);
+	public static final TimeComponent HOURS = new TimeComponent(RecipeComponentType.builtin("hours"), 1200L, TickDuration.HOURS_CODEC);
 
 	@Override
 	public Codec<TickDuration> codec() {

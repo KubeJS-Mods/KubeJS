@@ -1,19 +1,25 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.Codec;
-import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
-public record IngredientComponent(RecipeComponentType<?> type, Codec<Ingredient> codec, boolean allowEmpty) implements RecipeComponent<Ingredient> {
-	public static final RecipeComponentType.Unit<Ingredient> INGREDIENT = RecipeComponentType.unit(KubeJS.id("ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC, false));
-	public static final RecipeComponentType.Unit<Ingredient> OPTIONAL_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_ingredient"), type -> new IngredientComponent(type, Ingredient.CODEC, true));
+public record IngredientComponent(ResourceKey<RecipeComponentType<?>> type, Codec<Ingredient> codec, boolean allowEmpty) implements RecipeComponent<Ingredient> {
+	public static final IngredientComponent INGREDIENT = new IngredientComponent(
+		RecipeComponentType.builtin("ingredient"),
+		Ingredient.CODEC, false
+	);
+	public static final IngredientComponent OPTIONAL_INGREDIENT = new IngredientComponent(
+		RecipeComponentType.builtin("optional_ingredient"),
+		Ingredient.CODEC, true
+	);
 
 	@Override
 	public TypeInfo typeInfo() {
