@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.block.BlockTintFunction;
 import dev.latvian.mods.kubejs.client.highlight.HighlightRenderer;
 import dev.latvian.mods.kubejs.client.model.KubeJSConditionalCallbackProperty;
 import dev.latvian.mods.kubejs.command.KubeJSClientCommands;
+import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidTypeBuilder;
 import dev.latvian.mods.kubejs.gui.KubeJSMenus;
 import dev.latvian.mods.kubejs.gui.KubeJSScreen;
@@ -37,6 +38,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -55,6 +58,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterConditionalItemModelPropertyEvent;
+import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -205,25 +209,26 @@ public class KubeJSClientEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+	public void onRegisterFluidModels(RegisterFluidModelsEvent event) {
+		for (var builder : RegistryObjectStorage.FLUID) {
+			if (builder instanceof FluidBuilder b) {
+				var type = b.fluidType;
+				// TODO: revisit this!
+				event.register(new FluidModel.Unbaked(
+					new Material(type.actualStillTexture),
+					new Material(type.actualFlowingTexture),
+					type.blockOverlayTexture != null ? new Material(type.blockOverlayTexture) : null,
+					null
+				), b.get());
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
 		for (var builder : RegistryObjectStorage.FLUID_TYPE) {
 			if (builder instanceof FluidTypeBuilder b) {
 				event.registerFluidType(new IClientFluidTypeExtensions() {
-					@Override
-					public Identifier getStillTexture() {
-						return b.actualStillTexture;
-					}
-
-					@Override
-					public Identifier getFlowingTexture() {
-						return b.actualFlowingTexture;
-					}
-
-					@Override
-					public Identifier getOverlayTexture() {
-						return b.blockOverlayTexture;
-					}
-
 					@Override
 					@Nullable
 					public Identifier getRenderOverlayTexture(Minecraft mc) {
@@ -233,6 +238,7 @@ public class KubeJSClientEventHandler {
 			}
 		}
 	}
+
 
 	@SubscribeEvent
 	public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
