@@ -19,7 +19,7 @@ public class KubeJSInventoryListener implements ContainerListener {
 			var key = stack.getItem().kjs$getKey();
 
 			if (PlayerEvents.INVENTORY_CHANGED.hasListeners(key)) {
-				PlayerEvents.INVENTORY_CHANGED.post(player, key, new InventoryChangedKubeEvent(player, stack, index));
+				PlayerEvents.INVENTORY_CHANGED.post(player, key, new InventoryChangedKubeEvent(player, stack, container.getSlot(index).getContainerSlot()));
 			}
 		}
 	}
