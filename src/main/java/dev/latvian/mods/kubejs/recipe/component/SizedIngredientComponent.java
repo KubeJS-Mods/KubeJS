@@ -18,17 +18,6 @@ public record SizedIngredientComponent(RecipeComponentType<?> type, Codec<SizedI
 	public static final RecipeComponentType<SizedIngredient> SIZED_INGREDIENT = RecipeComponentType.unit(KubeJS.id("sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, false));
 	public static final RecipeComponentType<SizedIngredient> OPTIONAL_SIZED_INGREDIENT = RecipeComponentType.unit(KubeJS.id("optional_sized_ingredient"), type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, true));
 
-	//TODO: Flat is no longer a thing so these are stand-ins at this point
-	// Recipes expecting flat-format sized ingredients will serialize/deserialize incorrectly
-	@Deprecated(forRemoval = true)
-	public static final RecipeComponentType<SizedIngredient> FLAT =
-		RecipeComponentType.unit(KubeJS.id("flat_sized_ingredient"),
-			type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, false));
-	@Deprecated(forRemoval = true)
-	public static final RecipeComponentType<SizedIngredient> OPTIONAL_FLAT =
-		RecipeComponentType.unit(KubeJS.id("optional_flat_sized_ingredient"),
-			type -> new SizedIngredientComponent(type, SizedIngredient.NESTED_CODEC, true));
-
 	@Override
 	public TypeInfo typeInfo() {
 		return SizedIngredientWrapper.TYPE_INFO;
