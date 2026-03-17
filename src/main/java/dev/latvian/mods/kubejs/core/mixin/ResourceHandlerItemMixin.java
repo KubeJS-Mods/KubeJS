@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
+//TODO: ResourceHandlerItemMixin currently applies to all ResourceHandlers
 @Mixin(ResourceHandler.class)
 public interface ResourceHandlerItemMixin extends InventoryKJS {
 	@Unique

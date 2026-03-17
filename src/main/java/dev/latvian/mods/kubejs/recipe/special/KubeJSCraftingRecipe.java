@@ -31,11 +31,10 @@ public interface KubeJSCraftingRecipe extends CraftingRecipe {
 		return list;
 	}
 
-	default ItemStack kjs$assemble(CraftingInput input) {
+	default ItemStack kjs$assemble(CraftingInput input, ItemStack baseResult) {
 		var modifyResult = kjs$getModifyResult();
-		var result = assemble(input);
 		//noinspection ConstantValue
-		result = (result == null || result.isEmpty()) ? ItemStack.EMPTY : result.copy();
+		var result = (baseResult == null || baseResult.isEmpty()) ? ItemStack.EMPTY : baseResult.copy();
 
 		if (!modifyResult.isEmpty()) {
 			var event = new ModifyCraftingItemKubeEvent(input, result, 0);

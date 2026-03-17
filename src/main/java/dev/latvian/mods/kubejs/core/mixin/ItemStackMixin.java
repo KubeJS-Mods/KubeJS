@@ -16,14 +16,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
-import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 
@@ -66,20 +65,17 @@ public abstract class ItemStackMixin implements ItemStackKJS {
 		stack.set(type, value);
 	}
 
-	@Inject(
-		method = "finishUsingItem(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/item/ItemStack;",
-		at = @At("HEAD")
-	)
-	private void kjs$onFoodFinished(Level level, LivingEntity entity, CallbackInfoReturnable<ItemStack> cir) {
-		if (!(entity instanceof Player player)) {
+	@Inject(method = "consume", at = @At("HEAD"))
+	private void kjs$onConsume(int amount, LivingEntity owner, CallbackInfo ci) {
+		if (amount <= 0 || owner == null) {
 			return;
 		}
-
-		var consumable = kjs$self().get(DataComponents.CONSUMABLE);
-		if (consumable == null || !kjs$self().has(DataComponents.FOOD)) {
+		ItemStack stack = (ItemStack) (Object) this;
+		if (!stack.has(DataComponents.FOOD) || !stack.has(DataComponents.CONSUMABLE)) {
 			return;
 		}
-
-		entity.kjs$foodEaten((ItemStack) (Object) this);
+		if (owner instanceof Player player) {
+			player.kjs$foodEaten(stack);
+		}
 	}
 }

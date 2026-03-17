@@ -51,7 +51,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 
 	@Override
 	public ItemStack assemble(CraftingInput input) {
-		return kjs$assemble(input);
+		return kjs$assemble(input, super.assemble(input));
 	}
 
 	private CommonInfo commonInfo() {

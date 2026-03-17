@@ -97,7 +97,6 @@ public class FluidTankAttachment implements BlockEntityAttachment {
 
 		public void setFluid(FluidStack newStack) {
 			this.stack = newStack == null ? FluidStack.EMPTY : newStack;
-			attachment.entity.save();
 		}
 
 		@Override
@@ -159,7 +158,6 @@ public class FluidTankAttachment implements BlockEntityAttachment {
 			if (stack.isEmpty()) {
 				int inserted = Math.min(amount, capacity);
 				stack = resource.toStack(inserted);
-				attachment.entity.save();
 				return inserted;
 			}
 
@@ -175,7 +173,6 @@ public class FluidTankAttachment implements BlockEntityAttachment {
 			}
 
 			stack = stack.copyWithAmount(stack.getAmount() + inserted);
-			attachment.entity.save();
 			return inserted;
 		}
 
@@ -202,7 +199,6 @@ public class FluidTankAttachment implements BlockEntityAttachment {
 			int extracted = Math.min(amount, stack.getAmount());
 			int remaining = stack.getAmount() - extracted;
 			stack = remaining <= 0 ? FluidStack.EMPTY : stack.copyWithAmount(remaining);
-			attachment.entity.save();
 			return extracted;
 		}
 
@@ -218,6 +214,9 @@ public class FluidTankAttachment implements BlockEntityAttachment {
 
 		@Override
 		protected void onRootCommit(FluidStack originalState) {
+			if (!FluidStack.matches(originalState, stack)) {
+				attachment.entity.save();
+			}
 		}
 	}
 }

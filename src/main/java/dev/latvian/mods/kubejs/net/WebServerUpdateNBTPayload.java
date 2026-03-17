@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -31,7 +32,7 @@ public record WebServerUpdateNBTPayload(String event, String requiredTag, Option
 		int count = KubeJSWeb.broadcastUpdate("server/" + event, requiredTag, () -> payload.map(tag -> NbtOps.INSTANCE.convertTo(JsonOps.INSTANCE, tag)).orElse(null));
 
 		if (count == 0 && event.equals("highlight/items")) {
-			var list = ((CompoundTag) payload.get()).getList("items").get();
+			var list = ((CompoundTag) payload.get()).getList("items").orElse(new ListTag());
 
 			for (var e : list) {
 				if (!(e instanceof CompoundTag t)) {

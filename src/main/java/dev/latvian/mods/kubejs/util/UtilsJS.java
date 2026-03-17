@@ -65,6 +65,7 @@ public class UtilsJS {
 				return true;
 			}
 
+			//TODO: this shouldnt return null
 			@Override
 			public IngredientType<?> getType() {
 				return null;
@@ -90,9 +91,9 @@ public class UtilsJS {
 		} else if (o instanceof Wrapper w) {
 			return wrap(w.unwrap(), type);
 		} else if (o instanceof NumericTag tag) {
-			return tag.asNumber();
+			return tag.asNumber().isPresent() ? tag.asNumber().get() : wrap(null, type);
 		} else if (o instanceof StringTag tag) {
-			return tag.asString();
+			return tag.asString().isPresent() ? tag.asString().get() : wrap(null, type);
 		} else if (o instanceof Tag) {
 			return o;
 		}

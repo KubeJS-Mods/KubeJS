@@ -205,7 +205,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			}
 
 			if (!originalJson.has("type")) {
-				warnSkip("Skipping recipe %s, not a json object".formatted(recipeId));
+				warnSkip("Skipping recipe %s, missing 'type' field".formatted(recipeId));
 				continue;
 			}
 

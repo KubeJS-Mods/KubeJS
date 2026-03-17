@@ -463,12 +463,12 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		}
 
 		sb.append("] -> [");
-
+		boolean firstOutput = true;
 		for (var v : outputValues()) {
-			if (sb.length() > 1) {
+			if (!firstOutput) {
 				sb.append(",");
 			}
-
+			firstOutput = false;
 			sb.append(v.value);
 		}
 
