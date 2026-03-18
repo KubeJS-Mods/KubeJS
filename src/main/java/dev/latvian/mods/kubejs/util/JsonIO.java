@@ -39,7 +39,7 @@ public class JsonIO {
 	}
 
 	public static Object parse(String string) {
-		return UtilsJS.wrap(parseRaw(string), JSObjectType.ANY);
+		return JsonUtils.toObject(parseRaw(string));
 	}
 
 	@Nullable
