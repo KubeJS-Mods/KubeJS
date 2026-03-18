@@ -418,7 +418,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	}
 
 	@Info("""
-		Sets the render type of the block. Can be `cutout`, `cutout_mipped`, `translucent`, or `basic`.
+		Sets the render type of the block. Can be `solid`, `cutout`, or `translucent`.
 		""")
 	public BlockBuilder renderType(BlockRenderType l) {
 		renderType = l;

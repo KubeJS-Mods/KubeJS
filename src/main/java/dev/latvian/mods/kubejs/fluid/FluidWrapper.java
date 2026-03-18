@@ -192,7 +192,7 @@ public interface FluidWrapper {
 	}
 
 	static Fluid getType(Identifier id) {
-		return BuiltInRegistries.FLUID.get(id).get().value();
+		return BuiltInRegistries.FLUID.get(id).orElseThrow(() -> new KubeRuntimeException("Unknown fluid: " + id)).value();
 	}
 
 	static List<String> getTypes() {

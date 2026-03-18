@@ -243,6 +243,6 @@ public class UtilsJS {
 
 	@Nullable
 	public static CreativeModeTab findCreativeTab(Identifier id) {
-		return BuiltInRegistries.CREATIVE_MODE_TAB.get(id).get().value();
+		return BuiltInRegistries.CREATIVE_MODE_TAB.get(id).map(Holder.Reference::value).orElse(null);
 	}
 }

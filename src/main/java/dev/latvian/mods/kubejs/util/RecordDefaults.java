@@ -38,7 +38,6 @@ public class RecordDefaults {
 
 		add(MinMaxBounds.Ints.class, MinMaxBounds.Ints.ANY);
 		add(MinMaxBounds.Doubles.class, MinMaxBounds.Doubles.ANY);
-		//TODO Used to be DataComponentPredicate, Review this to make sure it's correct equivalent
 		add(DataComponentExactPredicate.class, DataComponentExactPredicate.EMPTY);
 		add(EntityPredicate.LocationWrapper.class, new EntityPredicate.LocationWrapper(Optional.empty(), Optional.empty(), Optional.empty()));
 		add(GameTypePredicate.class, GameTypePredicate.ANY);

@@ -92,7 +92,7 @@ public interface ItemWrapper {
 
 		for (var itemId : CACHED_ITEM_TYPE_LIST.get()) {
 			var itemRl = Identifier.parse(itemId);
-			map.computeIfAbsent(itemRl, id -> Set.of(BuiltInRegistries.ITEM.get(id).get().value().getDefaultInstance()));
+			map.computeIfAbsent(itemRl, id -> BuiltInRegistries.ITEM.get(id).map(h -> Set.of(h.value().getDefaultInstance())).orElse(Set.of()));
 		}
 	});
 
@@ -268,7 +268,7 @@ public interface ItemWrapper {
 
 	@Info("Gets an Item from an item id")
 	static Item getItem(Identifier id) {
-		return BuiltInRegistries.ITEM.get(id).get().value();
+		return BuiltInRegistries.ITEM.get(id).orElseThrow(() -> new IllegalArgumentException("Unknown item: " + id)).value();
 	}
 
 	@Info("Gets an items id from the Item")
