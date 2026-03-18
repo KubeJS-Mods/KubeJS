@@ -268,7 +268,7 @@ public interface ItemWrapper {
 
 	@Info("Gets an Item from an item id")
 	static Item getItem(Identifier id) {
-		return BuiltInRegistries.ITEM.get(id).orElseThrow(() -> new IllegalArgumentException("Unknown item: " + id)).value();
+		return BuiltInRegistries.ITEM.get(id).orElseThrow(() -> new KubeRuntimeException("Unknown item: " + id)).value();
 	}
 
 	@Info("Gets an items id from the Item")
