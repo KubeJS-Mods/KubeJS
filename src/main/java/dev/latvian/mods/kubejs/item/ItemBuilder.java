@@ -10,7 +10,6 @@ import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -24,7 +23,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.JukeboxPlayable;
 import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -395,8 +393,9 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 			properties.craftRemainder(item);
 		}
 
+		// TODO: rework into consumable!
 		if (foodBuilder != null) {
-			properties.food(foodBuilder.build());
+			foodBuilder.applyTo(properties);
 		}
 
 		if (fireResistant) {

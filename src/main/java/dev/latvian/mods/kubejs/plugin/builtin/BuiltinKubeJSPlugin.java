@@ -274,6 +274,8 @@ import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.datamaps.builtin.FurnaceFuel;
 import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -543,6 +545,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ColorRGBA.class, ColorWrapper::wrapColorRGBA);
 
 		// KubeJS //
+		// TODO(low): which way makes more sense for wrappers? stack => template or template => stack?
 		registry.register(ItemStack.class, ItemWrapper::wrap);
 		registry.register(Ingredient.class, IngredientWrapper::wrap);
 		registry.register(ItemPredicate.class, ItemPredicate::wrap);
@@ -591,6 +594,9 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		);
 		registry.registerAlias(LockCode.class, TypeInfo.STRING, LockCode::new);
 		registry.registerAlias(BlockItemStateProperties.class, TypeInfo.RAW_MAP.withParams(TypeInfo.STRING, TypeInfo.STRING), BlockItemStateProperties::new);
+
+		registry.registerAlias(ItemResource.class, ItemStack.class, ItemResource::of);
+		registry.registerAlias(FluidResource.class, FluidStack.class, FluidResource::of);
 	}
 
 	@Override
