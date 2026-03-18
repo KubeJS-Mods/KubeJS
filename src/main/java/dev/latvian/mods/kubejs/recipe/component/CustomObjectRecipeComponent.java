@@ -35,14 +35,12 @@ import java.util.stream.Stream;
 
 public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomObjectRecipeComponent.Value>> {
 	public record Key(String name, RecipeComponent<?> component, boolean optional, boolean alwaysWrite) {
-		public static Codec<Key> createCodec() {
-			return RecordCodecBuilder.create(instance -> instance.group(
-				Codec.STRING.fieldOf("name").forGetter(Key::name),
-				RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("component").forGetter(Key::component),
-				Codec.BOOL.optionalFieldOf("optional", false).forGetter(Key::optional),
-				Codec.BOOL.optionalFieldOf("always_write", false).forGetter(Key::alwaysWrite)
-			).apply(instance, Key::new));
-		}
+		public static final Codec<Key> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+			Codec.STRING.fieldOf("name").forGetter(Key::name),
+			RecipeSchemaStorage.COMPONENT_CODEC.fieldOf("component").forGetter(Key::component),
+			Codec.BOOL.optionalFieldOf("optional", false).forGetter(Key::optional),
+			Codec.BOOL.optionalFieldOf("always_write", false).forGetter(Key::alwaysWrite)
+		).apply(instance, Key::new));
 
 		public Key(String name, RecipeComponent<?> component, boolean optional) {
 			this(name, component, optional, false);
@@ -83,7 +81,7 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 	public static final ResourceKey<RecipeComponentType<?>> TYPE = RecipeComponentType.builtin("custom_object");
 
 	public static final MapCodec<CustomObjectRecipeComponent> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-		Key.createCodec().listOf().fieldOf("keys").forGetter(CustomObjectRecipeComponent::keys)
+		Key.CODEC.listOf().fieldOf("keys").forGetter(CustomObjectRecipeComponent::keys)
 	).apply(instance, CustomObjectRecipeComponent::new));
 
 	private final List<Key> keys;

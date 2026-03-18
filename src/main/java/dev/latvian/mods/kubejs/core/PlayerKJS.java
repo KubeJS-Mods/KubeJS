@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
 import com.mojang.authlib.GameProfile;
-import dev.latvian.mods.kubejs.item.ItemHandlerUtils;
 import dev.latvian.mods.kubejs.player.KubeJSInventoryListener;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.stages.Stages;
@@ -64,11 +63,11 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 	}
 
 	default void kjs$give(ItemStack item) {
-		ItemHandlerUtils.giveItemToPlayer(kjs$self(), item, -1);
+		kjs$self().getInventory().add(item);
 	}
 
 	default void kjs$giveInHand(ItemStack item) {
-		ItemHandlerUtils.giveItemToPlayer(kjs$self(), item, kjs$getSelectedSlot());
+		kjs$self().getInventory().add(kjs$getSelectedSlot(), item);
 	}
 
 	default int kjs$getSelectedSlot() {

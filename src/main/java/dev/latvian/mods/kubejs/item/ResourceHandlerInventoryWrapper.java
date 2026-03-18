@@ -6,20 +6,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.StacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.Nullable;
 
-public class ResourceHandlerInventoryWrapper implements InventoryKJS {
-	private final ResourceHandler<ItemResource> handler;
-
-	public ResourceHandlerInventoryWrapper(ResourceHandler<ItemResource> handler) {
-		this.handler = handler;
-	}
-
+public record ResourceHandlerInventoryWrapper(ResourceHandler<ItemResource> handler) implements InventoryKJS {
 	@Override
 	public boolean kjs$isMutable() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -34,6 +29,17 @@ public class ResourceHandlerInventoryWrapper implements InventoryKJS {
 			return ItemStack.EMPTY;
 		}
 		return resource.toStack(handler.getAmountAsInt(slot));
+	}
+
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Override
+	public void kjs$setStackInSlot(int slot, ItemStack stack) {
+		if (handler instanceof StacksResourceHandler stacks) {
+			var resource = ItemResource.of(stack);
+			stacks.set(slot, resource, stack.getCount());
+		} else {
+			InventoryKJS.super.kjs$setStackInSlot(slot, stack);
+		}
 	}
 
 	@Override
