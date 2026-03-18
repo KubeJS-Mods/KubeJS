@@ -174,7 +174,7 @@ public interface ItemStackKJS extends
 
 		EnchantmentHelper.updateEnchantments(is, mutable -> {
 			for (var entry : enchantments.entrySet()) {
-				mutable.upgrade(entry.getKey(), entry.getValue());
+				mutable.upgrade(entry.getKey(), entry.getIntValue());
 			}
 		});
 

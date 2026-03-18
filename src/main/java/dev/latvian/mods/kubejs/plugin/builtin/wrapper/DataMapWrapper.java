@@ -3,8 +3,8 @@ package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jetbrains.annotations.NotNull;
@@ -37,11 +37,11 @@ public record DataMapWrapper<T, A>(Registry<T> registry, DataMapType<T, A> type)
 
 	@Nullable
 	public A get(T item) {
-		return registry.getData(type, registry.getResourceKey(item).orElseThrow());
+		return registry.wrapAsHolder(item).getData(type);
 	}
 
 	public Stream<T> keys() {
-		return byKey().keySet().stream().map(m -> registry.get(m).orElseThrow().value());
+		return byKey().keySet().stream().map(registry::getValueOrThrow);
 	}
 
 	public @NotNull Iterator<Data<T, A>> iterator() {
@@ -56,7 +56,7 @@ public record DataMapWrapper<T, A>(Registry<T> registry, DataMapType<T, A> type)
 			@Override
 			public Data<T, A> next() {
 				var entry = backing.next();
-				return new Data<>(registry.get(entry.getKey()).orElseThrow().value(), entry.getValue());
+				return new Data<>(registry.getValueOrThrow(entry.getKey()), entry.getValue());
 			}
 		};
 	}

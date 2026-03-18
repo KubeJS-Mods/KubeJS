@@ -80,7 +80,7 @@ public class BlockWrapper {
 
 	@Info("Gets a Block from a block id")
 	public static Block getBlock(Identifier id) {
-		return BuiltInRegistries.BLOCK.get(id).orElseThrow(() -> new KubeRuntimeException("Unknown block: " + id)).value();
+		return BuiltInRegistries.BLOCK.getOptional(id).orElseThrow(() -> new KubeRuntimeException("Unknown block: " + id));
 	}
 
 	@Info("Gets a blocks id from the Block")

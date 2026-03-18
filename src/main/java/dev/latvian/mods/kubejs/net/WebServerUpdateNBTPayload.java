@@ -32,7 +32,7 @@ public record WebServerUpdateNBTPayload(String event, String requiredTag, Option
 		int count = KubeJSWeb.broadcastUpdate("server/" + event, requiredTag, () -> payload.map(tag -> NbtOps.INSTANCE.convertTo(JsonOps.INSTANCE, tag)).orElse(null));
 
 		if (count == 0 && event.equals("highlight/items")) {
-			var list = ((CompoundTag) payload.get()).getList("items").orElse(new ListTag());
+			var list = ((CompoundTag) payload.orElseThrow()).getList("items").orElse(new ListTag());
 
 			for (var e : list) {
 				if (!(e instanceof CompoundTag t)) {

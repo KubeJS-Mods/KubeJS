@@ -25,7 +25,6 @@ import dev.latvian.mods.rhino.EvaluatorException;
 import dev.latvian.mods.rhino.NativeJavaMap;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -107,7 +106,8 @@ public interface DataComponentWrapper {
 			return (DataComponentType<?>) object;
 		}
 
-		return BuiltInRegistries.DATA_COMPONENT_TYPE.get(ID.mc(object)).orElseThrow(() -> new KubeRuntimeException("Unknown data component type: " + object)).value();
+		var id = ID.mc(object);
+		return BuiltInRegistries.DATA_COMPONENT_TYPE.getOptional(id).orElseThrow(() -> new KubeRuntimeException("Unknown data component type: " + object));
 	}
 
 	static DataComponentMap readMap(@Nullable DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
@@ -264,7 +264,7 @@ public interface DataComponentWrapper {
 
 		int i = stringReader.getCursor();
 		Identifier identifier = Identifier.read(stringReader);
-		DataComponentType<?> dataComponentType = BuiltInRegistries.DATA_COMPONENT_TYPE.get(identifier).map(Holder.Reference::value).orElse(null);
+		DataComponentType<?> dataComponentType = BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(identifier);
 		if (dataComponentType != null && !dataComponentType.isTransient()) {
 			return dataComponentType;
 		} else {
@@ -418,8 +418,8 @@ public interface DataComponentWrapper {
 			//noinspection unchecked
 			return (DataResult<Optional<T>>) switch (codec.parse(reg.json(), JsonUtils.of(cx, value))) {
 				case DataResult.Success<?> success -> success.map(Optional::of);
-				case DataResult.Error<?> error -> error.mapError(err -> evalError.getValue() != null
-					? "Failed to parse component from type wrappers and codec! Native: %s, Codec: %s".formatted(evalError.getValue().details(), err)
+				case DataResult.Error<?> error -> error.mapError(err -> evalError.get() != null
+					? "Failed to parse component from type wrappers and codec! Native: %s, Codec: %s".formatted(evalError.get().details(), err)
 					: "Failed to parse component from codec: %s!".formatted(err));
 			};
 		} else {

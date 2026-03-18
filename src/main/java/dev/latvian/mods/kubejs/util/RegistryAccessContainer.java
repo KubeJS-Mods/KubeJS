@@ -131,7 +131,7 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 
 	private <T> RegistryWrapper<T> createRegistryWrapper(Identifier id) {
 		var key = ResourceKey.<T>createRegistryKey(id);
-		return new RegistryWrapper<>(access.get(key).orElseThrow(() -> new KubeRuntimeException("Unknown registry: " + id)).value(), ResourceKey.create(key, ID.UNKNOWN));
+		return new RegistryWrapper<>(access.lookup(key).orElseThrow(() -> new KubeRuntimeException("Unknown registry: " + id)), ResourceKey.create(key, ID.UNKNOWN));
 	}
 
 	public RegistryWrapper<?> wrapRegistry(Identifier id) {

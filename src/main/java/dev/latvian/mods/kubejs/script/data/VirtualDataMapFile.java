@@ -7,8 +7,8 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Util;
 import net.neoforged.neoforge.common.conditions.WithConditions;
@@ -141,6 +141,6 @@ public class VirtualDataMapFile<RT, DT> implements BiConsumer<Identifier, DT> {
 	@Override
 	@HideFromJS
 	public void accept(Identifier id, DT data) {
-		add(registry.get(ResourceKey.create(registry.key(), id)).get(), data);
+		add(registry.getOrThrow(ResourceKey.create(registry.key(), id)), data);
 	}
 }

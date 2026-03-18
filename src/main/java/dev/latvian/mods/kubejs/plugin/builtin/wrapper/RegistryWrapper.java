@@ -8,8 +8,8 @@ import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +32,7 @@ public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey
 	}
 
 	public T get(Identifier id) {
-		return registry.get(id).orElseThrow(() -> new KubeRuntimeException("Unknown registry entry: " + id + " in " + registry.key().identifier())).value();
+		return registry.getOptional(id).orElseThrow(() -> new KubeRuntimeException("Unknown registry entry: " + id + " in " + registry.key().identifier()));
 	}
 
 	public boolean contains(Identifier id) {

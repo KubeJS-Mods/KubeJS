@@ -559,7 +559,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			}
 		}
 
-		return originalRecipe.getValue();
+		return originalRecipe.get();
 	}
 
 	public ItemStack getOriginalRecipeResult() {
