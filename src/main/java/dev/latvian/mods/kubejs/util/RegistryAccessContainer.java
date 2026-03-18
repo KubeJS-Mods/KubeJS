@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.util;
 import com.google.gson.JsonArray;
 import com.mojang.serialization.JavaOps;
 import com.mojang.serialization.JsonOps;
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.RegistryWrapper;
 import dev.latvian.mods.kubejs.recipe.CachedItemTagLookup;
 import dev.latvian.mods.kubejs.recipe.CachedTagLookup;
@@ -130,7 +131,7 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 
 	private <T> RegistryWrapper<T> createRegistryWrapper(Identifier id) {
 		var key = ResourceKey.<T>createRegistryKey(id);
-		return new RegistryWrapper<>(access.get(key).get().value(), ResourceKey.create(key, ID.UNKNOWN));
+		return new RegistryWrapper<>(access.get(key).orElseThrow(() -> new KubeRuntimeException("Unknown registry: " + id)).value(), ResourceKey.create(key, ID.UNKNOWN));
 	}
 
 	public RegistryWrapper<?> wrapRegistry(Identifier id) {

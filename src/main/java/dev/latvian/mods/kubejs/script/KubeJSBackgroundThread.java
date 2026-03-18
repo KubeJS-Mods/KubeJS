@@ -5,7 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class KubeJSBackgroundThread extends Thread {
-	public static boolean running = true;
+	public static volatile boolean running = true;
 
 	public KubeJSBackgroundThread() {
 		super("kubejs-background-thread");

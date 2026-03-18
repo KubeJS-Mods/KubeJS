@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class KubeJSClientWeb {
-	private static final Lazy<CreativeModeTab> SEARCH_TAB = Lazy.of(() -> BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.SEARCH).get().value());
+	private static final Lazy<CreativeModeTab> SEARCH_TAB = Lazy.of(() -> BuiltInRegistries.CREATIVE_MODE_TAB.get(CreativeModeTabs.SEARCH).orElseThrow().value());
 
 	private static final Lazy<Map<Item, NameProvider<ItemStack>>> ITEM_NAME_PROVIDERS = Lazy.identityMap(map -> KubeJSPlugins.forEachPlugin(map::put, KubeJSPlugin::registerItemNameProviders));
 

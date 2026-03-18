@@ -25,6 +25,7 @@ import dev.latvian.mods.rhino.EvaluatorException;
 import dev.latvian.mods.rhino.NativeJavaMap;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -106,7 +107,7 @@ public interface DataComponentWrapper {
 			return (DataComponentType<?>) object;
 		}
 
-		return BuiltInRegistries.DATA_COMPONENT_TYPE.get(ID.mc(object)).get().value();
+		return BuiltInRegistries.DATA_COMPONENT_TYPE.get(ID.mc(object)).orElseThrow(() -> new KubeRuntimeException("Unknown data component type: " + object)).value();
 	}
 
 	static DataComponentMap readMap(@Nullable DynamicOps<Tag> registryOps, StringReader reader) throws CommandSyntaxException {
@@ -263,7 +264,7 @@ public interface DataComponentWrapper {
 
 		int i = stringReader.getCursor();
 		Identifier identifier = Identifier.read(stringReader);
-		DataComponentType<?> dataComponentType = BuiltInRegistries.DATA_COMPONENT_TYPE.get(identifier).get().value();
+		DataComponentType<?> dataComponentType = BuiltInRegistries.DATA_COMPONENT_TYPE.get(identifier).map(Holder.Reference::value).orElse(null);
 		if (dataComponentType != null && !dataComponentType.isTransient()) {
 			return dataComponentType;
 		} else {

@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.holder.HolderWrapper;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.UtilsJS;
@@ -31,7 +32,7 @@ public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey
 	}
 
 	public T get(Identifier id) {
-		return registry.get(id).get().value();
+		return registry.get(id).orElseThrow(() -> new KubeRuntimeException("Unknown registry entry: " + id + " in " + registry.key().identifier())).value();
 	}
 
 	public boolean contains(Identifier id) {

@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -27,8 +28,8 @@ public class RecipeSchemaType {
 	}
 
 	public RecipeSerializer<?> getSerializer() {
-		if (serializer == null) {
-			serializer = Optional.ofNullable(BuiltInRegistries.RECIPE_SERIALIZER.get(serializerKey).get().value());
+		if (serializer.isEmpty()) {
+			serializer = BuiltInRegistries.RECIPE_SERIALIZER.get(serializerKey).map(Holder.Reference::value);
 		}
 
 		var s = serializer.orElse(null);

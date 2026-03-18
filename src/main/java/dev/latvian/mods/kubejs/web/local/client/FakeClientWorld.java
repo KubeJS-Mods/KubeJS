@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.web.local.client;
 
+import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
@@ -23,7 +24,7 @@ public class FakeClientWorld implements BlockAndTintGetter {
 	public FakeClientWorld(LevelReader parent, BlockState blockState, ResourceKey<Biome> biome) {
 		this.parent = parent;
 		this.blockState = blockState;
-		this.biome = parent.registryAccess().get(biome).get().value();
+		this.biome = parent.registryAccess().get(biome).orElseThrow(() -> new KubeRuntimeException("Unknown biome: " + biome.identifier())).value();
 	}
 
 	@Override

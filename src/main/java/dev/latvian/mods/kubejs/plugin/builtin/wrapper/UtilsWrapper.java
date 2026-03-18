@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
@@ -88,7 +89,7 @@ public interface UtilsWrapper {
 	@Nullable
 	@Info("Gets a SoundEvent from the id")
 	static SoundEvent getSound(Identifier id) {
-		return BuiltInRegistries.SOUND_EVENT.get(id).get().value();
+		return BuiltInRegistries.SOUND_EVENT.get(id).map(Holder.Reference::value).orElse(null);
 	}
 
 	@Info("Gets a random object from the list using the passed in random")
