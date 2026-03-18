@@ -286,23 +286,21 @@ public interface LevelBlock extends BlockProviderKJS {
 
 	@Nullable
 	default InventoryKJS getInventory() {
-		return getInventory(Direction.UP);
+		return getInventory(null);
 	}
 
 	@Nullable
-	default InventoryKJS getInventory(Direction facing) {
+	default InventoryKJS getInventory(@Nullable Direction facing) {
 		var entity = getEntity();
 
 		if (entity != null) {
-			var c = getLevel().getCapability(Capabilities.Item.BLOCK, getPos(), getBlockState(), getEntity(), facing);
+			var handler = getLevel().getCapability(Capabilities.Item.BLOCK, getPos(), getBlockState(), entity, facing);
 
-			if (c instanceof InventoryKJS inv) {
-				return inv;
-			} else if (c != null) {
-				return new ResourceHandlerInventoryWrapper(c);
-			} else if (entity instanceof InventoryKJS inv) {
-				return inv;
-			}
+			return switch (handler) {
+				case InventoryKJS inv -> inv;
+				case null -> entity instanceof InventoryKJS inv ? inv : null;
+				default -> new ResourceHandlerInventoryWrapper(handler);
+			};
 		}
 
 		return null;
