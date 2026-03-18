@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.level;
 
 import dev.latvian.mods.kubejs.core.BlockProviderKJS;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
+import dev.latvian.mods.kubejs.item.ResourceHandlerInventoryWrapper;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
 import dev.latvian.mods.kubejs.util.Cast;
@@ -297,6 +298,8 @@ public interface LevelBlock extends BlockProviderKJS {
 
 			if (c instanceof InventoryKJS inv) {
 				return inv;
+			} else if (c != null) {
+				return new ResourceHandlerInventoryWrapper(c);
 			} else if (entity instanceof InventoryKJS inv) {
 				return inv;
 			}

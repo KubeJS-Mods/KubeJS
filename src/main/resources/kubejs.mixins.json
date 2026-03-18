@@ -60,7 +60,6 @@
 		"RecipeInputMixin",
 		"RecipeManagerMixin",
 		"ReloadableServerResourcesMixin",
-		"ResourceHandlerItemMixin",
 		"ResourceKeyMixin",
 		"ServerLevelMixin",
 		"ServerPlayerMixin",

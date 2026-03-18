@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.block.entity;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
+import dev.latvian.mods.kubejs.level.LevelBlock;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -12,11 +13,13 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -71,6 +74,79 @@ public class InventoryAttachment implements BlockEntityAttachment {
 		}
 
 		@Override
+		public boolean kjs$isMutable() {
+			return true;
+		}
+
+		@Override
+		public int kjs$getSlots() {
+			return size();
+		}
+
+		@Override
+		public ItemStack kjs$getStackInSlot(int slot) {
+			var resource = getResource(slot);
+			if (resource.isEmpty()) {
+				return ItemStack.EMPTY;
+			}
+			return resource.toStack(getAmountAsInt(slot));
+		}
+
+		@Override
+		public void kjs$setStackInSlot(int slot, ItemStack stack) {
+			var prev = stacks.get(slot);
+			stacks.set(slot, stack);
+			onContentsChanged(slot, prev);
+		}
+
+		@Override
+		public ItemStack kjs$insertItem(int slot, ItemStack stack, boolean simulate) {
+			if (stack.isEmpty()) {
+				return stack;
+			}
+			var resource = ItemResource.of(stack);
+			try (var tx = Transaction.openRoot()) {
+				int inserted = insert(slot, resource, stack.getCount(), tx);
+				if (!simulate) {
+					tx.commit();
+				}
+				int remaining = stack.getCount() - inserted;
+				return remaining <= 0 ? ItemStack.EMPTY : stack.copyWithCount(remaining);
+			}
+		}
+
+		@Override
+		public ItemStack kjs$extractItem(int slot, int amount, boolean simulate) {
+			if (amount <= 0) {
+				return ItemStack.EMPTY;
+			}
+			var resource = getResource(slot);
+			if (resource.isEmpty()) {
+				return ItemStack.EMPTY;
+			}
+			try (var tx = Transaction.openRoot()) {
+				int extracted = extract(slot, resource, amount, tx);
+				if (!simulate) {
+					tx.commit();
+				}
+				return extracted <= 0 ? ItemStack.EMPTY : resource.toStack(extracted);
+			}
+		}
+
+		@Override
+		public int kjs$getSlotLimit(int slot) {
+			return getCapacityAsInt(slot, ItemResource.EMPTY);
+		}
+
+		@Override
+		public boolean kjs$isItemValid(int slot, ItemStack stack) {
+			if (stack.isEmpty()) {
+				return false;
+			}
+			return isValid(slot, ItemResource.of(stack));
+		}
+
+		@Override
 		public int kjs$getWidth() {
 			return attachment.width;
 		}
@@ -78,6 +154,12 @@ public class InventoryAttachment implements BlockEntityAttachment {
 		@Override
 		public int kjs$getHeight() {
 			return attachment.height;
+		}
+
+		@Override
+		@Nullable
+		public LevelBlock kjs$getBlock(Level level) {
+			return level.kjs$getBlock(attachment.blockEntity);
 		}
 	}
 

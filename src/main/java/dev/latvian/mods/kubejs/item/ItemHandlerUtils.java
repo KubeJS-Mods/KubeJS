@@ -26,7 +26,22 @@ import org.jetbrains.annotations.NotNull;
 
 public class ItemHandlerUtils {
 	public static void giveItemToPlayer(Player player, @NotNull ItemStack stack, int preferredSlot) {
-		ItemHandlerUtils.giveItemToPlayer(player, stack, preferredSlot);
+		if (stack.isEmpty()) {
+			return;
+		}
+
+		var inventory = player.getInventory();
+
+		if (preferredSlot >= 0 && preferredSlot < inventory.getNonEquipmentItems().size()) {
+			inventory.add(preferredSlot, stack);
+		} else {
+			inventory.add(stack);
+		}
+
+		if (!stack.isEmpty()) {
+			player.drop(stack, false);
+			stack.setCount(0);
+		}
 	}
 
 	@NotNull

@@ -209,7 +209,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	@SubscribeEvent
-	public void onRegisterFluidModels(RegisterFluidModelsEvent event) {
+	public static void onRegisterFluidModels(RegisterFluidModelsEvent event) {
 		for (var builder : RegistryObjectStorage.FLUID) {
 			if (builder instanceof FluidBuilder b) {
 				var type = b.fluidType;
@@ -225,7 +225,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	@SubscribeEvent
-	public void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+	public static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
 		for (var builder : RegistryObjectStorage.FLUID_TYPE) {
 			if (builder instanceof FluidTypeBuilder b) {
 				event.registerFluidType(new IClientFluidTypeExtensions() {
