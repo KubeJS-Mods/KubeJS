@@ -140,10 +140,6 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 	default String kjs$toIngredientString(@Nullable DynamicOps<Tag> ops) {
 		var in = kjs$self();
 
-		if (in.isEmpty()) {
-			return "air";
-		}
-
 		var items = kjs$getStackArray();
 
 		if (items.length == 0) {

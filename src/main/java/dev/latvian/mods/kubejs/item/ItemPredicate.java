@@ -38,13 +38,7 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 
 			var in = IngredientWrapper.wrap(cx, from);
 
-			if (in.isEmpty()) {
-				return NONE;
-			} else if (in.kjs$isWildcard()) {
-				return ALL;
-			} else {
-				return in;
-			}
+			return in.kjs$isWildcard() ? ALL : in;
 		}
 	}
 
