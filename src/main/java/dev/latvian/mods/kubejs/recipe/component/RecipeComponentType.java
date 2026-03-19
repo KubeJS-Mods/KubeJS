@@ -2,15 +2,17 @@ package dev.latvian.mods.kubejs.recipe.component;
 
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.ApiStatus;
 
 @FunctionalInterface
 public interface RecipeComponentType<T> {
+	ResourceKey<Registry<RecipeComponentType<?>>> REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath("kubejs", "recipe_component_type"));
+
 	static ResourceKey<RecipeComponentType<?>> key(Identifier id) {
-		return ResourceKey.create(KubeJSRegistries.RECIPE_COMPONENT_TYPE, id);
+		return ResourceKey.create(REGISTRY_KEY, id);
 	}
 
 	@ApiStatus.Internal
