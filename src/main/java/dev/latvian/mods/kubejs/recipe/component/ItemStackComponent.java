@@ -16,26 +16,25 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static dev.latvian.mods.kubejs.util.UtilsJS.EMPTY_INGREDIENT;
-
-public record ItemStackComponent(ResourceKey<RecipeComponentType<?>> type, Codec<ItemStack> codec, boolean allowEmpty, Ingredient filter) implements RecipeComponent<ItemStack> {
+public record ItemStackComponent(ResourceKey<RecipeComponentType<?>> type, Codec<ItemStack> codec, boolean allowEmpty, Optional<Ingredient> filter) implements RecipeComponent<ItemStack> {
 	public static final ItemStackComponent ITEM_STACK = new ItemStackComponent(
 		RecipeComponentType.builtin("item_stack"),
-		false, EMPTY_INGREDIENT
+		false, Optional.empty()
 	);
 	public static final ItemStackComponent OPTIONAL_ITEM_STACK = new ItemStackComponent(
 		RecipeComponentType.builtin("optional_item_stack"),
-		true, EMPTY_INGREDIENT
+		true, Optional.empty()
 	);
 
 	public static final ResourceKey<RecipeComponentType<?>> FILTERED_TYPE = RecipeComponentType.builtin("filtered_item_stack");
 	public static final MapCodec<ItemStackComponent> FILTERED_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 		Codec.BOOL.optionalFieldOf("allow_empty", false).forGetter(ItemStackComponent::allowEmpty),
-		Ingredient.CODEC.optionalFieldOf("filter", EMPTY_INGREDIENT).forGetter(ItemStackComponent::filter)
+		Ingredient.CODEC.optionalFieldOf("filter").forGetter(ItemStackComponent::filter)
 	).apply(instance, (allowEmpty, filter) -> new ItemStackComponent(FILTERED_TYPE, allowEmpty, filter)));
 
-	public ItemStackComponent(ResourceKey<RecipeComponentType<?>> type, boolean allowEmpty, Ingredient filter) {
+	public ItemStackComponent(ResourceKey<RecipeComponentType<?>> type, boolean allowEmpty, Optional<Ingredient> filter) {
 		this(type, allowEmpty ? ItemStack.OPTIONAL_CODEC : ItemStack.CODEC.flatXmap(
 			ItemStack::validateStrict,
 			ItemStack::validateStrict
@@ -83,9 +82,11 @@ public record ItemStackComponent(ResourceKey<RecipeComponentType<?>> type, Codec
 	public void validate(RecipeValidationContext ctx, ItemStack value) {
 		RecipeComponent.super.validate(ctx, value);
 
-		if (!filter.isEmpty() && !filter.test(value)) {
-			throw new InvalidRecipeComponentValueException("Item " + value.kjs$toItemString0(ctx.ops().nbt()) + " doesn't match filter " + filter.kjs$toIngredientString(ctx.ops().nbt()), this, value);
-		}
+		filter.ifPresent(ingredient -> {
+			if (!ingredient.test(value)) {
+				throw new InvalidRecipeComponentValueException("Item " + value.kjs$toItemString0(ctx.ops().nbt()) + " doesn't match filter " + ingredient.kjs$toIngredientString(ctx.ops().nbt()), this, value);
+			}
+		});
 	}
 
 	@Override

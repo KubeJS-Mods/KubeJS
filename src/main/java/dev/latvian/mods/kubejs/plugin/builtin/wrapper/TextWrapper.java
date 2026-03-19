@@ -9,9 +9,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.kubejs.util.JSObjectType;
 import dev.latvian.mods.kubejs.util.JsonUtils;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -52,9 +50,7 @@ public interface TextWrapper {
 	}
 
 	@HideFromJS
-	static MutableComponent wrap(Context cx, @Nullable Object o) {
-		var from = UtilsJS.wrap(o, JSObjectType.ANY);
-
+	static MutableComponent wrap(Context cx, @Nullable Object from) {
 		return switch (from) {
 			case null -> Component.literal("null");
 			case MutableComponent component -> component;

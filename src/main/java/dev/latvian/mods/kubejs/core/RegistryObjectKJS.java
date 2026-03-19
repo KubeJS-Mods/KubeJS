@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -30,7 +29,7 @@ public interface RegistryObjectKJS<T> extends SpecialEquality {
 	}
 
 	default Registry<T> kjs$getRegistry() {
-		return RegistryAccessContainer.current.access().get(kjs$getRegistryId()).orElseThrow(() -> new KubeRuntimeException("Registry not found: " + kjs$getRegistryId().identifier())).value();
+		return RegistryAccessContainer.current.access().lookupOrThrow(kjs$getRegistryId());
 	}
 
 	@SuppressWarnings("unchecked")

@@ -166,19 +166,11 @@ public class KubeJSContext extends Context {
 			var reg = RegistryType.lookup(target);
 
 			if (reg != null) {
-				var registry = getRegistries().access().lookup(reg.key()).orElse(null);
-
-				if (registry == null) {
-					throw reportRuntimeError("Can't interpret '" + from + "' as '" + reg.key().identifier() + "': registry not found", this);
-				}
-
-				var value = registry.get(ID.mc(from));
-
-				if (value != null) {
-					return value;
-				} else {
-					throw reportRuntimeError("Can't interpret '" + from + "' as '" + reg.key().identifier() + "': entry not found", this);
-				}
+				var registry = getRegistries().access()
+					.lookup(reg.key())
+					.orElseThrow(() -> reportRuntimeError("Can't interpret '%s' as '%s': registry not found".formatted(from, reg.key().identifier()), this))
+					.getOptional(ID.mc(from))
+					.orElseThrow(() -> reportRuntimeError("Can't interpret '%s' as '%s': entry not found".formatted(from, reg.key().identifier()), this));
 			}
 		}
 

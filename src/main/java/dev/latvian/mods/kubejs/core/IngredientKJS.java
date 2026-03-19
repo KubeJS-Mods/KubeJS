@@ -6,7 +6,6 @@ import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
-import dev.latvian.mods.kubejs.plugin.builtin.wrapper.SizedIngredientWrapper;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
@@ -25,8 +24,6 @@ import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import org.jetbrains.annotations.Nullable;
 
-import static dev.latvian.mods.kubejs.util.UtilsJS.EMPTY_INGREDIENT;
-
 @RemapPrefixForJS("kjs$")
 public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, ItemMatch {
 	default Ingredient kjs$self() {
@@ -41,11 +38,11 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 	}
 
 	default Ingredient kjs$and(Ingredient ingredient) {
-		return ingredient == EMPTY_INGREDIENT ? kjs$self() : this == EMPTY_INGREDIENT ? ingredient : IntersectionIngredient.of(kjs$self(), ingredient);
+		return IntersectionIngredient.of(kjs$self(), ingredient);
 	}
 
 	default Ingredient kjs$or(Ingredient ingredient) {
-		return ingredient == EMPTY_INGREDIENT ? kjs$self() : this == EMPTY_INGREDIENT ? ingredient : CompoundIngredient.of(kjs$self(), ingredient);
+		return CompoundIngredient.of(kjs$self(), ingredient);
 	}
 
 	default Ingredient kjs$except(Ingredient subtracted) {
@@ -53,10 +50,6 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 	}
 
 	default SizedIngredient kjs$asStack() {
-		if (kjs$self().isEmpty()) {
-			return SizedIngredientWrapper.empty;
-		}
-
 		return new SizedIngredient(kjs$self(), 1);
 	}
 
@@ -70,8 +63,7 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 	}
 
 	default Ingredient kjs$asIngredient() {
-		var self = kjs$self();
-		return self.isEmpty() ? EMPTY_INGREDIENT : Ingredient.of(self.getValues());
+		return kjs$self();
 	}
 
 	@Override
@@ -105,7 +97,7 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 
 	@Override
 	default boolean matches(RecipeMatchContext cx, Ingredient in, boolean exact) {
-		if (in == EMPTY_INGREDIENT) {
+		if (in.isEmpty()) {
 			return false;
 		}
 
@@ -147,10 +139,6 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 
 	default String kjs$toIngredientString(@Nullable DynamicOps<Tag> ops) {
 		var in = kjs$self();
-
-		if (in.isEmpty()) {
-			return "air";
-		}
 
 		var items = kjs$getStackArray();
 

@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
@@ -26,7 +25,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeMap;
-import net.neoforged.neoforge.common.conditions.ConditionalOps;
+import net.neoforged.neoforge.resource.ContextAwareReloadListener;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,7 +40,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 @Mixin(value = RecipeManager.class, priority = 1100)
-public abstract class RecipeManagerMixin implements RecipeManagerKJS {
+public abstract class RecipeManagerMixin extends ContextAwareReloadListener implements RecipeManagerKJS {
 	@Unique
 	private RecipeManager kjs$self() {
 		return (RecipeManager) (Object) this;
@@ -103,10 +102,7 @@ public abstract class RecipeManagerMixin implements RecipeManagerKJS {
 
 		ConsoleJS.SERVER.info("Processing recipes...");
 
-		var ops = new ConditionalOps<>(
-			manager.getRegistries().access().createSerializationContext(JsonOps.INSTANCE),
-			kjs$self().kjs$getContext()
-		);
+		var ops = makeConditionalOps();
 		var jsonMap = new HashMap<Identifier, JsonElement>();
 
 		for (var holder : cir.getReturnValue().values()) {

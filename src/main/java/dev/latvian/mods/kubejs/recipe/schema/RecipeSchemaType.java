@@ -1,14 +1,14 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-
-import java.util.Optional;
+import org.jetbrains.annotations.Nullable;
 
 public class RecipeSchemaType {
 	public final RecipeNamespace namespace;
@@ -17,28 +17,29 @@ public class RecipeSchemaType {
 	public final ResourceKey<RecipeSerializer<?>> serializerKey;
 	public final String serializerType;
 	public RecipeSchemaType parent;
-	protected Optional<RecipeSerializer<?>> serializer;
+	protected final Lazy<RecipeSerializer<?>> serializer;
 
-	public RecipeSchemaType(RecipeNamespace namespace, Identifier id, RecipeSchema schema) {
+	protected RecipeSchemaType(RecipeNamespace namespace, Identifier id, RecipeSchema schema) {
+		this(namespace, id, schema, null);
+	}
+
+	protected RecipeSchemaType(RecipeNamespace namespace, Identifier id, RecipeSchema schema, @Nullable RecipeSerializer<?> serializer) {
 		this.namespace = namespace;
 		this.id = id;
 		this.schema = schema;
 		this.serializerKey = ResourceKey.create(Registries.RECIPE_SERIALIZER, schema.typeOverride == null ? id : schema.typeOverride);
 		serializerType = serializerKey.identifier().toString();
+		this.serializer = Lazy.of(serializer != null ? () -> serializer : this::serializerFromRegistry);
+	}
+
+	private RecipeSerializer<?> serializerFromRegistry() {
+		return BuiltInRegistries.RECIPE_SERIALIZER.get(serializerKey)
+			.map(Holder::value)
+			.orElseThrow(() -> new KubeRuntimeException("Serializer for type %s is not found!".formatted(serializerKey.identifier())));
 	}
 
 	public RecipeSerializer<?> getSerializer() {
-		if (serializer.isEmpty()) {
-			serializer = BuiltInRegistries.RECIPE_SERIALIZER.get(serializerKey).map(Holder.Reference::value);
-		}
-
-		var s = serializer.orElse(null);
-
-		if (s == null) {
-			throw new KubeRuntimeException("Serializer for type " + serializerKey.identifier() + " is not found!");
-		}
-
-		return s;
+		return serializer.get();
 	}
 
 	@Override

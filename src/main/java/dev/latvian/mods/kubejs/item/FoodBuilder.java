@@ -2,47 +2,73 @@ package dev.latvian.mods.kubejs.item;
 
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.util.Util;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodConstants;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.item.component.UseRemainder;
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
+// TODO: the API for this needs to be reworked; it looks like it can
+//  *almost* just be a record builder, if not for the eaten callback;
+//  that said, vanilla does this through ConsumeEffects now, which are
+//  just a normal registry
 public class FoodBuilder {
 	private int nutrition;
 	private float saturation;
 	private boolean alwaysEdible;
 	private float eatSeconds;
-	private Optional<ItemStack> usingConvertsTo;
-	private final List<PossibleEffect> effects;
+	private ItemStackTemplate usingConvertsTo;
+	private final List<ApplyStatusEffectsConsumeEffect> effects;
 	public Consumer<FoodEatenKubeEvent> eaten;
 
 	public FoodBuilder() {
 		this.nutrition = 0;
 		this.saturation = 0;
 		this.alwaysEdible = false;
-		this.eatSeconds = 1.6F;
-		this.usingConvertsTo = Optional.empty();
+		this.eatSeconds = Consumable.DEFAULT_CONSUME_SECONDS;
+		this.usingConvertsTo = null;
 		this.effects = new ArrayList<>();
 	}
 
-	public FoodBuilder(FoodProperties properties) {
-		this.nutrition = properties.nutrition();
-		this.saturation = properties.saturation();
-		this.alwaysEdible = properties.canAlwaysEat();
-		this.eatSeconds = 1.6F;
-		this.usingConvertsTo = Optional.empty();
-		this.effects = new ArrayList<>();
+	public FoodBuilder(ItemStack stack) {
+		this();
+
+		var food = stack.get(DataComponents.FOOD);
+
+		if (food != null) {
+			this.nutrition = food.nutrition();
+			this.saturation = food.saturation();
+			this.alwaysEdible = food.canAlwaysEat();
+		}
+
+		var consumable = stack.get(DataComponents.CONSUMABLE);
+		if (consumable != null) {
+			this.eatSeconds = consumable.consumeSeconds();
+
+			for (var e : consumable.onConsumeEffects()) {
+				if (e instanceof ApplyStatusEffectsConsumeEffect effect) {
+					effects.add(effect);
+				}
+			}
+		}
+
+		var rem = stack.get(DataComponents.USE_REMAINDER);
+		if (rem != null) {
+			this.usingConvertsTo = rem.convertInto();
+		}
 	}
 
 	@Info("Sets the hunger restored.")
@@ -80,7 +106,7 @@ public class FoodBuilder {
 	}
 
 	public FoodBuilder usingConvertsTo(ItemStack stack) {
-		usingConvertsTo = Optional.of(stack);
+		usingConvertsTo = stack.isEmpty() ? null : ItemStackTemplate.fromNonEmptyStack(stack);
 		return this;
 	}
 
@@ -89,24 +115,36 @@ public class FoodBuilder {
 			Adds an effect to the food. Note that the effect duration is in ticks (20 ticks = 1 second).
 			""",
 		params = {
-			@Param(name = "mobEffectId", value = "The id of the effect. Can be either a string or a Identifier."),
+			@Param(name = "effect", value = "The registry id of the effect to apply."),
 			@Param(name = "duration", value = "The duration of the effect in ticks."),
 			@Param(name = "amplifier", value = "The amplifier of the effect. 0 means level 1, 1 means level 2, etc."),
 			@Param(name = "probability", value = "The probability of the effect being applied. 1 = 100%.")
 		}
 	)
-	public FoodBuilder effect(Identifier mobEffectId, int duration, int amplifier, float probability) {
-		effects.add(new PossibleEffect(new EffectSupplier(mobEffectId, duration, amplifier), probability));
+	public FoodBuilder effect(Holder<MobEffect> effect, int duration, int amplifier, float probability) {
+		effects.add(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(effect, duration, amplifier), probability));
 		return this;
 	}
 
 	@Info("Removes an effect from the food.")
-	public FoodBuilder removeEffect(MobEffect mobEffect) {
-		if (mobEffect == null) {
-			return this;
-		}
+	public FoodBuilder removeEffect(Holder<MobEffect> mobEffect) {
+		for (var iterator = effects.listIterator(); iterator.hasNext(); ) {
+			var effect = iterator.next();
+			var newList = new ArrayList<MobEffectInstance>(effect.effects().size());
+			for (var instance : effect.effects()) {
+				if (!instance.is(mobEffect)) {
+					newList.add(instance);
+				}
+			}
 
-		effects.removeIf(e -> e.effectSupplier().get().getEffect().value() == mobEffect);
+			if (newList.size() != effect.effects().size()) {
+				if (newList.isEmpty()) {
+					iterator.remove();
+				} else {
+					iterator.set(new ApplyStatusEffectsConsumeEffect(newList, effect.probability()));
+				}
+			}
+		}
 		return this;
 	}
 
@@ -121,50 +159,29 @@ public class FoodBuilder {
 		return this;
 	}
 
-	public FoodProperties build() {
-		return new FoodProperties(nutrition, FoodConstants.saturationByModifier(nutrition, saturation), alwaysEdible);
+	@ApiStatus.Internal
+	@HideFromJS
+	public void applyTo(KubeJSItemProperties properties) {
+		var food = new FoodProperties(nutrition, FoodConstants.saturationByModifier(nutrition, saturation), alwaysEdible);
+		properties.food(food, Util.make(Consumable.builder(), builder -> {
+			builder.consumeSeconds(eatSeconds);
+			effects.forEach(builder::onConsume);
+		}).build());
+
+		if (usingConvertsTo != null) {
+			properties.component(DataComponents.USE_REMAINDER, new UseRemainder(usingConvertsTo));
+		}
 	}
 
 	public float getEatSeconds() {
 		return eatSeconds;
 	}
 
-	public Optional<ItemStack> getUsingConvertsTo() {
-		return usingConvertsTo;
+	public ItemStack getUsingConvertsTo() {
+		return usingConvertsTo.create();
 	}
 
-	public List<PossibleEffect> getEffects() {
+	public List<ApplyStatusEffectsConsumeEffect> getEffects() {
 		return effects;
-	}
-
-	public record PossibleEffect(Supplier<MobEffectInstance> effectSupplier, float probability) {
-	}
-
-	private static class EffectSupplier implements Supplier<MobEffectInstance> {
-		private final Identifier id;
-		private final int duration;
-		private final int amplifier;
-
-		private Holder<MobEffect> cachedEffect;
-
-		public EffectSupplier(Identifier id, int duration, int amplifier) {
-			this.id = id;
-			this.duration = duration;
-			this.amplifier = amplifier;
-		}
-
-		@Override
-		public MobEffectInstance get() {
-			if (cachedEffect == null) {
-				cachedEffect = BuiltInRegistries.MOB_EFFECT.get(id).orElse(null);
-
-				if (cachedEffect == null) {
-					var effectIds = BuiltInRegistries.MOB_EFFECT.entrySet().stream().map(entry -> entry.getKey().identifier()).collect(Collectors.toSet());
-					throw new RuntimeException(String.format("Missing effect '%s'. Check spelling or maybe potion id was used instead of effect id. Possible ids: %s", id, effectIds));
-				}
-			}
-
-			return new MobEffectInstance(cachedEffect, duration, amplifier);
-		}
 	}
 }

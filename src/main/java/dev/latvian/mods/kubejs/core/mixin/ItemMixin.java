@@ -39,8 +39,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static dev.latvian.mods.kubejs.util.UtilsJS.EMPTY_INGREDIENT;
-
 @Mixin(value = Item.class, priority = 1001)
 @RemapPrefixForJS("kjs$")
 public abstract class ItemMixin implements ItemKJS {
@@ -229,7 +227,7 @@ public abstract class ItemMixin implements ItemKJS {
 	public Ingredient kjs$asIngredient() {
 		if (kjs$asIngredient == null) {
 			var is = new ItemStack(kjs$self());
-			kjs$asIngredient = is.isEmpty() ? EMPTY_INGREDIENT : Ingredient.of(Stream.of(is.getItem()));
+			kjs$asIngredient = Ingredient.of(Stream.of(is.getItem()));
 		}
 
 		return kjs$asIngredient;

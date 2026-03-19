@@ -1,14 +1,11 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import com.google.common.base.Suppliers;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DataResult.Error;
-import com.mojang.serialization.DataResult.Success;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
@@ -30,10 +27,14 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class RecipeSchemaStorage {
-	private static final BiMap<ResourceKey<RecipeComponentType<?>>, RecipeComponentType<?>> COMPONENT_TYPES = HashBiMap.create();
+	// TODO: Maybe some sort of BakeableMap<> could be used... or that's my tendency to engineer moar talking
+	private static final Map<RecipeComponentType<?>, ResourceKey<RecipeComponentType<?>>> BAKED_COMPONENT_TYPE_LOOKUP = new HashMap<>();
+	private static final Map<ResourceKey<RecipeComponentType<?>>, Supplier<RecipeComponentType<?>>> COMPONENT_TYPES = new IdentityHashMap<>();
 
 	private final ServerScriptManager manager;
 
@@ -44,8 +45,8 @@ public class RecipeSchemaStorage {
 
 	public static DataResult<RecipeComponentType<?>> getType(ResourceKey<RecipeComponentType<?>> key) {
 		var stored = COMPONENT_TYPES.get(key);
-		return stored != null
-			? DataResult.success(stored)
+		return stored != null && stored.get() != null
+			? DataResult.success(stored.get())
 			: DataResult.error(() -> "Unknown recipe component type '%s'".formatted(ID.reduceKjs(key.identifier())));
 	}
 
@@ -58,7 +59,7 @@ public class RecipeSchemaStorage {
 	}
 
 	private static DataResult<ResourceKey<RecipeComponentType<?>>> getTypeId(RecipeComponentType<?> type) {
-		var id = COMPONENT_TYPES.inverse().get(type);
+		var id = BAKED_COMPONENT_TYPE_LOOKUP.get(type);
 		return id != null
 			? DataResult.success(id)
 			: DataResult.error(() -> "Unregistered recipe component type %s???".formatted(type));
@@ -117,6 +118,7 @@ public class RecipeSchemaStorage {
 		schemaTypes.clear();
 
 		COMPONENT_TYPES.clear();
+		BAKED_COMPONENT_TYPE_LOOKUP.clear();
 
 		var typeEvent = new RecipeFactoryRegistry(this);
 		KubeJSPlugins.forEachPlugin(typeEvent, KubeJSPlugin::registerRecipeFactories);
@@ -145,7 +147,7 @@ public class RecipeSchemaStorage {
 		KubeJSPlugins.forEachPlugin(mappingRegistry, KubeJSPlugin::registerRecipeMappings);
 		ServerEvents.RECIPE_MAPPING_REGISTRY.post(ScriptType.SERVER, mappingRegistry);
 
-		KubeJSPlugins.forEachPlugin(COMPONENT_TYPES::put, KubeJSPlugin::registerRecipeComponents);
+		KubeJSPlugins.forEachPlugin((k, v) -> COMPONENT_TYPES.put(k, () -> v), KubeJSPlugin::registerRecipeComponents);
 
 		var ops = registries.json();
 		for (var entry : resourceManager.listResources("kubejs", path -> path.getPath().endsWith("/recipe_components.json")).entrySet()) {
@@ -155,14 +157,32 @@ public class RecipeSchemaStorage {
 				for (var componentDef : json.entrySet()) {
 					var id = ID.kjs(componentDef.getKey());
 
-					// TODO: i'm not sure but i think json recipe components can't use each other now??
-					switch (COMPONENT_CODEC.parse(ops, componentDef.getValue())) {
-						case Success(var value, _) -> COMPONENT_TYPES.put(RecipeComponentType.key(id), () -> MapCodec.unit(value));
-						case Error(var msg, _, _) -> KubeJS.LOGGER.error("Failed to load recipe component {} from {}: {}", id, entry.getKey(), msg.get());
-					}
+					COMPONENT_TYPES.put(RecipeComponentType.key(id), Suppliers.memoize(() ->
+							COMPONENT_CODEC.parse(ops, componentDef.getValue()).mapOrElse(c -> () -> MapCodec.unit(c), error -> {
+								KubeJS.LOGGER.error("Failed to load recipe component {} from {}: {}", id, entry.getKey(), error.message());
+								return null;
+							})
+					));
 				}
 			} catch (Exception ex) {
 				KubeJS.LOGGER.error("Failed to load recipe component file {}: {}", entry.getKey(), ex);
+			}
+		}
+
+		var iterator = COMPONENT_TYPES.entrySet().iterator();
+		while (iterator.hasNext()) {
+			var entry = iterator.next();
+			var key = entry.getKey();
+			try {
+				var type = entry.getValue().get();
+				BAKED_COMPONENT_TYPE_LOOKUP.put(type, key);
+			} catch (StackOverflowError error) {
+				var msg = "Encountered cyclic recipe component type reference while baking '" + key.identifier() + "'";
+                KubeJS.LOGGER.error(msg, error);
+				iterator.remove();
+			} catch (Exception e) {
+				var msg = "Encountered error while baking recipe component type '" + key.identifier() + "'";
+				KubeJS.LOGGER.error(msg, e);
 			}
 		}
 

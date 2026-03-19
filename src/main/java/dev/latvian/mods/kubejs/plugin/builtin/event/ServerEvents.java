@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.event.TargetedEventHandler;
 import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
 import dev.latvian.mods.kubejs.recipe.AfterRecipesLoadedKubeEvent;
-import dev.latvian.mods.kubejs.recipe.CompostableRecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.ModifyCraftingItemKubeEvent;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeMappingRegistry;
@@ -41,7 +40,6 @@ public interface ServerEvents {
 	EventHandler RECIPES = GROUP.server("recipes", () -> RecipesKubeEvent.class);
 	EventHandler RECIPES_AFTER_LOADED = GROUP.server("afterRecipes", () -> AfterRecipesLoadedKubeEvent.class);
 	EventHandler SPECIAL_RECIPES = GROUP.server("specialRecipeSerializers", () -> SpecialRecipeSerializerManager.class);
-	EventHandler COMPOSTABLE_RECIPES = GROUP.server("compostableRecipes", () -> CompostableRecipesKubeEvent.class);
 	TargetedEventHandler<String> MODIFY_RECIPE_RESULT = GROUP.server("modifyRecipeResult", () -> ModifyCraftingItemKubeEvent.class).hasResult(ItemWrapper.TYPE_INFO).requiredTarget(EventTargetType.STRING);
 	TargetedEventHandler<String> MODIFY_RECIPE_INGREDIENT = GROUP.server("modifyRecipeIngredient", () -> ModifyCraftingItemKubeEvent.class).hasResult(ItemWrapper.TYPE_INFO).requiredTarget(EventTargetType.STRING);
 }

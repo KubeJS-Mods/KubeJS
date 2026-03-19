@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.block.predicate;
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.BlockWrapper;
 import dev.latvian.mods.kubejs.util.Cast;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
@@ -45,9 +44,8 @@ public class BlockIDPredicate implements BlockPredicate {
 
 	private Block getBlock() {
 		if (cachedBlock == null) {
-			cachedBlock = BuiltInRegistries.BLOCK.get(id).map(Holder.Reference::value).orElse(Blocks.AIR);
+			cachedBlock = BuiltInRegistries.BLOCK.getValue(id);
 		}
-
 		return cachedBlock;
 	}
 

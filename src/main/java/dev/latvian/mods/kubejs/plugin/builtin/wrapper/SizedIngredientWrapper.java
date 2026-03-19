@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
+import com.google.errorprone.annotations.DoNotCall;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DataResult;
@@ -21,14 +22,19 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
-import static dev.latvian.mods.kubejs.util.UtilsJS.EMPTY_INGREDIENT;
+import static dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper.EMPTY_INGREDIENT;
 
 @Info("Various SizedIngredient related helper methods")
 public interface SizedIngredientWrapper {
 	TypeInfo TYPE_INFO = TypeInfo.of(SizedIngredient.class);
 
-	@Info("A completely empty ingredient that will only match a dummy Ingredient")
-	SizedIngredient empty = new SizedIngredient(EMPTY_INGREDIENT, 1);
+	@DoNotCall
+	@Deprecated(forRemoval = true)
+	@Info("Empty ingredients are no longer supported. Do not call!")
+	static Object getEmpty(Context cx) {
+		return EMPTY_INGREDIENT.getOrThrow(str -> new KubeRuntimeException(str).source(SourceLine.of(cx)));
+	}
+
 	@Info("An ingredient that matches everything")
 	SizedIngredient all = new SizedIngredient(IngredientWrapper.all, 1);
 

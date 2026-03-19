@@ -1,30 +1,15 @@
 package dev.latvian.mods.kubejs.util;
 
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.block.BlockModificationKubeEvent;
 import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
 import dev.latvian.mods.kubejs.plugin.builtin.event.BlockEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
-import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeUtils;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.EndTag;
-import net.minecraft.nbt.NumericTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.display.SlotDisplay;
-import net.neoforged.neoforge.common.crafting.ICustomIngredient;
-import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,117 +18,14 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class UtilsJS {
 	public static final RandomSource RANDOM = RandomSource.create();
-	public static final Ingredient EMPTY_INGREDIENT;
 
 	public static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 	public static final Predicate<Object> ALWAYS_TRUE = o -> true;
-
-	static {
-		// Dummy-Ingredient as Ingredient can no longer be empty
-		EMPTY_INGREDIENT = new Ingredient(new ICustomIngredient() {
-			@Override
-			public boolean test(ItemStack stack) {
-				return false;
-			}
-
-			@Override
-			public Stream<Holder<Item>> items() {
-				return Stream.empty();
-			}
-
-			@Override
-			public boolean isSimple() {
-				return true;
-			}
-
-			//TODO: this shouldnt return null
-			@Override
-			public IngredientType<?> getType() {
-				return null;
-			}
-
-			@Override
-			public SlotDisplay display() {
-				return SlotDisplay.Empty.INSTANCE;
-			}
-		});
-	}
-
-	// TODO: Remove this garbage
-	@Nullable
-	public static Object wrap(@Nullable Object o, JSObjectType type) {
-		//Primitives and already normalized objects
-		if (o == null || o instanceof WrappedJS || o instanceof Number || o instanceof Character || o instanceof String || o instanceof Enum || o.getClass().isPrimitive() && !o.getClass().isArray()) {
-			return o;
-		} else if (o instanceof CharSequence || o instanceof Identifier) {
-			return o.toString();
-		} else if (o instanceof EndTag || o instanceof JsonNull) {
-			return null;
-		} else if (o instanceof Wrapper w) {
-			return wrap(w.unwrap(), type);
-		} else if (o instanceof NumericTag tag) {
-			return tag.asNumber().isPresent() ? tag.asNumber().get() : wrap(null, type);
-		} else if (o instanceof StringTag tag) {
-			return tag.asString().isPresent() ? tag.asString().get() : wrap(null, type);
-		} else if (o instanceof Tag) {
-			return o;
-		}
-		// Maps
-		else if (o instanceof Map) {
-			return o;
-		}
-		// Lists, Collections, Iterables, GSON Arrays
-		else if (o instanceof Iterable<?> itr) {
-			if (!type.checkList()) {
-				return null;
-			}
-
-			var list = new ArrayList<>();
-
-			for (var o1 : itr) {
-				list.add(o1);
-			}
-
-			return list;
-		}
-		// Arrays (and primitive arrays are a pain)
-		else if (o.getClass().isArray()) {
-			if (type.checkList()) {
-				return ListJS.ofArray(o);
-			} else {
-				return null;
-			}
-		}
-		// GSON Primitives
-		else if (o instanceof JsonPrimitive json) {
-			return JsonIO.toPrimitive(json);
-		}
-		// GSON Objects
-		else if (o instanceof JsonObject json) {
-			if (!type.checkMap()) {
-				return null;
-			}
-
-			var map = new HashMap<String, Object>(json.size());
-
-			for (var entry : json.entrySet()) {
-				map.put(entry.getKey(), entry.getValue());
-			}
-
-			return map;
-		}
-
-		return o;
-	}
 
 	public static <T> Predicate<T> onMatchDo(Predicate<T> predicate, Consumer<T> onMatch) {
 		return t -> {
@@ -243,6 +125,6 @@ public class UtilsJS {
 
 	@Nullable
 	public static CreativeModeTab findCreativeTab(Identifier id) {
-		return BuiltInRegistries.CREATIVE_MODE_TAB.get(id).map(Holder.Reference::value).orElse(null);
+		return BuiltInRegistries.CREATIVE_MODE_TAB.getValue(id);
 	}
 }

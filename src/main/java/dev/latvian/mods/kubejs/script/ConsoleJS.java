@@ -1,17 +1,19 @@
 package dev.latvian.mods.kubejs.script;
 
+import com.google.gson.JsonElement;
 import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
 import dev.latvian.apps.tinyserver.ws.WSHandler;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
-import dev.latvian.mods.kubejs.util.JSObjectType;
+import dev.latvian.mods.kubejs.util.JsonIO;
+import dev.latvian.mods.kubejs.util.ListJS;
 import dev.latvian.mods.kubejs.util.LogType;
 import dev.latvian.mods.kubejs.util.MutedError;
+import dev.latvian.mods.kubejs.util.NBTUtils;
 import dev.latvian.mods.kubejs.util.StackTraceCollector;
 import dev.latvian.mods.kubejs.util.TimeJS;
-import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.kubejs.util.WrappedJS;
 import dev.latvian.mods.kubejs.web.JsonContent;
 import dev.latvian.mods.kubejs.web.KJSHTTPRequest;
@@ -23,7 +25,9 @@ import dev.latvian.mods.rhino.EcmaError;
 import dev.latvian.mods.rhino.RhinoException;
 import dev.latvian.mods.rhino.WrappedException;
 import dev.latvian.mods.rhino.util.HideFromJS;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.neoforged.fml.loading.FMLLoader;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -40,6 +44,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Function;
@@ -173,15 +178,40 @@ public class ConsoleJS {
 		});
 	}
 
+	private Object unwrapForPrinting(Object object) {
+		return switch (object) {
+			case CharSequence cs -> cs.toString();
+			case Identifier id -> id.toString();
+			case Tag tag -> JsonIO.toObject(NBTUtils.toJson(tag));
+			case JsonElement json -> JsonIO.toObject(json);
+			case Iterable<?> itr -> ListJS.of(itr);
+			case Map<?, ?> map -> map;
+			default -> {
+				if (object.getClass().isArray()) {
+					yield ListJS.ofArray(object);
+				} else {
+					yield object;
+				}
+			}
+		};
+	}
+
 	private ConsoleLine line(LogType type, SourceLine sourceLine, Object object, @Nullable Throwable error) {
-		var o = UtilsJS.wrap(object, JSObjectType.ANY);
+		Object o = unwrapForPrinting(object);
 
 		if (o instanceof Component c) {
 			o = c.getString();
 		}
 
 		var timestamp = System.currentTimeMillis();
-		var line = new ConsoleLine(this, timestamp, o == null || o.getClass().isPrimitive() || o instanceof Boolean || o instanceof String || o instanceof Number || o instanceof WrappedJS ? String.valueOf(o) : (o + " [" + o.getClass().getName() + "]"));
+		var lineStr = (o == null
+			|| o instanceof Boolean
+			|| o instanceof Character
+			|| o instanceof Number
+			|| o instanceof CharSequence
+			|| o instanceof WrappedJS
+		) ? String.valueOf(o) : (o + " [" + o.getClass().getName() + "]");
+		var line = new ConsoleLine(this, timestamp, lineStr);
 		line.type = type;
 		line.group = group;
 
@@ -211,19 +241,17 @@ public class ConsoleJS {
 			}
 		}
 
-		if (line.message != null) {
+		if (line.message != null && line.message.endsWith(")")) {
 			int lpi = line.message.lastIndexOf('(');
-
-			if (lpi > 0 && line.message.charAt(line.message.length() - 1) == ')') {
+			if (lpi > 0) {
 				var pe = line.message.substring(lpi + 1, line.message.length() - 1);
-
 				int ci = pe.lastIndexOf('#');
 
 				if (ci > 0) {
 					try {
 						line.withSourceLine(pe.substring(0, ci), Integer.parseInt(pe.substring(ci + 1)));
 						line.message = line.message.substring(0, lpi).trim();
-					} catch (Exception e) {
+					} catch (Exception ignored) {
 					}
 				}
 			}
@@ -278,16 +306,12 @@ public class ConsoleJS {
 
 		sb.append('[');
 		TimeJS.appendTimestamp(sb, calendar);
-		sb.append(']');
-		sb.append(' ');
-		sb.append('[');
+		sb.append("] [");
 		sb.append(type);
-		sb.append(']');
-		sb.append(' ');
+		sb.append("] ");
 
 		if (type == LogType.ERROR) {
-			sb.append('!');
-			sb.append(' ');
+			sb.append("! ");
 		}
 
 		sb.append(line);

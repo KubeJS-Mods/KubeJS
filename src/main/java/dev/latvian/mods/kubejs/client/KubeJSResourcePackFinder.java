@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 public class KubeJSResourcePackFinder implements RepositorySource {
 	@Override
 	public void loadPacks(Consumer<Pack> nameToPackMap) {
-		if (KubeJSPaths.FIRST_RUN.getValue()) {
+		if (KubeJSPaths.FIRST_RUN.get()) {
 			var blockTextures = KubeJSPaths.dir(KubeJSPaths.ASSETS.resolve("kubejs/textures/block"));
 			var itemTextures = KubeJSPaths.dir(KubeJSPaths.ASSETS.resolve("kubejs/textures/item"));
 
