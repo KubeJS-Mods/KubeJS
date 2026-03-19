@@ -9,11 +9,12 @@ import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.util.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Util;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -25,9 +26,9 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	public final Identifier id;
 	public SourceLine sourceLine;
 	public ResourceKey<Registry<T>> registryKey;
-	protected T object;
+	protected @Nullable T object;
 	public String translationKey;
-	public Component displayName;
+	public @Nullable Component displayName;
 	public boolean formattedDisplayName;
 	public transient boolean dummyBuilder;
 	public transient Set<Identifier> defaultTags;
@@ -52,6 +53,7 @@ public abstract class BuilderBase<T> implements Supplier<T> {
 	}
 
 	@Override
+	@SuppressWarnings("DataFlowIssue")
 	public final T get() {
 		try {
 			return object;

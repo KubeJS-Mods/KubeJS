@@ -8,15 +8,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Supplier;
 
 public class BasicCommandKubeEvent implements KubeEntityEvent {
 	private final CommandSourceStack source;
 	private final Level level;
-	private final Entity entity;
-	private final ServerPlayer serverPlayer;
+	private final @Nullable Entity entity;
+	private final @Nullable ServerPlayer serverPlayer;
 	private final BlockPos pos;
 	public final String id;
 	public final String input;
@@ -42,6 +42,7 @@ public class BasicCommandKubeEvent implements KubeEntityEvent {
 
 	@Override
 	@Nullable
+	@SuppressWarnings("NullableProblems") // technically a problem, but again, script-facing class
 	public Entity getEntity() {
 		return entity;
 	}

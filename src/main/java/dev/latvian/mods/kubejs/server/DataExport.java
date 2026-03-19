@@ -18,6 +18,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
 import net.neoforged.fml.ModList;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -26,14 +27,17 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DataExport {
+	@Nullable
 	@HideFromJS
 	public static DataExport export = null;
 
+	@SuppressWarnings("NotNullFieldNotInitialized") // it's a lateinit field
 	public CommandSourceStack source;
 
 	private final Map<String, Callable<byte[]>> exportedFiles = new ConcurrentHashMap<>();
@@ -175,7 +179,7 @@ public class DataExport {
 				if (file.isFile()) {
 					file.delete();
 					KubeJS.LOGGER.info("Deleted old file {}", file.getPath());
-				} else if (file.isDirectory() && file.list().length == 0) {
+				} else if (file.isDirectory() && Objects.requireNonNull(file.list()).length == 0) {
 					file.delete();
 					KubeJS.LOGGER.info("Deleted empty directory {}", file.getPath());
 				}

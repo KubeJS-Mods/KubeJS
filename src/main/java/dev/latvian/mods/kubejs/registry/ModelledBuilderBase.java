@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,10 +12,10 @@ import java.util.function.Consumer;
 
 @ReturnsSelf
 public abstract class ModelledBuilderBase<T> extends BuilderBase<T> {
-	public transient Identifier parentModel;
+	public transient @Nullable Identifier parentModel;
 	public transient Map<String, String> textures;
 	public transient String baseTexture;
-	public transient Consumer<ModelGenerator> modelGenerator;
+	public transient @Nullable Consumer<ModelGenerator> modelGenerator;
 
 	public ModelledBuilderBase(Identifier id) {
 		super(id);

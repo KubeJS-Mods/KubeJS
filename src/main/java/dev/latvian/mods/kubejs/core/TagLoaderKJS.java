@@ -12,7 +12,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagLoader;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -89,6 +89,7 @@ public interface TagLoaderKJS<T> {
 
 	void kjs$init(ServerScriptManager serverScriptManager, Registry<T> registry);
 
+	@Nullable
 	ServerScriptManager kjs$getServerScriptManager();
 
 	@Nullable

@@ -9,6 +9,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.Objects;
 
 public class CustomChestMenu extends AbstractContainerMenu {
 	public static final MenuType[] TYPES = {
@@ -35,6 +36,8 @@ public class CustomChestMenu extends AbstractContainerMenu {
 		}
 
 		if (data.playerSlots) {
+			Objects.requireNonNull(data.capturedInventory);
+
 			for (int y = 0; y < 3; y++) {
 				for (int x = 0; x < 9; x++) {
 					addSlot(new Slot(data.capturedInventory, x + y * 9 + 9, 8 + x * 18, 103 + y * 18 + k));

@@ -6,8 +6,7 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.util.thread.BlockableEventLoop;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -20,12 +19,12 @@ import java.util.stream.IntStream;
 public record LocalWebServer(KJSHTTPServer server, String url, List<Endpoint> endpoints, String explorerCode) {
 	public record Endpoint(String method, String path, boolean auth) implements Comparable<Endpoint> {
 		@Override
-		public int compareTo(@NotNull LocalWebServer.Endpoint o) {
+		public int compareTo(LocalWebServer.Endpoint o) {
 			return path.compareToIgnoreCase(o.path);
 		}
 	}
 
-	private static LocalWebServer instance;
+	private static @Nullable LocalWebServer instance;
 
 	@Nullable
 	@HideFromJS

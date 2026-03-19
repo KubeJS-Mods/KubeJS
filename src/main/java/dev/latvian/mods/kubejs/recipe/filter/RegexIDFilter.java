@@ -12,7 +12,7 @@ public class RegexIDFilter implements RecipeFilter {
 	private final Pattern pattern;
 	private final ConcurrentHashMap<Identifier, Boolean> matchCache = new ConcurrentHashMap<>();
 
-	private static Interner<RegexIDFilter> INTERNER;
+	private static Interner<RegexIDFilter> INTERNER = Interners.newStrongInterner();
 
 	static {
 		clearInternCache();

@@ -13,6 +13,8 @@ import dev.latvian.mods.kubejs.util.JsonUtils;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ import static com.mojang.serialization.DataResult.Error;
 import static com.mojang.serialization.DataResult.Success;
 
 public class JsonRecipeSchemaLoader {
+	@NullUnmarked
 	private static final class RecipeSchemaBuilder {
 		private final Identifier id;
 		private final RecipeSchemaData data;
@@ -130,6 +133,7 @@ public class JsonRecipeSchemaLoader {
 			}
 		}
 
+		@Nullable
 		private KubeRecipeFactory getRecipeFactory() {
 			if (recipeFactory != null) {
 				return recipeFactory;
@@ -225,7 +229,9 @@ public class JsonRecipeSchemaLoader {
 						}
 					}
 
-					schema = new RecipeSchema(keyOverrides, getKeys());
+					var schema = new RecipeSchema(keyOverrides, getKeys());
+					this.schema = schema;
+
 					schema.typeOverride = overrideType;
 
 					var rf = getRecipeFactory();

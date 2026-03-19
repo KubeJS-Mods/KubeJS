@@ -89,7 +89,7 @@ public class InformationCommands {
 			player.sendSystemMessage(Component.literal("Held fluid:"));
 			var fluid = containedFluid.typeHolder();
 			// id
-			player.sendSystemMessage(copy(fluid.getKey().identifier().toString(), ChatFormatting.GREEN, "Fluid ID"));
+			player.sendSystemMessage(copy(fluid.getRegisteredName(), ChatFormatting.GREEN, "Fluid ID"));
 			// fluid tags
 			var fluidTags = containedFluid.tags().toList();
 			for (var tag : fluidTags) {

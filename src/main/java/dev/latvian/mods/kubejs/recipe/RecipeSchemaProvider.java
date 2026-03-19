@@ -21,7 +21,8 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.util.Util;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,6 +126,7 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 		return name;
 	}
 
+	@NullUnmarked
 	public class SchemaDataBuilder {
 		private Identifier parent, overrideType, recipeFactory;
 		private List<RecipeSchemaData.RecipeKeyData> keys;

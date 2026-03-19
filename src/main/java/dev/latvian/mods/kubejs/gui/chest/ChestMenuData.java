@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -13,12 +14,12 @@ public class ChestMenuData {
 	public Component title;
 	public final int rows;
 	public final ChestMenuSlot[] slots;
-	public ChestMenuClickEvent.Callback anyClicked;
-	public ChestMenuInventoryClickEvent.Callback inventoryClicked;
+	public ChestMenuClickEvent.@Nullable Callback anyClicked;
+	public ChestMenuInventoryClickEvent.@Nullable Callback inventoryClicked;
 	public boolean playerSlots;
-	public Runnable closed;
+	public @Nullable Runnable closed;
 	public ItemStack mouseItem;
-	public Container capturedInventory;
+	public @Nullable Container capturedInventory;
 
 	public ChestMenuData(ServerPlayer player, Component title, int rows) {
 		this.player = player;

@@ -2,9 +2,12 @@ package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.util.BaseProperties;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
+@NullUnmarked
 public class ClientProperties extends BaseProperties {
-	private static ClientProperties instance;
+	private static @Nullable ClientProperties instance;
 
 	public static ClientProperties get() {
 		if (instance == null) {

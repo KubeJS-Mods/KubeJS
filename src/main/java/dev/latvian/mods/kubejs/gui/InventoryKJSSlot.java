@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.core.InventoryKJS;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 public class InventoryKJSSlot extends Slot {
 	public final InventoryKJS inventory;
@@ -17,7 +16,7 @@ public class InventoryKJSSlot extends Slot {
 	}
 
 	@Override
-	public boolean mayPlace(@NotNull ItemStack stack) {
+	public boolean mayPlace(ItemStack stack) {
 		if (stack.isEmpty()) {
 			return false;
 		}
@@ -25,19 +24,18 @@ public class InventoryKJSSlot extends Slot {
 	}
 
 	@Override
-	@NotNull
 	public ItemStack getItem() {
 		return inventory.kjs$getStackInSlot(invIndex);
 	}
 
 	@Override
-	public void set(@NotNull ItemStack stack) {
+	public void set(ItemStack stack) {
 		inventory.kjs$setStackInSlot(invIndex, stack);
 		this.setChanged();
 	}
 
 	@Override
-	public void onQuickCraft(@NotNull ItemStack oldStackIn, @NotNull ItemStack newStackIn) {
+	public void onQuickCraft(ItemStack oldStackIn, ItemStack newStackIn) {
 	}
 
 	@Override
@@ -51,7 +49,7 @@ public class InventoryKJSSlot extends Slot {
 	}
 
 	@Override
-	public int getMaxStackSize(@NotNull ItemStack stack) {
+	public int getMaxStackSize(ItemStack stack) {
 		ItemStack maxAdd = stack.copy();
 		int maxInput = stack.getMaxStackSize();
 		maxAdd.setCount(maxInput);
@@ -76,7 +74,6 @@ public class InventoryKJSSlot extends Slot {
 	}
 
 	@Override
-	@NotNull
 	public ItemStack remove(int amount) {
 		return this.inventory.kjs$extractItem(invIndex, amount, false);
 	}

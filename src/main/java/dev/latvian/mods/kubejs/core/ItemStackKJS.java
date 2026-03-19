@@ -45,7 +45,7 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -67,7 +67,7 @@ public interface ItemStackKJS extends
 	}
 
 	@Override
-	default boolean specialEquals(Context cx, Object o, boolean shallow) {
+	default boolean specialEquals(Context cx, @Nullable Object o, boolean shallow) {
 		return switch (o) {
 			case CharSequence cs -> kjs$getId().equals(ID.string(cs.toString()));
 			case Identifier id -> kjs$getIdLocation().equals(id);

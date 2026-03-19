@@ -56,7 +56,7 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -72,9 +72,9 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	private static final BlockBehaviour.StatePredicate ALWAYS_FALSE_STATE_PREDICATE = (blockState, blockGetter, blockPos) -> false;
 	private static final BlockBehaviour.StateArgumentPredicate<?> ALWAYS_FALSE_STATE_ARG_PREDICATE = (blockState, blockGetter, blockPos, type) -> false;
 
-	public transient Block copyPropertiesFrom;
-	public transient SoundType soundType;
-	public transient Function<BlockState, MapColor> mapColorFn;
+	public transient @Nullable Block copyPropertiesFrom;
+	public transient @Nullable SoundType soundType;
+	public transient @Nullable Function<BlockState, MapColor> mapColorFn;
 	public transient float hardness;
 	public transient float resistance;
 	public transient float lightLevel;
@@ -82,35 +82,35 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	public transient boolean fullBlock;
 	public transient boolean requiresTool;
 	public transient BlockRenderType renderType;
-	public transient BlockTintFunction tint;
-	public transient ItemBuilder itemBuilder;
+	public transient @Nullable BlockTintFunction tint;
+	public transient @Nullable ItemBuilder itemBuilder;
 	public transient List<AABB> customShape;
 	public transient boolean noCollision;
 	public transient boolean notSolid;
 	public transient float slipperiness = Float.NaN;
 	public transient float speedFactor = Float.NaN;
 	public transient float jumpFactor = Float.NaN;
-	public Consumer<RandomTickCallback> randomTickCallback;
-	public BlockDropSupplier drops;
+	public @Nullable Consumer<RandomTickCallback> randomTickCallback;
+	public @Nullable BlockDropSupplier drops;
 	public transient boolean noValidSpawns;
 	public transient boolean suffocating;
 	public transient boolean viewBlocking;
 	public transient boolean redstoneConductor;
 	public transient boolean transparent;
-	public transient NoteBlockInstrument instrument;
+	public transient @Nullable NoteBlockInstrument instrument;
 	public transient Set<Property<?>> blockStateProperties;
-	public transient Consumer<BlockStateModifyCallback> defaultStateModification;
-	public transient Consumer<BlockStateModifyPlacementCallback> placementStateModification;
-	public transient Predicate<CanBeReplacedCallback> canBeReplacedFunction;
-	public transient Consumer<EntityBlockCallback> insideCallback;
-	public transient Consumer<EntityBlockCallback> stepOnCallback;
-	public transient Consumer<EntityFallenOnBlockCallback> fallOnCallback;
-	public transient Consumer<AfterEntityFallenOnBlockCallback> afterFallenOnCallback;
-	public transient Consumer<BlockExplodedCallback> explodedCallback;
-	public transient Consumer<BlockStateRotateCallback> rotateStateModification;
-	public transient Consumer<BlockStateMirrorCallback> mirrorStateModification;
-	public transient Consumer<BlockRightClickedKubeEvent> rightClick;
-	public transient BlockEntityInfo blockEntityInfo;
+	public transient @Nullable Consumer<BlockStateModifyCallback> defaultStateModification;
+	public transient @Nullable Consumer<BlockStateModifyPlacementCallback> placementStateModification;
+	public transient @Nullable Predicate<CanBeReplacedCallback> canBeReplacedFunction;
+	public transient @Nullable Consumer<EntityBlockCallback> insideCallback;
+	public transient @Nullable Consumer<EntityBlockCallback> stepOnCallback;
+	public transient @Nullable Consumer<EntityFallenOnBlockCallback> fallOnCallback;
+	public transient @Nullable Consumer<AfterEntityFallenOnBlockCallback> afterFallenOnCallback;
+	public transient @Nullable Consumer<BlockExplodedCallback> explodedCallback;
+	public transient @Nullable Consumer<BlockStateRotateCallback> rotateStateModification;
+	public transient @Nullable Consumer<BlockStateMirrorCallback> mirrorStateModification;
+	public transient @Nullable Consumer<BlockRightClickedKubeEvent> rightClick;
+	public transient @Nullable BlockEntityInfo blockEntityInfo;
 
 	public BlockBuilder(Identifier id) {
 		super(id);
@@ -126,10 +126,6 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		this.requiresTool = false;
 		this.renderType = BlockRenderType.SOLID;
 		this.itemBuilder = getOrCreateItemBuilder();
-
-		if (itemBuilder instanceof BlockItemBuilder b) {
-			b.blockBuilder = this;
-		}
 
 		this.customShape = new ArrayList<>();
 		this.noCollision = false;
@@ -306,7 +302,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	}
 
 	@Info("Sets the block's sound type. Defaults to wood.")
-	public BlockBuilder soundType(SoundType m) {
+	public BlockBuilder soundType(@Nullable SoundType m) {
 		if (m == null || m == SoundType.EMPTY) {
 			soundType = SoundType.EMPTY;
 			ConsoleJS.STARTUP.error("Invalid sound type!");
@@ -456,10 +452,6 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 			if (itemBuilder == null) {
 				itemBuilder = getOrCreateItemBuilder();
 
-				if (itemBuilder instanceof BlockItemBuilder b) {
-					b.blockBuilder = this;
-				}
-
 				ScriptType.STARTUP.console.warn("`item` is called with non-null builder callback after block item is set to null! Creating another block item as fallback.");
 			}
 			i.accept(itemBuilder);
@@ -470,7 +462,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 
 	@HideFromJS
 	protected ItemBuilder getOrCreateItemBuilder() {
-		return itemBuilder == null ? (itemBuilder = new BlockItemBuilder(id)) : itemBuilder;
+		return itemBuilder == null ? (itemBuilder = new BlockItemBuilder(this, id)) : itemBuilder;
 	}
 
 	@Info("""
@@ -533,7 +525,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	}
 
 	@Info("Change drops of this block")
-	public BlockBuilder drops(BlockDropSupplier drops) {
+	public BlockBuilder drops(@Nullable BlockDropSupplier drops) {
 		this.drops = drops == null ? BlockDropSupplier.NO_DROPS : drops;
 		return this;
 	}
@@ -646,6 +638,7 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 
 	@Info("Tags the item with the given tag.")
 	public BlockBuilder tagItem(Identifier[] tag) {
+		assert itemBuilder != null;
 		itemBuilder.tag(tag);
 		return this;
 	}

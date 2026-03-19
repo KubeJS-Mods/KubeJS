@@ -14,7 +14,7 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.neoforged.neoforge.common.SoundAction;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidType;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @ReturnsSelf
 public class FluidTypeBuilder extends BuilderBase<FluidType> {
@@ -32,9 +32,9 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 	public transient Identifier flowingTexture;
 	public transient Identifier actualStillTexture;
 	public transient Identifier actualFlowingTexture;
-	public transient Identifier screenOverlayTexture;
-	public transient Identifier blockOverlayTexture;
-	public transient KubeColor tint;
+	public transient @Nullable Identifier screenOverlayTexture;
+	public transient @Nullable Identifier blockOverlayTexture;
+	public transient @Nullable KubeColor tint;
 	public transient BlockRenderType renderType;
 
 	public FluidTypeBuilder(Identifier id) {

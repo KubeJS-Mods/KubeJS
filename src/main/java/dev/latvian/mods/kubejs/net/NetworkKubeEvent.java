@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.player.KubePlayerEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @Info("""
 	Invoked when a network packet is received.
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public class NetworkKubeEvent implements KubePlayerEvent {
 	private final Player player;
 	private final String channel;
-	private final CompoundTag data;
+	private final @Nullable CompoundTag data;
 
 	public NetworkKubeEvent(Player p, String c, @Nullable CompoundTag d) {
 		player = p;

@@ -10,6 +10,7 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -17,8 +18,8 @@ import java.util.function.Consumer;
 @ReturnsSelf
 public class ParticleTypeBuilder extends BuilderBase<ParticleType<?>> {
 	public transient boolean overrideLimiter;
-	public transient MapCodec<ParticleOptions> codec;
-	public transient StreamCodec<? super RegistryFriendlyByteBuf, ParticleOptions> streamCodec;
+	public transient @Nullable MapCodec<ParticleOptions> codec;
+	public transient @Nullable StreamCodec<? super RegistryFriendlyByteBuf, ParticleOptions> streamCodec;
 	public transient Consumer<ParticleGenerator> assetGen;
 
 	public ParticleTypeBuilder(Identifier i) {

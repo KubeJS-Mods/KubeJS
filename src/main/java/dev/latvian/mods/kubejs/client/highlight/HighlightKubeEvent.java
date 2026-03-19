@@ -12,6 +12,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.jspecify.annotations.Nullable;
 
 @Info("""
 	Invoked when block and entity highlight is rendered.
@@ -130,6 +131,7 @@ public class HighlightKubeEvent extends ClientPlayerKubeEvent {
 		}
 	}
 
+	@Nullable
 	public LevelBlock getTargetBlock() {
 		if (mc.hitResult instanceof BlockHitResult block && mc.hitResult.getType() == HitResult.Type.BLOCK) {
 			return getLevel().kjs$getBlock(block.getBlockPos());
@@ -137,6 +139,7 @@ public class HighlightKubeEvent extends ClientPlayerKubeEvent {
 		return null;
 	}
 
+	@Nullable
 	public Entity getTargetEntity() {
 		return mc.hitResult instanceof EntityHitResult hit ? hit.getEntity() : null;
 	}

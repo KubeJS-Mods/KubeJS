@@ -7,9 +7,10 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagLoader;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,7 +44,7 @@ public class TagKubeEvent implements KubeEvent {
 	public final Map<Identifier, TagWrapper> tags;
 	public int totalAdded;
 	public int totalRemoved;
-	private Set<Identifier> elementIds;
+	private @Nullable Set<Identifier> elementIds;
 
 	public TagKubeEvent(ResourceKey<?> registryKey, Registry<?> vr) {
 		this.registryKey = registryKey;

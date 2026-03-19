@@ -5,14 +5,14 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class CachedLevelBlock implements LevelBlock {
 	public final Level minecraftLevel;
 	private final BlockPos pos;
 
-	public transient BlockState cachedState;
-	public transient BlockEntity cachedEntity;
+	public transient @Nullable BlockState cachedState;
+	public transient @Nullable BlockEntity cachedEntity;
 
 	public CachedLevelBlock(Level w, BlockPos p) {
 		minecraftLevel = w;
@@ -30,13 +30,13 @@ public class CachedLevelBlock implements LevelBlock {
 	}
 
 	@Override
-	public LevelBlock cache(BlockState state) {
+	public LevelBlock cache(@Nullable BlockState state) {
 		cachedState = state;
 		return this;
 	}
 
 	@Override
-	public LevelBlock cache(BlockEntity entity) {
+	public LevelBlock cache(@Nullable BlockEntity entity) {
 		cachedEntity = entity;
 		return this;
 	}

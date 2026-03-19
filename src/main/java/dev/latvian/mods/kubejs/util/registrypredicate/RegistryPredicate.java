@@ -13,7 +13,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 @FunctionalInterface
 @SuppressWarnings({"rawtypes", "unchecked"})
 public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
-	static RegistryPredicate<?> of(Context cx, Object from, TypeInfo target) {
+	static RegistryPredicate<?> of(Context cx, @Nullable Object from, TypeInfo target) {
 		return switch (from) {
 			case null -> EntireRegistryPredicate.FALSE;
 			case RegistryPredicate<?> p -> p;
@@ -39,7 +39,7 @@ public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
 		};
 	}
 
-	private static @NotNull RegistryPredicate<?> ofString(TypeInfo target, String s) {
+	private static RegistryPredicate<?> ofString(TypeInfo target, String s) {
 		return switch (s) {
 			case "*" -> EntireRegistryPredicate.TRUE;
 			case "-" -> EntireRegistryPredicate.FALSE;
@@ -63,7 +63,7 @@ public interface RegistryPredicate<T> extends Predicate<Holder<T>> {
 				var id = ID.mc(s);
 
 				if (reg != null) {
-					Registry registry = (Registry) BuiltInRegistries.REGISTRY.get((ResourceKey) reg.key()).get();
+					Registry registry = BuiltInRegistries.REGISTRY.getValue((ResourceKey) reg.key());
 
 					if (registry != null) {
 						var opt = registry.get(id);

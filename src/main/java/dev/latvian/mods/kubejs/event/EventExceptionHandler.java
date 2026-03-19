@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.rhino.WrappedException;
+import org.jspecify.annotations.Nullable;
 
 @FunctionalInterface
 public interface EventExceptionHandler {
@@ -14,5 +15,5 @@ public interface EventExceptionHandler {
 	 * @implNote The thrown exception will never be an instance of {@link EventExit} or {@link WrappedException},
 	 * as those are already handled by the container itself.
 	 */
-	Throwable handle(KubeEvent event, EventHandlerContainer container, Throwable ex);
+	@Nullable Throwable handle(KubeEvent event, EventHandlerContainer container, Throwable ex);
 }

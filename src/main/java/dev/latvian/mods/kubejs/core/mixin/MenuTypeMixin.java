@@ -3,16 +3,17 @@ package dev.latvian.mods.kubejs.core.mixin;
 import dev.latvian.mods.kubejs.core.MenuTypeKJS;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.inventory.MenuType;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(MenuType.class)
 public abstract class MenuTypeMixin implements MenuTypeKJS {
 	@Unique
-	private ResourceKey<MenuType<?>> kjs$registryKey;
+	private @Nullable ResourceKey<MenuType<?>> kjs$registryKey;
 
 	@Unique
-	private String kjs$id;
+	private @Nullable String kjs$id;
 
 	@Override
 	public ResourceKey<MenuType<?>> kjs$getKey() {

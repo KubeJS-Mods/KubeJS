@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,14 +32,14 @@ public class KubeBlockEntity extends BlockEntity {
 
 	public final BlockEntityInfo info;
 	public final ResourceKey<Block> blockKey;
-	protected LevelBlock block;
+	protected @Nullable LevelBlock block;
 	public final int x, y, z;
 	public int tick, cycle;
 	public CompoundTag data;
 	public final Map<String, Object> attachments;
 	public final transient BlockEntityAttachmentHolder[] attachmentArray;
-	public UUID placerId;
-	private BlockEntityTickKubeEvent tickEvent;
+	public @Nullable UUID placerId;
+	private @Nullable BlockEntityTickKubeEvent tickEvent;
 	private boolean save;
 	private boolean sync;
 

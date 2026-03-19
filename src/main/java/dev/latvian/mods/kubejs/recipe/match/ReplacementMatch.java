@@ -2,6 +2,7 @@ package dev.latvian.mods.kubejs.recipe.match;
 
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
 import dev.latvian.mods.rhino.Context;
+import org.jspecify.annotations.Nullable;
 
 public interface ReplacementMatch {
 	ReplacementMatch NONE = new ReplacementMatch() {
@@ -11,7 +12,7 @@ public interface ReplacementMatch {
 		}
 	};
 
-	static ReplacementMatch wrap(Context cx, Object o) {
+	static ReplacementMatch wrap(Context cx, @Nullable Object o) {
 		return switch (o) {
 			case null -> NONE;
 			case ReplacementMatch m -> m;

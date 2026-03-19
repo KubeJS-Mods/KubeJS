@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
+import org.jspecify.annotations.Nullable;
 
 public record TimeComponent(ResourceKey<RecipeComponentType<?>> type, long scale, Codec<TickDuration> codec) implements RecipeComponent<TickDuration> {
 	public static final TimeComponent TICKS = new TimeComponent(RecipeComponentType.builtin("ticks"), 1L, TickDuration.CODEC);
@@ -25,12 +26,12 @@ public record TimeComponent(ResourceKey<RecipeComponentType<?>> type, long scale
 	}
 
 	@Override
-	public boolean hasPriority(RecipeMatchContext cx, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return from instanceof Number || from instanceof JsonPrimitive json && json.isNumber();
 	}
 
 	@Override
-	public TickDuration wrap(RecipeScriptContext cx, Object from) {
+	public TickDuration wrap(RecipeScriptContext cx, @Nullable Object from) {
 		if (from instanceof Number n) {
 			return TickDuration.of((long) (n.doubleValue() * scale));
 		} else {

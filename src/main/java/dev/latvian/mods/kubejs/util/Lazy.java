@@ -61,6 +61,7 @@ public class Lazy<T> implements Supplier<T> {
 	private boolean cached;
 	private long expires;
 
+	@SuppressWarnings("DataFlowIssue") // safe
 	private Lazy(Supplier<T> factory, long expiresAfter) {
 		this.factory = factory;
 		this.expiresAfter = expiresAfter;

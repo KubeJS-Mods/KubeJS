@@ -15,6 +15,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.crafting.RecipeManager;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,6 +32,7 @@ import java.util.concurrent.Executor;
 @Mixin(ReloadableServerResources.class)
 public abstract class ReloadableServerResourcesMixin implements ReloadableServerResourcesKJS {
 	@Unique
+	@Nullable
 	private ServerScriptManager kjs$serverScriptManager;
 
 	@Shadow
@@ -75,7 +77,7 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 	) {
 		RegistryAccessContainer.current = new RegistryAccessContainer(contextLayers.compositeAccess());
 
-		if (mainThreadExecutor instanceof MinecraftServer s && s.getServerResources() != null) {
+		if (mainThreadExecutor instanceof MinecraftServer s) {
 			var mgr = s.getServerResources().managers().kjs$getServerScriptManager();
 			if (mgr != null) {
 				mgr.reloadAndCapture();

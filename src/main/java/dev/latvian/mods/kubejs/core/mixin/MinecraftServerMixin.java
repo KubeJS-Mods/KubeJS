@@ -26,6 +26,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -57,10 +58,10 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	private final CompoundTag kjs$persistentData = new CompoundTag();
 
 	@Unique
-	private ServerLevel kjs$overworld;
+	private @Nullable ServerLevel kjs$overworld;
 
 	@Unique
-	private AttachedData<MinecraftServer> kjs$attachedData;
+	private @Nullable AttachedData<MinecraftServer> kjs$attachedData;
 
 	@Unique
 	private final Map<UUID, Map<Integer, ItemStack>> kjs$restoreInventories = new HashMap<>(1);

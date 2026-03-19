@@ -12,7 +12,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.RemappedEnumConstant;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.StringRepresentable;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 // TODO: add enum component variant with custom serialisation that doesn't need the StringRepresentable bound
 public record EnumComponent<T extends Enum<T> & StringRepresentable>(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, EnumTypeInfo typeInfo, Codec<T> codec) implements RecipeComponent<T> {

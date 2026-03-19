@@ -8,7 +8,9 @@ import java.time.temporal.TemporalAmount;
 
 @RemapPrefixForJS("kjs$")
 public interface MinecraftEnvironmentKJS extends MessageSenderKJS {
-	ScheduledEvents kjs$getScheduledEvents();
+	default ScheduledEvents kjs$getScheduledEvents() {
+		throw new NoMixinException();
+	}
 
 	default ScheduledEvents.ScheduledEvent kjs$schedule(TemporalAmount timer, ScheduledEvents.Callback callback) {
 		return kjs$getScheduledEvents().schedule(timer, false, callback);

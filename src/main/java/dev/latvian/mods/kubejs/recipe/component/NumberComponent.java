@@ -10,7 +10,8 @@ import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Contract;
+import org.jspecify.annotations.Nullable;
 
 public interface NumberComponent<S, T extends Number> extends RecipeComponent<T> {
 	IntRange INT = new IntRange(null, Integer.MIN_VALUE, Integer.MAX_VALUE, Codec.INT);
@@ -91,7 +92,8 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		Double.MIN_VALUE, Double.POSITIVE_INFINITY, KubeJSCodecs.POSITIVE_DOUBLE
 	);
 
-	private static Number numberOf(Object from) {
+	@Contract("null -> fail")
+	private static Number numberOf(@Nullable Object from) {
 		if (from instanceof Number n) {
 			return n;
 		} else if (from instanceof JsonPrimitive json) {
@@ -109,7 +111,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 	}
 
 	@Override
-	default boolean hasPriority(RecipeMatchContext cx, Object from) {
+	default boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return from instanceof Number || from instanceof JsonPrimitive json && json.isNumber();
 	}
 
@@ -167,7 +169,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		}
 
 		@Override
-		public Integer wrap(RecipeScriptContext cx, Object from) {
+		public Integer wrap(RecipeScriptContext cx, @Nullable Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).intValue(), min, max);
 		}
 
@@ -204,7 +206,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		}
 
 		@Override
-		public Long wrap(RecipeScriptContext cx, Object from) {
+		public Long wrap(RecipeScriptContext cx, @Nullable Object from) {
 			long val = NumberComponent.numberOf(from).longValue();
 			return (val < min) ? min : Math.min(val, max);
 		}
@@ -241,7 +243,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		}
 
 		@Override
-		public Float wrap(RecipeScriptContext cx, Object from) {
+		public Float wrap(RecipeScriptContext cx, @Nullable Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).floatValue(), min, max);
 		}
 
@@ -277,7 +279,7 @@ public interface NumberComponent<S, T extends Number> extends RecipeComponent<T>
 		}
 
 		@Override
-		public Double wrap(RecipeScriptContext cx, Object from) {
+		public Double wrap(RecipeScriptContext cx, @Nullable Object from) {
 			return Mth.clamp(NumberComponent.numberOf(from).doubleValue(), min, max);
 		}
 

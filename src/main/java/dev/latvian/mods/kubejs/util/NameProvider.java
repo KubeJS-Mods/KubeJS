@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.util;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;

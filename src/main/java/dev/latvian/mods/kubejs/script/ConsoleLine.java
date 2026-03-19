@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.util.LogType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -48,10 +49,10 @@ public class ConsoleLine implements Supplier<JsonElement> {
 	public LogType type = LogType.INFO;
 	public String group = "";
 	public Collection<SourceLine> sourceLines = Set.of();
-	public Path externalFile = null;
+	public @Nullable Path externalFile = null;
 	public List<String> stackTrace = List.of();
-	private String cachedText;
-	private JsonObject customData;
+	private @Nullable String cachedText;
+	private @Nullable JsonObject customData;
 
 	public ConsoleLine(ConsoleJS console, long timestamp, String message) {
 		this.console = console;

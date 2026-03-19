@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(IBlockStateExtension.class)
 public interface IBlockStateExtensionMixin {
+	@SuppressWarnings("DataFlowIssue")
 	@Shadow
 	private BlockState self() {
 		return null;

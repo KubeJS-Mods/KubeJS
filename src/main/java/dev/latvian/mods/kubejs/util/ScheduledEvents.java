@@ -9,6 +9,7 @@ import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.ScriptableObject;
 import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import org.jspecify.annotations.NullUnmarked;
 
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
@@ -17,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+@NullUnmarked
 public class ScheduledEvents {
 	public static class ScheduledEvent {
 		private static final Predicate<ScheduledEvent> TICK = ScheduledEvent::tick;

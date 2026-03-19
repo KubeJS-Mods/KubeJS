@@ -9,6 +9,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ExtraCodecs;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public record StringComponent(ResourceKey<RecipeComponentType<?>> type, Codec<St
 	}
 
 	@Override
-	public boolean hasPriority(RecipeMatchContext cx, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return from instanceof Character || from instanceof CharSequence || from instanceof JsonPrimitive json && json.isString();
 	}
 

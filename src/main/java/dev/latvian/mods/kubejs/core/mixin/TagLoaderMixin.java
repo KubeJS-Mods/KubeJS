@@ -9,7 +9,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.TagLoader;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Mixin(TagLoader.class)
 public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 	@Unique
-	private ServerScriptManager kjs$serverScriptManager;
+	private @Nullable ServerScriptManager kjs$serverScriptManager;
 
 	@Unique
 	private @Nullable Registry<T> kjs$storedRegistry;
@@ -74,6 +74,7 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 	}
 
 	@Override
+	@Nullable
 	public ServerScriptManager kjs$getServerScriptManager() {
 		return kjs$serverScriptManager;
 	}

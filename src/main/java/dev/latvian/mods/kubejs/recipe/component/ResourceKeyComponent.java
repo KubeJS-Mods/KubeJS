@@ -13,7 +13,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public record ResourceKeyComponent<T>(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, ResourceKey<? extends Registry<T>> registryKey, Codec<ResourceKey<T>> codec, TypeInfo typeInfo) implements RecipeComponent<ResourceKey<T>> {
 	private static <T> ResourceKeyComponent<T> create(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, ResourceKey<? extends Registry<T>> registryKey) {
@@ -45,7 +45,7 @@ public record ResourceKeyComponent<T>(@Nullable ResourceKey<RecipeComponentType<
 	}
 
 	@Override
-	public ResourceKey<T> wrap(RecipeScriptContext cx, Object from) {
+	public ResourceKey<T> wrap(RecipeScriptContext cx, @Nullable Object from) {
 		return ResourceKey.create(registryKey, ID.mc(from));
 	}
 

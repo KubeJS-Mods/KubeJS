@@ -10,6 +10,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import org.jspecify.annotations.Nullable;
 
 public record IngredientComponent(ResourceKey<RecipeComponentType<?>> type, Codec<Ingredient> codec, boolean allowEmpty) implements RecipeComponent<Ingredient> {
 	public static final IngredientComponent INGREDIENT = new IngredientComponent(
@@ -27,7 +28,7 @@ public record IngredientComponent(ResourceKey<RecipeComponentType<?>> type, Code
 	}
 
 	@Override
-	public boolean hasPriority(RecipeMatchContext cx, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return IngredientWrapper.isIngredientLike(from);
 	}
 

@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.gui.chest;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +19,7 @@ public class ChestMenuSlot {
 	public int clicked;
 	public Map<String, Object> data;
 	public final List<ChestMenuClickHandler> clickHandlers;
-	public InventoryKJS inventory;
+	public @Nullable InventoryKJS inventory;
 	public int inventorySlot;
 
 	public ChestMenuSlot(ChestMenuData gui, int index) {

@@ -7,7 +7,7 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class TargetedEventHandler<E> extends EventHandler {
-	protected Map<Object, EventHandlerContainer[]> extraEventContainers;
+	protected @Nullable Map<Object, @Nullable EventHandlerContainer[]> extraEventContainers;
 
 	TargetedEventHandler(EventGroup g, String n, ScriptTypePredicate st, EventTargetType<E> target, Supplier<Class<? extends KubeEvent>> e) {
 		super(g, n, st, e);
@@ -102,9 +102,9 @@ public class TargetedEventHandler<E> extends EventHandler {
 	}
 
 	@Override
-	protected EventHandlerContainer[] createMap(@Nullable Object extraId) {
+	protected @Nullable EventHandlerContainer[] createMap(@Nullable Object extraId) {
 		if (extraId == null) {
-			return super.createMap(extraId);
+			return super.createMap(null);
 		}
 
 		if (extraEventContainers == null) {

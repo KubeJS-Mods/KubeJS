@@ -3,19 +3,18 @@ package dev.latvian.mods.kubejs.error;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponent;
 import dev.latvian.mods.kubejs.recipe.component.RecipeComponentValue;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class RecipeComponentException extends KubeRuntimeException {
 	public final RecipeComponent<?> component;
 	public final @Nullable RecipeKey<?> key;
-	public final Object value;
+	public final @Nullable Object value;
 
-	public RecipeComponentException(String msg, Throwable cause, RecipeComponentValue<?> value) {
+	public RecipeComponentException(String msg, @Nullable Throwable cause, RecipeComponentValue<?> value) {
 		this(msg, cause, value.key.component, value.key, value.value);
 	}
 
-	public RecipeComponentException(String msg, Throwable cause, RecipeComponent<?> component, @Nullable RecipeKey<?> key, Object value) {
+	public RecipeComponentException(String msg, @Nullable Throwable cause, RecipeComponent<?> component, @Nullable RecipeKey<?> key, @Nullable Object value) {
 		super(msg, cause);
 
 		this.component = component;

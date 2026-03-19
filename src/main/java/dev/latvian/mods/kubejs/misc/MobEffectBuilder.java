@@ -8,6 +8,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class MobEffectBuilder extends BuilderBase<MobEffect> {
 	}
 
 	public transient MobEffectCategory category;
-	public transient EffectEntityCallback effectTick;
+	public transient @Nullable EffectEntityCallback effectTick;
 	public transient Map<Identifier, MobEffect.AttributeTemplate> attributeModifiers;
 	public transient int color;
 	public transient boolean instant;

@@ -46,12 +46,14 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@NullUnmarked
 public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	public static final String CHANGED_MARKER = "_kubejs_changed_marker";
 	public static final TypeInfo TYPE_INFO = TypeInfo.of(KubeRecipe.class);
@@ -114,7 +116,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		}
 	}
 
-	@Nullable
+	@NullUnmarked
 	public <T> T getValue(RecipeKey<T> key) {
 		var v = valueMap.getHolder(key);
 
@@ -180,6 +182,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			if (save) {
 				for (var v : valueMap.holders) {
 					if (v.key.optional()) {
+						//noinspection DataFlowIssue (safe)
 						v.value = Cast.to(v.key.optional.getDefaultValue(type.schemaType));
 					}
 

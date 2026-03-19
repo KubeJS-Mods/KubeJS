@@ -18,10 +18,11 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jspecify.annotations.Nullable;
 
 public class BasicCropBlockJS extends CropBlock {
 	private final CropBlockBuilder builder;
-	private IntegerProperty ageProperty;
+	private @Nullable IntegerProperty ageProperty;
 
 	public BasicCropBlockJS(CropBlockBuilder builder) {
 		super(builder.createProperties().sound(SoundType.CROP).randomTicks());

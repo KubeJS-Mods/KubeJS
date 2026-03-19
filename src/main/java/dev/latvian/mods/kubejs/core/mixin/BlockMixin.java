@@ -6,7 +6,7 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.Block;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,13 +20,13 @@ import java.util.Map;
 @RemapPrefixForJS("kjs$")
 public abstract class BlockMixin implements BlockKJS {
 	@Unique
-	private String kjs$id;
+	private @Nullable String kjs$id;
 
 	@Unique
-	private BlockBuilder kjs$blockBuilder;
+	private @Nullable BlockBuilder kjs$blockBuilder;
 
 	@Unique
-	private Map<String, Object> kjs$typeData;
+	private @Nullable Map<String, Object> kjs$typeData;
 
 	@Override
 	public String kjs$getId() {

@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.recipe.viewer.server;
 import dev.latvian.mods.kubejs.recipe.viewer.RemoveRecipesKubeEvent;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Map;

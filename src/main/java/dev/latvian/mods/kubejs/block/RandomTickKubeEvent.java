@@ -6,13 +6,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jspecify.annotations.Nullable;
 
 public class RandomTickKubeEvent implements KubeLevelEvent {
 	private final ServerLevel level;
 	private final BlockPos pos;
 	private final BlockState state;
 	public final RandomSource random;
-	private LevelBlock block;
+	private @Nullable LevelBlock block;
 
 	public RandomTickKubeEvent(ServerLevel level, BlockPos pos, BlockState state, RandomSource random) {
 		this.level = level;

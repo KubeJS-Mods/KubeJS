@@ -5,15 +5,15 @@ import dev.latvian.mods.kubejs.util.Cast;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -48,7 +48,7 @@ public final class RegistryObjectStorage<T> implements Iterable<BuilderBase<? ex
 		this.objects = new LinkedHashMap<>();
 	}
 
-	@NotNull
+	@NonNull
 	@Override
 	public Iterator<BuilderBase<? extends T>> iterator() {
 		return objects.values().iterator();

@@ -11,6 +11,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import org.jspecify.annotations.Nullable;
 
 public record SizedFluidIngredientComponent(ResourceKey<RecipeComponentType<?>> type, Codec<SizedFluidIngredient> codec, boolean allowEmpty) implements RecipeComponent<SizedFluidIngredient> {
 	public static final SizedFluidIngredientComponent SIZED_FLUID_INGREDIENT = new SizedFluidIngredientComponent(
@@ -29,7 +30,7 @@ public record SizedFluidIngredientComponent(ResourceKey<RecipeComponentType<?>> 
 	}
 
 	@Override
-	public boolean hasPriority(RecipeMatchContext cx, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return from instanceof SizedFluidIngredient || from instanceof FluidIngredient || from instanceof FluidStack || from instanceof Fluid;
 	}
 

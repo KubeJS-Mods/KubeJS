@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -22,8 +23,8 @@ public class BlockIDPredicate implements BlockPredicate {
 
 	private final Identifier id;
 	private final Map<String, String> properties;
-	private Block cachedBlock;
-	private List<PropertyObject> cachedProperties;
+	private @Nullable Block cachedBlock;
+	private @Nullable List<PropertyObject> cachedProperties;
 
 	public BlockIDPredicate(Identifier i) {
 		id = i;

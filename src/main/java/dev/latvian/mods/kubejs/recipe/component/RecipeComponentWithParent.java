@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -31,12 +31,12 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	}
 
 	@Override
-	default T wrap(RecipeScriptContext cx, Object from) {
+	default T wrap(RecipeScriptContext cx, @Nullable Object from) {
 		return parentComponent().wrap(cx, from);
 	}
 
 	@Override
-	default boolean hasPriority(RecipeMatchContext cx, Object from) {
+	default boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return parentComponent().hasPriority(cx, from);
 	}
 

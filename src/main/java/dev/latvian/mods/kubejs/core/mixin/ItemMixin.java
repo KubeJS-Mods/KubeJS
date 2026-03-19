@@ -22,7 +22,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -50,22 +50,22 @@ public abstract class ItemMixin implements ItemKJS {
 	private Holder.Reference<Item> builtInRegistryHolder;
 
 	@Unique
-	private ItemBuilder kjs$itemBuilder;
+	private @Nullable ItemBuilder kjs$itemBuilder;
 
 	@Unique
-	private Map<String, Object> kjs$typeData;
+	private @Nullable Map<String, Object> kjs$typeData;
 
 	@Unique
-	private Ingredient kjs$asIngredient;
+	private @Nullable Ingredient kjs$asIngredient;
 
 	@Unique
-	private ItemStackKey kjs$typeItemStackKey;
+	private @Nullable ItemStackKey kjs$typeItemStackKey;
 
 	@Unique
-	private ResourceKey<Item> kjs$registryKey;
+	private @Nullable ResourceKey<Item> kjs$registryKey;
 
 	@Unique
-	private String kjs$id;
+	private @Nullable String kjs$id;
 
 	@Override
 	@Nullable

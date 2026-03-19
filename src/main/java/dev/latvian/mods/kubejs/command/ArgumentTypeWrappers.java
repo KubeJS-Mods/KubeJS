@@ -11,7 +11,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
-
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.AngleArgument;
@@ -49,6 +48,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Util;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -118,7 +118,7 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 	private final Function<CommandBuildContext, ? extends ArgumentType<?>> factory;
 	private final ArgumentFunction<?> getter;
 
-	private static Map<Identifier, ClassWrapper<?>> byNameCache;
+	private static @Nullable Map<Identifier, ClassWrapper<?>> byNameCache;
 
 	public static ClassWrapper<?> byName(Identifier name) {
 		var wrapper = getOrCacheByName().get(name);
@@ -169,6 +169,7 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 			return byNameCache = Util.make(new HashMap<>(), map -> {
 				for (var entry : ArgumentTypeInfos.BY_CLASS.entrySet()) {
 					var id = BuiltInRegistries.COMMAND_ARGUMENT_TYPE.getKey(entry.getValue());
+					assert id != null;
 					byNameCache.put(id, new ClassWrapper<>(entry.getKey()));
 				}
 			});

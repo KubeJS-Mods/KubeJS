@@ -13,11 +13,14 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.FlowingFluid;
-import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import static net.neoforged.neoforge.fluids.BaseFlowingFluid.Properties;
+import static net.neoforged.neoforge.fluids.BaseFlowingFluid.Source;
 
 @ReturnsSelf
 public class FluidBuilder extends BuilderBase<FlowingFluid> {
@@ -32,9 +35,9 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 
 	public FluidTypeBuilder fluidType;
 	public FlowingFluidBuilder flowingFluid;
-	public FluidBlockBuilder block;
-	public FluidBucketItemBuilder bucketItem;
-	private BaseFlowingFluid.Properties properties;
+	public @Nullable FluidBlockBuilder block;
+	public @Nullable FluidBucketItemBuilder bucketItem;
+	private @Nullable Properties properties;
 
 	public FluidBuilder(Identifier i) {
 		super(i);
@@ -57,9 +60,10 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 		return super.displayName(name);
 	}
 
-	public BaseFlowingFluid.Properties createProperties() {
+	@SuppressWarnings("DataFlowIssue") // safe, neo hasn't marked nullable params as such
+	public Properties createProperties() {
 		if (properties == null) {
-			properties = new BaseFlowingFluid.Properties(fluidType, this, flowingFluid);
+			properties = new Properties(fluidType, this, flowingFluid);
 			properties.bucket(bucketItem);
 			properties.block((Supplier) block);
 			properties.slopeFindDistance(slopeFindDistance);
@@ -73,7 +77,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 
 	@Override
 	public FlowingFluid createObject() {
-		return new BaseFlowingFluid.Source(createProperties());
+		return new Source(createProperties());
 	}
 
 	@Override

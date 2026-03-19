@@ -6,6 +6,7 @@ import dev.latvian.mods.rhino.Context;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 public interface AABBWrapper {
 	AABB EMPTY = new AABB(0D, 0D, 0D, 0D, 0D, 0D);
@@ -31,7 +32,7 @@ public interface AABBWrapper {
 		return AABB.ofSize(vec3, x, y, z);
 	}
 
-	static AABB wrap(Context cx, Object o) {
+	static AABB wrap(Context cx, @Nullable Object o) {
 		return switch (o) {
 			case null -> EMPTY;
 			case AABB aabb -> aabb;

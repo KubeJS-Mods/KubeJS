@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.block.entity;
 import dev.latvian.mods.kubejs.level.KubeLevelEvent;
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.NullUnmarked;
 
 public class BlockEntityTickKubeEvent implements KubeLevelEvent {
 	private final KubeBlockEntity entity;
@@ -12,6 +13,7 @@ public class BlockEntityTickKubeEvent implements KubeLevelEvent {
 	}
 
 	@Override
+	@NullUnmarked
 	public Level getLevel() {
 		return entity.getLevel();
 	}

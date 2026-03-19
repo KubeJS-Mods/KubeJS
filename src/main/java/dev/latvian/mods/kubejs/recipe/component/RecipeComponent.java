@@ -20,7 +20,7 @@ import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -97,7 +97,7 @@ public interface RecipeComponent<T> {
 	 * @param from The object to be deserialized from
 	 * @return Whether this component should take priority
 	 */
-	default boolean hasPriority(RecipeMatchContext cx, Object from) {
+	default boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return false;
 	}
 
@@ -111,7 +111,7 @@ public interface RecipeComponent<T> {
 	 * @param from An object to be converted to a value for this component
 	 * @return The value read from the input
 	 */
-	default T wrap(RecipeScriptContext cx, Object from) {
+	default T wrap(RecipeScriptContext cx, @Nullable Object from) {
 		return (T) cx.cx().jsToJava(from, typeInfo());
 	}
 

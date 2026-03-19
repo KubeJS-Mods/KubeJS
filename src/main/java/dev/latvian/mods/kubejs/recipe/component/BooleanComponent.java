@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
+import org.jspecify.annotations.Nullable;
 
 public class BooleanComponent implements RecipeComponent<Boolean> {
 	private static final ResourceKey<RecipeComponentType<?>> TYPE = RecipeComponentType.builtin("boolean");
@@ -28,7 +29,7 @@ public class BooleanComponent implements RecipeComponent<Boolean> {
 	}
 
 	@Override
-	public Boolean wrap(RecipeScriptContext cx, Object from) {
+	public Boolean wrap(RecipeScriptContext cx, @Nullable Object from) {
 		if (from instanceof Boolean n) {
 			return n;
 		} else if (from instanceof JsonPrimitive json) {
@@ -41,7 +42,7 @@ public class BooleanComponent implements RecipeComponent<Boolean> {
 	}
 
 	@Override
-	public boolean hasPriority(RecipeMatchContext cx, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return from instanceof Boolean || from instanceof JsonPrimitive json && json.isBoolean();
 	}
 

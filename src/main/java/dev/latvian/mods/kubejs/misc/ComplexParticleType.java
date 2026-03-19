@@ -6,6 +6,8 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 
+import java.util.Objects;
+
 public class ComplexParticleType extends ParticleType<ParticleOptions> {
 	public final transient ParticleTypeBuilder builder;
 
@@ -16,11 +18,11 @@ public class ComplexParticleType extends ParticleType<ParticleOptions> {
 
 	@Override
 	public MapCodec<ParticleOptions> codec() {
-		return builder.codec;
+		return Objects.requireNonNull(builder.codec);
 	}
 
 	@Override
 	public StreamCodec<? super RegistryFriendlyByteBuf, ParticleOptions> streamCodec() {
-		return builder.streamCodec;
+		return Objects.requireNonNull(builder.streamCodec);
 	}
 }

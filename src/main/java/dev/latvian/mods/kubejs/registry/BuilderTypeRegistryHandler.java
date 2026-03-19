@@ -8,9 +8,9 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.resources.ResourceKey;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -30,11 +30,11 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 	}
 
 	public static class Info<T> {
-		private BuilderType<T> defaultType;
-		private Map<Identifier, BuilderType<T>> types;
-		private Map<String, BuilderType<T>> fallbackLookup;
-		private Codec<T> directCodec;
-		private TypeInfo typeInfo;
+		private @Nullable BuilderType<T> defaultType;
+		private @Nullable Map<Identifier, BuilderType<T>> types;
+		private @Nullable Map<String, BuilderType<T>> fallbackLookup;
+		private @Nullable Codec<T> directCodec;
+		private @Nullable TypeInfo typeInfo;
 
 		@Nullable
 		public BuilderType<T> defaultType() {

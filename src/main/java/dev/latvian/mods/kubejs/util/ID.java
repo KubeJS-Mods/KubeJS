@@ -10,7 +10,8 @@ import net.minecraft.IdentifierException;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Contract;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -72,6 +73,8 @@ public interface ID {
 		return i == -1 ? s : s.substring(i + 1);
 	}
 
+	@Nullable
+	@Contract("null, _ -> null; !null, _ -> !null")
 	static Identifier of(@Nullable Object o, boolean preferKJS) {
 		return switch (o) {
 			case null -> null;
@@ -95,19 +98,23 @@ public interface ID {
 		};
 	}
 
+	@Nullable
+	@Contract("null -> null; !null -> !null")
 	static Identifier mc(@Nullable Object o) {
 		return of(o, false);
 	}
 
+	@Nullable
+	@Contract("null -> null; !null -> !null")
 	static Identifier kjs(@Nullable Object o) {
 		return of(o, true);
 	}
 
-	static boolean isKey(Object from) {
+	static boolean isKey(@Nullable Object from) {
 		return from instanceof CharSequence || from instanceof Identifier || from instanceof ResourceKey<?>;
 	}
 
-	static boolean isValidKey(Object from) {
+	static boolean isValidKey(@Nullable Object from) {
 		return from instanceof Identifier || from instanceof ResourceKey<?> || (from instanceof CharSequence && Identifier.tryParse(from.toString()) != null);
 	}
 

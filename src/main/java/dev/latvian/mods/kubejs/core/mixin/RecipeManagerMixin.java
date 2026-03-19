@@ -26,6 +26,8 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeMap;
 import net.neoforged.neoforge.resource.ContextAwareReloadListener;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -54,10 +56,10 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener impl
 	private HolderLookup.Provider registries;
 
 	@Unique
-	private ReloadableServerResourcesKJS kjs$resources;
+	private @Nullable ReloadableServerResourcesKJS kjs$resources;
 
 	@Unique
-	private RecipesKubeEvent kjs$event;
+	private @Nullable RecipesKubeEvent kjs$event;
 
 	@Inject(
 		method = "prepare(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)Lnet/minecraft/world/item/crafting/RecipeMap;",
@@ -159,6 +161,7 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener impl
 	}
 
 	@Override
+	@NullUnmarked
 	public ServerScriptManager kjs$getServerScriptManager() {
 		return kjs$resources != null ? kjs$resources.kjs$getServerScriptManager() : null;
 	}

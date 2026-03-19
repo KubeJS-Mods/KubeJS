@@ -11,6 +11,7 @@ import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.entity.player.Player;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -19,13 +20,13 @@ import org.spongepowered.asm.mixin.Unique;
 @RemapPrefixForJS("kjs$")
 public abstract class PlayerMixin implements PlayerKJS {
 	@Unique
-	private Stages kjs$stages;
+	private @Nullable Stages kjs$stages;
 
 	@Unique
-	private AttachedData<Player> kjs$attachedData;
+	private @Nullable AttachedData<Player> kjs$attachedData;
 
 	@Unique
-	private KubeJSInventoryListener kjs$inventoryChangeListener;
+	private @Nullable KubeJSInventoryListener kjs$inventoryChangeListener;
 
 	@Override
 	public Stages kjs$getStages() {

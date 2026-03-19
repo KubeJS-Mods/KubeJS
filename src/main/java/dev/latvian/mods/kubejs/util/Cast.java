@@ -1,8 +1,12 @@
 package dev.latvian.mods.kubejs.util;
 
+import org.jetbrains.annotations.Contract;
+import org.jspecify.annotations.Nullable;
+
 public interface Cast {
 	@SuppressWarnings("unchecked")
-	static <T> T to(Object o) {
+	@Contract("null -> null; !null -> !null")
+	static <T> @Nullable T to(@Nullable Object o) {
 		return (T) o;
 	}
 }

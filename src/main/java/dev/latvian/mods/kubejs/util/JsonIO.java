@@ -7,7 +7,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.rhino.Context;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Contract;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -38,7 +40,9 @@ public class JsonIO {
 		return JsonUtils.fromString(string);
 	}
 
-	public static Object parse(String string) {
+	@NullUnmarked
+	@Contract("null -> null; _ -> _")
+	public static Object parse(@Nullable String string) {
 		return JsonUtils.toObject(parseRaw(string));
 	}
 
@@ -75,7 +79,7 @@ public class JsonIO {
 		}
 	}
 
-	public static JsonArray toArray(JsonElement element) {
+	public static JsonArray toArray(@Nullable JsonElement element) {
 		return switch (element) {
 			case JsonArray a -> a;
 			case null, default -> {

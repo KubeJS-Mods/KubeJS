@@ -3,8 +3,9 @@ package dev.latvian.mods.kubejs.block.drop;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import org.jspecify.annotations.Nullable;
 
-public record BlockDrops(ItemStack[] items, NumberProvider rolls) {
+public record BlockDrops(ItemStack[] items, @Nullable NumberProvider rolls) {
 	public static final BlockDrops EMPTY = new BlockDrops(new ItemStack[0], null);
 
 	public static BlockDrops createDefault(ItemStack item) {

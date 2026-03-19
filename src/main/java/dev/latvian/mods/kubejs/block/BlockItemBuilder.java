@@ -7,10 +7,11 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 
 public class BlockItemBuilder extends ItemBuilder {
-	public BlockBuilder blockBuilder;
+	public final BlockBuilder blockBuilder;
 
-	public BlockItemBuilder(Identifier i) {
+	public BlockItemBuilder(BlockBuilder b, Identifier i) {
 		super(i);
+		this.blockBuilder = b;
 	}
 
 	@Override

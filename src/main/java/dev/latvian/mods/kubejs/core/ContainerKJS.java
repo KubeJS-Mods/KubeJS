@@ -8,8 +8,7 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @RemapPrefixForJS("kjs$")
 public interface ContainerKJS extends InventoryKJS {
@@ -28,14 +27,12 @@ public interface ContainerKJS extends InventoryKJS {
 	}
 
 	@Override
-	@NotNull
 	default ItemStack kjs$getStackInSlot(int slot) {
 		return this.kjs$self().getItem(slot);
 	}
 
 	@Override
-	@NotNull
-	default ItemStack kjs$insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+	default ItemStack kjs$insertItem(int slot, ItemStack stack, boolean simulate) {
 		if (stack.isEmpty()) {
 			return ItemStack.EMPTY;
 		}
@@ -108,7 +105,6 @@ public interface ContainerKJS extends InventoryKJS {
 	}
 
 	@Override
-	@NotNull
 	default ItemStack kjs$extractItem(int slot, int amount, boolean simulate) {
 		if (amount == 0) {
 			return ItemStack.EMPTY;
@@ -138,7 +134,7 @@ public interface ContainerKJS extends InventoryKJS {
 	}
 
 	@Override
-	default void kjs$setStackInSlot(int slot, @NotNull ItemStack stack) {
+	default void kjs$setStackInSlot(int slot, ItemStack stack) {
 		this.kjs$self().setItem(slot, stack);
 	}
 
@@ -148,7 +144,7 @@ public interface ContainerKJS extends InventoryKJS {
 	}
 
 	@Override
-	default boolean kjs$isItemValid(int slot, @NotNull ItemStack stack) {
+	default boolean kjs$isItemValid(int slot, ItemStack stack) {
 		return this.kjs$self().canPlaceItem(slot, stack);
 	}
 

@@ -10,6 +10,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
+import org.jspecify.annotations.Nullable;
 
 @ReturnsSelf
 public class ArmorItemBuilder extends ItemBuilder {
@@ -65,7 +66,7 @@ public class ArmorItemBuilder extends ItemBuilder {
 
 	@ReturnsSelf
 	public static class AnimalArmor extends ItemBuilder {
-		public ArmorMaterial material;
+		public @Nullable ArmorMaterial material;
 		public AnimalArmorKind kind;
 
 		public AnimalArmor(Identifier id) {
@@ -109,7 +110,7 @@ public class ArmorItemBuilder extends ItemBuilder {
 	}
 
 	public final ArmorType armorType;
-	public ArmorMaterial material;
+	public @Nullable ArmorMaterial material;
 
 	protected ArmorItemBuilder(Identifier id, ArmorType t) {
 		super(id);

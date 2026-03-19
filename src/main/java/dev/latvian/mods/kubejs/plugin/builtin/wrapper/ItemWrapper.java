@@ -47,7 +47,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -123,6 +123,7 @@ public interface ItemWrapper {
 	}
 
 	@HideFromJS
+	@Nullable
 	private static ItemStack wrapTrivial(Context cx, @Nullable Object from) {
 		while (from instanceof Wrapper w) {
 			from = w.unwrap();
@@ -342,7 +343,7 @@ public interface ItemWrapper {
 		}
 	}
 
-	static boolean isItemStackLike(Object from) {
+	static boolean isItemStackLike(@Nullable Object from) {
 		return from instanceof ItemStack || from instanceof ItemLike;
 	}
 

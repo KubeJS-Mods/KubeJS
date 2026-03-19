@@ -13,7 +13,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import java.util.List;
 public interface ItemTintFunction {
 	TypeInfo TYPE_INFO = TypeInfo.of(ItemTintFunction.class);
 
-	KubeColor getColor(ItemStack stack, int index);
+	@Nullable KubeColor getColor(ItemStack stack, int index);
 
 	record Fixed(KubeColor color) implements ItemTintFunction {
 		@Override
@@ -31,9 +31,10 @@ public interface ItemTintFunction {
 	}
 
 	class Mapped implements ItemTintFunction {
-		public final Int2ObjectMap<ItemTintFunction> map = new Int2ObjectArrayMap<>(1);
+		public final Int2ObjectMap<@Nullable ItemTintFunction> map = new Int2ObjectArrayMap<>(1);
 
 		@Override
+		@Nullable
 		public KubeColor getColor(ItemStack stack, int index) {
 			var f = map.get(index);
 			return f == null ? null : f.getColor(stack, index);
@@ -84,7 +85,7 @@ public interface ItemTintFunction {
 	};
 
 	@Nullable
-	static ItemTintFunction wrap(Context cx, Object o) {
+	static ItemTintFunction wrap(Context cx, @Nullable Object o) {
 		return switch (o) {
 			case null -> null;
 			case Undefined undefined -> null;

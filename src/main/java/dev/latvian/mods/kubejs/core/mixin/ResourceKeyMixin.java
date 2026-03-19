@@ -3,8 +3,9 @@ package dev.latvian.mods.kubejs.core.mixin;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.SpecialEquality;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -38,8 +39,9 @@ public abstract class ResourceKeyMixin implements SpecialEquality {
 	}
 
 	@Override
-	public boolean specialEquals(Context cx, Object o, boolean shallow) {
+	public boolean specialEquals(Context cx, @Nullable Object o, boolean shallow) {
 		return switch (o) {
+			case null -> false;
 			case ResourceKey<?> _key -> o == this;
 			case Identifier id -> identifier.equals(id);
 			default -> identifier.toString().equals(o.toString());

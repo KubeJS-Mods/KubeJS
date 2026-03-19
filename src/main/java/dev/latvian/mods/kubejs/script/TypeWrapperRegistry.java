@@ -14,7 +14,7 @@ import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperValidator;
 import dev.latvian.mods.rhino.util.wrap.TypeWrappers;
 import net.minecraft.util.StringRepresentable;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.function.BiFunction;
@@ -77,7 +77,7 @@ public class TypeWrapperRegistry {
 		typeWrappers.registerDirect(target, factory);
 	}
 
-	public <T extends Enum<T> & StringRepresentable> void registerEnumFromStringCodec(Class<T> target, Codec<T> codec, T defaultValue, boolean forceLowerCase) {
+	public <T extends Enum<T> & StringRepresentable> void registerEnumFromStringCodec(Class<T> target, Codec<T> codec, @Nullable T defaultValue, boolean forceLowerCase) {
 		register(target, o -> {
 			o = Wrapper.unwrapped(o);
 
@@ -96,7 +96,7 @@ public class TypeWrapperRegistry {
 		registerEnumFromStringCodec(target, codec, null, true);
 	}
 
-	public <T> void registerCodec(Class<T> target, Codec<T> codec, T defaultValue) {
+	public <T> void registerCodec(Class<T> target, Codec<T> codec, @Nullable T defaultValue) {
 		typeWrappers.register(target, new CodecTypeWrapper<>(target, codec, defaultValue));
 	}
 
@@ -104,7 +104,7 @@ public class TypeWrapperRegistry {
 		registerCodec(target, codec, null);
 	}
 
-	public <T> void registerMapCodec(Class<T> target, MapCodec<T> codec, T defaultValue) {
+	public <T> void registerMapCodec(Class<T> target, MapCodec<T> codec, @Nullable T defaultValue) {
 		typeWrappers.register(target, new MapCodecTypeWrapper<>(target, codec, defaultValue));
 	}
 

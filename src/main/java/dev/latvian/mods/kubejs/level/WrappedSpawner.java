@@ -3,10 +3,10 @@ package dev.latvian.mods.kubejs.level;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public record WrappedSpawner(@Nullable Entity entity, @Nullable LevelBlock block) {
-	public static WrappedSpawner of(Either<BlockEntity, Entity> spawner) {
+	public static WrappedSpawner of(@Nullable Either<BlockEntity, Entity> spawner) {
 		if (spawner == null) {
 			return new WrappedSpawner(null, null);
 		}

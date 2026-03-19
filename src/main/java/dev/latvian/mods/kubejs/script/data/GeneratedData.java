@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.Lazy;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.IoSupplier;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -46,7 +45,6 @@ public record GeneratedData(Identifier id, Supplier<byte[]> data) implements IoS
 	}
 
 	@Override
-	@NotNull
 	public InputStream get() {
 		return new ByteArrayInputStream(data.get());
 	}

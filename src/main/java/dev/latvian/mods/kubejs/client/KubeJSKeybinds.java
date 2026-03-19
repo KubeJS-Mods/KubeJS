@@ -9,7 +9,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -40,6 +40,7 @@ public class KubeJSKeybinds {
 
 	public static class KubeKey {
 		public final String id;
+		// FIXME: nullability problems?
 		public transient KeyMapping mapping;
 		public transient boolean down = false;
 		private boolean shouldTick = false;
@@ -96,7 +97,7 @@ public class KubeJSKeybinds {
 	}
 
 	@Nullable
-	private static KubeKey get0(Object o) {
+	private static KubeKey get0(@Nullable Object o) {
 		return o == null ? null : getOrCreate(o.toString());
 	}
 

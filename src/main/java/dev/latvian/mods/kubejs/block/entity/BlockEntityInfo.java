@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
+import org.jspecify.annotations.Nullable;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import java.util.Set;
 
 public class BlockEntityInfo implements BlockEntityAttachmentHandler {
 	public transient final BlockBuilder blockBuilder;
+	@SuppressWarnings("NotNullFieldNotInitialized") // lateinit field
 	public transient BlockEntityType<?> entityType;
 	public transient CompoundTag initialData;
 	public transient boolean serverTicking;
@@ -116,6 +118,7 @@ public class BlockEntityInfo implements BlockEntityAttachmentHandler {
 	}
 
 	@HideFromJS
+	@Nullable
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level) {
 		if (level.isClientSide()) {
 			return clientTicking ? (BlockEntityTicker) KubeBlockEntity.TICKER : null;

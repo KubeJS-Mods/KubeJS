@@ -20,7 +20,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -58,7 +58,7 @@ public interface LivingEntityKJS extends EntityKJS {
 	}
 
 	default void kjs$setMaxHealth(float hp) {
-		kjs$self().getAttribute(Attributes.MAX_HEALTH).setBaseValue(hp);
+		kjs$self().kjs$setAttributeBaseValue(Attributes.MAX_HEALTH, hp);
 	}
 
 	default boolean kjs$isUndead() {
@@ -192,7 +192,7 @@ public interface LivingEntityKJS extends EntityKJS {
 	}
 
 	default void kjs$setDefaultMovementSpeed(double speed) {
-		kjs$self().getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(speed);
+		kjs$self().kjs$setAttributeBaseValue(Attributes.MOVEMENT_SPEED, speed);
 	}
 
 	default void kjs$setMovementSpeedAddition(double speed) {
@@ -224,7 +224,7 @@ public interface LivingEntityKJS extends EntityKJS {
 	}
 
 	default double kjs$getReachDistance() {
-		return kjs$self().getAttribute(Attributes.BLOCK_INTERACTION_RANGE).getValue();
+		return kjs$self().getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE);
 	}
 
 	default KubeRayTraceResult kjs$rayTrace() {

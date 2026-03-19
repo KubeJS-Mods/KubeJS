@@ -13,7 +13,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.holdersets.OrHolderSet;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public interface HolderWrapper {
 	TypeInfo HOLDER = TypeInfo.of(Holder.class);
 	TypeInfo HOLDER_SET = TypeInfo.of(HolderSet.class);
 
-	static Holder<?> wrap(KubeJSContext cx, Object from, TypeInfo param) {
+	static Holder<?> wrap(KubeJSContext cx, @Nullable Object from, TypeInfo param) {
 		if (from instanceof Holder<?> h) {
 			return h;
 		} else if (from == null) {
@@ -63,6 +63,7 @@ public interface HolderWrapper {
 			throw Context.reportRuntimeError("Can't interpret '" + from + "' as a Reference Holder: cannot obtain its registry id", cx);
 		}
 
+		//noinspection DataFlowIssue
 		return Holder.Reference.createStandAlone(Cast.to(cx.lookupRegistry(param, from)), h.getKey()); // Only null with direct holders
 	}
 

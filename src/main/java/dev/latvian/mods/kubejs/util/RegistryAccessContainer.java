@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,13 +46,13 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 	}
 
 	private final RegistryAccess.Frozen access;
-	private DamageSources damageSources;
+	private @Nullable DamageSources damageSources;
 	private final Map<String, ItemStack> itemStackParseCache;
 	public final Map<ResourceKey<?>, CachedTagLookup.Entry<?>> cachedRegistryTags;
-	public CachedItemTagLookup cachedItemTags;
-	public CachedTagLookup<Block> cachedBlockTags;
-	public CachedTagLookup<Fluid> cachedFluidTags;
-	private Map<Identifier, RegistryWrapper> cachedRegistryWrappers;
+	public @Nullable CachedItemTagLookup cachedItemTags;
+	public @Nullable CachedTagLookup<Block> cachedBlockTags;
+	public @Nullable CachedTagLookup<Fluid> cachedFluidTags;
+	private final Map<Identifier, RegistryWrapper> cachedRegistryWrappers = new HashMap<>();
 
 	public RegistryAccessContainer(RegistryAccess.Frozen access) {
 		super(
@@ -135,10 +136,6 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 	}
 
 	public RegistryWrapper<?> wrapRegistry(Identifier id) {
-		if (cachedRegistryWrappers == null) {
-			cachedRegistryWrappers = new HashMap<>();
-		}
-
 		return cachedRegistryWrappers.computeIfAbsent(id, this::createRegistryWrapper);
 	}
 

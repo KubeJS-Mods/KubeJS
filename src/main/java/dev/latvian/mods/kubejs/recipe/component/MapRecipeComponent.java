@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 
@@ -56,7 +57,7 @@ public record MapRecipeComponent<K, V>(RecipeComponent<K> key, RecipeComponent<V
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
-	public TinyMap<K, V> wrap(RecipeScriptContext cx, Object from) {
+	public TinyMap<K, V> wrap(RecipeScriptContext cx, @Nullable Object from) {
 		return switch (from) {
 			case TinyMap map -> map;
 			case JsonObject o -> wrap(cx, o.asMap());

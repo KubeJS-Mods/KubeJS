@@ -26,7 +26,7 @@ import net.minecraft.world.level.storage.loot.providers.number.BinomialDistribut
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -39,19 +39,19 @@ import static dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper.
 import static dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper.tryParseInt;
 
 public interface MiscWrappers {
-	static IntProvider wrapIntProvider(Context cx, Object o) {
+	static IntProvider wrapIntProvider(Context cx, @Nullable Object o) {
 		return tryWrapIntProvider(cx, o)
 			.getOrThrow(error -> new KubeRuntimeException("Failed to read IntProvider from %s: %s".formatted(o, error))
 				.source(SourceLine.of(cx)));
 	}
 
-	static FloatProvider wrapFloatProvider(Context cx, Object o) {
+	static FloatProvider wrapFloatProvider(Context cx, @Nullable Object o) {
 		return tryWrapFloatProvider(cx, o)
 			.getOrThrow(error -> new KubeRuntimeException("Failed to read FloatProvider from %s: %s".formatted(o, error))
 				.source(SourceLine.of(cx)));
 	}
 
-	static NumberProvider wrapNumberProvider(Context cx, Object o) {
+	static NumberProvider wrapNumberProvider(Context cx, @Nullable Object o) {
 		return tryWrapNumberProvider(cx, o)
 			.getOrThrow(error -> new KubeRuntimeException("Failed to read NumberProvider from %s: %s".formatted(o, error))
 				.source(SourceLine.of(cx)));
@@ -83,7 +83,7 @@ public interface MiscWrappers {
 		};
 	}
 
-	private static DataResult<IntProvider> tryWrapIntProvider(Context cx, Object o) {
+	private static DataResult<IntProvider> tryWrapIntProvider(Context cx, @Nullable Object o) {
 		return switch (o) {
 			case Number n -> success(ConstantInt.of(n.intValue()));
 			case List<?> list -> switch (list.size()) {
@@ -112,7 +112,7 @@ public interface MiscWrappers {
 		};
 	}
 
-	private static DataResult<FloatProvider> tryWrapFloatProvider(Context cx, Object o) {
+	private static DataResult<FloatProvider> tryWrapFloatProvider(Context cx, @Nullable Object o) {
 		return switch (o) {
 			case Number n -> success(ConstantFloat.of(n.floatValue()));
 			case List<?> list -> switch (list.size()) {
@@ -126,7 +126,7 @@ public interface MiscWrappers {
 		};
 	}
 
-	private static DataResult<NumberProvider> tryWrapNumberProvider(Context cx, Object o) {
+	private static DataResult<NumberProvider> tryWrapNumberProvider(Context cx, @Nullable Object o) {
 		return switch (o) {
 			case Number n -> {
 				var f = n.floatValue();
@@ -244,7 +244,8 @@ public interface MiscWrappers {
 		return ClampedNormalFloat.of(mean, deviation, clampTo.min(), clampTo.max());
 	}
 
-	static Path wrapPath(Context cx, Object o) {
+	@Nullable
+	static Path wrapPath(Context cx, @Nullable Object o) {
 		try {
 			if (o instanceof Path p) {
 				return KubeJSPaths.verifyFilePath(p);
@@ -258,7 +259,8 @@ public interface MiscWrappers {
 		}
 	}
 
-	static File wrapFile(Context cx, Object o) {
+	@Nullable
+	static File wrapFile(Context cx, @Nullable Object o) {
 		try {
 			if (o instanceof File f) {
 				return KubeJSPaths.verifyFilePath(f.toPath()).toFile();

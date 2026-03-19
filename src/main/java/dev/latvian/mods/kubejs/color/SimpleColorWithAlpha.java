@@ -1,10 +1,11 @@
 package dev.latvian.mods.kubejs.color;
 
 import net.minecraft.network.chat.TextColor;
+import org.jspecify.annotations.Nullable;
 
 public class SimpleColorWithAlpha implements KubeColor {
 	private final int value;
-	private TextColor textColor;
+	private @Nullable TextColor textColor;
 
 	public SimpleColorWithAlpha(int v) {
 		value = v;

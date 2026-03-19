@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs;
 
 import net.neoforged.fml.loading.FMLLoader;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullUnmarked;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import java.util.List;
 import java.util.Set;
 
+@NullUnmarked
 public class KubeJSMixinPlugin implements IMixinConfigPlugin {
 	@Override
 	public void onLoad(String mixinPackage) {
@@ -20,7 +21,7 @@ public class KubeJSMixinPlugin implements IMixinConfigPlugin {
 	}
 
 	@Override
-	public boolean shouldApplyMixin(@NotNull String targetClassName, @NotNull String mixinClassName) {
+	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
 		if (targetClassName.contains("mezz/modnametooltip")) {
 			return FMLLoader.getCurrent().getLoadingModList().getModFileById("modnametooltip") != null;
 		}

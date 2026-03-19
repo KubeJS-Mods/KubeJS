@@ -5,14 +5,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LivingEntityDropsKubeEvent implements KubeLivingEntityEvent {
 	private final LivingDropsEvent event;
-	public List<ItemEntity> eventDrops;
+	public @Nullable List<ItemEntity> eventDrops;
 
 	public LivingEntityDropsKubeEvent(LivingDropsEvent e) {
 		event = e;

@@ -7,16 +7,16 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class KubeRayTraceResult {
 	public final Entity fromEntity;
 	public final HitResult.Type type;
 	public final double distance;
 	public final Vec3 hit;
-	public final LevelBlock block;
-	public final Direction facing;
-	public final Entity entity;
+	public final @Nullable LevelBlock block;
+	public final @Nullable Direction facing;
+	public final @Nullable Entity entity;
 
 	public KubeRayTraceResult(Entity from, @Nullable HitResult result, double d) {
 		this.fromEntity = from;
@@ -44,14 +44,14 @@ public class KubeRayTraceResult {
 	}
 
 	public double getHitX() {
-		return hit == null ? Double.NaN : hit.x;
+		return hit.x;
 	}
 
 	public double getHitY() {
-		return hit == null ? Double.NaN : hit.y;
+		return hit.y;
 	}
 
 	public double getHitZ() {
-		return hit == null ? Double.NaN : hit.z;
+		return hit.z;
 	}
 }

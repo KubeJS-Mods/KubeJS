@@ -16,7 +16,8 @@ import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Contract;
+import org.jspecify.annotations.Nullable;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -76,11 +77,13 @@ public interface JsonUtils {
 		};
 	}
 
+	@Nullable
 	static JsonPrimitive primitiveOf(Context cx, @Nullable Object o) {
 		return of(cx, o) instanceof JsonPrimitive p ? p : null;
 	}
 
 	@Nullable
+	@Contract("_, null -> null; _, _ -> !null")
 	static JsonObject objectOf(Context cx, @Nullable Object map) {
 		return switch (map) {
 			case null -> null;
@@ -128,6 +131,7 @@ public interface JsonUtils {
 	}
 
 	@Nullable
+	@Contract("_, null -> null; _, _ -> !null")
 	static JsonArray arrayOf(Context cx, @Nullable Object array) {
 		return switch (array) {
 			case null -> null;

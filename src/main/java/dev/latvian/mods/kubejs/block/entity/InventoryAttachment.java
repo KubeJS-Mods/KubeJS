@@ -20,7 +20,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -166,7 +166,7 @@ public class InventoryAttachment implements BlockEntityAttachment {
 
 	public final int width, height;
 	public final KubeBlockEntity blockEntity;
-	public final ItemPredicate inputFilter;
+	public final @Nullable ItemPredicate inputFilter;
 	public final Wrapped inventory;
 
 	public InventoryAttachment(KubeBlockEntity blockEntity, int width, int height, @Nullable ItemPredicate inputFilter) {
@@ -218,7 +218,7 @@ public class InventoryAttachment implements BlockEntityAttachment {
 	}
 
 	@Override
-	public void deserialize(HolderLookup.Provider registries, Tag tag) {
+	public void deserialize(HolderLookup.Provider registries, @Nullable Tag tag) {
 		inventory.stacks().clear();
 		for (int i = 0; i < width * height; i++) {
 			inventory.stacks().add(ItemStack.EMPTY);

@@ -4,10 +4,12 @@ import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentInitializers;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 public interface ReloadableServerResourcesKJS {
+	@Nullable
 	default ServerScriptManager kjs$getServerScriptManager() {
 		throw new NoMixinException();
 	}

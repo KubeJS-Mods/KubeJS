@@ -6,15 +6,15 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.util.DependencySorter;
 import net.minecraft.world.item.Items;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,9 +45,9 @@ public class CachedTagLookup<T> {
 
 	public final Registry<T> registry;
 	public final Map<Identifier, List<TagLoader.EntryWithSource>> originalMap;
-	private Map<Identifier, Collection<Holder<T>>> tagMap;
-	private Map<TagKey<T>, Set<T>> keyToValue;
-	private Map<T, Set<TagKey<T>>> valueToKey;
+	private @Nullable Map<Identifier, Collection<Holder<T>>> tagMap;
+	private @Nullable Map<TagKey<T>, Set<T>> keyToValue;
+	private @Nullable Map<T, Set<TagKey<T>>> valueToKey;
 
 	public CachedTagLookup(Registry<T> registry, Map<Identifier, List<TagLoader.EntryWithSource>> originalMap) {
 		this.registry = registry;

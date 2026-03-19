@@ -28,7 +28,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,33 +47,33 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 	public record HurtEnemyContext(ItemStack getItem, LivingEntity getTarget, LivingEntity getAttacker) {
 	}
 
-	public transient Map<Object, Object> components;
+	public transient @Nullable Map<Object, Object> components;
 	public transient int maxStackSize;
 	public transient int maxDamage;
 	public transient int burnTime;
-	private Identifier containerItem;
-	public transient Function<ItemStack, Collection<ItemStack>> subtypes;
-	public transient Rarity rarity;
+	private @Nullable Identifier containerItem;
+	public transient @Nullable Function<ItemStack, Collection<ItemStack>> subtypes;
+	public transient @Nullable Rarity rarity;
 	public transient boolean fireResistant;
 	public transient boolean glow;
 	public transient final List<Component> tooltip;
 	@Nullable
 	public transient ItemTintFunction tint;
-	public transient FoodBuilder foodBuilder;
-	public transient Function<ItemStack, KubeColor> barColor;
-	public transient ToIntFunction<ItemStack> barWidth;
-	public transient NameCallback nameGetter;
+	public transient @Nullable FoodBuilder foodBuilder;
+	public transient @Nullable Function<ItemStack, KubeColor> barColor;
+	public transient @Nullable ToIntFunction<ItemStack> barWidth;
+	public transient @Nullable NameCallback nameGetter;
 
-	public transient ItemUseAnimation anim;
-	public transient ToIntBiFunction<ItemStack, LivingEntity> useDuration;
-	public transient UseCallback use;
-	public transient FinishUsingCallback finishUsing;
-	public transient ReleaseUsingCallback releaseUsing;
-	public transient Predicate<HurtEnemyContext> hurtEnemy;
-	public transient ResourceKey<JukeboxSong> jukeboxSong;
+	public transient @Nullable ItemUseAnimation anim;
+	public transient @Nullable ToIntBiFunction<ItemStack, LivingEntity> useDuration;
+	public transient @Nullable UseCallback use;
+	public transient @Nullable FinishUsingCallback finishUsing;
+	public transient @Nullable ReleaseUsingCallback releaseUsing;
+	public transient @Nullable Predicate<HurtEnemyContext> hurtEnemy;
+	public transient @Nullable ResourceKey<JukeboxSong> jukeboxSong;
 
-	public transient Tool tool;
-	public transient ItemAttributeModifiers itemAttributeModifiers;
+	public transient @Nullable Tool tool;
+	public transient @Nullable ItemAttributeModifiers itemAttributeModifiers;
 	public transient boolean canRepair;
 
 	public ItemBuilder(Identifier id) {

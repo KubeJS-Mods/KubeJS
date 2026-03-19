@@ -24,7 +24,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public record RegistryComponent<T>(
 	ResourceKey<? extends Registry<T>> registry,
@@ -58,7 +58,7 @@ public record RegistryComponent<T>(
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Holder<T> wrap(RecipeScriptContext cx, Object from) {
+	public Holder<T> wrap(RecipeScriptContext cx, @Nullable Object from) {
 		var lookup = cx.registries().registryAccess().lookupOrThrow(registry);
 
 		if (registry.equals(Registries.ITEM)) {
@@ -98,7 +98,7 @@ public record RegistryComponent<T>(
 	}
 
 	@Override
-	public boolean hasPriority(RecipeMatchContext cx, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return (regType != null && regType.baseClass().isInstance(from))
 			|| (ID.isValidKey(from))
 			|| (from instanceof JsonPrimitive json && json.isString() && Identifier.tryParse(json.getAsString()) != null);

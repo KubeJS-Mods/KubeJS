@@ -83,7 +83,7 @@ public class KubedexPayloadHandler {
 			if (blockEntity != null) {
 				var ejson = new CompoundTag();
 				payloadBlock.put("block_entity", ejson);
-				ejson.putString("id", BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntity.getType()).toString());
+				ejson.putString("id", blockEntity.typeHolder().getRegisteredName());
 
 				try {
 					ejson.put("components", DataComponentMap.CODEC.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), blockEntity.components()).result().get());

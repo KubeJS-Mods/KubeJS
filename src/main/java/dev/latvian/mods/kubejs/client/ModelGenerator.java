@@ -8,7 +8,7 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.AABB;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,8 +73,8 @@ public class ModelGenerator {
 	public static class Face {
 		public final Direction side;
 		private String texture = "kubejs:block/unknown";
-		private Direction cullface = null;
-		private double[] uv = null;
+		private @Nullable Direction cullface = null;
+		private double @Nullable [] uv = null;
 		private int tintindex = -1;
 
 		public Face(Direction side) {
@@ -167,11 +167,11 @@ public class ModelGenerator {
 
 	private static final Identifier CUBE = Identifier.withDefaultNamespace("block/cube");
 
-	private Identifier parent = CUBE;
+	private @Nullable Identifier parent = CUBE;
 	private final Map<String, String> textures = new HashMap<>(1);
 	private final List<Element> elements = new ArrayList<>();
 	private final List<Override> overrides = new ArrayList<>();
-	private Consumer<JsonObject> customJson = null;
+	private @Nullable Consumer<JsonObject> customJson = null;
 
 	public JsonObject toJson() {
 		var json = new JsonObject();

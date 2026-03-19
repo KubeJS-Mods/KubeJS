@@ -7,8 +7,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +58,6 @@ public record HolderSetWrapper<T>(Registry<T> registry, HolderSet<T> holders) im
 		return holders.getRandomElement(random).map(Holder::value).orElse(null);
 	}
 
-	@NotNull
 	@Override
 	public Iterator<T> iterator() {
 		return Iterators.transform(holders.iterator(), Holder::value);

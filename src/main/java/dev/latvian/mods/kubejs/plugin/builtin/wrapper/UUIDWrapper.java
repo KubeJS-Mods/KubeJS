@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.rhino.Context;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -31,7 +31,7 @@ public interface UUIDWrapper {
 	}
 
 	@Nullable
-	static UUID fromString(Context cx, Object o) {
+	static UUID fromString(Context cx, @Nullable Object o) {
 		if (o instanceof UUID) {
 			return (UUID) o;
 		} else if (o == null) {

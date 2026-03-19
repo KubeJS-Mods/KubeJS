@@ -16,6 +16,7 @@ import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.component.UseRemainder;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +31,9 @@ public class FoodBuilder {
 	private float saturation;
 	private boolean alwaysEdible;
 	private float eatSeconds;
-	private ItemStackTemplate usingConvertsTo;
+	private @Nullable ItemStackTemplate usingConvertsTo;
 	private final List<ApplyStatusEffectsConsumeEffect> effects;
-	public Consumer<FoodEatenKubeEvent> eaten;
+	public @Nullable Consumer<FoodEatenKubeEvent> eaten;
 
 	public FoodBuilder() {
 		this.nutrition = 0;
@@ -178,7 +179,7 @@ public class FoodBuilder {
 	}
 
 	public ItemStack getUsingConvertsTo() {
-		return usingConvertsTo.create();
+		return usingConvertsTo != null ? usingConvertsTo.create() : ItemStack.EMPTY;
 	}
 
 	public List<ApplyStatusEffectsConsumeEffect> getEffects() {

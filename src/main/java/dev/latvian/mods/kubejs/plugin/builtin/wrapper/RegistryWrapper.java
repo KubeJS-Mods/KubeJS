@@ -12,8 +12,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -22,7 +21,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey) implements Iterable<T> {
+public record RegistryWrapper<T>(Registry<T> registry, @Nullable ResourceKey<T> unknownKey) implements Iterable<T> {
 	public static RegistryWrapper<?> of(Context cx, Identifier id) {
 		return RegistryAccessContainer.of(cx).wrapRegistry(id);
 	}
@@ -92,7 +91,6 @@ public record RegistryWrapper<T>(Registry<T> registry, ResourceKey<T> unknownKey
 		return registry.getResourceKey(value).orElse(unknownKey);
 	}
 
-	@NotNull
 	@Override
 	public ListIterator<T> iterator() {
 		return getValues().listIterator();

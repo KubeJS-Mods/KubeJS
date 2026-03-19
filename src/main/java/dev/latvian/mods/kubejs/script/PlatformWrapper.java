@@ -7,6 +7,7 @@ import dev.latvian.mods.rhino.Context;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.data.loading.DatagenModLoader;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -62,7 +63,7 @@ public class PlatformWrapper {
 		}
 	}
 
-	private static Map<String, ModInfo> allMods;
+	private static @Nullable Map<String, ModInfo> allMods;
 
 	@Deprecated
 	public static String getName() {
@@ -150,7 +151,7 @@ public class PlatformWrapper {
 		return Thread.currentThread().getName();
 	}
 
-	public static String getPackMode() {
+	public static @Nullable String getPackMode() {
 		return CommonProperties.get().packMode;
 	}
 }

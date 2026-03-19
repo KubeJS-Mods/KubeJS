@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -24,7 +24,7 @@ public class StackTraceCollector extends PrintStream {
 	};
 
 	private final Collection<String> stackTrace;
-	private final Pattern exitPattern;
+	private final @Nullable Pattern exitPattern;
 	private final Function<String, String> reduce;
 	private boolean exit;
 

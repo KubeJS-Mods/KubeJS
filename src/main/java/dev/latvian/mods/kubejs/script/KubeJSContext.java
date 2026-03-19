@@ -21,7 +21,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Contract;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.AccessibleObject;
 import java.util.Collections;
@@ -33,7 +35,7 @@ import java.util.Optional;
 public class KubeJSContext extends Context {
 	public final KubeJSContextFactory kjsFactory;
 	public final Scriptable topLevelScope;
-	private Map<String, Either<NativeJavaClass, Boolean>> javaClassCache;
+	private @Nullable Map<String, Either<NativeJavaClass, Boolean>> javaClassCache;
 
 	public KubeJSContext(KubeJSContextFactory factory) {
 		super(factory);
@@ -177,7 +179,9 @@ public class KubeJSContext extends Context {
 		return super.internalJsToJavaLast(from, target);
 	}
 
-	public NativeJavaClass loadJavaClass(String name, boolean error) {
+	@Contract("null, false -> null; null, true -> fail")
+	@NullUnmarked
+	public NativeJavaClass loadJavaClass(@Nullable String name, boolean error) {
 		if (name == null || name.equals("null") || name.isEmpty()) {
 			if (error) {
 				throw reportRuntimeError("Class name can't be empty!", this);

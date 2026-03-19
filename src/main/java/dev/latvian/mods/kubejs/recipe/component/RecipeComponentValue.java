@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.WrappedJS;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
@@ -17,7 +18,7 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 
 	public final RecipeKey<T> key;
 	public final int index;
-	public T value;
+	public @Nullable T value;
 	public boolean write;
 
 	public RecipeComponentValue(RecipeKey<T> key, int index) {
@@ -39,7 +40,7 @@ public final class RecipeComponentValue<T> implements WrappedJS, Map.Entry<Recip
 	}
 
 	public boolean replace(RecipeScriptContext cx, ReplacementMatchInfo match, Object with) {
-		var newValue = value == null ? null : key.component.replace(cx, value, match, with);
+		T newValue = value == null ? null : key.component.replace(cx, value, match, with);
 
 		if (value != newValue) {
 			value = newValue;
