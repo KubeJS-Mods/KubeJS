@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.server;
 import com.mojang.brigadier.ParseResults;
 import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.neoforge.event.CommandEvent;
+import org.jspecify.annotations.Nullable;
 
 public class CommandKubeEvent extends ServerKubeEvent {
 	private final CommandEvent event;
@@ -30,6 +31,7 @@ public class CommandKubeEvent extends ServerKubeEvent {
 		event.setParseResults(parse);
 	}
 
+	@Nullable
 	public Throwable getException() {
 		return event.getException();
 	}

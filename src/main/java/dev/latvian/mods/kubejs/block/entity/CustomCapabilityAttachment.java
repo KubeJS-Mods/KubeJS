@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.block.entity;
 
 import dev.latvian.mods.kubejs.KubeJS;
 import net.neoforged.neoforge.capabilities.BlockCapability;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Supplier;

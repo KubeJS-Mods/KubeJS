@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import org.jspecify.annotations.Nullable;
 
 @Info(value = """
 	Invoked when a block is placed.
@@ -24,6 +25,7 @@ public class BlockPlacedKubeEvent implements KubeEntityEvent {
 	}
 
 	@Override
+	@Nullable
 	@Info("The entity that placed the block. Can be `null`, e.g. when a block is placed by a dispenser.")
 	public Entity getEntity() {
 		return event.getEntity();

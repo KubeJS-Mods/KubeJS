@@ -11,7 +11,7 @@ import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -27,11 +27,11 @@ public class EventHandler extends BaseFunction {
 	public final String name;
 	public final ScriptTypePredicate scriptTypePredicate;
 	public final Supplier<Class<? extends KubeEvent>> eventType;
-	protected TypeInfo result;
-	public transient EventTargetType<?> target;
+	protected @Nullable TypeInfo result;
+	public transient @Nullable EventTargetType<?> target;
 	public transient boolean targetRequired;
-	protected EventHandlerContainer[] eventContainers;
-	public transient EventExceptionHandler exceptionHandler;
+	protected @Nullable EventHandlerContainer @Nullable [] eventContainers;
+	public transient @Nullable EventExceptionHandler exceptionHandler;
 
 	EventHandler(EventGroup g, String n, ScriptTypePredicate st, Supplier<Class<? extends KubeEvent>> e) {
 		this.group = g;
@@ -149,7 +149,7 @@ public class EventHandler extends BaseFunction {
 		}
 	}
 
-	protected EventHandlerContainer[] createMap(@Nullable Object extraId) {
+	protected @Nullable EventHandlerContainer[] createMap(@Nullable Object extraId) {
 		if (eventContainers == null) {
 			eventContainers = new EventHandlerContainer[ScriptType.VALUES.length];
 		}
@@ -254,6 +254,7 @@ public class EventHandler extends BaseFunction {
 	}
 
 	@Override
+	@Nullable
 	public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
 		ScriptType type = ((KubeJSContext) cx).getType();
 

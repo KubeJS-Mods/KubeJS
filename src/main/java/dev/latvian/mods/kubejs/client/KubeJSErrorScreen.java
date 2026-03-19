@@ -21,8 +21,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Util;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.Desktop;
 import java.net.URI;
@@ -32,19 +32,19 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+@SuppressWarnings("NotNullFieldNotInitialized") // lateinit fields
 public class KubeJSErrorScreen extends Screen {
-	public final Screen lastScreen;
+	public final @Nullable Screen lastScreen;
 	public final ScriptType scriptType;
-	public final Path logFile;
+	public final @Nullable Path logFile;
 	public final List<ConsoleLine> errors;
 	public final List<ConsoleLine> warnings;
 	public final boolean canClose;
 	public List<ConsoleLine> viewing;
 	private ErrorList list;
-	@Nullable
 	private List<FormattedCharSequence> tooltip;
 
-	public KubeJSErrorScreen(Screen lastScreen, ScriptType scriptType, @Nullable Path logFile, List<ConsoleLine> errors, List<ConsoleLine> warnings, boolean canClose) {
+	public KubeJSErrorScreen(@Nullable Screen lastScreen, ScriptType scriptType, @Nullable Path logFile, List<ConsoleLine> errors, List<ConsoleLine> warnings, boolean canClose) {
 		super(Component.empty());
 		this.lastScreen = lastScreen;
 		this.scriptType = scriptType;
@@ -56,11 +56,11 @@ public class KubeJSErrorScreen extends Screen {
 		this.viewing = errors.isEmpty() && !warnings.isEmpty() ? warnings : errors;
 	}
 
-	public KubeJSErrorScreen(Screen lastScreen, ConsoleJS console, boolean canClose) {
+	public KubeJSErrorScreen(@Nullable Screen lastScreen, ConsoleJS console, boolean canClose) {
 		this(lastScreen, console.scriptType, console.scriptType.getLogFile(), new ArrayList<>(console.errors), new ArrayList<>(console.warnings), canClose);
 	}
 
-	public void setTooltip(@Nullable List<FormattedCharSequence> tooltip) {
+	public void setTooltip(List<FormattedCharSequence> tooltip) {
 		this.tooltip = tooltip;
 	}
 
@@ -393,6 +393,7 @@ public class KubeJSErrorScreen extends Screen {
 			return true;
 		}
 
+		@Nullable
 		private String fixSource(@Nullable String source) {
 			if (source != null && !source.isEmpty()) {
 				int c = source.indexOf(':');

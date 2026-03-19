@@ -6,25 +6,26 @@ import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.MutedError;
 import dev.latvian.mods.rhino.RhinoException;
+import org.jspecify.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class KubeRuntimeException extends RuntimeException implements MutedError {
 	private SourceLine sourceLine;
-	private Map<String, Object> customData;
+	private @Nullable Map<String, Object> customData;
 
 	public KubeRuntimeException(String m) {
 		super(m);
 		this.sourceLine = SourceLine.UNKNOWN;
 	}
 
-	public KubeRuntimeException(String m, Throwable cause) {
+	public KubeRuntimeException(String m, @Nullable Throwable cause) {
 		super(m, cause);
 		this.sourceLine = SourceLine.UNKNOWN;
 	}
 
-	public KubeRuntimeException(Throwable cause) {
+	public KubeRuntimeException(@Nullable Throwable cause) {
 		super(cause);
 		this.sourceLine = SourceLine.UNKNOWN;
 	}

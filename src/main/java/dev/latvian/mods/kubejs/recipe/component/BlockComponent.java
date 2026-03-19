@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jspecify.annotations.Nullable;
 
 public record BlockComponent(boolean allowEmpty) implements RecipeComponent<Block> {
 	private static final Codec<Block> CODEC = BuiltInRegistries.BLOCK.byNameCodec();
@@ -41,7 +42,7 @@ public record BlockComponent(boolean allowEmpty) implements RecipeComponent<Bloc
 	}
 
 	@Override
-	public Block wrap(RecipeScriptContext cx, Object from) {
+	public Block wrap(RecipeScriptContext cx, @Nullable Object from) {
 		return switch (from) {
 			case Block b -> b;
 			case BlockState s -> s.getBlock();

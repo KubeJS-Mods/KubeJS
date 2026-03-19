@@ -1,13 +1,16 @@
 package dev.latvian.mods.kubejs;
 
 import dev.latvian.mods.kubejs.util.BaseProperties;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
 
 import static dev.latvian.mods.kubejs.client.EditorExt.*;
 
+@NullUnmarked
 public class DevProperties extends BaseProperties {
-	private static DevProperties instance;
+	private static @Nullable DevProperties instance;
 
 	public static DevProperties get() {
 		if (instance == null) {

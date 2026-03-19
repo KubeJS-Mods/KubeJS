@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -31,7 +31,7 @@ public abstract class EntityMixin implements EntityKJS {
 	public abstract void playerTouch(Player arg);
 
 	@Unique
-	private CompoundTag kjs$persistentData;
+	private @Nullable CompoundTag kjs$persistentData;
 
 	@Override
 	public CompoundTag kjs$getPersistentData() {

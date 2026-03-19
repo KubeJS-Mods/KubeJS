@@ -36,8 +36,8 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ServerScriptManager extends ScriptManager {
-	private static ServerScriptManager staticInstance;
+	private static @Nullable ServerScriptManager staticInstance;
 
 	@ApiStatus.Internal
 	public static ServerScriptManager createForDataGen() {
@@ -96,7 +96,7 @@ public class ServerScriptManager extends ScriptManager {
 
 	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
 	public final RecipeSchemaStorage recipeSchemaStorage;
-	public SyncServerDataPayload serverData;
+	public @Nullable SyncServerDataPayload serverData;
 	public final VirtualDataPack internalDataPack;
 	public final VirtualDataPack registriesDataPack;
 	public final Map<GeneratedDataStage, VirtualDataPack> virtualPacks;
@@ -199,7 +199,7 @@ public class ServerScriptManager extends ScriptManager {
 					@Override
 					public <E> Optional<Registry<E>> lookup(ResourceKey<? extends Registry<? extends E>> registryKey) {
 						return Cast.to(registries.computeIfAbsent(registryKey, key -> {
-							var c = current.access().lookup(key);
+							var c = current.lookup(key);
 							if (c.isPresent()) {
 								return Cast.to(c);
 							}
@@ -209,7 +209,7 @@ public class ServerScriptManager extends ScriptManager {
 
 					@Override
 					public Stream<RegistryEntry<?>> registries() {
-						return current.access().registries();
+						return current.registries();
 					}
 				});
 

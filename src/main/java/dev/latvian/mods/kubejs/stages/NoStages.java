@@ -1,11 +1,13 @@
 package dev.latvian.mods.kubejs.stages;
 
 import net.minecraft.world.entity.player.Player;
+import org.jspecify.annotations.NullUnmarked;
 
 import java.util.Collection;
 import java.util.Set;
 
-public record NoStages(Player player) implements Stages {
+public record NoStages(@NullUnmarked Player player) implements Stages {
+	@SuppressWarnings("DataFlowIssue")
 	public static final NoStages NULL_INSTANCE = new NoStages(null);
 
 	@Override

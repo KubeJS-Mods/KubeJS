@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
 import net.neoforged.neoforge.registries.holdersets.ICustomHolderSet;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +30,8 @@ public class NamespaceHolderSet<T> extends HolderSet.ListBacked<T> implements IC
 		).apply(instance, NamespaceHolderSet::new));
 	}
 
+	// FIXME
+	@Nullable
 	public static <T> StreamCodec<RegistryFriendlyByteBuf, NamespaceHolderSet<T>> streamCodec(ResourceKey<? extends Registry<T>> registryKey) {
 		return null;
 	}

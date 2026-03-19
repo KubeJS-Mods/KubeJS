@@ -27,7 +27,7 @@ import net.minecraft.network.chat.contents.ScoreContents;
 import net.minecraft.network.chat.contents.SelectorContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.component.ItemLore;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
 import java.util.Arrays;

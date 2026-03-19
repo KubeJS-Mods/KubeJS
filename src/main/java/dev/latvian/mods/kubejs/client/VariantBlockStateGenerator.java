@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.function.Consumer;
 
 public class VariantBlockStateGenerator {
 	public static class Variant {
-		private String key;
+		private @Nullable String key;
 		private final List<Model> models = new ArrayList<>();
 
 		public Model model(Identifier s) {

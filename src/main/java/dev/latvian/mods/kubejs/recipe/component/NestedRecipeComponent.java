@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
+import org.jspecify.annotations.Nullable;
 
 public class NestedRecipeComponent implements RecipeComponent<KubeRecipe> {
 	private static final ResourceKey<RecipeComponentType<?>> TYPE = RecipeComponentType.builtin("nested_recipe");
@@ -30,7 +31,7 @@ public class NestedRecipeComponent implements RecipeComponent<KubeRecipe> {
 	}
 
 	@Override
-	public KubeRecipe wrap(RecipeScriptContext cx, Object from) {
+	public KubeRecipe wrap(RecipeScriptContext cx, @Nullable Object from) {
 		if (from instanceof KubeRecipe r) {
 			return KubeRecipeEventOps.MARK_SYNTHETIC.apply(r);
 		} else if (from instanceof JsonObject json && json.has("type")) {
@@ -41,7 +42,7 @@ public class NestedRecipeComponent implements RecipeComponent<KubeRecipe> {
 	}
 
 	@Override
-	public boolean hasPriority(RecipeMatchContext cx, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return from instanceof KubeRecipe || from instanceof JsonObject json && json.has("type");
 	}
 

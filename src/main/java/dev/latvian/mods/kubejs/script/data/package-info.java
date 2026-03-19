@@ -1,3 +1,4 @@
-@dev.latvian.mods.kubejs.util.NonnullByDefault
+@NullMarked
 package dev.latvian.mods.kubejs.script.data;
 
+import org.jspecify.annotations.NullMarked;

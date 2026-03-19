@@ -5,6 +5,7 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.material.Fluid;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,10 +19,10 @@ public abstract class FluidMixin implements FluidKJS {
 	private Holder.Reference<Fluid> builtInRegistryHolder;
 
 	@Unique
-	private ResourceKey<Fluid> kjs$registryKey;
+	private @Nullable ResourceKey<Fluid> kjs$registryKey;
 
 	@Unique
-	private String kjs$id;
+	private @Nullable String kjs$id;
 
 	@Override
 	public Holder.Reference<Fluid> kjs$asHolder() {

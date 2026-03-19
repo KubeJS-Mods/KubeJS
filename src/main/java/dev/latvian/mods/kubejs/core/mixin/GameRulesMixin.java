@@ -7,13 +7,14 @@ import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRuleTypeVisitor;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Mixin(GameRules.class)
 @RemapPrefixForJS("kjs$")
@@ -28,7 +29,7 @@ public abstract class GameRulesMixin implements GameRulesKJS {
 	public abstract void visitGameRuleTypes(GameRuleTypeVisitor visitor);
 
 	@Unique
-	private Map<String, GameRule<?>> kjs$ruleCache;
+	private @Nullable Map<String, GameRule<?>> kjs$ruleCache;
 
 	@Unique
 	private void kjs$initCache() {
@@ -51,7 +52,7 @@ public abstract class GameRulesMixin implements GameRulesKJS {
 	@Nullable
 	private GameRule<?> kjs$getCachedRule(String rule) {
 		kjs$initCache();
-		return kjs$ruleCache.get(rule);
+		return Objects.requireNonNull(kjs$ruleCache).get(rule);
 	}
 
 	@Override

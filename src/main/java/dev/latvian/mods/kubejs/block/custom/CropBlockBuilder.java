@@ -34,11 +34,12 @@ import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.Tags;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
@@ -60,11 +61,9 @@ public class CropBlockBuilder extends BlockBuilder {
 		boolean survive(BlockState state, LevelReader reader, BlockPos pos);
 	}
 
-	public static class ShapeBuilder {
-		private final List<VoxelShape> shapes;
-
-		public ShapeBuilder(int age) {
-			this.shapes = new ArrayList<>(Collections.nCopies(age + 1, Shapes.block()));
+	public record ShapeBuilder(List<VoxelShape> shapes) {
+		public ShapeBuilder(int shapes) {
+			this(new ArrayList<>(Collections.nCopies(shapes + 1, Shapes.block())));
 		}
 
 		@Info("""
@@ -114,16 +113,17 @@ public class CropBlockBuilder extends BlockBuilder {
 			return carrot();
 		}
 
-		public List<VoxelShape> getShapes() {
+		@Override
+		public List<VoxelShape> shapes() {
 			return List.copyOf(shapes);
 		}
 	}
 
 	public transient int age;
 	protected transient List<VoxelShape> shapeByAge;
-	public transient ToDoubleFunction<RandomTickCallback> growSpeedCallback;
-	public transient ToIntFunction<RandomTickCallback> fertilizerCallback;
-	public transient SurviveCallback surviveCallback;
+	public transient @Nullable ToDoubleFunction<RandomTickCallback> growSpeedCallback;
+	public transient @Nullable ToIntFunction<RandomTickCallback> fertilizerCallback;
+	public transient @Nullable SurviveCallback surviveCallback;
 
 	public transient List<Pair<Holder<Item>, NumberProvider>> outputs;
 	public transient boolean noSeeds;
@@ -137,8 +137,7 @@ public class CropBlockBuilder extends BlockBuilder {
 		surviveCallback = null;
 		renderType = BlockRenderType.CUTOUT;
 		noCollision = true;
-		itemBuilder = new SeedItemBuilder(newID("", "_seeds"));
-		((SeedItemBuilder) itemBuilder).blockBuilder = this;
+		itemBuilder = new SeedItemBuilder(this, newID("", "_seeds"));
 		hardness = 0.0f;
 		resistance = 0.0f;
 		outputs = new ArrayList<>();
@@ -192,7 +191,7 @@ public class CropBlockBuilder extends BlockBuilder {
 		this.age = age;
 		ShapeBuilder shapes = new ShapeBuilder(age);
 		builder.accept(shapes);
-		this.shapeByAge = shapes.getShapes();
+		this.shapeByAge = shapes.shapes();
 		textures.clear();
 
 		for (int i = 0; i <= age; i++) {
@@ -232,7 +231,7 @@ public class CropBlockBuilder extends BlockBuilder {
 	@Nullable
 	public LootTable generateLootTable(KubeDataGenerator generator) {
 		// TODO: Use this lookup to apply fortune bonus
-		var registries = generator.getRegistries().access();
+		var registries = generator.getRegistries();
 
 		var mature = LootItemBlockStatePropertyCondition.hasBlockStateProperties(this.get())
 			.setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(CropBlock.AGE, age));
@@ -282,7 +281,7 @@ public class CropBlockBuilder extends BlockBuilder {
 	@Override
 	protected void generateItemModel(ModelGenerator m) {
 		m.parent(KubeAssetGenerator.GENERATED_ITEM_MODEL);
-		m.texture("layer0", itemBuilder.baseTexture);
+		m.texture("layer0", Objects.requireNonNull(itemBuilder).baseTexture);
 	}
 
 	@Override

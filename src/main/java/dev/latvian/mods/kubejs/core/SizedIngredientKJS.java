@@ -7,13 +7,14 @@ import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ItemMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
+import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 public interface SizedIngredientKJS extends Replaceable, IngredientSupplierKJS, ItemMatch {
 	default SizedIngredient kjs$self() {
-		return (SizedIngredient) (Object) this;
+		return Cast.to(this);
 	}
 
 	@Override

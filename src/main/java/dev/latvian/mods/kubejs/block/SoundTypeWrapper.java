@@ -14,6 +14,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.block.SoundType;
 import net.neoforged.neoforge.common.util.DeferredSoundType;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
@@ -23,7 +24,7 @@ import java.util.Map;
 public class SoundTypeWrapper implements TypeWrapperFactory<SoundType> {
 	public static final SoundTypeWrapper INSTANCE = new SoundTypeWrapper();
 
-	private Map<String, SoundType> map;
+	private @Nullable Map<String, SoundType> map;
 
 	public Map<String, SoundType> getMap() {
 		if (map == null) {

@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 
 public class MultipartBlockStateGenerator {
 	public static class Part {
-		private String when;
+		private String when = "";
 		private final List<VariantBlockStateGenerator.Model> apply = new ArrayList<>();
 
 		public VariantBlockStateGenerator.Model model(Identifier s) {

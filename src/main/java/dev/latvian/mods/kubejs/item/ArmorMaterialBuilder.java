@@ -13,6 +13,7 @@ import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.EquipmentAssets;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 
@@ -20,11 +21,11 @@ import java.util.Map;
 @ReturnsSelf
 public class ArmorMaterialBuilder extends BuilderBase<ArmorMaterial> {
 	public transient int durability;
-	public transient Map<ArmorType, Integer> defense;
+	public transient @Nullable Map<ArmorType, Integer> defense;
 	public transient int enchantmentValue;
-	public transient Holder<SoundEvent> equipSound;
-	public transient TagKey<Item> repairIngredient;
-	public transient ResourceKey<EquipmentAsset> assetId;
+	public transient @Nullable Holder<SoundEvent> equipSound;
+	public transient @Nullable TagKey<Item> repairIngredient;
+	public transient @Nullable ResourceKey<EquipmentAsset> assetId;
 	public transient float toughness;
 	public transient float knockbackResistance;
 

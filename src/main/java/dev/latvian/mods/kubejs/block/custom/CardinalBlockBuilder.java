@@ -25,8 +25,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,13 +106,13 @@ public class CardinalBlockBuilder extends BlockBuilder {
 		}
 
 		@Override
-		protected void createBlockStateDefinition(@NotNull StateDefinition.Builder<Block, BlockState> builder) {
+		protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 			builder.add(FACING);
 			super.createBlockStateDefinition(builder);
 		}
 
 		@Override
-		public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
+		public BlockState getStateForPlacement(BlockPlaceContext context) {
 			var state = defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
 
 			if (blockBuilder.canBeWaterlogged()) {
@@ -134,6 +133,7 @@ public class CardinalBlockBuilder extends BlockBuilder {
 		}
 	}
 
+	@SuppressWarnings("DataFlowIssue") // safe
 	public static class WithEntity extends CardinalKubeBlock implements EntityBlock {
 		public WithEntity(BlockBuilder p) {
 			super(p);

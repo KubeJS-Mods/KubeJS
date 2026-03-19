@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.block.predicate;
 
 import net.minecraft.nbt.CompoundTag;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @FunctionalInterface
 public interface BlockEntityPredicateDataCheck {

@@ -13,6 +13,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public record ItemStackComponent(ResourceKey<RecipeComponentType<?>> type, Codec
 	}
 
 	@Override
-	public boolean hasPriority(RecipeMatchContext cx, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return ItemWrapper.isItemStackLike(from);
 	}
 

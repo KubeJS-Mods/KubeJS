@@ -14,6 +14,7 @@ import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -50,11 +51,11 @@ public final class RecipeKey<T> {
 	public final String name;
 	public final ComponentRole role;
 	public final SequencedSet<String> names;
-	public RecipeOptional<T> optional;
+	public @Nullable RecipeOptional<T> optional;
 	public boolean excluded;
-	public List<String> functionNames;
+	public @Nullable List<String> functionNames;
 	public boolean alwaysWrite;
-	private List<String> validFunctionNames;
+	private @Nullable List<String> validFunctionNames;
 
 	public RecipeKey(RecipeComponent<T> component, String name, ComponentRole role) {
 		this.component = component;
@@ -80,7 +81,7 @@ public final class RecipeKey<T> {
 		var sb = new StringBuilder(name);
 		sb.append(':');
 		sb.append(' ');
-		sb.append(component.toString());
+		sb.append(component);
 
 		if (optional != null) {
 			sb.append('?');

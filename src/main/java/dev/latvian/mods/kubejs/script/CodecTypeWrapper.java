@@ -7,9 +7,11 @@ import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Wrapper;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.wrap.TypeWrapperFactory;
+import org.jspecify.annotations.Nullable;
 
-public record CodecTypeWrapper<T>(Class<T> target, Codec<T> codec, T defaultValue) implements TypeWrapperFactory<T> {
+public record CodecTypeWrapper<T>(Class<T> target, Codec<T> codec, @Nullable T defaultValue) implements TypeWrapperFactory<T> {
 	@Override
+	@Nullable
 	public T wrap(Context cx, Object o, TypeInfo target) {
 		o = Wrapper.unwrapped(o);
 

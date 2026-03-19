@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

@@ -73,7 +73,7 @@ import net.neoforged.neoforge.client.settings.KeyModifier;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public class KubeJSClientEventHandler {
 	public static void blockTintSources(RegisterColorHandlersEvent.BlockTintSources event) {
 		for (var builder : RegistryObjectStorage.BLOCK) {
 			if (builder instanceof BlockBuilder b && b.tint != null) {
-				var tintSources = new ArrayList<BlockTintSource>();
+				var tintSources = new ArrayList<@Nullable BlockTintSource>();
 
 				if (b.tint instanceof BlockTintFunction.Mapped mapped) {
 					int maxIndex = 0;
@@ -254,7 +254,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	private static <T> List<String> appendComponentValue(DynamicOps<Tag> ops, MutableComponent line,
-														 DataComponentType<T> type, T value) {
+														 DataComponentType<T> type, @Nullable T value) {
 		if (value == null) {
 			line.append(Component.literal("null").kjs$red());
 			return List.of();
@@ -428,7 +428,6 @@ public class KubeJSClientEventHandler {
 		HighlightRenderer.INSTANCE.clearBuffers(mc);
 	}
 
-	@Nullable
 	public static Screen setScreen(Screen screen) {
 		if (screen instanceof TitleScreen && !ConsoleJS.STARTUP.errors.isEmpty()
 			&& CommonProperties.get().startupErrorGUI) {

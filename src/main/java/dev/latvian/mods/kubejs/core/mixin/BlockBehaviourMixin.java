@@ -9,6 +9,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Unique;
@@ -23,6 +24,7 @@ import java.util.function.Consumer;
 @RemapPrefixForJS("kjs$")
 public abstract class BlockBehaviourMixin implements BlockBehaviourKJS {
 	@Unique
+	@Nullable
 	private Consumer<RandomTickCallback> kjs$randomTickCallback;
 
 	@Override
@@ -73,7 +75,7 @@ public abstract class BlockBehaviourMixin implements BlockBehaviourKJS {
 	@Accessor("jumpFactor")
 	@Mutable
 	public abstract void kjs$setJumpFactor(float v);
-	
+
 	@Override
 	@Accessor("descriptionId")
 	@Mutable

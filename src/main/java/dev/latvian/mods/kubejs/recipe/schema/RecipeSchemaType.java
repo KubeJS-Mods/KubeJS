@@ -8,7 +8,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class RecipeSchemaType {
 	public final RecipeNamespace namespace;
@@ -16,7 +16,7 @@ public class RecipeSchemaType {
 	public final RecipeSchema schema;
 	public final ResourceKey<RecipeSerializer<?>> serializerKey;
 	public final String serializerType;
-	public RecipeSchemaType parent;
+	public @Nullable RecipeSchemaType parent;
 	protected final Lazy<RecipeSerializer<?>> serializer;
 
 	protected RecipeSchemaType(RecipeNamespace namespace, Identifier id, RecipeSchema schema) {

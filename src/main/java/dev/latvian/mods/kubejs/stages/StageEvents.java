@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.stages;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public interface StageEvents {
 	static Stages create(Player player) {

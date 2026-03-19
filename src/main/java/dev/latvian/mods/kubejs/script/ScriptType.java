@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.NativeEventWrapper;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.neoforged.fml.loading.FMLPaths;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
@@ -38,7 +38,7 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 	public transient Executor executor;
 	public final Lazy<ClassFilter> classFilter;
 	public final Map<NativeEventWrapper.Listeners.Key, NativeEventWrapper.Listeners> nativeEventListeners;
-	public KubeJSFileWatcherThread fileWatcherThread;
+	public @Nullable KubeJSFileWatcherThread fileWatcherThread;
 
 	ScriptType(String n, String cname, Path path) {
 		this.name = n;
@@ -114,7 +114,6 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 		return List.of(this);
 	}
 
-	@NotNull
 	@Override
 	public ScriptTypePredicate negate() {
 		return switch (this) {

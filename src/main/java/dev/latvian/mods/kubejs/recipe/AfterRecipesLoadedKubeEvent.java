@@ -15,6 +15,7 @@ import dev.latvian.mods.rhino.Context;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeMap;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class AfterRecipesLoadedKubeEvent implements KubeEvent {
 
 	private final RecipeManagerKJS recipeManager;
 	private final RegistryAccessContainer registries;
-	private List<RecipeLikeKJS> originalRecipes;
+	private @Nullable List<RecipeLikeKJS> originalRecipes;
 	private boolean changed;
 
 	public AfterRecipesLoadedKubeEvent(ReloadableServerResources resources) {

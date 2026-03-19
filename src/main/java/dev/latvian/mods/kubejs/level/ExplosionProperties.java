@@ -12,8 +12,9 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.Level.ExplosionInteraction;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 
 public record ExplosionProperties(
@@ -22,7 +23,7 @@ public record ExplosionProperties(
 	@Nullable ExplosionDamageCalculator damageCalculator,
 	Optional<Float> strength,
 	Optional<Boolean> causesFire,
-	@Nullable Level.ExplosionInteraction mode,
+	@Nullable ExplosionInteraction mode,
 	Optional<Boolean> particles,
 	@Nullable ParticleOptions smallParticles,
 	@Nullable ParticleOptions largeParticles,
@@ -43,7 +44,7 @@ public record ExplosionProperties(
 			x, y, z,
 			strength.orElse(3F),
 			causesFire.orElse(Boolean.FALSE),
-			mode == null ? Level.ExplosionInteraction.NONE : mode,
+			mode == null ? ExplosionInteraction.NONE : mode,
 			smallParticles == null ? ParticleTypes.EXPLOSION : smallParticles,
 			largeParticles == null ? ParticleTypes.EXPLOSION_EMITTER : largeParticles,
 			Cast.to(blockParticles),

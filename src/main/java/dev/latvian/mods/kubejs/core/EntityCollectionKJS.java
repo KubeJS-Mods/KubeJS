@@ -5,7 +5,7 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,11 @@ public interface EntityCollectionKJS {
 	}
 
 	@Nullable
-	default Entity kjs$getEntityByUUID(UUID id) {
+	default Entity kjs$getEntityByUUID(@Nullable UUID id) {
+		if (id == null) {
+			return null;
+		}
+
 		for (var entity : kjs$getMcEntities()) {
 			if (entity.getUUID().equals(id)) {
 				return entity;

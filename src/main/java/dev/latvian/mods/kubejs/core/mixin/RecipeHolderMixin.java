@@ -5,13 +5,14 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(RecipeHolder.class)
 public class RecipeHolderMixin implements RecipeHolderKJS {
 	@Unique
-	private ResourceKey<RecipeSerializer<?>> kjs$serializerKey;
+	private @Nullable ResourceKey<RecipeSerializer<?>> kjs$serializerKey;
 
 	@Override
 	public ResourceKey<RecipeSerializer<?>> kjs$getTypeKey() {

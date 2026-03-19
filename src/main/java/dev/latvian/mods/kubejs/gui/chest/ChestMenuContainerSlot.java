@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.gui.KubeJSGUI;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 public class ChestMenuContainerSlot extends Slot {
 	public final CustomChestMenu menu;
@@ -17,23 +16,22 @@ public class ChestMenuContainerSlot extends Slot {
 	}
 
 	@Override
-	public boolean mayPlace(@NotNull ItemStack stack) {
+	public boolean mayPlace(ItemStack stack) {
 		return false;
 	}
 
 	@Override
-	@NotNull
 	public ItemStack getItem() {
 		return menu.data.slots[_index].getItem();
 	}
 
 	@Override
-	public void set(@NotNull ItemStack stack) {
+	public void set(ItemStack stack) {
 		menu.data.slots[_index].setItem(stack);
 	}
 
 	@Override
-	public void onQuickCraft(@NotNull ItemStack oldStackIn, @NotNull ItemStack newStackIn) {
+	public void onQuickCraft(ItemStack oldStackIn, ItemStack newStackIn) {
 	}
 
 	@Override
@@ -42,7 +40,7 @@ public class ChestMenuContainerSlot extends Slot {
 	}
 
 	@Override
-	public int getMaxStackSize(@NotNull ItemStack stack) {
+	public int getMaxStackSize(ItemStack stack) {
 		return Integer.MAX_VALUE;
 	}
 
@@ -52,7 +50,6 @@ public class ChestMenuContainerSlot extends Slot {
 	}
 
 	@Override
-	@NotNull
 	public ItemStack remove(int amount) {
 		return ItemStack.EMPTY;
 	}

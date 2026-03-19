@@ -21,7 +21,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Contract;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.AccessibleObject;
 import java.util.Collections;
@@ -33,7 +35,7 @@ import java.util.Optional;
 public class KubeJSContext extends Context {
 	public final KubeJSContextFactory kjsFactory;
 	public final Scriptable topLevelScope;
-	private Map<String, Either<NativeJavaClass, Boolean>> javaClassCache;
+	private @Nullable Map<String, Either<NativeJavaClass, Boolean>> javaClassCache;
 
 	public KubeJSContext(KubeJSContextFactory factory) {
 		super(factory);
@@ -114,7 +116,7 @@ public class KubeJSContext extends Context {
 	public Registry<?> lookupRegistry(TypeInfo type, Object from) {
 		var registryType = lookupRegistryType(type, from);
 
-		var registry = getRegistries().access().lookup(registryType.key()).orElse(null);
+		var registry = getRegistries().lookup(registryType.key()).orElse(null);
 
 		if (registry == null) {
 			throw reportRuntimeError("Can't interpret '" + from + "' as '" + registryType.key().identifier() + "': registry not found", this);
@@ -166,7 +168,7 @@ public class KubeJSContext extends Context {
 			var reg = RegistryType.lookup(target);
 
 			if (reg != null) {
-				var registry = getRegistries().access()
+				var registry = getRegistries()
 					.lookup(reg.key())
 					.orElseThrow(() -> reportRuntimeError("Can't interpret '%s' as '%s': registry not found".formatted(from, reg.key().identifier()), this))
 					.getOptional(ID.mc(from))
@@ -177,7 +179,9 @@ public class KubeJSContext extends Context {
 		return super.internalJsToJavaLast(from, target);
 	}
 
-	public NativeJavaClass loadJavaClass(String name, boolean error) {
+	@Contract("null, false -> null; null, true -> fail")
+	@NullUnmarked
+	public NativeJavaClass loadJavaClass(@Nullable String name, boolean error) {
 		if (name == null || name.equals("null") || name.isEmpty()) {
 			if (error) {
 				throw reportRuntimeError("Class name can't be empty!", this);

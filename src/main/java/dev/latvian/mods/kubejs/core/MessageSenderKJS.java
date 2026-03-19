@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @RemapPrefixForJS("kjs$")
 public interface MessageSenderKJS {

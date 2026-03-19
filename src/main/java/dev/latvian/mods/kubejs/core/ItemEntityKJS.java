@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.core;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @RemapPrefixForJS("kjs$")
 public interface ItemEntityKJS extends EntityKJS {

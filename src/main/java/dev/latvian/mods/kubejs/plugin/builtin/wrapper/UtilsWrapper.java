@@ -15,7 +15,7 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.CreativeModeTab;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -102,7 +102,8 @@ public interface UtilsWrapper {
 	}
 
 	@HideFromJS
-	static Object randomOf(Collection<Object> objects, IntFunction<Integer> nextInt) {
+	@Nullable
+	static Object randomOf(@Nullable Collection<Object> objects, IntFunction<Integer> nextInt) {
 		if (objects == null || objects.isEmpty()) {
 			return null;
 		}

@@ -21,7 +21,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagType;
 import net.minecraft.nbt.TagTypes;
 import net.minecraft.network.FriendlyByteBuf;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.DataInput;
 import java.io.DataInputStream;

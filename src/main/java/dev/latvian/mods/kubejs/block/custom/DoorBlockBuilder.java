@@ -27,6 +27,7 @@ import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -181,6 +182,7 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 	}
 
 	@Override
+	@Nullable
 	public LootTable generateLootTable(KubeDataGenerator generator) {
 		var blockDrops = drops == null ? BlockDrops.createDefault(get().asItem().getDefaultInstance()) : drops.get();
 

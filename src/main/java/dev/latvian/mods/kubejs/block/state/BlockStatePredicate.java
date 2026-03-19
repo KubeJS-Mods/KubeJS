@@ -28,7 +28,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTes
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockStateMatchTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,7 +70,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		};
 	}
 
-	static BlockStatePredicate wrap(Context cx, Object o) {
+	static BlockStatePredicate wrap(Context cx, @Nullable Object o) {
 		if (o == null || o == Simple.ALL) {
 			return Simple.ALL;
 		} else if (o == Simple.NONE) {
@@ -120,12 +120,14 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		return ofSingle(cx, first);
 	}
 
-	static RuleTest wrapRuleTest(Context cx, Object o) {
+	static RuleTest wrapRuleTest(Context cx, @Nullable Object o) {
 		var nbt = RegistryAccessContainer.of(cx).nbt();
 		return switch (o) {
 			case RuleTest rule -> rule;
-			case BlockStatePredicate bsp when bsp.asRuleTest() != null -> bsp.asRuleTest();
-			default -> Optional.ofNullable(NBTWrapper.wrapCompound(cx, o))
+			case BlockStatePredicate bsp when bsp.asRuleTest() != null ->
+				//noinspection DataFlowIssue
+				bsp.asRuleTest(); // safe
+			case null, default -> Optional.ofNullable(NBTWrapper.wrapCompound(cx, o))
 				.map(tag -> RuleTest.CODEC.parse(nbt, tag))
 				.flatMap(DataResult::result)
 				.or(() -> Optional.ofNullable(wrap(cx, o).asRuleTest()))
@@ -405,7 +407,10 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		public RuleTest asRuleTest() {
 			var test = new AnyMatchRuleTest();
 			for (var predicate : list) {
-				test.rules.add(predicate.asRuleTest());
+				var t = predicate.asRuleTest();
+				if (t != null) {
+					test.rules.add(t);
+				}
 			}
 			return test;
 		}
@@ -465,8 +470,14 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		}
 
 		@Override
+		@Nullable
 		public RuleTest asRuleTest() {
-			return new InvertRuleTest(predicate.asRuleTest());
+			var t = predicate.asRuleTest();
+			if (t != null) {
+				return new InvertRuleTest(t);
+			} else {
+				return null;
+			}
 		}
 	}
 
@@ -532,7 +543,10 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 		public RuleTest asRuleTest() {
 			var test = new AllMatchRuleTest();
 			for (var predicate : list) {
-				test.rules.add(predicate.asRuleTest());
+				var t = predicate.asRuleTest();
+				if (t != null) {
+					test.rules.add(t);
+				}
 			}
 			return test;
 		}

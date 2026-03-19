@@ -41,7 +41,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.component.CustomData;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -328,7 +328,7 @@ public interface DataComponentWrapper {
 				if (!errors.isEmpty()) {
 					var joiner = new StringJoiner("; ");
 					errors.forEach((type, error) -> {
-						var id = reg.access().lookupOrThrow(Registries.DATA_COMPONENT_TYPE).getKeyOrNull(type);
+						var id = reg.lookupOrThrow(Registries.DATA_COMPONENT_TYPE).getKeyOrNull(type);
 						joiner.add("'%s' -> %s".formatted(id, error));
 					});
 					yield error(() -> "Invalid component map format, errored input: [%s]".formatted(joiner.toString()), builder.build());
@@ -369,7 +369,7 @@ public interface DataComponentWrapper {
 				if (!errors.isEmpty()) {
 					var joiner = new StringJoiner("; ");
 					errors.forEach((type, error) -> {
-						var id = reg.access().lookupOrThrow(Registries.DATA_COMPONENT_TYPE).getKeyOrNull(type);
+						var id = reg.lookupOrThrow(Registries.DATA_COMPONENT_TYPE).getKeyOrNull(type);
 						joiner.add("'%s' -> %s".formatted(id, error));
 					});
 					yield error(() -> "Invalid component map format, errored input: [%s]".formatted(joiner.toString()), builder.build());

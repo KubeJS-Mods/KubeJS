@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> left, RecipeCompone
 	}
 
 	@Override
-	public Either<H, L> wrap(RecipeScriptContext cx, Object from) {
+	public Either<H, L> wrap(RecipeScriptContext cx, @Nullable Object from) {
 		if (left.hasPriority(cx, from)) {
 			// if left has priority, only try to read left
 			var value = left.wrap(cx, from);

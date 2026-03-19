@@ -6,9 +6,9 @@ import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.type.EnumTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.resources.ResourceKey;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Predicate;
 
@@ -18,7 +18,7 @@ public class EventTargetType<T> {
 		Transformer IDENTITY = o -> o;
 
 		@Nullable
-		Object transform(Object source);
+		Object transform(@Nullable Object source);
 	}
 
 	public static <T> EventTargetType<T> create(Class<T> type) {
@@ -61,7 +61,8 @@ public class EventTargetType<T> {
 		}).describeType(typeInfo);
 	}
 
-	private static String toString(Object object) {
+	@Nullable
+	private static String toString(@Nullable Object object) {
 		if (object == null) {
 			return null;
 		}
@@ -70,7 +71,8 @@ public class EventTargetType<T> {
 		return s.isBlank() ? null : s;
 	}
 
-	private static Identifier toIdentifier(Object object) {
+	@Nullable
+	private static Identifier toIdentifier(@Nullable Object object) {
 		if (object == null) {
 			return null;
 		} else if (object instanceof Identifier rl) {
@@ -81,7 +83,9 @@ public class EventTargetType<T> {
 		return s.isBlank() ? null : Identifier.tryParse(s);
 	}
 
-	private static ResourceKey<?> toKey(ResourceKey registry, Object object) {
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Nullable
+	private static ResourceKey<?> toKey(ResourceKey registry, @Nullable Object object) {
 		return switch (object) {
 			case null -> null;
 			case ResourceKey<?> rl -> rl;
@@ -94,7 +98,8 @@ public class EventTargetType<T> {
 		};
 	}
 
-	private static ResourceKey<? extends Registry<?>> toRegistryKey(Object object) {
+	@Nullable
+	private static ResourceKey<? extends Registry<?>> toRegistryKey(@Nullable Object object) {
 		return switch (object) {
 			case null -> null;
 			case ResourceKey rl -> rl;

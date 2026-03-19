@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.item;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.IdentityHashMap;
 import java.util.Map;

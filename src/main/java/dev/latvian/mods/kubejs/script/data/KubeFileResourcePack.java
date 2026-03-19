@@ -16,8 +16,7 @@ import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.ResourceMetadata;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -132,8 +131,8 @@ public class KubeFileResourcePack implements PackResources {
 	}
 
 	private final PackType packType;
-	private Map<Identifier, GeneratedData> generated;
-	private Set<String> generatedNamespaces;
+	private @Nullable Map<Identifier, GeneratedData> generated;
+	private @Nullable Set<String> generatedNamespaces;
 
 	public KubeFileResourcePack(PackType t) {
 		packType = t;
@@ -254,7 +253,6 @@ public class KubeFileResourcePack implements PackResources {
 	}
 
 	@Override
-	@NotNull
 	public Set<String> getNamespaces(PackType type) {
 		if (type == packType) {
 			if (generatedNamespaces == null) {
@@ -287,7 +285,6 @@ public class KubeFileResourcePack implements PackResources {
 
 
 	@Override
-	@NotNull
 	public String packId() {
 		return "KubeJS File Resource Pack [" + packType.getDirectory() + "]";
 	}

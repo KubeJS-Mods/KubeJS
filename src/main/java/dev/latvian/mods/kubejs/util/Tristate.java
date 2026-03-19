@@ -6,6 +6,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.function.BooleanSupplier;
@@ -25,7 +26,7 @@ public enum Tristate implements StringRepresentable {
 
 	public static final StreamCodec<ByteBuf, Tristate> STREAM_CODEC = ByteBufCodecs.idMapper(i -> VALUES[i], Enum::ordinal);
 
-	public static Tristate wrap(Object from) {
+	public static Tristate wrap(@Nullable Object from) {
 		return switch (from) {
 			case null -> DEFAULT;
 			case Tristate t -> t;

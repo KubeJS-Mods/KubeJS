@@ -10,7 +10,6 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -33,7 +32,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
@@ -53,12 +52,12 @@ public interface LevelBlock extends BlockProviderKJS {
 	}
 
 	@HideFromJS
-	default LevelBlock cache(BlockState state) {
+	default LevelBlock cache(@Nullable BlockState state) {
 		return this;
 	}
 
 	@HideFromJS
-	default LevelBlock cache(BlockEntity entity) {
+	default LevelBlock cache(@Nullable BlockEntity entity) {
 		return this;
 	}
 
@@ -192,7 +191,7 @@ public interface LevelBlock extends BlockProviderKJS {
 
 	default String getEntityId() {
 		var entity = getEntity();
-		return entity == null ? "minecraft:air" : BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(entity.getType()).toString();
+		return entity == null ? "minecraft:air" : entity.typeHolder().getRegisteredName();
 	}
 
 	@Nullable

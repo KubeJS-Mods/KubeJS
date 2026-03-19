@@ -38,7 +38,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Team;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.Set;
@@ -288,7 +288,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 			if (t == null || t == EndTag.INSTANCE) {
 				nbt.remove(k);
 			} else {
-				nbt.put(k, tag.get(k));
+				nbt.put(k, t);
 			}
 		}
 

@@ -30,6 +30,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ public interface FluidWrapper {
 	DataResult<SizedFluidIngredient> EMPTY_SIZED_RESULT = Cast.to(EMPTY_INGREDIENT_RESULT);
 
 	@HideFromJS
-	static DataResult<FluidStack> tryWrap(Context cx, Object from) {
+	static DataResult<FluidStack> tryWrap(Context cx, @Nullable Object from) {
 		while (from instanceof Wrapper w) {
 			from = w.unwrap();
 		}
@@ -66,7 +67,7 @@ public interface FluidWrapper {
 	}
 
 	@HideFromJS
-	static FluidStack wrap(Context cx, Object from) {
+	static FluidStack wrap(Context cx, @Nullable Object from) {
 		return tryWrap(cx, from)
 			.getOrThrow(err -> new KubeRuntimeException("Failed to read FluidStack from %s: %s".formatted(from, err))
 				.source(SourceLine.of(cx)));
@@ -122,7 +123,7 @@ public interface FluidWrapper {
 	}
 
 	@HideFromJS
-	static DataResult<SizedFluidIngredient> tryWrapSizedIngredient(Context cx, Object o) {
+	static DataResult<SizedFluidIngredient> tryWrapSizedIngredient(Context cx, @Nullable Object o) {
 		var registries = RegistryAccessContainer.of(cx);
 
 		return switch (o) {

@@ -4,7 +4,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -36,7 +35,7 @@ public record OrCodec<V>(List<Codec<V>> codecs) implements Codec<V> {
 	}
 
 	@Override
-	public @NotNull String toString() {
+	public String toString() {
 		return "OrCodec" + codecs;
 	}
 }

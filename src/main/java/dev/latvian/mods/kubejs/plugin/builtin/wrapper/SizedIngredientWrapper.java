@@ -21,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import org.jspecify.annotations.Nullable;
 
 import static dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper.EMPTY_INGREDIENT;
 
@@ -54,7 +55,8 @@ public interface SizedIngredientWrapper {
 	}
 
 	@HideFromJS
-	private static SizedIngredient wrapTrivial(Context cx, Object from) {
+	@Nullable
+	private static SizedIngredient wrapTrivial(Context cx, @Nullable Object from) {
 		return switch (from) {
 			case SizedIngredient s -> s;
 			case Ingredient ingredient -> ingredient.kjs$asStack();
@@ -62,7 +64,6 @@ public interface SizedIngredientWrapper {
 			case ItemLike item -> Ingredient.of(item).kjs$asStack();
 			case null, default -> null;
 		};
-
 	}
 
 	@HideFromJS

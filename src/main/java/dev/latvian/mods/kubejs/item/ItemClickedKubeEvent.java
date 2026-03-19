@@ -10,7 +10,7 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @Info(value = """
 	Invoked when a player right clicks with an item **without targeting anything**.
@@ -22,7 +22,7 @@ public class ItemClickedKubeEvent implements KubePlayerEvent {
 	private final Player player;
 	private final InteractionHand hand;
 	private final ItemStack item;
-	private KubeRayTraceResult target;
+	private @Nullable KubeRayTraceResult target;
 
 	public ItemClickedKubeEvent(Player player, InteractionHand hand, ItemStack item) {
 		this.player = player;

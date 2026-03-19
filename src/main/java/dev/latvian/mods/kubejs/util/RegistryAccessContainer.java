@@ -27,13 +27,16 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
-public final class RegistryAccessContainer extends RegistryOpsContainer implements ICondition.IContext {
+public final class RegistryAccessContainer extends RegistryOpsContainer implements RegistryAccess, ICondition.IContext {
 	public static final RegistryAccessContainer BUILTIN = new RegistryAccessContainer(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
 
 	// Still necessary because STARTUP and CLIENT scripts need to know about registries
@@ -45,13 +48,13 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 	}
 
 	private final RegistryAccess.Frozen access;
-	private DamageSources damageSources;
+	private @Nullable DamageSources damageSources;
 	private final Map<String, ItemStack> itemStackParseCache;
 	public final Map<ResourceKey<?>, CachedTagLookup.Entry<?>> cachedRegistryTags;
-	public CachedItemTagLookup cachedItemTags;
-	public CachedTagLookup<Block> cachedBlockTags;
-	public CachedTagLookup<Fluid> cachedFluidTags;
-	private Map<Identifier, RegistryWrapper> cachedRegistryWrappers;
+	public @Nullable CachedItemTagLookup cachedItemTags;
+	public @Nullable CachedTagLookup<Block> cachedBlockTags;
+	public @Nullable CachedTagLookup<Fluid> cachedFluidTags;
+	private final Map<Identifier, RegistryWrapper> cachedRegistryWrappers = new HashMap<>();
 
 	public RegistryAccessContainer(RegistryAccess.Frozen access) {
 		super(
@@ -64,10 +67,6 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 		this.damageSources = null;
 		this.itemStackParseCache = new HashMap<>();
 		this.cachedRegistryTags = new Reference2ObjectOpenHashMap<>();
-	}
-
-	public RegistryAccess.Frozen access() {
-		return access;
 	}
 
 	public DamageSources damageSources() {
@@ -135,10 +134,6 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 	}
 
 	public RegistryWrapper<?> wrapRegistry(Identifier id) {
-		if (cachedRegistryWrappers == null) {
-			cachedRegistryWrappers = new HashMap<>();
-		}
-
 		return cachedRegistryWrappers.computeIfAbsent(id, this::createRegistryWrapper);
 	}
 
@@ -149,7 +144,17 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 	}
 
 	@Override
-	public RegistryAccess registryAccess() {
+	public RegistryAccess.Frozen registryAccess() {
 		return access;
+	}
+
+	@Override
+	public <E> Optional<Registry<E>> lookup(ResourceKey<? extends Registry<? extends E>> registryKey) {
+		return access.lookup(registryKey);
+	}
+
+	@Override
+	public Stream<RegistryEntry<?>> registries() {
+		return access.registries();
 	}
 }

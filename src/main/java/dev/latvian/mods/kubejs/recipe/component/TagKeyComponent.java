@@ -20,7 +20,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public record TagKeyComponent<T>(@Nullable ResourceKey<RecipeComponentType<?>> typeOverride, ResourceKey<? extends Registry<T>> registry, TypeInfo registryType, Codec<TagKey<T>> codec, TypeInfo typeInfo, boolean hashed) implements RecipeComponent<TagKey<T>> {
 	public static final TypeInfo TAG_KEY_TYPE = TypeInfo.of(TagKey.class);
@@ -72,12 +72,12 @@ public record TagKeyComponent<T>(@Nullable ResourceKey<RecipeComponentType<?>> t
 	}
 
 	@Override
-	public boolean hasPriority(RecipeMatchContext cx, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return from instanceof TagKey<?> || (from instanceof CharSequence && from.toString().startsWith("#")) || (from instanceof JsonPrimitive json && json.isString() && json.getAsString().startsWith("#"));
 	}
 
 	@Override
-	public TagKey<T> wrap(RecipeScriptContext cx, Object from) {
+	public TagKey<T> wrap(RecipeScriptContext cx, @Nullable Object from) {
 		if (from instanceof TagKey<?> k) {
 			return (TagKey<T>) k;
 		}

@@ -13,8 +13,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.neoforged.fml.loading.FMLLoader;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -139,7 +138,7 @@ public class VirtualResourcePack extends AbstractPackResources implements KubeRe
 	}
 
 	@Override
-	public @NotNull String packId() {
+	public String packId() {
 		return "KubeJS Virtual Resource Pack [" + info + "]";
 	}
 

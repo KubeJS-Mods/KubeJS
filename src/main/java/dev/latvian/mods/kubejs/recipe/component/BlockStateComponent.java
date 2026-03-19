@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jspecify.annotations.Nullable;
 
 public record BlockStateComponent(ResourceKey<RecipeComponentType<?>> type, boolean preferObjectForm, boolean allowEmpty) implements RecipeComponent<BlockState> {
 	public static final TypeInfo TYPE_INFO = TypeInfo.of(BlockState.class);
@@ -36,7 +37,7 @@ public record BlockStateComponent(ResourceKey<RecipeComponentType<?>> type, bool
 	}
 
 	@Override
-	public BlockState wrap(RecipeScriptContext cx, Object from) {
+	public BlockState wrap(RecipeScriptContext cx, @Nullable Object from) {
 		return switch (from) {
 			case BlockState s -> s;
 			case Block b -> b.defaultBlockState();

@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.core.EntityTypeKJS;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,10 +17,10 @@ public abstract class EntityTypeMixin implements EntityTypeKJS {
 	private Holder.Reference<EntityType<?>> builtInRegistryHolder;
 
 	@Unique
-	private ResourceKey<EntityType<?>> kjs$registryKey;
+	private @Nullable ResourceKey<EntityType<?>> kjs$registryKey;
 
 	@Unique
-	private String kjs$id;
+	private @Nullable String kjs$id;
 
 	@Override
 	public Holder<EntityType<?>> kjs$asHolder() {

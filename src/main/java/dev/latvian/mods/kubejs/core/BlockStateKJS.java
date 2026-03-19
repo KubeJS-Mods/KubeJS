@@ -81,7 +81,7 @@ public interface BlockStateKJS extends RegistryObjectKJS<Block>, Replaceable {
 	default String kjs$toString() {
 		var state = (BlockState) this;
 		var sb = new StringBuilder();
-		sb.append(state.getBlock().builtInRegistryHolder().getKey().identifier());
+		sb.append(state.getBlock().kjs$getId());
 		boolean first = true;
 
 		for (var prop : state.getProperties()) {

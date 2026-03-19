@@ -2,13 +2,16 @@ package dev.latvian.mods.kubejs.web;
 
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.util.BaseProperties;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Random;
 
+@NullUnmarked
 public class WebServerProperties extends BaseProperties {
-	private static WebServerProperties instance;
+	private static @Nullable WebServerProperties instance;
 
 	public static WebServerProperties get() {
 		if (instance == null) {

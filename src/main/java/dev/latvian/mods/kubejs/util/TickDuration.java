@@ -4,6 +4,7 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
+import org.jspecify.annotations.Nullable;
 
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAmount;
@@ -24,7 +25,7 @@ public record TickDuration(long ticks) implements TemporalAmount {
 		return ticks == 0L ? ZERO : new TickDuration(ticks);
 	}
 
-	public static TickDuration wrap(Context cx, Object from) {
+	public static TickDuration wrap(Context cx, @Nullable Object from) {
 		return switch (from) {
 			case null -> ZERO;
 			case TickDuration d -> d;

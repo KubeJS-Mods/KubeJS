@@ -11,6 +11,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -45,7 +46,7 @@ public interface KubeColor extends SpecialEquality {
 	}
 
 	@Override
-	default boolean specialEquals(Context cx, Object o, boolean shallow) {
+	default boolean specialEquals(Context cx, @Nullable Object o, boolean shallow) {
 		KubeColor c = ColorWrapper.wrap(o);
 		return shallow ? (kjs$getARGB() == c.kjs$getARGB()) : (kjs$getRGB() == c.kjs$getRGB());
 	}

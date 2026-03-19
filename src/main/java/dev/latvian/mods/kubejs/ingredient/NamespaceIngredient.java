@@ -8,7 +8,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.IngredientType;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public record NamespaceIngredient(String namespace) implements KubeJSIngredient {
 	public static final MapCodec<NamespaceIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(

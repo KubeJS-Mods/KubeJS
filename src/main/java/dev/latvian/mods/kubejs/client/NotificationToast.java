@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.util.FormattedCharSequence;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class NotificationToast implements Toast {
 	private final NotificationToastData notification;
 
 	private final long duration;
-	private final KubeIconRenderer icon;
+	private final @Nullable KubeIconRenderer icon;
 	private final List<FormattedCharSequence> text;
 	private int width, height;
 

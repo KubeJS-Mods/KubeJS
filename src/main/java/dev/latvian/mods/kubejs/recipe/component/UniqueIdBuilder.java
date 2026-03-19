@@ -1,8 +1,8 @@
 package dev.latvian.mods.kubejs.recipe.component;
 
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.resources.ResourceKey;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -43,6 +43,7 @@ public record UniqueIdBuilder(StringBuilder builder) {
 		}
 	}
 
+	@Nullable
 	public String build() {
 		var result = builder.toString();
 		builder.setLength(0);

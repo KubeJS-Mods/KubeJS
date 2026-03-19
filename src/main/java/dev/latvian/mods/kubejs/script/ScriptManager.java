@@ -9,6 +9,7 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.util.LogType;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
+import org.jspecify.annotations.NullUnmarked;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@NullUnmarked
 public class ScriptManager {
 	public final ScriptType scriptType;
 	public final Map<String, ScriptPack> packs;

@@ -12,7 +12,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.thread.BlockableEventLoop;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -40,7 +40,6 @@ public class KJSHTTPRequest extends HTTPRequest {
 		return Identifier.fromNamespaceAndPath(variable(ns).asString(), variable(path).asString());
 	}
 
-	@Nullable
 	public Identifier id() {
 		return id("namespace", "path");
 	}

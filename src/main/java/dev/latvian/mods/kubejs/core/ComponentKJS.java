@@ -16,11 +16,9 @@ import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -33,27 +31,23 @@ import java.util.function.Consumer;
 public interface ComponentKJS extends Component, WithCodec, WrappedJS {
 
 	default Iterable<Component> kjs$asIterable() {
-		return new Iterable<>() {
-			@NotNull
-			@Override
-			public Iterator<Component> iterator() {
-				if (!kjs$hasSiblings()) {
-					return Iterators.forArray(kjs$self());
-				}
-
-				List<Component> list = new LinkedList<>();
-				list.add(kjs$self());
-
-				for (var child : getSiblings()) {
-					if (child instanceof ComponentKJS wrapped) {
-						wrapped.forEach(list::add);
-					} else {
-						list.add(child);
-					}
-				}
-
-				return list.iterator();
+		return () -> {
+			if (!kjs$hasSiblings()) {
+				return Iterators.forArray(kjs$self());
 			}
+
+			List<Component> list = new LinkedList<>();
+			list.add(kjs$self());
+
+			for (var child : getSiblings()) {
+				if (child instanceof ComponentKJS wrapped) {
+					wrapped.forEach(list::add);
+				} else {
+					list.add(child);
+				}
+			}
+
+			return list.iterator();
 		};
 	}
 

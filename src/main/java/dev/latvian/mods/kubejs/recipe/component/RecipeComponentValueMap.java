@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.recipe.component;
 import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.rhino.Wrapper;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.AbstractMap;
 import java.util.List;
@@ -15,7 +15,7 @@ public class RecipeComponentValueMap extends AbstractMap<RecipeKey<?>, Object> {
 	public static final RecipeComponentValueMap EMPTY = new RecipeComponentValueMap(RecipeComponentValue.EMPTY_ARRAY);
 
 	public final RecipeComponentValue<?>[] holders;
-	private Set<Entry<RecipeKey<?>, Object>> holderSet;
+	private @Nullable Set<Entry<RecipeKey<?>, Object>> holderSet;
 
 	public RecipeComponentValueMap(RecipeComponentValue<?>[] holders) {
 		this.holders = new RecipeComponentValue[holders.length];
@@ -33,7 +33,6 @@ public class RecipeComponentValueMap extends AbstractMap<RecipeKey<?>, Object> {
 		}
 	}
 
-	@NotNull
 	@Override
 	public Set<Map.Entry<RecipeKey<?>, Object>> entrySet() {
 		if (holderSet == null) {
@@ -54,6 +53,7 @@ public class RecipeComponentValueMap extends AbstractMap<RecipeKey<?>, Object> {
 		throw new IllegalArgumentException("Key " + key + " is not in this map!");
 	}
 
+	@Nullable
 	public RecipeComponentValue<?> getHolder(Object key) {
 		for (var holder : holders) {
 			if (holder.key == key) {
@@ -65,6 +65,7 @@ public class RecipeComponentValueMap extends AbstractMap<RecipeKey<?>, Object> {
 	}
 
 	@Override
+	@Nullable
 	public Object get(Object key) {
 		var h = getHolder(key);
 		return h == null ? null : h.value;

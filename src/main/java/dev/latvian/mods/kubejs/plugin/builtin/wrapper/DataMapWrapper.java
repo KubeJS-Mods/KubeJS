@@ -7,8 +7,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.registries.RegistryManager;
 import net.neoforged.neoforge.registries.datamaps.DataMapType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -30,7 +31,8 @@ public record DataMapWrapper<T, A>(Registry<T> registry, DataMapType<T, A> type)
 		return new DataMapWrapper<>(registry.registry(), type);
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
+	@SuppressWarnings({"UnstableApiUsage", "NullableProblems"})
+	@NullUnmarked
 	public static <T> DataMapType<T, ?> typeOf(RegistryWrapper<T> registry, Identifier id) {
 		return RegistryManager.getDataMap(registry.registry().key(), id);
 	}
@@ -44,7 +46,7 @@ public record DataMapWrapper<T, A>(Registry<T> registry, DataMapType<T, A> type)
 		return byKey().keySet().stream().map(registry::getValueOrThrow);
 	}
 
-	public @NotNull Iterator<Data<T, A>> iterator() {
+	public Iterator<Data<T, A>> iterator() {
 		return new Iterator<>() {
 			final Iterator<Map.Entry<ResourceKey<T>, A>> backing = byKey().entrySet().iterator();
 
@@ -61,7 +63,7 @@ public record DataMapWrapper<T, A>(Registry<T> registry, DataMapType<T, A> type)
 		};
 	}
 
-	public @NotNull Map<ResourceKey<T>, A> byKey() {
+	public @NonNull Map<ResourceKey<T>, A> byKey() {
 		return registry.getDataMap(type);
 	}
 

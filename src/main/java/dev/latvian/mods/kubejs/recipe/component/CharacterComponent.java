@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
+import org.jspecify.annotations.Nullable;
 
 public class CharacterComponent extends SimpleRecipeComponent<Character> {
 	public static final CharacterComponent CHARACTER = new CharacterComponent(RecipeComponentType.builtin("character"));
@@ -15,7 +16,7 @@ public class CharacterComponent extends SimpleRecipeComponent<Character> {
 	}
 
 	@Override
-	public boolean hasPriority(RecipeMatchContext cx, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return from instanceof Character || from instanceof CharSequence || from instanceof JsonPrimitive json && json.isString();
 	}
 

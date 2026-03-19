@@ -42,8 +42,8 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -248,7 +248,7 @@ public class HighlightRenderer {
 	}
 
 	public static HighlightRenderer INSTANCE = new HighlightRenderer();
-	public static KeyMapping keyMapping;
+	public static @Nullable KeyMapping keyMapping;
 
 	public KubeColor color = new SimpleColor(0x99FFB3);
 	public Mode mode = Mode.NONE;

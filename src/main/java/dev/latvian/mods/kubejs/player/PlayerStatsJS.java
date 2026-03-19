@@ -9,6 +9,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import org.jspecify.annotations.Nullable;
 
 public class PlayerStatsJS {
 	public final Player player;
@@ -19,7 +20,8 @@ public class PlayerStatsJS {
 		statFile = s;
 	}
 
-	public static Stat<?> wrapStat(Object o) {
+	@Nullable
+	public static Stat<?> wrapStat(@Nullable Object o) {
 		return switch (o) {
 			case Stat<?> s -> s;
 			case Identifier rl -> Stats.CUSTOM.get(rl);

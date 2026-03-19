@@ -10,6 +10,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.FluidMatch;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.WithCodec;
 import dev.latvian.mods.kubejs.web.RelativeURL;
@@ -20,11 +21,12 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 
@@ -37,11 +39,11 @@ public interface FluidStackKJS extends
 	MutableDataComponentHolderFunctions,
 	RegistryObjectKJS<Fluid> {
 	default FluidStack kjs$self() {
-		return (FluidStack) (Object) this;
+		return Cast.to(this);
 	}
 
 	@Override
-	default boolean specialEquals(Context cx, Object o, boolean shallow) {
+	default boolean specialEquals(Context cx, @Nullable Object o, boolean shallow) {
 		return switch (o) {
 			case CharSequence cs -> kjs$getId().equals(ID.string(cs.toString()));
 			case Identifier id -> kjs$getIdLocation().equals(id);

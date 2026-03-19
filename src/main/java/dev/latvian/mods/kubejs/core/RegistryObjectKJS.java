@@ -9,13 +9,14 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 @RemapPrefixForJS("kjs$")
 public interface RegistryObjectKJS<T> extends SpecialEquality {
 	@Override
-	default boolean specialEquals(Context cx, Object o, boolean shallow) {
+	default boolean specialEquals(Context cx, @Nullable Object o, boolean shallow) {
 		return switch (o) {
 			case CharSequence cs -> kjs$getId().equals(cs.toString());
 			case Identifier id -> kjs$getIdLocation().equals(id);
@@ -29,7 +30,7 @@ public interface RegistryObjectKJS<T> extends SpecialEquality {
 	}
 
 	default Registry<T> kjs$getRegistry() {
-		return RegistryAccessContainer.current.access().lookupOrThrow(kjs$getRegistryId());
+		return RegistryAccessContainer.current.lookupOrThrow(kjs$getRegistryId());
 	}
 
 	@SuppressWarnings("unchecked")

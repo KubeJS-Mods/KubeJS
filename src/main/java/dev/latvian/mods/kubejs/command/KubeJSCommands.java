@@ -35,8 +35,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.commands.arguments.ResourceKeyArgument;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -44,14 +44,14 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.fml.loading.FMLLoader;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -297,8 +297,11 @@ public class KubeJSCommands {
 			if (result.value() instanceof Throwable ex) {
 				source.sendFailure(Component.literal(ex.toString()));
 				return 0;
-			} else if (result.value() != null && result.cx() != null) {
-				source.sendSuccess(() -> TextWrapper.wrap(result.cx(), result.value()), false);
+			} else if (result.value() != null) {
+				var cx = result.cx();
+				if (cx != null) {
+					source.sendSuccess(() -> TextWrapper.wrap(cx, result.value()), false);
+				}
 			}
 
 			return 1;

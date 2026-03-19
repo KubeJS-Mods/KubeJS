@@ -13,6 +13,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public record CachedComponentObject<T extends RegistryObjectKJS<T>, S>(UUID cacheKey, T value, S stack, DataComponentPatch components, Mutable<String> iconPath) {
@@ -21,7 +22,7 @@ public record CachedComponentObject<T extends RegistryObjectKJS<T>, S>(UUID cach
 		buf.writeVarInt(components.size());
 
 		for (var entry : components.entrySet()) {
-			var key = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(entry.getKey());
+			var key = Objects.requireNonNull(BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(entry.getKey()));
 			buf.writeUtf(key.getNamespace());
 			buf.writeUtf(key.getPath());
 			buf.writeBoolean(entry.getValue().isPresent());

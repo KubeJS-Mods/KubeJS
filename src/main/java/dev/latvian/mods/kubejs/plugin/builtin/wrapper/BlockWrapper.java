@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.Property;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +39,7 @@ import java.util.Map;
 public class BlockWrapper {
 	public static final TypeInfo TYPE_INFO = TypeInfo.of(Block.class);
 	public static final TypeInfo STATE_TYPE_INFO = TypeInfo.of(BlockState.class);
-	private static Collection<BlockState> ALL_STATE_CACHE = null;
+	private static @Nullable Collection<BlockState> ALL_STATE_CACHE = null;
 
 	public static BlockIDPredicate id(Identifier id) {
 		return new BlockIDPredicate(id);
@@ -63,7 +63,7 @@ public class BlockWrapper {
 		return predicate;
 	}
 
-	private static Map<String, Direction> facingMap;
+	private static @Nullable Map<String, Direction> facingMap;
 
 	@Info("Get a map of direction name to Direction. Functionally identical to Direction.ALL")
 	public static Map<String, Direction> getFacing() {
@@ -86,7 +86,7 @@ public class BlockWrapper {
 	@Info("Gets a blocks id from the Block")
 	@Nullable
 	public static Identifier getId(Block block) {
-		return BuiltInRegistries.BLOCK.getKey(block);
+		return BuiltInRegistries.BLOCK.getKeyOrNull(block);
 	}
 
 	@Info("Gets a list of the classname of all registered blocks")
@@ -130,13 +130,14 @@ public class BlockWrapper {
 	// TODO (26.1): RegistryAccessContainer => Context
 	public static BlockState parseBlockState(RegistryAccessContainer registries, String string) {
 		try {
-			return BlockStateParser.parseForBlock(registries.access().lookupOrThrow(Registries.BLOCK), string, false).blockState();
+			return BlockStateParser.parseForBlock(registries.lookupOrThrow(Registries.BLOCK), string, false).blockState();
 		} catch (Exception ex) {
 			throw new IllegalArgumentException("Invalid block state '%s'".formatted(string), ex);
 		}
 	}
 
-	public static BlockSetType wrapSetType(Context cx, Object from, TypeInfo target) {
+	@Nullable
+	public static BlockSetType wrapSetType(Context cx, @Nullable Object from, TypeInfo target) {
 		return switch (from) {
 			case null -> null;
 			case BlockSetType type -> type;

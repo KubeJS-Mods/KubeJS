@@ -10,8 +10,8 @@ import dev.latvian.mods.kubejs.block.callback.BlockStateModifyCallback;
 import dev.latvian.mods.kubejs.block.callback.BlockStateModifyPlacementCallback;
 import dev.latvian.mods.kubejs.block.callback.BlockStateRotateCallback;
 import dev.latvian.mods.kubejs.block.callback.CanBeReplacedCallback;
-import dev.latvian.mods.kubejs.block.callback.EntityFallenOnBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.EntityBlockCallback;
+import dev.latvian.mods.kubejs.block.callback.EntityFallenOnBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.RandomTickCallback;
 import dev.latvian.mods.kubejs.block.entity.KubeBlockEntity;
 import dev.latvian.mods.kubejs.script.ScriptType;
@@ -54,7 +54,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -72,6 +72,7 @@ public class BasicKubeBlock extends Block implements SimpleWaterloggedBlock {
 		}
 	}
 
+	@SuppressWarnings("DataFlowIssue") // safe
 	public static class WithEntity extends BasicKubeBlock implements EntityBlock {
 		public WithEntity(BlockBuilder p) {
 			super(p);

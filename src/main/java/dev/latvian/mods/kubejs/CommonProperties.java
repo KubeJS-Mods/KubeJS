@@ -10,9 +10,12 @@ import dev.latvian.mods.kubejs.util.BaseProperties;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
+@NullUnmarked
 public class CommonProperties extends BaseProperties {
-	private static CommonProperties instance;
+	private static @Nullable CommonProperties instance;
 
 	public static CommonProperties get() {
 		if (instance == null) {

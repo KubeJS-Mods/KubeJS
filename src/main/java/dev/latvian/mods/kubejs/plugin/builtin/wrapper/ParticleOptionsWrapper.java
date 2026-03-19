@@ -21,7 +21,7 @@ public interface ParticleOptionsWrapper {
 		} else if (o != null) {
 			try {
 				var reader = new StringReader(o instanceof JsonElement j ? j.getAsString() : o.toString());
-				return ParticleArgument.readParticle(reader, RegistryAccessContainer.of(cx).access());
+				return ParticleArgument.readParticle(reader, RegistryAccessContainer.of(cx).registryAccess());
 			} catch (Exception ex) {
 				throw new KubeRuntimeException("Failed to parse ParticleOptions from %s".formatted(o), ex).source(SourceLine.of(cx));
 			}

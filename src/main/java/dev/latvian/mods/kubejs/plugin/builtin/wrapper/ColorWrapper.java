@@ -5,10 +5,11 @@ import dev.latvian.mods.kubejs.color.NoColor;
 import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.kubejs.color.SimpleColorWithAlpha;
 import net.minecraft.ChatFormatting;
-import net.minecraft.util.Util;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.ColorRGBA;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.DyeColor;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +27,7 @@ public interface ColorWrapper {
 		}
 	});
 
-	static KubeColor wrap(Object o) {
+	static KubeColor wrap(@Nullable Object o) {
 		return switch (o) {
 			case KubeColor kubeColor -> kubeColor;
 			case CharSequence cs -> {

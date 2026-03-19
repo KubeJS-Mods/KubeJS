@@ -22,7 +22,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,6 +44,7 @@ import java.util.SequencedCollection;
  * @see RecipeKey
  * @see KubeRecipe
  */
+@NullUnmarked
 public class RecipeSchema {
 	public KubeRecipeFactory recipeFactory;
 	public Identifier typeOverride;

@@ -16,7 +16,8 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.common.util.NeoForgeExtraCodecs;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public record ListRecipeComponent<T>(
 		return new ListRecipeComponent<>(component, canWriteSelf, listTypeInfo, listCodec, conditional, bounds, spread, spreadWrap);
 	}
 
-	private static <L> @NotNull Optional<RecipeComponent<?>> wrapSpread(RecipeComponent<L> component, Optional<RecipeComponent<?>> spread) {
+	private static <L> @NonNull Optional<RecipeComponent<?>> wrapSpread(RecipeComponent<L> component, Optional<RecipeComponent<?>> spread) {
 		Optional<RecipeComponent<?>> spreadWrap = spread;
 
 		if (spread.isPresent()) {
@@ -90,11 +91,11 @@ public record ListRecipeComponent<T>(
 	}
 
 	@Override
-	public boolean hasPriority(RecipeMatchContext cx, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return from instanceof Iterable<?> || from != null && from.getClass().isArray();
 	}
 
-	public static <T> List<T> wrap0(RecipeScriptContext cx, RecipeComponent<T> component, Object from) {
+	public static <T> List<T> wrap0(RecipeScriptContext cx, RecipeComponent<T> component, @Nullable Object from) {
 		if (from instanceof Iterable<?> iterable) {
 			int size;
 
@@ -130,7 +131,7 @@ public record ListRecipeComponent<T>(
 
 				return list;
 			}
-		} else if (from.getClass().isArray()) {
+		} else if (from != null && from.getClass().isArray()) {
 			int length = Array.getLength(from);
 
 			if (length == 0) {
@@ -150,7 +151,7 @@ public record ListRecipeComponent<T>(
 	}
 
 	@Override
-	public List<T> wrap(RecipeScriptContext cx, Object from) {
+	public List<T> wrap(RecipeScriptContext cx, @Nullable Object from) {
 		var spreadComponent = spread.orElse(null);
 
 		if (spreadComponent != null && spreadWrap.isPresent()) {

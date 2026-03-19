@@ -6,7 +6,7 @@ import dev.latvian.mods.kubejs.color.KubeColor;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
@@ -50,16 +50,16 @@ public class LoadedTexture {
 	public final int width;
 	public final int height;
 	public final int[] pixels;
-	public final byte[] mcmeta;
+	public final byte @Nullable [] mcmeta;
 
-	public LoadedTexture(int width, int height, int[] pixels, @Nullable byte[] mcmeta) {
+	public LoadedTexture(int width, int height, int[] pixels, byte @Nullable [] mcmeta) {
 		this.width = width;
 		this.height = height;
 		this.pixels = pixels;
 		this.mcmeta = mcmeta;
 	}
 
-	public LoadedTexture(BufferedImage img, @Nullable byte[] mcmeta) {
+	public LoadedTexture(BufferedImage img, byte @Nullable [] mcmeta) {
 		this.width = img.getWidth();
 		this.height = img.getHeight();
 		this.pixels = new int[width * height];

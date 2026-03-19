@@ -24,7 +24,7 @@ public class ComponentValueMap extends Reference2ObjectOpenHashMap<RecipeKey<?>,
 		try {
 			return key.component.wrap(cx, o);
 		} catch (Throwable ex) {
-			throw new KubeRuntimeException("Unable to set '" + key + "'" + cx.errors().atString() + " to '" + o + "' as '" + key.component.toString() + "'!", ex);
+			throw new KubeRuntimeException("Unable to set '" + key + "'" + cx.errors().atString() + " to '" + o + "' as '" + key.component + "'!", ex);
 		}
 	}
 }

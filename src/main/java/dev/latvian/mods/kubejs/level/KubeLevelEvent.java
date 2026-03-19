@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.event.KubeEvent;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public interface KubeLevelEvent extends KubeEvent {
 	Level getLevel();

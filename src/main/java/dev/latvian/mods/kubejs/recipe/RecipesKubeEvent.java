@@ -48,7 +48,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.RecipeManager;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -519,6 +519,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		});
 	}
 
+	@Nullable
 	public RecipeTypeFunction getRecipeFunction(@Nullable String id) {
 		if (id == null || id.isEmpty()) {
 			return null;
@@ -597,7 +598,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			ConsoleJS.SERVER.info("- " + entry.getValue().stream().map(Identifier::toString).collect(Collectors.joining(", ")));
 
 			for (var c : entry.getKey().constructors().values()) {
-				ConsoleJS.SERVER.info("  - " + c.toString());
+				ConsoleJS.SERVER.info("  - " + c);
 			}
 
 			for (var key : entry.getKey().keys) {

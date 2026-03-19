@@ -13,7 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @Info(value = """
 	Invoked when player middle-clicks on a block.
@@ -23,7 +23,7 @@ public class BlockPickedKubeEvent implements KubePlayerEvent {
 	public final LevelBlock block;
 	public final Player player;
 	private final HitResult hitResult;
-	private KubeRayTraceResult target;
+	private @Nullable KubeRayTraceResult target;
 
 	public BlockPickedKubeEvent(Level level, BlockPos pos, BlockState state, Player player, HitResult hitResult) {
 		this.level = level;

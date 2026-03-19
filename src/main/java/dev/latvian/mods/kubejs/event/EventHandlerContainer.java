@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.event;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.rhino.WrappedException;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class EventHandlerContainer {
 	public static boolean isEmpty(@Nullable EventHandlerContainer[] array) {
@@ -20,13 +20,13 @@ public class EventHandlerContainer {
 		return true;
 	}
 
-	public final Object target;
+	public final @Nullable Object target;
 	public final IEventHandler handler;
 	public final String source;
 	public final int line;
-	EventHandlerContainer child;
+	@Nullable EventHandlerContainer child;
 
-	public EventHandlerContainer(Object target, IEventHandler handler, String source, int line) {
+	public EventHandlerContainer(@Nullable Object target, IEventHandler handler, String source, int line) {
 		this.target = target;
 		this.handler = handler;
 		this.source = source;
@@ -76,7 +76,7 @@ public class EventHandlerContainer {
 		return EventResult.PASS;
 	}
 
-	public void add(Object extraId, IEventHandler handler, String source, int line) {
+	public void add(@Nullable Object extraId, IEventHandler handler, String source, int line) {
 		var itr = this;
 
 		while (itr.child != null) {

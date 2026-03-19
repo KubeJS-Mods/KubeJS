@@ -1,9 +1,9 @@
 package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.rhino.Context;
-import net.neoforged.bus.api.ICancellableEvent;
 import net.minecraft.util.TriState;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.bus.api.ICancellableEvent;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -30,9 +30,9 @@ public class EventResult {
 
 	public static final EventResult PASS = Type.PASS.defaultResult;
 
-	private final Context cx;
+	private final @Nullable Context cx;
 	private final Type type;
-	private final Object value;
+	private final @Nullable Object value;
 
 	private EventResult(@Nullable Context cx, Type type, @Nullable Object value) {
 		this.cx = cx;

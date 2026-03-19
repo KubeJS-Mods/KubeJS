@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.ExtraCodecs;
+import org.jspecify.annotations.Nullable;
 
 public enum IgnoreComponent implements RecipeComponent<Object> {
 	INSTANCE;
@@ -27,7 +28,8 @@ public enum IgnoreComponent implements RecipeComponent<Object> {
 	}
 
 	@Override
-	public Object wrap(RecipeScriptContext cx, Object from) {
+	@Nullable
+	public Object wrap(RecipeScriptContext cx, @Nullable Object from) {
 		return from;
 	}
 
@@ -41,7 +43,7 @@ public enum IgnoreComponent implements RecipeComponent<Object> {
 	}
 
 	@Override
-	public boolean isEmpty(Object value) {
+	public boolean isEmpty(@Nullable Object value) {
 		return value == null;
 	}
 

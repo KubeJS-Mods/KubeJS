@@ -22,6 +22,7 @@ public record CustomIngredientAction(String id) implements IngredientAction {
 
 	@Override
 	public ItemStack transform(ItemStack old, int index, CraftingInput input) {
+		//noinspection DataFlowIssue
 		return ((ItemStack) ServerEvents.MODIFY_RECIPE_INGREDIENT.post(ScriptType.SERVER, id, new ModifyCraftingItemKubeEvent(input, old, index)).value()).copy();
 	}
 }

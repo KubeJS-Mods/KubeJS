@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import dev.latvian.mods.rhino.Context;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public record SourceLine(String source, int line) {
 	public static final SourceLine UNKNOWN = new SourceLine("", 0);

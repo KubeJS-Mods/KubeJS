@@ -47,7 +47,7 @@ import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -201,11 +201,11 @@ public interface IngredientWrapper {
 				.source(SourceLine.of(cx)));
 	}
 
-	static boolean isIngredientLike(Object from) {
+	static boolean isIngredientLike(@Nullable Object from) {
 		return from instanceof Ingredient || from instanceof SizedIngredient || from instanceof ItemStack;
 	}
 
-	static DataResult<Ingredient> parseJson(Context cx, JsonElement json) {
+	static DataResult<Ingredient> parseJson(Context cx, @Nullable JsonElement json) {
 		return switch (json) {
 			case null -> EMPTY_INGREDIENT;
 			case JsonNull jsonNull -> EMPTY_INGREDIENT;

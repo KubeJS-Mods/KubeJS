@@ -21,7 +21,7 @@ import dev.latvian.mods.rhino.type.JSObjectTypeInfo;
 import dev.latvian.mods.rhino.type.JSOptionalParam;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,7 +73,7 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 		}
 
 		@Override
-		public int compareTo(@NotNull CustomObjectRecipeComponent.Value value) {
+		public int compareTo(CustomObjectRecipeComponent.Value value) {
 			return Integer.compare(index, value.index);
 		}
 	}
@@ -85,9 +85,9 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 	).apply(instance, CustomObjectRecipeComponent::new));
 
 	private final List<Key> keys;
-	public Predicate<Set<String>> hasPriority;
-	private Codec<List<Value>> codec;
-	private TypeInfo typeInfo;
+	public @Nullable Predicate<Set<String>> hasPriority;
+	private @Nullable Codec<List<Value>> codec;
+	private @Nullable TypeInfo typeInfo;
 
 	public CustomObjectRecipeComponent(List<Key> keys) {
 		this.keys = List.copyOf(keys);
@@ -114,7 +114,7 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 	}
 
 	@Override
-	public List<CustomObjectRecipeComponent.Value> wrap(RecipeScriptContext rcx, Object from) {
+	public List<CustomObjectRecipeComponent.Value> wrap(RecipeScriptContext rcx, @Nullable Object from) {
 		var cx = rcx.cx();
 
 		// already wrapped
@@ -135,7 +135,6 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 				var key = switch (entry.getKey()) {
 					case Key id -> id;
 					case CharSequence cs -> keyMap.get(cs.toString());
-					case null -> null;
 					default -> keyMap.get(Objects.toString(entry.getKey()));
 				};
 
@@ -252,7 +251,7 @@ public class CustomObjectRecipeComponent implements RecipeComponent<List<CustomO
 	}
 
 	@Override
-	public boolean hasPriority(RecipeMatchContext cx, Object from) {
+	public boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		if (from instanceof Map m) {
 			if (hasPriority != null) {
 				return hasPriority.test(m.keySet());

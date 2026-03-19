@@ -4,6 +4,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.jspecify.annotations.Nullable;
 
 public class ItemStackKey {
 	public static ItemStackKey EMPTY = new ItemStackKey(Items.AIR, null);
@@ -22,7 +23,7 @@ public class ItemStackKey {
 	public final DataComponentPatch patch;
 	private int hashCode = 0;
 
-	public ItemStackKey(Item item, DataComponentPatch patch) {
+	public ItemStackKey(Item item, @Nullable DataComponentPatch patch) {
 		this.item = item;
 		this.patch = patch == null ? DataComponentPatch.EMPTY : patch;
 	}

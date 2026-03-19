@@ -19,7 +19,7 @@ import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -27,6 +27,7 @@ import java.util.List;
 public interface BlockTintFunction {
 	TypeInfo TYPE_INFO = TypeInfo.of(BlockTintFunction.class);
 
+	@Nullable
 	KubeColor getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index);
 
 	record Fixed(KubeColor color) implements BlockTintFunction {
@@ -37,10 +38,10 @@ public interface BlockTintFunction {
 	}
 
 	class Mapped implements BlockTintFunction {
-		public final Int2ObjectMap<BlockTintFunction> map = new Int2ObjectArrayMap<>(1);
+		public final Int2ObjectMap<@Nullable BlockTintFunction> map = new Int2ObjectArrayMap<>(1);
 
 		@Override
-		public KubeColor getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
+		public @Nullable KubeColor getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
 			var f = map.get(index);
 			return f == null ? null : f.getColor(state, level, pos, index);
 		}
@@ -53,7 +54,7 @@ public interface BlockTintFunction {
 	Fixed BIRCH_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.FOLIAGE_BIRCH));
 	Fixed MANGROVE_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.FOLIAGE_MANGROVE));
 	BlockTintFunction WATER = (s, l, p, i) -> l == null || p == null ? null : new SimpleColorWithAlpha(BiomeColors.getAverageWaterColor(l, p));
-	KubeColor[] REDSTONE_COLORS = new KubeColor[16];
+	@Nullable KubeColor[] REDSTONE_COLORS = new KubeColor[16];
 	BlockTintFunction REDSTONE = (state, level, pos, index) -> {
 		if (REDSTONE_COLORS[0] == null) {
 			for (int i = 0; i < REDSTONE_COLORS.length; i++) {
@@ -65,7 +66,7 @@ public interface BlockTintFunction {
 	};
 
 	@Nullable
-	static BlockTintFunction wrap(Context cx, Object o) {
+	static BlockTintFunction wrap(Context cx, @Nullable Object o) {
 		return switch (o) {
 			case null -> null;
 			case Undefined undefined -> null;
