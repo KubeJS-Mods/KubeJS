@@ -22,6 +22,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.world.damagesource.DamageSources;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
@@ -67,6 +68,14 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 		this.damageSources = null;
 		this.itemStackParseCache = new HashMap<>();
 		this.cachedRegistryTags = new Reference2ObjectOpenHashMap<>();
+	}
+
+	public Registry<Item> item() {
+		return lookupOrThrow(Registries.ITEM);
+	}
+
+	public Registry<Block> block() {
+		return lookupOrThrow(Registries.BLOCK);
 	}
 
 	public DamageSources damageSources() {

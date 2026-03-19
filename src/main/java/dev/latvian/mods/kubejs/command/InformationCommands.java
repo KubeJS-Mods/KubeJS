@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.command;
 
-import dev.latvian.mods.kubejs.ingredient.NamespaceIngredient;
+import dev.latvian.mods.kubejs.holder.NamespaceHolderSet;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
@@ -54,7 +54,7 @@ public class InformationCommands {
 			player.sendSystemMessage(copy(id, ChatFormatting.YELLOW, "Item Tag [" + size + " items]"));
 		}
 		// mod
-		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + new NamespaceIngredient(stack.kjs$getMod()).toVanilla().kjs$getStacks().size() + " items]"));
+		player.sendSystemMessage(copy("'@" + stack.kjs$getMod() + "'", ChatFormatting.AQUA, "Mod [" + NamespaceHolderSet.of(itemRegistry, stack.kjs$getMod()).size() + " items]"));
 
 		// creative tab
 		for (var tab : tabRegistry) {

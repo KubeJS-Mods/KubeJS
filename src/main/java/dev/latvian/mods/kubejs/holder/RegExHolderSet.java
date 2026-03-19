@@ -10,6 +10,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
@@ -26,19 +27,17 @@ import java.util.regex.Pattern;
 public class RegExHolderSet<T> extends HolderSet.ListBacked<T> implements ICustomHolderSet<T> {
 	public static <T> MapCodec<RegExHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
-			RegistryOps.retrieveRegistryLookup(registryKey).forGetter(s -> s.registryLookup),
-			RegExpKJS.CODEC.fieldOf("pattern").forGetter(s -> s.pattern)
+			RegistryOps.retrieveRegistryLookup(registryKey).forGetter(RegExHolderSet::registryLookup),
+			RegExpKJS.CODEC.fieldOf("pattern").forGetter(RegExHolderSet::pattern)
 		).apply(instance, RegExHolderSet::new));
 	}
 
-	// FIXME
-	@Nullable
 	public static <T> StreamCodec<RegistryFriendlyByteBuf, RegExHolderSet<T>> streamCodec(ResourceKey<? extends Registry<T>> registryKey) {
-		return null;
+		return ByteBufCodecs.fromCodecWithRegistries(codec(registryKey).codec());
 	}
 
-	public final HolderLookup.RegistryLookup<T> registryLookup;
-	public final Pattern pattern;
+	private final HolderLookup.RegistryLookup<T> registryLookup;
+	private final Pattern pattern;
 
 	@Nullable
 	private Set<Holder<T>> set = null;
@@ -62,6 +61,14 @@ public class RegExHolderSet<T> extends HolderSet.ListBacked<T> implements ICusto
 	@Override
 	public HolderSetType type() {
 		return KubeJSHolderSets.REGEX.value();
+	}
+
+	public HolderLookup.RegistryLookup<T> registryLookup() {
+		return registryLookup;
+	}
+
+	public Pattern pattern() {
+		return pattern;
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
@@ -25,19 +26,17 @@ import java.util.Set;
 public class NamespaceHolderSet<T> extends HolderSet.ListBacked<T> implements ICustomHolderSet<T> {
 	public static <T> MapCodec<NamespaceHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
-			RegistryOps.retrieveRegistryLookup(registryKey).forGetter(s -> s.registryLookup),
-			Codec.STRING.fieldOf("namespace").forGetter(s -> s.namespace)
+			RegistryOps.retrieveRegistryLookup(registryKey).forGetter(NamespaceHolderSet::registryLookup),
+			Codec.STRING.fieldOf("namespace").forGetter(NamespaceHolderSet::namespace)
 		).apply(instance, NamespaceHolderSet::new));
 	}
 
-	// FIXME
-	@Nullable
 	public static <T> StreamCodec<RegistryFriendlyByteBuf, NamespaceHolderSet<T>> streamCodec(ResourceKey<? extends Registry<T>> registryKey) {
-		return null;
+		return ByteBufCodecs.fromCodecWithRegistries(codec(registryKey).codec());
 	}
 
-	public final HolderLookup.RegistryLookup<T> registryLookup;
-	public final String namespace;
+	private final HolderLookup.RegistryLookup<T> registryLookup;
+	private final String namespace;
 
 	@Nullable
 	private Set<Holder<T>> set = null;
@@ -61,6 +60,14 @@ public class NamespaceHolderSet<T> extends HolderSet.ListBacked<T> implements IC
 	@Override
 	public HolderSetType type() {
 		return KubeJSHolderSets.NAMESPACE.value();
+	}
+
+	public HolderLookup.RegistryLookup<T> registryLookup() {
+		return registryLookup;
+	}
+
+	public String namespace() {
+		return namespace;
 	}
 
 	@Override

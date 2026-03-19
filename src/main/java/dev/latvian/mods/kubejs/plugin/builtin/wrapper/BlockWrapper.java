@@ -17,7 +17,6 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.level.block.Block;
@@ -130,7 +129,7 @@ public class BlockWrapper {
 	// TODO (26.1): RegistryAccessContainer => Context
 	public static BlockState parseBlockState(RegistryAccessContainer registries, String string) {
 		try {
-			return BlockStateParser.parseForBlock(registries.lookupOrThrow(Registries.BLOCK), string, false).blockState();
+			return BlockStateParser.parseForBlock(registries.block(), string, false).blockState();
 		} catch (Exception ex) {
 			throw new IllegalArgumentException("Invalid block state '%s'".formatted(string), ex);
 		}

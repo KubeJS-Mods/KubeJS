@@ -11,19 +11,21 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
+// TODO: Rework to fit ingredient changes
 @RemapPrefixForJS("kjs$")
 public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierKJS {
 	TypeInfo TYPE_INFO = TypeInfo.of(ItemPredicate.class);
 	ItemPredicate NONE = stack -> false;
 	ItemPredicate ALL = stack -> true;
 
-	static ItemPredicate wrap(Context cx, Object from) {
+	static ItemPredicate wrap(Context cx, @Nullable Object from) {
 		if (from == null) {
 			return NONE;
 		} else if (from instanceof BaseFunction func) {

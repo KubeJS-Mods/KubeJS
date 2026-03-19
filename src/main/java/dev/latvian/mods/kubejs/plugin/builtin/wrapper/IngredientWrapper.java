@@ -14,10 +14,9 @@ import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.core.IngredientSupplierKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.holder.NamespaceHolderSet;
+import dev.latvian.mods.kubejs.holder.RegExHolderSet;
 import dev.latvian.mods.kubejs.ingredient.CreativeTabIngredient;
-import dev.latvian.mods.kubejs.ingredient.NamespaceIngredient;
-import dev.latvian.mods.kubejs.ingredient.RegExIngredient;
-import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ID;
@@ -33,7 +32,6 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
@@ -45,8 +43,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
-import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -67,9 +65,6 @@ public interface IngredientWrapper {
 
 	TypeInfo TYPE_INFO = TypeInfo.of(Ingredient.class);
 
-	@Info("An ingredient that matches everything")
-	Ingredient all = WildcardIngredient.INSTANCE.toVanilla();
-
 	@Info("Returns an ingredient of the input")
 	static Ingredient of(Ingredient ingredient) {
 		return ingredient;
@@ -78,6 +73,11 @@ public interface IngredientWrapper {
 	@Info("Returns an ingredient of the input, with the specified count")
 	static SizedIngredient of(Ingredient ingredient, int count) {
 		return ingredient.kjs$withCount(count);
+	}
+
+	@Info("An ingredient that matches everything")
+	static Ingredient getAll(Context cx) {
+		return Ingredient.of(new AnyHolderSet<>(RegistryAccessContainer.of(cx).item()));
 	}
 
 	@DoNotCall
@@ -110,6 +110,8 @@ public interface IngredientWrapper {
 			from = w.unwrap();
 		}
 
+		var registries = RegistryAccessContainer.of(cx);
+
 		var trivial = switch (from) {
 			case null -> EMPTY_INGREDIENT;
 			case Ingredient id -> DataResult.success(id);
@@ -119,7 +121,7 @@ public interface IngredientWrapper {
 			case ItemLike i -> DataResult.success(Ingredient.of(i));
 			case TagKey<?>(ResourceKey<?> reg, var id) -> {
 				var tagKey = ItemTags.create(id);
-				yield BuiltInRegistries.ITEM.get(tagKey)
+				yield registries.get(tagKey)
 					.map(Ingredient::of)
 					.map(DataResult::success)
 					.orElseGet(() -> unknownTag(id))
@@ -135,11 +137,12 @@ public interface IngredientWrapper {
 
 		if (from instanceof Pattern || from instanceof NativeRegExp) {
 			var str = String.valueOf(from);
+			//noinspection DataFlowIssue (safe, no idea what idea is smoking)
 			return Optional.ofNullable(RegExpKJS.wrap(from))
 				.map(DataResult::success)
 				.orElseGet(() -> DataResult.error(() -> "Invalid regex " + str))
-				.map(RegExIngredient::new)
-				.map(ICustomIngredient::toVanilla)
+				.map(regex -> RegExHolderSet.of(registries.item(), regex))
+				.map(Ingredient::of)
 				;
 		} else if (from instanceof JsonElement json) {
 			return parseJson(cx, json);
@@ -218,7 +221,7 @@ public interface IngredientWrapper {
 	static DataResult<Ingredient> parseString(Context cx, String s) {
 		return switch (s) {
 			case "", "-", "air", "minecraft:air" -> EMPTY_INGREDIENT;
-			case "*" -> DataResult.success(IngredientWrapper.all);
+			case "*" -> DataResult.success(IngredientWrapper.getAll(cx));
 			default -> read(cx, new StringReader(s));
 		};
 	}
@@ -239,19 +242,19 @@ public interface IngredientWrapper {
 			}
 			case '*' -> {
 				reader.skip();
-				yield DataResult.success(IngredientWrapper.all);
+				yield DataResult.success(IngredientWrapper.getAll(cx));
 			}
 			case '#' -> {
 				reader.skip();
 				yield ID.read(reader).map(ItemTags::create).flatMap(tagKey ->
-					BuiltInRegistries.ITEM.get(tagKey)
+					registries.get(tagKey)
 						.map(set -> DataResult.success(Ingredient.of(set)))
 						.orElseGet(() -> unknownTag(tagKey.location()))
 				);
 			}
 			case '@' -> {
 				reader.skip();
-				yield DataResult.success(new NamespaceIngredient(reader.readUnquotedString()).toVanilla());
+				yield DataResult.success(new Ingredient(NamespaceHolderSet.of(registries.item(), reader.readUnquotedString())));
 			}
 			case '%' -> {
 				reader.skip();
@@ -262,7 +265,7 @@ public interface IngredientWrapper {
 					})
 					.map(group -> new CreativeTabIngredient(group).toVanilla());
 			}
-			case '/' -> RegExpKJS.tryRead(reader).map(RegExIngredient::new).map(ICustomIngredient::toVanilla);
+			case '/' -> RegExpKJS.tryRead(reader).map(regex -> RegExHolderSet.of(registries.item(), regex)).map(Ingredient::of);
 			case '[' -> {
 				reader.skip();
 				reader.skipWhitespace();

@@ -8,12 +8,11 @@ import dev.latvian.mods.kubejs.core.IngredientKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
@@ -37,7 +36,9 @@ public interface SizedIngredientWrapper {
 	}
 
 	@Info("An ingredient that matches everything")
-	SizedIngredient all = new SizedIngredient(IngredientWrapper.all, 1);
+	static SizedIngredient getAll(Context cx) {
+		return new SizedIngredient(IngredientWrapper.getAll(cx), 1);
+	}
 
 	@Info("Returns a sized ingredient of the input")
 	static SizedIngredient of(SizedIngredient ingredient) {
@@ -49,8 +50,8 @@ public interface SizedIngredientWrapper {
 		return new SizedIngredient(ingredient, count);
 	}
 
-	static SizedIngredient ofTag(RegistryAccess registries, TagKey<Item> tag, int count) {
-		HolderSet<Item> set = registries.lookupOrThrow(Registries.ITEM).getOrThrow(tag);
+	static SizedIngredient ofTag(Context cx, TagKey<Item> tag, int count) {
+		HolderSet<Item> set = RegistryAccessContainer.of(cx).getOrThrow(tag);
 		return new SizedIngredient(Ingredient.of(set), count);
 	}
 

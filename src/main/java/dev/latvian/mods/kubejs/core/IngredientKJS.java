@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.core;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
-import dev.latvian.mods.kubejs.ingredient.WildcardIngredient;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
@@ -22,6 +21,7 @@ import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.common.crafting.DifferenceIngredient;
 import net.neoforged.neoforge.common.crafting.IntersectionIngredient;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import net.neoforged.neoforge.registries.holdersets.AnyHolderSet;
 import org.jspecify.annotations.Nullable;
 
 @RemapPrefixForJS("kjs$")
@@ -59,7 +59,7 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 
 	@Override
 	default boolean kjs$isWildcard() {
-		return kjs$self().getCustomIngredient() == WildcardIngredient.INSTANCE;
+		return kjs$self().values instanceof AnyHolderSet<?>;
 	}
 
 	default Ingredient kjs$asIngredient() {
