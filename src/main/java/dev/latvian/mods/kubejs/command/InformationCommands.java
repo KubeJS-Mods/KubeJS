@@ -2,9 +2,8 @@ package dev.latvian.mods.kubejs.command;
 
 import dev.latvian.mods.kubejs.ingredient.NamespaceIngredient;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -38,11 +37,11 @@ public class InformationCommands {
 	public static int hand(ServerPlayer player, InteractionHand hand) {
 		player.sendSystemMessage(Component.literal("Item in hand:"));
 		var stack = player.getItemInHand(hand);
-		var holder = Holder.direct(stack.getItem());
-		var itemRegistry = BuiltInRegistries.ITEM;
-		var blockRegistry = BuiltInRegistries.BLOCK;
-		var fluidRegistry = BuiltInRegistries.FLUID;
-		var tabRegistry = BuiltInRegistries.CREATIVE_MODE_TAB;
+		var holder = stack.typeHolder();
+		var itemRegistry = player.registryAccess().lookupOrThrow(Registries.ITEM);
+		var blockRegistry = player.registryAccess().lookupOrThrow(Registries.BLOCK);
+		var fluidRegistry = player.registryAccess().lookupOrThrow(Registries.FLUID);
+		var tabRegistry = player.registryAccess().lookupOrThrow(Registries.CREATIVE_MODE_TAB);
 
 		// item info
 		// id
@@ -72,7 +71,7 @@ public class InformationCommands {
 		if (stack.getItem() instanceof BlockItem blockItem) {
 			player.sendSystemMessage(Component.literal("Held block:"));
 			var block = blockItem.getBlock();
-			var blockHolder = block.builtInRegistryHolder();
+			var blockHolder = block.defaultBlockState().typeHolder();
 			// id
 			player.sendSystemMessage(copy("'" + block.kjs$getId() + "'", ChatFormatting.GREEN, "Block ID"));
 			// block tags
@@ -89,7 +88,7 @@ public class InformationCommands {
 			player.sendSystemMessage(Component.literal("Held fluid:"));
 			var fluid = containedFluid.typeHolder();
 			// id
-			player.sendSystemMessage(copy(fluid.getRegisteredName(), ChatFormatting.GREEN, "Fluid ID"));
+			player.sendSystemMessage(copy(fluid.getKey().identifier().toString(), ChatFormatting.GREEN, "Fluid ID"));
 			// fluid tags
 			var fluidTags = containedFluid.tags().toList();
 			for (var tag : fluidTags) {
