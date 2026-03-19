@@ -66,8 +66,7 @@
 		"dev/latvian/mods/kubejs/core/ReloadableServerResourcesKJS"
 	],
 	"net/minecraft/world/item/crafting/RecipeManager": [
-		"dev/latvian/mods/kubejs/core/RecipeManagerKJS",
-		"dev/latvian/mods/kubejs/core/ContextAwareReloadListenerKJS"
+		"dev/latvian/mods/kubejs/core/RecipeManagerKJS"
 	],
 	"net/minecraft/tags/TagManager": [
 		"dev/latvian/mods/kubejs/core/TagManagerKJS"

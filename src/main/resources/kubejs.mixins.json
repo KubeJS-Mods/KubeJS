@@ -16,7 +16,6 @@
 		"CompoundIngredientMixin",
 		"CompoundTagMixin",
 		"ContainerMixin",
-		"ContextAwareReloadListenerMixin",
 		"CreativeModeTabMixin",
 		"DamageSourceMixin",
 		"DataComponentMapBuilderMixin",
