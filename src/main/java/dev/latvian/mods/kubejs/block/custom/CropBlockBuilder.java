@@ -231,7 +231,7 @@ public class CropBlockBuilder extends BlockBuilder {
 	@Nullable
 	public LootTable generateLootTable(KubeDataGenerator generator) {
 		// TODO: Use this lookup to apply fortune bonus
-		var registries = generator.getRegistries().access();
+		var registries = generator.getRegistries();
 
 		var mature = LootItemBlockStatePropertyCondition.hasBlockStateProperties(this.get())
 			.setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(CropBlock.AGE, age));

@@ -42,7 +42,7 @@ public class VirtualDataMapFile<RT, DT> implements BiConsumer<Identifier, DT> {
 	public VirtualDataMapFile(DataMapType<RT, DT> type, VirtualDataPack pack) {
 		this.pack = pack;
 		this.registryAccess = pack.getRegistries();
-		this.registry = registryAccess.access().lookupOrThrow(type.registryKey());
+		this.registry = registryAccess.lookupOrThrow(type.registryKey());
 	}
 
 	public void replaceAll() {

@@ -116,7 +116,7 @@ public class KubeJSContext extends Context {
 	public Registry<?> lookupRegistry(TypeInfo type, Object from) {
 		var registryType = lookupRegistryType(type, from);
 
-		var registry = getRegistries().access().lookup(registryType.key()).orElse(null);
+		var registry = getRegistries().lookup(registryType.key()).orElse(null);
 
 		if (registry == null) {
 			throw reportRuntimeError("Can't interpret '" + from + "' as '" + registryType.key().identifier() + "': registry not found", this);
@@ -168,7 +168,7 @@ public class KubeJSContext extends Context {
 			var reg = RegistryType.lookup(target);
 
 			if (reg != null) {
-				var registry = getRegistries().access()
+				var registry = getRegistries()
 					.lookup(reg.key())
 					.orElseThrow(() -> reportRuntimeError("Can't interpret '%s' as '%s': registry not found".formatted(from, reg.key().identifier()), this))
 					.getOptional(ID.mc(from))

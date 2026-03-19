@@ -33,8 +33,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
-public final class RegistryAccessContainer extends RegistryOpsContainer implements ICondition.IContext {
+public final class RegistryAccessContainer extends RegistryOpsContainer implements RegistryAccess, ICondition.IContext {
 	public static final RegistryAccessContainer BUILTIN = new RegistryAccessContainer(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
 
 	// Still necessary because STARTUP and CLIENT scripts need to know about registries
@@ -65,10 +67,6 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 		this.damageSources = null;
 		this.itemStackParseCache = new HashMap<>();
 		this.cachedRegistryTags = new Reference2ObjectOpenHashMap<>();
-	}
-
-	public RegistryAccess.Frozen access() {
-		return access;
 	}
 
 	public DamageSources damageSources() {
@@ -146,7 +144,17 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 	}
 
 	@Override
-	public RegistryAccess registryAccess() {
+	public RegistryAccess.Frozen registryAccess() {
 		return access;
+	}
+
+	@Override
+	public <E> Optional<Registry<E>> lookup(ResourceKey<? extends Registry<? extends E>> registryKey) {
+		return access.lookup(registryKey);
+	}
+
+	@Override
+	public Stream<RegistryEntry<?>> registries() {
+		return access.registries();
 	}
 }

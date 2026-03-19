@@ -199,7 +199,7 @@ public class ServerScriptManager extends ScriptManager {
 					@Override
 					public <E> Optional<Registry<E>> lookup(ResourceKey<? extends Registry<? extends E>> registryKey) {
 						return Cast.to(registries.computeIfAbsent(registryKey, key -> {
-							var c = current.access().lookup(key);
+							var c = current.lookup(key);
 							if (c.isPresent()) {
 								return Cast.to(c);
 							}
@@ -209,7 +209,7 @@ public class ServerScriptManager extends ScriptManager {
 
 					@Override
 					public Stream<RegistryEntry<?>> registries() {
-						return current.access().registries();
+						return current.registries();
 					}
 				});
 

@@ -130,7 +130,7 @@ public class BlockWrapper {
 	// TODO (26.1): RegistryAccessContainer => Context
 	public static BlockState parseBlockState(RegistryAccessContainer registries, String string) {
 		try {
-			return BlockStateParser.parseForBlock(registries.access().lookupOrThrow(Registries.BLOCK), string, false).blockState();
+			return BlockStateParser.parseForBlock(registries.lookupOrThrow(Registries.BLOCK), string, false).blockState();
 		} catch (Exception ex) {
 			throw new IllegalArgumentException("Invalid block state '%s'".formatted(string), ex);
 		}

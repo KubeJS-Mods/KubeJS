@@ -59,7 +59,7 @@ public record RegistryComponent<T>(
 	@Override
 	@SuppressWarnings("unchecked")
 	public Holder<T> wrap(RecipeScriptContext cx, @Nullable Object from) {
-		var lookup = cx.registries().registryAccess().lookupOrThrow(registry);
+		var lookup = cx.registries().lookupOrThrow(registry);
 
 		if (registry.equals(Registries.ITEM)) {
 			if (from instanceof ItemStack is) {

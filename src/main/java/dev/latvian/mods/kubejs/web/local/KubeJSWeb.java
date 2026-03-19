@@ -380,14 +380,14 @@ public class KubeJSWeb {
 
 	private static HTTPResponse getRegistriesResponse(KJSHTTPRequest req) {
 		return HTTPResponse.ok().content(JsonContent.array(json -> {
-			for (var registry : req.registries().access().registries().toList()) {
+			for (var registry : req.registries().registryAccess().registries().toList()) {
 				json.add(registry.key().identifier().toString());
 			}
 		}));
 	}
 
 	private static HTTPResponse getRegistryKeysResponse(KJSHTTPRequest req) {
-		var registry = req.registries().access().lookup(ResourceKey.createRegistryKey(req.id()));
+		var registry = req.registries().lookup(ResourceKey.createRegistryKey(req.id()));
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
@@ -401,7 +401,7 @@ public class KubeJSWeb {
 	}
 
 	private static HTTPResponse getRegistryMatchResponse(KJSHTTPRequest req) {
-		var registry = req.registries().access().lookup(ResourceKey.createRegistryKey(req.id()));
+		var registry = req.registries().lookup(ResourceKey.createRegistryKey(req.id()));
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
@@ -425,7 +425,7 @@ public class KubeJSWeb {
 	}
 
 	private static HTTPResponse getTagsResponse(KJSHTTPRequest req) {
-		var registry = req.registries().access().lookup(ResourceKey.createRegistryKey(req.id()));
+		var registry = req.registries().lookup(ResourceKey.createRegistryKey(req.id()));
 
 
 		if (registry.isEmpty()) {
@@ -440,7 +440,7 @@ public class KubeJSWeb {
 	}
 
 	private static HTTPResponse getTagValuesResponse(KJSHTTPRequest req) {
-		var registry = req.registries().access().lookup(ResourceKey.createRegistryKey(req.id()));
+		var registry = req.registries().lookup(ResourceKey.createRegistryKey(req.id()));
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
@@ -464,7 +464,7 @@ public class KubeJSWeb {
 	}
 
 	private static HTTPResponse getTagKeysResponse(KJSHTTPRequest req) {
-		var registry = req.registries().access().lookup(ResourceKey.createRegistryKey(req.id()));
+		var registry = req.registries().lookup(ResourceKey.createRegistryKey(req.id()));
 
 		if (registry.isEmpty()) {
 			return HTTPStatus.NOT_FOUND;
