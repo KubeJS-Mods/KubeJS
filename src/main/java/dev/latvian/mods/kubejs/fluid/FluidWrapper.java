@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
@@ -24,18 +25,15 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.DataComponentFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
-import net.neoforged.neoforge.fluids.crafting.FluidIngredientType;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static com.mojang.serialization.DataResult.error;
 import static com.mojang.serialization.DataResult.success;
@@ -46,12 +44,9 @@ public interface FluidWrapper {
 	TypeInfo INGREDIENT_TYPE_INFO = TypeInfo.of(FluidIngredient.class);
 	TypeInfo SIZED_INGREDIENT_TYPE_INFO = TypeInfo.of(SizedFluidIngredient.class);
 
-	FluidIngredient EMPTY_INGREDIENT = new EmptyKjsFluidIngredient();
-	SizedFluidIngredient EMPTY_SIZED = new SizedFluidIngredient(EMPTY_INGREDIENT, FluidType.BUCKET_VOLUME);
-
 	DataResult<FluidStack> EMPTY_STACK_RESULT = success(FluidStack.EMPTY);
-	DataResult<FluidIngredient> EMPTY_INGREDIENT_RESULT = success(EMPTY_INGREDIENT);
-	DataResult<SizedFluidIngredient> EMPTY_SIZED_RESULT = success(EMPTY_SIZED);
+	DataResult<FluidIngredient> EMPTY_INGREDIENT_RESULT = error(() -> "Empty fluid ingredients aren't supported!");
+	DataResult<SizedFluidIngredient> EMPTY_SIZED_RESULT = Cast.to(EMPTY_INGREDIENT_RESULT);
 
 	@HideFromJS
 	static DataResult<FluidStack> tryWrap(Context cx, Object from) {
@@ -103,7 +98,6 @@ public interface FluidWrapper {
 			case null -> EMPTY_INGREDIENT_RESULT;
 			case FluidStack stack when stack.isEmpty() -> EMPTY_INGREDIENT_RESULT;
 			case Fluid fluid when fluid.kjs$isEmpty() -> EMPTY_INGREDIENT_RESULT;
-			case FluidIngredient in when isEmptyIngredient(in) -> EMPTY_INGREDIENT_RESULT;
 			case FluidStack stack -> success(FluidIngredient.of(stack));
 			case Fluid fluid -> success(FluidIngredient.of(fluid));
 			case FluidIngredient in -> success(in);
@@ -135,7 +129,6 @@ public interface FluidWrapper {
 			case null -> EMPTY_SIZED_RESULT;
 			case FluidStack stack when stack.isEmpty() -> EMPTY_SIZED_RESULT;
 			case Fluid fluid when fluid.kjs$isEmpty() -> EMPTY_SIZED_RESULT;
-			case FluidIngredient in when isEmptyIngredient(in) -> EMPTY_SIZED_RESULT;
 			case FluidStack stack -> success(SizedFluidIngredient.of(stack.getFluid(), stack.getAmount()));
 			case Fluid fluid -> success(SizedFluidIngredient.of(fluid, FluidType.BUCKET_VOLUME));
 			case FluidIngredient in -> success(new SizedFluidIngredient(in, FluidType.BUCKET_VOLUME));
@@ -267,7 +260,7 @@ public interface FluidWrapper {
 
 	static DataResult<FluidIngredient> ingredientOfString(Context cx, DynamicOps<Tag> registryOps, String s) {
 		return switch (s) {
-			case "", "-", "empty", "minecraft:empty" -> EMPTY_INGREDIENT_RESULT;
+			case "", "-", "empty", "none", "minecraft:empty" -> EMPTY_INGREDIENT_RESULT;
 			default -> readWithContext(cx, registryOps, s, FluidWrapper::readIngredient, "FluidIngredient");
 		};
 	}
@@ -314,7 +307,7 @@ public interface FluidWrapper {
 
 	static DataResult<SizedFluidIngredient> sizedIngredientOfString(Context cx, DynamicOps<Tag> registryOps, String s) {
 		return switch (s) {
-			case "", "-", "empty", "minecraft:empty" -> EMPTY_SIZED_RESULT;
+			case "", "-", "empty", "none", "minecraft:empty" -> EMPTY_SIZED_RESULT;
 			default -> readWithContext(cx, registryOps, s, FluidWrapper::readSizedIngredient, "SizedFluidIngredient");
 		};
 	}
@@ -369,42 +362,5 @@ public interface FluidWrapper {
 		}
 
 		return success(FluidType.BUCKET_VOLUME);
-	}
-
-	@HideFromJS
-	static boolean isEmptyIngredient(FluidIngredient ingredient) {
-		return ingredient == EMPTY_INGREDIENT || ingredient instanceof EmptyKjsFluidIngredient;
-	}
-
-	final class EmptyKjsFluidIngredient extends FluidIngredient {
-		@Override
-		public boolean test(FluidStack fluidStack) {
-			return fluidStack == null || fluidStack.isEmpty();
-		}
-
-		@Override
-		protected Stream<Holder<Fluid>> generateFluids() {
-			return Stream.of(Fluids.EMPTY.builtInRegistryHolder());
-		}
-
-		@Override
-		public boolean isSimple() {
-			return true;
-		}
-
-		@Override
-		public FluidIngredientType<?> getType() {
-			return NeoForgeMod.SIMPLE_FLUID_INGREDIENT_TYPE.get();
-		}
-
-		@Override
-		public int hashCode() {
-			return 0;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return obj == this;
-		}
 	}
 }
