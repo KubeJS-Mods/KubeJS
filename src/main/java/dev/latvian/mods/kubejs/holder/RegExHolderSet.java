@@ -16,15 +16,15 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
-import net.neoforged.neoforge.registries.holdersets.ICustomHolderSet;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
-public class RegExHolderSet<T> extends HolderSet.ListBacked<T> implements ICustomHolderSet<T> {
+public class RegExHolderSet<T> extends HolderSet.ListBacked<T> implements KubeJSHolderSet<T> {
 	public static <T> MapCodec<RegExHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
 			RegistryOps.retrieveRegistryLookup(registryKey).forGetter(RegExHolderSet::registryLookup),
@@ -107,5 +107,10 @@ public class RegExHolderSet<T> extends HolderSet.ListBacked<T> implements ICusto
 	@Override
 	public String toString() {
 		return "KubeJSRegExHolderSet[" + RegExpKJS.toRegExpString(pattern) + ']';
+	}
+
+	@Override
+	public String kjs$toIngredientString(Function<Holder<T>, String> elementCodec) {
+		return pattern.toString();
 	}
 }

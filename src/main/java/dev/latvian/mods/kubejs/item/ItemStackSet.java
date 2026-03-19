@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class ItemStackSet implements Iterable<ItemStack> {
-	private final HashMap<ItemStackKey, ItemStack> map;
+	private final HashMap<ItemResource, ItemStack> map;
 
 	public ItemStackSet(int initialSize) {
 		map = new HashMap<>(initialSize);
@@ -32,30 +33,30 @@ public class ItemStackSet implements Iterable<ItemStack> {
 	}
 
 	public void add(ItemStack stack) {
-		var key = ItemStackKey.of(stack);
+		var key = ItemResource.of(stack);
 
-		if (key != ItemStackKey.EMPTY) {
+		if (key != ItemResource.EMPTY) {
 			map.putIfAbsent(key, stack);
 		}
 	}
 
 	public void addItem(Item item) {
 		if (item != Items.AIR) {
-			map.putIfAbsent(item.kjs$getTypeItemStackKey(), new ItemStack(item));
+			map.putIfAbsent(ItemResource.of(item), item.getDefaultInstance());
 		}
 	}
 
 	public void remove(ItemStack stack) {
-		var key = ItemStackKey.of(stack);
+		var key = ItemResource.of(stack);
 
-		if (key != ItemStackKey.EMPTY) {
+		if (key != ItemResource.EMPTY) {
 			map.remove(key);
 		}
 	}
 
 	public boolean contains(ItemStack stack) {
-		var key = ItemStackKey.of(stack);
-		return key != ItemStackKey.EMPTY && map.containsKey(key);
+		var key = ItemResource.of(stack);
+		return key != ItemResource.EMPTY && map.containsKey(key);
 	}
 
 	public List<ItemStack> toList() {

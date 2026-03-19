@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.item.ItemStackKey;
 import dev.latvian.mods.kubejs.item.KubeJSDefaultComponentOverrides;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -37,7 +36,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 @Mixin(value = Item.class, priority = 1001)
 @RemapPrefixForJS("kjs$")
@@ -54,12 +52,6 @@ public abstract class ItemMixin implements ItemKJS {
 
 	@Unique
 	private @Nullable Map<String, Object> kjs$typeData;
-
-	@Unique
-	private @Nullable Ingredient kjs$asIngredient;
-
-	@Unique
-	private @Nullable ItemStackKey kjs$typeItemStackKey;
 
 	@Unique
 	private @Nullable ResourceKey<Item> kjs$registryKey;
@@ -80,11 +72,7 @@ public abstract class ItemMixin implements ItemKJS {
 
 	@Override
 	public ResourceKey<Item> kjs$getKey() {
-		if (kjs$registryKey == null) {
-			kjs$registryKey = ItemKJS.super.kjs$getKey();
-		}
-
-		return kjs$registryKey;
+		return kjs$asHolder().getKey();
 	}
 
 	@Override
@@ -225,27 +213,13 @@ public abstract class ItemMixin implements ItemKJS {
 
 	@Override
 	public Ingredient kjs$asIngredient() {
-		if (kjs$asIngredient == null) {
-			var is = new ItemStack(kjs$self());
-			kjs$asIngredient = Ingredient.of(Stream.of(is.getItem()));
-		}
-
-		return kjs$asIngredient;
+		return Ingredient.of(kjs$self());
 	}
 
 	@Override
 	@Accessor("descriptionId")
 	@Mutable
 	public abstract void kjs$setNameKey(String key);
-
-	@Override
-	public ItemStackKey kjs$getTypeItemStackKey() {
-		if (kjs$typeItemStackKey == null) {
-			kjs$typeItemStackKey = new ItemStackKey(kjs$self(), null);
-		}
-
-		return kjs$typeItemStackKey;
-	}
 
 	@Override
 	@Accessor("canCombineRepair")

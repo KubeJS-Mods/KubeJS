@@ -16,14 +16,14 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.neoforged.neoforge.registries.holdersets.HolderSetType;
-import net.neoforged.neoforge.registries.holdersets.ICustomHolderSet;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
-public class NamespaceHolderSet<T> extends HolderSet.ListBacked<T> implements ICustomHolderSet<T> {
+public class NamespaceHolderSet<T> extends HolderSet.ListBacked<T> implements KubeJSHolderSet<T> {
 	public static <T> MapCodec<NamespaceHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registryKey) {
 		return RecordCodecBuilder.mapCodec(instance -> instance.group(
 			RegistryOps.retrieveRegistryLookup(registryKey).forGetter(NamespaceHolderSet::registryLookup),
@@ -106,5 +106,10 @@ public class NamespaceHolderSet<T> extends HolderSet.ListBacked<T> implements IC
 	@Override
 	public String toString() {
 		return "KubeJSNamespaceHolderSet[" + namespace + ']';
+	}
+
+	@Override
+	public String kjs$toIngredientString(Function<Holder<T>, String> elementCodec) {
+		return "@" + namespace;
 	}
 }

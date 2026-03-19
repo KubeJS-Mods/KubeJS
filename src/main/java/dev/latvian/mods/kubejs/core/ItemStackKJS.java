@@ -239,7 +239,7 @@ public interface ItemStackKJS extends
 	default Ingredient kjs$asIngredient() {
 		var p = kjs$self().getComponentsPatch();
 		if (p.isEmpty()) {
-			return kjs$self().getItem().kjs$asIngredient();
+			return Ingredient.of(HolderSet.direct(kjs$asHolder()));
 		}
 		var map = DataComponentMap.builder();
 		for (var entry : p.entrySet()) {

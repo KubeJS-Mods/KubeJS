@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.item.ItemStackKey;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -61,10 +60,6 @@ public interface ItemKJS extends IngredientSupplierKJS, RegistryObjectKJS<Item> 
 	}
 
 	default void kjs$setNameKey(String key) {
-		throw new NoMixinException();
-	}
-
-	default ItemStackKey kjs$getTypeItemStackKey() {
 		throw new NoMixinException();
 	}
 

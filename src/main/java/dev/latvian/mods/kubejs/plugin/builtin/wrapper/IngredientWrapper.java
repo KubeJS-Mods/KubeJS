@@ -347,15 +347,6 @@ public interface IngredientWrapper {
 		}
 
 		var values = in.getValues();
-		return values.unwrap().left().orElse(null);
+		return values.unwrapKey().orElse(null);
 	}
-
-	static boolean containsAnyTag(Ingredient in) {
-		if (in.isCustom()) {
-			return false;
-		}
-
-		return in.getValues().unwrap().left().isPresent();
-	}
-
 }

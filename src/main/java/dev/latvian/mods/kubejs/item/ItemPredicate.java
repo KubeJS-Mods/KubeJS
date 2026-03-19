@@ -49,14 +49,20 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 		return test(item.getDefaultInstance());
 	}
 
+	// TODO: remove or rework
+	@Deprecated(forRemoval = true)
 	default ItemStack[] kjs$getStackArray() {
 		return ItemWrapper.getList().stream().map(ItemStackTemplate::create).filter(this).toArray(ItemStack[]::new);
 	}
 
+	// TODO: remove or rework
+	@Deprecated(forRemoval = true)
 	default ItemStackSet kjs$getStacks() {
 		return new ItemStackSet(kjs$getStackArray());
 	}
 
+	// TODO: remove or rework
+	@Deprecated(forRemoval = true)
 	default ItemStackSet kjs$getDisplayStacks() {
 		var set = new ItemStackSet();
 

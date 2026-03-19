@@ -53,8 +53,10 @@ public class ItemModificationKubeEvent implements KubeEvent {
 		**NOTE**: tag ingredients are not supported at this time.
 		""")
 	public void modify(ItemPredicate in, Consumer<ItemModifications> c) {
-		for (var item : in.kjs$getItemTypes()) {
-			event.modify(item, builder -> c.accept(new ItemModifications(item, builder)));
+		for (var item : BuiltInRegistries.ITEM) {
+			if (in.kjs$testItem(item)) {
+				event.modify(item, builder -> c.accept(new ItemModifications(item, builder)));
+			}
 		}
 	}
 

@@ -1,9 +1,7 @@
 package dev.latvian.mods.kubejs.util;
 
 import dev.latvian.mods.kubejs.block.BlockModificationKubeEvent;
-import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
 import dev.latvian.mods.kubejs.plugin.builtin.event.BlockEvents;
-import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.type.TypeUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -37,10 +35,9 @@ public class UtilsJS {
 		};
 	}
 
-	// TODO: We could probably make these generic for RegistryObjectBuilderTypes,
-	//  so maybe look into that to allow people to modify builtin fluids, etc. as well.
 	public static void postItemModificationEvents(ModifyDefaultComponentsEvent event) {
-		ItemEvents.MODIFICATION.post(ScriptType.STARTUP, new ItemModificationKubeEvent(event));
+		// TODO: readd this, maybe we need an ItemPredicate vs. ItemStackPredicate type
+		// ItemEvents.MODIFICATION.post(ScriptType.STARTUP, new ItemModificationKubeEvent(event));
 	}
 
 	public static void postBlockModificationEvents() {

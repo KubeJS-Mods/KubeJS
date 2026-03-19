@@ -206,6 +206,9 @@ public interface RecipeComponent<T> {
 		builder.append(value.toString());
 	}
 
+	/**
+	 * Returns a string value for display of this component.
+	 */
 	default String toString(OpsContainer ops, T value) {
 		return value.toString();
 	}

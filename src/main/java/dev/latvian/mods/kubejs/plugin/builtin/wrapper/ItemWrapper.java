@@ -56,7 +56,6 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 @Info("Various item related helper methods")
@@ -66,6 +65,7 @@ public interface ItemWrapper {
 	TypeInfo TYPE_INFO = TypeInfo.of(ItemStack.class);
 
 	@HideFromJS
+	@Deprecated(forRemoval = true)
 	Lazy<List<String>> CACHED_ITEM_TYPE_LIST = Lazy.of(() -> {
 		var cachedItemTypeList = new ArrayList<String>();
 
@@ -77,6 +77,7 @@ public interface ItemWrapper {
 	});
 
 	@HideFromJS
+	@Deprecated(forRemoval = true)
 	Lazy<Map<Identifier, Collection<ItemStackTemplate>>> CACHED_ITEM_MAP = Lazy.map(map -> {
 		var stackList = ItemStackLinkedSet.createTypeAndComponentsSet();
 
@@ -98,6 +99,7 @@ public interface ItemWrapper {
 	});
 
 	@HideFromJS
+	@Deprecated(forRemoval = true)
 	Lazy<List<ItemStackTemplate>> CACHED_ITEM_LIST = Lazy.of(() -> CACHED_ITEM_MAP.get().values().stream().flatMap(Collection::stream).toList());
 
 	@Info("Returns an ItemStack of the input")
@@ -240,23 +242,22 @@ public interface ItemWrapper {
 			.orElseGet(() -> DataResult.error(() -> "Item with ID " + id + " does not exist!"));
 	}
 
+	// TODO: remove or rework
 	@Info("Get a list of most items in the game. Items not in a creative tab are ignored")
 	static List<ItemStackTemplate> getList() {
 		return CACHED_ITEM_LIST.get();
 	}
 
 	@Info("Get a list of all the item ids in the game")
-	static List<String> getTypeList() {
-		return CACHED_ITEM_TYPE_LIST.get();
+	// TODO: remove or rework
+	static List<String> getTypeList(Context cx) {
+		return RegistryAccessContainer.of(cx).item()
+			.keySet()
+			.stream()
+			.map(Identifier::toString)
+			.toList();
 	}
 
-	static Map<Identifier, Collection<ItemStackTemplate>> getTypeToStackMap() {
-		return CACHED_ITEM_MAP.get();
-	}
-
-	static Collection<ItemStackTemplate> getVariants(ItemStack item) {
-		return getTypeToStackMap().get(item.kjs$getIdLocation());
-	}
 
 	@Info("Get the item that represents air/an empty slot")
 	static ItemStack getEmpty() {

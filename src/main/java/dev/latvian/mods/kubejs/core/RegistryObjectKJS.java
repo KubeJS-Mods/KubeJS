@@ -9,6 +9,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
+import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -42,6 +43,8 @@ public interface RegistryObjectKJS<T> extends SpecialEquality {
 		}
 	}
 
+	@NullUnmarked // should not be null in practical scenarios (i.e. when holders are bound)
+	@SuppressWarnings("unchecked")
 	default ResourceKey<T> kjs$getKey() {
 		try {
 			return kjs$asHolder().getKey();

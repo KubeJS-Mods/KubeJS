@@ -721,9 +721,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void beforeScriptsLoaded(ScriptManager manager) {
-		ItemWrapper.CACHED_ITEM_MAP.forget();
-		ItemWrapper.CACHED_ITEM_LIST.forget();
-		ItemWrapper.CACHED_ITEM_TYPE_LIST.forget();
 	}
 
 	@Override
