@@ -23,11 +23,6 @@ import dev.latvian.mods.kubejs.block.custom.SlabBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.StairBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.TrapdoorBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.WallBlockBuilder;
-import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentRegistry;
-import dev.latvian.mods.kubejs.block.entity.CustomCapabilityAttachment;
-import dev.latvian.mods.kubejs.block.entity.EnergyStorageAttachment;
-import dev.latvian.mods.kubejs.block.entity.FluidTankAttachment;
-import dev.latvian.mods.kubejs.block.entity.InventoryAttachment;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.client.icon.AtlasSpriteKubeIcon;
 import dev.latvian.mods.kubejs.client.icon.ItemKubeIcon;
@@ -713,14 +708,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 	@Override
 	public void registerRecipePostProcessors(RecipePostProcessorTypeRegistry registry) {
 		registry.register(KeyPatternCleanupPostProcessor.TYPE);
-	}
-
-	@Override
-	public void registerBlockEntityAttachments(BlockEntityAttachmentRegistry registry) {
-		registry.register(CustomCapabilityAttachment.TYPE);
-		registry.register(InventoryAttachment.TYPE);
-		registry.register(FluidTankAttachment.TYPE);
-		registry.register(EnergyStorageAttachment.TYPE);
 	}
 
 	@Override

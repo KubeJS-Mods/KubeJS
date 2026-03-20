@@ -9,6 +9,7 @@ import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.Arrays;
@@ -47,7 +48,7 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 	}
 
 	default ItemStack[] kjs$getStackArray() {
-		return ItemWrapper.getList().stream().filter(this).toArray(ItemStack[]::new);
+		return ItemWrapper.getList().stream().map(ItemStackTemplate::create).filter(this).toArray(ItemStack[]::new);
 	}
 
 	default ItemStackSet kjs$getStacks() {
@@ -57,7 +58,8 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 	default ItemStackSet kjs$getDisplayStacks() {
 		var set = new ItemStackSet();
 
-		for (var stack : ItemWrapper.getList()) {
+		for (var template : ItemWrapper.getList()) {
+			var stack = template.create();
 			if (test(stack)) {
 				set.add(stack);
 			}

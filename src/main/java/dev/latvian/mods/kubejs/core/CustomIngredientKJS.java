@@ -32,7 +32,8 @@ public interface CustomIngredientKJS extends ItemPredicate {
 	default ItemStackSet kjs$getDisplayStacks() {
 		var set = new ItemStackSet();
 
-		for (var stack : ItemWrapper.getList()) {
+		for (var template : ItemWrapper.getList()) {
+			var stack = template.create();
 			if (test(stack)) {
 				set.add(stack);
 			}

@@ -1,13 +1,7 @@
 package dev.latvian.mods.kubejs.block.entity;
 
-import com.mojang.serialization.DataResult;
-import dev.latvian.mods.kubejs.KubeJS;
-import dev.latvian.mods.kubejs.util.Cast;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
-import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.capabilities.Capabilities;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.DirectionWrapper;
+import net.minecraft.core.Direction;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
@@ -18,77 +12,35 @@ import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jspecify.annotations.Nullable;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.EnumSet;
+import java.util.Set;
 
-public class FluidTankAttachment implements BlockEntityAttachment {
-	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType(KubeJS.id("fluid_tank"), Factory.class);
-
-	public record Factory(int capacity, Optional<FluidIngredient> inputFilter) implements BlockEntityAttachmentFactory {
-		@Override
-		public BlockEntityAttachment create(BlockEntityAttachmentInfo info, KubeBlockEntity entity) {
-			return new FluidTankAttachment(entity, capacity, inputFilter.orElse(null));
-		}
-
-		@Override
-		public List<BlockCapability<?, ?>> getCapabilities() {
-			return List.of(Capabilities.Fluid.BLOCK);
-		}
+public class FluidTankAttachment {
+	public record Config(String id, EnumSet<Direction> directions, int capacity, @Nullable FluidIngredient inputFilter) {
 	}
 
-	public final KubeBlockEntity entity;
-	public final Wrapped fluidTank;
-
-	public FluidTankAttachment(KubeBlockEntity entity, int capacity, @Nullable FluidIngredient inputFilter) {
-		this.entity = entity;
-		this.fluidTank = new Wrapped(this, capacity, inputFilter);
-	}
-
-	@Override
-	public Object getWrappedObject() {
-		return fluidTank;
-	}
-
-	@Override
-	@Nullable
-	public <CAP, SRC> CAP getCapability(BlockCapability<CAP, SRC> capability) {
-		if (capability == Capabilities.Fluid.BLOCK) {
-			return Cast.to(fluidTank);
-		}
-		return null;
-	}
-
-	@Override
-	@Nullable
-	public Tag serialize(HolderLookup.Provider registries) {
-		var stack = fluidTank.getFluid();
-		if (stack.isEmpty()) {
-			return null;
-		}
-		return FluidStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, stack).result().orElse(null);
-	}
-
-	@Override
-	public void deserialize(HolderLookup.Provider registries, @Nullable Tag tag) {
-		if (tag == null) {
-			fluidTank.setFluid(FluidStack.EMPTY);
-			return;
-		}
-		DataResult<FluidStack> parsed = FluidStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, tag);
-		fluidTank.setFluid(parsed.result().orElse(FluidStack.EMPTY));
+	public static Config createConfig(String id, Set<Direction> directions, int capacity, @Nullable FluidIngredient inputFilter) {
+		return new Config(
+			id,
+			directions == null || directions.isEmpty() ? DirectionWrapper.EMPTY_SET : EnumSet.copyOf(directions),
+			Math.max(0, capacity),
+			inputFilter
+		);
 	}
 
 	public static final class Wrapped extends SnapshotJournal<FluidStack> implements ResourceHandler<FluidResource> {
-		private final FluidTankAttachment attachment;
+		private final KubeBlockEntity entity;
+		private final String id;
 		private final int capacity;
 		private final @Nullable FluidIngredient inputFilter;
 
 		private FluidStack stack = FluidStack.EMPTY;
 
-		public Wrapped(FluidTankAttachment attachment, int capacity, @Nullable FluidIngredient inputFilter) {
-			this.attachment = attachment;
-			this.capacity = capacity;
-			this.inputFilter = inputFilter;
+		public Wrapped(KubeBlockEntity entity, Config config) {
+			this.entity = entity;
+			this.id = config.id();
+			this.capacity = config.capacity();
+			this.inputFilter = config.inputFilter();
 		}
 
 		public FluidStack getFluid() {
@@ -97,6 +49,7 @@ public class FluidTankAttachment implements BlockEntityAttachment {
 
 		public void setFluid(FluidStack newStack) {
 			this.stack = newStack == null ? FluidStack.EMPTY : newStack;
+			syncToAttachment();
 		}
 
 		@Override
@@ -215,7 +168,23 @@ public class FluidTankAttachment implements BlockEntityAttachment {
 		@Override
 		protected void onRootCommit(FluidStack originalState) {
 			if (!FluidStack.matches(originalState, stack)) {
-				attachment.entity.save();
+				syncToAttachment();
+				entity.save();
+			}
+		}
+
+		public void syncFromAttachment() {
+			var map = entity.getData(KubeJSAttachmentTypes.FLUID.get());
+			var loaded = map.get(id);
+			stack = loaded != null ? loaded : FluidStack.EMPTY;
+		}
+
+		public void syncToAttachment() {
+			var map = entity.getData(KubeJSAttachmentTypes.FLUID.get());
+			if (!stack.isEmpty()) {
+				map.put(id, stack);
+			} else {
+				map.remove(id);
 			}
 		}
 	}

@@ -17,7 +17,7 @@ public interface KubeJSIngredient extends ICustomIngredient, ItemPredicate {
 
 	@Override
 	default Stream<Holder<Item>> items() {
-		return ItemWrapper.getList().stream().filter(this).map(itemStack -> Holder.direct(itemStack.getItem()));
+		return ItemWrapper.getList().stream().filter(template -> test(template.create())).map(template -> template.item());
 	}
 
 	@Override

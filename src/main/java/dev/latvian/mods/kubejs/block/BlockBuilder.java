@@ -189,9 +189,9 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 			return null;
 		}
 
-		var blockDrops = drops == null ? BlockDrops.createDefault(get().asItem().getDefaultInstance()) : drops.get();
+		var blockDrops = drops == null ? BlockDrops.createDefault(get().asItem()) : drops.get();
 
-		if (blockDrops.items().length == 0) {
+		if (blockDrops.items().length == 0 && blockDrops.defaultItem() == null) {
 			return null;
 		}
 
@@ -202,6 +202,10 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		}
 
 		pool.when(ExplosionCondition.survivesExplosion());
+
+		if (blockDrops.defaultItem() != null) {
+			pool.add(LootItem.lootTableItem(blockDrops.defaultItem()));
+		}
 
 		for (var drop : blockDrops.items()) {
 			var item = LootItem.lootTableItem(drop.getItem());

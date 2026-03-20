@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.block.entity;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.core.InventoryKJS;
 import dev.latvian.mods.kubejs.core.ServerPlayerKJS;
-import dev.latvian.mods.kubejs.plugin.builtin.wrapper.DirectionWrapper;
+import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -15,15 +15,17 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import org.jspecify.annotations.Nullable;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class BlockEntityInfo implements BlockEntityAttachmentHandler {
 	public transient final BlockBuilder blockBuilder;
@@ -36,7 +38,10 @@ public class BlockEntityInfo implements BlockEntityAttachmentHandler {
 	public transient int tickFrequency;
 	public transient int tickOffset;
 	public transient boolean sync;
-	public transient Map<String, BlockEntityAttachmentInfo> attachments;
+	public transient List<EnergyStorageAttachment.Config> energyConfigs;
+	public transient List<FluidTankAttachment.Config> fluidConfigs;
+	public transient List<InventoryAttachment.Config> inventoryConfigs;
+	public transient List<CustomCapabilityAttachment.Config> customCapConfigs;
 	public transient Int2ObjectMap<BlockEntityEventCallback> eventHandlers;
 
 	public BlockEntityInfo(BlockBuilder blockBuilder) {
@@ -48,8 +53,15 @@ public class BlockEntityInfo implements BlockEntityAttachmentHandler {
 		this.tickFrequency = 1;
 		this.tickOffset = 0;
 		this.sync = false;
-		this.attachments = new HashMap<>(1);
 		this.eventHandlers = new Int2ObjectArrayMap<>(0);
+		this.energyConfigs = new ArrayList<>(0);
+		this.fluidConfigs = new ArrayList<>(0);
+		this.inventoryConfigs = new ArrayList<>(0);
+		this.customCapConfigs = new ArrayList<>(0);
+	}
+
+	public boolean hasAnyAttachments() {
+		return !energyConfigs.isEmpty() || !fluidConfigs.isEmpty() || !inventoryConfigs.isEmpty() || !customCapConfigs.isEmpty();
 	}
 
 	public void initialData(CompoundTag data) {
@@ -82,12 +94,28 @@ public class BlockEntityInfo implements BlockEntityAttachmentHandler {
 	}
 
 	@Override
-	public void attach(String id, BlockEntityAttachmentType type, Set<Direction> directions, BlockEntityAttachmentFactory factory) {
-		attachments.put(id, new BlockEntityAttachmentInfo(id, type, attachments.size(), directions == null || directions.isEmpty() ? DirectionWrapper.EMPTY_SET : EnumSet.copyOf(directions), factory));
+	public void energyStorage(String id, Set<Direction> directions, int capacity, int maxReceive, int maxExtract, int autoOutput) {
+		var config = EnergyStorageAttachment.createConfig(id, directions, capacity, maxReceive, maxExtract, autoOutput);
+		energyConfigs.add(config);
 
-		if (!attachmentsTicking && factory.isTicking()) {
+		if (!attachmentsTicking && config.isTicking()) {
 			attachmentsTicking = true;
 		}
+	}
+
+	@Override
+	public void fluidTank(String id, Set<Direction> directions, int capacity, @Nullable FluidIngredient inputFilter) {
+		fluidConfigs.add(FluidTankAttachment.createConfig(id, directions, capacity, inputFilter));
+	}
+
+	@Override
+	public void inventory(String id, Set<Direction> directions, int width, int height, @Nullable ItemPredicate inputFilter) {
+		inventoryConfigs.add(InventoryAttachment.createConfig(id, directions, width, height, inputFilter));
+	}
+
+	@Override
+	public void attachCustomCapability(String id, Set<Direction> directions, BlockCapability<?, ?> capability, Supplier<?> dataFactory) {
+		customCapConfigs.add(CustomCapabilityAttachment.createConfig(id, directions, capability, dataFactory));
 	}
 
 	public void eventHandler(int eventId, BlockEntityEventCallback callback) {

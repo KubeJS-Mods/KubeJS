@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.plugin;
 
 import com.google.gson.JsonElement;
-import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentRegistry;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.client.icon.KubeIconTypeRegistry;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
@@ -100,9 +99,6 @@ public interface KubeJSPlugin {
 	}
 
 	default void registerRecipePostProcessors(RecipePostProcessorTypeRegistry registry) {
-	}
-
-	default void registerBlockEntityAttachments(BlockEntityAttachmentRegistry registry) {
 	}
 
 	default void registerIngredientActionTypes(IngredientActionTypeRegistry registry) {

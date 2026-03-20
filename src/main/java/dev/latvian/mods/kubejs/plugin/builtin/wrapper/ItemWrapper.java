@@ -40,6 +40,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackLinkedSet;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.item.component.ResolvableProfile;
@@ -76,7 +77,7 @@ public interface ItemWrapper {
 	});
 
 	@HideFromJS
-	Lazy<Map<Identifier, Collection<ItemStack>>> CACHED_ITEM_MAP = Lazy.map(map -> {
+	Lazy<Map<Identifier, Collection<ItemStackTemplate>>> CACHED_ITEM_MAP = Lazy.map(map -> {
 		var stackList = ItemStackLinkedSet.createTypeAndComponentsSet();
 
 		stackList.addAll(CreativeModeTabs.searchTab().getDisplayItems());
@@ -85,19 +86,19 @@ public interface ItemWrapper {
 			if (!stack.isEmpty()) {
 				map.computeIfAbsent(
 					stack.getItem().kjs$getIdLocation(),
-					_rl -> ItemStackLinkedSet.createTypeAndComponentsSet()
-				).add(stack.kjs$withCount(1));
+					_rl -> new ArrayList<>()
+				).add(ItemStackTemplate.fromNonEmptyStack(stack.kjs$withCount(1)));
 			}
 		}
 
 		for (var itemId : CACHED_ITEM_TYPE_LIST.get()) {
 			var itemRl = Identifier.parse(itemId);
-			map.computeIfAbsent(itemRl, id -> BuiltInRegistries.ITEM.get(id).map(h -> Set.of(h.value().getDefaultInstance())).orElse(Set.of()));
+			map.computeIfAbsent(itemRl, id -> BuiltInRegistries.ITEM.get(id).map(h -> List.of(new ItemStackTemplate(h.value()))).orElse(List.of()));
 		}
 	});
 
 	@HideFromJS
-	Lazy<List<ItemStack>> CACHED_ITEM_LIST = Lazy.of(() -> CACHED_ITEM_MAP.get().values().stream().flatMap(Collection::stream).toList());
+	Lazy<List<ItemStackTemplate>> CACHED_ITEM_LIST = Lazy.of(() -> CACHED_ITEM_MAP.get().values().stream().flatMap(Collection::stream).toList());
 
 	@Info("Returns an ItemStack of the input")
 	static ItemStack of(ItemStack in) {
@@ -240,7 +241,7 @@ public interface ItemWrapper {
 	}
 
 	@Info("Get a list of most items in the game. Items not in a creative tab are ignored")
-	static List<ItemStack> getList() {
+	static List<ItemStackTemplate> getList() {
 		return CACHED_ITEM_LIST.get();
 	}
 
@@ -249,11 +250,11 @@ public interface ItemWrapper {
 		return CACHED_ITEM_TYPE_LIST.get();
 	}
 
-	static Map<Identifier, Collection<ItemStack>> getTypeToStackMap() {
+	static Map<Identifier, Collection<ItemStackTemplate>> getTypeToStackMap() {
 		return CACHED_ITEM_MAP.get();
 	}
 
-	static Collection<ItemStack> getVariants(ItemStack item) {
+	static Collection<ItemStackTemplate> getVariants(ItemStack item) {
 		return getTypeToStackMap().get(item.kjs$getIdLocation());
 	}
 

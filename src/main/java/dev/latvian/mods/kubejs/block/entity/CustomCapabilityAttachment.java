@@ -1,39 +1,33 @@
 package dev.latvian.mods.kubejs.block.entity;
 
-import dev.latvian.mods.kubejs.KubeJS;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.DirectionWrapper;
+import net.minecraft.core.Direction;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import org.jspecify.annotations.Nullable;
 
-import java.util.List;
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
-public record CustomCapabilityAttachment(BlockCapability<?, ?> capability, Object data) implements BlockEntityAttachment {
-	public static final BlockEntityAttachmentType TYPE = new BlockEntityAttachmentType(KubeJS.id("custom_capability"), Factory.class);
-
-	public record Factory(BlockCapability<?, ?> type, Supplier<?> dataFactory) implements BlockEntityAttachmentFactory {
-		@Override
-		public BlockEntityAttachment create(BlockEntityAttachmentInfo info, KubeBlockEntity entity) {
-			return new CustomCapabilityAttachment(type, dataFactory.get());
-		}
-
-		@Override
-		public List<BlockCapability<?, ?>> getCapabilities() {
-			return List.of(type);
-		}
+public record CustomCapabilityAttachment(BlockCapability<?, ?> capability, Object data) {
+	public record Config(String id, EnumSet<Direction> directions, BlockCapability<?, ?> capability, Supplier<?> dataFactory) {
 	}
 
-	@Override
-	public Object getWrappedObject() {
-		return data;
+	public static Config createConfig(String id, Set<Direction> directions, BlockCapability<?, ?> capability, Supplier<?> dataFactory) {
+		return new Config(
+			id,
+			directions == null || directions.isEmpty() ? DirectionWrapper.EMPTY_SET : EnumSet.copyOf(directions),
+			capability,
+			dataFactory
+		);
 	}
 
-	@Override
 	@Nullable
+	@SuppressWarnings("unchecked")
 	public <CAP, SRC> CAP getCapability(BlockCapability<CAP, SRC> c) {
 		if (c == capability) {
 			return (CAP) data;
 		}
-
 		return null;
 	}
 }

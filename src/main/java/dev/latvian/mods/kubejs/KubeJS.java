@@ -8,6 +8,7 @@ import dev.latvian.mods.kubejs.gui.KubeJSMenus;
 import dev.latvian.mods.kubejs.holder.KubeJSHolderSets;
 import dev.latvian.mods.kubejs.ingredient.KubeJSIngredients;
 import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
+import dev.latvian.mods.kubejs.block.entity.KubeJSAttachmentTypes;
 import dev.latvian.mods.kubejs.level.ruletest.KubeJSRuleTests;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
@@ -161,6 +162,7 @@ public class KubeJS {
 
 		KubeJSCreativeTabs.REGISTRY.register(bus);
 		KubeJSRuleTests.REGISTRY.register(bus);
+		KubeJSAttachmentTypes.REGISTRY.register(bus);
 
 		StartupEvents.INIT.post(ScriptType.STARTUP, KubeStartupEvent.BASIC);
 		// KubeJSRegistries.chunkGenerators().register(new Identifier(KubeJS.MOD_ID, "flat"), () -> KJSFlatLevelSource.CODEC);

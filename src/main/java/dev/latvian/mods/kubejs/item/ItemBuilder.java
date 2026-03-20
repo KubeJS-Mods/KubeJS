@@ -104,7 +104,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 
 	@Override
 	public Item createObject() {
-		return new Item(createItemProperties().setId(ResourceKey.create(BuiltInRegistries.ITEM.key(), this.id)));
+		return new Item(createItemProperties());
 	}
 
 	@Override
@@ -364,6 +364,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 
 	public Item.Properties createItemProperties() {
 		var properties = new KubeJSItemProperties(this);
+		properties.setId(ResourceKey.create(BuiltInRegistries.ITEM.key(), this.id));
 
 		if (components != null && !components.isEmpty()) {
 			for (var entry : components.entrySet()) {

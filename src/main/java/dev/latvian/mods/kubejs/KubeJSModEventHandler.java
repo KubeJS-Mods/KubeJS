@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs;
 
-import dev.latvian.mods.kubejs.block.entity.BlockEntityAttachmentInfo;
 import dev.latvian.mods.kubejs.block.entity.BlockEntityBuilder;
+import dev.latvian.mods.kubejs.block.entity.CustomCapabilityAttachment;
 import dev.latvian.mods.kubejs.block.entity.KubeBlockEntity;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.item.creativetab.CreativeTabCallbackForge;
@@ -24,6 +24,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -38,6 +39,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSModEventHandler {
@@ -107,16 +109,8 @@ public class KubeJSModEventHandler {
 		});
 	}
 
-	private record KubeEntityCapabilityProvider<CAP, SRC>(BlockCapability<CAP, SRC> capability, BlockEntityAttachmentInfo attachment) implements ICapabilityProvider<KubeBlockEntity, SRC, CAP> {
-		@Override
-		@Nullable
-		public CAP getCapability(KubeBlockEntity entity, SRC from) {
-			if (attachment.directions().isEmpty() || (from instanceof Direction d && attachment.directions().contains(d))) {
-				return entity.attachmentArray[attachment.index()].attachment().getCapability(capability);
-			}
-
-			return null;
-		}
+	private static boolean directionMatches(EnumSet<Direction> directions, @Nullable Object from) {
+		return directions.isEmpty() || (from instanceof Direction d && directions.contains(d));
 	}
 
 	@SubscribeEvent
@@ -124,11 +118,52 @@ public class KubeJSModEventHandler {
 		for (var info : RegistryObjectStorage.BLOCK_ENTITY.objects.values().stream()
 			.filter(BlockEntityBuilder.class::isInstance)
 			.map(b -> ((BlockEntityBuilder) b).info).toList()) {
-			for (var attachment : info.attachments.values()) {
-				for (var capability : attachment.factory().getCapabilities()) {
-					event.registerBlockEntity(capability, (BlockEntityType<KubeBlockEntity>) info.entityType, new KubeEntityCapabilityProvider(capability, attachment));
-				}
+			var beType = (BlockEntityType<KubeBlockEntity>) info.entityType;
+			for (var config : info.energyConfigs) {
+				registerDirectional(event, Capabilities.Energy.BLOCK, beType, config.directions(),
+					(entity, from) -> entity.energyWrappers.get(config.id()));
+			}
+
+			for (var config : info.fluidConfigs) {
+				registerDirectional(event, Capabilities.Fluid.BLOCK, beType, config.directions(),
+					(entity, from) -> entity.fluidWrappers.get(config.id()));
+			}
+
+			for (var config : info.inventoryConfigs) {
+				registerDirectional(event, Capabilities.Item.BLOCK, beType, config.directions(),
+					(entity, from) -> entity.inventoryWrappers.get(config.id()));
+			}
+
+			for (var config : info.customCapConfigs) {
+				registerCustomCapability(event, config, beType);
 			}
 		}
+	}
+
+	private static <CAP> void registerDirectional(
+		RegisterCapabilitiesEvent event,
+		BlockCapability<CAP, Direction> capability,
+		BlockEntityType<KubeBlockEntity> beType,
+		EnumSet<Direction> directions,
+		ICapabilityProvider<KubeBlockEntity, Direction, CAP> provider
+	) {
+		event.registerBlockEntity(capability, beType, (entity, from) -> {
+			if (directionMatches(directions, from)) {
+				return provider.getCapability(entity, from);
+			}
+			return null;
+		});
+	}
+
+	private static void registerCustomCapability(
+		RegisterCapabilitiesEvent event,
+		CustomCapabilityAttachment.Config config,
+		BlockEntityType<KubeBlockEntity> beType
+	) {
+		registerDirectional(event, (BlockCapability) config.capability(), beType, config.directions(),
+			(entity, from) -> {
+				var cap = entity.customCapabilities.get(config.id());
+				return cap != null ? cap.getCapability(config.capability()) : null;
+			});
 	}
 }

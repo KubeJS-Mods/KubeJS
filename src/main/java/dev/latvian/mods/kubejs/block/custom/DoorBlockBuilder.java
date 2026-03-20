@@ -184,9 +184,9 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 	@Override
 	@Nullable
 	public LootTable generateLootTable(KubeDataGenerator generator) {
-		var blockDrops = drops == null ? BlockDrops.createDefault(get().asItem().getDefaultInstance()) : drops.get();
+		var blockDrops = drops == null ? BlockDrops.createDefault(get().asItem()) : drops.get();
 
-		if (blockDrops.items().length == 0) {
+		if (blockDrops.items().length == 0 && blockDrops.defaultItem() == null) {
 			return null;
 		}
 
@@ -197,6 +197,12 @@ public class DoorBlockBuilder extends ShapedBlockBuilder {
 		}
 
 		pool.when(ExplosionCondition.survivesExplosion());
+
+		if (blockDrops.defaultItem() != null) {
+			var item = LootItem.lootTableItem(blockDrops.defaultItem());
+			item.when(new LootItemBlockStatePropertyCondition.Builder(get()).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(DoorBlock.HALF, DoubleBlockHalf.LOWER)));
+			pool.add(item);
+		}
 
 		for (var drop : blockDrops.items()) {
 			var item = LootItem.lootTableItem(drop.getItem());

@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.block.callback.CanBeReplacedCallback;
 import dev.latvian.mods.kubejs.block.callback.EntityBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.EntityFallenOnBlockCallback;
 import dev.latvian.mods.kubejs.block.callback.RandomTickCallback;
+import dev.latvian.mods.kubejs.block.entity.InventoryAttachment;
 import dev.latvian.mods.kubejs.block.entity.KubeBlockEntity;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
@@ -352,12 +353,7 @@ public class BasicKubeBlock extends Block implements SimpleWaterloggedBlock {
 	@Override
 	protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
 		if (level.getBlockEntity(pos) instanceof KubeBlockEntity entity) {
-			BlockState newState = level.getBlockState(pos);
-
-			for (var entry : entity.attachmentArray) {
-				entry.attachment().onRemove(level, entity, newState);
-			}
-
+			InventoryAttachment.onRemove(level, entity);
 			level.updateNeighbourForOutputSignal(pos, this.asBlock());
 		}
 	}

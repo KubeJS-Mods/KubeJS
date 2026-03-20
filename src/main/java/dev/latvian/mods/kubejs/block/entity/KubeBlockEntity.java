@@ -5,14 +5,12 @@ import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.plugin.builtin.event.BlockEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -24,6 +22,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -37,7 +36,10 @@ public class KubeBlockEntity extends BlockEntity {
 	public int tick, cycle;
 	public CompoundTag data;
 	public final Map<String, Object> attachments;
-	public final transient BlockEntityAttachmentHolder[] attachmentArray;
+	public final Map<String, EnergyStorageAttachment.Wrapped> energyWrappers;
+	public final Map<String, FluidTankAttachment.Wrapped> fluidWrappers;
+	public final Map<String, InventoryAttachment.Wrapped> inventoryWrappers;
+	public final Map<String, CustomCapabilityAttachment> customCapabilities;
 	public @Nullable UUID placerId;
 	private @Nullable BlockEntityTickKubeEvent tickEvent;
 	private boolean save;
@@ -52,21 +54,52 @@ public class KubeBlockEntity extends BlockEntity {
 		this.z = blockPos.getZ();
 		this.data = info.initialData.copy();
 
-		if (entityInfo.attachments != null) {
-			var map = new HashMap<String, Object>(entityInfo.attachments.size());
-			this.attachmentArray = new BlockEntityAttachmentHolder[entityInfo.attachments.size()];
+		var jsMap = new LinkedHashMap<String, Object>();
 
-			for (var aInfo : entityInfo.attachments.values()) {
-				var f = aInfo.factory().create(aInfo, this);
-				map.put(aInfo.id(), f.getWrappedObject());
-				this.attachmentArray[aInfo.index()] = new BlockEntityAttachmentHolder(aInfo, f);
+		if (!entityInfo.energyConfigs.isEmpty()) {
+			this.energyWrappers = new HashMap<>(entityInfo.energyConfigs.size());
+			for (var config : entityInfo.energyConfigs) {
+				var wrapped = new EnergyStorageAttachment.Wrapped(this, config);
+				energyWrappers.put(config.id(), wrapped);
+				jsMap.put(config.id(), wrapped);
 			}
-
-			this.attachments = Map.copyOf(map);
 		} else {
-			this.attachments = Map.of();
-			this.attachmentArray = BlockEntityAttachmentHolder.EMPTY_ARRAY;
+			this.energyWrappers = Map.of();
 		}
+
+		if (!entityInfo.fluidConfigs.isEmpty()) {
+			this.fluidWrappers = new HashMap<>(entityInfo.fluidConfigs.size());
+			for (var config : entityInfo.fluidConfigs) {
+				var wrapped = new FluidTankAttachment.Wrapped(this, config);
+				fluidWrappers.put(config.id(), wrapped);
+				jsMap.put(config.id(), wrapped);
+			}
+		} else {
+			this.fluidWrappers = Map.of();
+		}
+
+		if (!entityInfo.inventoryConfigs.isEmpty()) {
+			this.inventoryWrappers = new HashMap<>(entityInfo.inventoryConfigs.size());
+			for (var config : entityInfo.inventoryConfigs) {
+				var wrapped = new InventoryAttachment.Wrapped(this, config);
+				inventoryWrappers.put(config.id(), wrapped);
+				jsMap.put(config.id(), wrapped);
+			}
+		} else {
+			this.inventoryWrappers = Map.of();
+		}
+
+		if (!entityInfo.customCapConfigs.isEmpty()) {
+			this.customCapabilities = new HashMap<>(entityInfo.customCapConfigs.size());
+			for (var config : entityInfo.customCapConfigs) {
+				var entry = new CustomCapabilityAttachment(config.capability(), config.dataFactory().get());
+				customCapabilities.put(config.id(), entry);
+				jsMap.put(config.id(), entry.data());
+			}
+		} else {
+			this.customCapabilities = Map.of();
+		}
+		this.attachments = Map.copyOf(jsMap);
 	}
 
 	@Override
@@ -74,7 +107,6 @@ public class KubeBlockEntity extends BlockEntity {
 		super.setLevel(level);
 		block = null;
 	}
-
 
 	@Override
 	protected void saveAdditional(ValueOutput output) {
@@ -96,26 +128,6 @@ public class KubeBlockEntity extends BlockEntity {
 
 		output.storeNullable("placer", UUIDUtil.CODEC, placerId);
 
-		if (attachmentArray.length > 0) {
-			var registries = level != null ? level.registryAccess() : RegistryAccess.EMPTY;
-			var attachmentsOut = output.child("attachments");
-
-			for (var entry : attachmentArray) {
-				var t = entry.attachment().serialize(registries);
-
-				if (t != null) {
-					attachmentsOut.store(entry.info().id(), ExtraCodecs.NBT, t);
-				} else {
-					attachmentsOut.discard(entry.info().id());
-				}
-			}
-
-			if (attachmentsOut.isEmpty()) {
-				output.discard("attachments");
-			}
-		} else {
-			output.discard("attachments");
-		}
 	}
 
 	@Override
@@ -127,18 +139,20 @@ public class KubeBlockEntity extends BlockEntity {
 		cycle = input.read("cycle", Codec.INT).orElse(0);
 		placerId = input.read("placer", UUIDUtil.CODEC).orElse(null);
 
-		if (attachmentArray.length > 0) {
-			var registries = level != null ? level.registryAccess() : RegistryAccess.EMPTY;
-
-			input.child("attachments").ifPresent(attachmentsIn -> {
-				for (var entry : attachmentArray) {
-					var t = attachmentsIn.read(entry.info().id(), ExtraCodecs.NBT).orElse(null);
-					entry.attachment().deserialize(registries, t);
-				}
-			});
-		}
+		syncWrappersFromAttachments();
 	}
 
+	private void syncWrappersFromAttachments() {
+		for (var wrapper : energyWrappers.values()) {
+			wrapper.syncFromAttachment();
+		}
+		for (var wrapper : fluidWrappers.values()) {
+			wrapper.syncFromAttachment();
+		}
+		for (var wrapper : inventoryWrappers.values()) {
+			wrapper.syncFromAttachment();
+		}
+	}
 
 	@Override
 	public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
@@ -238,8 +252,8 @@ public class KubeBlockEntity extends BlockEntity {
 		}
 
 		if (!level.isClientSide() && info.attachmentsTicking) {
-			for (var entry : attachmentArray) {
-				entry.attachment().serverTick();
+			for (var wrapper : energyWrappers.values()) {
+				wrapper.serverTick();
 			}
 		}
 
