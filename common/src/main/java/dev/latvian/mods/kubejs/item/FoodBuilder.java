@@ -5,11 +5,15 @@ import dev.architectury.hooks.item.food.FoodPropertiesHooks;
 import dev.latvian.mods.kubejs.registry.RegistryInfo;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
+import dev.latvian.mods.rhino.BaseFunction;  
+import dev.latvian.mods.rhino.Context;  
+import dev.latvian.mods.rhino.NativeJavaObject;  
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodProperties;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -39,7 +43,23 @@ public class FoodBuilder {
 			effects.add(Pair.of(pair::getFirst, pair.getSecond()));
 		});
 	}
-
+    
+    @Nullable  
+	public static FoodProperties of(Context cx, @Nullable Object o) {  
+		if (o == null) {  
+			return null;  
+		} else if (o instanceof FoodProperties fp) {  
+			return fp;  
+		} else if (o instanceof BaseFunction func) {  
+			Consumer consumer = (Consumer) NativeJavaObject.createInterfaceAdapter(cx, Consumer.class, func);  
+			var builder = new FoodBuilder();  
+			consumer.accept(builder);  
+			return builder.build();  
+		} else {  
+			return null;  
+		}  
+	}
+    
 	@Info("Sets the hunger restored.")
 	public FoodBuilder hunger(int h) {
 		hunger = h;
