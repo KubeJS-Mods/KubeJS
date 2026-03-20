@@ -94,11 +94,7 @@ public class InventoryAttachment {
 
 		@Override
 		public ItemStack kjs$getStackInSlot(int slot) {
-			var resource = getResource(slot);
-			if (resource.isEmpty()) {
-				return ItemStack.EMPTY;
-			}
-			return resource.toStack(getAmountAsInt(slot));
+			return stacks.get(slot);
 		}
 
 		@Override
