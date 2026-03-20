@@ -12,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jspecify.annotations.Nullable;
 
 import java.util.EnumSet;
@@ -109,15 +108,37 @@ public class InventoryAttachment {
 			if (stack.isEmpty()) {
 				return stack;
 			}
-			var resource = ItemResource.of(stack);
-			try (var tx = Transaction.openRoot()) {
-				int inserted = insert(slot, resource, stack.getCount(), tx);
-				if (!simulate) {
-					tx.commit();
+
+			var existing = stacks.get(slot);
+			int limit = Math.min(stack.getMaxStackSize(), kjs$getSlotLimit(slot));
+
+			if (!existing.isEmpty()) {
+				if (!ItemStack.isSameItemSameComponents(existing, stack)) {
+					return stack;
 				}
-				int remaining = stack.getCount() - inserted;
-				return remaining <= 0 ? ItemStack.EMPTY : stack.copyWithCount(remaining);
+
+				limit -= existing.getCount();
 			}
+
+			if (limit <= 0) {
+				return stack;
+			}
+
+			int toInsert = Math.min(stack.getCount(), limit);
+
+			if (!simulate) {
+				var prev = existing.copy();
+
+				if (existing.isEmpty()) {
+					stacks.set(slot, stack.copyWithCount(toInsert));
+				} else {
+					existing.grow(toInsert);
+				}
+
+				onContentsChanged(slot, prev);
+			}
+
+			return stack.getCount() == toInsert ? ItemStack.EMPTY : stack.copyWithCount(stack.getCount() - toInsert);
 		}
 
 		@Override
@@ -125,17 +146,28 @@ public class InventoryAttachment {
 			if (amount <= 0) {
 				return ItemStack.EMPTY;
 			}
-			var resource = getResource(slot);
-			if (resource.isEmpty()) {
+
+			var existing = stacks.get(slot);
+
+			if (existing.isEmpty()) {
 				return ItemStack.EMPTY;
 			}
-			try (var tx = Transaction.openRoot()) {
-				int extracted = extract(slot, resource, amount, tx);
-				if (!simulate) {
-					tx.commit();
-				}
-				return extracted <= 0 ? ItemStack.EMPTY : resource.toStack(extracted);
+
+			int toExtract = Math.min(amount, existing.getCount());
+
+			if (simulate) {
+				return existing.copyWithCount(toExtract);
 			}
+
+			var prev = existing.copy();
+			var result = existing.split(toExtract);
+
+			if (existing.isEmpty()) {
+				stacks.set(slot, ItemStack.EMPTY);
+			}
+
+			onContentsChanged(slot, prev);
+			return result;
 		}
 
 		@Override
