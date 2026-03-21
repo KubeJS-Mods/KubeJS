@@ -23,7 +23,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 	private final List<IngredientActionHolder> ingredientActions;
 	private final String modifyResult;
 
-	public ShapelessKubeJSRecipe(CommonInfo commonInfo, CraftingBookInfo bookInfo, net.minecraft.world.item.ItemStackTemplate result, List<Ingredient> ingredients, List<IngredientActionHolder> ingredientActions, String modifyResult) {
+	public ShapelessKubeJSRecipe(CommonInfo commonInfo, CraftingBookInfo bookInfo, ItemStackTemplate result, List<Ingredient> ingredients, List<IngredientActionHolder> ingredientActions, String modifyResult) {
 		super(commonInfo, bookInfo, result, ingredients);
 		this.ingredientActions = ingredientActions;
 		this.modifyResult = modifyResult;
@@ -66,7 +66,7 @@ public class ShapelessKubeJSRecipe extends ShapelessRecipe implements KubeJSCraf
 		public static final MapCodec<ShapelessKubeJSRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			CommonInfo.MAP_CODEC.forGetter(ShapelessKubeJSRecipe::commonInfo),
 			CraftingBookInfo.MAP_CODEC.forGetter(ShapelessKubeJSRecipe::bookInfo),
-			net.minecraft.world.item.ItemStackTemplate.CODEC.fieldOf("result").forGetter(r -> r.result),
+			ItemStackTemplate.CODEC.fieldOf("result").forGetter(r -> r.result),
 			Codec.lazyInitialized(() -> Ingredient.CODEC.listOf(1, ShapedRecipePattern.getMaxHeight() * ShapedRecipePattern.getMaxWidth()))
 				.fieldOf("ingredients").forGetter(r -> r.ingredients),
 			IngredientActionHolder.LIST_CODEC.optionalFieldOf(INGREDIENT_ACTIONS_KEY, List.of()).forGetter(ShapelessKubeJSRecipe::kjs$getIngredientActions),

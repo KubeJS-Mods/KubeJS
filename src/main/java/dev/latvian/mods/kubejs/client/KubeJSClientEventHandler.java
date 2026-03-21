@@ -82,8 +82,7 @@ import java.util.regex.Pattern;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID, value = Dist.CLIENT)
 public class KubeJSClientEventHandler {
-	public static final Pattern COMPONENT_ERROR = ConsoleJS.methodPattern(KubeJSClientEventHandler.class,
-		"onItemTooltip");
+	public static final Pattern COMPONENT_ERROR = ConsoleJS.methodPattern(KubeJSClientEventHandler.class, "onItemTooltip");
 	private static final List<String> lastComponentError = List.of();
 
 	@SubscribeEvent(priority = EventPriority.LOW)
@@ -106,8 +105,7 @@ public class KubeJSClientEventHandler {
 	}
 
 	private static void setupClient0() {
-		if (!PlatformWrapper.isGeneratingData() && Minecraft.getInstance() != null
-			&& WebServerProperties.get().enabled) {
+		if (!PlatformWrapper.isGeneratingData() && Minecraft.getInstance() != null && WebServerProperties.get().enabled) {
 			LocalWebServer.start(Minecraft.getInstance(), true);
 		}
 
@@ -159,8 +157,7 @@ public class KubeJSClientEventHandler {
 	@SubscribeEvent
 	public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
 		ClientEvents.ENTITY_RENDERER_REGISTRY.post(ScriptType.STARTUP, new EntityRendererRegistryKubeEvent(event));
-		ClientEvents.BLOCK_ENTITY_RENDERER_REGISTRY.post(ScriptType.STARTUP,
-			new BlockEntityRendererRegistryKubeEvent(event));
+		ClientEvents.BLOCK_ENTITY_RENDERER_REGISTRY.post(ScriptType.STARTUP, new BlockEntityRendererRegistryKubeEvent(event));
 	}
 
 	@SubscribeEvent
@@ -253,8 +250,7 @@ public class KubeJSClientEventHandler {
 		// TODO: custom client commands...?
 	}
 
-	private static <T> List<String> appendComponentValue(DynamicOps<Tag> ops, MutableComponent line,
-														 DataComponentType<T> type, @Nullable T value) {
+	private static <T> List<String> appendComponentValue(DynamicOps<Tag> ops, MutableComponent line, DataComponentType<T> type, @Nullable T value) {
 		if (value == null) {
 			line.append(Component.literal("null").kjs$red());
 			return List.of();
@@ -364,8 +360,7 @@ public class KubeJSClientEventHandler {
 	@SubscribeEvent
 	public static void hudPostDraw(RenderGuiEvent.Post event) {
 		var mc = Minecraft.getInstance();
-		HighlightRenderer.INSTANCE.hudPostDraw(mc, event.getGuiGraphics(),
-			event.getPartialTick().getGameTimeDeltaPartialTick(false));
+		HighlightRenderer.INSTANCE.hudPostDraw(mc, event.getGuiGraphics(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
 
 		/*
 		if (PlatformWrapper.isDevelopmentEnvironment()) {
@@ -397,8 +392,7 @@ public class KubeJSClientEventHandler {
 		var mc = Minecraft.getInstance();
 
 		if (event.getScreen() instanceof AbstractContainerScreen<?> screen) {
-			HighlightRenderer.INSTANCE.screen(mc, event.getGuiGraphics(), screen, event.getMouseX(), event.getMouseY(),
-				event.getPartialTick());
+			HighlightRenderer.INSTANCE.screen(mc, event.getGuiGraphics(), screen, event.getMouseX(), event.getMouseY(), event.getPartialTick());
 		}
 	}
 
@@ -429,13 +423,11 @@ public class KubeJSClientEventHandler {
 	}
 
 	public static Screen setScreen(Screen screen) {
-		if (screen instanceof TitleScreen && !ConsoleJS.STARTUP.errors.isEmpty()
-			&& CommonProperties.get().startupErrorGUI) {
+		if (screen instanceof TitleScreen && !ConsoleJS.STARTUP.errors.isEmpty() && CommonProperties.get().startupErrorGUI) {
 			return new KubeJSErrorScreen(screen, ConsoleJS.STARTUP, false);
 		}
 
-		if (screen instanceof TitleScreen && !ConsoleJS.CLIENT.errors.isEmpty()
-			&& CommonProperties.get().startupErrorGUI) {
+		if (screen instanceof TitleScreen && !ConsoleJS.CLIENT.errors.isEmpty() && CommonProperties.get().startupErrorGUI) {
 			return new KubeJSErrorScreen(screen, ConsoleJS.CLIENT, false);
 		}
 
@@ -452,8 +444,7 @@ public class KubeJSClientEventHandler {
 			while (iterator.hasNext()) {
 				var listener = iterator.next();
 
-				if (listener instanceof ImageButton button
-					&& button.sprites.enabled().equals(KubeJSClient.RECIPE_BUTTON_TEXTURE)) {
+				if (listener instanceof ImageButton button && button.sprites.enabled().equals(KubeJSClient.RECIPE_BUTTON_TEXTURE)) {
 					screen.renderables.remove(listener);
 					screen.narratables.remove(listener);
 					iterator.remove();

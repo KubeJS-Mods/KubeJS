@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.recipe.schema;
 
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.recipe.KubeRecipe;
@@ -41,7 +42,7 @@ public class UnknownKubeRecipe extends KubeRecipe {
 						continue;
 					}
 
-					var ingredient = Ingredient.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, el).result().orElse(null);
+					var ingredient = Ingredient.CODEC.parse(JsonOps.INSTANCE, el).result().orElse(null);
 					if (ingredient != null && !ingredient.isEmpty() && ingredient.kjs$canBeUsedForMatching() && m.matches(cx, ingredient, match.exact())) {
 						return true;
 					}
@@ -51,7 +52,7 @@ public class UnknownKubeRecipe extends KubeRecipe {
 			}
 
 			if (recipeJson.has("ingredient")) {
-				var ingredient = Ingredient.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, recipeJson.get("ingredient")).result().orElse(null);
+				var ingredient = Ingredient.CODEC.parse(JsonOps.INSTANCE, recipeJson.get("ingredient")).result().orElse(null);
 				return ingredient != null && !ingredient.isEmpty() && ingredient.kjs$canBeUsedForMatching() && m.matches(cx, ingredient, match.exact());
 			}
 		}

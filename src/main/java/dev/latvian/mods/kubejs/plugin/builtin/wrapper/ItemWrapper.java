@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.plugin.builtin.wrapper;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -309,7 +310,7 @@ public interface ItemWrapper {
 		var stack = new ItemStack(Items.PLAYER_HEAD);
 
 		var props = PropertyMap.EMPTY;
-		props = new PropertyMap(com.google.common.collect.ImmutableMultimap.of(
+		props = new PropertyMap(ImmutableMultimap.of(
 			"textures", new Property("textures", textureBase64)
 		));
 

@@ -115,18 +115,6 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 		return false;
 	}
 
-	default boolean kjs$isShiftDown() {
-		return Minecraft.getInstance().hasShiftDown();
-	}
-
-	default boolean kjs$isCtrlDown() {
-		return Minecraft.getInstance().hasControlDown();
-	}
-
-	default boolean kjs$isAltDown() {
-		return Minecraft.getInstance().hasAltDown();
-	}
-
 	@HideFromJS
 	default void kjs$startAttack0() {
 		if (ItemEvents.FIRST_LEFT_CLICKED.hasListeners()) {

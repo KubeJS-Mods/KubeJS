@@ -128,7 +128,7 @@ public class VirtualResourcePack extends AbstractPackResources implements KubeRe
 
 
 	@Override
-	public <T> @org.jspecify.annotations.Nullable T getMetadataSection(MetadataSectionType<T> metadataSerializer) throws IOException {
+	public <T> @Nullable T getMetadataSection(MetadataSectionType<T> metadataSerializer) throws IOException {
 		return super.getMetadataSection(metadataSerializer);
 	}
 

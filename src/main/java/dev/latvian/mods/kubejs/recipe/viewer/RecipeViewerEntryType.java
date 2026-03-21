@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 /**
- * Note: predicateType has to be able to be cast to {@link java.util.function.Predicate} of entryType
+ * Note: predicateType has to be able to be cast to {@link Predicate} of entryType
  */
 public class RecipeViewerEntryType {
 	public record Component<T>(TypeInfo type, StreamCodec<?, T> streamCodec, Predicate<T> empty) {
