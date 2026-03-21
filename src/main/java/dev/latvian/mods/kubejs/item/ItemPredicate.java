@@ -62,6 +62,7 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 	}
 
 	// TODO: remove or rework
+	// specifically this can VERY likely just be removed since we can use SlotDisplay instead?
 	@Deprecated(forRemoval = true)
 	default ItemStackSet kjs$getDisplayStacks() {
 		var set = new ItemStackSet();

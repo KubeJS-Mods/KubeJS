@@ -126,12 +126,11 @@ public class BlockWrapper {
 		return ALL_STATE_CACHE;
 	}
 
-	// TODO (26.1): RegistryAccessContainer => Context
-	public static BlockState parseBlockState(RegistryAccessContainer registries, String string) {
+	public static BlockState parseBlockState(Context cx, String string) {
 		try {
-			return BlockStateParser.parseForBlock(registries.block(), string, false).blockState();
+			return BlockStateParser.parseForBlock(RegistryAccessContainer.of(cx).block(), string, false).blockState();
 		} catch (Exception ex) {
-			throw new IllegalArgumentException("Invalid block state '%s'".formatted(string), ex);
+			throw new KubeRuntimeException("Invalid block state '%s'".formatted(string), ex).source(SourceLine.of(cx));
 		}
 	}
 
@@ -156,14 +155,14 @@ public class BlockWrapper {
 	}
 
 	@Info("Parses a block state from the input string. May throw for invalid inputs!")
-	public static BlockState wrapBlockState(RegistryAccessContainer registries, Object o) {
+	public static BlockState wrapBlockState(Context cx, Object o) {
 		return switch (o) {
 			case null -> throw new KubeRuntimeException("BlockState cannot be null!");
 			case BlockState bs -> bs;
 			case Block block -> block.defaultBlockState();
 			default -> {
 				try {
-					yield parseBlockState(registries, o.toString());
+					yield parseBlockState(cx, o.toString());
 				} catch (IllegalArgumentException ex) {
 					throw new KubeRuntimeException("Failed to read block state from %s: %s".formatted(o, ex.getMessage()));
 				}

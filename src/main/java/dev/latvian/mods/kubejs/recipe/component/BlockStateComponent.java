@@ -41,12 +41,12 @@ public record BlockStateComponent(ResourceKey<RecipeComponentType<?>> type, bool
 		return switch (from) {
 			case BlockState s -> s;
 			case Block b -> b.defaultBlockState();
-			case JsonPrimitive json -> BlockWrapper.parseBlockState(cx.registries(), json.getAsString());
+			case JsonPrimitive json -> BlockWrapper.parseBlockState(cx.cx(), json.getAsString());
 			case null, default -> {
 				var map = cx.cx().optionalMapOf(from);
 
 				if (map == null) {
-					yield BlockWrapper.parseBlockState(cx.registries(), String.valueOf(from));
+					yield BlockWrapper.parseBlockState(cx.cx(), String.valueOf(from));
 				} else {
 					// this is formatted like so:
 					// { Name: "blockid", Properties: {Property: "value"}}

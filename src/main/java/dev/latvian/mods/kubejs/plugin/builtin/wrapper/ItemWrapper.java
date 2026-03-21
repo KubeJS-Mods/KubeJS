@@ -161,7 +161,7 @@ public interface ItemWrapper {
 		return switch (from) {
 			case Identifier id -> findItem(id).map(Holder::value).map(Item::getDefaultInstance);
 			case JsonElement json -> parseJson(cx, registries.nbt(), json);
-			case StringTag tag -> wrapResult(cx, tag.asString().get());
+			case StringTag tag -> wrapResult(cx, tag.value());
 			case CharSequence charSequence -> {
 				var os = from.toString().trim();
 				var s = os;
@@ -190,8 +190,12 @@ public interface ItemWrapper {
 				var map = cx.optionalMapOf(from);
 
 				if (map != null) {
-					// todo: if someone does something weird here, improve upon this parser
-					yield ItemStack.CODEC.parse(registries.java(), map);
+					// TODO: data results instead?
+					var item = ItemWrapper.wrapItem(cx, map.get("item"));
+					var amount = StringUtilsWrapper.parseInt(map.get("count"), 1);
+					var components = DataComponentWrapper.patchOrEmptyOf(cx, map.get("components"));
+
+					yield DataResult.success(new ItemStack(item.kjs$asHolder(), amount, components));
 				}
 
 				var invalid = from;
@@ -298,7 +302,7 @@ public interface ItemWrapper {
 		return stack;
 	}
 
-	static ItemStack playerHeadFromBase64(UUID uuid, String textureBase64) {
+	static ItemStack playerHeadFromBase64(@Nullable UUID uuid, @Nullable String textureBase64) {
 		if (uuid == null || uuid.equals(Util.NIL_UUID)) {
 			throw new IllegalArgumentException("UUID can't be null!");
 		}
@@ -335,7 +339,7 @@ public interface ItemWrapper {
 		return playerHeadFromUrl("https://textures.minecraft.net/texture/" + hash);
 	}
 
-	static ItemAbility wrapItemAbility(Object object) {
+	static @Nullable ItemAbility wrapItemAbility(@Nullable Object object) {
 		if (object instanceof ItemAbility ta) {
 			return ta;
 		} else if (object != null) {

@@ -77,11 +77,7 @@ public abstract class MinecraftClientMixin implements MinecraftClientKJS {
 			ScheduledClientEvent.EVENTS.tickAll(kjs$self().level.getGameTime());
 
 			if (ClientEvents.TICK.hasListeners()) {
-				try {
-					ClientEvents.TICK.post(ScriptType.CLIENT, new ClientPlayerKubeEvent(player));
-				} catch (IllegalStateException ignored) {
-					// FIXME: Replace with rhino exception when it gets updated
-				}
+				ClientEvents.TICK.post(ScriptType.CLIENT, new ClientPlayerKubeEvent(player));
 			}
 		}
 	}

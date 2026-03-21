@@ -140,10 +140,8 @@ public interface KubeJSCodecs {
 		return listOfOrSelf(codec.listOf(), codec);
 	}
 
-	// TODO: Check if this is correct
 	static <T> Codec<List<T>> listOfOrSelf(Codec<List<T>> listCodec, Codec<T> codec) {
 		return Codec.either(listCodec, codec).xmap(either -> either.map(Function.identity(), List::of), Either::left);
-		// return Codec.withAlternative(listCodec, codec.xmap(List::of, List::getFirst));
 	}
 
 	static <V> Codec<V> or(List<Codec<? extends V>> codecs) {

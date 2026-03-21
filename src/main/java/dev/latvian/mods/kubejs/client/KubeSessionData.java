@@ -27,7 +27,6 @@ public class KubeSessionData {
 	public @Nullable Identifier activePostShader = null;
 	public @Nullable RecipeViewerData recipeViewerData = null;
 	public List<ItemTooltipData> itemTooltips = List.of();
-	// FIXME public final Map<String, KGUI> kgui = new HashMap<>();
 
 	public void sync(KubeServerData data) {
 		recipeViewerData = data.recipeViewerData().orElse(null);

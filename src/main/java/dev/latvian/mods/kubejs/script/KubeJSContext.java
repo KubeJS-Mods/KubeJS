@@ -41,7 +41,7 @@ public class KubeJSContext extends Context {
 		super(factory);
 		this.kjsFactory = factory;
 		setApplicationClassLoader(KubeJS.class.getClassLoader());
-		this.topLevelScope = initStandardObjects(); // TODO: if this causes problems, revert to safe
+		this.topLevelScope = initStandardObjects();
 
 		var bindingsEvent = new BindingRegistry(this, topLevelScope);
 

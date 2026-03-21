@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
@@ -136,13 +135,16 @@ public class DataExport {
 			o.addProperty("name", mod.getDisplayName().trim());
 			o.addProperty("version", mod.getVersion().toString().trim());
 			o.addProperty("description", mod.getDescription().trim());
-			// FIXME
-			// o.addProperty("authors", String.join(", ", mod.getAuthors()).trim());
-			// o.addProperty("homepage", mod.getHomepage().orElse("").trim());
-			// o.addProperty("sources", mod.getSources().orElse("").trim());
-			// o.addProperty("issue_tracker", mod.getIssueTracker().orElse("").trim());
-			// o.addProperty("license", mod.getLicense() == null ? "" : String.join(", ", mod.getLicense()).trim());
-			o.entrySet().removeIf(e -> e.getValue() instanceof JsonPrimitive p && p.isString() && p.getAsString().isEmpty());
+
+			var cfg = mod.getConfig();
+
+			cfg.getConfigElement("authors").ifPresent(v -> o.addProperty("authors", v.toString().trim()));
+			cfg.getConfigElement("credits").ifPresent(v -> o.addProperty("credits", v.toString().trim()));
+			cfg.getConfigElement("displayURL").ifPresent(v -> o.addProperty("homepage", v.toString().trim()));
+			cfg.getConfigElement("issueTrackerURL").ifPresent(v -> o.addProperty("issue_tracker", v.toString().trim()));
+			cfg.getConfigElement("license").ifPresent(v -> o.addProperty("license", v.toString().trim()));
+
+			o.entrySet().removeIf(e -> e.getValue().getAsString().isBlank());
 			modArr.add(o);
 		}
 

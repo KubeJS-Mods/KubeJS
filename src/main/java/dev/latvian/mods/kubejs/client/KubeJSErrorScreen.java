@@ -191,8 +191,6 @@ public class KubeJSErrorScreen extends Screen {
 			this.screen = screen;
 			this.lines = lines;
 
-			// FIXME setRenderBackground(false);
-
 			var calendar = Calendar.getInstance();
 
 			for (int i = 0; i < lines.size(); i++) {

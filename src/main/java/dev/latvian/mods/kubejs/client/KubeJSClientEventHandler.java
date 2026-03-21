@@ -428,7 +428,7 @@ public class KubeJSClientEventHandler {
 		HighlightRenderer.INSTANCE.clearBuffers(mc);
 	}
 
-	public static Screen setScreen(Screen screen) {
+	public static @Nullable Screen setScreen(@Nullable Screen screen) {
 		if (screen instanceof TitleScreen && !ConsoleJS.STARTUP.errors.isEmpty()
 			&& CommonProperties.get().startupErrorGUI) {
 			return new KubeJSErrorScreen(screen, ConsoleJS.STARTUP, false);
@@ -510,11 +510,6 @@ public class KubeJSClientEventHandler {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}*/
-
-	// FIXME: implement
-	/*private void textureStitch(TextureStitchEvent.Pre event) {
-		ClientEvents.ATLAS_SPRITE_REGISTRY.post(new AtlasSpriteRegistryEventJS(event::addSprite), event.getAtlas().identifier());
 	}*/
 
 	@SubscribeEvent(priority = EventPriority.LOW)

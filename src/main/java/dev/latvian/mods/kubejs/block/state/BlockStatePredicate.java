@@ -60,7 +60,7 @@ public sealed interface BlockStatePredicate extends Predicate<BlockState>, Repla
 			case "-" -> Simple.NONE;
 			case String str when str.startsWith("#") -> new TagMatch(Tags.block(Identifier.parse(str.substring(1))));
 			case String str when str.indexOf('[') != -1 -> {
-				var state = BlockWrapper.parseBlockState(RegistryAccessContainer.of(cx), str);
+				var state = BlockWrapper.parseBlockState(cx, str);
 				yield state != Blocks.AIR.defaultBlockState() ? new StateMatch(state) : Simple.NONE;
 			}
 			default -> {

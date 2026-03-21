@@ -46,8 +46,8 @@ public record BlockComponent(boolean allowEmpty) implements RecipeComponent<Bloc
 		return switch (from) {
 			case Block b -> b;
 			case BlockState s -> s.getBlock();
-			case JsonPrimitive json -> BlockWrapper.parseBlockState(cx.registries(), json.getAsString()).getBlock();
-			case null, default -> BlockWrapper.parseBlockState(cx.registries(), String.valueOf(from)).getBlock();
+			case JsonPrimitive json -> BlockWrapper.parseBlockState(cx.cx(), json.getAsString()).getBlock();
+			case null, default -> BlockWrapper.parseBlockState(cx.cx(), String.valueOf(from)).getBlock();
 		};
 	}
 

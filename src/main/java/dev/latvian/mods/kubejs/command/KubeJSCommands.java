@@ -51,6 +51,7 @@ import net.minecraft.server.permissions.Permissions;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jspecify.annotations.Nullable;
 
 import java.io.File;
@@ -325,37 +326,28 @@ public class KubeJSCommands {
 		var player = source.getPlayerOrException();
 		var errors = new ArrayList<>(type.console.errors);
 		var warnings = new ArrayList<>(type.console.warnings);
-		player.sendSystemMessage(Component.literal("You need KubeJS on client side!").withStyle(ChatFormatting.RED), true);
-		KubeJSNet.safeSendToPlayer(player, new DisplayServerErrorsPayload(type.ordinal(), errors, warnings));
 
-		// FIXME
-		/*
-		var lines = ConsoleJS.SERVER.errors.toArray(ConsoleLine.EMPTY_ARRAY);
-
-		if (lines.length == 0) {
-			source.sendSystemMessage(Component.literal("No errors found!").withStyle(ChatFormatting.GREEN));
-
-			if (!ConsoleJS.SERVER.warnings.isEmpty()) {
-				source.sendSystemMessage(ConsoleJS.SERVER.warningsComponent("/kubejs warnings"));
-			}
+		if (player.connection.hasChannel(KubeJSNet.DISPLAY_SERVER_ERRORS)) {
+			PacketDistributor.sendToPlayer(player, new DisplayServerErrorsPayload(type.ordinal(), errors, warnings));
 			return 1;
 		}
 
-		for (var i = 0; i < lines.length; i++) {
-			var component = Component.literal((i + 1) + ") ").append(Component.literal(lines[i].getText()).withStyle(ChatFormatting.RED)).withStyle(ChatFormatting.DARK_RED);
+		if (errors.isEmpty()) {
+			source.sendSystemMessage(Component.literal("No errors found!").withStyle(ChatFormatting.GREEN));
+		}
+
+		for (var i = 0; i < errors.size(); i++) {
+			var component = Component.literal((i + 1) + ") ")
+				.append(Component.literal(errors.get(i).getText()).withStyle(ChatFormatting.RED))
+				.withStyle(ChatFormatting.DARK_RED);
 			source.sendSystemMessage(component);
 		}
 
-		source.sendSuccess(() -> Component.literal("More info in ")
-				.append(Component.literal("'logs/kubejs/server.log'")
-					.kjs$clickOpenFile(ScriptType.SERVER.getLogFile().toString())
-					.kjs$hover(Component.literal("Click to open"))).withStyle(ChatFormatting.DARK_RED),
-			false);
-
-		if (!ConsoleJS.SERVER.warnings.isEmpty()) {
-			source.sendSystemMessage(ConsoleJS.SERVER.warningsComponent("/kubejs warnings"));
+		if (!warnings.isEmpty()) {
+			source.sendSystemMessage(Component.literal(warnings.size() + " warnings found; check the log file for more information!"));
 		}
-		 */
+
+		source.sendSystemMessage(Component.literal("For a more detailed error screen, please install KubeJS on the client!").withStyle(ChatFormatting.RED));
 
 		return 1;
 	}
