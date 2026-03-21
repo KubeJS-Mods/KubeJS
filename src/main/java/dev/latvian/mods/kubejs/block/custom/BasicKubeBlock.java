@@ -168,7 +168,7 @@ public class BasicKubeBlock extends Block implements SimpleWaterloggedBlock {
 	@Override
 	protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
 		if (state.getOptionalValue(BlockStateProperties.WATERLOGGED).orElse(false)) {
-			((LevelAccessor) level).scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+			ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
 		}
 
 		return state;
