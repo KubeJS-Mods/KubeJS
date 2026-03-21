@@ -73,7 +73,7 @@ public class KubeJSPlayerEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void loggedOut(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event) {
+	public static void loggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
 		if (PlayerEvents.LOGGED_OUT.hasListeners() && event.getEntity() instanceof ServerPlayer player) {
 			PlayerEvents.LOGGED_OUT.post(ScriptType.SERVER, new SimplePlayerKubeEvent(player));
 		}

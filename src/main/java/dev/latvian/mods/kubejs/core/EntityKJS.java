@@ -12,7 +12,6 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
@@ -22,7 +21,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.commands.TeleportCommand;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
@@ -77,11 +75,10 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		return kjs$self().getDisplayName();
 	}
 
+	// TODO: move to PlayerKJS? maybe split MessageSender?
 	@Override
 	default void kjs$tell(Component message) {
-		if (kjs$self() instanceof ServerPlayer serverPlayer) {
-			serverPlayer.sendSystemMessage(message);
-		} else if (kjs$self() instanceof Player player) {
+		if (kjs$self() instanceof Player player) {
 			player.sendSystemMessage(message);
 		}
 	}
@@ -255,7 +252,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	default CompoundTag kjs$getNbt() {
-		var registries = (HolderLookup.Provider) kjs$self().level().registryAccess();
+		var registries = kjs$self().level().registryAccess();
 		var problems = new ProblemReporter.Collector(() -> "kubejs");
 
 		var out = TagValueOutput.createWithContext(problems, registries);
@@ -267,7 +264,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		if (nbt == null) {
 			return;
 		}
-		var registries = (HolderLookup.Provider) kjs$self().level().registryAccess();
+		var registries = kjs$self().level().registryAccess();
 		var problems = new ProblemReporter.Collector(() -> "kubejs");
 
 		var in = TagValueInput.create(problems, registries, nbt);
@@ -347,7 +344,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	@Nullable
-	default Entity kjs$rayTraceEntity(double distance, Predicate<Entity> filter) {
+	default Entity kjs$rayTraceEntity(double distance, @Nullable Predicate<Entity> filter) {
 		double d0 = Double.MAX_VALUE;
 		Entity entity = null;
 

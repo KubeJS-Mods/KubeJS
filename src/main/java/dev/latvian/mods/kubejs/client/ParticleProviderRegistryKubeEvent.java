@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.client;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -43,7 +44,7 @@ public class ParticleProviderRegistryKubeEvent implements ClientKubeEvent {
 
 	@FunctionalInterface
 	public interface SpriteSetParticleProvider<T extends ParticleOptions>
-		extends net.minecraft.client.particle.ParticleResources.SpriteParticleRegistration<T> {
+		extends ParticleResources.SpriteParticleRegistration<T> {
 
 		Particle create(
 			T type,

@@ -12,6 +12,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -191,13 +192,13 @@ public abstract class ItemMixin implements ItemKJS {
 	}
 
 	@Inject(method = "use", at = @At("HEAD"), cancellable = true)
-	private void use(Level level, Player player, InteractionHand hand, CallbackInfoReturnable<net.minecraft.world.InteractionResult> cir) {
+	private void use(Level level, Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.use != null) {
 			if (kjs$itemBuilder.use.use(level, player, hand)) {
 				player.startUsingItem(hand);
-				cir.setReturnValue(net.minecraft.world.InteractionResult.CONSUME);
+				cir.setReturnValue(InteractionResult.CONSUME);
 			} else {
-				cir.setReturnValue(net.minecraft.world.InteractionResult.FAIL);
+				cir.setReturnValue(InteractionResult.FAIL);
 			}
 		}
 	}

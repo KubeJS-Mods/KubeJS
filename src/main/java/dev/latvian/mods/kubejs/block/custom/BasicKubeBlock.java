@@ -168,7 +168,7 @@ public class BasicKubeBlock extends Block implements SimpleWaterloggedBlock {
 	@Override
 	protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction directionToNeighbour, BlockPos neighbourPos, BlockState neighbourState, RandomSource random) {
 		if (state.getOptionalValue(BlockStateProperties.WATERLOGGED).orElse(false)) {
-			((LevelAccessor) level).scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+			ticks.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
 		}
 
 		return state;
@@ -223,7 +223,7 @@ public class BasicKubeBlock extends Block implements SimpleWaterloggedBlock {
 	}
 
 	@Override
-	public boolean canPlaceLiquid(@org.jspecify.annotations.Nullable LivingEntity user, BlockGetter level, BlockPos pos, BlockState state, Fluid type) {
+	public boolean canPlaceLiquid(@Nullable LivingEntity user, BlockGetter level, BlockPos pos, BlockState state, Fluid type) {
 		if (blockBuilder.canBeWaterlogged()) {
 			return SimpleWaterloggedBlock.super.canPlaceLiquid(user, level, pos, state, type);
 		}
@@ -241,7 +241,7 @@ public class BasicKubeBlock extends Block implements SimpleWaterloggedBlock {
 	}
 
 	@Override
-	public ItemStack pickupBlock(@org.jspecify.annotations.Nullable LivingEntity user, LevelAccessor level, BlockPos pos, BlockState state) {
+	public ItemStack pickupBlock(@Nullable LivingEntity user, LevelAccessor level, BlockPos pos, BlockState state) {
 		if (blockBuilder.canBeWaterlogged()) {
 			return SimpleWaterloggedBlock.super.pickupBlock(user, level, pos, state);
 		}
