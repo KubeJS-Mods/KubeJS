@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Either;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -46,7 +47,7 @@ public class VillagerProfessionBuilder extends BuilderBase<VillagerProfession> {
 			requestedItems,
 			secondaryPoi,
 			workSound,
-			new it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap<>()
+			new Int2ObjectOpenHashMap<>()
 		);
 	}
 

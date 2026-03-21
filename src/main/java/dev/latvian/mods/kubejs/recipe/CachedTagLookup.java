@@ -73,7 +73,7 @@ public class CachedTagLookup<T> {
 
 
 			@Override
-			public @org.jspecify.annotations.Nullable T element(Identifier id, boolean b) {
+			public @Nullable T element(Identifier id, boolean b) {
 				return registry.getOptional(id).orElse(null);
 			}
 

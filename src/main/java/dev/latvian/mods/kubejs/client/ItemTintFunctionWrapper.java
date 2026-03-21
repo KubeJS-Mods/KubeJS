@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.client;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.color.item.ItemTintSource;
@@ -11,7 +12,7 @@ import org.jspecify.annotations.Nullable;
 public record ItemTintFunctionWrapper(int index) implements ItemTintSource {
 	public static final MapCodec<ItemTintFunctionWrapper> CODEC = RecordCodecBuilder.mapCodec(i ->
 		i.group(
-			com.mojang.serialization.Codec.INT.optionalFieldOf("index", 0).forGetter(ItemTintFunctionWrapper::index)
+			Codec.INT.optionalFieldOf("index", 0).forGetter(ItemTintFunctionWrapper::index)
 		).apply(i, ItemTintFunctionWrapper::new)
 	);
 

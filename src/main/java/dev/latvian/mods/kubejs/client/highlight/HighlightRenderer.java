@@ -1,10 +1,13 @@
 package dev.latvian.mods.kubejs.client.highlight;
 
+import com.google.gson.JsonParser;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.resource.ResourceHandle;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.color.KubeColor;
@@ -46,9 +49,11 @@ import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class HighlightRenderer {
 	public enum Mode {
@@ -153,7 +158,7 @@ public class HighlightRenderer {
 			var depthHandle = frame.importExternal("kubejs_mcdepth", mcDepthInput);
 			var outputHandle = frame.importExternal("kubejs_output", renderOutput);
 
-			var map = new java.util.HashMap<Identifier, com.mojang.blaze3d.resource.ResourceHandle<RenderTarget>>();
+			var map = new HashMap<Identifier, ResourceHandle<RenderTarget>>();
 			map.put(PostChain.MAIN_TARGET_ID, mainHandle);
 			map.put(renderInputId, inputHandle);
 			map.put(mcDepthInputId, depthHandle);
@@ -162,7 +167,7 @@ public class HighlightRenderer {
 			var bundle = new MultiTargetBundle(map);
 
 			postChain.addToFrame(frame, w, h, bundle);
-			frame.execute(com.mojang.blaze3d.resource.GraphicsResourceAllocator.UNPOOLED);
+			frame.execute(GraphicsResourceAllocator.UNPOOLED);
 
 			renderOutput.blitToScreen();
 		}
@@ -284,15 +289,15 @@ public class HighlightRenderer {
 
 		PostChainConfig config;
 		try (var reader = mc.getResourceManager().openAsReader(chainId)) {
-			var json = com.google.gson.JsonParser.parseReader(reader);
-			var result = PostChainConfig.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, json);
+			var json = JsonParser.parseReader(reader);
+			var result = PostChainConfig.CODEC.parse(JsonOps.INSTANCE, json);
 			config = result.getOrThrow();
 		} catch (Exception ex) {
 			KubeJS.LOGGER.warn("Failed to read shader chain config: {}", chainId, ex);
 			return;
 		}
 
-		var referenced = config.passes().stream().flatMap(p -> p.referencedTargets()).collect(java.util.stream.Collectors.toSet());
+		var referenced = config.passes().stream().flatMap(p -> p.referencedTargets()).collect(Collectors.toSet());
 
 		Identifier renderInputId = null;
 		Identifier mcDepthInputId = null;
