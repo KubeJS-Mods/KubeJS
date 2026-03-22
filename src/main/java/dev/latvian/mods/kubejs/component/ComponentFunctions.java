@@ -163,6 +163,16 @@ public interface ComponentFunctions {
 		);
 	}
 
+	@Nullable
+	default CustomModelData kjs$getCustomModelData() {
+		return kjs$get(DataComponents.CUSTOM_MODEL_DATA);
+	}
+
+	default void kjs$setCustomModelData(CustomModelDataType type, List<?> values) {
+		var existing = kjs$get(DataComponents.CUSTOM_MODEL_DATA);
+		kjs$override(DataComponents.CUSTOM_MODEL_DATA, type.apply(existing != null ? existing : CustomModelDataType.EMPTY, values));
+	}
+
 	default void kjs$setTooltipHidden() {
 		var display = kjs$get(DataComponents.TOOLTIP_DISPLAY);
 		if (display == null) {
