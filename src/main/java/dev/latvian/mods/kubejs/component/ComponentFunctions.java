@@ -151,18 +151,6 @@ public interface ComponentFunctions {
 		kjs$override(DataComponents.LORE, new ItemLore(List.copyOf(lines), List.copyOf(styledLines)));
 	}
 
-	default void kjs$setCustomModelData(int data) {
-		kjs$override(
-			DataComponents.CUSTOM_MODEL_DATA,
-			new CustomModelData(
-				List.of(),
-				List.of(),
-				List.of(),
-				List.of(data)
-			)
-		);
-	}
-
 	@Nullable
 	default CustomModelData kjs$getCustomModelData() {
 		return kjs$get(DataComponents.CUSTOM_MODEL_DATA);

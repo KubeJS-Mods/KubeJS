@@ -16,8 +16,11 @@ import org.jspecify.annotations.Nullable;
 
 public class SeedItemBuilder extends BlockItemBuilder {
 	public static class SeedKubeItem extends BlockItem implements SpecialPlantable {
+		private final boolean villagerCanPlant;
+
 		public SeedKubeItem(SeedItemBuilder b) {
 			super(b.blockBuilder.get(), b.createItemProperties());
+			this.villagerCanPlant = b.villagerCanPlant;
 		}
 
 		@Override
@@ -33,12 +36,20 @@ public class SeedItemBuilder extends BlockItemBuilder {
 
 		@Override
 		public boolean villagerCanPlantItem(Villager villager) {
-			return true;
+			return villagerCanPlant;
 		}
 	}
 
+	public transient boolean villagerCanPlant;
+
 	public SeedItemBuilder(CropBlockBuilder b, Identifier i) {
 		super(b, i);
+		this.villagerCanPlant = true;
+	}
+
+	public SeedItemBuilder villagerCanPlant(boolean canPlant) {
+		this.villagerCanPlant = canPlant;
+		return this;
 	}
 
 	@Override

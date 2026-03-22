@@ -4,6 +4,8 @@ import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockRenderType;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -25,7 +27,9 @@ public class FluidBlockBuilder extends BlockBuilder {
 
 	@Override
 	public Block createObject() {
-		return new LiquidBlock(fluidBuilder.get(), Block.Properties.ofFullCopy(Blocks.WATER).noCollision().strength(100F).noLootTable());
+		var properties = Block.Properties.ofFullCopy(Blocks.WATER).noCollision().strength(100F).noLootTable();
+		properties.setId(ResourceKey.create(BuiltInRegistries.BLOCK.key(), this.id));
+		return new LiquidBlock(fluidBuilder.get(), properties);
 	}
 
 	@Override
