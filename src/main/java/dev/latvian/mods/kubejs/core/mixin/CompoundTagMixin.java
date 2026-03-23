@@ -1,7 +1,7 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
+import dev.latvian.mods.kubejs.core.NativeCompoundTag;
 import dev.latvian.mods.rhino.Context;
-import dev.latvian.mods.rhino.NativeJavaMap;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import dev.latvian.mods.rhino.util.CustomJavaToJsWrapper;
@@ -26,7 +26,7 @@ public abstract class CompoundTagMixin implements CustomJavaToJsWrapper {
 
 	@Override
 	public Scriptable convertJavaToJs(Context cx, Scriptable scope, TypeInfo target) {
-		return new NativeJavaMap(cx, scope, this, tags, KJS$MAP_TYPE);
+		return new NativeCompoundTag(cx, scope, this, tags, KJS$MAP_TYPE);
 	}
 
 	@Shadow
