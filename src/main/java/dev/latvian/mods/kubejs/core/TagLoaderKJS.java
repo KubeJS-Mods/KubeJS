@@ -19,7 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface TagLoaderKJS<T> {
-	default void kjs$customTags(ServerScriptManager serverScriptManager, Map<Identifier, List<TagLoader.EntryWithSource>> map) {
+	default void kjs$customTags(@Nullable ServerScriptManager serverScriptManager, Map<Identifier, List<TagLoader.EntryWithSource>> map) {
+		if (serverScriptManager == null) {
+			return;
+		}
+
 		var reg = kjs$getRegistry();
 
 		if (reg == null) {
@@ -87,7 +91,7 @@ public interface TagLoaderKJS<T> {
 		serverScriptManager.getRegistries().cacheTags(reg, map);
 	}
 
-	void kjs$init(ServerScriptManager serverScriptManager, Registry<T> registry);
+	void kjs$init(@Nullable ServerScriptManager serverScriptManager, Registry<T> registry);
 
 	@Nullable
 	ServerScriptManager kjs$getServerScriptManager();

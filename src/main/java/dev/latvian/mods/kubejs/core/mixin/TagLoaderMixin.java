@@ -1,10 +1,9 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import dev.latvian.mods.kubejs.core.ScriptManagerHolderKJS;
 import dev.latvian.mods.kubejs.core.TagLoaderKJS;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
-import dev.latvian.mods.kubejs.util.TagReloadContextKJS;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -29,7 +28,7 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 	private @Nullable Registry<T> kjs$storedRegistry;
 
 	@Override
-	public void kjs$init(ServerScriptManager serverScriptManager, Registry<T> registry) {
+	public void kjs$init(@Nullable ServerScriptManager serverScriptManager, Registry<T> registry) {
 		kjs$serverScriptManager = serverScriptManager;
 		kjs$storedRegistry = registry;
 	}
@@ -46,12 +45,9 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 		ResourceManager manager,
 		Registry<T> registry,
 		CallbackInfoReturnable<?> cir,
-		@Local(name = "loader") TagLoader<Holder<T>> loader
+		@Local(name = "loader") TagLoader<T> loader
 	) {
-		ServerScriptManager ssm = TagReloadContextKJS.CURRENT.get();
-		if (ssm != null) {
-			((TagLoaderKJS<T>) loader).kjs$init(ssm, registry);
-		}
+		loader.kjs$init(((ScriptManagerHolderKJS) manager).kjs$getScriptManager(), registry);
 	}
 
 	@Redirect(
@@ -62,14 +58,11 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 		)
 	)
 	private static <T> Map<Identifier, List<TagLoader.EntryWithSource>> kjs$customTagsBeforeBuild(
-		TagLoader<Holder<T>> loader,
+		TagLoader<T> loader,
 		ResourceManager manager
 	) {
 		Map<Identifier, List<TagLoader.EntryWithSource>> map = loader.load(manager);
-		ServerScriptManager ssm = TagReloadContextKJS.CURRENT.get();
-		if (ssm != null) {
-			((TagLoaderKJS<T>) loader).kjs$customTags(ssm, map);
-		}
+		loader.kjs$customTags(loader.kjs$getServerScriptManager(), map);
 		return map;
 	}
 

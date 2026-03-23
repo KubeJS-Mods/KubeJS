@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
+import dev.latvian.mods.kubejs.core.ScriptManagerHolderKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.net.SyncServerDataPayload;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
@@ -32,6 +33,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.MultiPackResourceManager;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -43,24 +45,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ServerScriptManager extends ScriptManager {
-	private static @Nullable ServerScriptManager staticInstance;
-
 	@ApiStatus.Internal
 	public static ServerScriptManager createForDataGen() {
-		var manager = new ServerScriptManager();
+		var manager = new ServerScriptManager(true);
 		manager.reload(); // Is this needed?
 		return manager;
 	}
 
-	public static List<PackResources> createPackResources(List<PackResources> original) {
+	public static ServerScriptManager forResources(boolean firstLoad) {
+		return new ServerScriptManager(firstLoad);
+	}
+
+	@ApiStatus.Internal
+	public static MultiPackResourceManager bindServerResources(List<PackResources> original, boolean firstLoad, BiFunction<PackType, List<PackResources>, MultiPackResourceManager> ctor) {
 		var packs = new ArrayList<>(original);
 
 		var filePacks = new ArrayList<PackResources>();
@@ -71,7 +76,8 @@ public class ServerScriptManager extends ScriptManager {
 		int beforeModsIndex = KubeFileResourcePack.findBeforeModsIndex(packs);
 		int afterModsIndex = KubeFileResourcePack.findAfterModsIndex(packs);
 
-		var manager = new ServerScriptManager();
+		var manager = new ServerScriptManager(firstLoad);
+
 		packs.add(beforeModsIndex, manager.virtualPacks.get(GeneratedDataStage.BEFORE_MODS));
 		packs.add(afterModsIndex, manager.internalDataPack);
 		packs.add(afterModsIndex + 1, manager.registriesDataPack);
@@ -79,19 +85,15 @@ public class ServerScriptManager extends ScriptManager {
 		packs.addAll(afterModsIndex + 3, filePacks);
 		packs.add(manager.virtualPacks.get(GeneratedDataStage.LAST));
 		manager.reload();
-		staticInstance = manager;
 
 		if (!FMLLoader.getCurrent().isProduction()) {
 			KubeJS.LOGGER.info("Loaded {} data packs: {}", packs.size(), packs.stream().map(PackResources::packId).collect(Collectors.joining(", ")));
 		}
 
-		return packs;
-	}
+		var resources = ctor.apply(PackType.SERVER_DATA, packs);
+		((ScriptManagerHolderKJS) resources).kjs$setScriptManager(manager);
 
-	public static ServerScriptManager release() {
-		var instance = Objects.requireNonNull(staticInstance);
-		staticInstance = null;
-		return instance;
+		return resources;
 	}
 
 	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
@@ -103,7 +105,7 @@ public class ServerScriptManager extends ScriptManager {
 	public final Map<Identifier, Set<Identifier>> serverRegistryTags;
 	public boolean firstLoad;
 
-	private ServerScriptManager() {
+	private ServerScriptManager(boolean firstLoad) {
 		super(ScriptType.SERVER);
 		this.preTagEvents = new ConcurrentHashMap<>();
 		this.recipeSchemaStorage = new RecipeSchemaStorage(this);
@@ -114,7 +116,7 @@ public class ServerScriptManager extends ScriptManager {
 		this.virtualPacks = GeneratedDataStage.forScripts(stage -> new VirtualDataPack(stage, this::getRegistries));
 		serverRegistryTags = new HashMap<>();
 
-		this.firstLoad = true;
+		this.firstLoad = firstLoad;
 
 		try {
 			if (Files.notExists(KubeJSPaths.DATA)) {
@@ -123,10 +125,6 @@ public class ServerScriptManager extends ScriptManager {
 		} catch (Throwable ex) {
 			throw new RuntimeException("KubeJS failed to register it's script loader!", ex);
 		}
-	}
-
-	public static @Nullable ServerScriptManager getStaticInstance() {
-		return staticInstance;
 	}
 
 	@Override
@@ -304,10 +302,5 @@ public class ServerScriptManager extends ScriptManager {
 		if (server != null) {
 			server.execute(() -> server.kjs$runCommand("reload"));
 		}
-	}
-
-	public void reloadAndCapture() {
-		reload();
-		staticInstance = this;
 	}
 }

@@ -13,10 +13,8 @@ import dev.latvian.mods.kubejs.server.ServerKubeEvent;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.kubejs.util.ScheduledEvents;
-import dev.latvian.mods.kubejs.util.TagReloadContextKJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -24,7 +22,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.MultiPackResourceManager;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,7 +29,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -141,46 +137,20 @@ public abstract class MinecraftServerMixin implements MinecraftServerKJS {
 	@RemapForJS("stop")
 	public abstract void stopServer();
 
+	@Shadow
+	public abstract MinecraftServer.ReloadableResources getServerResources();
+
 	@Inject(method = "reloadResources", at = @At("TAIL"))
 	private void kjs$endResourceReload(Collection<String> collection, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
 		CompletableFuture.runAsync(() -> kjs$afterResourcesLoaded(true), kjs$self());
 	}
 
 	// There's a good chance this will break in the future, but currently that's the only reliable way to both inject packs and reload scripts before resources that I could find
-	@Redirect(method = "lambda$reloadResources$1", at = @At(value = "NEW", target = "(Lnet/minecraft/server/packs/PackType;Ljava/util/List;)Lnet/minecraft/server/packs/resources/MultiPackResourceManager;"))
-	private MultiPackResourceManager kjs$modifyResourceReload(PackType type, List<PackResources> original) {
-		return new MultiPackResourceManager(type, ServerScriptManager.createPackResources(original));
-	}
-
-	@WrapOperation(
-		method = "lambda$reloadResources$1",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/tags/TagLoader;loadTagsForExistingRegistries(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/core/RegistryAccess;)Ljava/util/List;"
-		)
+	@WrapOperation(method = "lambda$reloadResources$1", at = @At(
+		value = "NEW",
+		target = "(Lnet/minecraft/server/packs/PackType;Ljava/util/List;)Lnet/minecraft/server/packs/resources/MultiPackResourceManager;")
 	)
-	private List<Registry.PendingTags<?>> kjs$withTagContext_reloadResources(
-		ResourceManager manager,
-		RegistryAccess layer,
-		Operation<List<Registry.PendingTags<?>>> original
-	) {
-		MinecraftServer self = (MinecraftServer) (Object) this;
-
-		ServerScriptManager ssm = null;
-		if (self.getServerResources() != null) {
-			ssm = self.getServerResources().managers().kjs$getServerScriptManager();
-		}
-
-		ServerScriptManager prev = TagReloadContextKJS.CURRENT.get();
-		TagReloadContextKJS.CURRENT.set(ssm);
-		try {
-			return original.call(manager, layer);
-		} finally {
-			if (prev == null) {
-				TagReloadContextKJS.CURRENT.remove();
-			} else {
-				TagReloadContextKJS.CURRENT.set(prev);
-			}
-		}
+	private MultiPackResourceManager kjs$createResourceManager(PackType type, List<PackResources> original, Operation<MultiPackResourceManager> ctor) {
+		return ServerScriptManager.bindServerResources(original, false, ctor::call);
 	}
 }
