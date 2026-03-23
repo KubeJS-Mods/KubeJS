@@ -79,5 +79,8 @@
 	],
 	"net/minecraft/world/entity/EntityType": [
 		"dev/latvian/mods/kubejs/core/EntityTypeKJS"
+	],
+	"net/minecraft/tags/TagLoader":[
+		"dev/latvian/mods/kubejs/core/TagLoaderKJS<T>"
 	]
 }

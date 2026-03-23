@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
+import dev.latvian.mods.kubejs.core.ScriptManagerHolderKJS;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import net.minecraft.commands.Commands;
@@ -8,8 +10,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentInitializers;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.RegistryLayer;
+import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.ReloadableServerResources;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.permissions.PermissionSet;
@@ -26,7 +28,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 
 @Mixin(ReloadableServerResources.class)
@@ -59,7 +63,6 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 	private void kjs$init(
 		LayeredRegistryAccess fullLayers, HolderLookup.Provider loadingContext, FeatureFlagSet enabledFeatures, Commands.CommandSelection commandSelection, List postponedTags, PermissionSet functionCompilationPermissions, List newComponents, CallbackInfo ci
 	) {
-		kjs$serverScriptManager = ServerScriptManager.release();
 		recipes.kjs$setResources(this);
 	}
 
@@ -76,18 +79,42 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 		CallbackInfoReturnable<CompletableFuture<ReloadableServerResources>> cir
 	) {
 		RegistryAccessContainer.current = new RegistryAccessContainer(contextLayers.compositeAccess());
+	}
 
-		if (mainThreadExecutor instanceof MinecraftServer s) {
-			var mgr = s.getServerResources().managers().kjs$getServerScriptManager();
-			if (mgr != null) {
-				mgr.reloadAndCapture();
-			}
-		}
+	@Inject(
+		method = "lambda$loadResources$2",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/neoforged/neoforge/event/EventHooks;onResourceReload(Lnet/minecraft/server/ReloadableServerResources;Lnet/minecraft/core/RegistryAccess;)Ljava/util/List;",
+			shift = At.Shift.BEFORE
+		)
+	)
+	private static void kjs$bindServerScriptManager(
+		ReloadableServerRegistries.LoadResult _0,
+		FeatureFlagSet _1,
+		Commands.CommandSelection _2,
+		List _3,
+		PermissionSet _4,
+		ResourceManager resourceManager,
+		Executor _5,
+		Executor _6,
+		List _7,
+		CallbackInfoReturnable<CompletionStage> cir,
+		@Local(name = "result") ReloadableServerResources resources
+	) {
+		var ssm = ((ScriptManagerHolderKJS) resourceManager).kjs$getScriptManager();
+		resources.kjs$setServerScriptManager(Objects.requireNonNull(ssm, "Missing ServerScriptManager for resource reload!"));
 	}
 
 	@Override
+	@Nullable
 	public ServerScriptManager kjs$getServerScriptManager() {
 		return kjs$serverScriptManager;
+	}
+
+	@Override
+	public void kjs$setServerScriptManager(ServerScriptManager serverScriptManager) {
+		kjs$serverScriptManager = serverScriptManager;
 	}
 
 	@Override

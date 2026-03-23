@@ -50,6 +50,7 @@
 		"LevelMixin",
 		"MenuTypeMixin",
 		"MinecraftServerMixin",
+		"MultiPackResourceManagerMixin",
 		"MutableComponentMixin",
 		"MutableDataComponentHolderMixin",
 		"NumericTagMixin",

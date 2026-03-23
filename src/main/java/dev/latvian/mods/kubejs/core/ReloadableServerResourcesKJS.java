@@ -14,6 +14,10 @@ public interface ReloadableServerResourcesKJS {
 		throw new NoMixinException();
 	}
 
+	default void kjs$setServerScriptManager(ServerScriptManager serverScriptManager) {
+		throw new NoMixinException();
+	}
+
 	default HolderLookup.Provider kjs$getRegistryLookup() {
 		throw new NoMixinException();
 	}
