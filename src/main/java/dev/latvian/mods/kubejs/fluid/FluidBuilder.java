@@ -1,7 +1,11 @@
 package dev.latvian.mods.kubejs.fluid;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockRenderType;
+import dev.latvian.mods.kubejs.block.BlockTintFunction;
+import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
@@ -37,11 +41,14 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public FlowingFluidBuilder flowingFluid;
 	public @Nullable FluidBlockBuilder block;
 	public @Nullable FluidBucketItemBuilder bucketItem;
+	public transient @Nullable KubeColor bucketColor;
 	private @Nullable Properties properties;
 
 	public FluidBuilder(Identifier i) {
 		super(i);
 		fluidType = new FluidTypeBuilder(id);
+		this.stillTexture(Identifier.fromNamespaceAndPath("kubejs", "block/thin_fluid_still"))
+			.flowingTexture(Identifier.fromNamespaceAndPath("kubejs", "block/thin_fluid_flow"));
 		flowingFluid = new FlowingFluidBuilder(this);
 		block = new FluidBlockBuilder(this);
 		bucketItem = new FluidBucketItemBuilder(this);
@@ -106,7 +113,17 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	}
 
 	public FluidBuilder tint(KubeColor c) {
-		fluidType.tint = c;
+		fluidType.tint(c);
+		return this;
+	}
+
+	public FluidBuilder tintFunction(BlockTintFunction tint) {
+		fluidType.tintFunction(tint);
+		return this;
+	}
+
+	public FluidBuilder bucketColor(KubeColor color) {
+		this.bucketColor = color;
 		return this;
 	}
 
@@ -161,16 +178,18 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 
 	@Override
 	public void generateAssets(KubeAssetGenerator generator) {
-		var stillTexture = generator.loadTexture(fluidType.stillTexture);
+		var customStill = generator.loadTexture(newID("block/", "_still"));
+		var stillTexture = customStill.width > 0 && customStill.height > 0 ? customStill : generator.loadTexture(fluidType.stillTexture);
 
 		if (!(stillTexture.width <= 0 || stillTexture.height <= 0)) {
-			generator.texture(fluidType.actualStillTexture, stillTexture.tint(fluidType.tint));
+			generator.texture(fluidType.actualStillTexture, stillTexture.tint(fluidType.textureTint));
 		}
 
-		var flowingTexture = generator.loadTexture(fluidType.flowingTexture);
+		var customFlow = generator.loadTexture(newID("block/", "_flow"));
+		var flowingTexture = customFlow.width > 0 && customFlow.height > 0 ? customFlow : generator.loadTexture(fluidType.flowingTexture);
 
-		if (!(stillTexture.width <= 0 || stillTexture.height <= 0)) {
-			generator.texture(fluidType.actualFlowingTexture, flowingTexture.tint(fluidType.tint));
+		if (!(flowingTexture.width <= 0 || flowingTexture.height <= 0)) {
+			generator.texture(fluidType.actualFlowingTexture, flowingTexture.tint(fluidType.textureTint));
 		}
 
 		generator.blockState(id, m -> m.simpleVariant("", id.withPath(ID.BLOCK)));
@@ -187,16 +206,35 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 			}
 		});
 
-		if (bucketItem != null) {
+		if (bucketItem != null && bucketItem.modelGenerator == null && bucketItem.parentModel == null && bucketItem.textures.isEmpty()) {
 			var fluidPath = newID("item/generated/", "_bucket_fluid");
 
 			generator.mask(fluidPath, KubeJS.id("item/bucket_mask"), fluidType.actualStillTexture);
 
-			generator.itemModel(bucketItem.id, m -> {
-				m.parent(bucketItem.parentModel == null ? GENERATED_BUCKET_MODEL : bucketItem.parentModel);
-				m.texture("bucket_fluid", fluidPath.toString());
-				m.textures(bucketItem.textures);
-			});
+			var gen = new ModelGenerator();
+			gen.parent(GENERATED_BUCKET_MODEL);
+			gen.texture("bucket_fluid", fluidPath.toString());
+			generator.json(bucketItem.id.withPath(ID.ITEM_MODEL), gen.toJson());
+
+			var modelRef = new JsonObject();
+			modelRef.addProperty("type", "minecraft:model");
+			modelRef.addProperty("model", bucketItem.id.withPath(ID.ITEM).toString());
+
+			var tintEntry = new JsonObject();
+			tintEntry.addProperty("type", "neoforge:fluid_contents_tint");
+
+			var tints = new JsonArray();
+			var noTint = new JsonObject();
+			noTint.addProperty("type", "minecraft:constant");
+			noTint.addProperty("value", -1);
+			tints.add(noTint);
+			tints.add(tintEntry);
+
+			modelRef.add("tints", tints);
+
+			var def = new JsonObject();
+			def.add("model", modelRef);
+			generator.json(bucketItem.id.withPath(ID.ITEM_DEFINITION), def);
 		}
 	}
 }

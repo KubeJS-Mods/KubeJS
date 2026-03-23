@@ -36,7 +36,7 @@ public class FluidBlockBuilder extends BlockBuilder {
 	protected void generateBlockModels(KubeAssetGenerator generator) {
 		generator.blockModel(id, mg -> {
 			mg.parent(null);
-			mg.texture("particle", fluidBuilder.fluidType.stillTexture.toString());
+			mg.texture("particle", fluidBuilder.fluidType.actualStillTexture.toString());
 
 			if (fluidBuilder.fluidType.renderType != BlockRenderType.SOLID) {
 				mg.custom(json -> json.addProperty("render_type", switch (fluidBuilder.fluidType.renderType) {

@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.fluid;
 
 import dev.latvian.mods.kubejs.block.BlockRenderType;
+import dev.latvian.mods.kubejs.block.BlockTintFunction;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
@@ -34,7 +35,8 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 	public transient Identifier actualFlowingTexture;
 	public transient @Nullable Identifier screenOverlayTexture;
 	public transient @Nullable Identifier blockOverlayTexture;
-	public transient @Nullable KubeColor tint;
+	public transient @Nullable KubeColor textureTint;
+	public transient @Nullable BlockTintFunction tint;
 	public transient BlockRenderType renderType;
 
 	public FluidTypeBuilder(Identifier id) {
@@ -44,6 +46,7 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 		this.flowingTexture = newID("block/", "_flow");
 		this.actualStillTexture = newID("block/generated/", "_still");
 		this.actualFlowingTexture = newID("block/generated/", "_flow");
+		this.textureTint = null;
 		this.tint = null;
 		this.renderType = BlockRenderType.SOLID;
 
@@ -78,6 +81,11 @@ public class FluidTypeBuilder extends BuilderBase<FluidType> {
 	}
 
 	public FluidTypeBuilder tint(KubeColor tint) {
+		this.tint = new BlockTintFunction.Fixed(tint);
+		return this;
+	}
+
+	public FluidTypeBuilder tintFunction(BlockTintFunction tint) {
 		this.tint = tint;
 		return this;
 	}

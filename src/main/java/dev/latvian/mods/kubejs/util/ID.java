@@ -26,6 +26,7 @@ public interface ID {
 	UnaryOperator<String> MODEL = s -> "models/" + s;
 	UnaryOperator<String> BLOCK_MODEL = s -> "models/block/" + s;
 	UnaryOperator<String> ITEM_MODEL = s -> "models/item/" + s;
+	UnaryOperator<String> ITEM_DEFINITION = s -> "items/" + s;
 	UnaryOperator<String> BLOCK_LOOT_TABLE = s -> "loot_table/blocks/" + s;
 	UnaryOperator<String> PNG_TEXTURE = s -> "textures/" + s + ".png";
 	UnaryOperator<String> PNG_TEXTURE_MCMETA = s -> "textures/" + s + ".png.mcmeta";

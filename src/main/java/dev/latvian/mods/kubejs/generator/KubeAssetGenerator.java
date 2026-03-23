@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.generator;
 
+import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.client.LoadedTexture;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.client.MultipartBlockStateGenerator;
@@ -44,6 +45,13 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 	default void itemModel(Identifier id, Consumer<ModelGenerator> consumer) {
 		var gen = Util.make(new ModelGenerator(), consumer);
 		json(id.withPath(ID.ITEM_MODEL), gen.toJson());
+
+		var modelRef = new JsonObject();
+		modelRef.addProperty("type", "minecraft:model");
+		modelRef.addProperty("model", id.withPath(ID.ITEM).toString());
+		var def = new JsonObject();
+		def.add("model", modelRef);
+		json(id.withPath(ID.ITEM_DEFINITION), def);
 	}
 
 	default void defaultItemModel(Identifier id) {

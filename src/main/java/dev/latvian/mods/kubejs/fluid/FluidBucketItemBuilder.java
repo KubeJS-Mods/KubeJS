@@ -20,5 +20,8 @@ public class FluidBucketItemBuilder extends ItemBuilder {
 
 	@Override
 	public void generateAssets(KubeAssetGenerator generator) {
+		if (modelGenerator != null || parentModel != null || !textures.isEmpty()) {
+			super.generateAssets(generator);
+		}
 	}
 }

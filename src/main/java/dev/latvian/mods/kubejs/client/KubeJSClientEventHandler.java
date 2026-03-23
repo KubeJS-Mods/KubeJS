@@ -210,13 +210,13 @@ public class KubeJSClientEventHandler {
 		for (var builder : RegistryObjectStorage.FLUID) {
 			if (builder instanceof FluidBuilder b) {
 				var type = b.fluidType;
-				// TODO: revisit this!
 				event.register(new FluidModel.Unbaked(
 					new Material(type.actualStillTexture),
 					new Material(type.actualFlowingTexture),
 					type.blockOverlayTexture != null ? new Material(type.blockOverlayTexture) : null,
+					type.tint != null ? new FluidTintFunctionWrapper(type.tint, 0, b.bucketColor) : null,
 					null
-				), b.get());
+				), b.get(), b.flowingFluid.get());
 			}
 		}
 	}
