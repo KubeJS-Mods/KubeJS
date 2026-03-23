@@ -41,7 +41,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 	public FlowingFluidBuilder flowingFluid;
 	public @Nullable FluidBlockBuilder block;
 	public @Nullable FluidBucketItemBuilder bucketItem;
-	public transient @Nullable KubeColor bucketColor;
+	public @Nullable KubeColor bucketColor;
 	private @Nullable Properties properties;
 
 	public FluidBuilder(Identifier i) {
