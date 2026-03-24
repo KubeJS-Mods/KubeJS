@@ -51,7 +51,7 @@ public class FoodBuilder {
 
 		if (food != null) {
 			this.nutrition = food.nutrition();
-			this.saturation = food.saturation();
+			this.saturation = food.nutrition() > 0 ? food.saturation() / (food.nutrition() * 2.0F) : 0;
 			this.alwaysEdible = food.canAlwaysEat();
 		}
 
