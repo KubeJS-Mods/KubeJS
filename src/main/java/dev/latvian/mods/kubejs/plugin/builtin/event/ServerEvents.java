@@ -25,12 +25,12 @@ import net.minecraft.resources.ResourceKey;
 public interface ServerEvents {
 	EventGroup GROUP = EventGroup.of("ServerEvents");
 
-	TargetedEventHandler<ResourceKey<Registry<?>>> REGISTRY = GROUP.server("registry", () -> ServerRegistryKubeEvent.class).requiredTarget(EventTargetType.REGISTRY);
+	TargetedEventHandler<ResourceKey<? extends Registry<?>>> REGISTRY = GROUP.server("registry", () -> ServerRegistryKubeEvent.class).requiredTarget(EventTargetType.REGISTRY);
 	TargetedEventHandler<GeneratedDataStage> GENERATE_DATA = GROUP.server("generateData", () -> KubeDataGenerator.class).requiredTarget(GeneratedDataStage.TARGET);
 	EventHandler LOADED = GROUP.server("loaded", () -> ServerKubeEvent.class);
 	EventHandler UNLOADED = GROUP.server("unloaded", () -> ServerKubeEvent.class);
 	EventHandler TICK = GROUP.server("tick", () -> ServerKubeEvent.class);
-	TargetedEventHandler<ResourceKey<Registry<?>>> TAGS = GROUP.server("tags", () -> TagKubeEvent.class).exceptionHandler(TagKubeEvent.TAG_EVENT_HANDLER).requiredTarget(EventTargetType.REGISTRY);
+	TargetedEventHandler<ResourceKey<? extends Registry<?>>> TAGS = GROUP.server("tags", () -> TagKubeEvent.class).exceptionHandler(TagKubeEvent.TAG_EVENT_HANDLER).requiredTarget(EventTargetType.REGISTRY);
 	EventHandler COMMAND_REGISTRY = GROUP.server("commandRegistry", () -> CommandRegistryKubeEvent.class);
 	TargetedEventHandler<String> COMMAND = GROUP.server("command", () -> CommandKubeEvent.class).hasResult().supportsTarget(EventTargetType.STRING);
 	TargetedEventHandler<String> BASIC_COMMAND = GROUP.server("basicCommand", () -> BasicCommandKubeEvent.class).hasResult().requiredTarget(EventTargetType.STRING);

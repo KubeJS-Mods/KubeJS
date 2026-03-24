@@ -3,21 +3,10 @@ package dev.latvian.mods.kubejs.server.tag;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import net.minecraft.resources.Identifier;
-import net.minecraft.tags.TagLoader;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-
-public class TagWrapper {
-	public final TagKubeEvent event;
-	public final Identifier id;
-	public final List<TagLoader.EntryWithSource> entries;
-
-	public TagWrapper(TagKubeEvent e, Identifier i, List<TagLoader.EntryWithSource> t) {
-		event = e;
-		id = i;
-		entries = t;
+public record TagWrapper(TagKubeEvent event, Identifier id) {
+	TagEventBuilder builder() {
+		return event.getOrCreateBuilder(id);
 	}
 
 	@Override
@@ -27,11 +16,8 @@ public class TagWrapper {
 
 	public TagWrapper add(Object... filters) {
 		var filter = TagEventFilter.unwrap(event, filters);
-		var addedCount = filter.add(this);
 
-		if (addedCount > 0) {
-			event.totalAdded += addedCount;
-
+		if (filter.add(this)) {
 			if (ConsoleJS.SERVER.shouldPrintDebug()) {
 				ConsoleJS.SERVER.debug("+ %s // %s".formatted(this, filter));
 			}
@@ -44,11 +30,8 @@ public class TagWrapper {
 
 	public TagWrapper remove(Object... filters) {
 		var filter = TagEventFilter.unwrap(event, filters);
-		var removedCount = filter.remove(this);
 
-		if (removedCount > 0) {
-			event.totalRemoved += removedCount;
-
+		if (filter.remove(this)) {
 			if (ConsoleJS.SERVER.shouldPrintDebug()) {
 				ConsoleJS.SERVER.debug("- %s // %s".formatted(this, filter));
 			}
@@ -60,27 +43,21 @@ public class TagWrapper {
 	}
 
 	public TagWrapper removeAll() {
+		ConsoleJS.SERVER.info("TagWrapper.removeAll has been renamed to replace to better represent what the method does!");
+		return replace();
+	}
+
+	public TagWrapper replace() {
 		if (ConsoleJS.SERVER.shouldPrintDebug()) {
 			ConsoleJS.SERVER.debug("- %s // (all)".formatted(this));
 		}
 
-		if (!entries.isEmpty()) {
-			event.totalRemoved += entries.size();
-			entries.clear();
+		if (!builder().isEmpty()) {
+			builder().replace();
 		} else if (DevProperties.get().logSkippedTags) {
 			ConsoleJS.SERVER.warn("- %s // (all) [No matches found!]".formatted(this));
 		}
 
 		return this;
-	}
-
-	public List<Identifier> getObjectIds() {
-		var set = new LinkedHashSet<Identifier>();
-
-		for (var proxy : entries) {
-			event.gatherIdsFor(this, set, proxy);
-		}
-
-		return new ArrayList<>(set);
 	}
 }

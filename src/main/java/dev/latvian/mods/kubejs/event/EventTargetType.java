@@ -27,7 +27,7 @@ public class EventTargetType<T> {
 
 	public static final EventTargetType<String> STRING = create(String.class).transformer(EventTargetType::toString).describeType(TypeInfo.STRING);
 	public static final EventTargetType<Identifier> ID = create(Identifier.class).transformer(EventTargetType::toIdentifier).describeType(TypeInfo.of(Identifier.class));
-	public static final EventTargetType<ResourceKey<Registry<?>>> REGISTRY = Cast.to(create(ResourceKey.class).transformer(EventTargetType::toRegistryKey).identity().describeType(TypeInfo.of(ResourceKey.class).withParams(TypeInfo.of(Registry.class))));
+	public static final EventTargetType<ResourceKey<? extends Registry<?>>> REGISTRY = Cast.to(create(ResourceKey.class).transformer(EventTargetType::toRegistryKey).identity().describeType(TypeInfo.of(ResourceKey.class).withParams(TypeInfo.of(Registry.class))));
 
 	public static <T> EventTargetType<ResourceKey<T>> registryKey(ResourceKey<Registry<T>> registry, Class<?> type) {
 		return Cast.to(create(ResourceKey.class).identity().transformer(o -> toKey(registry, o)).describeType(TypeInfo.of(ResourceKey.class).withParams(TypeInfo.of(type))));

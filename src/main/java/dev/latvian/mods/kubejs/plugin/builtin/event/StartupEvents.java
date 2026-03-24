@@ -16,6 +16,6 @@ public interface StartupEvents {
 
 	EventHandler INIT = GROUP.startup("init", () -> KubeStartupEvent.class);
 	EventHandler POST_INIT = GROUP.startup("postInit", () -> KubeStartupEvent.class);
-	TargetedEventHandler<ResourceKey<Registry<?>>> REGISTRY = GROUP.startup("registry", () -> RegistryKubeEvent.class).requiredTarget(EventTargetType.REGISTRY);
+	TargetedEventHandler<ResourceKey<? extends Registry<?>>> REGISTRY = GROUP.startup("registry", () -> RegistryKubeEvent.class).requiredTarget(EventTargetType.REGISTRY);
 	TargetedEventHandler<Identifier> MODIFY_CREATIVE_TAB = GROUP.startup("modifyCreativeTab", () -> CreativeTabKubeEvent.class).requiredTarget(EventTargetType.ID);
 }

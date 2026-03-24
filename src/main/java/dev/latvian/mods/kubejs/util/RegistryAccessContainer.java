@@ -91,16 +91,13 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 	}
 
 	// Currently this is the best way I can think of to have tags available at the time of recipe loading
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public synchronized <T> void cacheTags(Registry<T> registry, Map<Identifier, List<TagLoader.EntryWithSource>> map) {
-		var key1 = registry == null ? null : (ResourceKey) registry.key();
-
-		if (key1 == null) {
-			return;
-		}
+		ResourceKey key1 = registry.key();
 
 		try {
 			if (key1 == Registries.ITEM) {
-				cachedItemTags = Cast.to(new CachedItemTagLookup((Registry) registry, map));
+				cachedItemTags = Cast.to(new CachedItemTagLookup(Cast.to(registry), map));
 				cachedRegistryTags.put(key1, new CachedTagLookup.Entry(key1, registry, cachedItemTags));
 			} else if (key1 == Registries.BLOCK) {
 				cachedBlockTags = Cast.to(new CachedTagLookup<>(registry, map));

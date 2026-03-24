@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class CachedTagLookup<T> {
-	public record Entry<T>(ResourceKey<T> key, Registry<T> registry, CachedTagLookup<T> lookup) {
+	public record Entry<T>(ResourceKey<? extends Registry<T>> key, Registry<T> registry, CachedTagLookup<T> lookup) {
 	}
 
 	record SortingEntry(List<TagLoader.EntryWithSource> entries) implements DependencySorter.Entry<Identifier> {

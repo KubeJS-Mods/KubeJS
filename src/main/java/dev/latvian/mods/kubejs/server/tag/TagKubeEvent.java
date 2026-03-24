@@ -4,20 +4,18 @@ import dev.latvian.mods.kubejs.error.EmptyTagTargetException;
 import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
-import dev.latvian.mods.kubejs.util.Cast;
-import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.TagLoader;
-import org.jspecify.annotations.Nullable;
+import net.minecraft.tags.TagLoader.EntryWithSource;
+import net.minecraft.util.VisibleForDebug;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import java.util.function.BiConsumer;
 
 public class TagKubeEvent implements KubeEvent {
 	public static final EventExceptionHandler TAG_EVENT_HANDLER = (event, container, ex) -> {
@@ -40,18 +38,23 @@ public class TagKubeEvent implements KubeEvent {
 	public static final String SOURCE = "KubeJS Custom Tags";
 
 	public final ResourceKey<?> registryKey;
-	public final Registry<?> vanillaRegistry;
 	public final Map<Identifier, TagWrapper> tags;
-	public int totalAdded;
-	public int totalRemoved;
-	private @Nullable Set<Identifier> elementIds;
+	final Map<Identifier, TagEventBuilder> builders;
+	final Set<Identifier> elementIds;
 
-	public TagKubeEvent(ResourceKey<?> registryKey, Registry<?> vr) {
-		this.registryKey = registryKey;
-		this.vanillaRegistry = vr;
+	private TagKubeEvent(Registry<?> vanillaRegistry, Map<Identifier, List<EntryWithSource>> map) {
+		this.registryKey = vanillaRegistry.key();
 		this.tags = new ConcurrentHashMap<>();
-		this.totalAdded = 0;
-		this.totalRemoved = 0;
+		this.builders = new HashMap<>();
+		this.elementIds = vanillaRegistry.keySet();
+
+		for (var entry : map.entrySet()) {
+			builders.put(entry.getKey(), new TagEventBuilder(entry.getValue()));
+		}
+	}
+
+	public static TagKubeEvent fromRegistry(Registry<?> vanillaRegistry, Map<Identifier, List<EntryWithSource>> map) {
+		return new TagKubeEvent(vanillaRegistry, map);
 	}
 
 	public Identifier getType() {
@@ -63,7 +66,11 @@ public class TagKubeEvent implements KubeEvent {
 	}
 
 	protected TagWrapper createTagWrapper(Identifier id) {
-		return new TagWrapper(this, id, new ArrayList<>());
+		return new TagWrapper(this, id);
+	}
+
+	TagEventBuilder getOrCreateBuilder(Identifier id) {
+		return builders.computeIfAbsent(id, _ -> new TagEventBuilder(List.of()));
 	}
 
 	public TagWrapper add(Identifier tag, Object... filters) {
@@ -78,42 +85,17 @@ public class TagKubeEvent implements KubeEvent {
 		return get(tag).removeAll();
 	}
 
-	public void removeAllTagsFrom(Object... ids) {
-		var filter = TagEventFilter.unwrap(this, ids);
-
-		for (var tagWrapper : tags.values()) {
-			tagWrapper.entries.removeIf(proxy -> filter.testTagOrElementLocation(proxy.entry().elementOrTag()));
-		}
-	}
-
 	public Set<Identifier> getElementIds() {
-		if (elementIds == null) {
-			elementIds = Cast.to(vanillaRegistry.listElements()
-				.map(Holder.Reference::key)
-				.map(ResourceKey::identifier)
-				.collect(Collectors.toSet()));
-		}
 		return elementIds;
 	}
 
-	void gatherIdsFor(TagWrapper excluded, Collection<Identifier> collection, TagLoader.EntryWithSource entry) {
-		var id = entry.entry().elementOrTag();
+	boolean hasElement(Identifier id) {
+		return elementIds.contains(id);
+	}
 
-		if (id.tag()) {
-			// tag entry, recurse
-			var w = tags.get(id.id());
-			if (w != null && w != excluded) {
-				for (var proxy : w.entries) {
-					gatherIdsFor(excluded, collection, proxy);
-				}
-			}
-		} else {
-			// verify that the entry is actually contained in the registry
-			var entryId = id.id();
-
-			if (getElementIds().contains(entryId)) {
-				collection.add(entryId);
-			}
+	public void build(BiConsumer<Identifier, List<EntryWithSource>> output) {
+		for (var entry : builders.entrySet()) {
+			output.accept(entry.getKey(), entry.getValue().buildEntries());
 		}
 	}
 }

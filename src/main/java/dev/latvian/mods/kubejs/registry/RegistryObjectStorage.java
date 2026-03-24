@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import org.jspecify.annotations.NonNull;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -28,7 +27,7 @@ public final class RegistryObjectStorage<T> implements Iterable<BuilderBase<? ex
 
 	public static final Codec<RegistryObjectStorage<?>> CODEC = Identifier.CODEC.xmap(rl -> RegistryObjectStorage.of(ResourceKey.createRegistryKey(rl)), ri -> ri.key.identifier());
 
-	public static <T> RegistryObjectStorage<T> of(ResourceKey<Registry<T>> key) {
+	public static <T> RegistryObjectStorage<T> of(ResourceKey<? extends Registry<T>> key) {
 		synchronized (LOCK) {
 			return Cast.to(MAP.computeIfAbsent(key, RegistryObjectStorage::new));
 		}
@@ -40,7 +39,7 @@ public final class RegistryObjectStorage<T> implements Iterable<BuilderBase<? ex
 	public static final RegistryObjectStorage<BlockEntityType<?>> BLOCK_ENTITY = of(Registries.BLOCK_ENTITY_TYPE);
 	public static final RegistryObjectStorage<FluidType> FLUID_TYPE = of(NeoForgeRegistries.Keys.FLUID_TYPES);
 
-	public final ResourceKey<Registry<T>> key;
+	public final ResourceKey<? extends Registry<T>> key;
 	public final Map<Identifier, BuilderBase<? extends T>> objects;
 
 	private RegistryObjectStorage(ResourceKey key) {
@@ -48,7 +47,6 @@ public final class RegistryObjectStorage<T> implements Iterable<BuilderBase<? ex
 		this.objects = new LinkedHashMap<>();
 	}
 
-	@NonNull
 	@Override
 	public Iterator<BuilderBase<? extends T>> iterator() {
 		return objects.values().iterator();

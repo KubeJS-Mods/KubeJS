@@ -22,7 +22,6 @@ import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
 import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
 import dev.latvian.mods.kubejs.script.data.VirtualDataPack;
-import dev.latvian.mods.kubejs.server.tag.PreTagKubeEvent;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
@@ -47,7 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -58,10 +56,6 @@ public class ServerScriptManager extends ScriptManager {
 		var manager = new ServerScriptManager(true);
 		manager.reload(); // Is this needed?
 		return manager;
-	}
-
-	public static ServerScriptManager forResources(boolean firstLoad) {
-		return new ServerScriptManager(firstLoad);
 	}
 
 	@ApiStatus.Internal
@@ -96,7 +90,6 @@ public class ServerScriptManager extends ScriptManager {
 		return resources;
 	}
 
-	public final Map<ResourceKey<?>, PreTagKubeEvent> preTagEvents;
 	public final RecipeSchemaStorage recipeSchemaStorage;
 	public @Nullable SyncServerDataPayload serverData;
 	public final VirtualDataPack internalDataPack;
@@ -107,7 +100,6 @@ public class ServerScriptManager extends ScriptManager {
 
 	private ServerScriptManager(boolean firstLoad) {
 		super(ScriptType.SERVER);
-		this.preTagEvents = new ConcurrentHashMap<>();
 		this.recipeSchemaStorage = new RecipeSchemaStorage(this);
 		this.serverData = null;
 
@@ -281,8 +273,6 @@ public class ServerScriptManager extends ScriptManager {
 		serverData = null;
 
 		super.reload();
-
-		PreTagKubeEvent.handle(preTagEvents);
 
 		internalDataPack.flush();
 

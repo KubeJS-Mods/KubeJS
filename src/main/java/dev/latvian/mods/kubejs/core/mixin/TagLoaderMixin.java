@@ -3,17 +3,19 @@ package dev.latvian.mods.kubejs.core.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.latvian.mods.kubejs.core.ScriptManagerHolderKJS;
 import dev.latvian.mods.kubejs.core.TagLoaderKJS;
+import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
+import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.TagLoader;
+import net.minecraft.tags.TagLoader.EntryWithSource;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
@@ -50,20 +52,39 @@ public abstract class TagLoaderMixin<T> implements TagLoaderKJS<T> {
 		loader.kjs$init(((ScriptManagerHolderKJS) manager).kjs$getScriptManager(), registry);
 	}
 
-	@Redirect(
-		method = "loadPendingTags(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/core/Registry;)Ljava/util/Optional;",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/tags/TagLoader;load(Lnet/minecraft/server/packs/resources/ResourceManager;)Ljava/util/Map;"
-		)
-	)
-	private static <T> Map<Identifier, List<TagLoader.EntryWithSource>> kjs$customTagsBeforeBuild(
-		TagLoader<T> loader,
-		ResourceManager manager
+	@Inject(method = "load", at = @At("RETURN"))
+	private void kjs$modifyLoadedTags(
+		ResourceManager manager,
+		CallbackInfoReturnable<Map<Identifier, List<EntryWithSource>>> cir
 	) {
-		Map<Identifier, List<TagLoader.EntryWithSource>> map = loader.load(manager);
-		loader.kjs$customTags(loader.kjs$getServerScriptManager(), map);
-		return map;
+		var ssm = kjs$getServerScriptManager();
+
+		if (ssm != null && kjs$storedRegistry != null) {
+			Map<Identifier, List<EntryWithSource>> map = cir.getReturnValue();
+			var reg = kjs$getRegistry();
+
+			if (reg == null) {
+				return;
+			}
+
+			boolean needsCustomTags = false;
+			var objStorage = RegistryObjectStorage.of(reg.key());
+
+			for (var builder : objStorage.objects.values()) {
+				if (!builder.defaultTags.isEmpty()) {
+					needsCustomTags = true;
+					break;
+				}
+			}
+
+			needsCustomTags |= !ssm.serverRegistryTags.isEmpty() || ServerEvents.TAGS.hasListeners(objStorage.key);
+
+			if (needsCustomTags) {
+				kjs$customTags(map);
+			}
+
+			ssm.getRegistries().cacheTags(reg, map);
+		}
 	}
 
 	@Override

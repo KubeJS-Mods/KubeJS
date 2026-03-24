@@ -6,8 +6,6 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagEntry;
-import net.minecraft.tags.TagLoader;
-import net.minecraft.util.ExtraCodecs;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,14 +13,14 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public interface TagEventFilter {
+public sealed interface TagEventFilter {
 	static TagEventFilter of(TagKubeEvent event, Object o) {
 		if (o instanceof TagEventFilter f) {
 			return f;
 		} else if (o instanceof Collection<?> list) {
 			var filters = list.stream()
 				.map(o1 -> of(event, o1))
-				.flatMap(TagEventFilter::unwrap)
+				.flatMap(TagEventFilter::flatten)
 				.filter(f -> f != Empty.INSTANCE)
 				.toList();
 
@@ -49,207 +47,177 @@ public interface TagEventFilter {
 	}
 
 	static TagEventFilter unwrap(TagKubeEvent event, Object[] array) {
-		var filter = array.length == 1 ? of(event, array[0]) : of(event, Arrays.asList(array));
+		return array.length == 1 ? of(event, array[0]) : of(event, Arrays.asList(array));
+	}
 
-		/*
-		if (filter.isEmpty()) {
-			var msg = "No matches found for filter %s!".formatted(filter);
+	boolean test(Identifier id);
+
+	default Stream<TagEventFilter> flatten() {
+		return Stream.of(this);
+	}
+
+	default boolean add(TagWrapper wrapper) {
+		boolean changed = false;
+		var builder = wrapper.builder();
+
+		for (var id : wrapper.event().getElementIds()) {
+			if (test(id)) {
+				builder.add(TagEntry.element(id));
+				changed = true;
+			}
+		}
+
+		return changed;
+	}
+
+	default boolean remove(TagWrapper wrapper) {
+		boolean changed = false;
+		var builder = wrapper.builder();
+
+		for (var id : wrapper.event().getElementIds()) {
+			if (test(id)) {
+				builder.remove(TagEntry.optionalElement(id));
+				changed = true;
+			}
+		}
+
+		return changed;
+	}
+
+	final class Empty implements TagEventFilter {
+		static final Empty INSTANCE = new Empty();
+
+		private Empty() {
+		}
+
+		@Override
+		public boolean test(Identifier id) {
+			return false;
+		}
+
+		@Override
+		public boolean add(TagWrapper wrapper) {
+			return false;
+		}
+
+		@Override
+		public boolean remove(TagWrapper wrapper) {
+			return false;
+		}
+	}
+
+	record Or(List<TagEventFilter> selectors) implements TagEventFilter {
+		@Override
+		public boolean test(Identifier id) {
+			for (var selector : selectors) {
+				if (selector.test(id)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		@Override
+		public Stream<TagEventFilter> flatten() {
+			return selectors.stream();
+		}
+
+		@Override
+		public boolean add(TagWrapper wrapper) {
+			boolean changed = false;
+
+			for (var selector : selectors) {
+				changed |= selector.add(wrapper);
+			}
+
+			return changed;
+		}
+
+		@Override
+		public boolean remove(TagWrapper wrapper) {
+			boolean changed = false;
+
+			for (var selector : selectors) {
+				changed |= selector.remove(wrapper);
+			}
+
+			return changed;
+		}
+	}
+
+	record ID(Identifier id) implements TagEventFilter {
+		@Override
+		public boolean test(Identifier id) {
+			return this.id.equals(id);
+		}
+
+		@Override
+		public boolean add(TagWrapper wrapper) {
+			if (wrapper.event().hasElement(id)) {
+				wrapper.builder().add(TagEntry.element(id));
+				return true;
+			}
+
+			var msg = "No such element %s in registry %s".formatted(id, wrapper.event().registryKey.identifier());
 
 			if (DevProperties.get().strictTags) {
 				throw new EmptyTagTargetException(msg);
 			} else if (DevProperties.get().logSkippedTags) {
 				ConsoleJS.SERVER.warn(msg);
 			}
-		}
-		 */
-
-		return filter;
-	}
-
-	boolean testElementId(Identifier id);
-
-	default boolean testTagOrElementLocation(ExtraCodecs.TagOrElementLocation element) {
-		return !element.tag() && testElementId(element.id());
-	}
-
-	default Stream<TagEventFilter> unwrap() {
-		return Stream.of(this);
-	}
-
-	default int add(TagWrapper wrapper) {
-		int count = 0;
-
-		for (var id : wrapper.event.getElementIds()) {
-			if (testElementId(id)) {
-				wrapper.entries.add(new TagLoader.EntryWithSource(TagEntry.element(id), TagKubeEvent.SOURCE));
-				count++;
-			}
-		}
-
-		return count;
-	}
-
-	default int remove(TagWrapper wrapper) {
-		int count = 0;
-		var itr = wrapper.entries.iterator();
-
-		while (itr.hasNext()) {
-			var it = itr.next();
-
-			if (!it.entry().tag && testElementId(it.entry().id)) {
-				itr.remove();
-				count++;
-			}
-		}
-
-		return count;
-	}
-
-	class Empty implements TagEventFilter {
-		public static final Empty INSTANCE = new Empty();
-
-		@Override
-		public boolean testElementId(Identifier Identifier) {
-			return false;
-		}
-
-		@Override
-		public boolean testTagOrElementLocation(ExtraCodecs.TagOrElementLocation element) {
-			return false;
-		}
-
-		@Override
-		public int add(TagWrapper wrapper) {
-			return 0;
-		}
-
-		@Override
-		public int remove(TagWrapper wrapper) {
-			return 0;
-		}
-	}
-
-	record Or(List<TagEventFilter> filters) implements TagEventFilter {
-		@Override
-		public boolean testElementId(Identifier Identifier) {
-			for (var filter : filters) {
-				if (filter.testElementId(Identifier)) {
-					return true;
-				}
-			}
 
 			return false;
 		}
 
 		@Override
-		public boolean testTagOrElementLocation(ExtraCodecs.TagOrElementLocation element) {
-			for (var filter : filters) {
-				if (filter.testTagOrElementLocation(element)) {
-					return true;
-				}
+		public boolean remove(TagWrapper wrapper) {
+			if (wrapper.event().hasElement(id)) {
+				wrapper.builder().remove(TagEntry.element(id));
+				return true;
+			}
+
+			var msg = "No such element %s in registry %s".formatted(id, wrapper.event().registryKey.identifier());
+
+			if (DevProperties.get().strictTags) {
+				throw new EmptyTagTargetException(msg);
+			} else if (DevProperties.get().logSkippedTags) {
+				ConsoleJS.SERVER.warn(msg);
 			}
 
 			return false;
-		}
-
-		@Override
-		public Stream<TagEventFilter> unwrap() {
-			return filters.stream();
-		}
-
-		@Override
-		public int add(TagWrapper wrapper) {
-			int count = 0;
-
-			for (var filter : filters) {
-				count += filter.add(wrapper);
-			}
-
-			return count;
-		}
-
-		@Override
-		public int remove(TagWrapper wrapper) {
-			int count = 0;
-
-			for (var filter : filters) {
-				count += filter.remove(wrapper);
-			}
-
-			return count;
-		}
-	}
-
-	record ID(Identifier id) implements TagEventFilter {
-		@Override
-		public boolean testElementId(Identifier id) {
-			return this.id.equals(id);
-		}
-
-		@Override
-		public int add(TagWrapper wrapper) {
-			if (wrapper.event.getElementIds().contains(id)) {
-				wrapper.entries.add(new TagLoader.EntryWithSource(TagEntry.element(id), TagKubeEvent.SOURCE));
-				return 1;
-			} else {
-				var msg = "No such element %s in registry %s".formatted(id, wrapper.event.registryKey.identifier());
-
-				if (DevProperties.get().strictTags) {
-					throw new EmptyTagTargetException(msg);
-				} else if (DevProperties.get().logSkippedTags) {
-					ConsoleJS.SERVER.warn(msg);
-				}
-
-				return 0;
-			}
 		}
 	}
 
 	record Tag(TagWrapper tag) implements TagEventFilter {
 		@Override
-		public boolean testElementId(Identifier id) {
+		public boolean test(Identifier id) {
 			return false;
 		}
 
 		@Override
-		public boolean testTagOrElementLocation(ExtraCodecs.TagOrElementLocation element) {
-			return element.tag() && this.tag.id.equals(element.id());
+		public boolean add(TagWrapper wrapper) {
+			wrapper.builder().add(TagEntry.tag(tag.id()));
+			return true;
 		}
 
 		@Override
-		public int add(TagWrapper wrapper) {
-			wrapper.entries.add(new TagLoader.EntryWithSource(TagEntry.tag(tag.id), TagKubeEvent.SOURCE));
-			return 1;
-		}
-
-		@Override
-		public int remove(TagWrapper wrapper) {
-			int count = 0;
-			var itr = wrapper.entries.iterator();
-
-			while (itr.hasNext()) {
-				var it = itr.next();
-
-				if (it.entry().tag && it.entry().id.equals(tag.id)) {
-					itr.remove();
-					count++;
-				}
-			}
-
-			return count;
+		public boolean remove(TagWrapper wrapper) {
+			wrapper.builder().remove(TagEntry.optionalTag(tag.id()));
+			return true;
 		}
 	}
 
 	record Namespace(String namespace) implements TagEventFilter {
 		@Override
-		public boolean testElementId(Identifier id) {
+		public boolean test(Identifier id) {
 			return id.getNamespace().equals(namespace);
 		}
 	}
 
 	record RegEx(Pattern pattern) implements TagEventFilter {
 		@Override
-		public boolean testElementId(Identifier id) {
+		public boolean test(Identifier id) {
 			return pattern.matcher(id.toString()).find();
 		}
 	}
