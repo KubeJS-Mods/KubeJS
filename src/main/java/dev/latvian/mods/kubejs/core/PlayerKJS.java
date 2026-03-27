@@ -19,6 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+
 @RemapPrefixForJS("kjs$")
 public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedData<Player> {
 	@Override
@@ -53,9 +55,16 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 	}
 
 	@Override
-	@Nullable
+	@Nonnull
+	@Info("Gets the player's profile.")
 	default GameProfile kjs$getProfile() {
 		return kjs$self().getGameProfile();
+	}
+
+	@Override
+	@Info("Gets the player's username.")
+	default String kjs$getUsername() {
+		return kjs$self().getGameProfile().getName();
 	}
 
 	default InventoryKJS kjs$getInventory() {

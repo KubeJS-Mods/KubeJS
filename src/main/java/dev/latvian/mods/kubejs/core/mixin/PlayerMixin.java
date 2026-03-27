@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.stages.StageEvents;
 import dev.latvian.mods.kubejs.stages.Stages;
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.AttachedData;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -68,4 +69,12 @@ public abstract class PlayerMixin implements PlayerKJS {
 
 		return kjs$inventoryChangeListener;
 	}
+
+	@Shadow
+	@Info("Checks, whether the player is in Spectator mode.")
+	public abstract boolean isSpectator();
+
+	@Shadow
+	@Info("Checks, whether the player is in Creative mode.")
+	public abstract boolean isCreative();
 }

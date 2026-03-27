@@ -12,6 +12,8 @@ import dev.latvian.mods.kubejs.typings.ThisIs;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -22,6 +24,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -64,13 +67,14 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		return kjs$self().getType().kjs$getId();
 	}
 
-	@ThisIs(LocalClientPlayerKJS.class)
+	@ThisIs(LocalPlayer.class)
 	@Info("Checks, whether the entity is a reference to yourself - that is - the client player you are controlling.")
 	default boolean kjs$isSelf() {
 		return false;
 	}
 
 	@Nullable
+	@Info("If the entity is a player, gets the player's profile, otherwise returns `null`.")
 	default GameProfile kjs$getProfile() {
 		return null;
 	}
@@ -122,6 +126,18 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	@ThisIs(Player.class)
 	@Info("Checks if the entity is a player entity.")
 	default boolean kjs$isPlayer() {
+		return false;
+	}
+
+	@ThisIs(ServerPlayer.class)
+	@Info("Checks if the entity is a server-side player.")
+	default boolean kjs$isServerPlayer() {
+		return false;
+	}
+
+	@ThisIs(AbstractClientPlayer.class)
+	@Info("Checks if the entity is a client-side player.")
+	default boolean kjs$isClientPlayer() {
 		return false;
 	}
 

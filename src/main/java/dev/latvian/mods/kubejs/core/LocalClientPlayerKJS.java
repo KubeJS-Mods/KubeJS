@@ -65,6 +65,7 @@ public interface LocalClientPlayerKJS extends ClientPlayerKJS {
 	}
 
 	@Override
+	@Info("Checks, whether the player is currently mining a block.")
 	default boolean kjs$isMiningBlock() {
 		return Minecraft.getInstance().gameMode.isDestroying();
 	}

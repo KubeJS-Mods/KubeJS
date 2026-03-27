@@ -37,6 +37,7 @@ import java.util.UUID;
 public abstract class EntityMixin implements EntityKJS {
 	@Shadow
 	public abstract void playerTouch(Player arg);
+
 	@Unique
 	private CompoundTag kjs$persistentData;
 
@@ -117,6 +118,16 @@ public abstract class EntityMixin implements EntityKJS {
 	@Shadow
 	@RemapForJS("setPitch")
 	public abstract void setXRot(float pitch);
+
+	@Shadow
+	@RemapForJS("setBodyYaw")
+	@Info("Sets the entity's body yaw.")
+	public abstract void setYBodyRot(float yBodyRot);
+
+	@Shadow
+	@RemapForJS("getBodyYaw")
+	@Info("Gets the entity's body yaw (if the entity is a `LivingEntity`), or the entity's visual rotation (if the entity is an item entity or an item frame).")
+	public abstract float getVisualRotationYInDegrees();
 
 	@Shadow
 	@RemapForJS("setMotion")

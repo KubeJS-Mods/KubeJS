@@ -7,7 +7,6 @@ import dev.latvian.mods.kubejs.util.NotificationToastData;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,11 +18,10 @@ public interface ClientPlayerKJS extends PlayerKJS {
 		return (AbstractClientPlayer) this;
 	}
 
-	@Override
-	@ThisIs(LocalPlayer.class)
-	@Info("Checks, whether the entity is a reference to yourself - that is - the client player you are controlling.")
-	default boolean kjs$isSelf() {
-		return false;
+	@ThisIs(AbstractClientPlayer.class)
+	@Info("Checks if the entity is a client-side player.")
+	default boolean kjs$isClientPlayer() {
+		return true;
 	}
 
 	@Override
