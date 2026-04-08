@@ -661,4 +661,43 @@ public class ConsoleJS {
 			}
 		}));
 	}
+
+	private record EarlyError(String message, @Nullable Throwable exception) {
+	}
+
+	private static List<EarlyError> earlyErrors;
+
+	/**
+	 * Buffers an error to be flushed to startup logs later via {@link #flushEarlyErrors()}.
+	 * Useful for when an error occurs before startup scripts have been initialized,
+	 * such as during config loading where {@link #STARTUP} is not yet available.
+	 */
+	@HideFromJS
+	public static void earlyError(String message) {
+		earlyError(message, null);
+	}
+
+	@HideFromJS
+	public static void earlyError(String message, @Nullable Throwable exception) {
+		if (earlyErrors == null) {
+			earlyErrors = new ArrayList<>();
+		}
+
+		earlyErrors.add(new EarlyError(message, exception));
+	}
+
+	@HideFromJS
+	public static void flushEarlyErrors() {
+		if (earlyErrors != null && STARTUP != null) {
+			for (var error : earlyErrors) {
+				if (error.exception != null) {
+					STARTUP.error(error.message, error.exception);
+				} else {
+					STARTUP.error(error.message);
+				}
+			}
+
+			earlyErrors = null;
+		}
+	}
 }

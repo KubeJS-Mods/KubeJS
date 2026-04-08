@@ -20,6 +20,7 @@ import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.RecordDefaults;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
@@ -131,6 +132,8 @@ public class KubeJS {
 
 		if (!datagen) {
 			startupScriptManager.reload();
+			// Flushing early errors here instead of console init so the startup error screen can report it
+			ConsoleJS.flushEarlyErrors();
 		}
 
 		if (dist.isClient()) {

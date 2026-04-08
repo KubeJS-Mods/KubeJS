@@ -10,7 +10,6 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
 import net.minecraft.CrashReport;
-import org.slf4j.LoggerFactory;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 
@@ -47,13 +46,7 @@ public class BaseProperties {
 
 				throw new ReportedException(crashreport);
 			} catch (JsonSyntaxException e) {
-				var msg = "Error parsing properties JSON for file %s! Default settings will be loaded, and changes won't be saved!".formatted(path);
-
-				if (ConsoleJS.STARTUP != null) {
-					ConsoleJS.STARTUP.error(msg, e);
-				} else {
-					LoggerFactory.getLogger("KubeJS").error(msg, e);
-				}
+				ConsoleJS.earlyError("Error parsing properties JSON for file %s! Default settings will be loaded, and changes won't be saved!".formatted(path), e);
 			}
 		} else {
 			writeProperties = true;
@@ -125,13 +118,7 @@ public class BaseProperties {
 		try (var writer = Files.newBufferedWriter(path)) {
 			GSON.toJson(properties, writer);
 		} catch (Exception ex) {
-			var msg = "Error saving properties file %s! Settings will not be saved!".formatted(path);
-
-			if (ConsoleJS.STARTUP != null) {
-				ConsoleJS.STARTUP.error(msg, ex);
-			} else {
-				LoggerFactory.getLogger("KubeJS").error(msg, ex);
-			}
+			ConsoleJS.earlyError("Error saving properties file %s! Settings will not be saved!".formatted(path), ex);
 		}
 	}
 
