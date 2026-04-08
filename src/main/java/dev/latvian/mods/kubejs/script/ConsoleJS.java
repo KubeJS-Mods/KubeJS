@@ -662,42 +662,55 @@ public class ConsoleJS {
 		}));
 	}
 
-	private record EarlyError(String message, @Nullable Throwable exception) {
+	private record EarlyError(String message, @Nullable Throwable exception, boolean errorScreen) {
 	}
 
 	private static List<EarlyError> earlyErrors;
 
 	/**
-	 * Buffers an error to be flushed to startup logs later via {@link #flushEarlyErrors()}.
+	 * Buffers an error to be flushed to startup logs later via {@link #flushEarlyErrors(boolean)}.
 	 * Useful for when an error occurs before startup scripts have been initialized,
 	 * such as during config loading where {@link #STARTUP} is not yet available.
+	 *
+	 * @param errorScreen if true, the error will be shown on the KubeJS error screen when flushed after startup scripts
 	 */
 	@HideFromJS
-	public static void earlyError(String message) {
-		earlyError(message, null);
-	}
-
-	@HideFromJS
-	public static void earlyError(String message, @Nullable Throwable exception) {
+	public static void earlyError(String message, @Nullable Throwable exception, boolean errorScreen) {
 		if (earlyErrors == null) {
 			earlyErrors = new ArrayList<>();
 		}
 
-		earlyErrors.add(new EarlyError(message, exception));
+		earlyErrors.add(new EarlyError(message, exception, errorScreen));
 	}
 
 	@HideFromJS
-	public static void flushEarlyErrors() {
+	public static void earlyError(String message, @Nullable Throwable exception) {
+		earlyError(message, exception, false);
+	}
+
+	@HideFromJS
+	public static void earlyError(String message) {
+		earlyError(message, null, false);
+	}
+
+	@HideFromJS
+	public static void flushEarlyErrors(boolean errorScreen) {
 		if (earlyErrors != null && STARTUP != null) {
+			var remaining = new ArrayList<EarlyError>();
+
 			for (var error : earlyErrors) {
-				if (error.exception != null) {
-					STARTUP.error(error.message, error.exception);
+				if (error.errorScreen == errorScreen) {
+					if (error.exception != null) {
+						STARTUP.error(error.message, error.exception);
+					} else {
+						STARTUP.error(error.message);
+					}
 				} else {
-					STARTUP.error(error.message);
+					remaining.add(error);
 				}
 			}
 
-			earlyErrors = null;
+			earlyErrors = remaining.isEmpty() ? null : remaining;
 		}
 	}
 }

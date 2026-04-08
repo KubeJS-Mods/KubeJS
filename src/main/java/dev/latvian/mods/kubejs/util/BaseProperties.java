@@ -16,6 +16,7 @@ import net.minecraft.ReportedException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 public class BaseProperties {
 	private static final Gson GSON = new GsonBuilder().setLenient().setPrettyPrinting().disableHtmlEscaping().serializeNulls().create();
@@ -46,7 +47,15 @@ public class BaseProperties {
 
 				throw new ReportedException(crashreport);
 			} catch (JsonSyntaxException e) {
-				ConsoleJS.earlyError("Error parsing properties JSON for file %s! Default settings will be loaded, and changes won't be saved!".formatted(path), e);
+				var bakPath = path.resolveSibling(path.getFileName() + ".bak");
+
+				try {
+					Files.copy(path, bakPath, StandardCopyOption.REPLACE_EXISTING);
+				} catch (IOException ex) {
+					ConsoleJS.earlyError("Failed to create backup file %s!".formatted(bakPath), ex);
+				}
+
+				ConsoleJS.earlyError("Error parsing properties JSON for file %s! A backup has been saved to %s. Default settings will be loaded.".formatted(path, bakPath), e);
 			}
 		} else {
 			writeProperties = true;

@@ -131,9 +131,9 @@ public class KubeJS {
 		startupScriptManager = new StartupScriptManager();
 
 		if (!datagen) {
+			ConsoleJS.flushEarlyErrors(false);
 			startupScriptManager.reload();
-			// Flushing early errors here instead of console init so the startup error screen can report it
-			ConsoleJS.flushEarlyErrors();
+			ConsoleJS.flushEarlyErrors(true);
 		}
 
 		if (dist.isClient()) {
