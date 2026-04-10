@@ -186,7 +186,7 @@ public interface DataComponentWrapper {
 				boolean remove = reader.canRead() && reader.peek() == '!';
 
 				if (remove) {
-					reader.skipWhitespace();
+					reader.skip();
 				}
 
 				var dataComponentType = readComponentType(reader);
