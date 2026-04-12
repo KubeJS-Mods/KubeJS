@@ -8,7 +8,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
-import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.error.RecipeComponentException;
 import dev.latvian.mods.kubejs.event.KubeEvent;
@@ -45,9 +44,9 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectLinkedOpenHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.RecipeManager;
+import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -68,6 +67,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RecipesKubeEvent implements KubeEvent {
+	public static final ScopedValue<RecipesKubeEvent> INSTANCE = ScopedValue.newInstance();
+
 	public static final Pattern POST_SKIP_ERROR = ConsoleJS.methodPattern(RecipesKubeEvent.class, "post");
 	public static final Pattern CREATE_RECIPE_SKIP_ERROR = ConsoleJS.methodPattern(RecipesKubeEvent.class, "createRecipe");
 	private static final Predicate<KubeRecipe> RECIPE_NOT_REMOVED = r -> r != null && !r.removed;
@@ -77,7 +78,6 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	public final RecipeSchemaStorage recipeSchemaStorage;
 	public final RegistryAccessContainer registries;
-	public final ResourceManager resourceManager;
 	public final RegistryOpsContainer ops;
 	public final Map<Identifier, KubeRecipe> originalRecipes;
 	public final Collection<KubeRecipe> addedRecipes;
@@ -100,13 +100,12 @@ public class RecipesKubeEvent implements KubeEvent {
 	public final RecipeTypeFunction smithing;
 	public final RecipeTypeFunction smithingTrim;
 
-	public RecipesKubeEvent(ServerScriptManager manager, ResourceManager resourceManager) {
+	public RecipesKubeEvent(ServerScriptManager manager) {
 		ConsoleJS.SERVER.info("Initializing recipe event...");
 		this.overallTimer = Stopwatch.createStarted();
 
 		this.recipeSchemaStorage = manager.recipeSchemaStorage;
 		this.registries = manager.getRegistries();
-		this.resourceManager = resourceManager;
 		this.ops = new RegistryOpsContainer(
 			new KubeRecipeEventOps<>(this, registries.nbt()),
 			new KubeRecipeEventOps<>(this, registries.json()),
@@ -174,23 +173,25 @@ public class RecipesKubeEvent implements KubeEvent {
 	}
 
 	@HideFromJS
-	public void post(RecipeManagerKJS recipeManager, Map<Identifier, JsonElement> datapackRecipeMap) {
-		discoverRecipes(recipeManager, datapackRecipeMap);
+	@ApiStatus.Internal
+	public void post(Map<Identifier, JsonElement> datapackRecipeMap) {
+		discoverRecipes(datapackRecipeMap);
 		postEvent();
 		applyChanges(datapackRecipeMap);
 	}
 
 	@HideFromJS
-	public void discoverRecipes(RecipeManagerKJS recipeManager, Map<Identifier, JsonElement> datapackRecipeMap) {
+	public void discoverRecipes(Map<Identifier, JsonElement> recipeJsons) {
 		var timer = Stopwatch.createStarted();
 
-		KubeJSPlugins.forEachPlugin(p -> p.beforeRecipeLoading(this, recipeManager, datapackRecipeMap));
+		KubeJSPlugins.forEachPlugin(p -> p.beforeRecipeLoading(this, recipeJsons));
 		int skippedRecipes = 0;
 
-		for (var entry : datapackRecipeMap.entrySet()) {
-			var recipeId = entry.getKey();
+		for (var entry : recipeJsons.entrySet()) {
+			Identifier recipeId = entry.getKey();
 
 			//Forge: filter anything beginning with "_" as it's used for metadata.
+			//noinspection ConstantValue
 			if (recipeId == null || recipeId.getPath().startsWith("_")) {
 				infoSkip("Skipping recipe %s, filename starts with _".formatted(recipeId));
 				skippedRecipes++;

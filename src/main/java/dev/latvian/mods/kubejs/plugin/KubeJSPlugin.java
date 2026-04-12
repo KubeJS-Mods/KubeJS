@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.plugin;
 import com.google.gson.JsonElement;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.client.icon.KubeIconTypeRegistry;
-import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventGroupRegistry;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
@@ -149,7 +148,7 @@ public interface KubeJSPlugin {
 	default void exportServerData(DataExport export) {
 	}
 
-	default void beforeRecipeLoading(RecipesKubeEvent event, RecipeManagerKJS manager, Map<Identifier, JsonElement> recipeJsons) {
+	default void beforeRecipeLoading(RecipesKubeEvent event, Map<Identifier, JsonElement> recipeJsons) {
 	}
 
 	default void beforeScriptsLoaded(ScriptManager manager) {

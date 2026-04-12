@@ -1,10 +1,10 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.core.RecipeManagerKJS;
 import dev.latvian.mods.kubejs.core.ReloadableServerResourcesKJS;
@@ -19,17 +19,14 @@ import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.MappedRegistry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeMap;
-import net.neoforged.neoforge.common.conditions.ConditionalOps;
 import net.neoforged.neoforge.resource.ContextAwareReloadListener;
 import org.jspecify.annotations.NullUnmarked;
 import org.jspecify.annotations.Nullable;
@@ -39,13 +36,12 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 @Mixin(value = RecipeManager.class, priority = 1100)
 public abstract class RecipeManagerMixin extends ContextAwareReloadListener implements RecipeManagerKJS {
@@ -67,31 +63,29 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener impl
 	@Unique
 	private @Nullable RecipesKubeEvent kjs$event;
 
-	@Unique
-	private @Nullable DynamicOps<JsonElement> kjs$cachedOps;
-
-	@ModifyArg(
+	@WrapOperation(
 		method = "prepare(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)Lnet/minecraft/world/item/crafting/RecipeMap;",
-		at = @At(value = "INVOKE", target = "Lnet/minecraft/server/packs/resources/SimpleJsonResourceReloadListener;scanDirectory(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/FileToIdConverter;Lcom/mojang/serialization/DynamicOps;Lcom/mojang/serialization/Codec;Ljava/util/Map;)V"),
-		index = 2
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/server/packs/resources/SimpleJsonResourceReloadListener;scanDirectoryWithModifier(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/FileToIdConverter;Lcom/mojang/serialization/DynamicOps;Lcom/mojang/serialization/Codec;Ljava/util/Map;Ljava/util/function/Consumer;)V"
+		)
 	)
-	private DynamicOps<JsonElement> kjs$captureOps(DynamicOps<JsonElement> ops) {
-		kjs$cachedOps = ops;
-		return ops;
-	}
-
-	@Inject(
-		method = "prepare(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)Lnet/minecraft/world/item/crafting/RecipeMap;",
-		at = @At("RETURN"),
-		cancellable = true
-	)
-	private void kjs$interceptPrepare(ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfoReturnable<RecipeMap> cir) {
+	private void injectEventToPost(
+		ResourceManager manager,
+		FileToIdConverter lister,
+		DynamicOps<JsonElement> ops,
+		Codec<Recipe<?>> codec,
+		Map<Identifier, Recipe<?>> result,
+		Consumer<Map<Identifier, JsonElement>> jsonConsumer,
+		Operation<Void> original
+	) {
 		if (kjs$resources == null) {
 			return;
 		}
 
-		var manager = kjs$resources.kjs$getServerScriptManager();
+		var ssm = Objects.requireNonNull(kjs$resources.kjs$getServerScriptManager());
 
+		// TODO: i would like to be able to live without these two calls
 		for (var pending : kjs$resources.kjs$getPostponedTags()) {
 			pending.apply();
 		}
@@ -100,16 +94,13 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener impl
 			pending.apply();
 		}
 
-		for (var entry : manager.getRegistries().cachedRegistryTags.values()) {
-			if (entry.registry() == null || entry.lookup() == null) {
-				continue;
-			}
+		for (var entry : ssm.getRegistries().cachedRegistryTags.values()) {
 			if (entry.registry() instanceof MappedRegistry<?> mappedRegistry) {
 				mappedRegistry.bindTags(Cast.to(entry.lookup().bindingMap()));
 			}
 		}
 
-		manager.recipeSchemaStorage.fireEvents(manager.getRegistries(), resourceManager);
+		ssm.recipeSchemaStorage.fireEvents(ssm.getRegistries(), manager);
 
 		SpecialRecipeSerializerManager.INSTANCE.reset();
 		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
@@ -118,49 +109,11 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener impl
 			return;
 		}
 
-		ConsoleJS.SERVER.info("Processing recipes...");
-
-		var ops = kjs$cachedOps != null ? kjs$cachedOps : new ConditionalOps<>(registries.createSerializationContext(JsonOps.INSTANCE), getContext());
-		var jsonMap = new HashMap<Identifier, JsonElement>();
-
-		var lister = FileToIdConverter.registry(Registries.RECIPE);
-		for (var entry : lister.listMatchingResources(resourceManager).entrySet()) {
-			var id = lister.fileToId(entry.getKey());
-			try (var reader = entry.getValue().openAsReader()) {
-				var json = JsonParser.parseReader(reader);
-				if (json instanceof JsonObject obj) {
-					jsonMap.put(id, obj);
-				}
-			} catch (Exception e) {
-				ConsoleJS.SERVER.warn("Failed to read recipe JSON %s: %s".formatted(id, e.getMessage()));
-			}
-		}
-
-		kjs$event = new RecipesKubeEvent(manager, resourceManager);
-		kjs$event.post(this, jsonMap);
-
-		var holders = new ArrayList<RecipeHolder<?>>();
-
-		for (var entry : jsonMap.entrySet()) {
-			var id = entry.getKey();
-
-			if (entry.getValue() instanceof JsonObject jsonObj && jsonObj.has("type")) {
-				Recipe.CODEC.parse(ops, jsonObj)
-					.ifSuccess(recipe -> {
-						var key = ResourceKey.create(Registries.RECIPE, id);
-						holders.add(new RecipeHolder<>(key, recipe));
-					})
-					.ifError(err -> {
-						if (kjs$event != null) {
-							kjs$event.handleFailedRecipe(id, entry.getValue(), new RuntimeException(err.toString()));
-						} else {
-							ConsoleJS.SERVER.warn("Failed to parse modified recipe %s: %s".formatted(id, err.toString()));
-						}
-					});
-			}
-		}
-
-		cir.setReturnValue(RecipeMap.create(holders));
+		// this will end up calling the NF event which will post the kube event
+		ScopedValue.where(RecipesKubeEvent.INSTANCE, new RecipesKubeEvent(ssm)).run(() -> {
+			ConsoleJS.SERVER.info("Processing recipes...");
+			original.call(manager, lister, ops, codec, result, jsonConsumer);
+		});
 	}
 
 	@Inject(
@@ -173,7 +126,6 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener impl
 		}
 
 		kjs$event = null;
-		kjs$cachedOps = null;
 
 		if (!CommonProperties.get().serverOnly) {
 			kjs$getServerScriptManager().serverData = new SyncServerDataPayload(KubeServerData.collect());
