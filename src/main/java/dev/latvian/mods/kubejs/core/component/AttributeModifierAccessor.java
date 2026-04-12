@@ -1,18 +1,11 @@
-package dev.latvian.mods.kubejs.component;
+package dev.latvian.mods.kubejs.core.component;
 
 import dev.latvian.mods.kubejs.typings.Info;
-import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import dev.latvian.mods.rhino.util.ReturnsSelf;
-import net.minecraft.core.Holder;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,42 +14,7 @@ import static net.minecraft.world.item.Item.BASE_ATTACK_DAMAGE_ID;
 import static net.minecraft.world.item.Item.BASE_ATTACK_SPEED_ID;
 
 @RemapPrefixForJS("kjs$")
-@ReturnsSelf
-public interface AttributeModifierFunctions {
-	ItemAttributeModifiers kjs$getAttributeModifiers();
-
-	default boolean kjs$hasAttributeModifier(Holder<Attribute> attribute, Identifier id) {
-		for (var entry : kjs$getAttributeModifiers().modifiers()) {
-			if (entry.matches(attribute, id)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Nullable
-	default AttributeModifier kjs$getAttributeModifier(Holder<Attribute> attribute, Identifier id) {
-		for (var entry : kjs$getAttributeModifiers().modifiers()) {
-			if (entry.matches(attribute, id)) {
-				return entry.modifier();
-			}
-		}
-		return null;
-	}
-
-	@HideFromJS
-	void kjs$setAttributeModifiers(ItemAttributeModifiers modifiers);
-
-	default void kjs$addAttributeModifier(Holder<Attribute> attribute, AttributeModifier mod, EquipmentSlotGroup slot) {
-		kjs$setAttributeModifiers(kjs$getAttributeModifiers().withModifierAdded(attribute, mod, slot));
-	}
-
-	@ApiStatus.NonExtendable
-	default void kjs$setAttributeModifiers(List<ItemAttributeModifiers.Entry> modifiers) {
-		kjs$setAttributeModifiers(new ItemAttributeModifiers(modifiers));
-	}
-
-	@ApiStatus.NonExtendable
+public interface AttributeModifierAccessor extends AttributeModifierGetter, AttributeModifierSetter {
 	default void kjs$setAttributeModifiersWithTooltip(List<ItemAttributeModifiers.Entry> modifiers) {
 		var out = new ArrayList<ItemAttributeModifiers.Entry>(modifiers.size());
 		for (var e : modifiers) {
@@ -65,7 +23,6 @@ public interface AttributeModifierFunctions {
 		kjs$setAttributeModifiers(new ItemAttributeModifiers(out));
 	}
 
-	@ApiStatus.NonExtendable
 	default void kjs$setAttributeModifiersWithoutTooltip(List<ItemAttributeModifiers.Entry> modifiers) {
 		var out = new ArrayList<ItemAttributeModifiers.Entry>(modifiers.size());
 		for (var e : modifiers) {
@@ -73,7 +30,6 @@ public interface AttributeModifierFunctions {
 		}
 		kjs$setAttributeModifiers(new ItemAttributeModifiers(out));
 	}
-
 
 	@Info("""
 		Sets the attack speed of this item to the given value, **removing** all other modifiers to attack speed.
@@ -143,48 +99,6 @@ public interface AttributeModifierFunctions {
 		kjs$setAttributeModifiers(new ItemAttributeModifiers(list));
 	}
 
-	default double kjs$getAttackDamage() {
-		var base = kjs$getBaseAttackDamage();
-		var sum = base;
-
-		for (var entry : kjs$getAttributeModifiers().modifiers()) {
-			if (entry.matches(Attributes.ATTACK_DAMAGE, BASE_ATTACK_DAMAGE_ID)) {
-				continue;
-			}
-
-			var mod = entry.modifier();
-			double d1 = mod.amount();
-
-			sum += switch (mod.operation()) {
-				case ADD_VALUE -> d1;
-				case ADD_MULTIPLIED_BASE -> d1 * base;
-				case ADD_MULTIPLIED_TOTAL -> d1 * sum;
-			};
-		}
-		return sum;
-	}
-
-	default double kjs$getAttackSpeed() {
-		var base = kjs$getBaseAttackSpeed();
-		var sum = base;
-
-		for (var entry : kjs$getAttributeModifiers().modifiers()) {
-			if (entry.matches(Attributes.ATTACK_SPEED, BASE_ATTACK_SPEED_ID)) {
-				continue;
-			}
-
-			var mod = entry.modifier();
-			double d1 = mod.amount();
-
-			sum += switch (mod.operation()) {
-				case ADD_VALUE -> d1;
-				case ADD_MULTIPLIED_BASE -> d1 * base;
-				case ADD_MULTIPLIED_TOTAL -> d1 * sum;
-			};
-		}
-		return sum;
-	}
-
 	@Info("""
 		Overrides the *base* attack speed of this item to be the given value, keeping other modifiers intact.
 		Note that players have a default attack speed of 4.0, so this modifier is added on top of that.
@@ -203,23 +117,5 @@ public interface AttributeModifierFunctions {
 		kjs$addAttributeModifier(Attributes.ATTACK_DAMAGE,
 			new AttributeModifier(BASE_ATTACK_DAMAGE_ID, dmg, AttributeModifier.Operation.ADD_VALUE),
 			EquipmentSlotGroup.MAINHAND);
-	}
-
-	default double kjs$getBaseAttackDamage() {
-		for (var modifier : kjs$getAttributeModifiers().modifiers()) {
-			if (modifier.matches(Attributes.ATTACK_DAMAGE, BASE_ATTACK_DAMAGE_ID)) {
-				return modifier.modifier().amount();
-			}
-		}
-		return 0.0;
-	}
-
-	default double kjs$getBaseAttackSpeed() {
-		for (var modifier : kjs$getAttributeModifiers().modifiers()) {
-			if (modifier.matches(Attributes.ATTACK_SPEED, BASE_ATTACK_SPEED_ID)) {
-				return modifier.modifier().amount();
-			}
-		}
-		return 0.0;
 	}
 }

@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.core;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
-import dev.latvian.mods.kubejs.component.MutableDataComponentHolderFunctions;
 import dev.latvian.mods.kubejs.fluid.FluidLike;
 import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
@@ -36,7 +35,7 @@ public interface FluidStackKJS extends
 	WithCodec,
 	FluidLike,
 	FluidMatch,
-	MutableDataComponentHolderFunctions,
+	MutableDataComponentHolderKJS,
 	RegistryObjectKJS<Fluid> {
 	default FluidStack kjs$self() {
 		return Cast.to(this);

@@ -389,7 +389,7 @@ public interface DataComponentWrapper {
 		};
 	}
 
-	static <T> DataResult<Optional<T>> tryWrapComponent(Context cx, DataComponentType<T> type, Object value) {
+	static <T> DataResult<Optional<T>> tryWrapComponent(Context cx, DataComponentType<T> type, @Nullable Object value) {
 		var reg = RegistryAccessContainer.of(cx);
 
 		var valueType = getTypeInfo(type);
@@ -398,7 +398,7 @@ public interface DataComponentWrapper {
 			return success(Optional.empty());
 		}
 
-		var evalError = new MutableObject<EvaluatorException>();
+		var evalError = new MutableObject<@Nullable EvaluatorException>();
 
 		if (valueType.shouldConvert() && cx.canConvert(value, valueType)) {
 			try {

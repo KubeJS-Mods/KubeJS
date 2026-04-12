@@ -222,6 +222,7 @@ import net.minecraft.world.item.component.BlockItemStateProperties;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.component.Fireworks;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -576,6 +577,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(ClickEvent.class, TextWrapper::wrapClickEvent);
 		registry.registerAlias(Component.class, TextWrapper.TYPE_INFO, Function.identity());
 		registry.registerAlias(ItemLore.class, TypeInfo.RAW_LIST.withParams(TextWrapper.TYPE_INFO), TextWrapper::lore);
+		registry.registerAlias(ItemAttributeModifiers.class, TypeInfo.RAW_LIST.withParams(TypeInfo.of(ItemAttributeModifiers.Entry.class)), ItemAttributeModifiers::new);
 
 		// codecs
 		registry.registerCodec(Fireworks.class, Fireworks.CODEC);

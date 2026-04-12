@@ -1,8 +1,7 @@
-package dev.latvian.mods.kubejs.component;
+package dev.latvian.mods.kubejs.core.component;
 
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
@@ -30,8 +29,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import java.util.List;
 
 @RemapPrefixForJS("kjs$")
-@ReturnsSelf
-public interface ItemComponentFunctions extends ComponentFunctions, AttributeModifierFunctions {
+public interface ItemComponentFunctions extends DataComponentAccessor, AttributeModifierAccessor {
 	default void kjs$setMaxStackSize(int size) {
 		kjs$override(DataComponents.MAX_STACK_SIZE, size);
 	}
@@ -50,12 +48,10 @@ public interface ItemComponentFunctions extends ComponentFunctions, AttributeMod
 
 	default void kjs$setUnbreakableWithTooltip() {
 		kjs$setUnit(DataComponents.UNBREAKABLE);
-
-		var td = kjs$get(DataComponents.TOOLTIP_DISPLAY);
-		if (td == null) {
-			td = TooltipDisplay.DEFAULT;
-		}
-		kjs$override(DataComponents.TOOLTIP_DISPLAY, td.withHidden(DataComponents.UNBREAKABLE, false));
+		kjs$override(DataComponents.TOOLTIP_DISPLAY,
+			getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT)
+				.withHidden(DataComponents.UNBREAKABLE, false)
+		);
 	}
 
 	default void kjs$setItemName(Component component) {
@@ -127,7 +123,7 @@ public interface ItemComponentFunctions extends ComponentFunctions, AttributeMod
 
 	@Override
 	default ItemAttributeModifiers kjs$getAttributeModifiers() {
-		var mods = kjs$get(DataComponents.ATTRIBUTE_MODIFIERS);
+		var mods = get(DataComponents.ATTRIBUTE_MODIFIERS);
 		return mods == null ? new ItemAttributeModifiers(List.of()) : mods;
 	}
 

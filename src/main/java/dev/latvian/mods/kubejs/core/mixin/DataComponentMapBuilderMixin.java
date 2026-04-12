@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
-import dev.latvian.mods.kubejs.component.ComponentFunctions;
-import dev.latvian.mods.kubejs.util.Cast;
+import dev.latvian.mods.kubejs.core.component.DataComponentAccessor;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import net.minecraft.core.component.DataComponentMap;
@@ -12,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(DataComponentMap.Builder.class)
-public abstract class DataComponentMapBuilderMixin implements ComponentFunctions {
+public abstract class DataComponentMapBuilderMixin implements DataComponentAccessor {
 	@Shadow
 	public abstract DataComponentMap build();
 
@@ -25,24 +24,12 @@ public abstract class DataComponentMapBuilderMixin implements ComponentFunctions
 	public abstract <T> DataComponentMap.Builder set(DataComponentType<T> component, @Nullable T value);
 
 	@Override
-	public <T> @Nullable T kjs$get(DataComponentType<T> type) {
-		return Cast.to(map.get(type));
-	}
-
-	@Override
-	public <T> ComponentFunctions kjs$override(DataComponentType<T> type, @Nullable T value) {
+	public <T> void kjs$override(DataComponentType<T> type, @Nullable T value) {
 		set(type, value);
-		return this;
 	}
 
 	@Override
-	public ComponentFunctions kjs$remove(DataComponentType<?> type) {
+	public void kjs$remove(DataComponentType<?> type) {
 		map.remove(type);
-		return this;
-	}
-
-	@Override
-	public DataComponentMap kjs$getComponentMap() {
-		return build();
 	}
 }

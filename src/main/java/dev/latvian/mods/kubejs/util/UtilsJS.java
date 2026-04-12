@@ -1,7 +1,9 @@
 package dev.latvian.mods.kubejs.util;
 
 import dev.latvian.mods.kubejs.block.BlockModificationKubeEvent;
+import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
 import dev.latvian.mods.kubejs.plugin.builtin.event.BlockEvents;
+import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.rhino.type.TypeUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -36,8 +38,7 @@ public class UtilsJS {
 	}
 
 	public static void postItemModificationEvents(ModifyDefaultComponentsEvent event) {
-		// TODO: readd this, maybe we need an ItemPredicate vs. ItemStackPredicate type
-		// ItemEvents.MODIFICATION.post(ScriptType.STARTUP, new ItemModificationKubeEvent(event));
+		ItemEvents.MODIFICATION.post(ScriptType.STARTUP, new ItemModificationKubeEvent(event));
 	}
 
 	public static void postBlockModificationEvents() {

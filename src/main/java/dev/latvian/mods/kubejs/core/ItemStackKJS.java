@@ -4,8 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.codec.KubeJSCodecs;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
-import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
-import dev.latvian.mods.kubejs.component.MutableDataComponentHolderFunctions;
+import dev.latvian.mods.kubejs.core.component.ItemComponentFunctions;
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.IngredientWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
@@ -59,7 +58,7 @@ public interface ItemStackKJS extends
 	ToStringJS,
 	Replaceable,
 	ItemComponentFunctions,
-	MutableDataComponentHolderFunctions,
+	MutableDataComponentHolderKJS,
 	ItemMatch,
 	RegistryObjectKJS<Item> {
 	default ItemStack kjs$self() {

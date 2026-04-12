@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.core.ItemStackKJS;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -52,10 +51,8 @@ public abstract class ItemStackMixin implements ItemStackKJS {
 	}*/
 
 	@Override
-	@ReturnsSelf
-	public ItemStackKJS kjs$resetComponents(Context cx) {
+	public void kjs$resetComponents(Context cx) {
 		components.restorePatch(DataComponentPatch.EMPTY);
-		return this;
 	}
 
 	@Unique

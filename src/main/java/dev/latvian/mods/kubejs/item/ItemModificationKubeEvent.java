@@ -1,14 +1,16 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
+import dev.latvian.mods.kubejs.core.component.ItemComponentFunctions;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.TickDuration;
+import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -52,9 +54,10 @@ public class ItemModificationKubeEvent implements KubeEvent {
 		
 		**NOTE**: tag ingredients are not supported at this time.
 		""")
-	public void modify(ItemPredicate in, Consumer<ItemModifications> c) {
-		for (var item : BuiltInRegistries.ITEM) {
-			if (in.kjs$testItem(item)) {
+	// TODO: item with component filter support?
+	public void modify(RegistryPredicate<Item> in, Consumer<ItemModifications> c) {
+		for (Item item : BuiltInRegistries.ITEM) {
+			if (in.test(item.kjs$asHolder())) {
 				event.modify(item, builder -> c.accept(new ItemModifications(item, builder)));
 			}
 		}
@@ -66,31 +69,39 @@ public class ItemModificationKubeEvent implements KubeEvent {
 		public static final Reference2IntOpenHashMap<Item> BURN_TIME_OVERRIDES = new Reference2IntOpenHashMap<>();
 
 		@Override
-		public DataComponentMap kjs$getComponentMap() {
-			return item.components();
+		public <T> @Nullable T get(DataComponentType<? extends T> type) {
+			return patch.get(type);
 		}
 
 		@Override
 		@HideFromJS
-		public <T> ItemComponentFunctions kjs$override(DataComponentType<T> type, @Nullable T value) {
+		public <T> void kjs$override(DataComponentType<T> type, @Nullable T value) {
 			patch.set(type, value);
-			return this;
+		}
+
+		@Override
+		@HideFromJS
+		public void kjs$setAttributeModifiers(ItemAttributeModifiers modifiers) {
+			kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, modifiers);
 		}
 
 		public void removeComponent(DataComponentType<?> type) {
-			patch.set((DataComponentType) type, null);
+			patch.set(type, null);
 		}
 
 		public void setBurnTime(TickDuration i) {
 			BURN_TIME_OVERRIDES.put(item, i.intTicks());
 		}
 
+		// TODO: ItemStackTemplate support?
 		public void setCraftingRemainder(Item item) {
-			var template = new ItemStackTemplate(item);
-			this.item.kjs$setCraftingRemainder(template);
+			this.item.kjs$setCraftingRemainder(new ItemStackTemplate(item, 1, DataComponentPatch.EMPTY));
 		}
 
 		public void setTier(Consumer<MutableToolMaterial> builder) {
+			var items = BuiltInRegistries.acquireBootstrapRegistrationLookup(BuiltInRegistries.ITEM);
+			var blocks = BuiltInRegistries.acquireBootstrapRegistrationLookup(BuiltInRegistries.BLOCK);
+
 			var material = Util.make(new MutableToolMaterial(ToolMaterial.IRON), builder).toToolMaterial();
 
 			var attackDamageBaseline = 0F;
@@ -111,16 +122,17 @@ public class ItemModificationKubeEvent implements KubeEvent {
 			kjs$setMaxDamage(material.durability());
 			kjs$override(DataComponents.ENCHANTABLE, new Enchantable(material.enchantmentValue()));
 			kjs$override(DataComponents.REPAIRABLE, new Repairable(
-				BuiltInRegistries.acquireBootstrapRegistrationLookup(BuiltInRegistries.ITEM).getOrThrow(material.repairItems())
+				items.getOrThrow(material.repairItems())
 			));
 
-			var tool = kjs$getComponentMap().get(DataComponents.TOOL);
+			var attackDamage = attackDamageBaseline + material.attackDamageBonus();
 
+			var tool = get(DataComponents.TOOL);
 			if (tool != null) {
 				var minesEfficiently = kjs$inferMineableTag(tool);
 				kjs$override(DataComponents.TOOL, MutableToolMaterial.createToolProperties(material, minesEfficiently));
 				kjs$setAttributeModifiers(ItemAttributeModifiers.builder()
-					.add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, attackDamageBaseline + material.attackDamageBonus(), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+					.add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, attackDamage, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
 					.add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, attackSpeedBaseline, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
 					.build()
 				);
@@ -128,16 +140,16 @@ public class ItemModificationKubeEvent implements KubeEvent {
 			} else {
 				kjs$override(DataComponents.TOOL, new Tool(
 					List.of(
-						Tool.Rule.minesAndDrops(HolderSet.direct(Blocks.COBWEB.builtInRegistryHolder()), 15.0F),
-						Tool.Rule.overrideSpeed(BuiltInRegistries.acquireBootstrapRegistrationLookup(BuiltInRegistries.BLOCK).getOrThrow(BlockTags.SWORD_INSTANTLY_MINES), Float.MAX_VALUE),
-						Tool.Rule.overrideSpeed(BuiltInRegistries.acquireBootstrapRegistrationLookup(BuiltInRegistries.BLOCK).getOrThrow(BlockTags.SWORD_EFFICIENT), 1.5F)
+						Tool.Rule.minesAndDrops(HolderSet.direct(Blocks.COBWEB.kjs$asHolder()), 15.0F),
+						Tool.Rule.overrideSpeed(blocks.getOrThrow(BlockTags.SWORD_INSTANTLY_MINES), Float.MAX_VALUE),
+						Tool.Rule.overrideSpeed(blocks.getOrThrow(BlockTags.SWORD_EFFICIENT), 1.5F)
 					),
 					1.0F,
 					2,
 					false
 				));
 				kjs$setAttributeModifiers(ItemAttributeModifiers.builder()
-					.add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, attackDamageBaseline + material.attackDamageBonus(), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+					.add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, attackDamage, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
 					.add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, attackSpeedBaseline, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
 					.build()
 				);
