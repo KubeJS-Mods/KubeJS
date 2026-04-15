@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import net.minecraft.client.Minecraft;
@@ -13,8 +14,8 @@ import net.minecraft.util.Util;
 import java.util.concurrent.CompletableFuture;
 
 public class KubeJSClientCommands {
-	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-		var cmd = Commands.literal("kubejs")
+	private static LiteralArgumentBuilder<CommandSourceStack> reloadTree(String name) {
+		return Commands.literal(name)
 			.then(Commands.literal("reload")
 				.then(Commands.literal("client-scripts")
 					.requires(source -> true)
@@ -29,8 +30,11 @@ public class KubeJSClientCommands {
 					.executes(context -> reloadLang(context.getSource()))
 				)
 			);
+	}
 
-		dispatcher.register(cmd);
+	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+		dispatcher.register(reloadTree("kubejs"));
+		dispatcher.register(reloadTree("kjs"));
 	}
 
 	private static int reloadClient(CommandSourceStack source) {

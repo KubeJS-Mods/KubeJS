@@ -229,7 +229,11 @@ public class KubeJSCommands {
 		}
 
 		var cmd1 = dispatcher.register(cmd);
-		dispatcher.register(Commands.literal("kjs").redirect(cmd1));
+		var kjsBuilder = Commands.literal("kjs");
+		for (var child : cmd1.getChildren()) {
+			kjsBuilder.then(child);
+		}
+		dispatcher.register(kjsBuilder);
 
 		for (var id : ServerEvents.BASIC_COMMAND.findUniqueExtraIds(ScriptType.SERVER)) {
 			dispatcher.register(Commands.literal(id)
