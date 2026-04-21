@@ -20,7 +20,20 @@ public class EditorExt {
 		return !custom.isEmpty() && (custom.equals(VSCODE) || custom.equals(VSCODIUM) || custom.equals(VSCODE_OSS));
 	}
 
+	private static URI formatVSLike(String prefix, Path path, int line, int column) {
+		var rawPath = path.toAbsolutePath().toUri().getRawPath();
+		if (rawPath == null || rawPath.isEmpty()) {
+			rawPath = "/" + path.toAbsolutePath().toString().replace("\\", "/");
+		}
+
+		return URI.create(prefix + "://file" + rawPath + ":" + line + ":" + column);
+	}
+
 	private static URI format(String scheme, Path path, int line, int column) {
+		if (scheme.equals(VSCODE) || scheme.equals(VSCODIUM) || scheme.equals(VSCODE_OSS)) {
+			return formatVSLike(scheme.substring(0, scheme.indexOf("://")), path, line, column);
+		}
+
 		return URI.create(scheme
 			.replace("{path}", path.toAbsolutePath().toString().replace("\\", "/"))
 			.replace("{line}", String.valueOf(line))
