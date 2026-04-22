@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.core.RecipeLikeKJS;
+import dev.latvian.mods.kubejs.error.InvalidRecipeComponentValueException;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.error.MissingComponentException;
 import dev.latvian.mods.kubejs.error.RecipeComponentException;
@@ -28,6 +29,7 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ErrorStack;
+import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.KubeIdentifier;
 import dev.latvian.mods.kubejs.util.SlotFilter;
 import dev.latvian.mods.rhino.Context;
@@ -232,6 +234,26 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	 * Perform additional validation after the recipe has been loaded.
 	 */
 	public void validate(RecipeValidationContext cx) {
+	}
+
+	/**
+	 * Final validation hook that runs right before this recipe is serialized back into JSON.
+	 * <p>
+	 * This is useful for schemas that fill some values via custom functions (not constructor args),
+	 * where {@link #afterLoaded(RecipeValidationContext)} is too early to validate "fully-built" recipes.
+	 * <p>
+	 * Addons should prefer throwing a {@link KubeRuntimeException}
+	 * subtype here when validation fails. In particular,
+	 * {@link RecipeComponentException} or
+	 * {@link InvalidRecipeComponentValueException} will preserve
+	 * component/key/value context in the logged error, which is more useful than throwing a plain
+	 * runtime exception.
+	 * <p>
+	 * If this throws during recipe processing, KubeJS will:
+	 * - revert modified existing recipes back to their original JSON
+	 * - drop newly created recipes (so they don't end up as broken JSON in the final map)
+	 */
+	public void validateForWrite(RecipeValidationContext cx) {
 	}
 
 	public final void save() {
@@ -510,7 +532,37 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 
 	public KubeRecipe serializeChanges() {
 		if (newRecipe || hasChanged()) {
-			serialize();
+			try {
+				var stack = new ErrorStack();
+				var cx = new RecipeValidationContext.Impl(this, stack);
+				cx.errors().push(this);
+
+				for (var v : valueMap.holders) {
+					cx.errors().setKey(v.key.name);
+					v.validate(cx, sourceLine);
+				}
+
+				validateForWrite(cx);
+				cx.errors().pop();
+
+				serialize();
+			} catch (Throwable ex) {
+				var rid = id != null ? id.toString() : "<no id>";
+				ConsoleJS.SERVER.error("Failed to serialize recipe %s[%s]: %s".formatted(rid, type, ex.toString()), sourceLine, ex, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
+
+				// if this is an existing recipe, keep vanilla/mod JSON instead of crashing the whole reload
+				if (originalJson != null) {
+					json = (JsonObject) JsonUtils.copy(originalJson);
+					changed = false;
+					for (var v : valueMap.holders) {
+						v.write = false;
+					}
+				} else {
+					removed = true;
+				}
+
+				return this;
+			}
 
 			if (!modifyResult.isEmpty()) {
 				json.addProperty(KubeJSCraftingRecipe.MODIFY_RESULT_KEY, modifyResult);

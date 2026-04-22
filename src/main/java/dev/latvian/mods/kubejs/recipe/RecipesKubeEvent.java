@@ -324,12 +324,14 @@ public class RecipesKubeEvent implements KubeEvent {
 		map.putAll(originalRecipes.values().parallelStream()
 			.filter(RECIPE_NOT_REMOVED)
 			.map(KubeRecipe::serializeChanges)
+			.filter(RECIPE_NOT_REMOVED)
 			.peek(this::addToExport)
 			.collect(Collectors.toConcurrentMap(KubeRecipe::getOrCreateId, recipe -> recipe.json, (a, b) -> b)));
 
 		map.putAll(addedRecipes.parallelStream()
 			.filter(RECIPE_NOT_REMOVED)
 			.map(KubeRecipe::serializeChanges)
+			.filter(RECIPE_NOT_REMOVED)
 			.peek(this::addToExport)
 			.collect(Collectors.toConcurrentMap(KubeRecipe::getOrCreateId, recipe -> recipe.json, (a, b) -> {
 				ConsoleJS.SERVER.warn("KubeJS has found two recipes with the same ID in your custom recipes! Picking the last one encountered!");
@@ -343,12 +345,13 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	@HideFromJS
 	public void finishEvent() {
-		ChangesForChat.recipesAdded = addedRecipes.size();
+		var successfulAddedRecipes = addedRecipes.stream().filter(RECIPE_NOT_REMOVED).toList();
+		ChangesForChat.recipesAdded = successfulAddedRecipes.size();
 		ChangesForChat.recipesModified = modifiedCount;
 		ChangesForChat.recipesRemoved = removedRecipes.size();
 		ChangesForChat.recipesMs = overallTimer.stop().elapsed(TimeUnit.MILLISECONDS);
 
-		ConsoleJS.SERVER.info("Added %d recipes, removed %d recipes, modified %d recipes, with %d failed recipes taking %s in total".formatted(addedRecipes.size(), removedRecipes.size(), modifiedCount, failedCount, TimeJS.msToString(ChangesForChat.recipesMs)));
+		ConsoleJS.SERVER.info("Added %d recipes, removed %d recipes, modified %d recipes, with %d failed recipes taking %s in total".formatted(successfulAddedRecipes.size(), removedRecipes.size(), modifiedCount, failedCount, TimeJS.msToString(ChangesForChat.recipesMs)));
 
 		if (DataExport.export != null) {
 			for (var r : removedRecipes) {
@@ -359,7 +362,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		if (DevProperties.get().logRecipeDebug) {
 			ConsoleJS.SERVER.info("======== Debug output of all added recipes ========");
 
-			for (var r : addedRecipes) {
+			for (var r : successfulAddedRecipes) {
 				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
 			}
 

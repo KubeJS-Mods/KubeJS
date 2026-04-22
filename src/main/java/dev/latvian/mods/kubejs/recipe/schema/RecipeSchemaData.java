@@ -31,7 +31,7 @@ public record RecipeSchemaData(
 	public static Codec<RecipeSchemaData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Identifier.CODEC.optionalFieldOf("parent").forGetter(RecipeSchemaData::parent),
 		Identifier.CODEC.optionalFieldOf("override_type").forGetter(RecipeSchemaData::overrideType),
-		Identifier.CODEC.optionalFieldOf("recipe_factory").forGetter(RecipeSchemaData::recipeFactory),
+		Identifier.CODEC.optionalFieldOf("factory").forGetter(RecipeSchemaData::recipeFactory),
 		RecipeKeyData.CODEC.listOf().optionalFieldOf("keys").forGetter(RecipeSchemaData::keys),
 		ConstructorData.CODEC.listOf().optionalFieldOf("constructors").forGetter(RecipeSchemaData::constructors),
 		Codec.unboundedMap(Codec.STRING, RecipeSchemaFunction.CODEC).optionalFieldOf("functions").forGetter(RecipeSchemaData::functions),
