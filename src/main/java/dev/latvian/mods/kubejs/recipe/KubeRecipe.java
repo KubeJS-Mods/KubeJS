@@ -252,8 +252,11 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	 * If this throws during recipe processing, KubeJS will:
 	 * - revert modified existing recipes back to their original JSON
 	 * - drop newly created recipes (so they don't end up as broken JSON in the final map)
+	 *
+	 * @throws KubeRuntimeException preferably, or another runtime exception, if the recipe is
+	 * invalid for final serialization
 	 */
-	public void validateForWrite(RecipeValidationContext cx) {
+	public void validateForWrite(RecipeValidationContext cx) throws KubeRuntimeException {
 	}
 
 	public final void save() {
