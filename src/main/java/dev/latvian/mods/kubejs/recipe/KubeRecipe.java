@@ -221,13 +221,16 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			cx.errors().pop();
 		}
 
+		validateComponentValues(cx);
+		validate(cx);
+		cx.errors().pop();
+	}
+
+	private void validateComponentValues(RecipeValidationContext cx) {
 		for (var v : valueMap.holders) {
 			cx.errors().setKey(v.key.name);
 			v.validate(cx, sourceLine);
 		}
-
-		validate(cx);
-		cx.errors().pop();
 	}
 
 	/**
@@ -540,11 +543,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				var cx = new RecipeValidationContext.Impl(this, stack);
 				cx.errors().push(this);
 
-				for (var v : valueMap.holders) {
-					cx.errors().setKey(v.key.name);
-					v.validate(cx, sourceLine);
-				}
-
+				validateComponentValues(cx);
 				validateForWrite(cx);
 				cx.errors().pop();
 
