@@ -1,5 +1,5 @@
 {
-	"factory": "kubejs:shaped",
+	"recipe_factory": "kubejs:shaped",
 	"keys": [
 		{
 			"name": "result",
