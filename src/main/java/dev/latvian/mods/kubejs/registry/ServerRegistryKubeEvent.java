@@ -31,11 +31,10 @@ public class ServerRegistryKubeEvent<T> implements KubeEvent {
 
 	public BuilderBase<? extends T> create(Context cx, KubeIdentifier id, KubeIdentifier type) {
 		var sourceLine = SourceLine.of(cx);
-
-		var t = builderInfo.namedType(type.wrapped());
+		var t = builderInfo == null ? null : builderInfo.namedType(type.wrapped());
 
 		if (t == null) {
-			throw new IllegalArgumentException("Unknown type '" + type + "' for object '" + id + "'!");
+			throw new KubeRuntimeException("Unknown type '" + type + "' for object '" + id + "'!").source(sourceLine);
 		}
 
 		var b = t.factory().createBuilder(id.wrapped());
@@ -52,9 +51,13 @@ public class ServerRegistryKubeEvent<T> implements KubeEvent {
 
 	public BuilderBase<? extends T> create(Context cx, KubeIdentifier id) {
 		var sourceLine = SourceLine.of(cx);
-		var t = builderInfo.defaultType();
+		var t = builderInfo == null ? null : builderInfo.defaultType();
 
-		if (t == null) {
+		if (t == null && builderInfo != null && builderInfo.directCodec() != null) {
+			return createCodecBuilder(sourceLine, id, null);
+		} else if (t == null && builderInfo == null) {
+			return createCodecBuilder(sourceLine, id, null);
+		} else if (t == null) {
 			throw new KubeRuntimeException("Registry '" + registryKey.identifier() + "' doesn't have a default type registered!").source(sourceLine);
 		}
 
@@ -84,12 +87,20 @@ public class ServerRegistryKubeEvent<T> implements KubeEvent {
 		return b;
 	}
 
-	public CustomBuilderObject createFromJson(Context cx, KubeIdentifier id, JsonElement json) {
+	public CodecRegistryBuilder<T> createFromJson(Context cx, KubeIdentifier id, JsonElement json) {
 		var sourceLine = SourceLine.of(cx);
+		return createCodecBuilder(sourceLine, id, json);
+	}
 
-		var b = new CustomBuilderObject(id.wrapped(), () -> codec.parse(jsonOps, json).result().orElseThrow());
+	private CodecRegistryBuilder<T> createCodecBuilder(SourceLine sourceLine, KubeIdentifier id, JsonElement json) {
+		var b = new CodecRegistryBuilder<>(id.wrapped(), jsonOps, codec);
 		b.sourceLine = sourceLine;
 		b.registryKey = registryKey;
+
+		if (json != null) {
+			b.json(json);
+		}
+
 		builders.add(b);
 		return b;
 	}

@@ -257,6 +257,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
@@ -459,6 +460,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		bindings.add("EntitySelector", EntitySelectorWrapper.class);
 
 		bindings.add("Fluid", FluidWrapper.class);
+		bindings.add("Fluids", Fluids.class);
 
 		bindings.add("SECOND", 1000L);
 		bindings.add("MINUTE", 60000L);
