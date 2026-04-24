@@ -42,7 +42,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Objects;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSModEventHandler {
@@ -53,7 +52,11 @@ public class KubeJSModEventHandler {
 
 	@SubscribeEvent
 	public static void modifyRecipeJsons(ModifyRecipeJsonsEvent event) {
-		Objects.requireNonNull(RecipesKubeEvent.INSTANCE.get()).post(event.getRecipeJsons());
+		if (!RecipesKubeEvent.INSTANCE.isBound()) {
+			return;
+		}
+
+		RecipesKubeEvent.INSTANCE.get().post(event.getRecipeJsons());
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOW)

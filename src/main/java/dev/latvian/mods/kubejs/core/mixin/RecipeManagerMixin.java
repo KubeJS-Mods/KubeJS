@@ -106,6 +106,7 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener impl
 		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
 
 		if (!ServerEvents.RECIPES.hasListeners()) {
+			original.call(manager, lister, ops, codec, result, jsonConsumer);
 			return;
 		}
 

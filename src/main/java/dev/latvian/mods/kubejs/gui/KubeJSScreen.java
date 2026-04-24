@@ -16,7 +16,11 @@ public class KubeJSScreen extends AbstractContainerScreen<KubeJSMenu> implements
 	private final int xOffset;
 
 	public KubeJSScreen(KubeJSMenu menu, Inventory inventory, Component component) {
-		super(menu, inventory, component, 176, 114 + menu.guiData.inventoryHeight * 18);
+		this(menu, inventory, component, 176, 114 + menu.guiData.inventoryHeight * 18);
+	}
+
+	public KubeJSScreen(KubeJSMenu menu, Inventory inventory, Component component, int imageWidth, int imageHeight) {
+		super(menu, inventory, component, imageWidth, imageHeight);
 		this.containerRows = menu.guiData.inventoryHeight;
 		this.containerColumns = menu.guiData.inventoryWidth;
 		this.inventoryLabelY = this.imageHeight - 94;
@@ -36,6 +40,16 @@ public class KubeJSScreen extends AbstractContainerScreen<KubeJSMenu> implements
 	public void extractBackground(GuiGraphicsExtractor graphics, int i, int j, float f) {
 		super.extractBackground(graphics, i, j, f);
 
+		if (shouldRenderKubeContainerBackground()) {
+			drawKubeContainerBackground(graphics);
+		}
+	}
+
+	protected boolean shouldRenderKubeContainerBackground() {
+		return true;
+	}
+
+	protected void drawKubeContainerBackground(GuiGraphicsExtractor graphics) {
 		int k = (this.width - this.imageWidth) / 2;
 		int l = (this.height - this.imageHeight) / 2;
 		graphics.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_BACKGROUND, k, l, 0, 0, this.imageWidth, this.containerRows * 18 + 17, 256, 256);

@@ -9,6 +9,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 
 @EventBusSubscriber(modid = KubeJS.MOD_ID)
 public class KubeJSBlockEventHandler {
@@ -33,7 +34,7 @@ public class KubeJSBlockEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void blockBreak(BlockEvent.BreakEvent event) {
+	public static void blockBreak(BreakBlockEvent event) {
 		var key = event.getState().getBlock().kjs$getKey();
 
 		if (event.getLevel() instanceof Level level && BlockEvents.BROKEN.hasListeners(key)) {

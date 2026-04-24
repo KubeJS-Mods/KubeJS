@@ -5,15 +5,15 @@ import dev.latvian.mods.kubejs.player.KubePlayerEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 
 @Info(value = """
 	Invoked when a block is destroyed by a player.
 	""")
 public class BlockBrokenKubeEvent implements KubePlayerEvent {
-	private final BlockEvent.BreakEvent event;
+	private final BreakBlockEvent event;
 
-	public BlockBrokenKubeEvent(BlockEvent.BreakEvent event) {
+	public BlockBrokenKubeEvent(BreakBlockEvent event) {
 		this.event = event;
 	}
 

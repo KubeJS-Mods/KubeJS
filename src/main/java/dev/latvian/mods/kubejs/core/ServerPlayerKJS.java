@@ -214,6 +214,16 @@ public interface ServerPlayerKJS extends PlayerKJS {
 		});
 	}
 
+	default void kjs$openInventoryGUI(Component title, int columns, int rows, Consumer<Container> inventoryBuilder) {
+		if (columns <= 0 || rows <= 0) {
+			throw new RuntimeException("Inventory GUI dimensions must be positive, got %sx%s!".formatted(columns, rows));
+		}
+
+		var inventory = new SimpleContainer(columns * rows);
+		inventoryBuilder.accept(inventory);
+		kjs$openInventoryGUI(inventory, title, columns, rows);
+	}
+
 	default Container kjs$captureInventory(boolean autoRestore) {
 		var playerItems = kjs$self().getInventory().getNonEquipmentItems();
 
