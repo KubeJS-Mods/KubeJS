@@ -12,12 +12,11 @@ import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 
 @RemapPrefixForJS("kjs$")
 public interface RecipeHolderKJS extends RecipeLikeKJS {
@@ -62,18 +61,9 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 	@Override
 	default boolean hasInput(RecipeMatchContext cx, ReplacementMatchInfo match) {
 		if (match.match() instanceof ItemMatch m) {
-			var recipe = kjs$getRecipe();
-			if (recipe instanceof ShapedRecipe shapedRecipe) {
-				for (var in : shapedRecipe.getIngredients()) {
-					if (m.matches(cx, in.get(), match.exact())) {
-						return true;
-					}
-				}
-			} else if (recipe instanceof ShapelessRecipe shapelessRecipe) {
-				for (var in : shapelessRecipe.ingredients) {
-					if (m.matches(cx, in, match.exact())) {
-						return true;
-					}
+			for (var ingredient : kjs$getRecipe().placementInfo().ingredients()) {
+				if (!ingredient.isEmpty() && ingredient.kjs$canBeUsedForMatching() && m.matches(cx, ingredient, match.exact())) {
+					return true;
 				}
 			}
 		}
@@ -88,16 +78,18 @@ public interface RecipeHolderKJS extends RecipeLikeKJS {
 
 	@Override
 	default boolean hasOutput(RecipeMatchContext cx, ReplacementMatchInfo match) {
-		var recipe = kjs$getRecipe();
-		if (recipe instanceof ShapedRecipe shaped) {
-			if (match.match() instanceof ItemMatch m) {
-				var result = shaped.result.create();
-				return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.matches(cx, result, match.exact());
-			}
-		} else if (recipe instanceof ShapelessRecipe shapeless) {
-			if (match.match() instanceof ItemMatch m) {
-				var result = shapeless.result.create();
-				return result != null && result != ItemStack.EMPTY && !result.isEmpty() && m.matches(cx, result, match.exact());
+		if (match.match() instanceof ItemMatch m) {
+			var displayContext = new ContextMap.Builder()
+				.withOptionalParameter(SlotDisplayContext.REGISTRIES, cx.registries())
+				.create(SlotDisplayContext.CONTEXT);
+
+			var stream = kjs$getRecipe().display().stream()
+				.flatMap(display -> display.result().resolveForStacks(displayContext).stream())
+				.toList();
+			for (var stack : stream) {
+				if (!stack.isEmpty() && m.matches(cx, stack, match.exact())) {
+					return true;
+				}
 			}
 		}
 		return false;

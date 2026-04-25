@@ -645,15 +645,6 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			return List.of();
 		}
 
-		if (original instanceof ShapelessRecipe shapeless) {
-			return List.copyOf(shapeless.ingredients);
-		} else if (original instanceof ShapedRecipe shaped) {
-			return shaped.getIngredients().stream()
-				.filter(Optional::isPresent)
-				.map(Optional::get)
-				.toList();
-		}
-
 		return List.copyOf(original.placementInfo().ingredients());
 	}
 
