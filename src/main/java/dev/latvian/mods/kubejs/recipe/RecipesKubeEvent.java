@@ -178,6 +178,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		discoverRecipes(datapackRecipeMap);
 		postEvent();
 		applyChanges(datapackRecipeMap);
+		finishEvent();
 	}
 
 	@HideFromJS

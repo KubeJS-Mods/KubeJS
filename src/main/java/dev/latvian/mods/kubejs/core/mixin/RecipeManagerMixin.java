@@ -60,9 +60,6 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener impl
 	@Unique
 	private @Nullable ReloadableServerResourcesKJS kjs$resources;
 
-	@Unique
-	private @Nullable RecipesKubeEvent kjs$event;
-
 	@WrapOperation(
 		method = "prepare(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)Lnet/minecraft/world/item/crafting/RecipeMap;",
 		at = @At(
@@ -105,11 +102,6 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener impl
 		SpecialRecipeSerializerManager.INSTANCE.reset();
 		ServerEvents.SPECIAL_RECIPES.post(ScriptType.SERVER, SpecialRecipeSerializerManager.INSTANCE);
 
-		if (!ServerEvents.RECIPES.hasListeners()) {
-			original.call(manager, lister, ops, codec, result, jsonConsumer);
-			return;
-		}
-
 		// this will end up calling the NF event which will post the kube event
 		ScopedValue.where(RecipesKubeEvent.INSTANCE, new RecipesKubeEvent(ssm)).run(() -> {
 			ConsoleJS.SERVER.info("Processing recipes...");
@@ -122,12 +114,6 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener impl
 		at = @At("TAIL")
 	)
 	private void kjs$applyTail(RecipeMap recipeMap, ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfo ci) {
-		if (kjs$event != null) {
-			kjs$event.finishEvent();
-		}
-
-		kjs$event = null;
-
 		if (!CommonProperties.get().serverOnly) {
 			kjs$getServerScriptManager().serverData = new SyncServerDataPayload(KubeServerData.collect());
 		}

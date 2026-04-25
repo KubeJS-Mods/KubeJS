@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
-//import dev.latvian.mods.betteradvancedtooltips.BATIcons;
-
+import dev.latvian.mods.betteradvancedtooltips.BATIcons;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
 import dev.latvian.mods.kubejs.util.TimeJS;
 import net.minecraft.network.chat.Component;
@@ -21,8 +20,8 @@ public class ChangesForChat {
 				.append(Component.empty()
 					.kjs$hover(Component.literal("Added Recipes"))
 					.append(" ")
-					//.append(BATIcons.PLUS)
-					//.append(BATIcons.SMALL_SPACE)
+					.append(BATIcons.PLUS)
+					.append(BATIcons.SMALL_SPACE)
 					.append(String.valueOf(recipesAdded))
 					.append(" ")
 				)
@@ -30,8 +29,8 @@ public class ChangesForChat {
 				.append(Component.empty()
 					.kjs$hover(Component.literal("Removed Recipes"))
 					.append(" ")
-					//.append(BATIcons.MINUS)
-					//.append(BATIcons.SMALL_SPACE)
+					.append(BATIcons.MINUS)
+					.append(BATIcons.SMALL_SPACE)
 					.append(String.valueOf(recipesRemoved))
 					.append(" ")
 				)
@@ -39,8 +38,8 @@ public class ChangesForChat {
 				.append(Component.empty()
 					.kjs$hover(Component.literal("Modified Recipes"))
 					.append(" ")
-					//.append(BATIcons.TILDE)
-					//.append(BATIcons.SMALL_SPACE)
+					.append(BATIcons.TILDE)
+					.append(BATIcons.SMALL_SPACE)
 					.append(String.valueOf(recipesModified))
 					.append(" ")
 				)
