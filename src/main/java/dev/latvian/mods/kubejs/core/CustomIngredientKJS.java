@@ -3,17 +3,19 @@ package dev.latvian.mods.kubejs.core;
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.item.ItemStackSet;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.stream.Stream;
 
-public interface CustomIngredientKJS extends ICustomIngredient, ItemPredicate {
-	default Stream<ItemStack> getItems() {
-		throw new NoMixinException();
-	}
+public interface CustomIngredientKJS extends ItemPredicate {
+	Ingredient toVanilla();
+
+	Stream<Holder<Item>> getItems();
 
 	default boolean kjs$canBeUsedForMatching() {
 		return false;
@@ -26,7 +28,10 @@ public interface CustomIngredientKJS extends ICustomIngredient, ItemPredicate {
 
 	@ApiStatus.NonExtendable
 	default ItemStack[] kjs$getStackArray() {
-		return getItems().toArray(ItemStack[]::new);
+		return getItems()
+			.map(ItemStackTemplate::new)
+			.map(ItemStackTemplate::create)
+			.toArray(ItemStack[]::new);
 	}
 
 	default ItemStackSet kjs$getDisplayStacks() {
