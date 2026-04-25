@@ -11,7 +11,6 @@ import dev.latvian.mods.kubejs.client.model.KubeJSConditionalCallbackProperty;
 import dev.latvian.mods.kubejs.command.KubeJSClientCommands;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
 import dev.latvian.mods.kubejs.fluid.FluidTypeBuilder;
-import dev.latvian.mods.kubejs.gui.KubeJSMenu;
 import dev.latvian.mods.kubejs.gui.KubeJSMenus;
 import dev.latvian.mods.kubejs.gui.KubeJSScreen;
 import dev.latvian.mods.kubejs.item.DynamicItemTooltipsKubeEvent;
@@ -35,7 +34,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -152,12 +150,8 @@ public class KubeJSClientEventHandler {
 
 	@SubscribeEvent
 	public static void registerMenuScreens(RegisterMenuScreensEvent event) {
-		var menuEvent = new MenuScreenRegistryKubeEvent(event);
-		ClientEvents.MENU_SCREEN_REGISTRY.post(ScriptType.STARTUP, menuEvent);
-
-		if (!menuEvent.hasRegistered(KubeJSMenus.MENU.get())) {
-			event.register(KubeJSMenus.MENU.get(), (MenuScreens.ScreenConstructor<KubeJSMenu, KubeJSScreen>) KubeJSScreen::new);
-		}
+		event.register(KubeJSMenus.MENU.get(), KubeJSScreen::new);
+		ClientEvents.MENU_SCREEN_REGISTRY.post(ScriptType.STARTUP, new MenuScreenRegistryKubeEvent(event));
 	}
 
 	@SubscribeEvent

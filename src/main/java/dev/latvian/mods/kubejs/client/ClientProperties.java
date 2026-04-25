@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.client;
 
-import com.google.gson.JsonPrimitive;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.util.BaseProperties;
 import org.jspecify.annotations.NullUnmarked;
@@ -29,7 +28,6 @@ public class ClientProperties extends BaseProperties {
 	public boolean blurScaledPackIcon;
 	public boolean customStackSizeText;
 	public boolean shrinkStackSizeText;
-	public boolean includeStackTraceWhenCopyingErrors;
 
 	private ClientProperties() {
 		super(KubeJSPaths.CLIENT_PROPERTIES, "KubeJS Client Properties");
@@ -43,12 +41,5 @@ public class ClientProperties extends BaseProperties {
 		blurScaledPackIcon = get("blur_scaled_pack_icon", true);
 		customStackSizeText = get("custom_stack_size_text", true);
 		shrinkStackSizeText = get("shrink_stack_size_text", true);
-		includeStackTraceWhenCopyingErrors = get("include_stacktrace_when_copying_errors", false);
-	}
-
-	public void setIncludeStackTraceWhenCopyingErrors(boolean include) {
-		includeStackTraceWhenCopyingErrors = include;
-		set("include_stacktrace_when_copying_errors", new JsonPrimitive(include));
-		save();
 	}
 }
