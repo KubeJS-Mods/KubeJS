@@ -11,9 +11,7 @@ import java.util.function.Supplier;
 
 public interface KubeJSRecipeSerializers {
 	DeferredRegister<RecipeSerializer<?>> REGISTRY = DeferredRegister.create(Registries.RECIPE_SERIALIZER, KubeJS.MOD_ID);
-	RecipeSerializer<?> SHAPELESSCODEC = new RecipeSerializer<>(ShapelessKubeJSRecipe.SerializerKJS.CODEC, ShapelessKubeJSRecipe.SerializerKJS.STREAM_CODEC);
-	RecipeSerializer<?> SHAPEDCODEC = new RecipeSerializer<>(ShapedKubeJSRecipe.SerializerKJS.CODEC, ShapedKubeJSRecipe.SerializerKJS.STREAM_CODEC);
 
-	Supplier<RecipeSerializer<?>> SHAPED = REGISTRY.register("shaped", () -> SHAPEDCODEC);
-	Supplier<RecipeSerializer<?>> SHAPELESS = REGISTRY.register("shapeless", () -> SHAPELESSCODEC);
+	Supplier<RecipeSerializer<?>> SHAPED = REGISTRY.register("shaped", () -> ShapedKubeJSRecipe.SERIALIZER);
+	Supplier<RecipeSerializer<?>> SHAPELESS = REGISTRY.register("shapeless", () -> ShapelessKubeJSRecipe.SERIALIZER);
 }

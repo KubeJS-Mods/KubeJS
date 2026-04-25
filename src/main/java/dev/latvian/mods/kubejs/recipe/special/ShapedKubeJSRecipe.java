@@ -20,6 +20,28 @@ import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import java.util.List;
 
 public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRecipe {
+	public static final MapCodec<ShapedKubeJSRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+		CommonInfo.MAP_CODEC.forGetter(ShapedKubeJSRecipe::commonInfo),
+		CraftingBookInfo.MAP_CODEC.forGetter(ShapedKubeJSRecipe::bookInfo),
+		ShapedRecipePattern.MAP_CODEC.forGetter(ShapedKubeJSRecipe::pattern),
+		ItemStackTemplate.CODEC.fieldOf("result").forGetter(ShapedKubeJSRecipe::result),
+		Codec.BOOL.optionalFieldOf(MIRROR_KEY, true).forGetter(ShapedKubeJSRecipe::kjs$getMirror),
+		IngredientActionHolder.LIST_CODEC.optionalFieldOf(INGREDIENT_ACTIONS_KEY, List.of()).forGetter(ShapedKubeJSRecipe::kjs$getIngredientActions),
+		Codec.STRING.optionalFieldOf(MODIFY_RESULT_KEY, "").forGetter(ShapedKubeJSRecipe::kjs$getModifyResult)
+	).apply(instance, ShapedKubeJSRecipe::new));
+
+	public static final StreamCodec<RegistryFriendlyByteBuf, ShapedKubeJSRecipe> STREAM_CODEC = KubeJSStreamCodecs.composite(
+		CommonInfo.STREAM_CODEC, ShapedKubeJSRecipe::commonInfo,
+		CraftingBookInfo.STREAM_CODEC, ShapedKubeJSRecipe::bookInfo,
+		ShapedRecipePattern.STREAM_CODEC, ShapedKubeJSRecipe::pattern,
+		ItemStackTemplate.STREAM_CODEC, ShapedKubeJSRecipe::result,
+		ByteBufCodecs.BOOL, ShapedKubeJSRecipe::kjs$getMirror,
+		IngredientActionHolder.LIST_STREAM_CODEC, ShapedKubeJSRecipe::kjs$getIngredientActions,
+		ByteBufCodecs.STRING_UTF8.cast(), ShapedKubeJSRecipe::kjs$getModifyResult,
+		ShapedKubeJSRecipe::new
+	);
+	public static final RecipeSerializer<?> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+
 	private final boolean mirror;
 	private final List<IngredientActionHolder> ingredientActions;
 	private final String modifyResult;
@@ -82,36 +104,5 @@ public class ShapedKubeJSRecipe extends ShapedRecipe implements KubeJSCraftingRe
 
 	public ItemStack getResultItem() {
 		return result.create();
-	}
-
-	public static class SerializerKJS {
-		public static final MapCodec<ShapedKubeJSRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			CommonInfo.MAP_CODEC.forGetter(ShapedKubeJSRecipe::commonInfo),
-			CraftingBookInfo.MAP_CODEC.forGetter(ShapedKubeJSRecipe::bookInfo),
-			ShapedRecipePattern.MAP_CODEC.forGetter(ShapedKubeJSRecipe::pattern),
-			ItemStackTemplate.CODEC.fieldOf("result").forGetter(ShapedKubeJSRecipe::result),
-			Codec.BOOL.optionalFieldOf(MIRROR_KEY, true).forGetter(ShapedKubeJSRecipe::kjs$getMirror),
-			IngredientActionHolder.LIST_CODEC.optionalFieldOf(INGREDIENT_ACTIONS_KEY, List.of()).forGetter(ShapedKubeJSRecipe::kjs$getIngredientActions),
-			Codec.STRING.optionalFieldOf(MODIFY_RESULT_KEY, "").forGetter(ShapedKubeJSRecipe::kjs$getModifyResult)
-		).apply(instance, ShapedKubeJSRecipe::new));
-
-		public static final StreamCodec<RegistryFriendlyByteBuf, ShapedKubeJSRecipe> STREAM_CODEC = KubeJSStreamCodecs.composite(
-			CommonInfo.STREAM_CODEC, ShapedKubeJSRecipe::commonInfo,
-			CraftingBookInfo.STREAM_CODEC, ShapedKubeJSRecipe::bookInfo,
-			ShapedRecipePattern.STREAM_CODEC, ShapedKubeJSRecipe::pattern,
-			ItemStackTemplate.STREAM_CODEC, ShapedKubeJSRecipe::result,
-			ByteBufCodecs.BOOL, ShapedKubeJSRecipe::kjs$getMirror,
-			IngredientActionHolder.LIST_STREAM_CODEC, ShapedKubeJSRecipe::kjs$getIngredientActions,
-			ByteBufCodecs.STRING_UTF8.cast(), ShapedKubeJSRecipe::kjs$getModifyResult,
-			ShapedKubeJSRecipe::new
-		);
-
-		public MapCodec<ShapedKubeJSRecipe> codec() {
-			return CODEC;
-		}
-
-		public StreamCodec<RegistryFriendlyByteBuf, ShapedKubeJSRecipe> streamCodec() {
-			return STREAM_CODEC;
-		}
 	}
 }
