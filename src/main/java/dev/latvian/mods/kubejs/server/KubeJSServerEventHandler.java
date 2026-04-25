@@ -1,7 +1,6 @@
 package dev.latvian.mods.kubejs.server;
 
 import com.google.gson.JsonObject;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.command.CommandRegistryKubeEvent;
@@ -17,7 +16,6 @@ import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.web.LocalWebServer;
 import dev.latvian.mods.kubejs.web.WebServerProperties;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -25,6 +23,7 @@ import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.visitors.CollectToTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
@@ -109,9 +108,13 @@ public class KubeJSServerEventHandler {
 
 		if (Files.exists(p)) {
 			try {
-				var tag = NbtIo.readCompressed(p, NbtAccounter.unlimitedHeap());
+				var output = new CollectToTag();
+				NbtIo.parseCompressed(p, output, NbtAccounter.unlimitedHeap());
+				var parsed = output.getResult();
 
-				if (tag != null) {
+				if (parsed instanceof CompoundTag tag) {
+					var access = server.registryAccess();
+					var ops = access.createSerializationContext(NbtOps.INSTANCE);
 					var tOpt = tag.getCompound("__restore_inventories");
 
 					if (tOpt.isPresent()) {
@@ -135,7 +138,7 @@ public class KubeJSServerEventHandler {
 								}
 
 								var slot = c.getShort("Slot").orElse((short) 0);
-								var stackResult = parseItemStack(server.registryAccess(), tag2);
+								var stackResult = ItemStack.CODEC.parse(ops, tag2);
 								stackResult.result().ifPresent(itemStack -> map.put((int) slot, itemStack));
 
 							}
@@ -147,11 +150,6 @@ public class KubeJSServerEventHandler {
 				ex.printStackTrace();
 			}
 		}
-	}
-
-	static DataResult<ItemStack> parseItemStack(RegistryAccess access, Tag tag) {
-		RegistryOps<Tag> ops = access.createSerializationContext(NbtOps.INSTANCE);
-		return ItemStack.CODEC.parse(ops, tag);
 	}
 
 	@SubscribeEvent
