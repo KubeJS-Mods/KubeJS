@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.level;
 
-import dev.latvian.mods.kubejs.util.Cast;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ExplosionParticleInfo;
 import net.minecraft.core.particles.ParticleOptions;
@@ -30,12 +29,13 @@ public record ExplosionProperties(
 	@Nullable Holder<SoundEvent> explosionSound
 ) {
 	public void explode(Level level, double x, double y, double z) {
-		var blockParticles = (particles.orElse(Boolean.TRUE))
-			? WeightedList.builder()
-			.add(new ExplosionParticleInfo(ParticleTypes.POOF, 0.5F, 1.0F))
-			.add(new ExplosionParticleInfo(ParticleTypes.SMOKE, 1.0F, 1.0F))
-			.build()
-			: WeightedList.<ExplosionParticleInfo>builder().build();
+		WeightedList.Builder<ExplosionParticleInfo> blockParticles = WeightedList.builder();
+
+		if (particles.orElse(true)) {
+			blockParticles
+				.add(new ExplosionParticleInfo(ParticleTypes.POOF, 0.5F, 1.0F))
+				.add(new ExplosionParticleInfo(ParticleTypes.SMOKE, 1.0F, 1.0F));
+		}
 
 		level.explode(
 			source,
@@ -47,7 +47,7 @@ public record ExplosionProperties(
 			mode == null ? ExplosionInteraction.NONE : mode,
 			smallParticles == null ? ParticleTypes.EXPLOSION : smallParticles,
 			largeParticles == null ? ParticleTypes.EXPLOSION_EMITTER : largeParticles,
-			Cast.to(blockParticles),
+			blockParticles.build(),
 			explosionSound == null ? SoundEvents.GENERIC_EXPLODE : explosionSound
 		);
 	}

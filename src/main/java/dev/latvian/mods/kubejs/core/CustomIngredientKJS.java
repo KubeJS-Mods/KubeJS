@@ -10,7 +10,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.stream.Stream;
 
-public interface CustomIngredientKJS extends ItemPredicate {
+public interface CustomIngredientKJS extends ICustomIngredient, ItemPredicate {
 	default Stream<ItemStack> getItems() {
 		throw new NoMixinException();
 	}
@@ -21,7 +21,7 @@ public interface CustomIngredientKJS extends ItemPredicate {
 
 	@ApiStatus.NonExtendable
 	default Ingredient kjs$asIngredient() {
-		return ((ICustomIngredient) this).toVanilla();
+		return this.toVanilla();
 	}
 
 	@ApiStatus.NonExtendable

@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.client.model.KubeJSModelPropertyRegistry;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.KubeIdentifier;
+import net.minecraft.client.renderer.item.properties.conditional.ItemModelPropertyTest;
 
 public class ItemModelPropertiesKubeEvent implements KubeStartupEvent {
 
@@ -12,13 +13,13 @@ public class ItemModelPropertiesKubeEvent implements KubeStartupEvent {
 		
 		More about model properties: https://minecraft.wiki/w/Tutorials/Models#Item_predicates
 		""")
-	public void register(KubeIdentifier overwriteId, KubeJSModelPropertyRegistry.ConditionalCallback callback) {
+	public void register(KubeIdentifier overwriteId, ItemModelPropertyTest callback) {
 		KubeJSModelPropertyRegistry.putConditional(overwriteId.wrapped(), callback);
 	}
 
 
 	@Info("Register a model property callback by id. Any item model that references this id will evaluate it.")
-	public void registerAll(KubeIdentifier overwriteId, KubeJSModelPropertyRegistry.ConditionalCallback callback) {
+	public void registerAll(KubeIdentifier overwriteId, ItemModelPropertyTest callback) {
 		KubeJSModelPropertyRegistry.putConditional(overwriteId.wrapped(), callback);
 	}
 

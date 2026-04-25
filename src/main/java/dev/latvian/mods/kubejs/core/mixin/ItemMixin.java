@@ -18,6 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -183,8 +184,7 @@ public abstract class ItemMixin implements ItemKJS {
 	private void use(Level level, Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
 		if (kjs$itemBuilder != null && kjs$itemBuilder.use != null) {
 			if (kjs$itemBuilder.use.use(level, player, hand)) {
-				player.startUsingItem(hand);
-				cir.setReturnValue(InteractionResult.CONSUME);
+				cir.setReturnValue(ItemUtils.startUsingInstantly(level, player, hand));
 			} else {
 				cir.setReturnValue(InteractionResult.FAIL);
 			}
