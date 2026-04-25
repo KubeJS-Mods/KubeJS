@@ -22,6 +22,8 @@ logs
 # other
 eclipse
 /runs
+# another run directory, yay
+/run
 .vscode
 
 # metadata (macOS)

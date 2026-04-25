@@ -18,42 +18,42 @@ displayURL = "https://kubejs.com"
 [[dependencies.kubejs]]
 modId = "neoforge"
 type = "required"
-versionRange = "[${neoforge_version},)"
+versionRange = "${neoforgeVersions}"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.kubejs]]
 modId = "rhino"
 type = "required"
-versionRange = "[${rhino_version},)"
+versionRange = "[${rhinoVersion},)"
 ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.kubejs]]
 modId = "jei"
 type = "optional"
-versionRange = "[${jei_version},)"
+versionRange = "[${jeiVersion},)"
 ordering = "AFTER"
 side = "CLIENT"
 
 [[dependencies.kubejs]]
 modId = "roughlyenoughitems"
 type = "optional"
-versionRange = "[${rei_version},)"
+versionRange = "[${reiVersion},)"
 ordering = "AFTER"
 side = "CLIENT"
 
 [[dependencies.kubejs]]
 modId = "emi"
 type = "optional"
-versionRange = "[${emi_version},)"
+versionRange = "[${emiVersion},)"
 ordering = "AFTER"
 side = "CLIENT"
 
 [[dependencies.kubejs]]
 modId = "betteradvancedtooltips"
 type = "optional"
-versionRange = "[${bat_version},)"
+versionRange = "[${batVersion},)"
 ordering = "BEFORE"
 side = "CLIENT"
 
