@@ -54,7 +54,13 @@ public class ArmorMaterialBuilder extends BuilderBase<ArmorMaterial> {
 
 		return new ArmorMaterial(
 			durability,
-			defense == null ? Map.of() : defense,
+			defense == null ? Map.of(
+				ArmorType.BOOTS, 2,
+				ArmorType.LEGGINGS, 5,
+				ArmorType.CHESTPLATE, 6,
+				ArmorType.HELMET, 2,
+				ArmorType.BODY, 5
+			) : defense,
 			enchantmentValue,
 			equipSound == null ? SoundEvents.ARMOR_EQUIP_IRON : equipSound,
 			toughness,
