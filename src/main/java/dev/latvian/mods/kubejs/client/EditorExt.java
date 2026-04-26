@@ -12,7 +12,7 @@ public class EditorExt {
 	public static final String VSCODE_OSS = vsLikeScheme("vscode-oss");
 
 	private static String vsLikeScheme(String prefix) {
-		return prefix + "://file/{path}:{line}:{col}";
+		return prefix + "://file{path}:{line}:{col}";
 	}
 
 	public static boolean isKnownVSCode() {
@@ -20,22 +20,9 @@ public class EditorExt {
 		return !custom.isEmpty() && (custom.equals(VSCODE) || custom.equals(VSCODIUM) || custom.equals(VSCODE_OSS));
 	}
 
-	private static URI formatVSLike(String prefix, Path path, int line, int column) {
-		var rawPath = path.toAbsolutePath().toUri().getRawPath();
-		if (rawPath == null || rawPath.isEmpty()) {
-			rawPath = "/" + path.toAbsolutePath().toString().replace("\\", "/");
-		}
-
-		return URI.create(prefix + "://file" + rawPath + ":" + line + ":" + column);
-	}
-
 	private static URI format(String scheme, Path path, int line, int column) {
-		if (scheme.equals(VSCODE) || scheme.equals(VSCODIUM) || scheme.equals(VSCODE_OSS)) {
-			return formatVSLike(scheme.substring(0, scheme.indexOf("://")), path, line, column);
-		}
-
 		return URI.create(scheme
-			.replace("{path}", path.toAbsolutePath().toString().replace("\\", "/"))
+			.replace("{path}", path.toAbsolutePath().toUri().getRawPath())
 			.replace("{line}", String.valueOf(line))
 			.replace("{col}", String.valueOf(column))
 		);
