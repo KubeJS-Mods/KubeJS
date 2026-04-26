@@ -66,12 +66,12 @@ public class ArmorItemBuilder extends ItemBuilder {
 
 	@ReturnsSelf
 	public static class AnimalArmor extends ItemBuilder {
-		public @Nullable ArmorMaterial material;
+		public @Nullable Identifier materialId;
 		public AnimalArmorKind kind;
 
 		public AnimalArmor(Identifier id) {
 			super(id);
-			this.material = null;
+			this.materialId = null;
 			this.kind = AnimalArmorKind.WOLF;
 			unstackable();
 		}
@@ -79,10 +79,7 @@ public class ArmorItemBuilder extends ItemBuilder {
 		@Override
 		public Item createObject() {
 			Item.Properties p = createItemProperties();
-
-			if (material == null) {
-				throw new IllegalStateException("Armor material not set for " + id);
-			}
+			var material = resolveMaterial(materialId, id);
 
 			return switch (kind) {
 				case WOLF -> new Item(p.wolfArmor(material));
@@ -92,14 +89,7 @@ public class ArmorItemBuilder extends ItemBuilder {
 		}
 
 		public AnimalArmor material(Identifier materialId) {
-			var storage = RegistryObjectStorage.of(KubeJSRegistries.ARMOR_MATERIAL);
-			var b = (BuilderBase<ArmorMaterial>) storage.objects.get(materialId);
-
-			if (b == null) {
-				throw new IllegalStateException("Unknown ArmorMaterial '" + materialId + "' for " + id);
-			}
-
-			material = b.getOrCreate();
+			this.materialId = materialId;
 			return this;
 		}
 
@@ -110,33 +100,39 @@ public class ArmorItemBuilder extends ItemBuilder {
 	}
 
 	public final ArmorType armorType;
-	public @Nullable ArmorMaterial material;
+	public @Nullable Identifier materialId;
 
 	protected ArmorItemBuilder(Identifier id, ArmorType t) {
 		super(id);
 		armorType = t;
-		material = null;
+		materialId = null;
 		unstackable();
 	}
 
 	@Override
 	public Item createObject() {
-		if (material == null) {
-			throw new IllegalStateException("Armor material not set for " + id);
-		}
-
+		var material = resolveMaterial(materialId, id);
 		return new Item(createItemProperties().humanoidArmor(material, armorType));
 	}
 
 	public ArmorItemBuilder material(Identifier materialId) {
+		this.materialId = materialId;
+		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static ArmorMaterial resolveMaterial(@Nullable Identifier materialId, Identifier itemId) {
+		if (materialId == null) {
+			throw new IllegalStateException("Armor material not set for " + itemId);
+		}
+
 		var storage = RegistryObjectStorage.of(KubeJSRegistries.ARMOR_MATERIAL);
 		var b = (BuilderBase<ArmorMaterial>) storage.objects.get(materialId);
 
 		if (b == null) {
-			throw new IllegalStateException("Unknown ArmorMaterial '" + materialId + "' for " + id);
+			throw new IllegalStateException("Unknown ArmorMaterial '" + materialId + "' for " + itemId);
 		}
 
-		material = b.getOrCreate();
-		return this;
+		return b.get();
 	}
 }
