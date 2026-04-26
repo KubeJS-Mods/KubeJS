@@ -2,12 +2,9 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.item.KubeJSDefaultComponentOverrides;
-import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
@@ -98,12 +95,6 @@ public abstract class ItemMixin implements ItemKJS {
 		}
 
 		return kjs$typeData;
-	}
-
-	@Override
-	@HideFromJS
-	public <T> void kjs$overrideComponent(DataComponentType<T> type, @Nullable T value) {
-		KubeJSDefaultComponentOverrides.override(kjs$self(), type, value);
 	}
 
 	@Override

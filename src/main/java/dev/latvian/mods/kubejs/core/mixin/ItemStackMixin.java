@@ -6,7 +6,6 @@ import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,11 +14,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
-import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -53,12 +50,6 @@ public abstract class ItemStackMixin implements ItemStackKJS {
 	@Override
 	public void kjs$resetComponents(Context cx) {
 		components.restorePatch(DataComponentPatch.EMPTY);
-	}
-
-	@Unique
-	@HideFromJS
-	private static <T> void kjs$overrideComponent(ItemStack stack, DataComponentType<T> type, @Nullable T value) {
-		stack.set(type, value);
 	}
 
 	@Inject(method = "consume", at = @At("HEAD"))
