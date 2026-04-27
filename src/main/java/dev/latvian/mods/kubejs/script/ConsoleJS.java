@@ -54,16 +54,12 @@ import java.util.stream.Collectors;
 
 @NullUnmarked
 public class ConsoleJS {
-	public static ConsoleJS STARTUP;
-	public static ConsoleJS SERVER;
-	public static ConsoleJS CLIENT;
-
 	public static ConsoleJS getCurrent(@Nullable Context cx) {
 		if (cx instanceof KubeJSContext kcx) {
 			return kcx.getConsole();
 		}
 
-		return STARTUP;
+		return ScriptType.STARTUP.console;
 	}
 
 	private static final Pattern GARBAGE_PATTERN = Pattern.compile("(?:TRANSFORMER|LAYER PLUGIN|MC-BOOTSTRAP)/\\w+@[^/]+/");
@@ -86,7 +82,8 @@ public class ConsoleJS {
 	public final transient Collection<ConsoleLine> warnings;
 	public final transient Logger logger;
 	private final Path logFile;
-	private boolean capturingErrors;
+	/// @see #isCapturingErrors()
+	private boolean shouldCaptureErrors;
 	private String group;
 	private boolean muted;
 	private boolean debugEnabled;
@@ -102,7 +99,7 @@ public class ConsoleJS {
 		this.warnings = new ConcurrentLinkedDeque<>();
 		this.logger = log;
 		this.logFile = m.getLogFile();
-		this.capturingErrors = DevProperties.get().alwaysCaptureErrors;
+		this.shouldCaptureErrors = false; // this can be overridden by DevProperties
 		this.group = "";
 		this.muted = false;
 		this.debugEnabled = false;
@@ -152,17 +149,14 @@ public class ConsoleJS {
 	}
 
 	private synchronized void setCapturingErrors(boolean enabled) {
-		if (DevProperties.get().alwaysCaptureErrors) {
-			capturingErrors = true;
-		} else if (capturingErrors != enabled) {
-			capturingErrors = enabled;
+		var wasCapturing = shouldCaptureErrors;
+		shouldCaptureErrors = enabled;
 
-			if (!FMLLoader.getCurrent().isProduction()) {
-				if (capturingErrors) {
-					logger.info("Capturing errors for {} scripts enabled", scriptType.name);
-				} else {
-					logger.info("Capturing errors for {} scripts disabled", scriptType.name);
-				}
+		if (!FMLLoader.getCurrent().isProduction() && enabled != wasCapturing) {
+			if (enabled) {
+				logger.info("Capturing errors for {} scripts enabled", scriptType.name);
+			} else {
+				logger.info("Capturing errors for {} scripts disabled", scriptType.name);
 			}
 		}
 	}
@@ -228,14 +222,14 @@ public class ConsoleJS {
 				line.withSourceLine(ex.lineSource(), ex.lineNumber());
 			}
 
-			if (capturingErrors) {
+			if (isCapturingErrors()) {
 				for (var el : ex.getScriptStack()) {
 					if (el.fileName != null && el.lineNumber >= 0) {
 						line.withSourceLine(el.fileName, el.lineNumber);
 					}
 				}
 			}
-		} else if (error != null && capturingErrors) {
+		} else if (error != null && isCapturingErrors()) {
 			for (var el : error.getStackTrace()) {
 				if (el.getFileName() != null && el.getLineNumber() >= 0 && el.getClassName().startsWith("dev.latvian.mods.kubejs.")) {
 					line.withSourceLine(el.getFileName(), el.getLineNumber());
@@ -275,7 +269,7 @@ public class ConsoleJS {
 			var line = line(type, sourceLine, message, error);
 			type.callback.accept(logger, line.getText());
 
-			if (capturingErrors) {
+			if (isCapturingErrors()) {
 				if (type == LogType.ERROR) {
 					errors.add(line);
 				} else if (type == LogType.WARN) {
@@ -370,7 +364,7 @@ public class ConsoleJS {
 	public ConsoleLine warn(String message, SourceLine sourceLine, Throwable error, @Nullable Pattern exitPattern) {
 		if (shouldPrint()) {
 			var l = log(LogType.WARN, sourceLine, error, messageForPrint(message, error));
-			handleError(l, error, exitPattern, !capturingErrors);
+			handleError(l, error, exitPattern, !isCapturingErrors());
 			return l;
 		}
 
@@ -608,6 +602,10 @@ public class ConsoleJS {
 			.kjs$hover(Component.literal("Click to show more info"));
 	}
 
+	private boolean isCapturingErrors() {
+		return shouldCaptureErrors || DevProperties.get().alwaysCaptureErrors;
+	}
+
 	private static final class VarFunc implements Comparable<VarFunc> {
 		public final String name;
 		public final Class<?> type;
@@ -660,57 +658,5 @@ public class ConsoleJS {
 				json.add(error.toJson());
 			}
 		}));
-	}
-
-	private record EarlyError(String message, @Nullable Throwable exception, boolean errorScreen) {
-	}
-
-	private static List<EarlyError> earlyErrors;
-
-	/**
-	 * Buffers an error to be flushed to startup logs later via {@link #flushEarlyErrors(boolean)}.
-	 * Useful for when an error occurs before startup scripts have been initialized,
-	 * such as during config loading where {@link #STARTUP} is not yet available.
-	 *
-	 * @param errorScreen if true, the error will be shown on the KubeJS error screen when flushed after startup scripts
-	 */
-	@HideFromJS
-	public static void earlyError(String message, @Nullable Throwable exception, boolean errorScreen) {
-		if (earlyErrors == null) {
-			earlyErrors = new ArrayList<>();
-		}
-
-		earlyErrors.add(new EarlyError(message, exception, errorScreen));
-	}
-
-	@HideFromJS
-	public static void earlyError(String message, @Nullable Throwable exception) {
-		earlyError(message, exception, false);
-	}
-
-	@HideFromJS
-	public static void earlyError(String message) {
-		earlyError(message, null, false);
-	}
-
-	@HideFromJS
-	public static void flushEarlyErrors(boolean errorScreen) {
-		if (earlyErrors != null && STARTUP != null) {
-			var remaining = new ArrayList<EarlyError>();
-
-			for (var error : earlyErrors) {
-				if (error.errorScreen == errorScreen) {
-					if (error.exception != null) {
-						STARTUP.error(error.message, error.exception);
-					} else {
-						STARTUP.error(error.message);
-					}
-				} else {
-					remaining.add(error);
-				}
-			}
-
-			earlyErrors = remaining.isEmpty() ? null : remaining;
-		}
 	}
 }

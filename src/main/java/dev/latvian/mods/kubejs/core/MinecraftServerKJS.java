@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.net.SendDataFromServerPayload;
 import dev.latvian.mods.kubejs.player.EntityArrayList;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ChangesForChat;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.rhino.util.HideFromJS;
@@ -159,13 +159,13 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 			DataExport.exportData();
 		}
 
-		ConsoleJS.SERVER.stopCapturingErrors();
+		ScriptType.SERVER.console.stopCapturingErrors();
 
 		if (reload && CommonProperties.get().announceReload && !CommonProperties.get().hideServerScriptErrors) {
-			if (ConsoleJS.SERVER.errors.isEmpty()) {
+			if (ScriptType.SERVER.console.errors.isEmpty()) {
 				kjs$tell(Component.literal("Reloaded with no KubeJS errors!").withStyle(ChatFormatting.GREEN));
 			} else {
-				kjs$tell(ConsoleJS.SERVER.errorsComponent("/kubejs errors server"));
+				kjs$tell(ScriptType.SERVER.console.errorsComponent("/kubejs errors server"));
 			}
 
 			if (DevProperties.get().logChangesInChat) {
@@ -173,7 +173,7 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 			}
 		}
 
-		ConsoleJS.SERVER.info("Server resource reload complete!");
+		ScriptType.SERVER.console.info("Server resource reload complete!");
 	}
 
 	default Map<UUID, Map<Integer, ItemStack>> kjs$restoreInventories() {

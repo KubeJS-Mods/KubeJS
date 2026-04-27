@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs;
 
 import com.google.common.base.Stopwatch;
+import dev.latvian.mods.kubejs.block.entity.KubeJSAttachmentTypes;
 import dev.latvian.mods.kubejs.client.ClientScriptManager;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
 import dev.latvian.mods.kubejs.fluid.KubeJSFluidIngredients;
@@ -8,19 +9,18 @@ import dev.latvian.mods.kubejs.gui.KubeJSMenus;
 import dev.latvian.mods.kubejs.holder.KubeJSHolderSets;
 import dev.latvian.mods.kubejs.ingredient.KubeJSIngredients;
 import dev.latvian.mods.kubejs.item.creativetab.KubeJSCreativeTabs;
-import dev.latvian.mods.kubejs.block.entity.KubeJSAttachmentTypes;
 import dev.latvian.mods.kubejs.level.ruletest.KubeJSRuleTests;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.event.StartupEvents;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.registry.RegistryType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.RecordDefaults;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
@@ -126,14 +126,12 @@ public class KubeJS {
 		KubeJSPlugins.load(allMods, dist == Dist.CLIENT);
 		LOGGER.info("Done in {}", pluginTimer.stop());
 
-		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);
-
 		startupScriptManager = new StartupScriptManager();
 
+		KubeJSPlugins.forEachPlugin(KubeJSPlugin::init);
+
 		if (!datagen) {
-			ConsoleJS.flushEarlyErrors(false);
 			startupScriptManager.reload();
-			ConsoleJS.flushEarlyErrors(true);
 		}
 
 		if (dist.isClient()) {

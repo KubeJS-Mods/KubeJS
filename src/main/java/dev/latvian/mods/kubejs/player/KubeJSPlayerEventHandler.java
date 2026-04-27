@@ -4,7 +4,6 @@ import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.net.KubeJSNet;
 import dev.latvian.mods.kubejs.plugin.builtin.event.PlayerEvents;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,8 +40,8 @@ public class KubeJSPlayerEventHandler {
 
 			player.inventoryMenu.addSlotListener(player.kjs$getInventoryChangeListener());
 
-			if (!ConsoleJS.SERVER.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors) {
-				player.sendSystemMessage(ConsoleJS.SERVER.errorsComponent("/kubejs errors server"), false);
+			if (!ScriptType.SERVER.console.errors.isEmpty() && !CommonProperties.get().hideServerScriptErrors) {
+				player.sendSystemMessage(ScriptType.SERVER.console.errorsComponent("/kubejs errors server"), false);
 			}
 
 			player.kjs$getStages().sync();

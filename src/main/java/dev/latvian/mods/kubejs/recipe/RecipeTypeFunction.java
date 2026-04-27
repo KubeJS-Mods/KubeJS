@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.JsonUtils;
@@ -13,8 +14,8 @@ import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.Scriptable;
 import dev.latvian.mods.rhino.Wrapper;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import java.util.Arrays;
@@ -50,7 +51,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			var r = schemaType.schema.recipeFactory.create(this, sourceLine, true);
 			r.creationError = true;
 			event.failedCount++;
-			ConsoleJS.SERVER.error("Failed to create a '" + idString + "' recipe" + stack.atString() + " from args " + Arrays.toString(args0), sourceLine, cause, SKIP_ERROR);
+			ScriptType.SERVER.console.error("Failed to create a '" + idString + "' recipe" + stack.atString() + " from args " + Arrays.toString(args0), sourceLine, cause, SKIP_ERROR);
 			r.json = new JsonObject();
 			r.json.addProperty("type", idString);
 			r.newRecipe = true;

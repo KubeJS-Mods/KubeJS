@@ -15,7 +15,6 @@ import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.registry.ServerRegistryKubeEvent;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.SourceLine;
@@ -121,7 +120,7 @@ public class ServerScriptManager extends ScriptManager {
 
 	@Override
 	public void loadFromDirectory() {
-		ConsoleJS.SERVER.startCapturingErrors();
+		ScriptType.SERVER.console.startCapturingErrors();
 		super.loadFromDirectory();
 
 		if (FMLLoader.getCurrent().getDist().isDedicatedServer()) {
@@ -230,7 +229,7 @@ public class ServerScriptManager extends ScriptManager {
 
 				for (var b : builders) {
 					if (b.registryKey == null) {
-						ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to register object '" + b.id + "' - unknown registry").source(b.sourceLine));
+						ScriptType.SERVER.console.error("", new KubeRuntimeException("Failed to register object '" + b.id + "' - unknown registry").source(b.sourceLine));
 						continue;
 					}
 
@@ -251,7 +250,7 @@ public class ServerScriptManager extends ScriptManager {
 							registriesDataPack.json(Identifier.fromNamespaceAndPath(b.id.getNamespace(), k.getNamespace() + "/" + k.getPath() + "/" + b.id.getPath()), json);
 						}
 					} catch (Exception ex) {
-						ConsoleJS.SERVER.error("", new KubeRuntimeException("Failed to register object '" + b.id + "' of registry '" + b.registryKey.identifier() + "'!", ex).source(b.sourceLine));
+						ScriptType.SERVER.console.error("", new KubeRuntimeException("Failed to register object '" + b.id + "' of registry '" + b.registryKey.identifier() + "'!", ex).source(b.sourceLine));
 					}
 				}
 

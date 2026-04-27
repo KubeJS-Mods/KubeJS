@@ -9,7 +9,6 @@ import dev.latvian.mods.kubejs.gui.chest.CustomChestMenu;
 import dev.latvian.mods.kubejs.level.SimpleLevelKubeEvent;
 import dev.latvian.mods.kubejs.plugin.builtin.event.LevelEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
@@ -83,7 +82,7 @@ public class KubeJSServerEventHandler {
 				}
 			});
 		} catch (Exception ex) {
-			ConsoleJS.SERVER.error("Failed to export loot table %s as JSON!".formatted(id), ex);
+			ScriptType.SERVER.console.error("Failed to export loot table %s as JSON!".formatted(id), ex);
 		}
 	}
 

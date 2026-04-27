@@ -25,7 +25,7 @@ import dev.latvian.mods.kubejs.recipe.ingredientaction.ReplaceAction;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
 import dev.latvian.mods.kubejs.recipe.special.KubeJSCraftingRecipe;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
+import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.ErrorStack;
@@ -90,7 +90,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				v.key.component.readFromJson(this, Cast.to(v), json);
 			} catch (Exception ex) {
 				if (v.key.optional()) {
-					ConsoleJS.SERVER.warn("Failed to read component '%s' from recipe %s, falling back to default value".formatted(v.key, this), sourceLine, ex, RecipesKubeEvent.POST_SKIP_ERROR);
+					ScriptType.SERVER.console.warn("Failed to read component '%s' from recipe %s, falling back to default value".formatted(v.key, this), sourceLine, ex, RecipesKubeEvent.POST_SKIP_ERROR);
 				} else {
 					throw new RecipeComponentException("Failed to read required component '%s'".formatted(v.key), ex, v).source(sourceLine);
 				}
@@ -257,7 +257,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 	 * - drop newly created recipes (so they don't end up as broken JSON in the final map)
 	 *
 	 * @throws KubeRuntimeException preferably, or another runtime exception, if the recipe is
-	 * invalid for final serialization
+	 *                              invalid for final serialization
 	 */
 	public void validateForWrite(RecipeValidationContext cx) throws KubeRuntimeException {
 	}
@@ -511,9 +511,9 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			removed = true;
 
 			if (DevProperties.get().logRemovedRecipes) {
-				ConsoleJS.SERVER.info("- " + this + ": " + getFromToString());
-			} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
-				ConsoleJS.SERVER.debug("- " + this + ": " + getFromToString());
+				ScriptType.SERVER.console.info("- " + this + ": " + getFromToString());
+			} else if (ScriptType.SERVER.console.shouldPrintDebug()) {
+				ScriptType.SERVER.console.debug("- " + this + ": " + getFromToString());
 			}
 		}
 	}
@@ -550,7 +550,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				serialize();
 			} catch (Throwable ex) {
 				var rid = id != null ? id.toString() : "<no id>";
-				ConsoleJS.SERVER.error("Failed to serialize recipe %s[%s]: %s".formatted(rid, type, ex.toString()), sourceLine, ex, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
+				ScriptType.SERVER.console.error("Failed to serialize recipe %s[%s]: %s".formatted(rid, type, ex.toString()), sourceLine, ex, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
 
 				// if this is an existing recipe, keep vanilla/mod JSON instead of crashing the whole reload
 				if (originalJson != null) {
@@ -574,7 +574,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 				try {
 					json.add(KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, IngredientActionHolder.LIST_CODEC.encodeStart(type.event.ops.json(), recipeIngredientActions).getOrThrow());
 				} catch (Throwable ex) {
-					ConsoleJS.SERVER.error("Failed to encode " + KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, sourceLine, ex, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
+					ScriptType.SERVER.console.error("Failed to encode " + KubeJSCraftingRecipe.INGREDIENT_ACTIONS_KEY, sourceLine, ex, RecipesKubeEvent.CREATE_RECIPE_SKIP_ERROR);
 				}
 			}
 
@@ -606,13 +606,13 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 					.ifSuccess(originalRecipe::setValue)
 					.ifError(err -> {
 						if (DevProperties.get().logErroringParsedRecipes) {
-							ConsoleJS.SERVER.error(err.message());
+							ScriptType.SERVER.console.error(err.message());
 						} else {
 							RecipeManager.LOGGER.error(err.message());
 						}
 					});
 			} catch (Throwable e) {
-				ConsoleJS.SERVER.error("Could not create recipe from json for " + this, e);
+				ScriptType.SERVER.console.error("Could not create recipe from json for " + this, e);
 			}
 		}
 
@@ -623,7 +623,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		var original = getOriginalRecipe();
 
 		if (original == null) {
-			ConsoleJS.SERVER.warn("Original recipe is null - could not get result");
+			ScriptType.SERVER.console.warn("Original recipe is null - could not get result");
 			return ItemStack.EMPTY;
 		}
 
@@ -633,7 +633,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 			return shapeless.result.create();
 		}
 
-		ConsoleJS.SERVER.warn("Recipe type " + original.getClass().getName() + " does not support getResult");
+		ScriptType.SERVER.console.warn("Recipe type " + original.getClass().getName() + " does not support getResult");
 		return ItemStack.EMPTY;
 	}
 
@@ -641,7 +641,7 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		var original = getOriginalRecipe();
 
 		if (original == null) {
-			ConsoleJS.SERVER.warn("Original recipe is null - could not get ingredients");
+			ScriptType.SERVER.console.warn("Original recipe is null - could not get ingredients");
 			return List.of();
 		}
 

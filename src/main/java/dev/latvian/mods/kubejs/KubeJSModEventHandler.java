@@ -11,7 +11,6 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.event.StartupEvents;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptsLoadedEvent;
@@ -80,11 +79,11 @@ public class KubeJSModEventHandler {
 		StartupEvents.POST_INIT.post(ScriptType.STARTUP, KubeStartupEvent.BASIC);
 		UtilsJS.postBlockModificationEvents();
 
-		if (!ConsoleJS.STARTUP.errors.isEmpty()) {
+		if (!ScriptType.STARTUP.console.errors.isEmpty()) {
 			var list = new ArrayList<String>();
 			list.add("Startup script errors:");
 
-			var lines = ConsoleJS.STARTUP.errors.toArray(ConsoleLine.EMPTY_ARRAY);
+			var lines = ScriptType.STARTUP.console.errors.toArray(ConsoleLine.EMPTY_ARRAY);
 
 			for (int i = 0; i < lines.length; i++) {
 				list.add((i + 1) + ") " + lines[i]);
@@ -92,15 +91,15 @@ public class KubeJSModEventHandler {
 
 			KubeJS.LOGGER.error(String.join("\n", list));
 
-			ConsoleJS.STARTUP.flush(true);
+			ScriptType.STARTUP.console.flush(true);
 
 			if (FMLLoader.getCurrent().getDist().isDedicatedServer() || !CommonProperties.get().startupErrorGUI) {
 				throw new RuntimeException("There were KubeJS startup script syntax errors! See logs/kubejs/startup.log for more info");
 			}
 		}
 
-		ConsoleJS.STARTUP.stopCapturingErrors();
-		ConsoleJS.CLIENT.stopCapturingErrors();
+		ScriptType.STARTUP.console.stopCapturingErrors();
+		ScriptType.CLIENT.console.stopCapturingErrors();
 
 		Util.nonCriticalIoPool().execute(() -> {
 			try {
@@ -113,7 +112,7 @@ public class KubeJSModEventHandler {
 					var body = response.body().trim();
 
 					if (!body.isEmpty()) {
-						ConsoleJS.STARTUP.info("Update available: " + body);
+						ScriptType.STARTUP.console.info("Update available: " + body);
 					}
 				}
 			} catch (Exception ignored) {

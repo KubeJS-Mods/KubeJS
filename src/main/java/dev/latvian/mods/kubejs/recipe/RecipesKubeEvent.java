@@ -101,7 +101,7 @@ public class RecipesKubeEvent implements KubeEvent {
 	public final RecipeTypeFunction smithingTrim;
 
 	public RecipesKubeEvent(ServerScriptManager manager) {
-		ConsoleJS.SERVER.info("Initializing recipe event...");
+		ScriptType.SERVER.console.info("Initializing recipe event...");
 		this.overallTimer = Stopwatch.createStarted();
 
 		this.recipeSchemaStorage = manager.recipeSchemaStorage;
@@ -227,7 +227,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 
 		takenIds.putAll(originalRecipes);
-		ConsoleJS.SERVER.info("Found %,d recipes (skipped %,d) in %s".formatted(originalRecipes.size(), skippedRecipes, timer.stop()));
+		ScriptType.SERVER.console.info("Found %,d recipes (skipped %,d) in %s".formatted(originalRecipes.size(), skippedRecipes, timer.stop()));
 	}
 
 	private void parseOriginalRecipe(JsonObject json, Identifier recipeId) {
@@ -247,37 +247,37 @@ public class RecipesKubeEvent implements KubeEvent {
 			recipe.afterLoaded(stack);
 			originalRecipes.put(recipeId, recipe);
 
-			if (ConsoleJS.SERVER.shouldPrintDebug()) {
+			if (ScriptType.SERVER.console.shouldPrintDebug()) {
 				var original = recipe.getOriginalRecipe();
 
 				if (original == null || SpecialRecipeSerializerManager.INSTANCE.isSpecial(original)) {
-					ConsoleJS.SERVER.debug("Loaded recipe " + recipeIdAndType + ": <dynamic>");
+					ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": <dynamic>");
 				} else {
-					ConsoleJS.SERVER.debug("Loaded recipe " + recipeIdAndType + ": " + recipe.getFromToString());
+					ScriptType.SERVER.console.debug("Loaded recipe " + recipeIdAndType + ": " + recipe.getFromToString());
 				}
 			}
 		} catch (Throwable ex) {
 			var recipeStr = "'%s'%s".formatted(recipeIdAndType, stack.atString());
 
 			if (ex instanceof RecipeComponentException || DevProperties.get().logErroringParsedRecipes) {
-				ConsoleJS.SERVER.warn("Failed to parse recipe %s! Falling back to vanilla".formatted(recipeStr), ex, POST_SKIP_ERROR);
+				ScriptType.SERVER.console.warn("Failed to parse recipe %s! Falling back to vanilla".formatted(recipeStr), ex, POST_SKIP_ERROR);
 			}
 
 			try {
 				originalRecipes.put(recipeId, UnknownRecipeSchema.SCHEMA.deserialize(SourceLine.UNKNOWN, type, recipeId, json));
 			} catch (NullPointerException | IllegalArgumentException | JsonParseException ex2) {
 				if (DevProperties.get().logErroringParsedRecipes) {
-					ConsoleJS.SERVER.error("Failed to parse recipe %s".formatted(recipeStr), ex2, POST_SKIP_ERROR);
+					ScriptType.SERVER.console.error("Failed to parse recipe %s".formatted(recipeStr), ex2, POST_SKIP_ERROR);
 				}
 			} catch (Exception ex3) {
-				ConsoleJS.SERVER.error("Failed to parse recipe %s".formatted(recipeStr), ex3, POST_SKIP_ERROR);
+				ScriptType.SERVER.console.error("Failed to parse recipe %s".formatted(recipeStr), ex3, POST_SKIP_ERROR);
 			}
 		}
 	}
 
 	private void infoSkip(String s) {
 		if (DevProperties.get().logSkippedRecipes) {
-			ConsoleJS.SERVER.info(s);
+			ScriptType.SERVER.console.info(s);
 		} else {
 			RecipeManager.LOGGER.debug(s);
 		}
@@ -285,7 +285,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	private void warnSkip(String s) {
 		if (DevProperties.get().logSkippedRecipes) {
-			ConsoleJS.SERVER.warn(s);
+			ScriptType.SERVER.console.warn(s);
 		} else {
 			RecipeManager.LOGGER.warn(s);
 		}
@@ -293,7 +293,7 @@ public class RecipesKubeEvent implements KubeEvent {
 
 	private void errorSkip(String s) {
 		if (DevProperties.get().logSkippedRecipes) {
-			ConsoleJS.SERVER.error(s);
+			ScriptType.SERVER.console.error(s);
 		} else {
 			RecipeManager.LOGGER.error(s);
 		}
@@ -313,7 +313,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			}
 		}
 
-		ConsoleJS.SERVER.info("Posted recipe events in " + TimeJS.msToString(timer.stop().elapsed(TimeUnit.MILLISECONDS)));
+		ScriptType.SERVER.console.info("Posted recipe events in " + TimeJS.msToString(timer.stop().elapsed(TimeUnit.MILLISECONDS)));
 	}
 
 	@HideFromJS
@@ -335,13 +335,13 @@ public class RecipesKubeEvent implements KubeEvent {
 			.filter(RECIPE_NOT_REMOVED)
 			.peek(this::addToExport)
 			.collect(Collectors.toConcurrentMap(KubeRecipe::getOrCreateId, recipe -> recipe.json, (a, b) -> {
-				ConsoleJS.SERVER.warn("KubeJS has found two recipes with the same ID in your custom recipes! Picking the last one encountered!");
-				ConsoleJS.SERVER.warn("Recipe A JSON: " + a);
-				ConsoleJS.SERVER.warn("Recipe B JSON: " + b);
+				ScriptType.SERVER.console.warn("KubeJS has found two recipes with the same ID in your custom recipes! Picking the last one encountered!");
+				ScriptType.SERVER.console.warn("Recipe A JSON: " + a);
+				ScriptType.SERVER.console.warn("Recipe B JSON: " + b);
 				return b;
 			})));
 
-		ConsoleJS.SERVER.info("KubeJS modifications to recipe manager finished in %s".formatted(timer.stop()));
+		ScriptType.SERVER.console.info("KubeJS modifications to recipe manager finished in %s".formatted(timer.stop()));
 	}
 
 	@HideFromJS
@@ -352,7 +352,7 @@ public class RecipesKubeEvent implements KubeEvent {
 		ChangesForChat.recipesRemoved = removedRecipes.size();
 		ChangesForChat.recipesMs = overallTimer.stop().elapsed(TimeUnit.MILLISECONDS);
 
-		ConsoleJS.SERVER.info("Added %d recipes, removed %d recipes, modified %d recipes, with %d failed recipes taking %s in total".formatted(successfulAddedRecipes.size(), removedRecipes.size(), modifiedCount, failedCount, TimeJS.msToString(ChangesForChat.recipesMs)));
+		ScriptType.SERVER.console.info("Added %d recipes, removed %d recipes, modified %d recipes, with %d failed recipes taking %s in total".formatted(successfulAddedRecipes.size(), removedRecipes.size(), modifiedCount, failedCount, TimeJS.msToString(ChangesForChat.recipesMs)));
 
 		if (DataExport.export != null) {
 			for (var r : removedRecipes) {
@@ -361,24 +361,24 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 
 		if (DevProperties.get().logRecipeDebug) {
-			ConsoleJS.SERVER.info("======== Debug output of all added recipes ========");
+			ScriptType.SERVER.console.info("======== Debug output of all added recipes ========");
 
 			for (var r : successfulAddedRecipes) {
-				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
+				ScriptType.SERVER.console.info(r.getOrCreateId() + ": " + r.json);
 			}
 
-			ConsoleJS.SERVER.info("======== Debug output of all modified recipes ========");
+			ScriptType.SERVER.console.info("======== Debug output of all modified recipes ========");
 
 			for (var r : originalRecipes.values()) {
 				if (!r.removed && r.hasChanged()) {
-					ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json + " FROM " + r.originalJson);
+					ScriptType.SERVER.console.info(r.getOrCreateId() + ": " + r.json + " FROM " + r.originalJson);
 				}
 			}
 
-			ConsoleJS.SERVER.info("======== Debug output of all removed recipes ========");
+			ScriptType.SERVER.console.info("======== Debug output of all removed recipes ========");
 
 			for (var r : removedRecipes) {
-				ConsoleJS.SERVER.info(r.getOrCreateId() + ": " + r.json);
+				ScriptType.SERVER.console.info(r.getOrCreateId() + ": " + r.json);
 			}
 		}
 
@@ -402,10 +402,10 @@ public class RecipesKubeEvent implements KubeEvent {
 		if (json instanceof JsonObject obj && obj.has(KubeRecipe.CHANGED_MARKER)) {
 			var sourceLine = SourceLine.fromJson(obj.remove(KubeRecipe.CHANGED_MARKER).getAsJsonObject());
 			if (DevProperties.get().logErroringRecipes) {
-				ConsoleJS.SERVER.error("Error parsing recipe %s (details below this line)".formatted(id), sourceLine, ex, null);
-				ConsoleJS.SERVER.stopCapturingErrors();
-				ConsoleJS.SERVER.error("Recipe JSON for %s: %s".formatted(id, json), sourceLine, null, null);
-				ConsoleJS.SERVER.startCapturingErrors();
+				ScriptType.SERVER.console.error("Error parsing recipe %s (details below this line)".formatted(id), sourceLine, ex, null);
+				ScriptType.SERVER.console.stopCapturingErrors();
+				ScriptType.SERVER.console.error("Recipe JSON for %s: %s".formatted(id, json), sourceLine, null, null);
+				ScriptType.SERVER.console.startCapturingErrors();
 			}
 			failedCount++;
 		}
@@ -419,9 +419,9 @@ public class RecipesKubeEvent implements KubeEvent {
 		addedRecipes.add(r);
 
 		if (DevProperties.get().logAddedRecipes) {
-			ConsoleJS.SERVER.info("+ " + r.kjs$getType() + ": " + r.getFromToString() + (json ? " [json]" : ""));
-		} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
-			ConsoleJS.SERVER.debug("+ " + r.kjs$getType() + ": " + r.getFromToString() + (json ? " [json]" : ""));
+			ScriptType.SERVER.console.info("+ " + r.kjs$getType() + ": " + r.getFromToString() + (json ? " [json]" : ""));
+		} else if (ScriptType.SERVER.console.shouldPrintDebug()) {
+			ScriptType.SERVER.console.debug("+ " + r.kjs$getType() + ": " + r.getFromToString() + (json ? " [json]" : ""));
 		}
 
 		return r;
@@ -497,28 +497,28 @@ public class RecipesKubeEvent implements KubeEvent {
 	}
 
 	public void replaceInput(Context cx, RecipeFilter filter, ReplacementMatchInfo match, Object with) {
-		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": IN " + match + " -> " + with) : "";
+		var dstring = (DevProperties.get().logModifiedRecipes || ScriptType.SERVER.console.shouldPrintDebug()) ? (": IN " + match + " -> " + with) : "";
 
 		forEachRecipe(cx, filter, r -> {
 			if (r.replaceInput(new RecipeScriptContext.Impl(cx, r), match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
-					ConsoleJS.SERVER.info("~ " + r + dstring);
-				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
-					ConsoleJS.SERVER.debug("~ " + r + dstring);
+					ScriptType.SERVER.console.info("~ " + r + dstring);
+				} else if (ScriptType.SERVER.console.shouldPrintDebug()) {
+					ScriptType.SERVER.console.debug("~ " + r + dstring);
 				}
 			}
 		});
 	}
 
 	public void replaceOutput(Context cx, RecipeFilter filter, ReplacementMatchInfo match, Object with) {
-		var dstring = (DevProperties.get().logModifiedRecipes || ConsoleJS.SERVER.shouldPrintDebug()) ? (": OUT " + match + " -> " + with) : "";
+		var dstring = (DevProperties.get().logModifiedRecipes || ScriptType.SERVER.console.shouldPrintDebug()) ? (": OUT " + match + " -> " + with) : "";
 
 		forEachRecipe(cx, filter, r -> {
 			if (r.replaceOutput(new RecipeScriptContext.Impl(cx, r), match, with)) {
 				if (DevProperties.get().logModifiedRecipes) {
-					ConsoleJS.SERVER.info("~ " + r + dstring);
-				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
-					ConsoleJS.SERVER.debug("~ " + r + dstring);
+					ScriptType.SERVER.console.info("~ " + r + dstring);
+				} else if (ScriptType.SERVER.console.shouldPrintDebug()) {
+					ScriptType.SERVER.console.debug("~ " + r + dstring);
 				}
 			}
 		});
@@ -561,7 +561,7 @@ public class RecipesKubeEvent implements KubeEvent {
 			var recipe = type.schemaType.schema.recipeFactory.create(type, sourceLine, true);
 			recipe.creationError = true;
 			var errorString = "Failed to create custom recipe" + stack.atString() + " from json " + JsonUtils.toString(json);
-			ConsoleJS.SERVER.error(errorString, sourceLine, cause, POST_SKIP_ERROR);
+			ScriptType.SERVER.console.error(errorString, sourceLine, cause, POST_SKIP_ERROR);
 			recipe.json = json;
 			recipe.newRecipe = true;
 
@@ -584,54 +584,54 @@ public class RecipesKubeEvent implements KubeEvent {
 		}
 
 		if (all) {
-			ConsoleJS.SERVER.info("- All recipe types");
-			ConsoleJS.SERVER.info("  - .id(id)");
-			ConsoleJS.SERVER.info("  - .group(string)");
-			ConsoleJS.SERVER.info("  - .set(key, value)");
-			ConsoleJS.SERVER.info("  - .merge(json)");
-			ConsoleJS.SERVER.info("- All crafting table recipe types");
-			ConsoleJS.SERVER.info("  - .stage(string)");
-			ConsoleJS.SERVER.info("  - .damageIngredient(filter, int?)");
-			ConsoleJS.SERVER.info("  - .replaceIngredient(filter, item_stack)");
-			ConsoleJS.SERVER.info("  - .customIngredientAction(filter, string)");
-			ConsoleJS.SERVER.info("  - .keepIngredient(filter)");
-			ConsoleJS.SERVER.info("  - .consumeIngredient(filter)");
-			ConsoleJS.SERVER.info("  - .modifyResult(string)");
+			ScriptType.SERVER.console.info("- All recipe types");
+			ScriptType.SERVER.console.info("  - .id(id)");
+			ScriptType.SERVER.console.info("  - .group(string)");
+			ScriptType.SERVER.console.info("  - .set(key, value)");
+			ScriptType.SERVER.console.info("  - .merge(json)");
+			ScriptType.SERVER.console.info("- All crafting table recipe types");
+			ScriptType.SERVER.console.info("  - .stage(string)");
+			ScriptType.SERVER.console.info("  - .damageIngredient(filter, int?)");
+			ScriptType.SERVER.console.info("  - .replaceIngredient(filter, item_stack)");
+			ScriptType.SERVER.console.info("  - .customIngredientAction(filter, string)");
+			ScriptType.SERVER.console.info("  - .keepIngredient(filter)");
+			ScriptType.SERVER.console.info("  - .consumeIngredient(filter)");
+			ScriptType.SERVER.console.info("  - .modifyResult(string)");
 		}
 
 		for (var entry : map.entrySet()) {
-			ConsoleJS.SERVER.info("- " + entry.getValue().stream().map(Identifier::toString).collect(Collectors.joining(", ")));
+			ScriptType.SERVER.console.info("- " + entry.getValue().stream().map(Identifier::toString).collect(Collectors.joining(", ")));
 
 			for (var c : entry.getKey().constructors().values()) {
-				ConsoleJS.SERVER.info("  - " + c);
+				ScriptType.SERVER.console.info("  - " + c);
 			}
 
 			for (var key : entry.getKey().keys) {
 				var name = key.getPrimaryFunctionName();
 
 				if (RecipeFunction.isValidIdentifier(name.toCharArray())) {
-					ConsoleJS.SERVER.info("  - ." + name + "(" + key.component + ")");
+					ScriptType.SERVER.console.info("  - ." + name + "(" + key.component + ")");
 				}
 			}
 
 			for (var f : entry.getKey().functions.values()) {
 				if (RecipeFunction.isValidIdentifier(f.name().toCharArray())) {
-					ConsoleJS.SERVER.info("  - ." + f);
+					ScriptType.SERVER.console.info("  - ." + f);
 				}
 			}
 		}
 
-		ConsoleJS.SERVER.info(t + " types");
+		ScriptType.SERVER.console.info(t + " types");
 	}
 
 	public void printTypes(Context cx) {
-		ConsoleJS.SERVER.info("== All recipe types [used] ==");
+		ScriptType.SERVER.console.info("== All recipe types [used] ==");
 		var set = reduceRecipesAsync(cx, ConstantFilter.TRUE, s -> s.map(r -> r.type.id).collect(Collectors.toSet()));
 		printTypes(t -> set.contains(t.id), false);
 	}
 
 	public void printAllTypes() {
-		ConsoleJS.SERVER.info("== All recipe types [available] ==");
+		ScriptType.SERVER.console.info("== All recipe types [available] ==");
 		printTypes(t -> BuiltInRegistries.RECIPE_SERIALIZER.containsKey(t.id), true);
 	}
 
@@ -639,11 +639,11 @@ public class RecipesKubeEvent implements KubeEvent {
 		var list = originalRecipes.values().stream().filter(recipeJS -> recipeJS.type.toString().equals(type)).collect(Collectors.toList());
 		Collections.shuffle(list);
 
-		ConsoleJS.SERVER.info("== Random examples of '" + type + "' ==");
+		ScriptType.SERVER.console.info("== Random examples of '" + type + "' ==");
 
 		for (var i = 0; i < Math.min(list.size(), 5); i++) {
 			var r = list.get(i);
-			ConsoleJS.SERVER.info("- " + r.getOrCreateId() + ":\n" + JsonIO.toPrettyString(r.json));
+			ScriptType.SERVER.console.info("- " + r.getOrCreateId() + ":\n" + JsonIO.toPrettyString(r.json));
 		}
 	}
 

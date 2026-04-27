@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ClientEvents;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.GeneratedDataStage;
 import dev.latvian.mods.kubejs.script.data.KubeFileResourcePack;
@@ -42,7 +41,7 @@ public class ClientAssetPacks {
 		try {
 			return inject0(original);
 		} catch (Throwable ex) {
-			ConsoleJS.CLIENT.error("Error while generating client assets", ex);
+			ScriptType.CLIENT.console.error("Error while generating client assets", ex);
 			return original;
 		}
 	}
@@ -95,12 +94,12 @@ public class ClientAssetPacks {
 		ClientEvents.GENERATE_ASSETS.post(ScriptType.CLIENT, GeneratedDataStage.AFTER_MODS, virtualPacks.get(GeneratedDataStage.AFTER_MODS));
 
 		for (var lang : ClientEvents.LANG.findUniqueExtraIds(ScriptType.CLIENT)) {
-			var l = String.valueOf(lang);
+			var l = lang;
 
 			if (LangKubeEvent.PATTERN.matcher(l).matches()) {
 				ClientEvents.LANG.post(ScriptType.CLIENT, l, langEvents.computeIfAbsent(l, k -> new LangKubeEvent(k, langMap)));
 			} else {
-				ConsoleJS.CLIENT.error("Invalid language key: " + l);
+				ScriptType.CLIENT.console.error("Invalid language key: " + l);
 			}
 		}
 
