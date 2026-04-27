@@ -1,16 +1,14 @@
 package dev.latvian.mods.kubejs.item.custom;
 
 import dev.latvian.mods.kubejs.item.ItemBuilder;
-import dev.latvian.mods.kubejs.registry.BuilderBase;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
-import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
+import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorMaterials;
 import net.minecraft.world.item.equipment.ArmorType;
-import org.jspecify.annotations.Nullable;
 
 @ReturnsSelf
 public class ArmorItemBuilder extends ItemBuilder {
@@ -66,30 +64,35 @@ public class ArmorItemBuilder extends ItemBuilder {
 
 	@ReturnsSelf
 	public static class AnimalArmor extends ItemBuilder {
-		public @Nullable Identifier materialId;
+		public ArmorMaterial material;
 		public AnimalArmorKind kind;
 
 		public AnimalArmor(Identifier id) {
 			super(id);
-			this.materialId = null;
-			this.kind = AnimalArmorKind.WOLF;
+			material = ArmorMaterials.IRON;
+			kind = AnimalArmorKind.WOLF;
 			unstackable();
 		}
 
 		@Override
 		public Item createObject() {
 			Item.Properties p = createItemProperties();
-			var material = resolveMaterial(materialId, id);
+			var resolvedMaterial = material == null ? ArmorMaterials.IRON : material;
 
 			return switch (kind) {
-				case WOLF -> new Item(p.wolfArmor(material));
-				case HORSE -> new Item(p.horseArmor(material));
-				case NAUTILUS -> new Item(p.nautilusArmor(material));
+				case WOLF -> new Item(p.wolfArmor(resolvedMaterial));
+				case HORSE -> new Item(p.horseArmor(resolvedMaterial));
+				case NAUTILUS -> new Item(p.nautilusArmor(resolvedMaterial));
 			};
 		}
 
-		public AnimalArmor material(Identifier materialId) {
-			this.materialId = materialId;
+		@Info("""
+			Sets the armor material for this item.
+			
+			If unset, this defaults to vanilla iron armor material.
+			""")
+		public AnimalArmor material(ArmorMaterialType type) {
+			this.material = type.material;
 			return this;
 		}
 
@@ -100,39 +103,46 @@ public class ArmorItemBuilder extends ItemBuilder {
 	}
 
 	public final ArmorType armorType;
-	public @Nullable Identifier materialId;
+	public ArmorMaterial material;
 
 	protected ArmorItemBuilder(Identifier id, ArmorType t) {
 		super(id);
 		armorType = t;
-		materialId = null;
+		material = ArmorMaterials.IRON;
 		unstackable();
 	}
 
 	@Override
 	public Item createObject() {
-		var material = resolveMaterial(materialId, id);
-		return new Item(createItemProperties().humanoidArmor(material, armorType));
+		return new Item(createItemProperties().humanoidArmor(material == null ? ArmorMaterials.IRON : material, armorType));
 	}
 
-	public ArmorItemBuilder material(Identifier materialId) {
-		this.materialId = materialId;
+	@Info("""
+		Sets the armor material for this item.
+		
+		If unset, this defaults to vanilla iron armor material.
+		""")
+	public ArmorItemBuilder material(ArmorMaterialType type) {
+		material = type.material;
 		return this;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static ArmorMaterial resolveMaterial(@Nullable Identifier materialId, Identifier itemId) {
-		if (materialId == null) {
-			throw new IllegalStateException("Armor material not set for " + itemId);
+	public enum ArmorMaterialType {
+		LEATHER(ArmorMaterials.LEATHER),
+		COPPER(ArmorMaterials.COPPER),
+		CHAINMAIL(ArmorMaterials.CHAINMAIL),
+		IRON(ArmorMaterials.IRON),
+		GOLD(ArmorMaterials.GOLD),
+		DIAMOND(ArmorMaterials.DIAMOND),
+		TURTLE_SCUTE(ArmorMaterials.TURTLE_SCUTE),
+		NETHERITE(ArmorMaterials.NETHERITE),
+		ARMADILLO_SCUTE(ArmorMaterials.ARMADILLO_SCUTE);
+
+		public final ArmorMaterial material;
+
+		ArmorMaterialType(ArmorMaterial material) {
+			this.material = material;
 		}
-
-		var storage = RegistryObjectStorage.of(KubeJSRegistries.ARMOR_MATERIAL);
-		var b = (BuilderBase<ArmorMaterial>) storage.objects.get(materialId);
-
-		if (b == null) {
-			throw new IllegalStateException("Unknown ArmorMaterial '" + materialId + "' for " + itemId);
-		}
-
-		return b.get();
 	}
+
 }

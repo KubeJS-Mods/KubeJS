@@ -42,8 +42,6 @@ import dev.latvian.mods.kubejs.fluid.FluidWrapper;
 import dev.latvian.mods.kubejs.fluid.ThickFluidBuilder;
 import dev.latvian.mods.kubejs.fluid.ThinFluidBuilder;
 import dev.latvian.mods.kubejs.generator.KubeDataGenerator;
-import dev.latvian.mods.kubejs.item.ArmorMaterialBuilder;
-import dev.latvian.mods.kubejs.item.EquipmentAssetBuilder;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemEnchantmentsWrapper;
 import dev.latvian.mods.kubejs.item.ItemModificationKubeEvent;
@@ -145,7 +143,6 @@ import dev.latvian.mods.kubejs.recipe.schema.minecraft.ShapelessKubeRecipe;
 import dev.latvian.mods.kubejs.recipe.schema.postprocessing.KeyPatternCleanupPostProcessor;
 import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessorTypeRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderTypeRegistry;
-import dev.latvian.mods.kubejs.registry.KubeJSRegistries;
 import dev.latvian.mods.kubejs.registry.RegistryObjectStorage;
 import dev.latvian.mods.kubejs.registry.ServerRegistryRegistry;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
@@ -218,6 +215,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.component.BlockItemStateProperties;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.CustomModelData;
@@ -230,7 +228,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.enchantment.providers.EnchantmentProvider;
 import net.minecraft.world.item.equipment.ArmorType;
-import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import net.minecraft.world.level.ItemLike;
@@ -350,10 +347,6 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.addDefault(Registries.VILLAGER_TYPE, VillagerTypeBuilder.class, VillagerTypeBuilder::new);
 		registry.addDefault(Registries.VILLAGER_PROFESSION, VillagerProfessionBuilder.class, VillagerProfessionBuilder::new);
 		registry.addDefault(Registries.CREATIVE_MODE_TAB, CreativeTabBuilder.class, CreativeTabBuilder::new);
-
-		registry.addDefault(EquipmentAssets.ROOT_ID, EquipmentAssetBuilder.class, EquipmentAssetBuilder::new);
-		registry.addDefault(KubeJSRegistries.ARMOR_MATERIAL, ArmorMaterialBuilder.class, ArmorMaterialBuilder::new);
-
 
 		// FIXME registry.addDefault(Registries.ENCHANTMENT, EnchantmentBuilder.class, EnchantmentBuilder::new);
 		registry.addDefault(Registries.PAINTING_VARIANT, PaintingVariantBuilder.class, PaintingVariantBuilder::new);
@@ -557,6 +550,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 		registry.register(SlotFilter.class, SlotFilter::wrap);
 
 
+		registry.register(ArmorMaterial.class, o -> o instanceof ArmorMaterial armorMaterial ? armorMaterial : null);
 		registry.register(ToolMaterial.class, ItemToolMaterials::wrap);
 
 		registry.register(PlayerSelector.class, PlayerSelector::wrap);
