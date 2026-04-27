@@ -111,10 +111,6 @@ public interface IngredientKJS extends ItemPredicate, Replaceable, WithCodec, It
 
 	@Override
 	default boolean matches(RecipeMatchContext cx, Ingredient in, boolean exact) {
-		if (in.isEmpty()) {
-			return false;
-		}
-
 		if (exact) {
 			return Objects.equals(kjs$self(), in);
 		}
