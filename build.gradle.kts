@@ -1,13 +1,13 @@
 import com.almostreliable.almostgradle.dependency.LoadingMode
 
-// import org.gradle.api.internal.artifacts.dsl.dependencies.DependenciesExtensionModule.module
-
 plugins {
 	id("net.neoforged.moddev") version "2.0.138"
-	id("com.almostreliable.almostgradle") version "2.0.0"
+	id("com.almostreliable.almostgradle") version "2.1.1"
 	id("idea")
 	// id("me.shedaniel.unified-publishing") version "0.1.+"
 }
+
+val runningInCI = System.getenv("CI").toBoolean()
 
 almostgradle.setup {
 	javaVersion = 25
@@ -19,7 +19,8 @@ almostgradle.setup {
 
 	dataGen = false
 
-	withAccessTransformerValidation = false
+	splitRunDirs = true
+	withAccessTransformerValidation = !runningInCI
 
 	tests {
 
@@ -48,9 +49,6 @@ almostgradle.setup {
 	}
 }
 
-val ENV = System.getenv()
-val CI = ENV["CI"] == "true"
-
 val rhinoVersion: String by project
 val tinyServerVersion: String by project
 val gifLibVersion: String by project
@@ -63,8 +61,6 @@ neoForge {
 		from(file("interfaces.json"))
 		publish(file("interfaces.json"))
 	}
-
-	validateAccessTransformers = false
 }
 
 repositories {
@@ -127,9 +123,9 @@ dependencies {
 
 publishing {
 	repositories {
-		val mavenUrl = ENV["MAVEN_URL"] ?: return@repositories
-		val mavenUsername = ENV["MAVEN_USERNAME"] ?: return@repositories
-		val mavenToken = ENV["MAVEN_TOKEN"] ?: return@repositories
+		val mavenUrl = System.getenv("MAVEN_URL") ?: return@repositories
+		val mavenUsername = System.getenv("MAVEN_USERNAME") ?: return@repositories
+		val mavenToken = System.getenv("MAVEN_TOKEN") ?: return@repositories
 
 		maven {
 			url = uri(mavenUrl)
@@ -176,7 +172,7 @@ publishing {
 
 configure<org.gradle.plugins.ide.idea.model.IdeaModel> {
 	module {
-		if (!CI) {
+		if (!runningInCI) {
 			isDownloadSources = true
 			isDownloadJavadoc = true
 
