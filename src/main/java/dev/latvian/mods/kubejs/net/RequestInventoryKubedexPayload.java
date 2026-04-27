@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.net;
 
-import dev.latvian.mods.kubejs.client.highlight.KubedexPayloadHandler;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -28,7 +27,7 @@ public record RequestInventoryKubedexPayload(List<Integer> slots, List<ItemStack
 	public void handle(IPayloadContext ctx) {
 		if (ctx.player() instanceof ServerPlayer serverPlayer
 			&& Commands.LEVEL_GAMEMASTERS.check(serverPlayer.permissions())) {
-			ctx.enqueueWork(() -> KubedexPayloadHandler.inventory(serverPlayer, slots, stacks, flags));
+			// TODO: empty for now, waiting for a kubedex rework
 		}
 	}
 }

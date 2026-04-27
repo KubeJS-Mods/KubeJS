@@ -80,7 +80,6 @@
 		"GameRendererMixin",
 		"GuiGraphicsExtractorMixin",
 		"KeyboardHandlerMixin",
-		"LevelRendererMixin",
 		"LocalPlayerMixin",
 		"MinecraftClientMixin",
 		"OptionsMixin",

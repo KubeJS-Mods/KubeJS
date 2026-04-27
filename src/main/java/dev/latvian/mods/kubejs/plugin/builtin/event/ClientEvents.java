@@ -8,7 +8,6 @@ import dev.latvian.mods.kubejs.client.EntityRendererRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.client.MenuScreenRegistryKubeEvent;
 import dev.latvian.mods.kubejs.client.ParticleProviderRegistryKubeEvent;
-import dev.latvian.mods.kubejs.client.highlight.HighlightKubeEvent;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.EventTargetType;
@@ -32,5 +31,5 @@ public interface ClientEvents {
 	TargetedEventHandler<Identifier> ATLAS_SPRITE_REGISTRY = GROUP.client("atlasSpriteRegistry", () -> AtlasSpriteRegistryKubeEvent.class).requiredTarget(EventTargetType.ID);
 	TargetedEventHandler<String> LANG = GROUP.client("lang", () -> LangKubeEvent.class).requiredTarget(EventTargetType.STRING);
 	EventHandler PARTICLE_PROVIDER_REGISTRY = GROUP.client("particleProviderRegistry", () -> ParticleProviderRegistryKubeEvent.class);
-	EventHandler HIGHLIGHT = GROUP.client("highlight", () -> HighlightKubeEvent.class);
+	// EventHandler HIGHLIGHT = GROUP.client("highlight", () -> HighlightKubeEvent.class);
 }

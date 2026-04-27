@@ -3,7 +3,6 @@ package dev.latvian.mods.kubejs.client;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSCommon;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.client.highlight.HighlightRenderer;
 import dev.latvian.mods.kubejs.item.ModifyItemTooltipsKubeEvent;
 import dev.latvian.mods.kubejs.net.KubeServerData;
 import dev.latvian.mods.kubejs.net.NetworkKubeEvent;
@@ -156,14 +155,6 @@ public class KubeJSClient extends KubeJSCommon {
 	public String getWebServerWindowTitle() {
 		var mc = Minecraft.getInstance();
 		return mc.getGameProfile().name() + ", " + mc.kjs$getTitle();
-	}
-
-	public static void loadPostChains(Minecraft mc) {
-		HighlightRenderer.INSTANCE.loadPostChains(mc);
-	}
-
-	public static void resizePostChains(int width, int height) {
-		HighlightRenderer.INSTANCE.resizePostChains(width, height);
 	}
 
 	private static final char[] POWER = {'K', 'M', 'B', 'T'};

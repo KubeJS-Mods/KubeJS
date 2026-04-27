@@ -1,12 +1,10 @@
 package dev.latvian.mods.kubejs.client;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.DynamicOps;
 import dev.latvian.mods.kubejs.CommonProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.block.BlockBuilder;
 import dev.latvian.mods.kubejs.block.BlockTintFunction;
-import dev.latvian.mods.kubejs.client.highlight.HighlightRenderer;
 import dev.latvian.mods.kubejs.client.model.KubeJSConditionalCallbackProperty;
 import dev.latvian.mods.kubejs.command.KubeJSClientCommands;
 import dev.latvian.mods.kubejs.fluid.FluidBuilder;
@@ -36,7 +34,6 @@ import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.resources.model.sprite.Material;
@@ -63,18 +60,13 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
-import net.neoforged.neoforge.client.settings.KeyConflictContext;
-import net.neoforged.neoforge.client.settings.KeyModifier;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -164,14 +156,6 @@ public class KubeJSClientEventHandler {
 	public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
 		var mainCategory = new KeyMapping.Category(Identifier.fromNamespaceAndPath("kubejs", "kubejs"));
 		event.registerCategory(mainCategory);
-
-		event.register(HighlightRenderer.keyMapping = new KeyMapping(
-			"key.kubejs.kubedex",
-			KeyConflictContext.UNIVERSAL,
-			KeyModifier.NONE,
-			InputConstants.Type.KEYSYM,
-			GLFW.GLFW_KEY_K,
-			mainCategory));
 
 		var kubeEvent = new KeybindRegistryKubeEvent();
 		KeyBindEvents.REGISTRY.post(kubeEvent);
@@ -358,68 +342,10 @@ public class KubeJSClientEventHandler {
 	}
 
 	@SubscribeEvent
-	public static void hudPostDraw(RenderGuiEvent.Post event) {
-		var mc = Minecraft.getInstance();
-		HighlightRenderer.INSTANCE.hudPostDraw(mc, event.getGuiGraphics(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
-
-		/*
-		if (PlatformWrapper.isDevelopmentEnvironment()) {
-			var fb = ImageGenerator.FB_CACHE.get(128);
-
-			if (fb != null) {
-				var graphics = event.getGuiGraphicsExtractor();
-				graphics.pose().pushPose();
-				graphics.pose().translate(event.getGuiGraphicsExtractor().guiWidth() - 66F - 3F, 4F, 0F);
-				graphics.fill(0, 0, 66, 66, 0xFF000000);
-				graphics.fill(1, 1, 65, 65, 0xFF222222);
-				RenderSystem.setShader(GameRenderer::getPositionTexShader);
-				RenderSystem.setShaderTexture(0, fb.getColorTextureId());
-				var m = graphics.pose().last().pose();
-				var builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-				builder.addVertex(m, 1F, 1F, 10F).setUv(0F, 1F);
-				builder.addVertex(m, 1F, 65F, 10F).setUv(0F, 0F);
-				builder.addVertex(m, 65F, 65F, 10F).setUv(1F, 0F);
-				builder.addVertex(m, 65F, 1F, 10F).setUv(1F, 1F);
-				BufferUploader.drawWithShader(builder.buildOrThrow());
-				graphics.pose().popPose();
-			}
-		}
-		*/
-	}
-
-	@SubscribeEvent
-	public static void screenPostDraw(ScreenEvent.Render.Post event) {
-		var mc = Minecraft.getInstance();
-
-		if (event.getScreen() instanceof AbstractContainerScreen<?> screen) {
-			HighlightRenderer.INSTANCE.screen(mc, event.getGuiGraphics(), screen, event.getMouseX(), event.getMouseY(), event.getPartialTick());
-		}
-	}
-
-	@SubscribeEvent
 	public static void clientTick(ClientTickEvent.Pre event) {
 		var mc = Minecraft.getInstance();
-		HighlightRenderer.INSTANCE.tickPre(mc);
+
 		KubeJSKeybinds.triggerKeyEvents(mc);
-	}
-
-	@SubscribeEvent
-	public static void worldRender(RenderLevelStageEvent.AfterLevel event) {
-		var mc = Minecraft.getInstance();
-		HighlightRenderer.INSTANCE.renderAfterLevel(mc, event);
-
-	}
-
-	@SubscribeEvent
-	public static void worldRender(RenderLevelStageEvent.AfterOpaqueFeatures event) {
-		var mc = Minecraft.getInstance();
-		HighlightRenderer.INSTANCE.renderAfterEntities(mc, event);
-	}
-
-	@SubscribeEvent
-	public static void worldRender(RenderLevelStageEvent.AfterSky event) {
-		var mc = Minecraft.getInstance();
-		HighlightRenderer.INSTANCE.clearBuffers(mc);
 	}
 
 	public static @Nullable Screen setScreen(@Nullable Screen screen) {
