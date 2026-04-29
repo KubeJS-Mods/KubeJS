@@ -1,0 +1,67 @@
+name: Release (2001)
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Release Type"
+        required: true
+        type: choice
+        default: "release"
+        options:
+          - "release"
+          - "beta"
+          - "alpha"
+          - "none"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 30
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Increment build number
+        id: build_number
+        env:
+          GH_TOKEN: ${{ secrets.BUILD_NUMBER_TOKEN }}
+        run: |
+          current=$(gh api repos/$GITHUB_REPOSITORY/actions/variables/BUILD_NUMBER_2001 --jq '.value')
+          next=$((current + 1))
+          gh variable set BUILD_NUMBER_2001 --body "$next" --repo "$GITHUB_REPOSITORY"
+          echo "number=$next" >> "$GITHUB_OUTPUT"
+
+      - name: Build and Publish with Gradle
+        run: ./gradlew build publish --stacktrace --no-daemon
+        env:
+          BUILD_NUMBER: ${{ steps.build_number.outputs.number }}
+          MAVEN_TOKEN: ${{ secrets.MAVEN_TOKEN }}
+          SAPS_TOKEN: ${{ secrets.SAPS_TOKEN }}
+
+      - name: Release to CurseForge and Modrinth
+        if: ${{ inputs.release_type != 'none' }}
+        run: ./gradlew curseforge modrinth --stacktrace --no-daemon
+        env:
+          BUILD_NUMBER: ${{ steps.build_number.outputs.number }}
+          GIT_COMMIT: ${{ github.sha }}
+          GIT_PREVIOUS_COMMIT: ${{ github.event.before }}
+          CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          RELEASE_TYPE: ${{ inputs.release_type }}

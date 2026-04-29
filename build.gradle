@@ -35,9 +35,9 @@ allprojects {
 	}
 }
 
-def isLocal = !ENV.containsKey("GITHUB_RUN_NUMBER")
+def isLocal = !ENV.containsKey("BUILD_NUMBER")
 
-version = "${mod_version}-${isLocal ? 'local' : "build.${ENV.GITHUB_RUN_NUMBER}"}"
+version = "${mod_version}-${isLocal ? 'local' : "build.${ENV.BUILD_NUMBER}"}"
 group = project.maven_group
 base.archivesBaseName = project.archives_base_name
 
