@@ -14,8 +14,8 @@ import dev.latvian.mods.kubejs.player.PlayerRespawnedKubeEvent;
 import dev.latvian.mods.kubejs.player.SimplePlayerKubeEvent;
 import dev.latvian.mods.kubejs.player.StageChangedEvent;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 

@@ -7,6 +7,10 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+/// Metadata for a single script file discovered on the filesystem.
+/// Stores file path, id and name as well as the associated [ScriptPackInfo].
+///
+/// Non-word characters in the path are normalized to `_` when building the identifier.
 public class ScriptFileInfo {
 	private static final Pattern FILE_FIXER = Pattern.compile("[^\\w./]");
 

@@ -563,11 +563,9 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		return this;
 	}
 
-	/**
-	 * Sets random tick callback for this black.
-	 *
-	 * @param randomTickCallback A callback using a block container and a random.
-	 */
+	/// Sets random tick callback for this black.
+	///
+	/// @param randomTickCallback A callback using a block container and a random.
 	@Info("Sets random tick callback for this black.")
 	public BlockBuilder randomTick(@Nullable Consumer<RandomTickCallback> randomTickCallback) {
 		this.randomTickCallback = randomTickCallback;

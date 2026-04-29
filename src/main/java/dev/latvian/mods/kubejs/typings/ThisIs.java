@@ -6,18 +6,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Annotation that typing generation mods can use to declare type guards.
- * <p>
- * Use this on <code>boolean</code>-returning methods that can guarantee that if the method returns <code>true</code>,
- * the current instance may be treated as the provided class type.
- * </p>
- * <p>
- * Type guards can help narrow down types in conditional blocks.
- * </p>
- */
+/// Annotation that typing generation mods can use to declare type guards.
+///
+/// Use this on `boolean`-returning methods that can guarantee that if the method returns `true`,
+/// the current instance may be treated as the provided class type.
+///
+/// Type guards can help narrow down types in conditional blocks.
+///
 @Documented
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
 public @interface ThisIs {
 	Class<?> value();

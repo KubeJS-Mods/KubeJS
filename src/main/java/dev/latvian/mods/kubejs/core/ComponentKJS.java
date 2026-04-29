@@ -23,10 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
-/**
- * Extensions for components, will be injected into
- * {@link MutableComponent} at runtime.
- */
+/// Extensions for components, will be injected into
+/// [MutableComponent] at runtime.
 @RemapPrefixForJS("kjs$")
 public interface ComponentKJS extends Component, WithCodec, WrappedJS {
 

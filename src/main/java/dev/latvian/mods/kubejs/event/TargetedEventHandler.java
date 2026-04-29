@@ -54,9 +54,7 @@ public class TargetedEventHandler<E> extends EventHandler {
 		return eventContainers != null || extraId != null && extraEventContainers != null && extraEventContainers.containsKey(extraId);
 	}
 
-	/**
-	 * @see TargetedEventHandler#post(ScriptTypeHolder, E, KubeEvent)
-	 */
+	/// @see TargetedEventHandler#post(ScriptTypeHolder, E, KubeEvent)
 	public EventResult post(KubeEvent event, @Nullable E extraId) {
 		if (scriptTypePredicate instanceof ScriptTypeHolder type) {
 			return postInternal(type, extraId, event);
@@ -65,15 +63,13 @@ public class TargetedEventHandler<E> extends EventHandler {
 		}
 	}
 
-	/**
-	 * @return EventResult that can contain an object. What previously returned true on {@link KubeEvent#cancel(Context)} ()} now returns {@link EventResult#interruptFalse()}
-	 * @see KubeEvent#cancel(Context)
-	 * @see KubeEvent#success(Context)
-	 * @see KubeEvent#exit(Context)
-	 * @see KubeEvent#cancel(Context, Object)
-	 * @see KubeEvent#success(Context, Object)
-	 * @see KubeEvent#exit(Context, Object)
-	 */
+	/// @return EventResult that can contain an object. What previously returned true on [KubeEvent#cancel(Context)] now returns [EventResult#interruptFalse()]
+	/// @see KubeEvent#cancel(Context)
+	/// @see KubeEvent#success(Context)
+	/// @see KubeEvent#exit(Context)
+	/// @see KubeEvent#cancel(Context, Object)
+	/// @see KubeEvent#success(Context, Object)
+	/// @see KubeEvent#exit(Context, Object)
 	public EventResult post(ScriptTypeHolder type, @Nullable E extraId, KubeEvent event) {
 		return postInternal(type, extraId, event);
 	}

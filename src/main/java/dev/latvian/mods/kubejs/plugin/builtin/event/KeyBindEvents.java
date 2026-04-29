@@ -6,6 +6,8 @@ import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.event.TargetedEventHandler;
 
+/// Client-side keybind events.
+/// Use [#REGISTRY] at startup to register new keys, then [#PRESSED]/[#RELEASED]/[#TICK] to handle them.
 public interface KeyBindEvents {
 	EventGroup GROUP = EventGroup.of("KeyBindEvents");
 

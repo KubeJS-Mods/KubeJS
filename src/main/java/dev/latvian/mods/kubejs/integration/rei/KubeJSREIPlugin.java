@@ -55,10 +55,9 @@ public class KubeJSREIPlugin implements REIClientPlugin {
 	}
 
 	*/
-/**
- * We want to run as late as possible, so we can remove other
- * mods' entries after they have already been added.
- *//*
+/// We want to run as late as possible, so we can remove other
+/// mods' entries after they have already been added.
+/*
 
 	@Override
 	public double getPriority() {

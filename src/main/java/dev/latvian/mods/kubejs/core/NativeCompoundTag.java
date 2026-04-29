@@ -9,12 +9,10 @@ import net.minecraft.nbt.Tag;
 
 import java.util.Map;
 
-/**
- * Custom NativeJavaMap subclass for CompoundTag that properly unwraps
- * Tag values to JS primitives on read, restoring 1.20.1 behavior where
- * reading entity.persistentData.SomeTag returns a JS number/string
- * instead of a wrapped Java IntTag/StringTag object
- */
+/// Custom NativeJavaMap subclass for CompoundTag that properly unwraps
+/// Tag values to JS primitives on read, restoring 1.20.1 behavior where
+/// reading entity.persistentData.SomeTag returns a JS number/string
+/// instead of a wrapped Java IntTag/StringTag object
 public class NativeCompoundTag extends NativeJavaMap {
 	public NativeCompoundTag(Context cx, Scriptable scope, Object jo, Map<String, Tag> map, TypeInfo type) {
 		super(cx, scope, jo, map, type);

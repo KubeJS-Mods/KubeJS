@@ -3,6 +3,10 @@ package dev.latvian.mods.kubejs.script;
 import java.io.IOException;
 import java.nio.file.Files;
 
+/// Daemon that polls loaded script files once per second and triggers a full reload
+/// when any file's last-modified timestamp changes.
+///
+/// Only starts when `DevProperties.reloadOnFileSave` is `true`.
 public class KubeJSFileWatcherThread extends Thread {
 	public final ScriptType scriptType;
 	public final ScriptFile[] files;

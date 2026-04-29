@@ -127,10 +127,8 @@ public interface ItemPredicate extends Predicate<ItemStack>, IngredientSupplierK
 		return ItemStack.EMPTY;
 	}
 
-	/**
-	 * Marks whether an ingredient is safe to be used to match recipe filters during the recipe event.
-	 * (The answer is usually no for non-Vanilla ingredients, but can be overridden manually by addons or downstream mods with integration.)
-	 */
+	/// Marks whether an ingredient is safe to be used to match recipe filters during the recipe event.
+	/// (The answer is usually no for non-Vanilla ingredients, but can be overridden manually by addons or downstream mods with integration.)
 	default boolean kjs$canBeUsedForMatching() {
 		return true;
 	}

@@ -5,6 +5,7 @@ import dev.latvian.apps.tinyserver.http.response.HTTPResponse;
 import dev.latvian.apps.tinyserver.ws.WSHandler;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
+import dev.latvian.mods.kubejs.plugin.builtin.wrapper.JavaWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.StringUtilsWrapper;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
 import dev.latvian.mods.kubejs.util.JsonIO;
@@ -52,6 +53,19 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/// Logger for a given [ScriptType], exposed to scripts as the global `console`.
+///
+/// By default, one instance of this class exists for each [ScriptType] that survives across
+/// reloads and whose log file is cleared by [#resetFile()] on reload, though custom console
+/// instances may additionally be created by users (these also save to the script type's `.log``)
+///
+/// Messages are written to:
+///
+///   - The SLF4J [Logger] (i.e. the game log / stdout)
+///   - The per-type log file at `logs/kubejs/<type>.log`, asynchronously via the type's background executor
+///   - Any connected web-socket clients via [KubeJSWeb]
+///
+/// @see JavaWrapper#createConsole(KubeJSContext, String)
 @NullUnmarked
 public class ConsoleJS {
 	public static ConsoleJS getCurrent(@Nullable Context cx) {

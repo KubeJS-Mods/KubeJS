@@ -9,14 +9,12 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
-/**
- * A recipe component that may delegate most of its logic to a parent component.
- * A common example of using this would be to define a custom item output component
- * with different serialization or matching logic, but that can still use the same
- * base ItemOutput type as its parent.
- *
- * @param <T> The value type of this component
- */
+/// A recipe component that may delegate most of its logic to a parent component.
+/// A common example of using this would be to define a custom item output component
+/// with different serialization or matching logic, but that can still use the same
+/// base ItemOutput type as its parent.
+///
+/// @param <T> The value type of this component
 public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	RecipeComponent<T> parentComponent();
 
@@ -68,12 +66,6 @@ public interface RecipeComponentWithParent<T> extends RecipeComponent<T> {
 	@Override
 	default void buildUniqueId(UniqueIdBuilder builder, T value) {
 		parentComponent().buildUniqueId(builder, value);
-	}
-
-	@Override
-	@Nullable
-	default RecipeComponentBuilder createBuilder() {
-		return parentComponent().createBuilder();
 	}
 
 	@Override

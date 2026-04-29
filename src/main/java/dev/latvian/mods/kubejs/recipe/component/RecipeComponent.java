@@ -19,28 +19,25 @@ import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.kubejs.util.TinyMap;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
-import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
-/**
- * A <b>recipe component</b> is a reusable definition of a recipe element (such as an in/output item, a fluid, or even just a number value)
- * that has a {@link #typeInfo() description} associated with it and defines logic on how to serialize the value
- * contained within the context of a recipe with a {@link #codec()}.
- * <p>
- * Recipe components are used in conjunction with {@link RecipeKey}s to define the structure of a recipe,
- * and are also referred to by bulk recipe operations such as replacements.
- * <p>
- * There are lots of standard components provided in the {@link dev.latvian.mods.kubejs.recipe.component} package,
- * including items and fluid in- and outputs, generic group and logic components (array, map, and, or)
- * and all kinds of primitives (including specialised ones such as number ranges and characters), which you can use to
- * more easily define standardised components for your own recipes, though you may also want to define your own components
- * from the ground up depending on your use case.
- *
- * @param <T> The value type of this component
- * @see RecipeComponentWithParent
- */
+/// A **recipe component** is a reusable definition of a recipe element (such as an in/output item, a fluid, or even just a number value)
+/// that has a [`description`][#typeInfo()] associated with it and defines logic on how to serialize the value
+/// contained within the context of a recipe with a [#codec()].
+///
+/// Recipe components are used in conjunction with [RecipeKey]s to define the structure of a recipe,
+/// and are also referred to by bulk recipe operations such as replacements.
+///
+/// There are lots of standard components provided in the [dev.latvian.mods.kubejs.recipe.component] package,
+/// including items and fluid in- and outputs, generic group and logic components (array, map, and, or)
+/// and all kinds of primitives (including specialised ones such as number ranges and characters), which you can use to
+/// more easily define standardised components for your own recipes, though you may also want to define your own components
+/// from the ground up depending on your use case.
+///
+/// @param <T> The value type of this component
+/// @see RecipeComponentWithParent
 public interface RecipeComponent<T> {
 	static CustomObjectRecipeComponent builder(List<CustomObjectRecipeComponent.Key> keys) {
 		return new CustomObjectRecipeComponent(keys);
@@ -50,12 +47,10 @@ public interface RecipeComponent<T> {
 		return new CustomObjectRecipeComponent(List.of(keys));
 	}
 
-	/**
-	 * Creates a new {@link RecipeKey} for this component with the given name.
-	 *
-	 * @param name The name of the key
-	 * @return The created {@link RecipeKey}
-	 */
+	/// Creates a new [RecipeKey] for this component with the given name.
+	///
+	/// @param name The name of the key
+	/// @return The created [RecipeKey]
 	default RecipeKey<T> key(String name, ComponentRole role) {
 		return new RecipeKey<>(this, name, role);
 	}
@@ -76,55 +71,47 @@ public interface RecipeComponent<T> {
 
 	Codec<T> codec();
 
-	/**
-	 * Defines a description for how this component may be constructed.
-	 * Type descriptions may be comprised of a primitive type such as a string,
-	 * number or Java class (which may be useful if that that class has an appropriate
-	 * type wrapper for it already), an array of fixed or dynamic length, a map / object,
-	 * or a union of multiple types.
-	 * <p>
-	 * Type descriptions are used by addons like ProbeJS to provide typing hints.
-	 *
-	 * @return A description of how this component may be constructed
-	 */
+	/// Defines a description for how this component may be constructed.
+	/// Type descriptions may be comprised of a primitive type such as a string,
+	/// number or Java class (which may be useful if that that class has an appropriate
+	/// type wrapper for it already), an array of fixed or dynamic length, a map / object,
+	/// or a union of multiple types.
+	///
+	/// Type descriptions are used by addons like ProbeJS to provide typing hints.
+	///
+	/// @return A description of how this component may be constructed
 	TypeInfo typeInfo();
 
-	/**
-	 * Declares whether this component should take priority when being
-	 * considered by e.g. an {@link EitherRecipeComponent} during deserialization.
-	 *
-	 * @param cx   Script context
-	 * @param from The object to be deserialized from
-	 * @return Whether this component should take priority
-	 */
+	/// Declares whether this component should take priority when being
+	/// considered by e.g. an [EitherRecipeComponent] during deserialization.
+	///
+	/// @param cx   Script context
+	/// @param from The object to be deserialized from
+	/// @return Whether this component should take priority
 	default boolean hasPriority(RecipeMatchContext cx, @Nullable Object from) {
 		return false;
 	}
 
-	/**
-	 * Method to read the value contained within this component from an input object;
-	 * this may be some arbitrary value passed into a {@link RecipeSchema schema's}
-	 * constructor(s) or automatically generated builder methods. By default, it will
-	 * attempt to type wrap based on {@link #typeInfo()}
-	 *
-	 * @param cx   Script context
-	 * @param from An object to be converted to a value for this component
-	 * @return The value read from the input
-	 */
+	/// Method to read the value contained within this component from an input object;
+	/// this may be some arbitrary value passed into a [`schema's`][RecipeSchema]
+	/// constructor(s) or automatically generated builder methods. By default, it will
+	/// attempt to type wrap based on [#typeInfo()]
+	///
+	/// @param cx   Script context
+	/// @param from An object to be converted to a value for this component
+	/// @return The value read from the input
 	default T wrap(RecipeScriptContext cx, @Nullable Object from) {
 		return (T) cx.cx().jsToJava(from, typeInfo());
 	}
 
-	/**
-	 * This method serves as a more specialized override for serializing to JSON,
-	 * providing the JSON object as additional context.
-	 *
-	 * @param recipe The recipe object used for context
-	 * @param cv     A holder object to retrieve the component's value from
-	 * @param json   The root JSON object to write to
-	 *               (this might be the root of the recipe JSON, or a nested object inside if
-	 *               this component is contained within for example a RecipeComponentBuilder)
-	 */
+	/// This method serves as a more specialized override for serializing to JSON,
+	/// providing the JSON object as additional context.
+	///
+	/// @param recipe The recipe object used for context
+	/// @param cv     A holder object to retrieve the component's value from
+	/// @param json   The root JSON object to write to
+	///               (this might be the root of the recipe JSON, or a nested object inside if
+	///               this component is contained within for example a RecipeComponentBuilder)
 	default void writeToJson(KubeRecipe recipe, RecipeComponentValue<T> cv, JsonObject json) {
 		if (cv.key.names.size() >= 2) {
 			for (var k : cv.key.names) {
@@ -144,16 +131,14 @@ public interface RecipeComponent<T> {
 		}
 	}
 
-	/**
-	 * This method serves as a more specialized override for deserializing from JSON,
-	 * providing the JSON object as additional context.
-	 *
-	 * @param recipe The recipe object used for context
-	 * @param cv     The holder object to store the resulting value in
-	 * @param json   The root JSON object to read from
-	 *               (this might be the root of the recipe JSON, or a nested object inside if
-	 *               this component is contained within for example a RecipeComponentBuilder)
-	 */
+	/// This method serves as a more specialized override for deserializing from JSON,
+	/// providing the JSON object as additional context.
+	///
+	/// @param recipe The recipe object used for context
+	/// @param cv     The holder object to store the resulting value in
+	/// @param json   The root JSON object to read from
+	///               (this might be the root of the recipe JSON, or a nested object inside if
+	///               this component is contained within for example a RecipeComponentBuilder)
 	default void readFromJson(KubeRecipe recipe, RecipeComponentValue<T> cv, JsonObject json) {
 		var v = json.get(cv.key.name);
 
@@ -171,12 +156,10 @@ public interface RecipeComponent<T> {
 		}
 	}
 
-	/**
-	 * @param cx    Script context
-	 * @param value The value to check
-	 * @param match The replacement match to check against
-	 * @return true if the given value matches the given replacement match.
-	 */
+	/// @param cx    Script context
+	/// @param value The value to check
+	/// @param match The replacement match to check against
+	/// @return true if the given value matches the given replacement match.
 	default boolean matches(RecipeMatchContext cx, T value, ReplacementMatchInfo match) {
 		return false;
 	}
@@ -195,9 +178,7 @@ public interface RecipeComponent<T> {
 		}
 	}
 
-	/**
-	 * Shallow empty check function
-	 */
+	/// Shallow empty check function
 	default boolean isEmpty(T value) {
 		return false;
 	}
@@ -206,9 +187,7 @@ public interface RecipeComponent<T> {
 		builder.append(value.toString());
 	}
 
-	/**
-	 * Returns a string value for display of this component.
-	 */
+	/// Returns a string value for display of this component.
 	default String toString(OpsContainer ops, T value) {
 		return value.toString();
 	}
@@ -247,12 +226,6 @@ public interface RecipeComponent<T> {
 
 	default RecipeComponent<T> withCodec(Codec<T> codec) {
 		return new RecipeComponentWithCodec<>(this, codec);
-	}
-
-	@Nullable
-	@ApiStatus.Experimental
-	default RecipeComponentBuilder createBuilder() {
-		return null;
 	}
 
 	default List<?> spread(T value) {

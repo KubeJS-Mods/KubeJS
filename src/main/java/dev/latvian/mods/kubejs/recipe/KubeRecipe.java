@@ -233,32 +233,28 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		}
 	}
 
-	/**
-	 * Perform additional validation after the recipe has been loaded.
-	 */
+	/// Perform additional validation after the recipe has been loaded.
 	public void validate(RecipeValidationContext cx) {
 	}
 
-	/**
-	 * Final validation hook that runs right before this recipe is serialized back into JSON.
-	 * <p>
-	 * This is useful for schemas that fill some values via custom functions (not constructor args),
-	 * where {@link #afterLoaded(RecipeValidationContext)} is too early to validate "fully-built" recipes.
-	 * <p>
-	 * Addons should prefer throwing a {@link KubeRuntimeException}
-	 * subtype here when validation fails. In particular,
-	 * {@link RecipeComponentException} or
-	 * {@link InvalidRecipeComponentValueException} will preserve
-	 * component/key/value context in the logged error, which is more useful than throwing a plain
-	 * runtime exception.
-	 * <p>
-	 * If this throws during recipe processing, KubeJS will:
-	 * - revert modified existing recipes back to their original JSON
-	 * - drop newly created recipes (so they don't end up as broken JSON in the final map)
-	 *
-	 * @throws KubeRuntimeException preferably, or another runtime exception, if the recipe is
-	 *                              invalid for final serialization
-	 */
+	/// Final validation hook that runs right before this recipe is serialized back into JSON.
+	///
+	/// This is useful for schemas that fill some values via custom functions (not constructor args),
+	/// where [#afterLoaded(RecipeValidationContext)] is too early to validate "fully-built" recipes.
+	///
+	/// Addons should prefer throwing a [KubeRuntimeException]
+	/// subtype here when validation fails. In particular,
+	/// [RecipeComponentException] or
+	/// [InvalidRecipeComponentValueException] will preserve
+	/// component/key/value context in the logged error, which is more useful than throwing a plain
+	/// runtime exception.
+	///
+	/// If this throws during recipe processing, KubeJS will:
+	/// - revert modified existing recipes back to their original JSON
+	/// - drop newly created recipes (so they don't end up as broken JSON in the final map)
+	///
+	/// @throws KubeRuntimeException preferably, or another runtime exception, if the recipe is
+	///                              invalid for final serialization
 	public void validateForWrite(RecipeValidationContext cx) throws KubeRuntimeException {
 	}
 
@@ -518,20 +514,16 @@ public class KubeRecipe implements RecipeLikeKJS, CustomJavaToJsWrapper {
 		}
 	}
 
-	/**
-	 * @deprecated It doesn't look like recipe staging is likely to return any time soon;
-	 * if anybody finds a way to do it though or just needs this method for whatever reason,
-	 * I am happy to keep it...
-	 */
+	/// @deprecated It doesn't look like recipe staging is likely to return any time soon;
+	/// if anybody finds a way to do it though or just needs this method for whatever reason,
+	/// I am happy to keep it...
 	@Deprecated(forRemoval = true)
 	public KubeRecipe stage(String s) {
 		throw new KubeRuntimeException("recipe.stage() is no longer supported by default due to vanilla changes!")
 			.source(sourceLine);
 	}
 
-	/**
-	 * Only used by {@link KubeRecipe#getOrCreateId()} and {@link KubeRecipe#serializeChanges()} in rare case that a recipe can be another recipe type than itself (e.g. kubejs:shaped -> minecraft:crafting_shaped)
-	 */
+	/// Only used by [KubeRecipe#getOrCreateId()] and [KubeRecipe#serializeChanges()] in rare case that a recipe can be another recipe type than itself (e.g. kubejs:shaped -> minecraft:crafting\_shaped)
 	public RecipeTypeFunction getSerializationTypeFunction() {
 		return type;
 	}

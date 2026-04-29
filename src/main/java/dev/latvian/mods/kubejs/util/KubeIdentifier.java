@@ -6,9 +6,7 @@ import net.minecraft.resources.Identifier;
 
 import java.util.function.UnaryOperator;
 
-/**
- * Exists to indicate that a Identifier would use kubejs: namespace by default when written as plain string. Should only be used as an argument in registry methods
- */
+/// Exists to indicate that a Identifier would use kubejs: namespace by default when written as plain string. Should only be used as an argument in registry methods
 public record KubeIdentifier(Identifier wrapped) {
 	public static final Codec<KubeIdentifier> CODEC = KubeJSCodecs.KUBEJS_ID.xmap(KubeIdentifier::new, KubeIdentifier::wrapped);
 

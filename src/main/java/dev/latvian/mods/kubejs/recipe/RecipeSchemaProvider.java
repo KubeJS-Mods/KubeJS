@@ -32,12 +32,10 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-/**
- * A base provider for generating recipe schemas.
- * <p>
- * <strong>Important!</strong> KubeJS must be added as an existing mod via
- * {@code programArguments.addAll('--existing-mod', 'kubejs')} in your data gen runs block for this to work!
- */
+/// A base provider for generating recipe schemas.
+///
+/// **Important!** KubeJS must be added as an existing mod via
+/// `programArguments.addAll('--existing-mod', 'kubejs')` in your data gen runs block for this to work!
 @ApiStatus.Experimental
 public abstract class RecipeSchemaProvider implements DataProvider {
 
@@ -139,57 +137,43 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 		private List<RecipePostProcessor> postProcessors;
 		private RecipeSchemaData.MergeData mergeData = RecipeSchemaData.MergeData.DEFAULT;
 
-		/**
-		 * Sets the parent recipe type, which acts as a fallback/proxy for recipe methods. See vanilla's smoking &
-		 * blasting recipe types for examples.
-		 */
+		/// Sets the parent recipe type, which acts as a fallback/proxy for recipe methods. See vanilla's smoking &
+		/// blasting recipe types for examples.
 		public SchemaDataBuilder parent(Identifier parent) {
 			this.parent = parent;
 			return this;
 		}
 
-		/**
-		 * Specifies an alternative recipe serializer to use instead of the one associated with this recipe
-		 */
+		/// Specifies an alternative recipe serializer to use instead of the one associated with this recipe
 		public SchemaDataBuilder overrideType(Identifier type) {
 			overrideType = type;
 			return this;
 		}
 
-		/**
-		 * Set the {@link dev.latvian.mods.kubejs.recipe.schema.KubeRecipeFactory recipe factory} to be used for this recipe
-		 * type. See {@link dev.latvian.mods.kubejs.plugin.KubeJSPlugin#registerRecipeFactories(RecipeFactoryRegistry) #registerRecipeFactories}
-		 * for registering custom factories
-		 */
+		/// Set the [`recipe factory`][dev.latvian.mods.kubejs.recipe.schema.KubeRecipeFactory] to be used for this recipe
+		/// type. See [`#registerRecipeFactories`][dev.latvian.mods.kubejs.plugin.KubeJSPlugin#registerRecipeFactories(RecipeFactoryRegistry)]
+		/// for registering custom factories
 		public SchemaDataBuilder recipeFactory(Identifier factory) {
 			recipeFactory = factory;
 			return this;
 		}
 
-		/**
-		 * Adds the {@code RecipeKey}s, automatically converting them to {@code RecipeKeyData}s
-		 */
+		/// Adds the `RecipeKey`s, automatically converting them to `RecipeKeyData`s
 		public SchemaDataBuilder keys(RecipeKey<?>... keys) {
 			return keys(List.of(keys));
 		}
 
-		/**
-		 * Adds the {@code RecipeKey}s, automatically converting them to {@code RecipeKeyData}s
-		 */
+		/// Adds the `RecipeKey`s, automatically converting them to `RecipeKeyData`s
 		public SchemaDataBuilder keys(List<RecipeKey<?>> keys) {
 			return keyDatas(keys.stream().map(RecipeSchemaProvider.this::keyData).toList());
 		}
 
-		/**
-		 * Adds the raw {@code RecipeKeyData}s
-		 */
+		/// Adds the raw `RecipeKeyData`s
 		public SchemaDataBuilder keyDatas(RecipeSchemaData.RecipeKeyData... keys) {
 			return keyDatas(List.of(keys));
 		}
 
-		/**
-		 * Adds the raw {@code RecipeKeyData}s
-		 */
+		/// Adds the raw `RecipeKeyData`s
 		public SchemaDataBuilder keyDatas(List<RecipeSchemaData.RecipeKeyData> keys) {
 			if (this.keys == null) {
 				this.keys = new ArrayList<>(keys);
@@ -199,16 +183,12 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 			return this;
 		}
 
-		/**
-		 * Add custom constructors which can be used instead of the key-based default
-		 */
+		/// Add custom constructors which can be used instead of the key-based default
 		public SchemaDataBuilder constructors(RecipeSchemaData.ConstructorData... constructors) {
 			return constructors(List.of(constructors));
 		}
 
-		/**
-		 * Add custom constructors which can be used instead of the key-based default
-		 */
+		/// Add custom constructors which can be used instead of the key-based default
 		public SchemaDataBuilder constructors(List<RecipeSchemaData.ConstructorData> constructors) {
 			if (this.constructors == null) {
 				this.constructors = new ArrayList<>(constructors);
@@ -218,16 +198,12 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 			return this;
 		}
 
-		/**
-		 * Add the function to the recipe, used like {@code event.recipes.my.recipe(<recipe args>).<name>(<function args>)}
-		 */
+		/// Add the function to the recipe, used like `event.recipes.my.recipe(<recipe args>).<name>(<function args>)`
 		public SchemaDataBuilder function(String name, RecipeSchemaFunction function) {
 			return functions(Map.of(name, function));
 		}
 
-		/**
-		 * Add the functions to the recipe, see {@link #function(String, RecipeSchemaFunction)}
-		 */
+		/// Add the functions to the recipe, see [#function(String, RecipeSchemaFunction)]
 		public SchemaDataBuilder functions(Map<String, RecipeSchemaFunction> functions) {
 			if (this.functions == null) {
 				this.functions = new HashMap<>(functions);
@@ -237,9 +213,7 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 			return this;
 		}
 
-		/**
-		 * Specify the default optional value of a key
-		 */
+		/// Specify the default optional value of a key
 		public <T> SchemaDataBuilder overrideKey(RecipeKey<T> key, @Nullable T optionalValue) {
 			var encoded = optionalValue != null
 				? key.codec.encodeStart(registryAccessContainer.json(), optionalValue).getOrThrow()
@@ -248,46 +222,34 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 			return this;
 		}
 
-		/**
-		 * Nominally, if this recipe type should be hidden... but this value appears to be unused
-		 */
+		/// Nominally, if this recipe type should be hidden... but this value appears to be unused
 		public SchemaDataBuilder hidden() {
 			return hidden(true);
 		}
 
-		/**
-		 * Nominally, if this recipe type should be hidden... but this value appears to be unused
-		 */
+		/// Nominally, if this recipe type should be hidden... but this value appears to be unused
 		public SchemaDataBuilder hidden(boolean hidden) {
 			this.hidden = hidden;
 			return this;
 		}
 
-		/**
-		 * The names for accessing this recipe via a special method, e.g. {@code event.recipes.myMapping(...}
-		 */
+		/// The names for accessing this recipe via a special method, e.g. `event.recipes.myMapping(...`
 		public SchemaDataBuilder mappings(String... mappings) {
 			return mappings(List.of(mappings));
 		}
 
-		/**
-		 * The names for accessing this recipe via a special method, e.g. {@code event.recipes.myMapping(...}
-		 */
+		/// The names for accessing this recipe via a special method, e.g. `event.recipes.myMapping(...`
 		public SchemaDataBuilder mappings(List<String> mappings) {
 			this.mappings.addAll(mappings);
 			return this;
 		}
 
-		/**
-		 * The keys to use when generating a unique id for the recipe
-		 */
+		/// The keys to use when generating a unique id for the recipe
 		public SchemaDataBuilder keysForUniqueId(String... keys) {
 			return keysForUniqueId(List.of(keys));
 		}
 
-		/**
-		 * The keys to use when generating a unique id for the recipe
-		 */
+		/// The keys to use when generating a unique id for the recipe
 		public SchemaDataBuilder keysForUniqueId(List<String> keys) {
 			if (unique == null) {
 				unique = new ArrayList<>(keys);
@@ -297,16 +259,12 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 			return this;
 		}
 
-		/**
-		 * Post processors to apply to recipes, see {@link KeyPatternCleanupPostProcessor KeyPatternCleanupPostProcessor}
-		 */
+		/// Post processors to apply to recipes, see [`KeyPatternCleanupPostProcessor`][KeyPatternCleanupPostProcessor]
 		public SchemaDataBuilder postProcessors(RecipePostProcessor... processors) {
 			return postProcessors(List.of(processors));
 		}
 
-		/**
-		 * Post processors to apply to recipes, see {@link KeyPatternCleanupPostProcessor KeyPatternCleanupPostProcessor}
-		 */
+		/// Post processors to apply to recipes, see [`KeyPatternCleanupPostProcessor`][KeyPatternCleanupPostProcessor]
 		public SchemaDataBuilder postProcessors(List<RecipePostProcessor> processors) {
 			if (postProcessors == null) {
 				postProcessors = new ArrayList<>(processors);
@@ -316,9 +274,7 @@ public abstract class RecipeSchemaProvider implements DataProvider {
 			return this;
 		}
 
-		/**
-		 * If values from {@link #parent(Identifier) parent schemas} should be merged when baking the recipe schema
-		 */
+		/// If values from [`parent schemas`][#parent(Identifier)] should be merged when baking the recipe schema
 		public SchemaDataBuilder mergeData(boolean keys, boolean constructors, boolean unique, boolean postProcessors) {
 			mergeData = new RecipeSchemaData.MergeData(keys, constructors, unique, postProcessors);
 			return this;

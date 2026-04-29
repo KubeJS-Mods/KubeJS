@@ -67,9 +67,7 @@ public interface KubeJSNet {
 		PacketDistributor.sendToPlayer(player, payload, payloads);
 	}
 
-	/**
-	 * Send the given payload(s) to all players on the server
-	 */
+	/// Send the given payload(s) to all players on the server
 	static void sendToAllPlayers(CustomPacketPayload payload, CustomPacketPayload... payloads) {
 		if (CommonProperties.get().serverOnly) {
 			return;

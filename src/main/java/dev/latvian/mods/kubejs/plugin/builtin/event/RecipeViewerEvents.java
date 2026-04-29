@@ -13,6 +13,8 @@ import dev.latvian.mods.kubejs.recipe.viewer.RemoveCategoriesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.viewer.RemoveEntriesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.viewer.RemoveRecipesKubeEvent;
 
+/// Events for recipe viewer integrations (EMI, JEI, REI).
+/// Handlers fire for all entry types by default, but you may use a [RecipeViewerEntryType] target to filter for only item / fluid / etc. entries.
 public interface RecipeViewerEvents {
 	EventGroup GROUP = EventGroup.of("RecipeViewerEvents");
 	EventTargetType<RecipeViewerEntryType> TARGET = EventTargetType.create(RecipeViewerEntryType.class).transformer(RecipeViewerEntryType::fromString).identity();

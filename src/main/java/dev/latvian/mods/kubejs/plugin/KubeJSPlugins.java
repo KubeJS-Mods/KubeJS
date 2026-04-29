@@ -17,11 +17,16 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+/// Discovers, loads, and stores all [KubeJSPlugin] instances.
+/// Use [#forEachPlugin] to iterate over all loaded plugins.
 public class KubeJSPlugins {
 	private static final List<KubeJSPlugin> LIST = new ArrayList<>();
 	private static final List<String> GLOBAL_CLASS_FILTER = new ArrayList<>();
 	private static final ModResourceBindings BINDINGS = new ModResourceBindings();
 
+	/// Scans all mod JARs for plugin, [ClassFilter] and bindings definitions, and loads them if present.
+	///
+	/// @see #loadMod(String, IModFile, boolean)
 	public static void load(List<IModFile> modFiles, boolean loadClientPlugins) {
 		try {
 			for (var file : modFiles) {
@@ -34,6 +39,12 @@ public class KubeJSPlugins {
 		}
 	}
 
+	/// Given a mod file, checks if it has a file defining KubeJS plugins, class filter rules, or bindings,
+	/// and tries to load them if they exist.
+	///
+	/// For plugin syntax, see [#loadFromFile(java.util.stream.Stream, java.lang.String, boolean)],
+	/// and for bindings, see [ModResourceBindings]. Class filter syntax simply consists have lines
+	/// starting with either a '+' (allow) or '-' (deny) followed by a class or package name.
 	private static void loadMod(String modId, IModFile mod, boolean loadClientPlugins) throws IOException {
 		var contents = mod.getContents();
 
@@ -50,6 +61,13 @@ public class KubeJSPlugins {
 		BINDINGS.readBindings(modId, mod);
 	}
 
+	/// Tries to load KubeJS plugins based on the contents of a `kubejs.plugins.txt` file.
+	///
+	/// A plugin definition consists of a FQCN referring to a class that implements [KubeJSPlugin],
+	/// followed by an optional list of *mod ids* which are required for the plugin to be loaded.
+	/// The string "client" may be used to ensure a plugin only loads on the client side.
+	///
+	/// Filters can be used to make sure that certain plugins only load if a mod is present.
 	private static void loadFromFile(Stream<String> contents, String source, boolean loadClientPlugins) {
 		KubeJS.LOGGER.info("Found plugin source {}", source);
 

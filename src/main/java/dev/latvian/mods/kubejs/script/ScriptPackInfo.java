@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/// Metadata for a [ScriptPack]: stores its namespace, display name, and a list of discovered [file][ScriptFileInfo]s.
 public class ScriptPackInfo {
 	public final String namespace;
 	public final Component displayName;

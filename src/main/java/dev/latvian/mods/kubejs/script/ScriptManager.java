@@ -22,6 +22,20 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/// Loads and owns all [script packs][ScriptPack] for one [ScriptType].
+///
+/// On reload:
+///   1. [#unload()] clears packs and event listeners through [ScriptType#unload()]
+///   2. [#loadFromDirectory()] walks the filesystem and populates [ScriptPack] / [ScriptFile] objects
+///   3. [#load(long)] creates the [KubeJSContextFactory], registers type wrappers from all plugins,
+///     then evaluates every script file in priority order inside a single [KubeJSContext].
+///
+/// Subclasses may override [#loadAdditional()] to inject extra script sources
+/// (e.g. `StartupScriptManager` adds `local/kubejs/local_startup_scripts`)
+/// and define additional behaviour.
+///
+/// If `DevProperties.reloadOnFileSave` is set, a [KubeJSFileWatcherThread] is
+/// started after load to trigger hot-reloads on file changes.
 @NullUnmarked
 public class ScriptManager {
 	public final ScriptType scriptType;

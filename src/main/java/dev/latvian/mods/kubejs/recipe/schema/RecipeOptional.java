@@ -40,12 +40,10 @@ public interface RecipeOptional<T> {
 
 	T getDefaultValue(RecipeSchemaType type);
 
-	/**
-	 * Gets a value that is used during {@link RecipeSchemaProvider data generation} of recipe schema JSONs,
-	 * as well as during debugging of recipe constructors.
-	 * <p>
-	 * This <strong>needs to be</strong> implemented if you intend to use data generation with a custom optional type
-	 */
+	/// Gets a value that is used during [`data generation`][RecipeSchemaProvider] of recipe schema JSONs,
+	/// as well as during debugging of recipe constructors.
+	///
+	/// This **needs to be** implemented if you intend to use data generation with a custom optional type
 	@Nullable
 	default T getInformativeValue() {
 		return null;

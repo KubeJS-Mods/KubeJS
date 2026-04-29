@@ -1,11 +1,11 @@
 package dev.latvian.mods.kubejs.script;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/// Daemon thread started mod initialization that handles non-blocking
+/// logging and file writes from [ConsoleJS].
 public class KubeJSBackgroundThread extends Thread {
-	public static volatile boolean running = true;
+	private static volatile boolean running = true;
 
 	public KubeJSBackgroundThread() {
 		super("kubejs-background-thread");
@@ -14,40 +14,15 @@ public class KubeJSBackgroundThread extends Thread {
 
 	@Override
 	public void run() {
-		Runtime.getRuntime().addShutdownHook(new Thread(KubeJSBackgroundThread::shutdown, "kubejs-background-thread-shutdown"));
-
-		for (var type : ScriptType.VALUES) {
-			type.executor = Executors.newSingleThreadExecutor(Thread.ofVirtual().name("kubejs-" + type + "-background-task-").factory());
-		}
-
 		while (running) {
 			try {
 				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			} catch (InterruptedException ignored) {
+				Thread.currentThread().interrupt();
 			}
 
 			for (var type : ScriptType.VALUES) {
 				type.console.flush(false);
-			}
-		}
-
-		for (var type : ScriptType.VALUES) {
-			type.console.flush(true);
-
-			if (type.executor instanceof ExecutorService service) {
-				service.shutdown();
-
-				boolean b;
-				try {
-					b = service.awaitTermination(3L, TimeUnit.SECONDS);
-				} catch (InterruptedException var3) {
-					b = false;
-				}
-
-				if (!b) {
-					service.shutdownNow();
-				}
 			}
 		}
 	}
@@ -55,8 +30,18 @@ public class KubeJSBackgroundThread extends Thread {
 	public static void shutdown() {
 		running = false;
 
-		for (var value : ScriptType.VALUES) {
-			value.console.flush(true);
+		for (var type : ScriptType.VALUES) {
+			type.console.flush(true);
+
+			type.executor.shutdown();
+
+			try {
+				if (!type.executor.awaitTermination(3L, TimeUnit.SECONDS)) {
+					type.executor.shutdownNow();
+				}
+			} catch (InterruptedException ignored) {
+				type.executor.shutdownNow();
+			}
 		}
 	}
 }

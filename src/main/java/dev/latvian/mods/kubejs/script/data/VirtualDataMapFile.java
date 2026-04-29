@@ -26,6 +26,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+/// Mutable builder for a single NeoForge [DataMapFile], for use in [VirtualDataPack]s.
+/// Files are built using [#toFile()] when the virtual data pack is built.
+///
+/// @param <RT> the type of the registry this data map is attached to
+/// @param <DT> the type of the attached data
+/// @see KubeDataGenerator#dataMap
+///
 public class VirtualDataMapFile<RT, DT> implements BiConsumer<Identifier, DT> {
 	public final KubeDataGenerator pack;
 	public final RegistryAccessContainer registryAccess;
@@ -45,6 +52,7 @@ public class VirtualDataMapFile<RT, DT> implements BiConsumer<Identifier, DT> {
 		this.registry = registryAccess.lookupOrThrow(type.registryKey());
 	}
 
+	/// Causes this data map file to replace all other existing entries rather than merge with them.
 	public void replaceAll() {
 		replace = true;
 	}
@@ -130,6 +138,7 @@ public class VirtualDataMapFile<RT, DT> implements BiConsumer<Identifier, DT> {
 		}
 	}
 
+	/// builds the real data
 	DataMapFile<DT, RT> toFile() {
 		return new DataMapFile<>(
 			replace,

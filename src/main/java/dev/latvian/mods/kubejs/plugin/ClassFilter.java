@@ -8,6 +8,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/// Controls which Java classes may be accessed from KubeJS scripts.
+///
+/// Resolution order for [#isAllowed(String)]:
+/// 1. Exact deny match -> denied
+/// 2. Exact allow match -> allowed
+/// 3. Prefix deny match (e.g. a package prefix) -> denied
+/// 4. Default -> allowed (deny-list semantics; everything is allowed unless explicitly denied)
+///
+/// Results are cached for repeated lookups.
+/// Note: prefix-based allow (package allow-list) is currently disabled, [#allow] only works for exact class names.
+///
+/// Mods may contribute rules via [KubeJSPlugin#registerClasses(ClassFilter)],
+/// or ship a `kubejs.classfilter.txt`.
+///
+/// @see KubeJSPlugins#createClassFilter(ScriptType)
 public class ClassFilter {
 	private static final byte V_DEF = -1;
 	private static final byte V_DENY = 0;

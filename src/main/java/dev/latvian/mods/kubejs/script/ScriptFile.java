@@ -14,6 +14,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+/// A single `.js` or `.ts` script file loaded from disk that needs to be evaluated.
+/// Additional _file properties_ can be specified in the form of line comments before
+/// any regular script lines, including:
+///
+///    - `priority <priority>` – integer sort key; higher values execute first (default 0)
+///   - `ignore(d) <true>`: if `true`, the file will be skipped
+///   - `packmode <mode>`: only load when the active pack-mode matches this string
+///   - `requires <mod>` – one or more mod IDs that must be present (or `client` to only load the script on client-side)
+///
+/// Script files are loaded in the order of their priority, then by their file path.
 public class ScriptFile implements Comparable<ScriptFile> {
 	private static final Pattern PROPERTY_PATTERN = Pattern.compile("^(\\w+)\\s*[:=]?\\s*(-?\\w+)$");
 

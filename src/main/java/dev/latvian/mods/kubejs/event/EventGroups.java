@@ -1,11 +1,13 @@
 package dev.latvian.mods.kubejs.event;
 
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
+import dev.latvian.mods.kubejs.plugin.builtin.BuiltinKubeJSPlugin;
 import dev.latvian.mods.kubejs.util.Lazy;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/// A map storing all known event groups. Elements of this map are added as bindings by the [BuiltinKubeJSPlugin].
 public record EventGroups(Map<String, EventGroup> map) implements EventGroupRegistry {
 	public static final Lazy<EventGroups> ALL = Lazy.of(() -> {
 		var groups = new EventGroups(new LinkedHashMap<>());
