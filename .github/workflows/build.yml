@@ -1,0 +1,37 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "2601"
+    tags-ignore:
+      - "**"
+    paths:
+      - "gradle/**"
+      - "**.java"
+      - "**.kts"
+      - "**.properties"
+      - "**/build.yml"
+      - "**/accesstransformer.cfg"
+  pull_request:
+    branches:
+      - "2601"
+    paths:
+      - "gradle/**"
+      - "**.java"
+      - "**.kts"
+      - "**.properties"
+      - "**/build.yml"
+      - "**/accesstransformer.cfg"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  redirect:
+    uses: AlmostReliable/.github/.github/workflows/build.yml@main
+    with:
+      java-distribution: "microsoft"
+      java-version: "25"
