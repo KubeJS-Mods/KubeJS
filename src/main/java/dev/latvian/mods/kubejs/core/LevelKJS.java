@@ -5,6 +5,8 @@ import dev.latvian.mods.kubejs.level.ExplosionProperties;
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.ScriptTypeHolder;
+import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.Param;
 import dev.latvian.mods.rhino.util.RemapForJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.BlockPos;
@@ -60,6 +62,9 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Ent
 	}
 
 	@Override
+	@Info(value = "Each player in the level (world) runs the specified console command with their permission level.", params = {
+		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
+	})
 	default void kjs$runCommand(String command) {
 		for (var entity : kjs$self().players()) {
 			entity.kjs$runCommand(command);
@@ -67,6 +72,9 @@ public interface LevelKJS extends WithAttachedData<Level>, ScriptTypeHolder, Ent
 	}
 
 	@Override
+	@Info(value = "Each player in the level (world) runs the specified console command with their permission level. The command won't output any logs in chat nor console", params = {
+		@Param(name = "command", value = "The console command. Slash at the beginning is optional."),
+	})
 	default void kjs$runCommandSilent(String command) {
 		for (var entity : kjs$self().players()) {
 			entity.kjs$runCommandSilent(command);

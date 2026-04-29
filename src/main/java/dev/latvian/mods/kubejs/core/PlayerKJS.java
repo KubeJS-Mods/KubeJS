@@ -4,7 +4,10 @@ import com.mojang.authlib.GameProfile;
 import dev.latvian.mods.kubejs.player.KubeJSInventoryListener;
 import dev.latvian.mods.kubejs.player.PlayerStatsJS;
 import dev.latvian.mods.kubejs.stages.Stages;
+import dev.latvian.mods.kubejs.typings.Info;
+import dev.latvian.mods.kubejs.typings.ThisIs;
 import dev.latvian.mods.kubejs.util.NotificationToastData;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -15,9 +18,12 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import org.jspecify.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+
 @RemapPrefixForJS("kjs$")
 public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedData<Player> {
 	@Override
+	@HideFromJS
 	default Player kjs$self() {
 		return (Player) this;
 	}
@@ -35,17 +41,29 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 	}
 
 	@Override
+	@ThisIs(Player.class)
+	@Info("Checks if the entity is a player entity.")
 	default boolean kjs$isPlayer() {
 		return true;
 	}
 
+	@ThisIs(FakePlayer.class)
+	@Info("Checks if the player is fake.")
 	default boolean kjs$isFake() {
 		return this instanceof FakePlayer;
 	}
 
 	@Override
+	@Nonnull
+	@Info("Gets the player's profile.")
 	default GameProfile kjs$getProfile() {
 		return kjs$self().getGameProfile();
+	}
+
+	@Override
+	@Info("Gets the player's username.")
+	default String kjs$getUsername() {
+		return kjs$self().getGameProfile().name();
 	}
 
 	default InventoryKJS kjs$getInventory() {
@@ -95,8 +113,8 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 	default void kjs$spawn() {
 	}
 
-	default void kjs$addFood(int f, float m) {
-		kjs$self().getFoodData().eat(f, m);
+	default void kjs$addFood(int hunger, float saturation) {
+		kjs$self().getFoodData().eat(hunger, saturation);
 	}
 
 	default int kjs$getFoodLevel() {
@@ -123,8 +141,8 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 		kjs$self().giveExperiencePoints(xp);
 	}
 
-	default void kjs$addXPLevels(int l) {
-		kjs$self().giveExperienceLevels(l);
+	default void kjs$addXPLevels(int levels) {
+		kjs$self().giveExperienceLevels(levels);
 	}
 
 	default void kjs$setXp(int xp) {
@@ -138,11 +156,11 @@ public interface PlayerKJS extends LivingEntityKJS, DataSenderKJS, WithAttachedD
 		return kjs$self().totalExperience;
 	}
 
-	default void kjs$setXpLevel(int l) {
+	default void kjs$setXpLevel(int levels) {
 		kjs$self().totalExperience = 0;
 		kjs$self().experienceProgress = 0F;
 		kjs$self().experienceLevel = 0;
-		kjs$self().giveExperienceLevels(l);
+		kjs$self().giveExperienceLevels(levels);
 	}
 
 	default int kjs$getXpLevel() {
