@@ -125,7 +125,7 @@ public abstract class ItemMixin implements ItemKJS {
 	@Override
 	@Accessor("foodProperties")
 	@Mutable
-	public abstract void kjs$setFoodProperties(FoodProperties properties);
+	public abstract void kjs$overrideFood(@Nullable FoodProperties properties);
 
 	@Inject(method = "isFoil", at = @At("HEAD"), cancellable = true)
 	private void isFoilKJS(ItemStack itemStack, CallbackInfoReturnable<Boolean> ci) {

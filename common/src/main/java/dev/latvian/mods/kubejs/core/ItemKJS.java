@@ -90,7 +90,7 @@ public interface ItemKJS extends IngredientSupplierKJS {
 		throw new NoMixinException();
 	}
 
-	default void kjs$setFoodProperties(FoodProperties properties) {
+	default void kjs$overrideFood(@Nullable FoodProperties properties) {
 		throw new NoMixinException();
 	}
 
@@ -118,11 +118,15 @@ public interface ItemKJS extends IngredientSupplierKJS {
 		}
 	}
 
-	default void kjs$setFoodProperties(Consumer<FoodBuilder> consumer) {
-		var fp = kjs$self().getFoodProperties();
-		var builder = fp == null ? new FoodBuilder() : new FoodBuilder(fp);
-		consumer.accept(builder);
-		kjs$setFoodProperties(builder.build());
+	default void kjs$setFoodProperties(@Nullable Consumer<FoodBuilder> consumer) {
+		if (consumer != null) {
+			var fp = kjs$self().getFoodProperties();
+			var builder = fp == null ? new FoodBuilder() : new FoodBuilder(fp);
+			consumer.accept(builder);
+			kjs$overrideFood(builder.build());
+		} else {
+			kjs$overrideFood(null);
+		}
 	}
 
 	default void kjs$setAttackDamage(double attackDamage) {
