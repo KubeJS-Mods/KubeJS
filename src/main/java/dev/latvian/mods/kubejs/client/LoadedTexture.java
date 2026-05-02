@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.color.KubeColor;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.neoforged.fml.ModList;
 import org.jspecify.annotations.Nullable;
 
 import javax.imageio.ImageIO;
@@ -22,15 +23,18 @@ public class LoadedTexture {
 	public static final LoadedTexture EMPTY = new LoadedTexture(0, 0, new int[0], null);
 
 	public static LoadedTexture load(Identifier id) {
+		KubeJS.LOGGER.warn("Loading texture " + id);
 		try {
 			var path = KubeJSPaths.ASSETS.resolve(id.getNamespace() + "/textures/" + id.getPath() + ".png");
 
 			if (Files.exists(path)) {
+				KubeJS.LOGGER.warn("TEST - ONE");
 				try (var in = new BufferedInputStream(Files.newInputStream(path))) {
 					var metaPath = KubeJSPaths.ASSETS.resolve(id.getNamespace() + "/textures/" + id.getPath() + ".png.mcmeta");
 					return new LoadedTexture(ImageIO.read(in), Files.exists(metaPath) ? Files.readAllBytes(metaPath) : null);
 				}
 			} else if (id.getNamespace().equals(KubeJS.MOD_ID)) {
+				KubeJS.LOGGER.warn("TEST - TWO");
 				var path1 = KubeJS.thisMod.getModInfo().getOwningFile().getFile().getFilePath().resolve("assets", "kubejs", "textures", id.getPath() + ".png");
 
 				if (Files.exists(path1)) {
@@ -39,11 +43,31 @@ public class LoadedTexture {
 						return new LoadedTexture(ImageIO.read(in), Files.exists(metaPath) ? Files.readAllBytes(metaPath) : null);
 					}
 				}
+			} else {
+				KubeJS.LOGGER.warn("TEST - THREE");
+				var modContainer = ModList.get().getModContainerById(id.getNamespace());
+
+				if (modContainer.isPresent()) {
+					KubeJS.LOGGER.warn("Mod present");
+					var modFile = modContainer.get().getModInfo().getOwningFile().getFile();
+					var path2 = modFile.getFilePath().resolve("assets", id.getNamespace(), "textures", id.getPath() + ".png");
+					KubeJS.LOGGER.warn(path2.toString());
+
+					if (Files.exists(path2)) {
+						KubeJS.LOGGER.warn("Path exists");
+						try (var in = new BufferedInputStream(Files.newInputStream(path2))) {
+							var metaPath = modFile.getFilePath().resolve("assets", id.getNamespace(), "textures", id.getPath() + ".png.mcmeta");
+							KubeJS.LOGGER.warn("Correct return");
+							return new LoadedTexture(ImageIO.read(in), Files.exists(metaPath) ? Files.readAllBytes(metaPath) : null);
+						}
+					}
+				}
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 
+		KubeJS.LOGGER.warn("TEST - FOUR");
 		return EMPTY;
 	}
 
