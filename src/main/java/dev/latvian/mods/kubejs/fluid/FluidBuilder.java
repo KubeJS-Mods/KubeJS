@@ -211,69 +211,38 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 
 			generator.mask(fluidPath, KubeJS.id("item/bucket_mask"), fluidType.actualStillTexture);
 
-			// 1.21 Model Generator
-//			generator.itemModel(bucketItem.id, m -> {
-//				m.parent(bucketItem.parentModel == null ? GENERATED_BUCKET_MODEL_ID : bucketItem.parentModel);
-//				m.texture("bucket_fluid", fluidPath.toString());
-//				m.textures(bucketItem.textures);
-//			});
+			generator.itemModel(bucketItem.id, m -> {
+				m.parent(GENERATED_BUCKET_MODEL_ID);
+				m.texture("bucket_fluid", fluidPath.toString());
+			});
 
-			// Test Implementation
-//			generator.itemModel(bucketItem.id, m -> {
-//				m.parent(GENERATED_BUCKET_MODEL_ID);
-//				m.texture("bucket_fluid", fluidPath.toString());
-//			});
-			var gen = new ModelGenerator();
-			gen.parent(GENERATED_BUCKET_MODEL_ID);
-			gen.texture("bucket_fluid", fluidPath.toString());
-			generator.json(bucketItem.id.withPath(ID.ITEM_MODEL), gen.toJson());
+			var modelRef = new JsonObject();
+			modelRef.addProperty("type", "minecraft:model");
+			modelRef.addProperty("model", bucketItem.id.withPath(ID.ITEM).toString());
 
-			var textureObject = new JsonObject();
-//			textureObject.addProperty("particle", "minecraft:item/bucket");
-			textureObject.addProperty("base", "minecraft:item/bucket");
-			textureObject.addProperty("fluid", "neoforge:item/mask/bucket_fluid");
-			textureObject.addProperty("cover", "neoforge:item/mask/bucket_fluid_cover");
+			var tints = new JsonArray();
 
-			var modelObject = new JsonObject();
-			modelObject.addProperty("type", "neoforge:fluid_container");
-			modelObject.addProperty("flip_gas", fluidType.get().getDensity() <= 0);
-			modelObject.addProperty("cover_is_mask", true);
-			modelObject.addProperty("apply_fluid_luminosity", fluidType.get().getLightLevel() > 0);
-//			modelObject.addProperty("fluid", fluidType.stillTexture.toString());
-			modelObject.add("textures", textureObject);
+			var baseTint = new JsonObject();
+			baseTint.addProperty("type", "minecraft:constant");
+			baseTint.addProperty("value", -1);
+			tints.add(baseTint);
 
-//			generator.itemModel(bucketItem.id, m -> {
-//				m.custom(json -> modelObject.getAsJsonObject());
-//			});
-			var itemModel = new JsonObject();
-			itemModel.add("model", modelObject);
-			generator.json(bucketItem.id.withPath(ID.ITEM_DEFINITION), itemModel);
+			KubeColor tintColor = bucketColor;
 
-			// 26.1 Model Generator
-//			var gen = new ModelGenerator();
-//			gen.parent(GENERATED_BUCKET_MODEL_ID);
-//			gen.texture("bucket_fluid", fluidPath.toString());
-//			generator.json(bucketItem.id.withPath(ID.ITEM_MODEL), gen.toJson());
+			if (tintColor == null && fluidType.tint instanceof BlockTintFunction.Fixed(KubeColor color)) {
+				tintColor = color;
+			}
 
-//			var modelRef = new JsonObject();
-//			modelRef.addProperty("type", "minecraft:model");
-//			modelRef.addProperty("model", bucketItem.id.withPath(ID.ITEM).toString());
-//
-//			var tintEntry = new JsonObject();
-//			tintEntry.addProperty("type", "neoforge:fluid_contents_tint");
-//
-//			var tints = new JsonArray();
-//			var noTint = new JsonObject();
-//			noTint.addProperty("type", "minecraft:constant");
-//			noTint.addProperty("value", -1);
-//			tints.add(noTint);
-//			tints.add(tintEntry);
-//
-//			modelRef.add("tints", tints);
-//
-//			var def = new JsonObject();
-//			def.add("model", modelRef);
-//			generator.json(bucketItem.id.withPath(ID.ITEM_DEFINITION), def);
+			var fluidTint = new JsonObject();
+			fluidTint.addProperty("type", "minecraft:constant");
+			fluidTint.addProperty("value", tintColor != null ? tintColor.kjs$getARGB() : -1);
+			tints.add(fluidTint);
+
+			modelRef.add("tints", tints);
+
+			var def = new JsonObject();
+			def.add("model", modelRef);
+			generator.json(bucketItem.id.withPath(ID.ITEM_DEFINITION), def);
 		}
 	}
 }
