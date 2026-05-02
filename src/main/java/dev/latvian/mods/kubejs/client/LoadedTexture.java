@@ -6,6 +6,7 @@ import dev.latvian.mods.kubejs.color.KubeColor;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.neoforged.fml.ModList;
 import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
@@ -37,6 +38,20 @@ public class LoadedTexture {
 					try (var in = new BufferedInputStream(Files.newInputStream(path1))) {
 						var metaPath = KubeJS.thisMod.getModInfo().getOwningFile().getFile().findResource("assets", "kubejs", "textures", id.getPath() + ".png.mcmeta");
 						return new LoadedTexture(ImageIO.read(in), Files.exists(metaPath) ? Files.readAllBytes(metaPath) : null);
+					}
+				}
+			} else {
+				var modContainer = ModList.get().getModContainerById(id.getNamespace());
+
+				if (modContainer.isPresent()) {
+					var modFile = modContainer.get().getModInfo().getOwningFile().getFile();
+					var path2 = modFile.findResource("assets", id.getNamespace(), "textures", id.getPath() + ".png");
+
+					if (Files.exists(path2)) {
+						try (var in = new BufferedInputStream(Files.newInputStream(path2))) {
+							var metaPath = modFile.findResource("assets", id.getNamespace(), "textures", id.getPath() + ".png.mcmeta");
+							return new LoadedTexture(ImageIO.read(in), Files.exists(metaPath) ? Files.readAllBytes(metaPath) : null);
+						}
 					}
 				}
 			}
