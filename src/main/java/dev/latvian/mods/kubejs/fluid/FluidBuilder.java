@@ -166,7 +166,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 
 		var flowingTexture = generator.loadTexture(fluidType.flowingTexture);
 
-		if (!(stillTexture.width <= 0 || stillTexture.height <= 0)) {
+		if (!(flowingTexture.width <= 0 || flowingTexture.height <= 0)) {
 			generator.texture(fluidType.actualFlowingTexture, flowingTexture.tint(fluidType.tint));
 		}
 
