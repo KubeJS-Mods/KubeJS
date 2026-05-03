@@ -273,12 +273,11 @@ public interface ItemStackKJS extends
 		var t = kjs$self();
 		var r = ItemWrapper.wrap(cx.cx(), with);
 
-		if (!ItemStack.isSameItemSameComponents(t, r)) {
-			r.setCount(t.getCount());
-			return r;
+		if (ItemStack.isSameItemSameComponents(t, r) && t.getCount() == r.getCount()) {
+			return this;
 		}
 
-		return this;
+		return r;
 	}
 
 	@Override
