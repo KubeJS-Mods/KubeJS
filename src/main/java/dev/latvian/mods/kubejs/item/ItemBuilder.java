@@ -5,7 +5,7 @@ import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.ItemWrapper;
 import dev.latvian.mods.kubejs.registry.ModelledBuilderBase;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.TickDuration;
@@ -373,7 +373,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 				if (type != null) {
 					properties.component((DataComponentType) type, entry.getValue());
 				} else {
-					ScriptType.STARTUP.console.error("Component '" + entry.getKey() + "' not found for item " + id);
+					ConsoleJS.STARTUP.error("Component '" + entry.getKey() + "' not found for item " + id);
 				}
 			}
 		}

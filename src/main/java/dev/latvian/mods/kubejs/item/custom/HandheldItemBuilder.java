@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.item.custom;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.MutableToolTier;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.resources.Identifier;
@@ -38,7 +38,7 @@ public abstract class HandheldItemBuilder extends ItemBuilder {
 			try {
 				return this;
 			} catch (Exception e) {
-				ScriptType.STARTUP.console.error("Cannot pass in a null tier to tier builder.");
+				ConsoleJS.STARTUP.error("Cannot pass in a null tier to tier builder.");
 			}
 		}
 

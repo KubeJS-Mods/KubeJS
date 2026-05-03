@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Lazy;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.core.Registry;
@@ -81,7 +81,7 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 		@Override
 		public void addDefault(Class<? extends BuilderBase<? extends T>> builderType, BuilderFactory factory) {
 			if (info.defaultType != null) {
-				ScriptType.STARTUP.console.warn("Previous default type '" + info.defaultType.builderClass().getName() + "' for registry '" + info + "' replaced with '" + builderType.getName() + "'!");
+				ConsoleJS.STARTUP.warn("Previous default type '" + info.defaultType.builderClass().getName() + "' for registry '" + info + "' replaced with '" + builderType.getName() + "'!");
 			}
 
 			info.defaultType = new BuilderType<>(DEFAULT, builderType, factory);
@@ -100,7 +100,7 @@ public record BuilderTypeRegistryHandler(Map<ResourceKey<?>, Info<?>> map) imple
 			var prev = info.types.get(type);
 
 			if (prev != null) {
-				ScriptType.STARTUP.console.warn("Previous '" + type + "' type '" + prev.builderClass().getName() + "' for registry '" + info + "' replaced with '" + builderType.getName() + "'!");
+				ConsoleJS.STARTUP.warn("Previous '" + type + "' type '" + prev.builderClass().getName() + "' for registry '" + info + "' replaced with '" + builderType.getName() + "'!");
 			}
 
 			var builderTypeDef = new BuilderType<>(type, builderType, factory);

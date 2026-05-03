@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.util;
 
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.rhino.BaseFunction;
 import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.RhinoException;
@@ -52,7 +52,7 @@ public class ScheduledEvents {
 				try {
 					callback.onCallback(this);
 				} catch (RhinoException ex) {
-					ScriptType.SERVER.console.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
+					ConsoleJS.SERVER.error("Error occurred while handling scheduled event callback: " + ex.getMessage());
 				} catch (Throwable ex) {
 					ex.printStackTrace();
 				}

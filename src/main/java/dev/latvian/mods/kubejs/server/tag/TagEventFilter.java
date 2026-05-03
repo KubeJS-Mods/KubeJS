@@ -2,7 +2,7 @@ package dev.latvian.mods.kubejs.server.tag;
 
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.error.EmptyTagTargetException;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.RegExpKJS;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagEntry;
@@ -164,7 +164,7 @@ public sealed interface TagEventFilter {
 			if (DevProperties.get().strictTags) {
 				throw new EmptyTagTargetException(msg);
 			} else if (DevProperties.get().logSkippedTags) {
-				ScriptType.SERVER.console.warn(msg);
+				ConsoleJS.SERVER.warn(msg);
 			}
 
 			return false;
@@ -182,7 +182,7 @@ public sealed interface TagEventFilter {
 			if (DevProperties.get().strictTags) {
 				throw new EmptyTagTargetException(msg);
 			} else if (DevProperties.get().logSkippedTags) {
-				ScriptType.SERVER.console.warn(msg);
+				ConsoleJS.SERVER.warn(msg);
 			}
 
 			return false;

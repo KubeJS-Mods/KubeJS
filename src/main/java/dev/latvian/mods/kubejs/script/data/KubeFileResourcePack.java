@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.script.data;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.FilePackResources;
@@ -59,7 +59,7 @@ public class KubeFileResourcePack implements PackResources {
 				if (fileNameLC.endsWith(".zip") || fileNameLC.equals(".ds_store") || fileNameLC.equals("thumbs.db") || fileNameLC.equals("desktop.ini")) {
 					continue;
 				} else if (Files.isHidden(path)) {
-					ScriptType.STARTUP.console.error("Invisible file found: " + pathName + path.relativize(p).toString().replace('\\', '/')).withExternalFile(p);
+					ConsoleJS.STARTUP.error("Invisible file found: " + pathName + path.relativize(p).toString().replace('\\', '/')).withExternalFile(p);
 					continue;
 				}
 
@@ -67,19 +67,19 @@ public class KubeFileResourcePack implements PackResources {
 
 				for (char c : chars) {
 					if (c >= 'A' && c <= 'Z') {
-						ScriptType.STARTUP.console.error("Invalid file name: Uppercase '" + c + "' in " + pathName + path.relativize(p).toString().replace('\\', '/')).withExternalFile(p);
+						ConsoleJS.STARTUP.error("Invalid file name: Uppercase '" + c + "' in " + pathName + path.relativize(p).toString().replace('\\', '/')).withExternalFile(p);
 						break;
 					} else if (c != '_' && c != '-' && (c < 'a' || c > 'z') && (c < '0' || c > '9') && c != '/' && c != '.') {
-						ScriptType.STARTUP.console.error("Invalid file name: Invalid character '" + c + "' in " + pathName + path.relativize(p).toString().replace('\\', '/')).withExternalFile(p);
+						ConsoleJS.STARTUP.error("Invalid file name: Invalid character '" + c + "' in " + pathName + path.relativize(p).toString().replace('\\', '/')).withExternalFile(p);
 						break;
 					}
 				}
 			} catch (Exception ex) {
-				ScriptType.STARTUP.console.error("Invalid file name: " + pathName + path.relativize(p).toString().replace('\\', '/'), ex).withExternalFile(p);
+				ConsoleJS.STARTUP.error("Invalid file name: " + pathName + path.relativize(p).toString().replace('\\', '/'), ex).withExternalFile(p);
 			}
 		}
 
-		ScriptType.STARTUP.console.info("Validated " + files + " files in " + pathName + " in " + (System.currentTimeMillis() - start) + "ms");
+		ConsoleJS.STARTUP.info("Validated " + files + " files in " + pathName + " in " + (System.currentTimeMillis() - start) + "ms");
 	}
 
 	public static int findBeforeModsIndex(List<PackResources> packs) {

@@ -109,9 +109,8 @@ public class KubeJS {
 
 		if (!datagen) {
 			new KubeJSBackgroundThread().start();
-			// Required to be called this way because ConsoleJS class hasn't been initialized yet
-			ScriptType.STARTUP.console.startCapturingErrors();
-			ScriptType.CLIENT.console.startCapturingErrors();
+			ConsoleJS.STARTUP.startCapturingErrors();
+			ConsoleJS.CLIENT.startCapturingErrors();
 		}
 
 		LOGGER.info("Loading vanilla registries...");

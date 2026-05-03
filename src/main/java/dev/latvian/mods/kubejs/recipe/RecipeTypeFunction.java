@@ -5,7 +5,6 @@ import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.recipe.component.ComponentValueMap;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaType;
 import dev.latvian.mods.kubejs.script.ConsoleJS;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.ErrorStack;
 import dev.latvian.mods.kubejs.util.JsonUtils;
@@ -51,7 +50,7 @@ public class RecipeTypeFunction extends BaseFunction implements WrappedJS {
 			var r = schemaType.schema.recipeFactory.create(this, sourceLine, true);
 			r.creationError = true;
 			event.failedCount++;
-			ScriptType.SERVER.console.error("Failed to create a '" + idString + "' recipe" + stack.atString() + " from args " + Arrays.toString(args0), sourceLine, cause, SKIP_ERROR);
+			ConsoleJS.SERVER.error("Failed to create a '" + idString + "' recipe" + stack.atString() + " from args " + Arrays.toString(args0), sourceLine, cause, SKIP_ERROR);
 			r.json = new JsonObject();
 			r.json.addProperty("type", idString);
 			r.newRecipe = true;

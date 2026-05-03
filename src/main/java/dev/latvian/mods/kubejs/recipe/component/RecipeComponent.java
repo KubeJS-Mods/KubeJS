@@ -13,7 +13,7 @@ import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.Replaceable;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchema;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.IntBounds;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.kubejs.util.TinyMap;
@@ -124,10 +124,10 @@ public interface RecipeComponent<T> {
 
 			switch (result) {
 				case DataResult.Success<JsonElement> r -> json.add(cv.key.name, r.value());
-				case DataResult.Error<JsonElement> r -> ScriptType.SERVER.console.error("Failed to encode " + cv.key.name + " for recipe " + recipe.id + " from value" + cv.value + ": " + r.message(), recipe.sourceLine, null, RecipesKubeEvent.POST_SKIP_ERROR);
+				case DataResult.Error<JsonElement> r -> ConsoleJS.SERVER.error("Failed to encode " + cv.key.name + " for recipe " + recipe.id + " from value" + cv.value + ": " + r.message(), recipe.sourceLine, null, RecipesKubeEvent.POST_SKIP_ERROR);
 			}
 		} catch (Exception ex) {
-			ScriptType.SERVER.console.error("Failed to encode " + cv.key.name + " for recipe " + recipe.id + " from value" + cv.value + ": " + ex, recipe.sourceLine, ex, RecipesKubeEvent.POST_SKIP_ERROR);
+			ConsoleJS.SERVER.error("Failed to encode " + cv.key.name + " for recipe " + recipe.id + " from value" + cv.value + ": " + ex, recipe.sourceLine, ex, RecipesKubeEvent.POST_SKIP_ERROR);
 		}
 	}
 

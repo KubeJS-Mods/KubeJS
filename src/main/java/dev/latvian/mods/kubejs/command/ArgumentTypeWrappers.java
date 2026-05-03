@@ -9,7 +9,7 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.ClassWrapper;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -160,7 +160,7 @@ public enum ArgumentTypeWrappers implements ArgumentTypeWrapper {
 
 	public static void printAll() {
 		for (var argType : getOrCacheByName().entrySet()) {
-			ScriptType.SERVER.console.info("Argument type: " + argType.getKey() + " -> " + argType.getValue());
+			ConsoleJS.SERVER.info("Argument type: " + argType.getKey() + " -> " + argType.getValue());
 		}
 	}
 

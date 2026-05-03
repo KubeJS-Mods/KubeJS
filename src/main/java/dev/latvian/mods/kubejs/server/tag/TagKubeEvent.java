@@ -3,7 +3,7 @@ package dev.latvian.mods.kubejs.server.tag;
 import dev.latvian.mods.kubejs.error.EmptyTagTargetException;
 import dev.latvian.mods.kubejs.event.EventExceptionHandler;
 import dev.latvian.mods.kubejs.event.KubeEvent;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -23,12 +23,12 @@ public class TagKubeEvent implements KubeEvent {
 			if (stacktrace.length > 0) {
 				if (stacktrace[0].toString().contains("dev.latvian.mods.rhino.ScriptRuntime.doTopCall")) {
 					var error = ex.getCause() == null ? ex : ex.getCause();
-					ScriptType.SERVER.console.error("IllegalStateException was thrown during tag event in script %s:%d, this is most likely due to a concurrency bug in Rhino! While we are working on a fix for this issue, you may manually work around it by reloading the server again (e.g. by using /reload command).".formatted(container.source, container.line), error);
+					ConsoleJS.SERVER.error("IllegalStateException was thrown during tag event in script %s:%d, this is most likely due to a concurrency bug in Rhino! While we are working on a fix for this issue, you may manually work around it by reloading the server again (e.g. by using /reload command).".formatted(container.source, container.line), error);
 					return null;
 				}
 			}
 		} else if (ex instanceof EmptyTagTargetException) {
-			ScriptType.SERVER.console.error(ex.getMessage() + " (at %s:%d)".formatted(container.source, container.line));
+			ConsoleJS.SERVER.error(ex.getMessage() + " (at %s:%d)".formatted(container.source, container.line));
 			return null;
 		}
 		return ex;

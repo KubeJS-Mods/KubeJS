@@ -4,7 +4,7 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.event.KubeStartupEvent;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.SourceLine;
 import dev.latvian.mods.kubejs.util.KubeIdentifier;
 import dev.latvian.mods.rhino.Context;
@@ -106,7 +106,7 @@ public class RegistryKubeEvent<T> implements KubeStartupEvent, AdditionalObjectR
 		}
 
 		if (DevProperties.get().logRegistryEventObjects) {
-			ScriptType.STARTUP.console.info("~ " + builder.registryKey.identifier() + " | " + builder.id);
+			ConsoleJS.STARTUP.info("~ " + builder.registryKey.identifier() + " | " + builder.id);
 		}
 
 		var objStorage = RegistryObjectStorage.of(builder.registryKey);

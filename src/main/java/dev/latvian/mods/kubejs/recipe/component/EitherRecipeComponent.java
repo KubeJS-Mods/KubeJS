@@ -9,7 +9,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeScriptContext;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
 import dev.latvian.mods.kubejs.recipe.match.ReplacementMatchInfo;
 import dev.latvian.mods.kubejs.recipe.schema.RecipeSchemaStorage;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.OpsContainer;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.resources.ResourceKey;
@@ -77,8 +77,8 @@ public record EitherRecipeComponent<H, L>(RecipeComponent<H> left, RecipeCompone
 				return Either.right(value);
 			}
 		} catch (Exception ex) {
-			ScriptType.SERVER.console.warn("Failed to read %s (left: %s)!".formatted(from, left), ex1);
-			ScriptType.SERVER.console.warn("Failed to read %s (right: %s)!".formatted(from, right), ex);
+			ConsoleJS.SERVER.warn("Failed to read %s (left: %s)!".formatted(from, left), ex1);
+			ConsoleJS.SERVER.warn("Failed to read %s (right: %s)!".formatted(from, right), ex);
 		}
 
 		throw new KubeRuntimeException("Failed to read %s as either %s or %s!".formatted(from, left, right)).source(cx.recipe().sourceLine);

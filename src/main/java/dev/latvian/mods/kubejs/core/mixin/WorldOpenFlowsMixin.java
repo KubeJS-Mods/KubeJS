@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.core.mixin;
 
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import net.minecraft.client.gui.screens.worldselection.WorldOpenFlows;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,7 +14,7 @@ public class WorldOpenFlowsMixin {
 		shift = At.Shift.AFTER
 	))
 	private void printServerLogWarning(CallbackInfo ci) {
-		ScriptType.SERVER.console.warn("Due to the way Minecraft resource loading works, KubeJS' server.log may not contain everything that happened in your server scripts on initial world creation.");
-		ScriptType.SERVER.console.warn("You can still see the full log (including past reloads) in your latest.log file.");
+		ConsoleJS.SERVER.warn("Due to the way Minecraft resource loading works, KubeJS' server.log may not contain everything that happened in your server scripts on initial world creation.");
+		ConsoleJS.SERVER.warn("You can still see the full log (including past reloads) in your latest.log file.");
 	}
 }

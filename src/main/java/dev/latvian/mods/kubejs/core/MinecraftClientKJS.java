@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.item.ItemClickedKubeEvent;
 import dev.latvian.mods.kubejs.net.FirstClickPayload;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ItemEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.GLFWInputWrapper;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
@@ -158,10 +159,10 @@ public interface MinecraftClientKJS extends MinecraftEnvironmentKJS {
 	@HideFromJS
 	default void kjs$afterResourcesLoaded(boolean reload) {
 		if (reload) {
-			ScriptType.CLIENT.console.stopCapturingErrors();
+			ConsoleJS.CLIENT.stopCapturingErrors();
 		}
 
-		ScriptType.CLIENT.console.info("Client resource reload complete!");
+		ConsoleJS.CLIENT.info("Client resource reload complete!");
 	}
 
 	default Function<Identifier, TextureAtlasSprite> kjs$getBlockTextureAtlas() {

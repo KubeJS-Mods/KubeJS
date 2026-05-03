@@ -7,7 +7,7 @@ import dev.latvian.mods.kubejs.recipe.RecipeKey;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeFunctionInstance;
 import dev.latvian.mods.kubejs.recipe.schema.function.RecipeSchemaFunction;
 import dev.latvian.mods.kubejs.recipe.schema.postprocessing.RecipePostProcessor;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.Cast;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
@@ -334,10 +334,10 @@ public class JsonRecipeSchemaLoader {
 
 				switch (recipeSchemaDataCodec.parse(ops, json)) {
 					case Success(var value, _) -> map.put(id, new RecipeSchemaBuilder(id, value));
-					case Error(var msg, _, _) -> ScriptType.SERVER.console.error("Error parsing recipe schema json %s: %s".formatted(entry.getKey(), msg.get()));
+					case Error(var msg, _, _) -> ConsoleJS.SERVER.error("Error parsing recipe schema json %s: %s".formatted(entry.getKey(), msg.get()));
 				}
 			} catch (Exception ex) {
-				ScriptType.SERVER.console.error("Error reading recipe schema json " + entry.getKey(), ex);
+				ConsoleJS.SERVER.error("Error reading recipe schema json " + entry.getKey(), ex);
 			}
 		}
 
@@ -395,7 +395,7 @@ public class JsonRecipeSchemaLoader {
 						key.alwaysWrite = keyData.alwaysWrite();
 						builder.keys.add(key);
 					} catch (Exception ex) {
-						ScriptType.SERVER.console.error("Error parsing recipe schema '" + builder.id + "' key " + keyData.name(), ex);
+						ConsoleJS.SERVER.error("Error parsing recipe schema '" + builder.id + "' key " + keyData.name(), ex);
 					}
 				}
 			}

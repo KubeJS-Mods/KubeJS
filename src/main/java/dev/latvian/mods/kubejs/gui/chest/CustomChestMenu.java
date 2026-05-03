@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.gui.chest;
 
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
@@ -81,7 +81,7 @@ public class CustomChestMenu extends AbstractContainerMenu {
 		try {
 			data.handleClick(slot, input, button);
 		} catch (Exception ex) {
-			ScriptType.SERVER.console.error("Error handling chest gui click", ex);
+			ConsoleJS.SERVER.error("Error handling chest gui click", ex);
 		}
 
 		broadcastFullState();

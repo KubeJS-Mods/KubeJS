@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.recipe.filter.ConstantFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeFilter;
 import dev.latvian.mods.kubejs.recipe.filter.RecipeMatchContext;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
 import dev.latvian.mods.kubejs.util.RegistryOpsContainer;
 import dev.latvian.mods.rhino.Context;
@@ -85,9 +85,9 @@ public class AfterRecipesLoadedKubeEvent implements KubeEvent {
 				changed = true;
 
 				if (DevProperties.get().logRemovedRecipes) {
-					ScriptType.SERVER.console.info("- " + r);
-				} else if (ScriptType.SERVER.console.shouldPrintDebug()) {
-					ScriptType.SERVER.console.debug("- " + r);
+					ConsoleJS.SERVER.info("- " + r);
+				} else if (ConsoleJS.SERVER.shouldPrintDebug()) {
+					ConsoleJS.SERVER.debug("- " + r);
 				}
 			}
 		}

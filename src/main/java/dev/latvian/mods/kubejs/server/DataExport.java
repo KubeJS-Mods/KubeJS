@@ -7,8 +7,8 @@ import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ConsoleLine;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.JsonUtils;
 import dev.latvian.mods.kubejs.util.LogType;
 import dev.latvian.mods.kubejs.util.TimeJS;
@@ -107,7 +107,7 @@ public class DataExport {
 		var logStringBuilder = new StringBuilder();
 		var calendar = Calendar.getInstance();
 
-		for (var line : ScriptType.SERVER.console.errors) {
+		for (var line : ConsoleJS.SERVER.errors) {
 			appendLine(logStringBuilder, calendar, line);
 		}
 
@@ -118,7 +118,7 @@ public class DataExport {
 
 		logStringBuilder.setLength(0);
 
-		for (var line : ScriptType.SERVER.console.warnings) {
+		for (var line : ConsoleJS.SERVER.warnings) {
 			appendLine(logStringBuilder, calendar, line);
 		}
 

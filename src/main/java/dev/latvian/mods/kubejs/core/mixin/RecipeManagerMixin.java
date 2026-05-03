@@ -13,6 +13,7 @@ import dev.latvian.mods.kubejs.net.SyncServerDataPayload;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
 import dev.latvian.mods.kubejs.recipe.RecipesKubeEvent;
 import dev.latvian.mods.kubejs.recipe.special.SpecialRecipeSerializerManager;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.Cast;
@@ -103,7 +104,7 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener impl
 
 		// this will end up calling the NF event which will post the kube event
 		ScopedValue.where(RecipesKubeEvent.INSTANCE, new RecipesKubeEvent(ssm)).run(() -> {
-			ScriptType.SERVER.console.info("Processing recipes...");
+			ConsoleJS.SERVER.info("Processing recipes...");
 			original.call(manager, lister, ops, codec, result, jsonConsumer);
 		});
 	}
@@ -132,7 +133,7 @@ public abstract class RecipeManagerMixin extends ContextAwareReloadListener impl
 	@Override
 	public void kjs$replaceRecipes(RecipeMap recipeMap) {
 		recipes = recipeMap;
-		ScriptType.SERVER.console.info("Loaded " + recipeMap.values().size() + " recipes");
+		ConsoleJS.SERVER.info("Loaded " + recipeMap.values().size() + " recipes");
 	}
 
 	@Override

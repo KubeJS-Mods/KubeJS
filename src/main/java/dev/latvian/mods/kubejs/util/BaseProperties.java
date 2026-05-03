@@ -8,7 +8,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
@@ -47,17 +47,17 @@ public class BaseProperties {
 
 				throw new ReportedException(crashreport);
 			} catch (JsonSyntaxException e) {
-				ScriptType.STARTUP.console.startCapturingErrors();
+				ConsoleJS.STARTUP.startCapturingErrors();
 
 				var bakPath = path.resolveSibling(path.getFileName() + ".bak");
 
 				try {
 					Files.copy(path, bakPath, StandardCopyOption.REPLACE_EXISTING);
 				} catch (IOException ex) {
-					ScriptType.STARTUP.console.error("Failed to create backup file %s!".formatted(bakPath), ex);
+					ConsoleJS.STARTUP.error("Failed to create backup file %s!".formatted(bakPath), ex);
 				}
 
-				ScriptType.STARTUP.console.error("Error parsing properties JSON for file %s! A backup has been saved to %s. Default settings will be loaded.".formatted(path, bakPath), e);
+				ConsoleJS.STARTUP.warn("Error parsing properties JSON for file %s! A backup has been saved to %s. Default settings will be loaded.".formatted(path, bakPath), e);
 			}
 		} else {
 			writeProperties = true;
@@ -129,7 +129,7 @@ public class BaseProperties {
 		try (var writer = Files.newBufferedWriter(path)) {
 			GSON.toJson(properties, writer);
 		} catch (Exception ex) {
-			ScriptType.STARTUP.console.error("Error saving properties file %s! Settings will not be saved!".formatted(path), ex);
+			ConsoleJS.STARTUP.error("Error saving properties file %s! Settings will not be saved!".formatted(path), ex);
 		}
 	}
 

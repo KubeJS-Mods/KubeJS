@@ -4,8 +4,8 @@ import com.google.common.base.Strings;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.event.EventGroups;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import net.minecraft.commands.CommandSourceStack;
@@ -47,7 +47,7 @@ public class DumpCommands {
 				Files.createDirectories(groupFolder);
 				FileUtils.cleanDirectory(groupFolder.toFile());
 			} catch (IOException e) {
-				ScriptType.SERVER.console.error("Failed to create folder for event group " + groupName, e);
+				ConsoleJS.SERVER.error("Failed to create folder for event group " + groupName, e);
 				source.sendFailure(Component.literal("Failed to create folder for event group " + groupName));
 				return 0;
 			}
@@ -219,7 +219,7 @@ public class DumpCommands {
 				try {
 					Files.writeString(handlerFile, builder.toString());
 				} catch (IOException e) {
-					ScriptType.SERVER.console.error("Failed to write file for event handler " + fullName, e);
+					ConsoleJS.SERVER.error("Failed to write file for event handler " + fullName, e);
 					source.sendFailure(Component.literal("Failed to write file for event handler " + fullName));
 					return 0;
 				}

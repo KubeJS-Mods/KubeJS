@@ -5,6 +5,7 @@ import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.entity.AttributeBuilder;
 import dev.latvian.mods.kubejs.plugin.builtin.event.StartupEvents;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -56,7 +57,7 @@ public class RegistryEventHandler {
 				event.register(registryKey, builder.id, builder::createTransformedObject);
 
 				if (DevProperties.get().logRegistryEventObjects) {
-					ScriptType.STARTUP.console.info("+ " + registryKey.identifier() + " | " + builder.id);
+					ConsoleJS.STARTUP.info("+ " + registryKey.identifier() + " | " + builder.id);
 				}
 
 				added++;

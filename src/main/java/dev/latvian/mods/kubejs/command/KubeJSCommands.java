@@ -21,6 +21,7 @@ import dev.latvian.mods.kubejs.net.ReloadStartupScriptsPayload;
 import dev.latvian.mods.kubejs.plugin.builtin.event.ServerEvents;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextIcons;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.TextWrapper;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.script.data.ExportablePackResources;
@@ -569,9 +570,9 @@ public class KubeJSCommands {
 
 		if (schemaType != null) {
 			var json = schemaType.schema.toJson(storage, schemaType, ops);
-			ScriptType.SERVER.console.info("JSON of " + id.identifier() + ": (May be inaccurate!)\n" + JsonUtils.toPrettyString(json));
+			ConsoleJS.SERVER.info("JSON of " + id.identifier() + ": (May be inaccurate!)\n" + JsonUtils.toPrettyString(json));
 		} else {
-			ScriptType.SERVER.console.info("Failed to generate JSON of " + id.identifier());
+			ConsoleJS.SERVER.info("Failed to generate JSON of " + id.identifier());
 		}
 
 		return 1;

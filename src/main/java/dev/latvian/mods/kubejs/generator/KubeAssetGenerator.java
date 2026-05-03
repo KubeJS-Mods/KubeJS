@@ -8,7 +8,7 @@ import dev.latvian.mods.kubejs.client.ParticleGenerator;
 import dev.latvian.mods.kubejs.client.SoundsGenerator;
 import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.color.KubeColor;
-import dev.latvian.mods.kubejs.script.ScriptType;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.resources.Identifier;
@@ -70,7 +70,7 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 
 	default void texture(Identifier target, LoadedTexture texture) {
 		if (texture.width <= 0 || texture.height <= 0) {
-			ScriptType.CLIENT.console.error("Failed to save texture " + target);
+			ConsoleJS.CLIENT.error("Failed to save texture " + target);
 			return;
 		}
 
@@ -85,7 +85,7 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 		var stencilTexture = loadTexture(stencil);
 
 		if (stencilTexture.width == 0 || stencilTexture.height == 0) {
-			ScriptType.CLIENT.console.error("Failed to load texture " + stencil);
+			ConsoleJS.CLIENT.error("Failed to load texture " + stencil);
 			return;
 		}
 

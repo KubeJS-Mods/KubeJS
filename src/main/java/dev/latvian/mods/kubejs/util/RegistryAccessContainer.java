@@ -7,8 +7,8 @@ import dev.latvian.mods.kubejs.error.KubeRuntimeException;
 import dev.latvian.mods.kubejs.plugin.builtin.wrapper.RegistryWrapper;
 import dev.latvian.mods.kubejs.recipe.CachedItemTagLookup;
 import dev.latvian.mods.kubejs.recipe.CachedTagLookup;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.KubeJSContext;
-import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.server.DataExport;
 import dev.latvian.mods.rhino.Context;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
@@ -109,7 +109,7 @@ public final class RegistryAccessContainer extends RegistryOpsContainer implemen
 				cachedRegistryTags.put(key1, new CachedTagLookup.Entry(key1, registry, new CachedTagLookup<>(registry, map)));
 			}
 		} catch (Exception ex) {
-			ScriptType.SERVER.console.error("Error caching tags for " + key1, ex);
+			ConsoleJS.SERVER.error("Error caching tags for " + key1, ex);
 		}
 
 		if (DataExport.export != null) {

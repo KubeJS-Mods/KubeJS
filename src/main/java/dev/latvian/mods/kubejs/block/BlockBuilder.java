@@ -24,6 +24,7 @@ import dev.latvian.mods.kubejs.plugin.builtin.wrapper.AABBWrapper;
 import dev.latvian.mods.kubejs.registry.AdditionalObjectRegistry;
 import dev.latvian.mods.kubejs.registry.BuilderBase;
 import dev.latvian.mods.kubejs.registry.ModelledBuilderBase;
+import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.Cast;
@@ -308,8 +309,8 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	public BlockBuilder soundType(@Nullable SoundType m) {
 		if (m == null || m == SoundType.EMPTY) {
 			soundType = SoundType.EMPTY;
-			ScriptType.STARTUP.console.error("Invalid sound type!");
-			ScriptType.STARTUP.console.warn("Valid sound types: " + SoundTypeWrapper.INSTANCE.getMap().keySet());
+			ConsoleJS.STARTUP.error("Invalid sound type!");
+			ConsoleJS.STARTUP.warn("Valid sound types: " + SoundTypeWrapper.INSTANCE.getMap().keySet());
 			return this;
 		}
 

@@ -68,12 +68,16 @@ import java.util.stream.Collectors;
 /// @see JavaWrapper#createConsole(KubeJSContext, String)
 @NullUnmarked
 public class ConsoleJS {
+	public static final ConsoleJS STARTUP = ScriptType.STARTUP.console;
+	public static final ConsoleJS SERVER = ScriptType.SERVER.console;
+	public static final ConsoleJS CLIENT = ScriptType.CLIENT.console;
+
 	public static ConsoleJS getCurrent(@Nullable Context cx) {
 		if (cx instanceof KubeJSContext kcx) {
 			return kcx.getConsole();
 		}
 
-		return ScriptType.STARTUP.console;
+		return STARTUP;
 	}
 
 	private static final Pattern GARBAGE_PATTERN = Pattern.compile("(?:TRANSFORMER|LAYER PLUGIN|MC-BOOTSTRAP)/\\w+@[^/]+/");

@@ -296,7 +296,7 @@ public class KubeJSClientEventHandler {
 					try {
 						ItemEvents.DYNAMIC_TOOLTIPS.post(ScriptType.CLIENT, id, event);
 					} catch (Exception ex) {
-						ScriptType.CLIENT.console.error("Item " + event.item.kjs$getId() + " dynamic tooltip error", ex);
+						ConsoleJS.CLIENT.error("Item " + event.item.kjs$getId() + " dynamic tooltip error", ex);
 					}
 				} else {
 					action.apply(event.lines);
@@ -349,12 +349,12 @@ public class KubeJSClientEventHandler {
 	}
 
 	public static @Nullable Screen setScreen(@Nullable Screen screen) {
-		if (screen instanceof TitleScreen && !ScriptType.STARTUP.console.errors.isEmpty() && CommonProperties.get().startupErrorGUI) {
-			return new KubeJSErrorScreen(screen, ScriptType.STARTUP.console, false);
+		if (screen instanceof TitleScreen && !ConsoleJS.STARTUP.errors.isEmpty() && CommonProperties.get().startupErrorGUI) {
+			return new KubeJSErrorScreen(screen, ConsoleJS.STARTUP, false);
 		}
 
-		if (screen instanceof TitleScreen && !ScriptType.CLIENT.console.errors.isEmpty() && CommonProperties.get().startupErrorGUI) {
-			return new KubeJSErrorScreen(screen, ScriptType.CLIENT.console, false);
+		if (screen instanceof TitleScreen && !ConsoleJS.CLIENT.errors.isEmpty() && CommonProperties.get().startupErrorGUI) {
+			return new KubeJSErrorScreen(screen, ConsoleJS.CLIENT, false);
 		}
 
 		return screen;
