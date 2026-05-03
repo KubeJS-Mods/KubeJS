@@ -99,7 +99,7 @@ KubeJS offers native Java type access in script files, meaning that basic Java t
 
 In addition to registering recipe schemas through your plugin, they can be made via a json file in the `kubejs/recipe_schema` registry. Json schemas are the preferred method of declaring schemas and can be [datagenned](https://docs.neoforged.net/docs/1.21.1/resources/#data-generation) with the provided `RecipeSchemaProvider`!
 
-**Important!** In order to use this data provider, you *must* add kubejs as an existing mod with the `'--exisiting-mod', 'kubejs'` arguments. See [NeoForge's docs](https://docs.neoforged.net/docs/1.21.1/resources/#command-line-arguments) for how to do that.
+**Important!** In order to use this data provider, you *must* add kubejs as an existing mod with the `'--existing-mod', 'kubejs'` arguments. See [NeoForge's docs](https://docs.neoforged.net/docs/1.21.1/resources/#command-line-arguments) for how to do that.
 
 After that, using the provider is just like any other
 
@@ -111,7 +111,7 @@ public class DataGen {
     public static void gatherData(GatherDataEvent event) {
         event.addProvider(new RecipeSchemaProvider("Mod Recipe Schemas", event) {
            @Override
-           public void add(HolderLookup.Proivder lookup) {
+           public void add(HolderLookup.Provider lookup) {
                add(ResourceLocation.fromNamespaceAndPath("mod", "recipe"), builder -> {
                    builder.hidden();
                    builder.mappings("modRecipe", "hungry");
