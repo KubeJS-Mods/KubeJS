@@ -12,8 +12,6 @@ import dev.latvian.mods.kubejs.typings.ThisIs;
 import dev.latvian.mods.kubejs.util.UtilsJS;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
-import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -67,7 +65,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		return kjs$self().getType().kjs$getId();
 	}
 
-	@ThisIs(LocalPlayer.class)
+	@ThisIs(classNames = "net.minecraft.client.player.LocalPlayer")
 	@Info("Checks, whether the entity is a reference to yourself - that is - the client player you are controlling.")
 	default boolean kjs$isSelf() {
 		return false;
@@ -135,7 +133,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 		return false;
 	}
 
-	@ThisIs(AbstractClientPlayer.class)
+	@ThisIs(classNames = "net.minecraft.client.player.AbstractClientPlayer")
 	@Info("Checks if the entity is a client-side player.")
 	default boolean kjs$isClientPlayer() {
 		return false;

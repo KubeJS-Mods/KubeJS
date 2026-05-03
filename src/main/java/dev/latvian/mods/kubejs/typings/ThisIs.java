@@ -17,8 +17,24 @@ import java.lang.annotation.Target;
  * </p>
  */
 @Documented
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ThisIs {
-	Class<?> value();
+	/**
+	 * Alias for {@link #classes()}
+	 *
+	 * @see #classes()
+	 * @see #classNames()
+	 */
+	Class<?>[] value() default {};
+
+	Class<?>[] classes() default {};
+
+	/**
+	 * (Fully qualified) class names of types this object may be assigned to.
+	 * <p>
+	 * This **needs** to be used with client-only classes to avoid loading them,
+	 * otherwise the annotation scanner will crash the game!
+	 */
+	String[] classNames() default {};
 }

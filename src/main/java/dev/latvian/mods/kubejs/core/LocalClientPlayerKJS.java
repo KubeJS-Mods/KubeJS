@@ -46,7 +46,7 @@ public interface LocalClientPlayerKJS extends ClientPlayerKJS {
 	}
 
 	@Override
-	@ThisIs(LocalPlayer.class)
+	@ThisIs(classNames = "net.minecraft.client.player.LocalPlayer")
 	@Info("Checks, whether the entity is a reference to yourself - that is - the client player you are controlling.")
 	default boolean kjs$isSelf() {
 		return true;

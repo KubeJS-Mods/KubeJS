@@ -18,6 +18,7 @@ import dev.latvian.mods.kubejs.block.custom.DoorBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FallingBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FenceBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.FenceGateBlockBuilder;
+import dev.latvian.mods.kubejs.block.custom.PillarBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.PressurePlateBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.SlabBlockBuilder;
 import dev.latvian.mods.kubejs.block.custom.StairBlockBuilder;
@@ -317,6 +318,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 			reg.add(KubeJS.id("carpet"), CarpetBlockBuilder.class, CarpetBlockBuilder::new);
 			reg.add(KubeJS.id("door"), DoorBlockBuilder.class, DoorBlockBuilder::new);
 			reg.add(KubeJS.id("trapdoor"), TrapdoorBlockBuilder.class, TrapdoorBlockBuilder::new);
+			reg.add(KubeJS.id("pillar"), PillarBlockBuilder.class, PillarBlockBuilder::new);
 		});
 
 		registry.addDefault(Registries.ITEM, ItemBuilder.class, ItemBuilder::new);
