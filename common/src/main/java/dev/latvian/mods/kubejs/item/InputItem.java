@@ -180,10 +180,6 @@ public class InputItem implements IngredientSupplierKJS, InputReplacement, JsonS
 
 	@Override
 	public Object replaceInput(RecipeJS recipe, ReplacementMatch match, InputReplacement original) {
-		if (original instanceof InputItem o) {
-			return withCount(o.count);
-		}
-
 		return this;
 	}
 }

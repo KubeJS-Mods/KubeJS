@@ -107,9 +107,7 @@ public class OutputItem implements OutputReplacement {
 	@Override
 	public Object replaceOutput(RecipeJS recipe, ReplacementMatch match, OutputReplacement original) {
 		if (original instanceof OutputItem o) {
-			var replacement = new OutputItem(item.copy(), o.chance, o.rolls);
-			replacement.item.setCount(o.getCount());
-			return replacement;
+			return new OutputItem(item.copy(), o.chance, o.rolls);
 		}
 
 		return new OutputItem(item.copy(), Double.NaN, null);
