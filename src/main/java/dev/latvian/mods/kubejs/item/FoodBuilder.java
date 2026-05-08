@@ -41,6 +41,7 @@ public class FoodBuilder {
 		this.saturation = properties.saturation();
 		this.alwaysEdible = properties.canAlwaysEat();
 		this.eatSeconds = properties.eatSeconds();
+		this.usingConvertsTo = properties.usingConvertsTo();
 		this.effects = new ArrayList<>();
 		this.effects.addAll(properties.effects());
 	}
