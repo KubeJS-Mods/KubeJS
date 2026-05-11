@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.component;
 
 import dev.latvian.mods.kubejs.color.KubeColor;
+import dev.latvian.mods.kubejs.item.FoodBuilder;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.Holder;
@@ -22,6 +23,7 @@ import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.item.component.Unbreakable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @RemapPrefixForJS("kjs$")
 @ReturnsSelf
@@ -58,8 +60,15 @@ public interface ItemComponentFunctions extends ComponentFunctions, AttributeMod
 		kjs$override(DataComponents.FOOD, foodProperties);
 	}
 
+	default void kjs$modifyFood(Consumer<FoodBuilder> foodBuilder) {
+		var food = kjs$get(DataComponents.FOOD);
+		FoodBuilder builder = food == null ? new FoodBuilder() : new FoodBuilder(food);
+		foodBuilder.accept(builder);
+		kjs$setFood(builder.build());
+	}
+
 	default void kjs$setFood(int nutrition, float saturation) {
-		kjs$setFood(new FoodProperties.Builder().nutrition(nutrition).saturationModifier(saturation).build());
+		kjs$modifyFood(builder -> builder.nutrition(nutrition).saturation(saturation));
 	}
 
 	default void kjs$setFireResistant() {
