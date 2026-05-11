@@ -163,6 +163,7 @@ import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.FluidAmounts;
+import dev.latvian.mods.kubejs.util.GlobalUnmodifiableMap;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.JsonUtils;
@@ -182,6 +183,7 @@ import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
 import dev.latvian.mods.kubejs.web.LocalWebServer;
 import dev.latvian.mods.kubejs.web.LocalWebServerRegistry;
 import dev.latvian.mods.kubejs.web.local.KubeJSWeb;
+import dev.latvian.mods.rhino.ScriptableObject;
 import dev.latvian.mods.rhino.type.RecordTypeInfo;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import net.minecraft.Util;
@@ -407,7 +409,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void registerBindings(BindingRegistry bindings) {
-		bindings.add("global", bindings.type().isStartup() ? GLOBAL : Collections.unmodifiableMap(GLOBAL));
+		bindings.add("global", bindings.type().isStartup() ? GLOBAL : new GlobalUnmodifiableMap<>(GLOBAL));
 		bindings.add("Platform", PlatformWrapper.class);
 		bindings.add("console", bindings.type().console);
 
