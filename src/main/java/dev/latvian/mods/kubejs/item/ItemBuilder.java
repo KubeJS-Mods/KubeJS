@@ -31,10 +31,8 @@ import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -56,22 +54,11 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 	public transient Function<ItemStack, Collection<ItemStack>> subtypes;
 	public transient Rarity rarity;
 	public transient boolean fireResistant;
-	public transient boolean glow;
-	public transient final List<Component> tooltip;
 	@Nullable
 	public transient ItemTintFunction tint;
 	public transient FoodBuilder foodBuilder;
-	public transient Function<ItemStack, KubeColor> barColor;
-	public transient ToIntFunction<ItemStack> barWidth;
-	public transient NameCallback nameGetter;
-
-	public transient UseAnim anim;
-	public transient ToIntBiFunction<ItemStack, LivingEntity> useDuration;
-	public transient UseCallback use;
-	public transient FinishUsingCallback finishUsing;
-	public transient ReleaseUsingCallback releaseUsing;
-	public transient Predicate<HurtEnemyContext> hurtEnemy;
 	public transient JukeboxPlayable jukeboxPlayable;
+	public transient final ItemBehavior behavior = new ItemBehavior();
 
 	public transient Tool tool;
 	public transient ItemAttributeModifiers itemAttributeModifiers;
@@ -87,16 +74,8 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 		this.containerItem = null;
 		this.subtypes = null;
 		this.rarity = null;
-		this.glow = false;
-		this.tooltip = new ArrayList<>();
 		this.foodBuilder = null;
-		this.anim = null;
-		this.useDuration = null;
-		this.use = null;
-		this.finishUsing = null;
-		this.releaseUsing = null;
 		this.fireResistant = false;
-		this.hurtEnemy = null;
 
 		this.tool = null;
 		this.itemAttributeModifiers = null;
@@ -110,7 +89,9 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 
 	@Override
 	public Item transformObject(Item obj) {
-		obj.kjs$setItemBuilder(this);
+		behavior.displayName = displayName;
+		behavior.formattedDisplayName = formattedDisplayName;
+		obj.kjs$setItemBehavior(behavior);
 		return obj;
 	}
 
@@ -192,13 +173,13 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 
 	@Info("Makes the item glow like enchanted, even if it's not enchanted.")
 	public ItemBuilder glow(boolean v) {
-		glow = v;
+		behavior.glow = v;
 		return this;
 	}
 
 	@Info("Adds a tooltip to the item.")
 	public ItemBuilder tooltip(Component text) {
-		tooltip.add(text);
+		behavior.tooltip.add(text);
 		return this;
 	}
 
@@ -226,7 +207,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 
 	@Info("Determines the color of the item's durability bar. Defaulted to vanilla behavior.")
 	public ItemBuilder barColor(Function<ItemStack, KubeColor> barColor) {
-		this.barColor = barColor;
+		behavior.barColor = barColor;
 		return this;
 	}
 
@@ -236,7 +217,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 		The function should return a value between 0 and 13 (max width of the bar).
 		""")
 	public ItemBuilder barWidth(ToIntFunction<ItemStack> barWidth) {
-		this.barWidth = barWidth;
+		behavior.barWidth = barWidth;
 		return this;
 	}
 
@@ -244,7 +225,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 		Sets the item's name dynamically.
 		""")
 	public ItemBuilder name(NameCallback name) {
-		this.nameGetter = name;
+		behavior.nameGetter = name;
 		return this;
 	}
 
@@ -280,7 +261,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 
 	@Info("Determines the animation of the item when used, e.g. eating food.")
 	public ItemBuilder useAnimation(UseAnim animation) {
-		this.anim = animation;
+		behavior.anim = animation;
 		return this;
 	}
 
@@ -291,7 +272,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 		This can change the eating speed, or be used for other things (like making a custom bow).
 		""")
 	public ItemBuilder useDuration(ToIntBiFunction<ItemStack, LivingEntity> useDuration) {
-		this.useDuration = useDuration;
+		behavior.useDuration = useDuration;
 		return this;
 	}
 
@@ -301,7 +282,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 		For example, when eating food, returning true will make the player start eating the food.
 		""")
 	public ItemBuilder use(UseCallback use) {
-		this.use = use;
+		behavior.use = use;
 		return this;
 	}
 
@@ -313,7 +294,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 		For example, when eating food, this is called when the player has finished eating the food, so hunger is restored.
 		""")
 	public ItemBuilder finishUsing(FinishUsingCallback finishUsing) {
-		this.finishUsing = finishUsing;
+		behavior.finishUsing = finishUsing;
 		return this;
 	}
 
@@ -325,7 +306,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 		To ensure the bow won't finish using, Minecraft sets the `useDuration` to a very high number (1h).
 		""")
 	public ItemBuilder releaseUsing(ReleaseUsingCallback releaseUsing) {
-		this.releaseUsing = releaseUsing;
+		behavior.releaseUsing = releaseUsing;
 		return this;
 	}
 
@@ -335,7 +316,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 		For example, when using a sword to hit a mob, this is called.
 		""")
 	public ItemBuilder hurtEnemy(Predicate<HurtEnemyContext> context) {
-		this.hurtEnemy = context;
+		behavior.hurtEnemy = context;
 		return this;
 	}
 
