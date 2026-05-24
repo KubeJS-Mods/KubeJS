@@ -60,6 +60,7 @@ import org.joml.Matrix4f;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class HighlightRenderer {
@@ -213,7 +214,7 @@ public class HighlightRenderer {
 	@Nullable
 	public ShaderInstance highlightShader;
 
-	public final Set<Slot> hoveredSlots = new HashSet<>();
+	public final Set<Slot> hoveredSlots = new LinkedHashSet<>();
 	public final Reference2IntMap<Entity> highlightedEntities = new Reference2IntLinkedOpenHashMap<>(0);
 	public final Long2IntMap highlightedBlocks = new Long2IntLinkedOpenHashMap(0);
 	public final IntOpenHashSet uniqueColors = new IntOpenHashSet(0);
