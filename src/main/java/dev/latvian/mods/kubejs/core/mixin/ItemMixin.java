@@ -2,7 +2,6 @@ package dev.latvian.mods.kubejs.core.mixin;
 
 import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.item.ItemBehavior;
-import dev.latvian.mods.kubejs.item.ItemBuilder;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
@@ -22,6 +21,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -212,7 +212,7 @@ public abstract class ItemMixin implements ItemKJS {
 	@Inject(method = "hurtEnemy", at = @At("HEAD"), cancellable = true)
 	private void hurtEnemy(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2, CallbackInfoReturnable<Boolean> cir) {
 		if (kjs$behavior != null && kjs$behavior.hurtEnemy != null) {
-			cir.setReturnValue(kjs$behavior.hurtEnemy.test(new ItemBuilder.HurtEnemyContext(itemStack, livingEntity, livingEntity2)));
+			cir.setReturnValue(kjs$behavior.hurtEnemy.test(new ItemBehavior.HurtEnemyContext(itemStack, livingEntity, livingEntity2)));
 		}
 	}
 
