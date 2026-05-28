@@ -1,7 +1,9 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.component.ItemComponentFunctions;
 import dev.latvian.mods.kubejs.core.DiggerItemKJS;
+import dev.latvian.mods.kubejs.core.ItemKJS;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.TickDuration;
@@ -11,15 +13,22 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import net.minecraft.Util;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.ToIntBiFunction;
+import java.util.function.ToIntFunction;
 
 import static net.minecraft.world.item.Item.BASE_ATTACK_DAMAGE_ID;
 
@@ -29,7 +38,7 @@ import static net.minecraft.world.item.Item.BASE_ATTACK_DAMAGE_ID;
 public class ItemModificationKubeEvent implements KubeEvent {
 	@Info("""
 		Modifies items matching the given ingredient.
-		
+				
 		**NOTE**: tag ingredients are not supported at this time.
 		""")
 	public void modify(ItemPredicate in, Consumer<ItemModifications> c) {
@@ -37,7 +46,7 @@ public class ItemModificationKubeEvent implements KubeEvent {
 	}
 
 	@RemapPrefixForJS("kjs$")
-	public record ItemModifications(Item item) implements ItemComponentFunctions {
+	public record ItemModifications(Item item) implements ItemComponentFunctions, ItemBehaviorFunctions {
 		@HideFromJS
 		public static final Reference2IntOpenHashMap<Item> BURN_TIME_OVERRIDES = new Reference2IntOpenHashMap<>();
 
@@ -97,6 +106,16 @@ public class ItemModificationKubeEvent implements KubeEvent {
 
 		public void disableRepair() {
 			item.kjs$setCanRepair(false);
+		}
+
+		@Override
+		public ItemBehavior kjs$getOrCreateBehavior() {
+			var behavior = item.kjs$getItemBehavior();
+			if (behavior == null) {
+				behavior = new ItemBehavior();
+				item.kjs$setItemBehavior(behavior);
+			}
+			return behavior;
 		}
 	}
 }

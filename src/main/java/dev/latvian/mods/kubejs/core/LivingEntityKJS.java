@@ -43,10 +43,10 @@ public interface LivingEntityKJS extends EntityKJS {
 	default void kjs$foodEaten(ItemStack eatenStack, FoodProperties food) {
 		var event = new FoodEatenKubeEvent(kjs$self(), eatenStack);
 		var item = eatenStack.getItem();
-		var itemBuilder = item.kjs$getItemBuilder();
+		var behavior = item.kjs$getItemBehavior();
 
-		if (itemBuilder != null && itemBuilder.foodBuilder != null && itemBuilder.foodBuilder.eaten != null) {
-			itemBuilder.foodBuilder.eaten.accept(event);
+		if (behavior != null && behavior.foodEaten != null) {
+			behavior.foodEaten.accept(event);
 		}
 
 		var key = item.kjs$getKey();

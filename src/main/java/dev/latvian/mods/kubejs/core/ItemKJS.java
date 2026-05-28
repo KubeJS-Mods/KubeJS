@@ -1,6 +1,6 @@
 package dev.latvian.mods.kubejs.core;
 
-import dev.latvian.mods.kubejs.item.ItemBuilder;
+import dev.latvian.mods.kubejs.item.ItemBehavior;
 import dev.latvian.mods.kubejs.item.ItemStackKey;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapForJS;
@@ -33,11 +33,11 @@ public interface ItemKJS extends IngredientSupplierKJS, RegistryObjectKJS<Item> 
 	}
 
 	@Nullable
-	default ItemBuilder kjs$getItemBuilder() {
+	default ItemBehavior kjs$getItemBehavior() {
 		throw new NoMixinException();
 	}
 
-	default void kjs$setItemBuilder(ItemBuilder b) {
+	default void kjs$setItemBehavior(ItemBehavior b) {
 		throw new NoMixinException();
 	}
 
