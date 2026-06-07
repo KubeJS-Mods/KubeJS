@@ -28,6 +28,6 @@ public class AfterLivingEntityHurtKubeEvent implements KubeLivingEntityEvent {
 
 	@Info("The amount of damage.")
 	public float getDamage() {
-		return event.getNewDamage();
+		return event.getHealthDamage();
 	}
 }
