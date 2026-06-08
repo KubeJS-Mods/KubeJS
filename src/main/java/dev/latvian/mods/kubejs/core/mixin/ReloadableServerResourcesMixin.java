@@ -45,7 +45,7 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 
 	@Shadow
 	@Final
-	private HolderLookup.Provider registryLookup;
+	private HolderLookup.Provider loadingContext;
 
 	@Shadow
 	@Final
@@ -85,25 +85,25 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 		method = "lambda$loadResources$2",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/neoforged/neoforge/event/EventHooks;onResourceReload(Lnet/minecraft/server/ReloadableServerResources;Lnet/minecraft/core/RegistryAccess;)Ljava/util/List;",
+			target = "Lnet/neoforged/neoforge/event/EventHooks;onResourceReload(Lnet/minecraft/server/ReloadableServerResources;Lnet/minecraft/core/RegistryAccess;Ljava/util/Map;)Ljava/util/List;",
 			shift = At.Shift.BEFORE
 		)
 	)
 	private static void kjs$bindServerScriptManager(
-		ReloadableServerRegistries.LoadResult _0,
-		FeatureFlagSet _1,
-		Commands.CommandSelection _2,
-		List _3,
-		PermissionSet _4,
+		ReloadableServerRegistries.LoadResult fullRegistries,
+		FeatureFlagSet enabledFeatures,
+		Commands.CommandSelection commandSelection,
+		List updatedContextTags,
+		PermissionSet functionCompilationPermissions,
 		ResourceManager resourceManager,
-		Executor _5,
-		Executor _6,
-		List _7,
+		Executor backgroundExecutor,
+		Executor mainThreadExecutor,
+		List pendingComponents,
 		CallbackInfoReturnable<CompletionStage> cir,
-		@Local(name = "result") ReloadableServerResources resources
+		@Local(name = "result") ReloadableServerResources result
 	) {
 		var ssm = ((ScriptManagerHolderKJS) resourceManager).kjs$getScriptManager();
-		resources.kjs$setServerScriptManager(Objects.requireNonNull(ssm, "Missing ServerScriptManager for resource reload!"));
+		result.kjs$setServerScriptManager(Objects.requireNonNull(ssm, "Missing ServerScriptManager for resource reload!"));
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public abstract class ReloadableServerResourcesMixin implements ReloadableServer
 
 	@Override
 	public HolderLookup.Provider kjs$getRegistryLookup() {
-		return registryLookup;
+		return loadingContext;
 	}
 
 	@Override
