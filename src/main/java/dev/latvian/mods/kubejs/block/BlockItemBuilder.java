@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
+import dev.latvian.mods.kubejs.client.LangKubeEvent;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
 import dev.latvian.mods.kubejs.item.ItemBuilder;
 import net.minecraft.resources.Identifier;
@@ -16,7 +17,10 @@ public class BlockItemBuilder extends ItemBuilder {
 
 	@Override
 	public Item createObject() {
-		return new BlockItem(blockBuilder.get(), createItemProperties());
+		return new BlockItem(blockBuilder.get(),
+			createItemProperties()
+				.overrideDescription(blockBuilder.getBuilderTranslationKey())
+		);
 	}
 
 	@Override
@@ -26,5 +30,13 @@ public class BlockItemBuilder extends ItemBuilder {
 
 	@Override
 	public void generateAssets(KubeAssetGenerator generator) {
+	}
+
+	@Override
+	public void generateLang(LangKubeEvent lang) {
+		// To allow subclasses like SeedItemBuilder to still generate normally
+		if (getClass() != BlockItemBuilder.class) {
+			super.generateLang(lang);
+		}
 	}
 }
