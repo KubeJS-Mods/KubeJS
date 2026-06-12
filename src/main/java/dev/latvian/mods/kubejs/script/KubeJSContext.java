@@ -185,7 +185,7 @@ public class KubeJSContext extends Context {
 			var reg = RegistryType.lookup(target);
 
 			if (reg != null) {
-				var registry = getRegistries()
+				return getRegistries()
 					.lookup(reg.key())
 					.orElseThrow(() -> reportRuntimeError("Can't interpret '%s' as '%s': registry not found".formatted(from, reg.key().identifier()), this))
 					.getOptional(ID.mc(from))
