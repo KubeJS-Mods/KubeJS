@@ -83,6 +83,17 @@ public class ScriptManager {
 		KubeJSPlugins.forEachPlugin(this, KubeJSPlugin::afterScriptsLoaded);
 	}
 
+	public void addClientRuntimeBindings() {
+		if (contextFactory != null) {
+			var cx = (KubeJSContext) contextFactory.enter();
+			var bindings = new BindingRegistry(cx, cx.topLevelScope);
+
+			for (var plugin : KubeJSPlugins.getAll()) {
+				plugin.registerClientRuntimeBindings(bindings);
+			}
+		}
+	}
+
 	public void collectScripts(ScriptPack pack, Path dir, String path) {
 		if (!path.isEmpty() && !path.endsWith("/")) {
 			path += "/";
