@@ -44,7 +44,7 @@ almostgradle.setup {
 		jei {
 			runConfig = true
 			mode = LoadingMode.API
-			version = "29.5.0.26"
+			version = "29.6.2.31"
 		}
 	}
 }

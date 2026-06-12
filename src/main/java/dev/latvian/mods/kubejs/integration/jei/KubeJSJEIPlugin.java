@@ -1,5 +1,4 @@
 package dev.latvian.mods.kubejs.integration.jei;
-/*
 
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.plugin.builtin.event.RecipeViewerEvents;
@@ -19,7 +18,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
@@ -27,9 +25,9 @@ import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.CompoundFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -38,7 +36,7 @@ import java.util.stream.Collectors;
 public class KubeJSJEIPlugin implements IModPlugin {
 	public static final Identifier ID = KubeJS.id("jei");
 	public static final boolean DISABLED = ModList.get().isLoaded("emi");
-	private RecipeViewerData remote = null;
+	private @Nullable RecipeViewerData remote = null;
 
 	public KubeJSJEIPlugin() {
 		NeoForge.EVENT_BUS.register(this);
@@ -219,7 +217,7 @@ public class KubeJSJEIPlugin implements IModPlugin {
 
 		if (remote != null) {
 			for (var subtypes : remote.itemData().dataComponentSubtypes()) {
-				var in = DataComponentTypeInterpreter.of(subtypes.components());
+				DataComponentTypeInterpreter<ItemStack> in = DataComponentTypeInterpreter.of(subtypes.components());
 
 				for (var item : subtypes.filter().kjs$getItemTypes()) {
 					registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item, in);
@@ -240,12 +238,12 @@ public class KubeJSJEIPlugin implements IModPlugin {
 
 		if (remote != null) {
 			for (var subtypes : remote.fluidData().dataComponentSubtypes()) {
-				var in = DataComponentTypeInterpreter.of(subtypes.components());
+				DataComponentTypeInterpreter<FluidStack> in = DataComponentTypeInterpreter.of(subtypes.components());
 
-				for (var fluid : Arrays.stream(subtypes.filter().getStacks()).map(FluidStack::getFluid).toArray(Fluid[]::new)) {
-					registration.registerSubtypeInterpreter(NeoForgeTypes.FLUID_STACK, fluid, in);
+				for (var fluidHolder : subtypes.filter().fluids()) {
+					registration.registerSubtypeInterpreter(NeoForgeTypes.FLUID_STACK, fluidHolder.value(), in);
 				}
 			}
 		}
 	}
-}*/
+}

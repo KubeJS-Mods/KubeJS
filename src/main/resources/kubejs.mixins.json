@@ -62,6 +62,7 @@
 		"ResourceKeyMixin",
 		"ServerLevelMixin",
 		"ServerPlayerMixin",
+		"SimpleJsonResourceReloadListenerMixin",
 		"SizedFluidIngredientMixin",
 		"SizedIngredientMixin",
 		"StringRepresentableMixin",

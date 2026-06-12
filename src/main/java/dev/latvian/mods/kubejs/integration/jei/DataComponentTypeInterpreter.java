@@ -1,23 +1,25 @@
 package dev.latvian.mods.kubejs.integration.jei;
-/*
 
-import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
-public record DataComponentTypeInterpreter(List<DataComponentType<?>> keys) implements IIngredientSubtypeInterpreter {
-	public static final DataComponentTypeInterpreter EMPTY = new DataComponentTypeInterpreter(List.of());
+public record DataComponentTypeInterpreter<T>(List<DataComponentType<?>> keys) implements ISubtypeInterpreter<T> {
+	public static final DataComponentTypeInterpreter<?> EMPTY = new DataComponentTypeInterpreter<>(List.of());
 
-	public static DataComponentTypeInterpreter of(List<DataComponentType<?>> keys) {
-		return keys.isEmpty() ? EMPTY : new DataComponentTypeInterpreter(keys);
+	@SuppressWarnings("unchecked")
+	public static <T> DataComponentTypeInterpreter<T> of(List<DataComponentType<?>> keys) {
+		return keys.isEmpty() ? (DataComponentTypeInterpreter<T>) EMPTY : new DataComponentTypeInterpreter<>(keys);
 	}
 
 	@Override
-	public String apply(Object from, UidContext context) {
+	@Nullable
+	public Object getSubtypeData(T from, UidContext context) {
 		if (!(from instanceof DataComponentHolder holder)) {
 			return "";
 		}
@@ -57,4 +59,4 @@ public record DataComponentTypeInterpreter(List<DataComponentType<?>> keys) impl
 			return sb.toString();
 		}
 	}
-}*/
+}

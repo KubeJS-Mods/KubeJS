@@ -1,6 +1,8 @@
 package dev.latvian.mods.kubejs.recipe.viewer;
 
+import org.jspecify.annotations.Nullable;
+
 @FunctionalInterface
 public interface SubtypeInterpreter {
-	Object apply(Object entry);
+	@Nullable Object apply(Object entry);
 }

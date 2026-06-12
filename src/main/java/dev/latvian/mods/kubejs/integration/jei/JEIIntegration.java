@@ -1,5 +1,4 @@
 package dev.latvian.mods.kubejs.integration.jei;
-/*
 
 import dev.latvian.mods.kubejs.item.ItemPredicate;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
@@ -33,4 +32,4 @@ public class JEIIntegration {
 			return new Object[0];
 		}
 	}
-}*/
+}

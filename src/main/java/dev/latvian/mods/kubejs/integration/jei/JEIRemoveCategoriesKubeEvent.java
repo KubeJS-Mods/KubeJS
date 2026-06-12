@@ -1,5 +1,4 @@
 package dev.latvian.mods.kubejs.integration.jei;
-/*
 
 import dev.latvian.mods.kubejs.recipe.viewer.RemoveCategoriesKubeEvent;
 import dev.latvian.mods.rhino.Context;
@@ -29,4 +28,4 @@ public class JEIRemoveCategoriesKubeEvent implements RemoveCategoriesKubeEvent {
 			}
 		}
 	}
-}*/
+}

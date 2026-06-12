@@ -1,5 +1,4 @@
 package dev.latvian.mods.kubejs.integration.jei;
-/*
 
 import dev.latvian.mods.kubejs.event.EventResult;
 import dev.latvian.mods.kubejs.recipe.viewer.AddEntriesKubeEvent;
@@ -37,4 +36,4 @@ public class JEIAddEntriesKubeEvent implements AddEntriesKubeEvent {
 			runtime.getIngredientManager().addIngredientsAtRuntime(ingredientType, added);
 		}
 	}
-}*/
+}

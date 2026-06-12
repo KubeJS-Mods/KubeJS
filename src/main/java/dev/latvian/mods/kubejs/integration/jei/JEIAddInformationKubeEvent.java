@@ -1,5 +1,4 @@
 package dev.latvian.mods.kubejs.integration.jei;
-/*
 
 import dev.latvian.mods.kubejs.recipe.viewer.AddInformationKubeEvent;
 import dev.latvian.mods.kubejs.recipe.viewer.RecipeViewerEntryType;
@@ -42,4 +41,3 @@ public class JEIAddInformationKubeEvent implements AddInformationKubeEvent {
 		}
 	}
 }
-*/

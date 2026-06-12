@@ -1,10 +1,13 @@
 # changelog
 
-
 ## Unreleased
-- /
+
+- Readd error handling during the recipe event (#1142)
+- Fix BlockItemBuilder translation key resolution/duplicate key (#1143)
+- Reimplement basic JEI integration. EMI and REI at the time of writing are not released for 26.1 yet and will follow later.
 
 ## [8.0.1] - 2026-06-08
+
 - Hotfix for the release version of NeoForge, sorry to anybody who got a Mixin crash when they tried to open a world!
 
 ## [8.0.0] - 2026-06-08
