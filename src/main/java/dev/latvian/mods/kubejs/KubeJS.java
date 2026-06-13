@@ -15,7 +15,6 @@ import dev.latvian.mods.kubejs.plugin.KubeJSPlugins;
 import dev.latvian.mods.kubejs.plugin.builtin.event.StartupEvents;
 import dev.latvian.mods.kubejs.recipe.KubeJSRecipeSerializers;
 import dev.latvian.mods.kubejs.registry.RegistryType;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.KubeJSBackgroundThread;
 import dev.latvian.mods.kubejs.script.PlatformWrapper;
 import dev.latvian.mods.kubejs.script.ScriptManager;
@@ -109,8 +108,8 @@ public class KubeJS {
 
 		if (!datagen) {
 			new KubeJSBackgroundThread().start();
-			ConsoleJS.STARTUP.startCapturingErrors();
-			ConsoleJS.CLIENT.startCapturingErrors();
+			ScriptType.STARTUP.console.startCapturingErrors();
+			ScriptType.CLIENT.console.startCapturingErrors();
 		}
 
 		LOGGER.info("Loading vanilla registries...");

@@ -32,6 +32,12 @@ public enum ScriptType implements ScriptTypePredicate, ScriptTypeHolder {
 	SERVER("server", "KubeJS Server", KubeJSPaths.SERVER_SCRIPTS),
 	CLIENT("client", "KubeJS Client", KubeJSPaths.CLIENT_SCRIPTS);
 
+	static {
+		ConsoleJS.STARTUP = STARTUP.console;
+		ConsoleJS.SERVER = SERVER.console;
+		ConsoleJS.CLIENT = CLIENT.console;
+	}
+
 	public static final ScriptType[] VALUES = values();
 
 	public final String name;
