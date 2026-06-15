@@ -330,8 +330,8 @@ public interface LevelBlock extends BlockProviderKJS {
 		Block.popResourceFromFace(getLevel(), getPos(), dir, item);
 	}
 
-	default EntityArrayList getPlayersInRadius(double radius) {
-		var list = new EntityArrayList(1);
+	default EntityArrayList<? extends Player> getPlayersInRadius(double radius) {
+		var list = new EntityArrayList<Player>(1);
 
 		double cx = getCenterX();
 		double cy = getCenterY();
@@ -346,7 +346,7 @@ public interface LevelBlock extends BlockProviderKJS {
 		return list;
 	}
 
-	default EntityArrayList getPlayersInRadius() {
+	default EntityArrayList<? extends Player> getPlayersInRadius() {
 		return getPlayersInRadius(8D);
 	}
 

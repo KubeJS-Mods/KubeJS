@@ -83,8 +83,8 @@ public abstract class ExplosionKubeEvent implements KubeLevelEvent {
 		}
 
 		@Info("Gets a list of all entities affected by the explosion.")
-		public EntityArrayList getAffectedEntities() {
-			return new EntityArrayList(affectedEntities);
+		public EntityArrayList<? extends Entity> getAffectedEntities() {
+			return new EntityArrayList<>(affectedEntities);
 		}
 
 		@Info("Remove an entity from the list of affected entities.")
