@@ -62,7 +62,7 @@ public class KubeJSModEventHandler {
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void creativeTab(BuildCreativeModeTabContentsEvent event) {
-		var tabId = event.getTabKey().registry();
+		var tabId = event.getTabKey().identifier();
 
 		if (StartupEvents.MODIFY_CREATIVE_TAB.hasListeners(tabId)) {
 			StartupEvents.MODIFY_CREATIVE_TAB.post(ScriptType.STARTUP, tabId, new CreativeTabKubeEvent(event.getTab(), event.hasPermissions(), new CreativeTabCallbackForge(event)));
