@@ -97,9 +97,6 @@ public class KubeJSClientEventHandler {
 	}
 
 	private static void setupClient0() {
-		KubeJS.getStartupScriptManager().addClientRuntimeBindings();
-		KubeJS.getClientScriptManager().addClientRuntimeBindings();
-
 		if (!PlatformWrapper.isGeneratingData() && Minecraft.getInstance() != null && WebServerProperties.get().enabled) {
 			LocalWebServer.start(Minecraft.getInstance(), true);
 		}

@@ -93,12 +93,6 @@ public interface KubeJSPlugin {
 	default void registerBindings(BindingRegistry bindings) {
 	}
 
-	/// Add client runtime bindings that require Minecraft's physical client instance to exist.
-	/// Use this for client objects, such as font, screen, or window instance,
-	/// that are null during mod loading and [#registerBindings] execution.
-	default void registerClientRuntimeBindings(BindingRegistry bindings) {
-	}
-
 	/// Register JS-to-Java type wrappers so Rhino can automatically convert script values
 	/// (e.g. a string `"minecraft:stone"`) into the expected Java type (e.g. a [Block]).
 	default void registerTypeWrappers(TypeWrapperRegistry registry) {
