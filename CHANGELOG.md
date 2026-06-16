@@ -4,6 +4,7 @@
 
 - Fix `Client` binding not being available from startup/client scripts (#1145)
 - Fixed circular initialization between ConsoleJS and ScriptType before script consoles are ready (#1147)
+- Fixed creative tab modification not firing correctly (#1149)
 
 ## [8.0.2] - 2026-06-12
 
