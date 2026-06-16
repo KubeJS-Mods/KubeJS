@@ -526,7 +526,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	@Nullable
-	default Entity kjs$rayTraceEntity(double distance, @Nullable Predicate<Entity> filter) {
+	default Entity kjs$rayTraceEntity(double distance, @Nullable Predicate<? super Entity> filter) {
 		double d0 = Double.MAX_VALUE;
 		Entity entity = null;
 
