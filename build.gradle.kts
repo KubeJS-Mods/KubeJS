@@ -23,7 +23,9 @@ almostgradle.setup {
 	withAccessTransformerValidation = !runningInCI
 
 	tests {
-
+		enabled = true
+		testMod = true
+		gameTests = true
 	}
 
 	recipeViewers {
@@ -60,6 +62,15 @@ neoForge {
 	interfaceInjectionData {
 		from(file("interfaces.json"))
 		publish(file("interfaces.json"))
+	}
+
+	runs {
+		// AlmostGradle's gametest run launches as a plain server here; use Neo's headless type and run only our tests.
+		matching { it.name == "gametest" }.configureEach {
+			type.set("gameTestServer")
+			programArgument("--tests")
+			programArgument("testmod:*")
+		}
 	}
 }
 
@@ -119,6 +130,22 @@ dependencies {
 			prefer(batVersion)
 		}
 	})
+}
+
+// Make the game tests' KubeJS scripts available in the gametest run's game directory.
+val copyGameTestScripts by tasks.registering(Copy::class) {
+	mustRunAfter("prepareGametestRun")
+	from(layout.projectDirectory.dir("src/test/kubejs"))
+	into(layout.buildDirectory.dir("tmp/gametestRuns/gametest/kubejs"))
+}
+
+tasks.matching { it.name == "runGametest" }.configureEach {
+	dependsOn(copyGameTestScripts)
+}
+
+// The test source set holds game tests (run via runGametest), not JUnit tests.
+tasks.named<Test>("test") {
+	failOnNoDiscoveredTests = false
 }
 
 publishing {
