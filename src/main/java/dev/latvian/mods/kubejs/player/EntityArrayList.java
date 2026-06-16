@@ -126,7 +126,7 @@ public class EntityArrayList<T extends Entity> extends ArrayList<T> implements M
 		@Param(name = "filter", value = "The predicate - a function that takes an argument of `Entity` and returns a boolean.")
 	})
 	// FIXME: Inaccessible from JS due to order of operations in Rhino, this method is used by other filter methods
-	public EntityArrayList<T> filter(Predicate<Entity> filter) {
+	public EntityArrayList<T> filter(Predicate<? super Entity> filter) {
 		if (isEmpty()) {
 			return this;
 		}
@@ -148,7 +148,7 @@ public class EntityArrayList<T extends Entity> extends ArrayList<T> implements M
 		""", params = {
 		@Param(name = "filterList", value = "The list of predicates - functions that take one argument of `Entity` and return boolean values.")
 	})
-	public EntityArrayList<T> filterList(List<Predicate<Entity>> filterList) {
+	public EntityArrayList<T> filterList(List<? extends Predicate<Entity>> filterList) {
 		if (isEmpty() || filterList.isEmpty()) {
 			return this;
 		}
