@@ -1,0 +1,84 @@
+name: Coverage
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - "2601"
+    paths:
+      - "gradle/**"
+      - "**.java"
+      - "**.kts"
+      - "**.properties"
+      - "**/coverage.yml"
+      - "src/test/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: "microsoft"
+          java-version: "25"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # Runs the JUnit (`test`) and headless game-test (`runGametest`) JVMs, merges their JaCoCo
+      # data into one report, and derives build/reports/coverage/coverage-summary.json.
+      - name: Generate coverage
+        run: ./gradlew coverageSummaryJson
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-html
+          path: build/reports/coverage/html
+
+      # Same-repo PRs only: PRs from forks get a read-only token and cannot comment. For fork
+      # coverage comments, split this into a companion `workflow_run` job that has write access.
+      - name: Comment coverage on PR
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const s = JSON.parse(fs.readFileSync('build/reports/coverage/coverage-summary.json', 'utf8'));
+            const row = (label, m) => `| ${label} | ${m.percent}% | ${m.covered} | ${m.missed} |`;
+            const marker = '<!-- kubejs-coverage -->';
+            const body = [
+              marker,
+              '## Coverage report',
+              '',
+              '| Metric | Coverage | Covered | Missed |',
+              '| --- | --- | --- | --- |',
+              row('Instructions', s.instruction),
+              row('Branches', s.branch),
+              row('Lines', s.line),
+              '',
+              '_Merged from the JUnit unit tests and the headless game test. Full HTML report is in the `coverage-report-html` artifact._',
+            ].join('\n');
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await github.rest.issues.listComments({ owner, repo, issue_number });
+            const existing = comments.data.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
