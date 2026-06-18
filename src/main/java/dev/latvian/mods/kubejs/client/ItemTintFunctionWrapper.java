@@ -23,11 +23,7 @@ public record ItemTintFunctionWrapper(int index) implements ItemTintSource {
 		var builder = item.kjs$getItemBuilder();
 
 		if (builder != null) {
-			var c = builder.tint == null ? null : builder.tint.getColor(stack, index);
-
-			if (c == null) {
-				c = ItemTintFunction.BLOCK.getColor(stack, index);
-			}
+			var c = builder.tint == null ? ItemTintFunction.BLOCK.getColor(stack, index) : builder.tint.getColor(stack, index);
 
 			if (c != null) {
 				return c.kjs$getARGB();

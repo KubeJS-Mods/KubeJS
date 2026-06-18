@@ -115,14 +115,7 @@ public class KubeJSClientEventHandler {
 				var tintSources = new ArrayList<@Nullable BlockTintSource>();
 
 				if (b.tint instanceof BlockTintFunction.Mapped mapped) {
-					int maxIndex = 0;
-					for (var entry : mapped.map.int2ObjectEntrySet()) {
-						int key = entry.getIntKey();
-						if (key > maxIndex) {
-							maxIndex = key;
-						}
-					}
-					for (int i = 0; i <= maxIndex; i++) {
+					for (int i = 0; i <= mapped.getMaxTintIndex(); i++) {
 						var func = mapped.map.get(i);
 						tintSources.add(func == null ? null : new BlockTintFunctionWrapper(func, i));
 					}

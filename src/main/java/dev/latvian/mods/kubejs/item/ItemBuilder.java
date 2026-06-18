@@ -1,6 +1,5 @@
 package dev.latvian.mods.kubejs.item;
 
-import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
@@ -117,27 +116,33 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 
 	@Override
 	public void generateAssets(KubeAssetGenerator generator) {
-		generateItemModels(generator);
-	}
-
-	protected void generateItemModels(KubeAssetGenerator generator) {
-		generator.itemModel(id, this::generateItemModel, KubeAssetGenerator.createItemTintSources(tint == null ? -1 : tint.getMaxTintIndex()));
+		generateItemModels(generator, tint == null ? -1 : tint.getMaxTintIndex());
 	}
 
 	@HideFromJS
-	public void generateItemModel(ModelGenerator model) {
-		if (modelGenerator != null) {
-			modelGenerator.accept(model);
-			return;
-		}
+	public void generateItemModels(KubeAssetGenerator generator, int maxTintIndex) {
+		generator.itemModel(id, model -> {
+			if (modelGenerator != null) {
+				modelGenerator.accept(model);
+				return;
+			}
 
-		model.parent(parentModel != null ? parentModel : KubeAssetGenerator.GENERATED_ITEM_MODEL);
+			model.parent(parentModel != null ? parentModel : KubeAssetGenerator.GENERATED_ITEM_MODEL);
 
-		if (textures.isEmpty()) {
-			model.texture("layer0", baseTexture);
-		} else {
-			model.textures(textures);
-		}
+			if (textures.isEmpty()) {
+				model.texture("layer0", baseTexture);
+			} else {
+				model.textures(textures);
+			}
+		}, KubeAssetGenerator.createItemTintSources(maxTintIndex));
+	}
+
+	@HideFromJS
+	public boolean hasCustomModel() {
+		return modelGenerator != null ||
+			parentModel != null ||
+			!textures.isEmpty() ||
+			!baseTexture.equals(id.withPath(ID.ITEM).toString());
 	}
 
 	public <T> ItemBuilder component(DataComponentType<T> type, T value) {
