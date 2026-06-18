@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.client.ModelGenerator;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
@@ -9,6 +10,7 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.TickDuration;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -119,20 +121,23 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 	}
 
 	protected void generateItemModels(KubeAssetGenerator generator) {
-		generator.itemModel(id, m -> {
-			if (modelGenerator != null) {
-				modelGenerator.accept(m);
-				return;
-			}
+		generator.itemModel(id, this::generateItemModel, KubeAssetGenerator.createItemTintSources(tint == null ? -1 : tint.getMaxTintIndex()));
+	}
 
-			m.parent(parentModel != null ? parentModel : KubeAssetGenerator.GENERATED_ITEM_MODEL);
+	@HideFromJS
+	public void generateItemModel(ModelGenerator model) {
+		if (modelGenerator != null) {
+			modelGenerator.accept(model);
+			return;
+		}
 
-			if (textures.isEmpty()) {
-				m.texture("layer0", baseTexture);
-			} else {
-				m.textures(textures);
-			}
-		});
+		model.parent(parentModel != null ? parentModel : KubeAssetGenerator.GENERATED_ITEM_MODEL);
+
+		if (textures.isEmpty()) {
+			model.texture("layer0", baseTexture);
+		} else {
+			model.textures(textures);
+		}
 	}
 
 	public <T> ItemBuilder component(DataComponentType<T> type, T value) {

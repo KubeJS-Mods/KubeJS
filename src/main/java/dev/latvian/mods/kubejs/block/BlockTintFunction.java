@@ -30,6 +30,10 @@ public interface BlockTintFunction {
 	@Nullable
 	KubeColor getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index);
 
+	default int getMaxTintIndex() {
+		return 0;
+	}
+
 	record Fixed(KubeColor color) implements BlockTintFunction {
 		@Override
 		public KubeColor getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
@@ -44,6 +48,17 @@ public interface BlockTintFunction {
 		public @Nullable KubeColor getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
 			var f = map.get(index);
 			return f == null ? null : f.getColor(state, level, pos, index);
+		}
+
+		@Override
+		public int getMaxTintIndex() {
+			int maxIndex = 0;
+
+			for (var entry : map.int2ObjectEntrySet()) {
+				maxIndex = Math.max(maxIndex, entry.getIntKey());
+			}
+
+			return maxIndex;
 		}
 	}
 

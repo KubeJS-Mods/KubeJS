@@ -235,7 +235,17 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		generateBlockModels(generator);
 
 		if (itemBuilder != null) {
-			generator.itemModel(itemBuilder.id, this::generateItemModel);
+			int maxTintIndex = -1;
+
+			if (itemBuilder.tint != null) {
+				maxTintIndex = itemBuilder.tint.getMaxTintIndex();
+			}
+
+			if (tint != null) {
+				maxTintIndex = Math.max(maxTintIndex, tint.getMaxTintIndex());
+			}
+
+			generator.itemModel(itemBuilder.id, this::generateItemModel, KubeAssetGenerator.createItemTintSources(maxTintIndex));
 		}
 	}
 
@@ -286,6 +296,16 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 	}
 
 	protected void generateItemModel(ModelGenerator m) {
+		var hasCustomModel = itemBuilder != null &&
+			(itemBuilder.modelGenerator != null ||
+				itemBuilder.parentModel != null ||
+				!itemBuilder.textures.isEmpty() ||
+				!itemBuilder.baseTexture.equals(itemBuilder.id.withPath(ID.ITEM).toString()));
+		if (hasCustomModel) {
+			itemBuilder.generateItemModel(m);
+			return;
+		}
+
 		m.parent(id.withPath(ID.BLOCK));
 	}
 
