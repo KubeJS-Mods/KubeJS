@@ -27,7 +27,6 @@ almostgradle.setup {
 	withAccessTransformerValidation = !runningInCI
 
 	tests {
-		enabled = true
 		testMod = true
 		gameTests = true
 		testFramework = true
