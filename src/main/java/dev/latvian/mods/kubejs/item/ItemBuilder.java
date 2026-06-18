@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.block.BlockItemBuilder;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
@@ -116,11 +117,11 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 
 	@Override
 	public void generateAssets(KubeAssetGenerator generator) {
-		generateItemModels(generator, tint == null ? -1 : tint.getMaxTintIndex());
+		generateItemModels(generator);
 	}
 
 	@HideFromJS
-	public void generateItemModels(KubeAssetGenerator generator, int maxTintIndex) {
+	public void generateItemModels(KubeAssetGenerator generator) {
 		generator.itemModel(id, model -> {
 			if (modelGenerator != null) {
 				modelGenerator.accept(model);
@@ -134,7 +135,7 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 			} else {
 				model.textures(textures);
 			}
-		}, KubeAssetGenerator.createItemTintSources(maxTintIndex));
+		}, KubeAssetGenerator.createItemTintSources(getMaxTintIndex()));
 	}
 
 	@HideFromJS
@@ -143,6 +144,17 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 			parentModel != null ||
 			!textures.isEmpty() ||
 			!baseTexture.equals(id.withPath(ID.ITEM).toString());
+	}
+
+	@HideFromJS
+	public int getMaxTintIndex() {
+		int maxTintIndex = tint == null ? -1 : tint.getMaxTintIndex();
+
+		if (this instanceof BlockItemBuilder blockItemBuilder && blockItemBuilder.blockBuilder.tint != null) {
+			maxTintIndex = Math.max(maxTintIndex, blockItemBuilder.blockBuilder.tint.getMaxTintIndex());
+		}
+
+		return maxTintIndex;
 	}
 
 	public <T> ItemBuilder component(DataComponentType<T> type, T value) {

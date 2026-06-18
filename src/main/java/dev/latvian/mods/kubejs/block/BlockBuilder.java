@@ -235,16 +235,10 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		generateBlockModels(generator);
 
 		if (itemBuilder != null) {
-			int maxTintIndex = itemBuilder.tint == null ? -1 : itemBuilder.tint.getMaxTintIndex();
-
-			if (tint != null) {
-				maxTintIndex = Math.max(maxTintIndex, tint.getMaxTintIndex());
-			}
-
 			if (itemBuilder.hasCustomModel()) {
-				itemBuilder.generateItemModels(generator, maxTintIndex);
+				itemBuilder.generateItemModels(generator);
 			} else {
-				generator.itemModel(itemBuilder.id, this::generateItemModel, KubeAssetGenerator.createItemTintSources(maxTintIndex));
+				generator.itemModel(itemBuilder.id, this::generateItemModel, KubeAssetGenerator.createItemTintSources(itemBuilder.getMaxTintIndex()));
 			}
 		}
 	}
