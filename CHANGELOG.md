@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Builders now generate the required model data for item and block-item tinting (#1156)
 - Fix `Client` binding not being available from startup/client scripts (#1152)
 - Fixed circular initialization between ConsoleJS and ScriptType before script consoles are ready (#1147)
 - Fixed creative tab modification not firing correctly (#1149)
