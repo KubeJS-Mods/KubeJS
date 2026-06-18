@@ -177,6 +177,9 @@ tasks.named<Test>("test") {
 }
 
 tasks.withType<JavaExec>().matching { it.name == "runGametest" }.configureEach {
+	// When both run (the coverage flow), order the cheap unit tests first so the heavy game-test
+	// server never shares a heap window with the JUnit fork, even under --parallel.
+	mustRunAfter("test")
 	if (coverageRequested) {
 		outputs.upToDateWhen { false }
 	}
