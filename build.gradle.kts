@@ -5,7 +5,7 @@ import org.gradle.testing.jacoco.tasks.JacocoReport
 
 plugins {
 	id("net.neoforged.moddev") version "2.0.138"
-	id("com.almostreliable.almostgradle") version "2.1.1"
+	id("com.almostreliable.almostgradle") version "2.2.0"
 	id("idea")
 	jacoco
 	// id("me.shedaniel.unified-publishing") version "0.1.+"
@@ -67,15 +67,6 @@ neoForge {
 	interfaceInjectionData {
 		from(file("interfaces.json"))
 		publish(file("interfaces.json"))
-	}
-
-	runs {
-		// AlmostGradle's gametest run launches as a plain server here; use Neo's headless type and run only our tests.
-		matching { it.name == "gametest" }.configureEach {
-			type.set("gameTestServer")
-			programArgument("--tests")
-			programArgument("testmod:*")
-		}
 	}
 }
 
