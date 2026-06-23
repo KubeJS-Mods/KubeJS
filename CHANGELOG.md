@@ -1,7 +1,8 @@
 # changelog
 
 ## Unreleased
-- /
+
+- Fix dedicated server crash from block tint function client types (#1159)
 
 ## [8.0.3] - 2026-06-22
 
