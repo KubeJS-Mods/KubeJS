@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.block;
 
+import dev.latvian.mods.kubejs.client.BlockTintFunctionWrapper;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.color.SimpleColor;
 import dev.latvian.mods.kubejs.color.SimpleColorWithAlpha;
@@ -11,9 +12,8 @@ import dev.latvian.mods.rhino.Undefined;
 import dev.latvian.mods.rhino.type.TypeInfo;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.minecraft.client.renderer.BiomeColors;
-import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.FoliageColor;
 import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.block.RedStoneWireBlock;
@@ -28,7 +28,7 @@ public interface BlockTintFunction {
 	TypeInfo TYPE_INFO = TypeInfo.of(BlockTintFunction.class);
 
 	@Nullable
-	KubeColor getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index);
+	KubeColor getColor(BlockState state, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos, int index);
 
 	default int getMaxTintIndex() {
 		return 0;
@@ -36,7 +36,7 @@ public interface BlockTintFunction {
 
 	record Fixed(KubeColor color) implements BlockTintFunction {
 		@Override
-		public KubeColor getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
+		public KubeColor getColor(BlockState state, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos, int index) {
 			return color;
 		}
 	}
@@ -45,7 +45,7 @@ public interface BlockTintFunction {
 		public final Int2ObjectMap<@Nullable BlockTintFunction> map = new Int2ObjectArrayMap<>(1);
 
 		@Override
-		public @Nullable KubeColor getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int index) {
+		public @Nullable KubeColor getColor(BlockState state, @Nullable BlockAndLightGetter level, @Nullable BlockPos pos, int index) {
 			var f = map.get(index);
 			return f == null ? null : f.getColor(state, level, pos, index);
 		}
@@ -62,13 +62,13 @@ public interface BlockTintFunction {
 		}
 	}
 
-	BlockTintFunction GRASS = (s, l, p, i) -> new SimpleColor(l == null || p == null ? GrassColor.get(0.5, 1.0) : BiomeColors.getAverageGrassColor(l, p));
+	BlockTintFunction GRASS = (s, l, p, i) -> new SimpleColor(l == null || p == null ? GrassColor.get(0.5, 1.0) : BlockTintFunctionWrapper.getAverageGrassColor(l, p));
 	KubeColor DEFAULT_FOLIAGE_COLOR = new SimpleColor(FoliageColor.FOLIAGE_DEFAULT);
-	BlockTintFunction FOLIAGE = (s, l, p, i) -> l == null || p == null ? DEFAULT_FOLIAGE_COLOR : new SimpleColor(BiomeColors.getAverageFoliageColor(l, p));
+	BlockTintFunction FOLIAGE = (s, l, p, i) -> l == null || p == null ? DEFAULT_FOLIAGE_COLOR : new SimpleColor(BlockTintFunctionWrapper.getAverageFoliageColor(l, p));
 	Fixed EVERGREEN_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.FOLIAGE_EVERGREEN));
 	Fixed BIRCH_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.FOLIAGE_BIRCH));
 	Fixed MANGROVE_FOLIAGE = new Fixed(new SimpleColor(FoliageColor.FOLIAGE_MANGROVE));
-	BlockTintFunction WATER = (s, l, p, i) -> l == null || p == null ? null : new SimpleColorWithAlpha(BiomeColors.getAverageWaterColor(l, p));
+	BlockTintFunction WATER = (s, l, p, i) -> l == null || p == null ? null : new SimpleColorWithAlpha(BlockTintFunctionWrapper.getAverageWaterColor(l, p));
 	@Nullable KubeColor[] REDSTONE_COLORS = new KubeColor[16];
 	BlockTintFunction REDSTONE = (state, level, pos, index) -> {
 		if (REDSTONE_COLORS[0] == null) {
