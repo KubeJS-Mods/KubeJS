@@ -341,8 +341,8 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	@Info("Gets a list of all passengers of the entity.")
-	default EntityArrayList kjs$getPassengers() {
-		return new EntityArrayList(kjs$self().getPassengers());
+	default EntityArrayList<? extends Entity> kjs$getPassengers() {
+		return new EntityArrayList<>(kjs$self().getPassengers());
 	}
 
 	@Deprecated
@@ -526,7 +526,7 @@ public interface EntityKJS extends WithPersistentData, MessageSenderKJS, ScriptT
 	}
 
 	@Nullable
-	default Entity kjs$rayTraceEntity(double distance, @Nullable Predicate<Entity> filter) {
+	default Entity kjs$rayTraceEntity(double distance, @Nullable Predicate<? super Entity> filter) {
 		double d0 = Double.MAX_VALUE;
 		Entity entity = null;
 

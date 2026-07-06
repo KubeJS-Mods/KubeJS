@@ -2,10 +2,16 @@
 
 ## Unreleased
 
-- Fix `Client` binding not being available from startup/client scripts (#1145)
+- Fix dedicated server crash from block tint function client types (#1159)
+- Fix `DetectorBlock` failing to register (and crashing world load) because its block id was never set (#1153)
+- Add game tests covering block and entity events (#1153)
+
+## [8.0.3] - 2026-06-22
+
+- Builders now generate the required model data for item and block-item tinting (#1156)
+- Fix `Client` binding not being available from startup/client scripts (#1152)
 - Fixed circular initialization between ConsoleJS and ScriptType before script consoles are ready (#1147)
-- Fix `DetectorBlock` failing to register (and crashing world load) because its block id was never set (#NNNN)
-- Add game tests covering block and entity events (#NNNN)
+- Fixed creative tab modification not firing correctly (#1149)
 
 ## [8.0.2] - 2026-06-12
 

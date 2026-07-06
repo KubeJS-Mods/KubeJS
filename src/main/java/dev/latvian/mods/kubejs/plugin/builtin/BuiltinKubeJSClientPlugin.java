@@ -29,6 +29,10 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 
 	@Override
 	public void registerBindings(BindingRegistry bindings) {
+		if (bindings.type().isStartup() || bindings.type().isClient()) {
+			bindings.addLazy("Client", Minecraft::getInstance);
+		}
+
 		if (bindings.type().isClient()) {
 			var se = ScheduledClientEvent.EVENTS;
 			bindings.add("setTimeout", new ScheduledEvents.TimeoutJSFunction(se, false, false));
@@ -37,11 +41,6 @@ public class BuiltinKubeJSClientPlugin implements KubeJSPlugin {
 			bindings.add("clearInterval", new ScheduledEvents.TimeoutJSFunction(se, true, true));
 		}
 		bindings.add("GLFWInput", GLFWInputWrapper.MAP.get());
-	}
-
-	@Override
-	public void registerClientRuntimeBindings(BindingRegistry bindings) {
-		bindings.add("Client", Minecraft.getInstance());
 	}
 
 	@Override

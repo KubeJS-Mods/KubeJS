@@ -119,8 +119,8 @@ public interface MinecraftServerKJS extends WithAttachedData<MinecraftServer>, W
 	}
 
 	@Override
-	default EntityArrayList kjs$getPlayers() {
-		return new EntityArrayList(kjs$self().getPlayerList().getPlayers());
+	default EntityArrayList<ServerPlayer> kjs$getPlayers() {
+		return new EntityArrayList<>(kjs$self().getPlayerList().getPlayers());
 	}
 
 	@Override

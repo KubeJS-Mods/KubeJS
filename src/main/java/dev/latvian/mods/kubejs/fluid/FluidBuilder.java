@@ -215,10 +215,6 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 				m.texture("bucket_fluid", fluidPath.toString());
 			});
 
-			var modelRef = new JsonObject();
-			modelRef.addProperty("type", "minecraft:model");
-			modelRef.addProperty("model", bucketItem.id.withPath(ID.ITEM).toString());
-
 			var tints = new JsonArray();
 
 			var baseTint = new JsonObject();
@@ -237,11 +233,7 @@ public class FluidBuilder extends BuilderBase<FlowingFluid> {
 			fluidTint.addProperty("value", tintColor != null ? tintColor.kjs$getARGB() : -1);
 			tints.add(fluidTint);
 
-			modelRef.add("tints", tints);
-
-			var def = new JsonObject();
-			def.add("model", modelRef);
-			generator.json(bucketItem.id.withPath(ID.ITEM_DEFINITION), def);
+			generator.itemDefinition(bucketItem.id, bucketItem.id.withPath(ID.ITEM), tints);
 		}
 	}
 }

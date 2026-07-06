@@ -52,3 +52,5 @@ jobs:
       release_type: ${{ github.event.inputs.release_type }}
       loaders: "neoforge"
       debug: ${{ github.event.inputs.debug }}
+      maven_url: "https://maven.latvian.dev/releases"
+      maven_username: "lat"

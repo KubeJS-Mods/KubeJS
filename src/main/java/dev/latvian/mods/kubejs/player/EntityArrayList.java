@@ -24,20 +24,20 @@ import java.util.List;
 import java.util.function.Predicate;
 
 @RemapPrefixForJS("kjs$")
-public class EntityArrayList extends ArrayList<Entity> implements MessageSenderKJS, DataSenderKJS {
-	public static final Predicate<Entity> ALWAYS_TRUE_PREDICATE = entity -> true;
+public class EntityArrayList<T extends Entity> extends ArrayList<T> implements MessageSenderKJS, DataSenderKJS {
+	public static final Predicate<Entity> ALWAYS_TRUE_PREDICATE = _ -> true;
 
 	public EntityArrayList(int size) {
 		super(size);
 	}
 
-	public EntityArrayList(Iterable<? extends Entity> entities) {
-		this(entities instanceof Collection c ? c.size() : 4);
+	public EntityArrayList(Iterable<T> entities) {
+		this(entities instanceof Collection<T> c ? c.size() : 4);
 		addAllIterable(entities);
 	}
 
-	public void addAllIterable(Iterable<? extends Entity> entities) {
-		if (entities instanceof Collection c) {
+	public void addAllIterable(Iterable<T> entities) {
+		if (entities instanceof Collection<T> c) {
 			addAll(c);
 		} else {
 			for (var entity : entities) {
@@ -126,12 +126,12 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 		@Param(name = "filter", value = "The predicate - a function that takes an argument of `Entity` and returns a boolean.")
 	})
 	// FIXME: Inaccessible from JS due to order of operations in Rhino, this method is used by other filter methods
-	public EntityArrayList filter(Predicate<Entity> filter) {
+	public EntityArrayList<T> filter(Predicate<? super Entity> filter) {
 		if (isEmpty()) {
 			return this;
 		}
 
-		var list = new EntityArrayList(size() / 4);
+		var list = new EntityArrayList<T>(size() / 4);
 
 		for (var entity : this) {
 			if (filter.test(entity)) {
@@ -148,12 +148,12 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 		""", params = {
 		@Param(name = "filterList", value = "The list of predicates - functions that take one argument of `Entity` and return boolean values.")
 	})
-	public EntityArrayList filterList(List<Predicate<Entity>> filterList) {
+	public EntityArrayList<T> filterList(List<? extends Predicate<Entity>> filterList) {
 		if (isEmpty() || filterList.isEmpty()) {
 			return this;
 		}
 
-		var list = new EntityArrayList(size());
+		var list = new EntityArrayList<T>(size());
 
 		for (var entity : this) {
 			for (var filter : filterList) {
@@ -169,7 +169,7 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 	@Info(value = "Filters the entity list based on the provided `EntitySelector`.", params = {
 		@Param(name = "selector", value = "The entity selector. It may be a string representing the entity selector as seen in commands, such as `'@e[distance=..25]'`")
 	})
-	public EntityArrayList filterSelector(EntitySelector selector) {
+	public EntityArrayList<T> filterSelector(EntitySelector selector) {
 		return filterList(selector.contextFreePredicates);
 	}
 
@@ -182,8 +182,8 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 		@Param(name = "z", value = "The `z` coordinate of the point."),
 		@Param(name = "distance", value = "The maximum distance of entities from the point.")
 	})
-	public EntityArrayList filterDistance(double x, double y, double z, double distance) {
-		var list = new EntityArrayList(size());
+	public EntityArrayList<T> filterDistance(double x, double y, double z, double distance) {
+		var list = new EntityArrayList<T>(size());
 
 		for (var entity : this) {
 			if (entity.distanceToSqr(x, y, z) <= distance * distance) {
@@ -201,24 +201,24 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 		@Param(name = "pos", value = "The `BlockPos` - that is the center of the block at specified position. It can be a 3-element array of integers, such as `[64, 25, 39]`."),
 		@Param(name = "distance", value = "The maximum distance of entities from the point.")
 	})
-	public EntityArrayList filterDistance(BlockPos pos, double distance) {
+	public EntityArrayList<T> filterDistance(BlockPos pos, double distance) {
 		return filterDistance(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, distance);
 	}
 
 	@Info("Results in an entity list containing only players.")
-	public EntityArrayList filterPlayers() {
+	public EntityArrayList<T> filterPlayers() {
 		return filter(e -> e instanceof Player);
 	}
 
 	@Info("Results in an entity list containing only item entities.")
-	public EntityArrayList filterItems() {
+	public EntityArrayList<T> filterItems() {
 		return filter(e -> e instanceof ItemEntity);
 	}
 
 	@Info(value = "Filters the entity list based on the type of the entity. Only entities whose type is equal to the provided one will end up in the resulting list.", params = {
 		@Param(name = "type", value = "The entity type. It may be a string representing an entity ID, like `'minecraft:creeper'`.")
 	})
-	public EntityArrayList filterType(EntityType<?> type) {
+	public EntityArrayList<T> filterType(EntityType<?> type) {
 		return filter(e -> e.getType() == type);
 	}
 
@@ -239,9 +239,8 @@ public class EntityArrayList extends ArrayList<Entity> implements MessageSenderK
 	}
 
 	@Override
-	@Nullable
 	@Info("Gets the first entity on the list, or `null` if the list is empty.")
-	public Entity getFirst() {
+	public @Nullable T getFirst() {
 		return isEmpty() ? null : get(0);
 	}
 }

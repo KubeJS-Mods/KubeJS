@@ -3,6 +3,7 @@ package dev.latvian.mods.kubejs.client;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.latvian.mods.kubejs.item.ItemTintFunction;
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,9 +22,12 @@ public record ItemTintFunctionWrapper(int index) implements ItemTintSource {
 		var item = stack.getItem();
 		var builder = item.kjs$getItemBuilder();
 
-		if (builder != null && builder.tint != null) {
-			var c = builder.tint.getColor(stack, index);
-			return c == null ? 0xFFFFFFFF : c.kjs$getARGB();
+		if (builder != null) {
+			var c = builder.tint == null ? ItemTintFunction.BLOCK.getColor(stack, index) : builder.tint.getColor(stack, index);
+
+			if (c != null) {
+				return c.kjs$getARGB();
+			}
 		}
 
 		return 0xFFFFFFFF;

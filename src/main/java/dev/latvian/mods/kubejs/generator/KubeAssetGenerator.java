@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.generator;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dev.latvian.mods.kubejs.client.LoadedTexture;
 import dev.latvian.mods.kubejs.client.ModelGenerator;
@@ -13,6 +14,7 @@ import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import dev.latvian.mods.kubejs.util.ID;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -43,15 +45,44 @@ public interface KubeAssetGenerator extends KubeResourceGenerator {
 	}
 
 	default void itemModel(Identifier id, Consumer<ModelGenerator> consumer) {
+		itemModel(id, consumer, null);
+	}
+
+	default void itemModel(Identifier id, Consumer<ModelGenerator> consumer, @Nullable JsonArray tints) {
 		var gen = Util.make(new ModelGenerator(), consumer);
 		json(id.withPath(ID.ITEM_MODEL), gen.toJson());
+		itemDefinition(id, id.withPath(ID.ITEM), tints);
+	}
 
+	default void itemDefinition(Identifier id, Identifier model, @Nullable JsonArray tints) {
 		var modelRef = new JsonObject();
 		modelRef.addProperty("type", "minecraft:model");
-		modelRef.addProperty("model", id.withPath(ID.ITEM).toString());
+		modelRef.addProperty("model", model.toString());
+
+		if (tints != null) {
+			modelRef.add("tints", tints);
+		}
+
 		var def = new JsonObject();
 		def.add("model", modelRef);
 		json(id.withPath(ID.ITEM_DEFINITION), def);
+	}
+
+	static @Nullable JsonArray createItemTintSources(int maxTintIndex) {
+		if (maxTintIndex < 0) {
+			return null;
+		}
+
+		var tints = new JsonArray();
+
+		for (int i = 0; i <= maxTintIndex; i++) {
+			var tintSource = new JsonObject();
+			tintSource.addProperty("type", "kubejs:tint");
+			tintSource.addProperty("index", i);
+			tints.add(tintSource);
+		}
+
+		return tints;
 	}
 
 	default void defaultItemModel(Identifier id) {

@@ -21,8 +21,8 @@ public interface EntityGetterKJS extends EntityCollectionKJS {
 	}
 
 	@Override
-	default EntityArrayList kjs$getPlayers() {
-		return new EntityArrayList(kjs$self().players());
+	default EntityArrayList<? extends Player> kjs$getPlayers() {
+		return new EntityArrayList<>(kjs$self().players());
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public interface EntityGetterKJS extends EntityCollectionKJS {
 	}
 
 	@Override
-	default EntityArrayList kjs$getEntitiesWithin(AABB aabb) {
-		return new EntityArrayList(kjs$self().getEntities(null, aabb));
+	default EntityArrayList<? extends Entity> kjs$getEntitiesWithin(AABB aabb) {
+		return new EntityArrayList<>(kjs$self().getEntities(null, aabb));
 	}
 }

@@ -27,20 +27,20 @@ public interface EntityCollectionKJS {
 		return list;
 	}
 
-	default EntityArrayList kjs$getPlayers() {
-		return new EntityArrayList(kjs$getMcPlayers());
+	default EntityArrayList<? extends Player> kjs$getPlayers() {
+		return new EntityArrayList<>(kjs$getMcPlayers());
 	}
 
-	default EntityArrayList kjs$getEntities() {
-		return new EntityArrayList(kjs$getMcEntities());
+	default EntityArrayList<? extends Entity> kjs$getEntities() {
+		return new EntityArrayList<>(kjs$getMcEntities());
 	}
 
-	default EntityArrayList kjs$getEntitiesWithin(AABB aabb) {
+	default EntityArrayList<? extends Entity> kjs$getEntitiesWithin(AABB aabb) {
 		if (aabb == null || aabb == AABB.INFINITE) {
 			return kjs$getEntities();
 		}
 
-		var list = new EntityArrayList(10);
+		var list = new EntityArrayList<>(10);
 
 		for (var entity : kjs$getMcEntities()) {
 			if (entity.getBoundingBox().intersects(aabb)) {

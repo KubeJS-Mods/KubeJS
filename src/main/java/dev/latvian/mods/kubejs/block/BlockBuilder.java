@@ -235,7 +235,11 @@ public abstract class BlockBuilder extends ModelledBuilderBase<Block> {
 		generateBlockModels(generator);
 
 		if (itemBuilder != null) {
-			generator.itemModel(itemBuilder.id, this::generateItemModel);
+			if (itemBuilder.hasCustomModel()) {
+				itemBuilder.generateItemModels(generator);
+			} else {
+				generator.itemModel(itemBuilder.id, this::generateItemModel, KubeAssetGenerator.createItemTintSources(itemBuilder.getMaxTintIndex()));
+			}
 		}
 	}
 

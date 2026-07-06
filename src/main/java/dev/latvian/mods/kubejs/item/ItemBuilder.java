@@ -1,5 +1,6 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.block.BlockItemBuilder;
 import dev.latvian.mods.kubejs.color.KubeColor;
 import dev.latvian.mods.kubejs.component.DataComponentWrapper;
 import dev.latvian.mods.kubejs.generator.KubeAssetGenerator;
@@ -9,6 +10,7 @@ import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.TickDuration;
+import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -118,21 +120,41 @@ public class ItemBuilder extends ModelledBuilderBase<Item> {
 		generateItemModels(generator);
 	}
 
-	protected void generateItemModels(KubeAssetGenerator generator) {
-		generator.itemModel(id, m -> {
+	@HideFromJS
+	public void generateItemModels(KubeAssetGenerator generator) {
+		generator.itemModel(id, model -> {
 			if (modelGenerator != null) {
-				modelGenerator.accept(m);
+				modelGenerator.accept(model);
 				return;
 			}
 
-			m.parent(parentModel != null ? parentModel : KubeAssetGenerator.GENERATED_ITEM_MODEL);
+			model.parent(parentModel != null ? parentModel : KubeAssetGenerator.GENERATED_ITEM_MODEL);
 
 			if (textures.isEmpty()) {
-				m.texture("layer0", baseTexture);
+				model.texture("layer0", baseTexture);
 			} else {
-				m.textures(textures);
+				model.textures(textures);
 			}
-		});
+		}, KubeAssetGenerator.createItemTintSources(getMaxTintIndex()));
+	}
+
+	@HideFromJS
+	public boolean hasCustomModel() {
+		return modelGenerator != null ||
+			parentModel != null ||
+			!textures.isEmpty() ||
+			!baseTexture.equals(id.withPath(ID.ITEM).toString());
+	}
+
+	@HideFromJS
+	public int getMaxTintIndex() {
+		int maxTintIndex = tint == null ? -1 : tint.getMaxTintIndex();
+
+		if (this instanceof BlockItemBuilder blockItemBuilder && blockItemBuilder.blockBuilder.tint != null) {
+			maxTintIndex = Math.max(maxTintIndex, blockItemBuilder.blockBuilder.tint.getMaxTintIndex());
+		}
+
+		return maxTintIndex;
 	}
 
 	public <T> ItemBuilder component(DataComponentType<T> type, T value) {
