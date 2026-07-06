@@ -126,6 +126,8 @@ dependencies {
 			prefer(batVersion)
 		}
 	})
+
+	testImplementation("org.assertj:assertj-core:3.27.3")
 }
 
 // Make the game tests' KubeJS scripts available in the gametest run's game directory.
