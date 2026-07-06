@@ -70,6 +70,18 @@ public class EntityEventTests {
 
 	@GameTest
 	@EmptyTemplate(floor = true)
+	@TestHolder(value = "entity_death_asserts", description = "KubeJS EntityEvents.death exposes the dead entity and damage source to script assertions")
+	static void entityDeathAsserts(final DynamicTest test) {
+		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
+			.thenExecute(() -> TestRuntime.clear("entity.death.assert"))
+			.thenExecute(player -> helper.spawn(EntityType.PIG, POS).kill((ServerLevel) player.level()))
+			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("entity.death.assert"), "script did not assert on entity.death"))
+			.thenExecute(() -> TestRuntime.verify("entity.death.assert"))
+			.thenSucceed());
+	}
+
+	@GameTest
+	@EmptyTemplate(floor = true)
 	@TestHolder(value = "entity_drops", description = "KubeJS EntityEvents.drops fires when an entity drops loot on death")
 	static void entityDrops(final DynamicTest test) {
 		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))

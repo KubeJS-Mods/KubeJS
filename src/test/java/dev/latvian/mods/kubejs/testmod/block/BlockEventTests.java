@@ -40,6 +40,19 @@ public class BlockEventTests {
 
 	@GameTest
 	@EmptyTemplate(floor = true)
+	@TestHolder(value = "block_broken_asserts", description = "KubeJS BlockEvents.broken exposes the broken block and player to script assertions")
+	static void blockBrokenAsserts(final DynamicTest test) {
+		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
+			.thenExecute(() -> TestRuntime.clear("block.broken.assert"))
+			.thenExecute(() -> helper.setBlock(POS, Blocks.DIRT.defaultBlockState()))
+			.thenExecute(player -> player.gameMode.destroyBlock(helper.absolutePos(POS)))
+			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.broken.assert"), "script did not assert on block.broken"))
+			.thenExecute(() -> TestRuntime.verify("block.broken.assert"))
+			.thenSucceed());
+	}
+
+	@GameTest
+	@EmptyTemplate(floor = true)
 	@TestHolder(value = "block_drops_dirt", description = "KubeJS BlockEvents.drops fires when a broken block drops items")
 	static void blockDropsDirt(final DynamicTest test) {
 		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
@@ -65,6 +78,25 @@ public class BlockEventTests {
 				player.gameMode.useItemOn(player, (ServerLevel) player.level(), stack, InteractionHand.MAIN_HAND, hit);
 			})
 			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.placed"), "script did not report block.placed"))
+			.thenSucceed());
+	}
+
+	@GameTest
+	@EmptyTemplate(floor = true)
+	@TestHolder(value = "block_placed_asserts", description = "KubeJS BlockEvents.placed exposes the placed block to script assertions")
+	static void blockPlacedAsserts(final DynamicTest test) {
+		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
+			.thenExecute(() -> TestRuntime.clear("block.placed.assert"))
+			.thenExecute(() -> helper.setBlock(POS, Blocks.STONE.defaultBlockState()))
+			.thenExecute(player -> {
+				var stack = new ItemStack(Items.OAK_PLANKS);
+				player.setItemInHand(InteractionHand.MAIN_HAND, stack);
+				var abs = helper.absolutePos(POS);
+				var hit = new BlockHitResult(Vec3.atCenterOf(abs).add(0, 0.5, 0), Direction.UP, abs, false);
+				player.gameMode.useItemOn(player, (ServerLevel) player.level(), stack, InteractionHand.MAIN_HAND, hit);
+			})
+			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.placed.assert"), "script did not assert on block.placed"))
+			.thenExecute(() -> TestRuntime.verify("block.placed.assert"))
 			.thenSucceed());
 	}
 
