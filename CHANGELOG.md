@@ -4,6 +4,8 @@
 
 - Fix `Client` binding not being available from startup/client scripts (#1145)
 - Fixed circular initialization between ConsoleJS and ScriptType before script consoles are ready (#1147)
+- Fix `DetectorBlock` failing to register (and crashing world load) because its block id was never set (#NNNN)
+- Add game tests covering block and entity events (#NNNN)
 
 ## [8.0.2] - 2026-06-12
 

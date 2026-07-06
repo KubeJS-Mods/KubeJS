@@ -6,8 +6,10 @@ import dev.latvian.mods.kubejs.client.VariantBlockStateGenerator;
 import dev.latvian.mods.kubejs.plugin.builtin.event.BlockEvents;
 import dev.latvian.mods.rhino.util.ReturnsSelf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -66,7 +68,7 @@ public class DetectorBlock extends Block {
 	private final Builder builder;
 
 	public DetectorBlock(Builder b) {
-		super(Properties.ofFullCopy(Blocks.BEDROCK));
+		super(Properties.ofFullCopy(Blocks.BEDROCK).setId(ResourceKey.create(BuiltInRegistries.BLOCK.key(), b.id)));
 		builder = b;
 		registerDefaultState(stateDefinition.any().setValue(BlockStateProperties.POWERED, false));
 	}
