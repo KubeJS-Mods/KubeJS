@@ -240,6 +240,73 @@ val coverageSummaryJson by tasks.registering {
 	}
 }
 
+// Coverage gate over the *script-exposed* API surface (what KubeJS scripts can call), as opposed to
+// the whole mod. Packages are partitioned into: excluded internals (mixins, datagen, networking, the
+// local web server, mod integrations, the script engine itself, command/tag internals), a client-only
+// sub-surface (only reachable by a client run), and the reachable subset that server/unit tests can
+// exercise. The gate enforces a minimum on the reachable subset and prints the biggest gaps so the
+// test-writing loop knows what to target next. Override the threshold with -PscriptCoverageGate=<0..1>.
+val scriptCoverageGate = (findProperty("scriptCoverageGate") as String?)?.toDouble() ?: 0.40
+
+fun coveragePackageExcluded(pkg: String): Boolean {
+	val internal = listOf(".core.mixin", ".generator", ".error", ".misc", ".command", ".server.tag", ".integration.gamestages")
+	return internal.any { pkg.contains(it) } ||
+		pkg == "dev.latvian.mods.kubejs.net" ||
+		pkg.startsWith("dev.latvian.mods.kubejs.web") ||
+		pkg.startsWith("dev.latvian.mods.kubejs.script")
+}
+
+fun coveragePackageClientOnly(pkg: String): Boolean =
+	pkg.startsWith("dev.latvian.mods.kubejs.client") ||
+		pkg.startsWith("dev.latvian.mods.kubejs.gui") ||
+		pkg.startsWith("dev.latvian.mods.kubejs.integration.jei")
+
+val coverageGate by tasks.registering {
+	group = "verification"
+	description = "Fails if reachable script-exposed API coverage is below the gate; prints the split and top uncovered classes."
+	dependsOn(coverageReport)
+	val csvFile = layout.buildDirectory.file("reports/coverage/coverage.csv")
+	inputs.file(csvFile)
+	val gate = scriptCoverageGate
+	doLast {
+		var rc = 0L; var rm = 0L // reachable covered / missed
+		var cc = 0L; var cm = 0L // client-only covered / missed
+		val uncovered = mutableListOf<Triple<String, Long, Long>>() // class, missed, covered (reachable)
+
+		csvFile.get().asFile.readLines().drop(1).filter { it.isNotBlank() }.forEach { row ->
+			val c = row.split(',')
+			if (c.size < 9) return@forEach
+			val pkg = c[1]
+			if (coveragePackageExcluded(pkg)) return@forEach
+			val missed = c[3].toLong(); val covered = c[4].toLong()
+			if (coveragePackageClientOnly(pkg)) {
+				cc += covered; cm += missed
+			} else {
+				rc += covered; rm += missed
+				if (missed > 0) uncovered.add(Triple("${pkg.removePrefix("dev.latvian.mods.kubejs.")}.${c[2]}", missed, covered))
+			}
+		}
+
+		fun pct(covered: Long, total: Long) = if (total == 0L) 0.0 else covered * 100.0 / total
+		val reachPct = pct(rc, rc + rm)
+
+		logger.lifecycle("Script-exposed API coverage (instructions):")
+		logger.lifecycle(String.format(Locale.ROOT, "  reachable   : %.2f%% (%d / %d)", reachPct, rc, rc + rm))
+		logger.lifecycle(String.format(Locale.ROOT, "  client-only : %.2f%% (%d / %d)", pct(cc, cc + cm), cc, cc + cm))
+		logger.lifecycle(String.format(Locale.ROOT, "  full        : %.2f%% (%d / %d)", pct(rc + cc, rc + rm + cc + cm), rc + cc, rc + rm + cc + cm))
+		logger.lifecycle("Top uncovered reachable classes (missed instructions):")
+		uncovered.sortedByDescending { it.second }.take(25).forEach {
+			logger.lifecycle(String.format(Locale.ROOT, "  %-7d %s", it.second, it.first))
+		}
+
+		val gatePct = gate * 100.0
+		if (reachPct < gatePct) {
+			throw GradleException(String.format(Locale.ROOT, "Reachable script-exposed coverage %.2f%% is below the gate %.2f%%", reachPct, gatePct))
+		}
+		logger.lifecycle(String.format(Locale.ROOT, "Coverage gate passed: %.2f%% >= %.2f%%", reachPct, gatePct))
+	}
+}
+
 publishing {
 	repositories {
 		val mavenUrl = System.getenv("MAVEN_URL") ?: return@repositories
