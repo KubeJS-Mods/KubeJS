@@ -8,6 +8,7 @@ import org.assertj.core.api.AbstractBooleanAssert;
 import org.assertj.core.api.AbstractDoubleAssert;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.jspecify.annotations.Nullable;
 
@@ -100,6 +101,10 @@ public class TestRuntime {
 
 	public static LevelBlockAssert assertThat(LevelBlock actual) {
 		return new LevelBlockAssert(actual);
+	}
+
+	public static <T> IterableAssert<T> assertThat(Iterable<? extends T> actual) {
+		return Assertions.assertThat(actual);
 	}
 
 	public static ObjectAssert<Object> assertThat(@Nullable Object actual) {

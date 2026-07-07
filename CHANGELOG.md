@@ -5,7 +5,8 @@
 - Fix dedicated server crash from block tint function client types (#1159)
 - Fix `DetectorBlock` failing to register (and crashing world load) because its block id was never set (#1153)
 - Add game tests covering block and entity events (#1153)
-- Add typed script-side `TestRuntime.assertThat` entry points and game tests asserting on event objects (#NNNN)
+- Add typed script-side `TestRuntime.assertThat` entry points and game tests asserting on event objects (#1153)
+- Expand game-test and unit-test coverage: level/server/item/player events and util classes (#1153)
 
 ## [8.0.3] - 2026-06-22
 
