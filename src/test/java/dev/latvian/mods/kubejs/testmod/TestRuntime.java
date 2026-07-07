@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.entity.KubeEntityEvent;
 import dev.latvian.mods.kubejs.level.LevelBlock;
 import dev.latvian.mods.kubejs.testmod.assertion.KubeEntityEventAssert;
 import dev.latvian.mods.kubejs.testmod.assertion.LevelBlockAssert;
+import dev.latvian.mods.rhino.Undefined;
 import org.assertj.core.api.AbstractBooleanAssert;
 import org.assertj.core.api.AbstractDoubleAssert;
 import org.assertj.core.api.AbstractStringAssert;
@@ -80,6 +81,14 @@ public class TestRuntime {
 
 		if (error != null) {
 			throw error;
+		}
+	}
+
+	/// Fails if a script-read value is `null` or JS `undefined` - used by the *KJS getter fixtures to
+	/// prove the exposed properties actually resolve, not merely that calling them doesn't throw.
+	public static void assertDefined(String label, @Nullable Object value) {
+		if (value == null || Undefined.isUndefined(value)) {
+			throw new AssertionError("Expected '" + label + "' to be defined but was: " + value);
 		}
 	}
 

@@ -1,10 +1,10 @@
-// Coverage fixtures for the vanilla-injected *KJS convenience getters (EntityKJS, LivingEntityKJS,
-// PlayerKJS/ServerPlayerKJS, LevelBlock, ItemStackKJS). These read-only listeners piggy-back on the
-// events the existing @GameTests already drive (entity spawns, block break/place, item drop/use), so
-// every no-arg getter runs as its bean property is read. They report no markers and assert nothing;
-// the event dispatcher isolates each listener, so a getter that throws for one entity type can't fail
-// a paired test. Reads that need a script Context, an argument, or a specific entity capability are
-// either skipped or guarded behind the relevant is* check.
+// Coverage + sanity fixtures for the vanilla-injected *KJS convenience getters (EntityKJS,
+// LivingEntityKJS, PlayerKJS/ServerPlayerKJS, LevelBlock, ItemStackKJS). Each listener piggy-backs
+// on an event the existing @GameTests already drive: it first reads a broad set of getters (so every
+// property is exercised for coverage), then asserts - inside a TestRuntime.check block that the paired
+// KjsReadTests verify - that the always-present properties actually resolve (not null / not JS
+// undefined). Conditionally-null getters (profile on a non-player, block-entity on a plain block, ...)
+// are read for coverage but not asserted.
 
 function readEntity(e) {
 	e.level;
@@ -37,6 +37,8 @@ function readEntity(e) {
 	e.block;
 	e.nbt;
 	e.scriptType;
+	e.id;
+	e.rawPersistentData;
 }
 
 function readLiving(e) {
@@ -89,6 +91,22 @@ EntityEvents.spawned(event => {
 	if (e.serverPlayer) {
 		readServerPlayer(e);
 	}
+
+	TestRuntime.check('kjs.entity.reads', () => {
+		TestRuntime.assertDefined('entity.type', e.type);
+		TestRuntime.assertDefined('entity.name', e.name);
+		TestRuntime.assertDefined('entity.displayName', e.displayName);
+		TestRuntime.assertDefined('entity.username', e.username);
+		TestRuntime.assertDefined('entity.level', e.level);
+		TestRuntime.assertDefined('entity.block', e.block);
+		TestRuntime.assertDefined('entity.facing', e.facing);
+		TestRuntime.assertDefined('entity.nbt', e.nbt);
+		TestRuntime.assertDefined('entity.passengers', e.passengers);
+		TestRuntime.assertDefined('entity.scriptType', e.scriptType);
+		TestRuntime.assertDefined('entity.motionX', e.motionX);
+		TestRuntime.assertDefined('entity.motionY', e.motionY);
+		TestRuntime.assertDefined('entity.motionZ', e.motionZ);
+	});
 });
 
 function readBlock(b) {
@@ -125,7 +143,30 @@ function readBlock(b) {
 	b.toBlockStateString();
 }
 
-BlockEvents.broken(event => readBlock(event.block));
+function assertBlock(b) {
+	TestRuntime.check('kjs.block.reads', () => {
+		TestRuntime.assertDefined('block.id', b.id);
+		TestRuntime.assertDefined('block.block', b.block);
+		TestRuntime.assertDefined('block.blockState', b.blockState);
+		TestRuntime.assertDefined('block.properties', b.properties);
+		TestRuntime.assertDefined('block.dimension', b.dimension);
+		TestRuntime.assertDefined('block.dimensionKey', b.dimensionKey);
+		TestRuntime.assertDefined('block.biomeId', b.biomeId);
+		TestRuntime.assertDefined('block.x', b.x);
+		TestRuntime.assertDefined('block.y', b.y);
+		TestRuntime.assertDefined('block.z', b.z);
+		TestRuntime.assertDefined('block.centerX', b.centerX);
+		TestRuntime.assertDefined('block.up', b.up);
+		TestRuntime.assertDefined('block.down', b.down);
+		TestRuntime.assertDefined('block.north', b.north);
+		TestRuntime.assertDefined('block.toBlockStateString', b.toBlockStateString());
+	});
+}
+
+BlockEvents.broken(event => {
+	readBlock(event.block);
+	assertBlock(event.block);
+});
 
 BlockEvents.placed(event => readBlock(event.block));
 
@@ -144,6 +185,14 @@ function readItem(item) {
 	item.asIngredient();
 }
 
-ItemEvents.dropped(event => readItem(event.item));
+ItemEvents.dropped(event => {
+	readItem(event.item);
+	TestRuntime.check('kjs.item.reads', () => {
+		TestRuntime.assertDefined('item.id', event.item.id);
+		TestRuntime.assertDefined('item.mod', event.item.mod);
+		TestRuntime.assertDefined('item.idLocation', event.item.idLocation);
+		TestRuntime.assertDefined('item.enchantments', event.item.enchantments);
+	});
+});
 
 ItemEvents.rightClicked(event => readItem(event.item));

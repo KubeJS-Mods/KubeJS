@@ -7,7 +7,7 @@
 - Add game tests covering block and entity events (#1153)
 - Add typed script-side `TestRuntime.assertThat` entry points and game tests asserting on event objects (#1153)
 - Expand game-test and unit-test coverage: level/server/item/player events and util classes (#1153)
-- Add a script-exposed-API coverage gate (`coverageGate`) and a bootstrapped JUnit harness; expand unit coverage of wrappers, recipe components, and util (#1153)
+- Add a bootstrapped JUnit harness and expand unit + game-test coverage of wrappers, recipe components, util, builders, and script-exposed `*KJS` getters (#1153)
 
 ## [8.0.3] - 2026-06-22
 
