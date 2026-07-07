@@ -71,6 +71,9 @@ public class JsonIO {
 		if (json == null || json instanceof JsonNull) {
 			Files.deleteIfExists(path);
 		} else {
+			if (Files.notExists(path.getParent())) {
+				Files.createDirectories(path.getParent());
+			}
 			Files.writeString(path, JsonUtils.toPrettyString(json));
 		}
 	}
