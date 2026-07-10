@@ -81,6 +81,6 @@
 		"dev/latvian/mods/kubejs/core/EntityTypeKJS"
 	],
 	"net/minecraft/tags/TagLoader":[
-		"dev/latvian/mods/kubejs/core/TagLoaderKJS<T>"
+		"dev/latvian/mods/kubejs/core/TagLoaderKJS"
 	]
 }
