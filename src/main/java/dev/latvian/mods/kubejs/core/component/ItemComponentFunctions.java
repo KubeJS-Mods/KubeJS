@@ -1,6 +1,9 @@
 package dev.latvian.mods.kubejs.core.component;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.color.KubeColor;
+import dev.latvian.mods.kubejs.util.RegistryAccessContainer;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
@@ -8,6 +11,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Instrument;
@@ -25,6 +29,7 @@ import net.minecraft.world.item.component.Tool;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.neoforge.registries.holdersets.OrHolderSet;
 
 import java.util.List;
 
@@ -70,12 +75,33 @@ public interface ItemComponentFunctions extends DataComponentAccessor, Attribute
 		kjs$setFood(new FoodProperties.Builder().nutrition(nutrition).saturationModifier(saturation).build());
 	}
 
-	default void kjs$addDamageResistance(HolderSet<DamageType> types) {
+	default void kjs$clearDamageResistance() {
+		kjs$remove(DataComponents.DAMAGE_RESISTANT);
+	}
+
+	default void kjs$setDamageResistance(HolderSet<DamageType> types) {
 		kjs$override(DataComponents.DAMAGE_RESISTANT, new DamageResistant(types));
 	}
 
-	default void kjs$setFireResistant(HolderSet<DamageType> fireTypes) {
-		kjs$addDamageResistance(fireTypes);
+	default void kjs$addDamageResistance(HolderSet<DamageType> types) {
+		var existing = get(DataComponents.DAMAGE_RESISTANT);
+		if (existing != null) {
+			kjs$setDamageResistance(new OrHolderSet<>(existing.types(), types));
+		} else {
+			kjs$setDamageResistance(types);
+		}
+	}
+
+	default void kjs$setFireResistant(Context cx) {
+		kjs$addDamageResistance(RegistryAccessContainer.of(cx).getOrThrow(DamageTypeTags.IS_FIRE));
+	}
+
+	@Deprecated
+	default void kjs$setFireResistant(Context cx, boolean fireResistant) {
+		KubeJS.LOGGER.warn("kjs$setFireResistant(boolean) is deprecated due to changes in damage resistance, use the no-arg version instead");
+		if (fireResistant) {
+			kjs$setFireResistant(cx);
+		}
 	}
 
 	default void kjs$setTool(Tool tool) {

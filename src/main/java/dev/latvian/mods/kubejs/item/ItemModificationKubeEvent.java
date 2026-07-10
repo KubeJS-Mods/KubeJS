@@ -1,13 +1,16 @@
 package dev.latvian.mods.kubejs.item;
 
+import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.core.component.ItemComponentFunctions;
 import dev.latvian.mods.kubejs.event.KubeEvent;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.util.TickDuration;
 import dev.latvian.mods.kubejs.util.registrypredicate.RegistryPredicate;
+import dev.latvian.mods.rhino.Context;
 import dev.latvian.mods.rhino.util.HideFromJS;
 import dev.latvian.mods.rhino.util.RemapPrefixForJS;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -16,6 +19,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Util;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -36,10 +40,6 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.ToIntBiFunction;
-import java.util.function.ToIntFunction;
 
 import static net.minecraft.world.item.Item.BASE_ATTACK_DAMAGE_ID;
 
@@ -55,32 +55,32 @@ public class ItemModificationKubeEvent implements KubeEvent {
 
 	@Info("""
 		Modifies items matching the given ingredient.
-				
+		
 		**NOTE**: tag ingredients are not supported at this time.
 		""")
 	// TODO: item with component filter support?
 	public void modify(RegistryPredicate<Item> in, Consumer<ItemModifications> c) {
 		for (Item item : BuiltInRegistries.ITEM) {
 			if (in.test(item.kjs$asHolder())) {
-				event.modify(item, builder -> c.accept(new ItemModifications(item, builder)));
+				event.modify(item, (builder, context, key) -> c.accept(new ItemModifications(item, builder, context)));
 			}
 		}
 	}
 
 	@RemapPrefixForJS("kjs$")
-	public record ItemModifications(Item item, DataComponentMap.Builder patch) implements ItemComponentFunctions, ItemBehaviorFunctions {
+	public record ItemModifications(Item item, DataComponentMap.Builder components, HolderLookup.Provider registries) implements ItemComponentFunctions, ItemBehaviorFunctions {
 		@HideFromJS
 		public static final Reference2IntOpenHashMap<Item> BURN_TIME_OVERRIDES = new Reference2IntOpenHashMap<>();
 
 		@Override
 		public <T> @Nullable T get(DataComponentType<? extends T> type) {
-			return patch.get(type);
+			return components.get(type);
 		}
 
 		@Override
 		@HideFromJS
 		public <T> void kjs$override(DataComponentType<T> type, @Nullable T value) {
-			patch.set(type, value);
+			components.set(type, value);
 		}
 
 		@Override
@@ -89,8 +89,24 @@ public class ItemModificationKubeEvent implements KubeEvent {
 			kjs$override(DataComponents.ATTRIBUTE_MODIFIERS, modifiers);
 		}
 
+		@Override
+		@HideFromJS
+		public void kjs$setFireResistant(Context cx) {
+			kjs$addDamageResistance(registries.lookupOrThrow(Registries.DAMAGE_TYPE).get(DamageTypeTags.IS_FIRE).orElseThrow());
+		}
+
+		@Override
+		@Deprecated
+		@HideFromJS
+		public void kjs$setFireResistant(Context cx, boolean fireResistant) {
+			KubeJS.LOGGER.warn("kjs$setFireResistant(boolean) is deprecated due to changes in damage resistance, use the no-arg version instead");
+			if (fireResistant) {
+				kjs$setFireResistant(cx);
+			}
+		}
+
 		public void removeComponent(DataComponentType<?> type) {
-			patch.set(type, null);
+			components.set(type, null);
 		}
 
 		public void setBurnTime(TickDuration i) {
@@ -103,8 +119,8 @@ public class ItemModificationKubeEvent implements KubeEvent {
 		}
 
 		public void setTier(Consumer<MutableToolMaterial> builder) {
-			var items = BuiltInRegistries.acquireBootstrapRegistrationLookup(BuiltInRegistries.ITEM);
-			var blocks = BuiltInRegistries.acquireBootstrapRegistrationLookup(BuiltInRegistries.BLOCK);
+			var items = registries.lookupOrThrow(Registries.ITEM);
+			var blocks = registries.lookupOrThrow(Registries.BLOCK);
 
 			var material = Util.make(new MutableToolMaterial(ToolMaterial.IRON), builder).toToolMaterial();
 
