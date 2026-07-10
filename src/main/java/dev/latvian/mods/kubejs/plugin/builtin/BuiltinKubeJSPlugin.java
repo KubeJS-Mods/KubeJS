@@ -156,6 +156,7 @@ import dev.latvian.mods.kubejs.script.TypeWrapperRegistry;
 import dev.latvian.mods.kubejs.server.ScheduledServerEvent;
 import dev.latvian.mods.kubejs.server.ServerScriptManager;
 import dev.latvian.mods.kubejs.util.FluidAmounts;
+import dev.latvian.mods.kubejs.util.GlobalUnmodifiableMap;
 import dev.latvian.mods.kubejs.util.ID;
 import dev.latvian.mods.kubejs.util.JsonIO;
 import dev.latvian.mods.kubejs.util.JsonUtils;
@@ -281,7 +282,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.temporal.TemporalAmount;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -401,7 +401,7 @@ public class BuiltinKubeJSPlugin implements KubeJSPlugin {
 
 	@Override
 	public void registerBindings(BindingRegistry bindings) {
-		bindings.add("global", bindings.type().isStartup() ? GLOBAL : Collections.unmodifiableMap(GLOBAL));
+		bindings.add("global", bindings.type().isStartup() ? GLOBAL : new GlobalUnmodifiableMap<>(GLOBAL));
 		bindings.add("Platform", PlatformWrapper.class);
 		bindings.add("console", bindings.type().console);
 

@@ -210,7 +210,7 @@ public interface TextWrapper {
 	}
 
 	@Info("Joins all components in the list with the separator component")
-	static MutableComponent join(MutableComponent separator, Iterable<? extends Component> texts) {
+	static MutableComponent joinSep(MutableComponent separator, Iterable<? extends Component> texts) {
 		var joined = Component.empty();
 		var first = true;
 
@@ -227,14 +227,14 @@ public interface TextWrapper {
 		return joined;
 	}
 
+	@Info("Joins all components without a separator")
+	static MutableComponent join(Component... texts) {
+		return joinSep(Component.empty(), Arrays.asList(texts));
+	}
+
 	@Info("Returns an empty component")
 	static MutableComponent empty() {
 		return Component.empty();
-	}
-
-	@Info("Joins all components")
-	static MutableComponent join(Component... texts) {
-		return join(Component.empty(), Arrays.asList(texts));
 	}
 
 	@Info("Returns a plain component of the passed in string, even if empty")

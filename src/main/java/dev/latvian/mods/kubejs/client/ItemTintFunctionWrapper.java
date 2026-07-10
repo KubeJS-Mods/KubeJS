@@ -20,10 +20,10 @@ public record ItemTintFunctionWrapper(int index) implements ItemTintSource {
 	@Override
 	public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity) {
 		var item = stack.getItem();
-		var builder = item.kjs$getItemBuilder();
+		var behavior = item.kjs$getItemBehavior();
 
-		if (builder != null) {
-			var c = builder.tint == null ? ItemTintFunction.BLOCK.getColor(stack, index) : builder.tint.getColor(stack, index);
+		if (behavior != null) {
+			var c = behavior.tint == null ? ItemTintFunction.BLOCK.getColor(stack, index) : behavior.tint.getColor(stack, index);
 
 			if (c != null) {
 				return c.kjs$getARGB();

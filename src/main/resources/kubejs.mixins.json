@@ -38,6 +38,7 @@
 		"HolderMixin",
 		"IBlockStateExtensionMixin",
 		"ICustomIngredientMixin",
+		"IItemExtensionMixin",
 		"IdentifierMixin",
 		"IngredientMixin",
 		"IntersectionIngredientMixin",

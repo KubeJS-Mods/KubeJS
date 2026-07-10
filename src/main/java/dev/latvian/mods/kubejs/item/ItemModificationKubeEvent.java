@@ -36,6 +36,10 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.ToIntBiFunction;
+import java.util.function.ToIntFunction;
 
 import static net.minecraft.world.item.Item.BASE_ATTACK_DAMAGE_ID;
 
@@ -51,7 +55,7 @@ public class ItemModificationKubeEvent implements KubeEvent {
 
 	@Info("""
 		Modifies items matching the given ingredient.
-		
+				
 		**NOTE**: tag ingredients are not supported at this time.
 		""")
 	// TODO: item with component filter support?
@@ -64,7 +68,7 @@ public class ItemModificationKubeEvent implements KubeEvent {
 	}
 
 	@RemapPrefixForJS("kjs$")
-	public record ItemModifications(Item item, DataComponentMap.Builder patch) implements ItemComponentFunctions {
+	public record ItemModifications(Item item, DataComponentMap.Builder patch) implements ItemComponentFunctions, ItemBehaviorFunctions {
 		@HideFromJS
 		public static final Reference2IntOpenHashMap<Item> BURN_TIME_OVERRIDES = new Reference2IntOpenHashMap<>();
 
@@ -176,6 +180,16 @@ public class ItemModificationKubeEvent implements KubeEvent {
 
 		public void disableRepair() {
 			item.kjs$setCanRepair(false);
+		}
+
+		@Override
+		public ItemBehavior kjs$getOrCreateBehavior() {
+			var behavior = item.kjs$getItemBehavior();
+			if (behavior == null) {
+				behavior = new ItemBehavior();
+				item.kjs$setItemBehavior(behavior);
+			}
+			return behavior;
 		}
 	}
 }
