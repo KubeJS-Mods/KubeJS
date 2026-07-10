@@ -16,6 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /// Category 3. Verifies that script bindings are reachable and work (`binding_checks.js`), including
 /// that the file-writing bindings actually create files on disk.
+///
+/// ID/Text/NBT/JsonUtils checks fire as the script loads, so they are asserted directly. Item and
+/// Ingredient parsing is registry-backed and runs on the first server tick, so those are awaited.
 @ForEachTest(groups = "kubejs.binding")
 public class BindingTests {
 	@GameTest
@@ -29,6 +32,72 @@ public class BindingTests {
 			assertVerified(helper, "binding.text");
 			helper.succeed();
 		});
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(value = "binding_text", description = "Text binding builders and styling behave as expected")
+	static void bindingText(final DynamicTest test) {
+		test.onGameTest(helper -> {
+			assertFired(helper, "binding.text.builders");
+			assertVerified(helper, "binding.text.builders");
+			assertFired(helper, "binding.text.styled");
+			assertVerified(helper, "binding.text.styled");
+			helper.succeed();
+		});
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(value = "binding_nbt", description = "NBT binding builds compound/typed/list tags and converts to JSON")
+	static void bindingNbt(final DynamicTest test) {
+		test.onGameTest(helper -> {
+			assertFired(helper, "binding.nbt.compound");
+			assertVerified(helper, "binding.nbt.compound");
+			assertFired(helper, "binding.nbt.typed");
+			assertVerified(helper, "binding.nbt.typed");
+			assertFired(helper, "binding.nbt.json");
+			assertVerified(helper, "binding.nbt.json");
+			helper.succeed();
+		});
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(value = "binding_json", description = "JsonUtils binding round-trips, builds and copies JSON")
+	static void bindingJson(final DynamicTest test) {
+		test.onGameTest(helper -> {
+			assertFired(helper, "binding.json.roundtrip");
+			assertVerified(helper, "binding.json.roundtrip");
+			assertFired(helper, "binding.json.build");
+			assertVerified(helper, "binding.json.build");
+			helper.succeed();
+		});
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(value = "binding_item", description = "Item binding parses ids, counts and metadata helpers")
+	static void bindingItem(final DynamicTest test) {
+		test.onGameTest(helper -> helper.startSequence()
+			.thenWaitUntil(() -> assertFired(helper, "binding.item.of"))
+			.thenExecute(() -> assertVerified(helper, "binding.item.of"))
+			.thenExecute(() -> assertVerified(helper, "binding.item.count"))
+			.thenExecute(() -> assertVerified(helper, "binding.item.meta"))
+			.thenSucceed());
+	}
+
+	@GameTest
+	@EmptyTemplate
+	@TestHolder(value = "binding_ingredient", description = "Ingredient binding matches items, tags, compounds and metadata helpers")
+	static void bindingIngredient(final DynamicTest test) {
+		test.onGameTest(helper -> helper.startSequence()
+			.thenWaitUntil(() -> assertFired(helper, "binding.ingredient.match"))
+			.thenExecute(() -> assertVerified(helper, "binding.ingredient.match"))
+			.thenExecute(() -> assertVerified(helper, "binding.ingredient.tag"))
+			.thenExecute(() -> assertVerified(helper, "binding.ingredient.compound"))
+			.thenExecute(() -> assertVerified(helper, "binding.ingredient.meta"))
+			.thenSucceed());
 	}
 
 	@GameTest

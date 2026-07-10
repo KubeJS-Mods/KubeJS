@@ -9,6 +9,7 @@
 - Expand game-test and unit-test coverage: level/server/item/player events and util classes (#1153)
 - Add a bootstrapped JUnit harness and expand unit + game-test coverage of wrappers, recipe components, util, builders, and script-exposed `*KJS` getters (#1153)
 - Add game tests running the wiki recipe, tag, item/block modification, and registry-builder example scripts (#1153)
+- Add game tests covering the `Item`, `Ingredient`, `Text`, `NBT`, and `JsonUtils` script bindings (#1153)
 
 ## [8.0.3] - 2026-06-22
 
