@@ -8,6 +8,9 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertFired;
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertVerified;
+
 @ForEachTest(groups = "kubejs.server.event")
 public class ServerEventTests {
 	@GameTest
@@ -17,7 +20,7 @@ public class ServerEventTests {
 		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
 			.thenExecute(() -> TestRuntime.clear("server.tick"))
 			.thenIdle(2)
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("server.tick"), "script did not report server.tick"))
+			.thenWaitUntil(() -> assertFired(helper, "server.tick"))
 			.thenSucceed());
 	}
 
@@ -28,8 +31,8 @@ public class ServerEventTests {
 		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
 			.thenExecute(() -> TestRuntime.clear("server.command"))
 			.thenExecute(player -> helper.getLevel().getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), "help"))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("server.command"), "script did not assert on server.command"))
-			.thenExecute(() -> TestRuntime.verify("server.command"))
+			.thenWaitUntil(() -> assertFired(helper, "server.command"))
+			.thenExecute(() -> assertVerified(helper, "server.command"))
 			.thenSucceed());
 	}
 }

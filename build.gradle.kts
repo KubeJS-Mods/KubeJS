@@ -127,6 +127,7 @@ dependencies {
 		}
 	})
 
+	testImplementation("org.mockito:mockito-core:5.18.0")
 	testImplementation("org.assertj:assertj-core:3.27.3")
 }
 
@@ -157,8 +158,8 @@ val coverageRequested = gradle.startParameter.taskNames.any {
 	it.substringAfterLast(':').startsWith("coverage")
 }
 
-// The test source set holds both JUnit unit tests (...unittest, run by `test`) and the game-test
-// mod (...testmod, run by `runGametest`). Allow `test` to pass before any unit tests are present.
+// The test source set is driven by the game-test mod (...testmod, run by `runGametest`). JUnit
+// (`test`) is kept available as a last resort but currently holds no tests, so allow it to pass.
 tasks.named<Test>("test") {
 	failOnNoDiscoveredTests = false
 	if (coverageRequested) {

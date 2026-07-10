@@ -10,6 +10,9 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertFired;
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertVerified;
+
 @ForEachTest(groups = "kubejs.level.event")
 public class LevelEventTests {
 	private static final BlockPos POS = new BlockPos(1, 2, 1);
@@ -21,7 +24,7 @@ public class LevelEventTests {
 		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
 			.thenExecute(() -> TestRuntime.clear("level.tick"))
 			.thenIdle(2)
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("level.tick"), "script did not report level.tick"))
+			.thenWaitUntil(() -> assertFired(helper, "level.tick"))
 			.thenSucceed());
 	}
 
@@ -33,10 +36,10 @@ public class LevelEventTests {
 			.thenExecute(() -> TestRuntime.clear("level.beforeExplosion", "level.afterExplosion"))
 			.thenExecute(() -> helper.getLevel().explode(null, null, null, helper.absoluteVec(POS.getCenter()), 3.0F, false, Level.ExplosionInteraction.BLOCK))
 			.thenIdle(2)
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("level.beforeExplosion"), "script did not assert on level.beforeExplosion"))
-			.thenExecute(() -> TestRuntime.verify("level.beforeExplosion"))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("level.afterExplosion"), "script did not assert on level.afterExplosion"))
-			.thenExecute(() -> TestRuntime.verify("level.afterExplosion"))
+			.thenWaitUntil(() -> assertFired(helper, "level.beforeExplosion"))
+			.thenExecute(() -> assertVerified(helper, "level.beforeExplosion"))
+			.thenWaitUntil(() -> assertFired(helper, "level.afterExplosion"))
+			.thenExecute(() -> assertVerified(helper, "level.afterExplosion"))
 			.thenSucceed());
 	}
 }

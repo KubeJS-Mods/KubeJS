@@ -8,6 +8,8 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertFired;
+
 @ForEachTest(groups = "kubejs.player.event")
 public class PlayerEventTests {
 	@GameTest
@@ -17,7 +19,7 @@ public class PlayerEventTests {
 		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
 			.thenExecute(() -> TestRuntime.clear("player.tick"))
 			.thenIdle(2)
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("player.tick"), "script did not report player.tick"))
+			.thenWaitUntil(() -> assertFired(helper, "player.tick"))
 			.thenSucceed());
 	}
 }

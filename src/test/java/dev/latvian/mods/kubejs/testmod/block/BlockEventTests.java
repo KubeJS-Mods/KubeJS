@@ -22,6 +22,12 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertCount;
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertFired;
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertVerified;
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertj;
+import static org.assertj.core.api.Assertions.assertThat;
+
 @ForEachTest(groups = "kubejs.block.event")
 public class BlockEventTests {
 	private static final BlockPos POS = new BlockPos(1, 2, 1);
@@ -34,7 +40,8 @@ public class BlockEventTests {
 			.thenExecute(() -> TestRuntime.clear("block.break.dirt"))
 			.thenExecute(() -> helper.setBlock(POS, Blocks.DIRT.defaultBlockState()))
 			.thenExecute(player -> player.gameMode.destroyBlock(helper.absolutePos(POS)))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.break.dirt"), "script did not report block.break.dirt"))
+			.thenWaitUntil(() -> assertFired(helper, "block.break.dirt"))
+			.thenExecute(() -> assertCount(helper, "block.break.dirt", 1))
 			.thenSucceed());
 	}
 
@@ -46,8 +53,8 @@ public class BlockEventTests {
 			.thenExecute(() -> TestRuntime.clear("block.broken.assert"))
 			.thenExecute(() -> helper.setBlock(POS, Blocks.DIRT.defaultBlockState()))
 			.thenExecute(player -> player.gameMode.destroyBlock(helper.absolutePos(POS)))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.broken.assert"), "script did not assert on block.broken"))
-			.thenExecute(() -> TestRuntime.verify("block.broken.assert"))
+			.thenWaitUntil(() -> assertFired(helper, "block.broken.assert"))
+			.thenExecute(() -> assertVerified(helper, "block.broken.assert"))
 			.thenSucceed());
 	}
 
@@ -59,7 +66,8 @@ public class BlockEventTests {
 			.thenExecute(() -> TestRuntime.clear("block.drops.dirt"))
 			.thenExecute(() -> helper.setBlock(POS, Blocks.DIRT.defaultBlockState()))
 			.thenExecute(player -> player.gameMode.destroyBlock(helper.absolutePos(POS)))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.drops.dirt"), "script did not report block.drops.dirt"))
+			.thenWaitUntil(() -> assertFired(helper, "block.drops.dirt"))
+			.thenExecute(() -> assertCount(helper, "block.drops.dirt", 1))
 			.thenSucceed());
 	}
 
@@ -77,7 +85,8 @@ public class BlockEventTests {
 				var hit = new BlockHitResult(Vec3.atCenterOf(abs).add(0, 0.5, 0), Direction.UP, abs, false);
 				player.gameMode.useItemOn(player, (ServerLevel) player.level(), stack, InteractionHand.MAIN_HAND, hit);
 			})
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.placed"), "script did not report block.placed"))
+			.thenWaitUntil(() -> assertFired(helper, "block.placed"))
+			.thenExecute(() -> assertCount(helper, "block.placed", 1))
 			.thenSucceed());
 	}
 
@@ -95,8 +104,8 @@ public class BlockEventTests {
 				var hit = new BlockHitResult(Vec3.atCenterOf(abs).add(0, 0.5, 0), Direction.UP, abs, false);
 				player.gameMode.useItemOn(player, (ServerLevel) player.level(), stack, InteractionHand.MAIN_HAND, hit);
 			})
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.placed.assert"), "script did not assert on block.placed"))
-			.thenExecute(() -> TestRuntime.verify("block.placed.assert"))
+			.thenWaitUntil(() -> assertFired(helper, "block.placed.assert"))
+			.thenExecute(() -> assertVerified(helper, "block.placed.assert"))
 			.thenSucceed());
 	}
 
@@ -113,7 +122,7 @@ public class BlockEventTests {
 				var hit = new BlockHitResult(Vec3.atCenterOf(abs).add(0, 0.5, 0), Direction.UP, abs, false);
 				player.gameMode.useItemOn(player, (ServerLevel) player.level(), ItemStack.EMPTY, InteractionHand.MAIN_HAND, hit);
 			})
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.rightClicked"), "script did not report block.rightClicked"))
+			.thenWaitUntil(() -> assertFired(helper, "block.rightClicked"))
 			.thenSucceed());
 	}
 
@@ -130,7 +139,7 @@ public class BlockEventTests {
 				Direction.UP,
 				player.level().getMaxY(),
 				0))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.leftClicked"), "script did not report block.leftClicked"))
+			.thenWaitUntil(() -> assertFired(helper, "block.leftClicked"))
 			.thenSucceed());
 	}
 
@@ -143,7 +152,7 @@ public class BlockEventTests {
 			.thenExecute(() -> helper.setBlock(new BlockPos(1, 2, 1), Blocks.AIR.defaultBlockState()))
 			.thenExecute(() -> helper.setBlock(new BlockPos(1, 3, 1), Blocks.SAND.defaultBlockState()))
 			.thenIdle(4)
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.startedFalling"), "script did not report block.startedFalling"))
+			.thenWaitUntil(() -> assertFired(helper, "block.startedFalling"))
 			.thenSucceed());
 	}
 
@@ -156,7 +165,7 @@ public class BlockEventTests {
 			.thenExecute(() -> helper.setBlock(new BlockPos(1, 2, 1), Blocks.AIR.defaultBlockState()))
 			.thenExecute(() -> helper.setBlock(new BlockPos(1, 3, 1), Blocks.SAND.defaultBlockState()))
 			.thenIdle(20)
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.stoppedFalling"), "script did not report block.stoppedFalling"))
+			.thenWaitUntil(() -> assertFired(helper, "block.stoppedFalling"))
 			.thenSucceed());
 	}
 
@@ -169,7 +178,7 @@ public class BlockEventTests {
 			.thenExecute(player -> ((GameRulesKJS) ((ServerLevel) player.level()).getGameRules()).kjs$set("mob_griefing", "true"))
 			.thenExecute(() -> helper.setBlock(POS, Blocks.FARMLAND.defaultBlockState()))
 			.thenExecute(() -> helper.spawnWithNoFreeWill(EntityType.GOAT, new BlockPos(1, 5, 1).getCenter()))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.farmlandTrampled"), "script did not report block.farmlandTrampled"))
+			.thenWaitUntil(() -> assertFired(helper, "block.farmlandTrampled"))
 			.thenSucceed());
 	}
 
@@ -185,7 +194,7 @@ public class BlockEventTests {
 				var level = (ServerLevel) player.level();
 				helper.getBlockState(POS).randomTick(level, abs, level.getRandom());
 			})
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.randomTick.dirt"), "script did not report block.randomTick.dirt"))
+			.thenWaitUntil(() -> assertFired(helper, "block.randomTick.dirt"))
 			.thenSucceed());
 	}
 
@@ -198,8 +207,8 @@ public class BlockEventTests {
 			.thenExecute(() -> helper.setBlock(POS, detector()))
 			.thenExecute(() -> helper.setBlock(new BlockPos(2, 2, 1), Blocks.REDSTONE_BLOCK.defaultBlockState()))
 			.thenIdle(4)
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.detector.powered"), "script did not report block.detector.powered"))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.detector.changed"), "script did not report block.detector.changed"))
+			.thenWaitUntil(() -> assertFired(helper, "block.detector.powered"))
+			.thenWaitUntil(() -> assertFired(helper, "block.detector.changed"))
 			.thenSucceed());
 	}
 
@@ -214,7 +223,7 @@ public class BlockEventTests {
 			.thenIdle(4)
 			.thenExecute(() -> helper.setBlock(new BlockPos(2, 2, 1), Blocks.AIR.defaultBlockState()))
 			.thenIdle(4)
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.detector.unpowered"), "script did not report block.detector.unpowered"))
+			.thenWaitUntil(() -> assertFired(helper, "block.detector.unpowered"))
 			.thenSucceed());
 	}
 
@@ -226,7 +235,7 @@ public class BlockEventTests {
 			.thenExecute(() -> TestRuntime.clear("block.blockEntityTick"))
 			.thenExecute(() -> helper.setBlock(POS, block("kubejs:test_ticker")))
 			.thenIdle(5)
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.count("block.blockEntityTick") >= 1, "script did not report block.blockEntityTick"))
+			.thenWaitUntil(() -> assertFired(helper, "block.blockEntityTick"))
 			.thenSucceed());
 	}
 
@@ -241,7 +250,7 @@ public class BlockEventTests {
 				var abs = helper.absolutePos(POS);
 				helper.getBlockState(POS).getCloneItemStack(abs, (ServerLevel) player.level(), true, player);
 			})
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("block.picked"), "script did not report block.picked"))
+			.thenWaitUntil(() -> assertFired(helper, "block.picked"))
 			.thenSucceed());
 	}
 
@@ -250,7 +259,7 @@ public class BlockEventTests {
 	@TestHolder(value = "block_modification", description = "KubeJS BlockEvents.modification fired during startup script load")
 	static void blockModification(final DynamicTest test) {
 		test.onGameTest(helper -> {
-			helper.assertTrue(TestRuntime.passedStartup("block.modification"), "script did not report block.modification");
+			assertj(helper, () -> assertThat(TestRuntime.passedStartup("block.modification")).as("block.modification should have fired during startup").isTrue());
 			helper.succeed();
 		});
 	}

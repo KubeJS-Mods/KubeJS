@@ -12,6 +12,10 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertCount;
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertFired;
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertVerified;
+
 @ForEachTest(groups = "kubejs.entity.event")
 public class EntityEventTests {
 	private static final BlockPos POS = new BlockPos(1, 2, 1);
@@ -23,7 +27,8 @@ public class EntityEventTests {
 		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
 			.thenExecute(() -> TestRuntime.clear("entity.spawned"))
 			.thenExecute(() -> helper.spawn(EntityType.PIG, POS))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("entity.spawned"), "script did not report entity.spawned"))
+			.thenWaitUntil(() -> assertFired(helper, "entity.spawned"))
+			.thenExecute(() -> assertCount(helper, "entity.spawned", 1))
 			.thenSucceed());
 	}
 
@@ -38,7 +43,7 @@ public class EntityEventTests {
 				var pig = helper.spawn(EntityType.PIG, POS);
 				pig.hurtServer(level, level.damageSources().generic(), 1.0F);
 			})
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("entity.beforeHurt"), "script did not report entity.beforeHurt"))
+			.thenWaitUntil(() -> assertFired(helper, "entity.beforeHurt"))
 			.thenSucceed());
 	}
 
@@ -53,7 +58,7 @@ public class EntityEventTests {
 				var pig = helper.spawn(EntityType.PIG, POS);
 				pig.hurtServer(level, level.damageSources().generic(), 1.0F);
 			})
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("entity.afterHurt"), "script did not report entity.afterHurt"))
+			.thenWaitUntil(() -> assertFired(helper, "entity.afterHurt"))
 			.thenSucceed());
 	}
 
@@ -64,7 +69,8 @@ public class EntityEventTests {
 		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
 			.thenExecute(() -> TestRuntime.clear("entity.death"))
 			.thenExecute(player -> helper.spawn(EntityType.PIG, POS).kill((ServerLevel) player.level()))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("entity.death"), "script did not report entity.death"))
+			.thenWaitUntil(() -> assertFired(helper, "entity.death"))
+			.thenExecute(() -> assertCount(helper, "entity.death", 1))
 			.thenSucceed());
 	}
 
@@ -75,8 +81,8 @@ public class EntityEventTests {
 		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
 			.thenExecute(() -> TestRuntime.clear("entity.death.assert"))
 			.thenExecute(player -> helper.spawn(EntityType.PIG, POS).kill((ServerLevel) player.level()))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("entity.death.assert"), "script did not assert on entity.death"))
-			.thenExecute(() -> TestRuntime.verify("entity.death.assert"))
+			.thenWaitUntil(() -> assertFired(helper, "entity.death.assert"))
+			.thenExecute(() -> assertVerified(helper, "entity.death.assert"))
 			.thenSucceed());
 	}
 
@@ -87,7 +93,7 @@ public class EntityEventTests {
 		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
 			.thenExecute(() -> TestRuntime.clear("entity.drops"))
 			.thenExecute(player -> helper.spawn(EntityType.PIG, POS).kill((ServerLevel) player.level()))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("entity.drops"), "script did not report entity.drops"))
+			.thenWaitUntil(() -> assertFired(helper, "entity.drops"))
 			.thenSucceed());
 	}
 
@@ -98,7 +104,7 @@ public class EntityEventTests {
 		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
 			.thenExecute(() -> TestRuntime.clear("entity.checkSpawn"))
 			.thenExecute(player -> EntityType.ZOMBIE.spawn((ServerLevel) player.level(), helper.absolutePos(POS), EntitySpawnReason.SPAWNER))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("entity.checkSpawn"), "script did not report entity.checkSpawn"))
+			.thenWaitUntil(() -> assertFired(helper, "entity.checkSpawn"))
 			.thenSucceed());
 	}
 }

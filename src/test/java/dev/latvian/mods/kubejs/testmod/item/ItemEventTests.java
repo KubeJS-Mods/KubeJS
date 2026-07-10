@@ -15,6 +15,10 @@ import net.neoforged.testframework.annotation.TestHolder;
 import net.neoforged.testframework.gametest.EmptyTemplate;
 import net.neoforged.testframework.gametest.GameTest;
 
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertCount;
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertFired;
+import static dev.latvian.mods.kubejs.testmod.GameAsserts.assertVerified;
+
 @ForEachTest(groups = "kubejs.item.event")
 public class ItemEventTests {
 	private static final BlockPos POS = new BlockPos(1, 2, 1);
@@ -26,8 +30,9 @@ public class ItemEventTests {
 		test.onGameTest(helper -> helper.startSequence(() -> helper.makeTickingMockServerPlayerInCorner(GameType.SURVIVAL))
 			.thenExecute(() -> TestRuntime.clear("item.dropped"))
 			.thenExecute(player -> player.drop(new ItemStack(Items.DIAMOND), false))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("item.dropped"), "script did not assert on item.dropped"))
-			.thenExecute(() -> TestRuntime.verify("item.dropped"))
+			.thenWaitUntil(() -> assertFired(helper, "item.dropped"))
+			.thenExecute(() -> assertCount(helper, "item.dropped", 1))
+			.thenExecute(() -> assertVerified(helper, "item.dropped"))
 			.thenSucceed());
 	}
 
@@ -42,7 +47,8 @@ public class ItemEventTests {
 				player.setItemInHand(InteractionHand.MAIN_HAND, stack);
 				player.gameMode.useItem(player, player.level(), stack, InteractionHand.MAIN_HAND);
 			})
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("item.rightClicked"), "script did not report item.rightClicked"))
+			.thenWaitUntil(() -> assertFired(helper, "item.rightClicked"))
+			.thenExecute(() -> assertCount(helper, "item.rightClicked", 1))
 			.thenSucceed());
 	}
 
@@ -57,7 +63,7 @@ public class ItemEventTests {
 				var pig = helper.spawn(EntityType.PIG, POS);
 				player.interactOn(pig, InteractionHand.MAIN_HAND, pig.position());
 			})
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("item.entityInteracted"), "script did not report item.entityInteracted"))
+			.thenWaitUntil(() -> assertFired(helper, "item.entityInteracted"))
 			.thenSucceed());
 	}
 
@@ -74,9 +80,9 @@ public class ItemEventTests {
 				player.level().addFreshEntity(entity);
 				entity.playerTouch(player);
 			})
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("item.canPickUp"), "script did not assert on item.canPickUp"))
-			.thenExecute(() -> TestRuntime.verify("item.canPickUp"))
-			.thenWaitUntil(() -> helper.assertTrue(TestRuntime.passed("item.pickedUp"), "script did not report item.pickedUp"))
+			.thenWaitUntil(() -> assertFired(helper, "item.canPickUp"))
+			.thenExecute(() -> assertVerified(helper, "item.canPickUp"))
+			.thenWaitUntil(() -> assertFired(helper, "item.pickedUp"))
 			.thenSucceed());
 	}
 }
