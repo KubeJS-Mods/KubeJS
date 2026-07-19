@@ -3,6 +3,11 @@
 ## Unreleased
 
 - Fix dedicated server crash from block tint function client types (#1159)
+- Add `/kubejs browse` command to open the `kubejs` directory directly from the game
+- Fix component initialization in item modification
+- [port from 1.21] Rework item builders for integration with IItemExtension (#1131)
+- [port from 1.21] `global` write error message for client and server scripts (#1126)
+- [port from 1.21] mkdirs automatically when using `JsonIO`
 
 ## [8.0.3] - 2026-06-22
 
