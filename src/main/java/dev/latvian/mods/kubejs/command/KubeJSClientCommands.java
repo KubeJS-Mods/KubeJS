@@ -1,6 +1,7 @@
 package dev.latvian.mods.kubejs.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import dev.latvian.mods.kubejs.KubeJSPaths;
 import dev.latvian.mods.kubejs.client.KubeJSClient;
 import dev.latvian.mods.kubejs.script.data.GeneratedData;
 import net.minecraft.Util;
@@ -29,9 +30,16 @@ public class KubeJSClientCommands {
 					.requires(source -> true)
 					.executes(context -> reloadLang(context.getSource()))
 				)
-			);
+			)
+			.then(Commands.literal("browse")
+				.executes(source -> {
+					Util.getPlatform().openPath(KubeJSPaths.DIRECTORY);
+					return 1;
+				}));
+		;
 
-		dispatcher.register(cmd);
+		var node = dispatcher.register(cmd);
+		dispatcher.register(Commands.literal("kjs").redirect(node));
 	}
 
 	private static int reloadClient(CommandSourceStack source) {
