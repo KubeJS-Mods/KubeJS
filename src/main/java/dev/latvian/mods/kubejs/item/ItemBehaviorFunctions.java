@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
@@ -221,7 +222,7 @@ public interface ItemBehaviorFunctions {
 	@Info("""
 		Determines if the item can perform corresponding action. E.g. shearing sheep, stripping logs, etc.
 		""")
-	default ItemBehaviorFunctions canPerformAction(BiPredicate<ItemStack, ItemAbility> canPerformAction) {
+	default ItemBehaviorFunctions canPerformAction(BiPredicate<ItemInstance, ItemAbility> canPerformAction) {
 		kjs$getOrCreateBehavior().canPerformAction = canPerformAction;
 		return this;
 	}

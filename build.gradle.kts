@@ -27,12 +27,12 @@ almostgradle.setup {
 	}
 
 	recipeViewers {
-		emi {
+		/*emi {
 			runConfig = true
 			mode = LoadingMode.API
 			version = "1.1.22"
 			minecraftVersion = "1.21.1"
-		}
+		}*/
 
 		rei {
 			runConfig = true
