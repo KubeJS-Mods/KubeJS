@@ -34,7 +34,7 @@ on:
 
 jobs:
   redirect:
-    uses: KubeJS-Mods/.github/.github/workflows/release-nf.yml@main
+    uses: Kube-Mods/.github/.github/workflows/release-nf.yml@main
     secrets: inherit
     with:
       java-distribution: "microsoft"

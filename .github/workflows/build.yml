@@ -31,7 +31,7 @@ concurrency:
 
 jobs:
   redirect:
-    uses: KubeJS-Mods/.github/.github/workflows/build.yml@main
+    uses: Kube-Mods/.github/.github/workflows/build.yml@main
     with:
       java-distribution: "microsoft"
       java-version: "25"
