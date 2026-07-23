@@ -1,6 +1,9 @@
 # changelog
 
 ## Unreleased
+- /
+
+## [8.0.4] - 2026-07-23
 
 - Fix dedicated server crash from block tint function client types (#1159)
 - Add `/kubejs browse` command to open the `kubejs` directory directly from the game
