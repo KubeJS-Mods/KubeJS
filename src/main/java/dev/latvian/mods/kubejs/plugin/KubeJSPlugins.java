@@ -2,17 +2,19 @@ package dev.latvian.mods.kubejs.plugin;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.annotations.SerializedName;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.latvian.mods.kubejs.DevProperties;
 import dev.latvian.mods.kubejs.KubeJS;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
-import dev.latvian.mods.kubejs.script.ConsoleJS;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import dev.latvian.mods.kubejs.util.ModResourceBindings;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforgespi.locating.IModFile;
-import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +25,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -77,37 +80,68 @@ public class KubeJSPlugins {
 		}
 	}
 
+	// "Duplicate logs" okay fine idea
+	private static void logFailedToParse(String source, String message) {
+		KubeJS.LOGGER.error("Failed to parse kube.plugin.json from {}: {}", source, message);
+	}
+
 	private static void loadFromJson(String json, String source, boolean loadClientPlugins) {
-		PluginFileData data;
+		JsonElement element;
 
 		try {
-			data = GSON.fromJson(json, PluginFileData.class);
+			element = GSON.fromJson(json, JsonElement.class);
 		} catch (JsonSyntaxException ex) {
 			if (DevProperties.get().logErroringPlugins) {
-				KubeJS.LOGGER.error("Failed to parse kube.plugin.json from {}: {}", source, ex.getMessage());
+				logFailedToParse(source, ex.getMessage());
 			}
 			return;
 		}
 
+		var result = PLUGIN_DATA_CODEC.parse(JsonOps.INSTANCE, element);
+		var dataOptional = result.result();
+
+		if (dataOptional.isEmpty()) {
+			if (DevProperties.get().logErroringPlugins) {
+				var message = result.error().map(DataResult.Error::message).orElse("unknown error");
+				logFailedToParse(source, message);
+			}
+			return;
+		}
+
+		var data = dataOptional.get();
+
 		logFoundSource(source);
 
-		for (var entry : data.plugins) {
-			if (entry.className == null || entry.className.isBlank()) {
-				KubeJS.LOGGER.error("Plugin entry in {} is missing a 'class' field, skipping", source);
+		for (var entry : data.plugins()) {
+			if (entry.className.isBlank()) {
+				if (DevProperties.get().logErroringPlugins) {
+					KubeJS.LOGGER.error("Plugin entry in {} 'class_path' can not be blank", source);
+				}
 				continue;
 			}
 
-			if (entry.clientOnly && !loadClientPlugins) {
-				logClientOnlySkip(entry.className);
+			// Checks to see if the provided class does exist
+			try {
+				// "false" is to prevent the class from being loaded
+				Class.forName(entry.className, false, ClassLoader.getSystemClassLoader());
+			} catch (ClassNotFoundException e) {
+				if (DevProperties.get().logErroringPlugins) {
+					KubeJS.LOGGER.error("Plugin entry in {} references missing class '{}'", source, entry.className);
+				}
 				continue;
 			}
 
-			if (entry.requiredMods != null) {
-				var missing = entry.requiredMods.stream().filter(m -> !ModList.get().isLoaded(m)).toList();
+			if (entry.clientOnly() && !loadClientPlugins) {
+				logClientOnlySkip(entry.className());
+				continue;
+			}
+
+			if (!entry.requiredMods().isEmpty()) {
+				var missing = entry.requiredMods().stream().filter(m -> !ModList.get().isLoaded(m)).toList();
 
 				if (!missing.isEmpty()) {
 					if (DevProperties.get().logSkippedPlugins) {
-						KubeJS.LOGGER.warn("Plugin {} does not have required mod(s) {} loaded, skipping", entry.className, missing);
+						KubeJS.LOGGER.warn("Plugin {} does not have required mod(s) {} loaded, skipping", entry.className(), missing);
 					}
 
 					continue;
@@ -116,32 +150,28 @@ public class KubeJSPlugins {
 
 			PENDING.add(new PendingPlugin(
 				source,
-				entry.id,
-				entry.className,
-				entry.after == null ? List.of() : List.copyOf(entry.after)
+				entry.id(),
+				entry.className(),
+				entry.after()
 			));
 		}
 
 		// Adding '+' and '-' into the GLOBAL_CLASS_FILTER is needed for legacy support, and for the createClassFilter method
 		// Removing that would require a little rework on how it works in here
 
-		if (data.classFilter != null) {
-			if (data.classFilter.allow != null) {
-				for (var s : data.classFilter.allow) {
-					if (!s.isBlank()) {
-						GLOBAL_CLASS_FILTER.add("+" + s.trim());
-					}
+		data.classFilter().ifPresent(classFilter -> {
+			for (var s : classFilter.allow()) {
+				if (!s.isBlank()) {
+					GLOBAL_CLASS_FILTER.add("+" + s.trim());
 				}
 			}
 
-			if (data.classFilter.deny != null) {
-				for (var s : data.classFilter.deny) {
-					if (!s.isBlank()) {
-						GLOBAL_CLASS_FILTER.add("-" + s.trim());
-					}
+			for (var s : classFilter.deny()) {
+				if (!s.isBlank()) {
+					GLOBAL_CLASS_FILTER.add("-" + s.trim());
 				}
 			}
-		}
+		});
 	}
 
 	private static void logFoundSource(String source) {
@@ -212,7 +242,7 @@ public class KubeJSPlugins {
 		var byId = new HashMap<String, PendingPlugin>();
 
 		for (var p : PENDING) {
-			if (p.id() != null && !p.id().isBlank() && byId.putIfAbsent(p.id(), p) != null) {
+			if (p.id().isPresent() && !p.id().get().isBlank() && byId.putIfAbsent(p.id().get(), p) != null) {
 				KubeJS.LOGGER.warn("Duplicate plugin id '{}' from source {}, 'after' references to it may be ambiguous", p.id(), p.source());
 			}
 		}
@@ -330,44 +360,53 @@ public class KubeJSPlugins {
 	}
 
 	/// A plugin queued for instantiation, after required-mod and client-only checks have already passed.
-	/// `id` is nullable in case a mod does not add it, but really should
+	/// `id` is optional in case a mod does not provide it, but really should
 	private record PendingPlugin(
 		String source,
-		@Nullable String id,
+		Optional<String> id,
 		String className,
-		List<String> after // defaults to empty list
-	) {}
-
-	private record PluginFileData (
-		List<PluginEntry> plugins,
-
-		@Nullable
-		@SerializedName("class_filter")
-		ClassFilterData classFilter
-	) {}
-
-	private record PluginEntry (
-		String id,
-
-		@SerializedName("class")
-		@Nullable
-		String className,
-
-		@SerializedName("client_only")
-		// defaults to false
-		boolean clientOnly,
-
-		@SerializedName("required_mods")
-		@Nullable
-		List<String> requiredMods,
-
-		@Nullable
 		List<String> after
 	) {}
 
-	// Despite if PluginFileData classFilter field is null, need to mark these as Nullable to make IntelliJ stop crying
+	private static final Codec<ClassFilterData> CLASS_FILTER_CODEC = RecordCodecBuilder.create(
+		inst -> inst.group(
+			Codec.STRING.listOf().optionalFieldOf("allow", List.of()).forGetter(ClassFilterData::allow),
+			Codec.STRING.listOf().optionalFieldOf("deny", List.of()).forGetter(ClassFilterData::deny)
+		).apply(inst, ClassFilterData::new)
+	);
+
+	private static final Codec<PluginEntry> PLUGIN_ENTRY_CODEC = RecordCodecBuilder.create(
+		inst -> inst.group(
+			Codec.STRING.optionalFieldOf("id").forGetter(PluginEntry::id),
+			Codec.STRING.fieldOf("class").forGetter(PluginEntry::className),
+			Codec.BOOL.optionalFieldOf("client_only", false).forGetter(PluginEntry::clientOnly),
+			Codec.STRING.listOf().optionalFieldOf("required_mods", List.of()).forGetter(PluginEntry::requiredMods),
+			Codec.STRING.listOf().optionalFieldOf("after", List.of()).forGetter(PluginEntry::after)
+		).apply(inst, PluginEntry::new)
+	);
+
+	private static final Codec<PluginFileData> PLUGIN_DATA_CODEC = RecordCodecBuilder.create(
+		inst -> inst.group(
+			PLUGIN_ENTRY_CODEC.listOf().fieldOf("plugins").forGetter(PluginFileData::plugins),
+			CLASS_FILTER_CODEC.optionalFieldOf("class_filter").forGetter(PluginFileData::classFilter)
+		).apply(inst, PluginFileData::new)
+	);
+
+	private record PluginFileData (
+		List<PluginEntry> plugins,
+		Optional<ClassFilterData> classFilter
+	) {}
+
+	private record PluginEntry (
+		Optional<String> id,
+		String className,
+		boolean clientOnly,
+		List<String> requiredMods,
+		List<String> after
+	) {}
+
 	private record ClassFilterData (
-		@Nullable List<String> allow,
-		@Nullable List<String> deny
+		List<String> allow,
+		List<String> deny
 	) {}
 }
