@@ -1,17 +1,87 @@
 {
-	"plugins": [
-		{
-			"class": "dev.latvian.mods.kubejs.plugin.builtin.BuiltinKubeJSPlugin"
-		},
-		{
-			"id": "client",
-			"class": "dev.latvian.mods.kubejs.plugin.builtin.BuiltinKubeJSClientPlugin",
-			"client_only": true
-		},
-		{
-			"id": "architectury",
-			"class": "dev.latvian.mods.kubejs.integration.architectury.ArchitecturyIntegration",
-			"required_mods": ["architectury"]
-		}
-	]
+  "plugins": [
+    {
+      "class": "dev.latvian.mods.kubejs.plugin.builtin.BuiltinKubeJSPlugin",
+      "class_filter": {
+        "allow": [
+          "java.lang.Number",
+          "java.lang.String",
+          "java.lang.Character",
+          "java.lang.Byte",
+          "java.lang.Short",
+          "java.lang.Integer",
+          "java.lang.Long",
+          "java.lang.Float",
+          "java.lang.Double",
+          "java.lang.Boolean",
+          "java.lang.Runnable",
+          "java.lang.Iterable",
+          "java.lang.Comparable",
+          "java.lang.CharSequence",
+          "java.lang.Void",
+          "java.lang.Package",
+          "java.lang.Appendable",
+          "java.lang.AutoCloseable",
+          "java.lang.Comparable",
+          "java.lang.Iterable",
+          "java.lang.Object",
+          "java.lang.Runnable",
+          "java.lang.StringBuilder",
+          "java.math.BigInteger",
+          "java.math.BigDecimal",
+          "java.io.Closeable",
+          "java.io.Serializable",
+          "java.nio.ByteOrder",
+          "java.util",
+          "it.unimi.dsi.fastutil",
+          "dev.latvian.mods.kubejs",
+          "net.minecraft",
+          "com.mojang.authlib.GameProfile",
+          "com.mojang.util.UUIDTypeAdapter",
+          "com.mojang.brigadier",
+          "com.mojang.blaze3d",
+          "dev.architectury",
+          "net.neoforged",
+          "mezz.jei"
+        ],
+        "deny": [
+          "java.lang",
+          "java.io",
+          "java.nio",
+          "java.util.jar",
+          "java.util.zip",
+          "dev.latvian.mods.kubejs.script",
+          "dev.latvian.mods.kubejs.plugin",
+          "dev.latvian.mods.kubejs.core",
+          "net.minecraft.Util",
+          "java.net",
+          "sun",
+          "com.sun",
+          "io.netty",
+          "org.objectweb.asm",
+          "org.spongepowered.asm",
+          "org.openjdk.nashorn",
+          "jdk.nashorn",
+          "org.lwjgl.system",
+          "net.neoforged.fml",
+          "net.neoforged.accesstransformer",
+          "net.neoforged.coremod",
+          "cpw.mods.modlauncher",
+          "cpw.mods.gross"
+        ]
+      }
+    },
+    {
+      "id": "client",
+      "class": "dev.latvian.mods.kubejs.plugin.builtin.BuiltinKubeJSClientPlugin",
+      "client_only": true
+    },
+    {
+      "id": "architectury",
+      "class": "dev.latvian.mods.kubejs.integration.architectury.ArchitecturyIntegration",
+      "required_mods": [
+        "architectury"
+      ]
+    }
+  ]
 }
