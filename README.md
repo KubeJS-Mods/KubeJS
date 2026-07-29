@@ -75,17 +75,10 @@ KubeJS [plugins](https://github.com/KubeJS-Mods/KubeJS/blob/main/src/main/java/d
 - registering custom event handler groups for the KubeJS event system (`registerEvents`, this is **necessary** in order to have the event group be accessible from scripts)
 - attaching extra data to players, worlds or the server, such that it can be accessed by script developers later (`attach(Player|World|Server)Data` - [Example](https://github.com/FTBTeam/FTB-Quests/blob/11311be070273008483d4c734ff9b96cc6a85b02/common/src/main/java/dev/ftb/mods/ftbquests/integration/kubejs/KubeJSIntegration.java#L40-L43))
 
-You must add your plugin class in a `src/main/resources/kube.plugin.json` file, optionally with mod id included, e.g.:
+You must add your plugin class in a `src/main/resources/kubejs.plugins.txt` file, optionally with mod id at end, e.g.:
 
-```json
-{
-    "plugins": [
-        {
-            "id": "mekanism",
-            "class": "dev.latvian.mods.kubejs.mekanism.MekanismKubeJSPlugin"
-        }
-    ]
-}
+```
+dev.latvian.mods.kubejs.mekanism.MekanismKubeJSPlugin mekanism
 ```
 
 ### Adding bindings
