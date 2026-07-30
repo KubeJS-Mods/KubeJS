@@ -113,26 +113,17 @@ public class KubeJSPlugins {
 		logFoundSource(source);
 
 		for (var entry : data.plugins()) {
-			if (entry.className.isBlank()) {
-				if (DevProperties.get().logErroringPlugins) {
-					KubeJS.LOGGER.error("Plugin entry in {} 'class_path' can not be blank", source);
+			if (entry.pluginClass().isEmpty()) {
+				if (DevProperties.get().logSkippedPlugins) {
+					KubeJS.LOGGER.warn("Plugin class in {} not found, skipping", source);
 				}
 				continue;
 			}
 
-			// Checks to see if the provided class does exist
-			try {
-				// "false" is to prevent the class from being loaded
-				Class.forName(entry.className, false, ClassLoader.getSystemClassLoader());
-			} catch (ClassNotFoundException e) {
-				if (DevProperties.get().logErroringPlugins) {
-					KubeJS.LOGGER.error("Plugin entry in {} references missing class '{}'", source, entry.className);
-				}
-				continue;
-			}
+			var pluginClass = entry.pluginClass().get();
 
 			if (entry.clientOnly() && !loadClientPlugins) {
-				logClientOnlySkip(entry.className());
+				logClientOnlySkip(pluginClass.getName());
 				continue;
 			}
 
@@ -141,7 +132,7 @@ public class KubeJSPlugins {
 
 				if (!missing.isEmpty()) {
 					if (DevProperties.get().logSkippedPlugins) {
-						KubeJS.LOGGER.warn("Plugin {} does not have required mod(s) {} loaded, skipping", entry.className(), missing);
+						KubeJS.LOGGER.warn("Plugin {} does not have required mod(s) {} loaded, skipping", pluginClass.getName(), missing);
 					}
 
 					continue;
@@ -151,7 +142,7 @@ public class KubeJSPlugins {
 			PENDING.add(new PendingPlugin(
 				source,
 				entry.id(),
-				entry.className(),
+				pluginClass,
 				entry.after()
 			));
 		}
@@ -304,19 +295,10 @@ public class KubeJSPlugins {
 
 		for (var p : ordered) {
 			try {
-				var clazz = Class.forName(p.className());
-
-				if (!KubeJSPlugin.class.isAssignableFrom(clazz)) {
-					if (DevProperties.get().logErroringPlugins) {
-						KubeJS.LOGGER.error("Class {} from source {} does not implement KubeJSPlugin, skipping", p.className(), p.source());
-					}
-					continue;
-				}
-
-				LIST.add((KubeJSPlugin) clazz.getDeclaredConstructor().newInstance());
+				LIST.add(p.pluginClass().getDeclaredConstructor().newInstance());
 			} catch (Throwable t) {
 				if (DevProperties.get().logErroringPlugins) {
-					KubeJS.LOGGER.error("Failed to load plugin {} from source {}: {}", p.className(), p.source(), t.toString());
+					KubeJS.LOGGER.error("Failed to load plugin {} from source {}: {}", p.pluginClass().getName(), p.source(), t.toString());
 				}
 			}
 		}
@@ -364,7 +346,7 @@ public class KubeJSPlugins {
 	private record PendingPlugin(
 		String source,
 		Optional<String> id,
-		String className,
+		Class<? extends KubeJSPlugin> pluginClass,
 		List<String> after
 	) {}
 
@@ -375,10 +357,24 @@ public class KubeJSPlugins {
 		).apply(inst, ClassFilterData::new)
 	);
 
+	private static final Codec<Optional<Class<? extends KubeJSPlugin>>> PLUGIN_CLASS_CODEC = Codec.STRING.comapFlatMap(str -> {
+		try {
+			var clazz = Class.forName(str, false, KubeJSPlugins.class.getClassLoader());
+
+			try {
+				return DataResult.success(Optional.of(clazz.asSubclass(KubeJSPlugin.class)));
+			} catch (ClassCastException e) {
+				return DataResult.error(() -> "Class " + str + " does not implement KubeJSPlugin");
+			}
+		} catch (ClassNotFoundException e) {
+			return DataResult.success(Optional.empty());
+		}
+	}, clazz -> clazz.map(Class::getName).orElse(""));
+
 	private static final Codec<PluginEntry> PLUGIN_ENTRY_CODEC = RecordCodecBuilder.create(
 		inst -> inst.group(
 			Codec.STRING.optionalFieldOf("id").forGetter(PluginEntry::id),
-			Codec.STRING.fieldOf("class").forGetter(PluginEntry::className),
+			PLUGIN_CLASS_CODEC.fieldOf("class").forGetter(PluginEntry::pluginClass),
 			Codec.BOOL.optionalFieldOf("client_only", false).forGetter(PluginEntry::clientOnly),
 			Codec.STRING.listOf().optionalFieldOf("required_mods", List.of()).forGetter(PluginEntry::requiredMods),
 			Codec.STRING.listOf().optionalFieldOf("after", List.of()).forGetter(PluginEntry::after)
@@ -399,7 +395,9 @@ public class KubeJSPlugins {
 
 	private record PluginEntry (
 		Optional<String> id,
-		String className,
+		// If a mod is required and not loaded, having it as an optional
+		// prevents the entire plugin list from failing, therefor an Optional of the class is used
+		Optional<Class<? extends KubeJSPlugin>> pluginClass,
 		boolean clientOnly,
 		List<String> requiredMods,
 		List<String> after
