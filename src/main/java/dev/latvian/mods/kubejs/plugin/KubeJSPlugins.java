@@ -206,7 +206,7 @@ public class KubeJSPlugins {
 				}
 
 				try {
-					return Stream.of(Class.forName(line[0]));
+					return Stream.of(Class.forName(line[0], false, KubeJSPlugins.class.getClassLoader()));
 				} catch (Throwable t) {
 					KubeJS.LOGGER.error("Failed to load plugin {} from source {}", s, source, t);
 					return Stream.empty();
