@@ -165,8 +165,6 @@ public class KubeJSContext extends Context {
 			return HolderWrapper.wrap(this, from, target.param(0));
 		} else if (c == Holder.Reference.class) {
 			return HolderWrapper.wrapRef(this, from, target.param(0));
-		} else if (c == HolderSet.class) {
-			return HolderWrapper.wrapSet(this, from, target.param(0));
 		} else if (c == TagKey.class) {
 			if (from instanceof TagKey<?> k) {
 				return k;
