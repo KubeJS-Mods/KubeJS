@@ -1,7 +1,8 @@
 # changelog
 
 ## Unreleased
-- /
+
+- Fixed an issue grabbing tags from frozen registries in FluidWrapper (#1173)
 
 ## [8.0.4] - 2026-07-23
 
