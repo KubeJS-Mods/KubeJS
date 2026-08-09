@@ -1,7 +1,7 @@
 # changelog
 
 ## Unreleased
-- /
+- Fix invalid fluid lookup for fluid tag ingredients
 
 ## [8.0.4] - 2026-07-23
 
