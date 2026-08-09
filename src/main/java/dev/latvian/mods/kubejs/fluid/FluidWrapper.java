@@ -275,11 +275,10 @@ public interface FluidWrapper {
 		return switch (reader.peek()) {
 			case '#' -> {
 				reader.skip();
-				var tagKey = ID.read(reader).map(FluidTags::create);
-				yield tagKey.map(k -> {
-					var lookup = BuiltInRegistries.acquireBootstrapRegistrationLookup(BuiltInRegistries.FLUID);
-					return FluidIngredient.of(lookup.getOrThrow(k));
-				});
+				yield ID.read(reader).map(FluidTags::create).flatMap(k -> BuiltInRegistries.FLUID
+					.get(k)
+					.map(fluidNamed -> success(FluidIngredient.of(fluidNamed)))
+					.orElseGet(() -> error(() -> "Tag " + k.location() + " does not exist!")));
 			}
 			case '@' -> {
 				reader.skip();
