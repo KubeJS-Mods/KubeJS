@@ -1,9 +1,11 @@
 package dev.latvian.mods.kubejs.client;
 
 import dev.latvian.mods.kubejs.DevProperties;
+import dev.latvian.mods.kubejs.KubeJS;
 import net.minecraft.util.Util;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 
 public class EditorExt {
@@ -20,20 +22,40 @@ public class EditorExt {
 		return !custom.isEmpty() && (custom.equals(VSCODE) || custom.equals(VSCODIUM) || custom.equals(VSCODE_OSS));
 	}
 
-	private static URI format(String scheme, Path path, int line, int column) {
-		return URI.create(scheme
-			.replace("{path}", path.toAbsolutePath().toUri().getRawPath())
+	private static URI format(String scheme, Path path, int line, int column) throws URISyntaxException {
+		// Normalize to use forward slash that works for Windows and Linux absolute paths
+		String rawPath = path.toAbsolutePath().normalize().toUri().getRawPath();
+
+		if (rawPath == null || rawPath.isEmpty()) {
+			// Fallback: manually build something URI-legal if toUri() somehow gave nothing usable
+			rawPath = path.toAbsolutePath().normalize().toString().replace('\\', '/');
+			if (!rawPath.startsWith("/")) {
+				rawPath = "/" + rawPath;
+			}
+		}
+
+		String formatted = scheme
+			.replace("{path}", rawPath)
 			.replace("{line}", String.valueOf(line))
-			.replace("{col}", String.valueOf(column))
-		);
+			.replace("{col}", String.valueOf(column));
+
+		// URI#create would throw an IllegalArgumentException on any bad input
+		// Use the checked constructor instead so callers can handle failure gracefully
+		return new URI(formatted);
 	}
 
 	public static void openFile(Path path, int line, int column) {
 		var custom = DevProperties.get().openUriFormat;
 		if (!custom.isBlank()) {
-			Util.getPlatform().openUri(format(custom, path, line, column));
-		} else {
-			Util.getPlatform().openPath(path);
+			try {
+				Util.getPlatform().openUri(format(custom, path, line, column));
+				return;
+			} catch (URISyntaxException | IllegalArgumentException e) {
+				// Bad/unsupported openUriFormat so the game doesn't crash.
+				// Just fall through to opening the file/folder directly instead.
+				KubeJS.LOGGER.error("Failed to build editor URI for " + path + " with format '" + custom + "'", e);
+			}
 		}
+		Util.getPlatform().openPath(path);
 	}
 }
