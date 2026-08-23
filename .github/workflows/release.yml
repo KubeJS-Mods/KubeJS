@@ -71,20 +71,16 @@ jobs:
 
       - name: Release to CurseForge
         if: ${{ inputs.release_type != 'none' }}
-        run: ./gradlew publishUnified --stacktrace
+        run: ./gradlew publishCurseforge --stacktrace
         env:
           BUILD_NUMBER: ${{ steps.build_number.outputs.number }}
-          GIT_COMMIT: ${{ github.sha }}
-          GIT_PREVIOUS_COMMIT: ${{ github.event.before }}
           CURSEFORGE_KEY: ${{ secrets.CURSEFORGE_KEY }}
           RELEASE_TYPE: ${{ inputs.release_type }}
 
       - name: Release to Modrinth
         if: ${{ inputs.release_type != 'none' }}
-        run: ./gradlew publishUnified --stacktrace
+        run: ./gradlew publishModrinth --stacktrace
         env:
           BUILD_NUMBER: ${{ steps.build_number.outputs.number }}
-          GIT_COMMIT: ${{ github.sha }}
-          GIT_PREVIOUS_COMMIT: ${{ github.event.before }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           RELEASE_TYPE: ${{ inputs.release_type }}
