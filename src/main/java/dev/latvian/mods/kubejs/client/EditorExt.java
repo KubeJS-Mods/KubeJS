@@ -23,11 +23,9 @@ public class EditorExt {
 	}
 
 	private static URI format(String scheme, Path path, int line, int column) throws URISyntaxException {
-		// Normalize to use forward slash that works for Windows and Linux absolute paths
 		String rawPath = path.toAbsolutePath().normalize().toUri().getRawPath();
 
 		if (rawPath == null || rawPath.isEmpty()) {
-			// Fallback: manually build something URI-legal if toUri() somehow gave nothing usable
 			rawPath = path.toAbsolutePath().normalize().toString().replace('\\', '/');
 			if (!rawPath.startsWith("/")) {
 				rawPath = "/" + rawPath;
@@ -39,8 +37,6 @@ public class EditorExt {
 			.replace("{line}", String.valueOf(line))
 			.replace("{col}", String.valueOf(column));
 
-		// URI#create would throw an IllegalArgumentException on any bad input
-		// Use the checked constructor instead so callers can handle failure gracefully
 		return new URI(formatted);
 	}
 
@@ -51,8 +47,6 @@ public class EditorExt {
 				Util.getPlatform().openUri(format(custom, path, line, column));
 				return;
 			} catch (URISyntaxException | IllegalArgumentException e) {
-				// Bad/unsupported openUriFormat so the game doesn't crash.
-				// Just fall through to opening the file/folder directly instead.
 				KubeJS.LOGGER.error("Failed to build editor URI for " + path + " with format '" + custom + "'", e);
 			}
 		}
