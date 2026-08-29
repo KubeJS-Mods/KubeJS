@@ -59,9 +59,10 @@ public class ClientAssetPacks {
 		int afterModsIndex = KubeFileResourcePack.findAfterModsIndex(packs);
 
 		packs.add(beforeModsIndex, virtualPacks.get(GeneratedDataStage.BEFORE_MODS));
-		packs.add(afterModsIndex, internalAssetPack);
-		packs.add(afterModsIndex + 1, virtualPacks.get(GeneratedDataStage.AFTER_MODS));
-		packs.addAll(afterModsIndex + 2, filePacks);
+		// Each entry index is incremented to account for the fact that we've inserted entries before it
+		packs.add(afterModsIndex + 1, internalAssetPack);
+		packs.add(afterModsIndex + 2, virtualPacks.get(GeneratedDataStage.AFTER_MODS));
+		packs.addAll(afterModsIndex + 3, filePacks);
 		packs.add(virtualPacks.get(GeneratedDataStage.LAST));
 
 		internalAssetPack.reset();
